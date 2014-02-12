@@ -1,0 +1,5 @@
+Dependancy/win32/Debug/
+*.sdf
+*.opensdf
+*.ipch
+*.v11.suo
