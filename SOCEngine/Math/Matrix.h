@@ -13,15 +13,8 @@ namespace Math
 	class Matrix
 	{
 	public:
-		Matrix(void)
-		{
-
-		}
-
-		~Matrix(void)
-		{
-
-		}
+		Matrix(void);
+		~Matrix(void);
 
 	public:
 		bool operator != (const Matrix& mat) const;
@@ -35,7 +28,7 @@ namespace Math
 
 		Matrix operator+ (const Matrix& mat) const;
 		Matrix operator- (const Matrix& mat) const;
-		Matrix operator* (const Matrix& mat) const;
+		Matrix operator* (const Matrix& mat);
 		Matrix operator* (float f) const;
 		Matrix operator/ (float f) const;
 
@@ -44,7 +37,8 @@ namespace Math
 		const Vector4 operator* (const Vector4& v) const;
 
 	public:
-		//inverse, 
+		void MatrixMultiply(Matrix& out, const Matrix& lhs, const Matrix& rhs);
+		//inverse, transpose, other....
 
 	private:
 		union

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{fe7ae6ba-29d6-4a15-99e9-41816367b37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector">
+      <UniqueIdentifier>{48afae74-d7ca-4b84-84ee-9dac3a03b5cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\Vector2">
+      <UniqueIdentifier>{ed1b8c9c-1fa1-4779-a73b-4e09c6eddb61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\Vector3">
+      <UniqueIdentifier>{2de1487d-4879-4760-ba31-ca72a4cc8a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\Vector4">
+      <UniqueIdentifier>{c1306f3f-cfe3-4f86-974b-eddedcd6eddc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Common">
+      <UniqueIdentifier>{ce28d9b7-370f-416f-8c41-ef808495af82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Matrix">
+      <UniqueIdentifier>{eecb864e-76a2-4cf6-a3e9-edc589f92d1e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Vector2.cpp">
+      <Filter>Math\Vector\Vector2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Vector3.cpp">
+      <Filter>Math\Vector\Vector3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Vector4.cpp">
+      <Filter>Math\Vector\Vector4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Common.cpp">
+      <Filter>Math\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp">
+      <Filter>Math\Matrix</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\SOCEngine\Math\Math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Vector2.h">
+      <Filter>Math\Vector\Vector2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Vector3.h">
+      <Filter>Math\Vector\Vector3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Vector4.h">
+      <Filter>Math\Vector\Vector4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Common.h">
+      <Filter>Math\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Matrix.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
