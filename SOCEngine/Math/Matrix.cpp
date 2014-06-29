@@ -18,13 +18,9 @@ namespace Math
 	bool Matrix::operator != (const Matrix& mat) const
 	{
 		for(int i=0; i<4; ++i)
-		{
 			for(int j=0; j<4; ++j)
-			{
 				if( _m[i][j] != mat._m[i][j] )
 					return true;
-			}
-		}
 
 		return false;
 	}
@@ -37,12 +33,8 @@ namespace Math
 	Matrix& Matrix::operator+= (const Matrix& mat)
 	{
 		for (int i=0; i<4; i++)
-		{
 			for (int j=0; j<4; j++)
-			{
 				_m[i][j] += mat._m[i][j];
-			}
-		}
 
 		return *this;
 	}
@@ -50,12 +42,8 @@ namespace Math
 	Matrix& Matrix::operator-= (const Matrix& mat)
 	{
 		for (int i=0; i<4; i++)
-		{
 			for (int j=0; j<4; j++)
-			{
 				_m[i][j] -= mat._m[i][j];
-			}
-		}
 
 		return *this;
 	}
@@ -63,7 +51,7 @@ namespace Math
 	Matrix& Matrix::operator*= (const Matrix& mat)
 	{
 		Matrix res;
-		MatrixMultiply( res, (*this), mat);
+		Multiply( res, (*this), mat);
 
 		(*this) = res;
 
@@ -73,12 +61,8 @@ namespace Math
 	Matrix& Matrix::operator*= (float f)
 	{
 		for(int i=0; i<4; ++i)
-		{
 			for(int j=0; j<4; ++j)
-			{
 				_m[i][j] *= f;
-			}
-		}
 
 		return (*this);
 	}
@@ -116,8 +100,7 @@ namespace Math
 	Matrix Matrix::operator* (const Matrix& mat)
 	{
 		Matrix res;
-
-		MatrixMultiply(res, (*this), mat);
+		Multiply(res, (*this), mat);
 
 		return res;
 	}
@@ -127,12 +110,8 @@ namespace Math
 		Matrix res( *this );
 
 		for(int i=0; i<4; ++i)
-		{
 			for(int j=0; j<4; ++j)
-			{
 				res._m[i][j] *= f;
-			}
-		}
 
 		return res;
 	}
@@ -142,12 +121,8 @@ namespace Math
 		Matrix res( *this );
 
 		for(int i=0; i<4; ++i)
-		{
 			for(int j=0; j<4; ++j)
-			{
 				res._m[i][j] /= f;
-			}
-		}
 
 		return res;
 	}
@@ -180,7 +155,38 @@ namespace Math
 		return res;
 	}
 
-	void Matrix::MatrixMultiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
+	void Matrix::Transpose(Matrix& out, const Matrix& mat)
+	{
+		for(int i=0; i<4; ++i)
+			for(int j=0; j<4; ++j)
+				out._m[j][i] = mat._m[i][j];
+	}
+
+	const Matrix& Matrix::Transpose()
+	{
+		Matrix::Transpose((*this), (*this));
+		return (*this);
+	}
+
+	const Matrix& Matrix::Inverse()
+	{
+		Matrix::Inverse((*this), (*this));
+		return (*this);
+	}
+
+	void Matrix::Set( float _11, float _12, float _13, float _14,
+		float _21, float _22, float _23, float _24,
+		float _31, float _32, float _33, float _34,
+		float _41, float _42, float _43, float _44
+		)
+	{
+		_m[0][0] = _11; _m[0][1] = _12; _m[0][2] = _13; _m[0][3] = _14;
+		_m[1][0] = _21; _m[1][1] = _22; _m[1][2] = _23; _m[1][3] = _24;
+		_m[2][0] = _31; _m[2][1] = _32; _m[2][2] = _33; _m[2][3] = _34;
+		_m[3][0] = _41; _m[3][1] = _42; _m[3][2] = _43; _m[3][3] = _44;
+	}
+
+	void Matrix::Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
 	{
 		for(int k=0; k<4; ++k)
 		{
@@ -196,5 +202,99 @@ namespace Math
 				out._m[i][k] = f;
 			}
 		}
+	}
+
+	const Matrix& Matrix::Identity()
+	{
+		memset(&_m, 0, sizeof(Matrix));
+		_11 = _22 = _33 = _44 = 1.0f;
+
+		return *this;
+	}
+
+	const Matrix& Matrix::Zero()
+	{
+		memset(&_m, 0, sizeof(Matrix));
+		return *this;			
+	}
+
+	void Matrix::Inverse(Matrix& out, const Matrix& mat)
+	{			
+		Matrix src;
+		Matrix::Transpose(src, mat);
+
+		float tmpCofactors[12];
+		/* calculate pairs for first 8 elements (cofactors) */
+		tmpCofactors[0] = src._m[2][2] * src._m[3][3];
+		tmpCofactors[1] = src._m[2][3] * src._m[3][2];
+		tmpCofactors[2] = src._m[2][1] * src._m[3][3];
+		tmpCofactors[3] = src._m[2][3] * src._m[3][1];
+		tmpCofactors[4] = src._m[2][1] * src._m[3][2];
+		tmpCofactors[5] = src._m[2][2] * src._m[3][1];
+		tmpCofactors[6] = src._m[2][0] * src._m[3][3];
+		tmpCofactors[7] = src._m[2][3] * src._m[3][0];
+		tmpCofactors[8] = src._m[2][0] * src._m[3][2];
+		tmpCofactors[9] = src._m[2][2] * src._m[3][0];
+		tmpCofactors[10] = src._m[2][0] * src._m[3][1];
+		tmpCofactors[11] = src._m[2][1] * src._m[3][0];
+
+		/* calculate first 8 elements (cofactors) */
+		out._m[0][0] = tmpCofactors[0]*src._m[1][1] + tmpCofactors[3]*src._m[1][2] + tmpCofactors[4]*src._m[1][3];
+		out._m[0][0] -= tmpCofactors[1]*src._m[1][1] + tmpCofactors[2]*src._m[1][2] + tmpCofactors[5]*src._m[1][3];
+		out._m[0][1] = tmpCofactors[1]*src._m[1][0] + tmpCofactors[6]*src._m[1][2] + tmpCofactors[9]*src._m[1][3];
+		out._m[0][1] -= tmpCofactors[0]*src._m[1][0] + tmpCofactors[7]*src._m[1][2] + tmpCofactors[8]*src._m[1][3];
+		out._m[0][2] = tmpCofactors[2]*src._m[1][0] + tmpCofactors[7]*src._m[1][1] + tmpCofactors[10]*src._m[1][3];
+		out._m[0][2] -= tmpCofactors[3]*src._m[1][0] + tmpCofactors[6]*src._m[1][1] + tmpCofactors[11]*src._m[1][3];
+		out._m[0][3] = tmpCofactors[5]*src._m[1][0] + tmpCofactors[8]*src._m[1][1] + tmpCofactors[11]*src._m[1][2];
+		out._m[0][3] -= tmpCofactors[4]*src._m[1][0] + tmpCofactors[9]*src._m[1][1] + tmpCofactors[10]*src._m[1][2];
+		out._m[1][0] = tmpCofactors[1]*src._m[0][1] + tmpCofactors[2]*src._m[0][2] + tmpCofactors[5]*src._m[0][3];
+		out._m[1][0] -= tmpCofactors[0]*src._m[0][1] + tmpCofactors[3]*src._m[0][2] + tmpCofactors[4]*src._m[0][3];
+		out._m[1][1] = tmpCofactors[0]*src._m[0][0] + tmpCofactors[7]*src._m[0][2] + tmpCofactors[8]*src._m[0][3];
+		out._m[1][1] -= tmpCofactors[1]*src._m[0][0] + tmpCofactors[6]*src._m[0][2] + tmpCofactors[9]*src._m[0][3];
+		out._m[1][2] = tmpCofactors[3]*src._m[0][0] + tmpCofactors[6]*src._m[0][1] + tmpCofactors[11]*src._m[0][3];
+		out._m[1][2] -= tmpCofactors[2]*src._m[0][0] + tmpCofactors[7]*src._m[0][1] + tmpCofactors[10]*src._m[0][3];
+		out._m[1][3] = tmpCofactors[4]*src._m[0][0] + tmpCofactors[9]*src._m[0][1] + tmpCofactors[10]*src._m[0][2];
+		out._m[1][3] -= tmpCofactors[5]*src._m[0][0] + tmpCofactors[8]*src._m[0][1] + tmpCofactors[11]*src._m[0][2];
+
+		/* calculate pairs for second 8 elements (cofactors) */
+		tmpCofactors[0] = src._m[0][2]*src._m[1][3];
+		tmpCofactors[1] = src._m[0][3]*src._m[1][2];
+		tmpCofactors[2] = src._m[0][1]*src._m[1][3];
+		tmpCofactors[3] = src._m[0][3]*src._m[1][1];
+		tmpCofactors[4] = src._m[0][1]*src._m[1][2];
+		tmpCofactors[5] = src._m[0][2]*src._m[1][1];
+		tmpCofactors[6] = src._m[0][0]*src._m[1][3];
+		tmpCofactors[7] = src._m[0][3]*src._m[1][0];
+		tmpCofactors[8] = src._m[0][0]*src._m[1][2];
+		tmpCofactors[9] = src._m[0][2]*src._m[1][0];
+		tmpCofactors[10] = src._m[0][0]*src._m[1][1];
+		tmpCofactors[11] = src._m[0][1]*src._m[1][0];
+
+		/* calculate second 8 elements (cofactors) */
+		out._m[2][0] = tmpCofactors[0]*src._m[3][1] + tmpCofactors[3]*src._m[3][2] + tmpCofactors[4]*src._m[3][3];
+		out._m[2][0] -= tmpCofactors[1]*src._m[3][1] + tmpCofactors[2]*src._m[3][2] + tmpCofactors[5]*src._m[3][3];
+		out._m[2][1] = tmpCofactors[1]*src._m[3][0] + tmpCofactors[6]*src._m[3][2] + tmpCofactors[9]*src._m[3][3];
+		out._m[2][1] -= tmpCofactors[0]*src._m[3][0] + tmpCofactors[7]*src._m[3][2] + tmpCofactors[8]*src._m[3][3];
+		out._m[2][2] = tmpCofactors[2]*src._m[3][0] + tmpCofactors[7]*src._m[3][1] + tmpCofactors[10]*src._m[3][3];
+		out._m[2][2]-= tmpCofactors[3]*src._m[3][0] + tmpCofactors[6]*src._m[3][1] + tmpCofactors[11]*src._m[3][3];
+		out._m[2][3] = tmpCofactors[5]*src._m[3][0] + tmpCofactors[8]*src._m[3][1] + tmpCofactors[11]*src._m[3][2];
+		out._m[2][3]-= tmpCofactors[4]*src._m[3][0] + tmpCofactors[9]*src._m[3][1] + tmpCofactors[10]*src._m[3][2];
+		out._m[3][0] = tmpCofactors[2]*src._m[2][2] + tmpCofactors[5]*src._m[2][3] + tmpCofactors[1]*src._m[2][1];
+		out._m[3][0]-= tmpCofactors[4]*src._m[2][3] + tmpCofactors[0]*src._m[2][1] + tmpCofactors[3]*src._m[2][2];
+		out._m[3][1] = tmpCofactors[8]*src._m[2][3] + tmpCofactors[0]*src._m[2][0] + tmpCofactors[7]*src._m[2][2];
+		out._m[3][1]-= tmpCofactors[6]*src._m[2][2] + tmpCofactors[9]*src._m[2][3] + tmpCofactors[1]*src._m[2][0];
+		out._m[3][2] = tmpCofactors[6]*src._m[2][1] + tmpCofactors[11]*src._m[2][3] + tmpCofactors[3]*src._m[2][0];
+		out._m[3][2]-= tmpCofactors[10]*src._m[2][3] + tmpCofactors[2]*src._m[2][0] + tmpCofactors[7]*src._m[2][1];
+		out._m[3][3] = tmpCofactors[10]*src._m[2][2] + tmpCofactors[4]*src._m[2][0] + tmpCofactors[9]*src._m[2][1];
+		out._m[3][3]-= tmpCofactors[8]*src._m[2][1] + tmpCofactors[11]*src._m[2][2] + tmpCofactors[5]*src._m[2][0];
+
+		/* calculate determinant */
+		float det = src._m[0][0]*out._m[0][0]+src._m[0][1]*out._m[0][1]+src._m[0][2]*out._m[0][2]+src._m[0][3]*out._m[0][3];
+
+		/* calculate matrix inverse */
+		det = 1/det;
+		for (int i = 0; i < 4; i++)
+			for( int j = 0; j < 4; ++j)
+				out._m[i][j] *= det;
 	}
 }
