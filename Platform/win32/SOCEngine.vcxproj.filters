@@ -30,6 +30,9 @@
     <Filter Include="Math\Matrix">
       <UniqueIdentifier>{eecb864e-76a2-4cf6-a3e9-edc589f92d1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Quaternion">
+      <UniqueIdentifier>{4826ae2c-abb1-4549-850a-bd4a37635b69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp">
       <Filter>Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp">
+      <Filter>Math\Quaternion</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +78,9 @@
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Math\Matrix.h">
       <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Quaternion.h">
+      <Filter>Math\Quaternion</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

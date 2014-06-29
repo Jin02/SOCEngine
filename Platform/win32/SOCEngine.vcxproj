@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\SOCEngine\Math\Common.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector2.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector3.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector4.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="..\..\SOCEngine\Math\Common.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Math.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Matrix.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Quaternion.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector2.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector3.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector4.h" />
