@@ -1,4 +1,4 @@
-Dependancy/win32/Debug/
+Platform/win32/Debug/
 *.sdf
 *.opensdf
 *.ipch
