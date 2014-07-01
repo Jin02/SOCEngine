@@ -26,6 +26,12 @@ namespace Math
 		Vector3 operator * (const Vector3& a) const;
 		Vector3 operator / (float d) const;
 
+		Vector3& operator += (const Vector3& a);
+		Vector3& operator -= (const Vector3& a);
+		Vector3& operator *= (const Vector3& a);
+		Vector3& operator *= (float f);
+		Vector3& operator /= (float f);
+
 	public:
 		static Vector3 Forward();
 		static Vector3 Right();

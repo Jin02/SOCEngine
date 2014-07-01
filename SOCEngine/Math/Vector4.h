@@ -27,6 +27,12 @@ namespace Math
 		Vector4 operator * (const Vector4& a) const;
 		Vector4 operator / (float d) const;
 
+		Vector4& operator += (const Vector4& a);
+		Vector4& operator -= (const Vector4& a);
+		Vector4& operator *= (const Vector4& a);
+		Vector4& operator *= (float f);
+		Vector4& operator /= (float f);
+
 	public:
 		static Vector4 One();
 		static Vector4 Zero();

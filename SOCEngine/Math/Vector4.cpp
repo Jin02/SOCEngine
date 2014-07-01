@@ -8,7 +8,7 @@ namespace Math
 {
 
 	Vector4::Vector4(void) :
-		x(0), y(0), z(0), w(0)
+		x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 	{
 	}
 

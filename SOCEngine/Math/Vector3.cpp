@@ -3,7 +3,7 @@
 namespace Math
 {
 	Vector3::Vector3() :
-		x(0), y(0), z(0)
+		x(0.0f), y(0.0f), z(0.0f)
 	{
 	}
 

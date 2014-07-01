@@ -26,6 +26,12 @@ namespace Math
 		Vector2 operator * (const Vector2 &a) const;
 		Vector2 operator / (float d) const;
 
+		Vector2& operator += (const Vector2& a);
+		Vector2& operator -= (const Vector2& a);
+		Vector2& operator *= (const Vector2& a);
+		Vector2& operator *= (float f);
+		Vector2& operator /= (float f);
+
 	public:
 		static Vector2 Zero();
 		static Vector2 One();
