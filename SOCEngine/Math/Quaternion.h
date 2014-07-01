@@ -44,7 +44,13 @@ namespace Math
 		}
 		Quaternion operator * (const Quaternion& rhs) const
 		{
+			Quaternion q;
+			q.x = (w * rhs.x) + (x * rhs.w) + (y * rhs.z) - (z * rhs.y);
+			q.y = (w * rhs.y) + (y * rhs.w) + (z * rhs.x) - (x * rhs.z);
+			q.z = (w * rhs.z) + (z * rhs.w) + (x * rhs.y) - (y * rhs.x);
+			q.w = (w * rhs.w) - (x * rhs.x) - (y * rhs.y) - (z * rhs.z);
 
+			return q;
 		}
 		Quaternion operator * (float f) const
 		{
@@ -61,6 +67,18 @@ namespace Math
 		bool operator != (const Quaternion& rhs) const
 		{
 
+		}
+
+		Quaternion& operator += (const Quaternion& a)
+		{
+
+		}
+		Quaternion& operator -= (const Quaternion& a)
+		{
+		}
+
+		Quaternion& operator *= (const Quaternion& a)
+		{
 		}
 
 	public:
