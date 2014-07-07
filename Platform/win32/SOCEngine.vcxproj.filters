@@ -33,6 +33,42 @@
     <Filter Include="Math\Quaternion">
       <UniqueIdentifier>{4826ae2c-abb1-4549-850a-bd4a37635b69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{096791ff-57b0-49c1-aa2a-ae487719b0f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Rect">
+      <UniqueIdentifier>{5d592127-13a0-4f7a-bc90-943f2621e2bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{f279f9af-b8f1-4356-842d-3c4cf40b76a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Scene">
+      <UniqueIdentifier>{3621fa38-dc2a-4d53-b142-f718a8a1f90a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{4cdce50f-2d2c-4998-ba7b-7efb7d319831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Color">
+      <UniqueIdentifier>{a2084078-3547-4ad4-84aa-4e4842e2aa7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Time">
+      <UniqueIdentifier>{bb0794cc-3a9f-46c5-b423-8b917cd031fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device">
+      <UniqueIdentifier>{d9510b10-380d-427f-92cd-26632eae913b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device\Director">
+      <UniqueIdentifier>{05e124f2-c444-4ea3-ac4e-d6984e6510e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device\Graphics">
+      <UniqueIdentifier>{a2a293d6-1f83-48ac-90d6-0ad840993cf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{986f2004-69a4-4ef1-9a6b-8a2f38a4fe74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device\Application">
+      <UniqueIdentifier>{681a8791-32da-4887-9cac-d973e58e4b43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -55,6 +91,27 @@
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp">
       <Filter>Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Scene\BaseScene.cpp">
+      <Filter>Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Scene\Scene.cpp">
+      <Filter>Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Color\Color.cpp">
+      <Filter>Rendering\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Time\Timer.cpp">
+      <Filter>Core\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeviceDirector.cpp">
+      <Filter>Device\Director</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Graphics.cpp">
+      <Filter>Device\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Device\Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +138,48 @@
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Math\Quaternion.h">
       <Filter>Math\Quaternion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Utility\SingleTon.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Utility\Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Rect.h">
+      <Filter>Math\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\Size.h">
+      <Filter>Math\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Scene\BaseScene.h">
+      <Filter>Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Scene\Scene.h">
+      <Filter>Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Color\Color.h">
+      <Filter>Rendering\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Time\Timer.h">
+      <Filter>Core\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeviceDirector.h">
+      <Filter>Device\Director</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Device.h">
+      <Filter>Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Common\HashMap.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\Graphics.h">
+      <Filter>Device\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Device\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeviceType.h">
+      <Filter>Device</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

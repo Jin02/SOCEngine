@@ -20,7 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);../../SOCEngine/Math;$(DXSDK_DIR)Include;$(FBX2014_DIR)include</IncludePath>
+    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../SOCEngine/Math;../../SOCEngine/Utility;../../SOCEngine/Rendering/Color;../../SOCEngine/Rendering;../../SOCEngine/Core/Time;../../SOCEngine/Core/Scene;../../SOCEngine/Core;../../SOCEngine/Common;../../Platform/Graphics;../../Platform;../../Platform/win32</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -77,22 +77,59 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\SOCEngine\Core\Scene\BaseScene.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Core\Scene\Scene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Common.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector2.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector3.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Rendering\Color\Color.cpp" />
+    <ClCompile Include="..\DeviceDirector.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\Graphics.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\SOCEngine\Common\HashMap.h" />
+    <ClInclude Include="..\..\SOCEngine\Core\Scene\BaseScene.h" />
+    <ClInclude Include="..\..\SOCEngine\Core\Scene\Scene.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Time\Timer.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Common.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Math.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Matrix.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Quaternion.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Rect.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Size.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector2.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector3.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector4.h" />
+    <ClInclude Include="..\..\SOCEngine\Rendering\Color\Color.h" />
+    <ClInclude Include="..\..\SOCEngine\Utility\SingleTon.h" />
+    <ClInclude Include="..\..\SOCEngine\Utility\Utility.h" />
+    <ClInclude Include="..\DeviceDirector.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Device.h" />
+    <ClInclude Include="..\Graphics\Graphics.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\DeviceType.h" />
+    <ClInclude Include="Application.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
