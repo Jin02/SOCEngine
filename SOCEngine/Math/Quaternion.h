@@ -19,13 +19,13 @@ namespace Math
 	public:
 		Quaternion operator + () const;
 		Quaternion operator - () const;
-		Quaternion operator + (const Quaternion& rhs) const;
-		Quaternion operator - (const Quaternion& rhs) const;
-		Quaternion operator * (const Quaternion& rhs) const;
+		Quaternion operator + (const Quaternion& q) const;
+		Quaternion operator - (const Quaternion& q) const;
+		Quaternion operator * (const Quaternion& q) const;
 		Quaternion operator * (float f) const;
 		Quaternion operator / (float f) const;
-		bool operator == (const Quaternion& rhs) const;
-		bool operator != (const Quaternion& rhs) const;
+		bool operator == (const Quaternion& q) const;
+		bool operator != (const Quaternion& q) const;
 		Quaternion& operator += (const Quaternion& a);
 		Quaternion& operator -= (const Quaternion& a);
 		Quaternion& operator *= (const Quaternion& a);

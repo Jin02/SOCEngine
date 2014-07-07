@@ -33,6 +33,16 @@ namespace Math
 
 	}
 
+	Vector4 Vector4::operator + () const
+	{
+		return (*this);
+	}
+
+	Vector4 Vector4::operator - () const
+	{
+		return Vector4(-x, -y, -z, -w);
+	}
+
 	Vector4 Vector4::operator - (const Vector4& a) const
 	{
 		return Vector4(x-a.x, y-a.y, z-a.z, w-a.w);
@@ -46,20 +56,20 @@ namespace Math
 			a.w + w);
 	}
 
-	bool Vector4::operator == (const Vector4& rhs) const
+	bool Vector4::operator == (const Vector4& b) const
 	{
 		const float kEpsilon = 1e-005f;
-		bool x = abs(this->x - rhs.x) < kEpsilon;
-		bool y = abs(this->y - rhs.y) < kEpsilon;
-		bool z = abs(this->z - rhs.z) < kEpsilon;
-		bool w = abs(this->w - rhs.w) < kEpsilon;
+		bool x = abs(this->x - b.x) < kEpsilon;
+		bool y = abs(this->y - b.y) < kEpsilon;
+		bool z = abs(this->z - b.z) < kEpsilon;
+		bool w = abs(this->w - b.w) < kEpsilon;
 
 		return x & y & z & w;
 	}
 
-	bool Vector4::operator != (const Vector4& rhs) const
+	bool Vector4::operator != (const Vector4& b) const
 	{
-		return !Vector4::operator==(rhs);
+		return !Vector4::operator==(b);
 	}
 
 	Vector4 Vector4::operator * (float d) const
@@ -97,9 +107,9 @@ namespace Math
 		return sqrtf(sx+sy+sz+sw);
 	}
 
-	float Vector4::Dot(const Vector4& lhs, const Vector4& rhs)
+	float Vector4::Dot(const Vector4& a, const Vector4& b)
 	{
-		return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z) + (lhs.w * rhs.w);
+		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);
 	}
 
 	Vector4 Vector4::Lerp(const Vector4& from, const Vector4& to, float t)
@@ -108,22 +118,22 @@ namespace Math
 		return a * t;
 	}
 
-	Vector4 Vector4::Min(const Vector4& lhs, const Vector4& rhs)
+	Vector4 Vector4::Min(const Vector4& a, const Vector4& b)
 	{
-		float x = lhs.x > rhs.x ? rhs.x : lhs.x;
-		float y = lhs.y > rhs.y ? rhs.y : lhs.y;
-		float z = lhs.z > rhs.z ? rhs.z : lhs.z;
-		float w = lhs.w > rhs.w ? rhs.w : lhs.w;
+		float x = a.x > b.x ? b.x : a.x;
+		float y = a.y > b.y ? b.y : a.y;
+		float z = a.z > b.z ? b.z : a.z;
+		float w = a.w > b.w ? b.w : a.w;
 
 		return Vector4(x, y, z, w);
 	}
 
-	Vector4 Vector4::Max(const Vector4& lhs, const Vector4& rhs)
+	Vector4 Vector4::Max(const Vector4& a, const Vector4& b)
 	{
-		float x = lhs.x > rhs.x ? lhs.x : rhs.x;
-		float y = lhs.y > rhs.y ? lhs.y : rhs.y;
-		float z = lhs.z > rhs.z ? lhs.z : rhs.z;
-		float w = lhs.w > rhs.w ? lhs.w : rhs.w;
+		float x = a.x > b.x ? a.x : b.x;
+		float y = a.y > b.y ? a.y : b.y;
+		float z = a.z > b.z ? a.z : b.z;
+		float w = a.w > b.w ? a.w : b.w;
 
 		return Vector4(x, y, z, w);
 	}

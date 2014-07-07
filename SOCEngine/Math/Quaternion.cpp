@@ -57,9 +57,9 @@ namespace Math
 	{
 		return Quaternion(x/f, y/f, z/f, w/f);
 	}
-	bool Quaternion::operator == (const Quaternion& rhs) const
+	bool Quaternion::operator == (const Quaternion& a) const
 	{
-		Quaternion q = (*this) - rhs;
+		Quaternion q = (*this) - a;
 
 		if( abs(q.x) < EPSILON &&
 			abs(q.y) < EPSILON &&
@@ -69,9 +69,9 @@ namespace Math
 
 		return false;
 	}
-	bool Quaternion::operator != (const Quaternion& rhs) const
+	bool Quaternion::operator != (const Quaternion& a) const
 	{
-		return !operator==(rhs);
+		return !operator==(a);
 	}
 
 	Quaternion& Quaternion::operator += (const Quaternion& a)

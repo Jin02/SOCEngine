@@ -19,10 +19,13 @@ namespace Math
 		~Vector4(void);
 
 	public:
+		Vector4 operator + () const;
+		Vector4 operator - () const;
+
 		Vector4 operator - (const Vector4& a) const;
 		Vector4 operator + (const Vector4& a) const;
-		bool operator == (const Vector4& rhs) const;
-		bool operator != (const Vector4& rhs) const;
+		bool operator == (const Vector4& b) const;
+		bool operator != (const Vector4& b) const;
 		Vector4 operator * (float d) const;
 		Vector4 operator * (const Vector4& a) const;
 		Vector4 operator / (float d) const;
@@ -39,10 +42,10 @@ namespace Math
 
 	public:
 		static float Distance(const Vector4& a, const Vector4& b);
-		static float Dot(const Vector4& lhs, const Vector4& rhs);
+		static float Dot(const Vector4& a, const Vector4& b);
 		static Vector4 Lerp(const Vector4& from, const Vector4& to, float t);
-		static Vector4 Min(const Vector4& lhs, const Vector4& rhs);
-		static Vector4 Max(const Vector4& lhs, const Vector4& rhs);
+		static Vector4 Min(const Vector4& a, const Vector4& b);
+		static Vector4 Max(const Vector4& a, const Vector4& b);
 		static float Legnth(const Vector4& a);
 		static Vector4 Normalize(Vector4& value);
 		static Vector4 Scale(const Vector4& a, const Vector4& b);

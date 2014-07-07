@@ -17,6 +17,16 @@ namespace Math
 	{
 	}
 
+	Vector2 Vector2::operator + () const
+	{
+		return (*this);
+	}
+
+	Vector2 Vector2::operator - () const
+	{
+		return Vector2(-x, -y);
+	}
+
 	Vector2 Vector2::operator - (const Vector2 &a) const
 	{
 		return Vector2(x - a.x, y - a.y);

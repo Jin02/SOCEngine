@@ -25,6 +25,16 @@ namespace Math
 	{
 	}
 
+	Vector3 Vector3::operator + () const
+	{
+		return (*this);
+	}
+
+	Vector3 Vector3::operator - () const
+	{
+		return Vector3(-x, -y, -z);
+	}
+
 	Vector3 Vector3::operator - (const Vector3& a) const
 	{
 		return Vector3(x-a.x, y-a.y, z-a.z);
@@ -37,19 +47,19 @@ namespace Math
 			a.z + z);
 	}
 
-	bool Vector3::operator == (const Vector3& rhs) const
+	bool Vector3::operator == (const Vector3& b) const
 	{
 		const float kEpsilon = 1e-005f;
-		bool x = abs(this->x - rhs.x) < kEpsilon;
-		bool y = abs(this->y - rhs.y) < kEpsilon;
-		bool z = abs(this->z - rhs.z) < kEpsilon;
+		bool x = abs(this->x - b.x) < kEpsilon;
+		bool y = abs(this->y - b.y) < kEpsilon;
+		bool z = abs(this->z - b.z) < kEpsilon;
 
 		return x & y & z;
 	}
 
-	bool Vector3::operator != (const Vector3& rhs) const
+	bool Vector3::operator != (const Vector3& b) const
 	{
-		return !Vector3::operator==(rhs);
+		return !Vector3::operator==(b);
 	}
 
 	Vector3 Vector3::operator * (float d) const
@@ -98,9 +108,9 @@ namespace Math
 		return radian ? dot : dot * Common::Rad2Deg();
 	}
 
-	Vector3 Vector3::Cross(const Vector3& lhs, const Vector3& rhs)
+	Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
 	{
-		return Vector3( lhs.y * rhs.z - rhs.y * lhs.z, lhs.z * rhs.x - rhs.z * lhs.x, lhs.x * rhs.y - rhs.x * lhs.y );
+		return Vector3( a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y );
 	}
 
 	float Vector3::Distance(const Vector3& a, const Vector3& b)
@@ -112,9 +122,9 @@ namespace Math
 		return sqrtf(sx+sy+sz);
 	}
 
-	float Vector3::Dot(const Vector3& lhs, const Vector3& rhs)
+	float Vector3::Dot(const Vector3& a, const Vector3& b)
 	{
-		return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 	}
 
 	Vector3 Vector3::Lerp(const Vector3& from, const Vector3& to, float t)
@@ -123,20 +133,20 @@ namespace Math
 		return a * t;
 	}
 
-	Vector3 Vector3::Min(const Vector3& lhs, const Vector3& rhs)
+	Vector3 Vector3::Min(const Vector3& a, const Vector3& b)
 	{
-		float x = lhs.x > rhs.x ? rhs.x : lhs.x;
-		float y = lhs.y > rhs.y ? rhs.y : lhs.y;
-		float z = lhs.z > rhs.z ? rhs.z : lhs.z;
+		float x = a.x > b.x ? b.x : a.x;
+		float y = a.y > b.y ? b.y : a.y;
+		float z = a.z > b.z ? b.z : a.z;
 
 		return Vector3(x, y, z);
 	}
 
-	Vector3 Vector3::Max(const Vector3& lhs, const Vector3& rhs)
+	Vector3 Vector3::Max(const Vector3& a, const Vector3& b)
 	{
-		float x = lhs.x > rhs.x ? lhs.x : rhs.x;
-		float y = lhs.y > rhs.y ? lhs.y : rhs.y;
-		float z = lhs.z > rhs.z ? lhs.z : rhs.z;
+		float x = a.x > b.x ? a.x : b.x;
+		float y = a.y > b.y ? a.y : b.y;
+		float z = a.z > b.z ? a.z : b.z;
 
 		return Vector3(x, y, z);
 	}

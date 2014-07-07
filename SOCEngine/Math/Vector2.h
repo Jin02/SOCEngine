@@ -18,6 +18,9 @@ namespace Math
 		~Vector2(void);
 
 	public:
+		Vector2 operator + () const;
+		Vector2 operator - () const;
+
 		Vector2 operator - (const Vector2 &a) const;
 		Vector2 operator + (const Vector2 &a) const;
 		bool operator == (const Vector2 rhs) const;

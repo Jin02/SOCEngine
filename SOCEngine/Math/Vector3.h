@@ -18,10 +18,13 @@ namespace Math
 		~Vector3(void);
 
 	public:
+		Vector3 operator + () const;
+		Vector3 operator - () const;
+
 		Vector3 operator - (const Vector3& a) const;
 		Vector3 operator + (const Vector3& a) const;
-		bool operator == (const Vector3& rhs) const;
-		bool operator != (const Vector3& rhs) const;
+		bool operator == (const Vector3& b) const;
+		bool operator != (const Vector3& b) const;
 		Vector3 operator * (float d) const;
 		Vector3 operator * (const Vector3& a) const;
 		Vector3 operator / (float d) const;
@@ -39,12 +42,12 @@ namespace Math
 		static Vector3 Up();
 		static Vector3 Zero();
 		static float AngleDir(const Vector3& from, const Vector3& to, bool radian = true);
-		static Vector3 Cross(const Vector3& lhs, const Vector3& rhs);
+		static Vector3 Cross(const Vector3& a, const Vector3& b);
 		static float Distance(const Vector3& a, const Vector3& b);
-		static float Dot(const Vector3& lhs, const Vector3& rhs);
+		static float Dot(const Vector3& a, const Vector3& b);
 		static Vector3 Lerp(const Vector3& from, const Vector3& to, float t);
-		static Vector3 Min(const Vector3& lhs, const Vector3& rhs);
-		static Vector3 Max(const Vector3& lhs, const Vector3& rhs);
+		static Vector3 Min(const Vector3& a, const Vector3& b);
+		static Vector3 Max(const Vector3& a, const Vector3& b);
 		static float Legnth(const Vector3& a);
 		static Vector3 Normalize(const Vector3 &value);
 		static Vector3 Project(const Vector3& vector, const Vector3& onNormal);
