@@ -49,10 +49,9 @@ namespace Math
 
 	bool Vector3::operator == (const Vector3& b) const
 	{
-		const float kEpsilon = 1e-005f;
-		bool x = abs(this->x - b.x) < kEpsilon;
-		bool y = abs(this->y - b.y) < kEpsilon;
-		bool z = abs(this->z - b.z) < kEpsilon;
+		bool x = abs(this->x - b.x) < EPSILON;
+		bool y = abs(this->y - b.y) < EPSILON;
+		bool z = abs(this->z - b.z) < EPSILON;
 
 		return x & y & z;
 	}

@@ -19,8 +19,12 @@ namespace Math
 	{
 		for(int i=0; i<4; ++i)
 			for(int j=0; j<4; ++j)
-				if( _m[i][j] != mat._m[i][j] )
+			{
+				float f = abs( _m[i][j] - mat._m[i][j] );
+
+				if( f > EPSILON )
 					return true;
+			}
 
 		return false;
 	}
@@ -69,19 +73,16 @@ namespace Math
 
 	Matrix& Matrix::operator/= (float f)
 	{
-		if( f != 0 )
-			operator*=( 1.0f / f );
-
-		return (*this);
+		return operator*=( 1.0f / f );
 	}
 
 	Matrix Matrix::operator+ (const Matrix& mat) const
 	{
-		Matrix res;
+		Matrix res(*this);
 
 		for(int i=0; i<4; ++i)
 			for(int j=0; j<4; ++j)
-				res._m[i][j] = _m[i][j] + mat._m[i][j];
+				res._m[i][j] += mat._m[i][j];
 
 		return res;
 	}

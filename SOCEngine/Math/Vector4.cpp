@@ -58,11 +58,10 @@ namespace Math
 
 	bool Vector4::operator == (const Vector4& b) const
 	{
-		const float kEpsilon = 1e-005f;
-		bool x = abs(this->x - b.x) < kEpsilon;
-		bool y = abs(this->y - b.y) < kEpsilon;
-		bool z = abs(this->z - b.z) < kEpsilon;
-		bool w = abs(this->w - b.w) < kEpsilon;
+		bool x = abs(this->x - b.x) < EPSILON;
+		bool y = abs(this->y - b.y) < EPSILON;
+		bool z = abs(this->z - b.z) < EPSILON;
+		bool w = abs(this->w - b.w) < EPSILON;
 
 		return x & y & z & w;
 	}

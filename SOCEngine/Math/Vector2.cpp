@@ -37,18 +37,17 @@ namespace Math
 		return Vector2( a.x + x, a.y + y );
 	}
 
-	bool Vector2::operator == (const Vector2 rhs) const
+	bool Vector2::operator == (const Vector2 b) const
 	{
-		const float kEpsilon = 1e-005f;
-		bool x = abs(this->x - rhs.x) < kEpsilon;
-		bool y = abs(this->y - rhs.y) < kEpsilon;
+		bool x = abs(this->x - b.x) < EPSILON;
+		bool y = abs(this->y - b.y) < EPSILON;
 
 		return x & y;
 	}
 
-	bool Vector2::operator != (const Vector2 &rhs) const
+	bool Vector2::operator != (const Vector2 &b) const
 	{
-		return !Vector2::operator==(rhs);
+		return !Vector2::operator==(b);
 	}
 
 	Vector2 Vector2::operator * (float d) const
@@ -92,9 +91,9 @@ namespace Math
 		return sqrtf(sx+sy);
 	}
 
-	float Vector2::Dot(const Vector2 &lhs, const Vector2 &rhs)
+	float Vector2::Dot(const Vector2 &a, const Vector2 &b)
 	{
-		return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+		return (a.x * b.x) + (a.y * b.y);
 	}
 
 	Vector2 Vector2::Lerp(const Vector2 &from, const Vector2 &to, float t)
@@ -103,18 +102,18 @@ namespace Math
 		return a * t;
 	}
 
-	Vector2 Vector2::Min(const Vector2 &lhs, const Vector2 &rhs)
+	Vector2 Vector2::Min(const Vector2 &a, const Vector2 &b)
 	{
-		float x = lhs.x > rhs.x ? rhs.x : lhs.x;
-		float y = lhs.y > rhs.y ? rhs.y : lhs.y;
+		float x = a.x > b.x ? b.x : a.x;
+		float y = a.y > b.y ? b.y : a.y;
 
 		return Vector2(x, y);
 	}
 
-	Vector2 Vector2::Max(const Vector2 &lhs, const Vector2 &rhs)
+	Vector2 Vector2::Max(const Vector2 &a, const Vector2 &b)
 	{
-		float x = lhs.x > rhs.x ? lhs.x : rhs.x;
-		float y = lhs.y > rhs.y ? lhs.y : rhs.y;
+		float x = a.x > b.x ? a.x : b.x;
+		float y = a.y > b.y ? a.y : b.y;
 
 		return Vector2(x, y);
 	}
