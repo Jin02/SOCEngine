@@ -6,6 +6,7 @@
 namespace Math
 {
 #define PI 3.141592654f
+#define EPSILON 1.0e-6
 
 	class Common
 	{
