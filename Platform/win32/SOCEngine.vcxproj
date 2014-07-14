@@ -20,7 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -41,7 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);../../SOCEngine/Math;$(DXSDK_DIR)Include;$(FBX2014_DIR)include</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../SOCEngine/Rendering/Texture;../../SOCEngine/Rendering/Shader;../../SOCEngine/Rendering/Mesh;../../SOCEngine/Rendering/Material;../../SOCEngine/Rendering/Light;../../SOCEngine/Rendering/Buffer;../../SOCEngine/Rendering/Camera;../../SOCEngine/Rendering/Color;../../SOCEngine/Core/Tag;../../SOCEngine/Core/Layer;../../SOCEngine/Core/Object;../../SOCEngine/Core/Transform;../../SOCEngine/Core/Time;../../SOCEngine/Core/Component;../../SOCEngine/Core/Scene;../../SOCEngine/Rendering;../../SOCEngine/Collision;../../SOCEngine/Structure;../../SOCEngine/Math;../../SOCEngine/Common;../../SOCEngine/Core;../../SOCEngine/Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -77,23 +78,128 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\SOCEngine\Math\Common.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Collision\AABB.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Collision\Cone.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Collision\Ray.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Collision\Sphere.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Common\Common.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Common\ResourcesFolder.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Core\Transform\Transform.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Transform\TransformParameters.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\MathCommon.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Math\Plane.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector2.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector3.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\Camera.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\CameraManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\Frustum.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Color\Color.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\DirectionalLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightForm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightParameters.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\PointLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\SpotLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Structure\Dictionary.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Structure\Map.cpp" />
+    <ClCompile Include="DX.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Win32.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\SOCEngine\Math\Common.h" />
-    <ClInclude Include="..\..\SOCEngine\Math\Math.h" />
+    <ClInclude Include="..\..\SOCEngine\Collision\AABB.h" />
+    <ClInclude Include="..\..\SOCEngine\Collision\Collision.h" />
+    <ClInclude Include="..\..\SOCEngine\Collision\Cone.h" />
+    <ClInclude Include="..\..\SOCEngine\Collision\Ray.h" />
+    <ClInclude Include="..\..\SOCEngine\Collision\Sphere.h" />
+    <ClInclude Include="..\..\SOCEngine\Common\Common.h" />
+    <ClInclude Include="..\..\SOCEngine\Common\ResourcesFolder.h" />
+    <ClInclude Include="..\..\SOCEngine\Core\Transform\Transform.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Transform\TransformParameters.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\MathCommon.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\EngineMath.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Matrix.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Plane.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Quaternion.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Rect.h" />
+    <ClInclude Include="..\..\SOCEngine\Math\Size.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector2.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector3.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Vector4.h" />
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\Camera.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\CameraManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\Frustum.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Color\Color.h" />
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\DirectionalLight.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\Light.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightForm.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightParameters.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\PointLight.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\SpotLight.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Structure\Container.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\Dictionary.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\Map.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\Structure.h" />
+    <ClInclude Include="..\..\SOCEngine\Utility\SingleTon.h" />
+    <ClInclude Include="..\..\SOCEngine\Utility\Utility.h" />
+    <ClInclude Include="DX.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Win32.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
