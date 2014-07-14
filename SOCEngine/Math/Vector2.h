@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.h"
 
 namespace Math
 {
@@ -34,6 +33,8 @@ namespace Math
 		Vector2& operator *= (const Vector2& a);
 		Vector2& operator *= (float f);
 		Vector2& operator /= (float f);
+
+		float operator[](unsigned int idx) const;
 
 	public:
 		static Vector2 Zero();

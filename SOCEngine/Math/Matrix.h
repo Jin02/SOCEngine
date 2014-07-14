@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Vector4.h"
-
 namespace Math
 {
 	class Vector2;
 	class Vector3;
 	class Vector4;
+	class Quaternion;
 
 	class Matrix
 	{
@@ -35,6 +34,12 @@ namespace Math
 		const Vector4 operator* (const Vector4& v) const;
 
 	public:
+		static void RotationQuaternion(Matrix& out, const Quaternion& q);
+		static void PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf);
+		static void OrthoLH(Matrix& out, float w, float h, float zn, float zf);
+		static void RotationAxis(Matrix& out, const Vector3& v, float angle);
+
+	public:
 		void Set( float _11, float _12, float _13, float _14,
 			float _21, float _22, float _23, float _24,
 			float _31, float _32, float _33, float _34,
@@ -44,12 +49,12 @@ namespace Math
 		static void Transpose(Matrix& out, const Matrix& mat);
 		static void Inverse(Matrix& out, const Matrix& mat); 		//using cramer's rule
 
-		const Matrix& Transpose();
-		const Matrix& Inverse();
-		const Matrix& Identity();
-		const Matrix& Zero();
+		void Transpose();
+		void Inverse();
+		void Identity();
+		void Zero();
 
-	private:
+	public:
 		union
 		{
 			struct

@@ -1,4 +1,5 @@
 #include "Vector2.h"
+#include "MathCommon.h"
 
 namespace Math
 {
@@ -60,6 +61,14 @@ namespace Math
 		return Vector2(a.x * x, a.y * y);
 	}
 
+	float Vector2::operator[](unsigned int idx) const
+	{
+		if( idx == 0 )		return x;
+		else if( idx == 1 ) return y;
+
+		return 0.0f;
+	}
+
 	Vector2 Vector2::operator / (float d) const
 	{
 		return Vector2(x/d, y/d);
@@ -80,7 +89,7 @@ namespace Math
 		float x = to.x - from.x;
 		float y = to.y - from.y;
 
-		return radian ? atan2f(y, x) : atan2f(y, x) * Common::Rad2Deg();
+		return radian ? atan2f(y, x) : Common::Rad2Deg( atan2f(y, x) );
 	}
 
 	float Vector2::Distance(const Vector2 &a, const Vector2 &b)

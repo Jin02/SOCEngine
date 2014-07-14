@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Common.h"
-
 namespace Math
 {
+	class Matrix;
+
 	class Vector3
 	{
 	public:
@@ -35,6 +35,8 @@ namespace Math
 		Vector3& operator *= (float f);
 		Vector3& operator /= (float f);
 
+		float operator[](unsigned int idx) const;
+
 	public:
 		static Vector3 Forward();
 		static Vector3 Right();
@@ -48,15 +50,20 @@ namespace Math
 		static Vector3 Lerp(const Vector3& from, const Vector3& to, float t);
 		static Vector3 Min(const Vector3& a, const Vector3& b);
 		static Vector3 Max(const Vector3& a, const Vector3& b);
-		static float Legnth(const Vector3& a);
+		static float Length(const Vector3& a);
 		static Vector3 Normalize(const Vector3 &value);
 		static Vector3 Project(const Vector3& vector, const Vector3& onNormal);
 		static Vector3 Reflect(const Vector3& inDirection, const Vector3& inNormal);
 		static Vector3 Scale(const Vector3& a, const Vector3& b);
 		static float SqrLegnth(const Vector3& a);
 
+		static void TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat);
+
 	public:
 		void Normalize();
+		float Length();
+		float Dot(const Vector3& v);
+
 		void Scale(const Vector3& scale);
 		void Set(float newX, float newY, float newZ);
 	};

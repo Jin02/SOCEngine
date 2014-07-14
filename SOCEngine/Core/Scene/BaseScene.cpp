@@ -1,21 +1,16 @@
 #include "BaseScene.h"
 
-namespace Core
+BaseScene::BaseScene()
 {
+	state = STATE_INIT;
+}
 
-	BaseScene::BaseScene()
-	{
-		state = STATE_INIT;
-	}
+void BaseScene::NextState()
+{
+	state = (STATE)(((int)state + 1) % (int)STATE_NUM);
+}
 
-	void BaseScene::NextState()
-	{
-		state = (STATE)(((int)state + 1) % (int)STATE_NUM);
-	}
-
-	BaseScene::STATE BaseScene::GetState()
-	{
-		return state;
-	}
-
+BaseScene::STATE BaseScene::GetState()
+{
+	return state;
 }

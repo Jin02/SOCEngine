@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Common.h"
+#include "MathCommon.h"
 
 namespace Math
 {
 	class Vector3;
+	class Matrix;
 
 	class Quaternion
 	{
@@ -37,6 +38,10 @@ namespace Math
 		static void Lerp(Quaternion& out, const Quaternion& from, const Quaternion& to, float t);
 		static void ToEuler(Vector3& out, const Quaternion& q);
 		static void FromEuler(Quaternion& out, const Vector3& v);
+
+		static void RotationMatrix(Quaternion& out, const Matrix& m);
+		static void RotationAxis(Quaternion& out, const Vector3& axis, float angle);
+		static void RotationYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll);
 
 	public:
 		void Set(float x,  float y, float z, float w);

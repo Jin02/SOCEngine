@@ -1,8 +1,5 @@
 #include "Vector4.h"
-
-#pragma once
-
-#include "Common.h"
+#include "MathCommon.h"
 
 namespace Math
 {
@@ -84,6 +81,14 @@ namespace Math
 	Vector4 Vector4::operator / (float d) const
 	{
 		return Vector4(x/d, y/d, z/d, w/d);
+	}
+
+	float Vector4::operator[](unsigned int idx) const
+	{
+		if( idx == 0 )		return x;
+		else if( idx == 1 ) return y;
+		else if( idx == 2 ) return z;
+		else if( idx == 3 ) return w;
 	}
 
 	Vector4 Vector4::One()

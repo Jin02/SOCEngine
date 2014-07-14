@@ -69,6 +69,54 @@
     <Filter Include="Device\Application">
       <UniqueIdentifier>{681a8791-32da-4887-9cac-d973e58e4b43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Component">
+      <UniqueIdentifier>{1ac893bb-c50b-44ad-944d-07fec3dec7b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Object">
+      <UniqueIdentifier>{362e2a82-bc0b-4848-b4ec-292f05145111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light">
+      <UniqueIdentifier>{550d467d-48df-4685-985c-4f3e97e9aa6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera">
+      <UniqueIdentifier>{aaf18540-79a9-4e7e-821e-ab6b66a4e275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer">
+      <UniqueIdentifier>{29500b90-3253-4173-b6cd-ebdb482f7911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material">
+      <UniqueIdentifier>{461185e9-e09e-4c7f-a471-f44b82505590}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Mesh">
+      <UniqueIdentifier>{1965c25e-0900-4307-8fd5-6e2d99f4a8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader">
+      <UniqueIdentifier>{dd71d5db-b9ce-42d8-9985-8a7060b13054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture">
+      <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{26dd6fce-5323-4faf-b8cc-61a0eb862160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Layer">
+      <UniqueIdentifier>{ac22db50-378f-4e29-819c-7fed681683d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Tag">
+      <UniqueIdentifier>{669fb4ec-1399-48a0-b999-56a87c1203ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structure">
+      <UniqueIdentifier>{fd4efbd9-028c-454a-a7bb-f153d33aac85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Plane">
+      <UniqueIdentifier>{6067178f-3376-433e-8c1e-540111037486}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Transform">
+      <UniqueIdentifier>{1aa6cca6-9c13-4a75-a3fc-f2b6a0f5d45f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device\Application\Win32">
+      <UniqueIdentifier>{2b4269aa-4366-4980-bba3-1419c38200b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -83,41 +131,86 @@
     <ClCompile Include="..\..\SOCEngine\Math\Vector4.cpp">
       <Filter>Math\Vector\Vector4</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Math\Common.cpp">
-      <Filter>Math\Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp">
       <Filter>Math\Matrix</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Math\Quaternion.cpp">
       <Filter>Math\Quaternion</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Core\Scene\BaseScene.cpp">
-      <Filter>Core\Scene</Filter>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\DirectionalLight.cpp">
+      <Filter>Rendering\Light</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Core\Scene\Scene.cpp">
-      <Filter>Core\Scene</Filter>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightForm.cpp">
+      <Filter>Rendering\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightManager.cpp">
+      <Filter>Rendering\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightParameters.cpp">
+      <Filter>Rendering\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\PointLight.cpp">
+      <Filter>Rendering\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Light\SpotLight.cpp">
+      <Filter>Rendering\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\Camera.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Rendering\Camera\Frustum.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Common\ResourcesFolder.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Collision\AABB.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Collision\Cone.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Collision\Ray.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Collision\Sphere.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Math\MathCommon.cpp">
+      <Filter>Math\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Common\Common.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Rendering\Color\Color.cpp">
       <Filter>Rendering\Color</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Core\Time\Timer.cpp">
-      <Filter>Core\Time</Filter>
+    <ClCompile Include="..\..\SOCEngine\Structure\Dictionary.cpp">
+      <Filter>Structure</Filter>
     </ClCompile>
-    <ClCompile Include="..\DeviceDirector.cpp">
-      <Filter>Device\Director</Filter>
+    <ClCompile Include="..\..\SOCEngine\Structure\Map.cpp">
+      <Filter>Structure</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\Graphics.cpp">
-      <Filter>Device\Graphics</Filter>
+    <ClCompile Include="..\..\SOCEngine\Math\Plane.cpp">
+      <Filter>Math\Plane</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Device\Application</Filter>
+    <ClCompile Include="..\..\SOCEngine\Core\Transform\TransformParameters.cpp">
+      <Filter>Core\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Core\Transform\Transform.cpp">
+      <Filter>Core\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Win32.cpp">
+      <Filter>Device\Application\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="DX.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\SOCEngine\Math\Math.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Math\Vector2.h">
       <Filter>Math\Vector\Vector2</Filter>
     </ClInclude>
@@ -126,9 +219,6 @@
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Math\Vector4.h">
       <Filter>Math\Vector\Vector4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Math\Common.h">
-      <Filter>Math\Common</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
       <Filter>소스 파일</Filter>
@@ -151,35 +241,93 @@
     <ClInclude Include="..\..\SOCEngine\Math\Size.h">
       <Filter>Math\Rect</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Core\Scene\BaseScene.h">
-      <Filter>Core\Scene</Filter>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\DirectionalLight.h">
+      <Filter>Rendering\Light</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Core\Scene\Scene.h">
-      <Filter>Core\Scene</Filter>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\Light.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightForm.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightManager.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightParameters.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\PointLight.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Light\SpotLight.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\Camera.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\CameraManager.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Rendering\Camera\Frustum.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Common\ResourcesFolder.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Collision\AABB.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Collision\Cone.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Collision\Ray.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Collision\Sphere.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Math\MathCommon.h">
+      <Filter>Math\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Common\Common.h">
+      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Rendering\Color\Color.h">
       <Filter>Rendering\Color</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Core\Time\Timer.h">
-      <Filter>Core\Time</Filter>
+    <ClInclude Include="..\..\SOCEngine\Structure\Container.h">
+      <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\DeviceDirector.h">
-      <Filter>Device\Director</Filter>
+    <ClInclude Include="..\..\SOCEngine\Structure\Dictionary.h">
+      <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Device.h">
-      <Filter>Device</Filter>
+    <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h">
+      <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Common\HashMap.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="..\..\SOCEngine\Structure\Map.h">
+      <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="..\Graphics\Graphics.h">
-      <Filter>Device\Graphics</Filter>
+    <ClInclude Include="..\..\SOCEngine\Structure\Structure.h">
+      <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>Device\Application</Filter>
+    <ClInclude Include="..\..\SOCEngine\Math\EngineMath.h">
+      <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\DeviceType.h">
-      <Filter>Device</Filter>
+    <ClInclude Include="..\..\SOCEngine\Math\Plane.h">
+      <Filter>Math\Plane</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Transform\Transform.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Core\Transform\TransformParameters.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Collision\Collision.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32.h">
+      <Filter>Device\Application\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="DX.h" />
   </ItemGroup>
 </Project>

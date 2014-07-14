@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+
 
 namespace Math
 {
@@ -35,6 +35,8 @@ namespace Math
 		Vector4& operator *= (const Vector4& a);
 		Vector4& operator *= (float f);
 		Vector4& operator /= (float f);
+
+		float operator[](unsigned int idx) const;
 
 	public:
 		static Vector4 One();

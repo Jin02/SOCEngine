@@ -1,5 +1,6 @@
 #include "Quaternion.h"
 #include "Vector3.h"
+#include "Matrix.h"
 
 namespace Math
 {
@@ -249,4 +250,83 @@ namespace Math
 		this->z = z;
 		this->w = w;
 	}
+
+	void Quaternion::RotationMatrix(Quaternion& out, const Matrix& m)
+	{
+		float s, trace;
+
+		trace = m._m[0][0] + m._m[1][1] + m._m[2][2] + 1.0f;
+		if (trace > 1.0f)
+		{
+			s = 2.0f * sqrtf(trace);
+			out.x = (m._m[1][2] - m._m[2][1]) / s;
+			out.y = (m._m[2][0] - m._m[0][2]) / s;
+			out.z = (m._m[0][1] - m._m[1][0]) / s;
+			out.w = 0.25f * s;
+		}
+		else
+		{
+			int i, maxi = 0;
+
+			for (i = 1; i < 3; i++)
+			{
+				if (m._m[i][i] > m._m[maxi][maxi])
+					maxi = i;
+			}
+
+			switch (maxi)
+			{
+			case 0:
+				s = 2.0f * sqrtf(1.0f + m._m[0][0] - m._m[1][1] - m._m[2][2]);
+				out.x = 0.25f * s;
+				out.y = (m._m[0][1] + m._m[1][0]) / s;
+				out.z = (m._m[0][2] + m._m[2][0]) / s;
+				out.w = (m._m[1][2] - m._m[2][1]) / s;
+				break;
+
+			case 1:
+				s = 2.0f * sqrtf(1.0f + m._m[1][1] - m._m[0][0] - m._m[2][2]);
+				out.x = (m._m[0][1] + m._m[1][0]) / s;
+				out.y = 0.25f * s;
+				out.z = (m._m[1][2] + m._m[2][1]) / s;
+				out.w = (m._m[2][0] - m._m[0][2]) / s;
+				break;
+
+			case 2:
+				s = 2.0f * sqrtf(1.0f + m._m[2][2] - m._m[0][0] - m._m[1][1]);
+				out.x = (m._m[0][2] + m._m[2][0]) / s;
+				out.y = (m._m[1][2] + m._m[2][1]) / s;
+				out.z = 0.25f * s;
+				out.w = (m._m[0][1] - m._m[1][0]) / s;
+				break;
+			}
+		}
+	}
+
+		void Quaternion::RotationYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll)
+		{
+			 float syaw, cyaw, spitch, cpitch, sroll, croll;      
+			 syaw = sinf(yaw / 2.0f);
+			 cyaw = cosf(yaw / 2.0f);
+			 spitch = sinf(pitch / 2.0f);
+			 cpitch = cosf(pitch / 2.0f);
+			 sroll = sinf(roll / 2.0f);
+			 croll = cosf(roll / 2.0f);
+ 
+			 out.x = syaw * cpitch * sroll + cyaw * spitch * croll;
+			 out.y = syaw * cpitch * croll - cyaw * spitch * sroll;
+			 out.z = cyaw * cpitch * sroll - syaw * spitch * croll;
+			 out.w = cyaw * cpitch * croll + syaw * spitch * sroll;
+		}
+
+	void RotationAxis(Quaternion& out, const Vector3& axis, float angle)
+	{
+		Vector3 temp = Vector3::Normalize(axis);
+
+		out.x = sinf(angle / 2.0f) * temp.x;
+		out.y = sinf(angle / 2.0f) * temp.y;
+		out.z = sinf(angle / 2.0f) * temp.z;
+		out.w = cosf(angle / 2.0f);
+	}
+
 }

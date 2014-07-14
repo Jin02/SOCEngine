@@ -1,7 +1,11 @@
 #include "Matrix.h"
+
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Quaternion.h"
+
+#include "MathCommon.h"
 
 namespace Math
 {
@@ -163,16 +167,14 @@ namespace Math
 				out._m[j][i] = mat._m[i][j];
 	}
 
-	const Matrix& Matrix::Transpose()
+	void Matrix::Transpose()
 	{
 		Matrix::Transpose((*this), (*this));
-		return (*this);
 	}
 
-	const Matrix& Matrix::Inverse()
+	void Matrix::Inverse()
 	{
 		Matrix::Inverse((*this), (*this));
-		return (*this);
 	}
 
 	void Matrix::Set( float _11, float _12, float _13, float _14,
@@ -205,18 +207,15 @@ namespace Math
 		}
 	}
 
-	const Matrix& Matrix::Identity()
+	void Matrix::Identity()
 	{
 		memset(&_m, 0, sizeof(Matrix));
 		_11 = _22 = _33 = _44 = 1.0f;
-
-		return *this;
 	}
 
-	const Matrix& Matrix::Zero()
+	void Matrix::Zero()
 	{
 		memset(&_m, 0, sizeof(Matrix));
-		return *this;			
 	}
 
 	void Matrix::Inverse(Matrix& out, const Matrix& mat)
@@ -298,4 +297,69 @@ namespace Math
 			for( int j = 0; j < 4; ++j)
 				out._m[i][j] *= det;
 	}
+
+		void Matrix::RotationQuaternion(Matrix& out, const Quaternion& q)
+		{
+			out.Identity();
+			
+			out._m[0][0] = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
+			out._m[0][1] = 2.0f * (q.x *q.y + q.z * q.w);
+			out._m[0][2] = 2.0f * (q.x * q.z - q.y * q.w);
+			out._m[1][0] = 2.0f * (q.x * q.y - q.z * q.w);
+			out._m[1][1] = 1.0f - 2.0f * (q.x * q.x + q.z * q.z);
+			out._m[1][2] = 2.0f * (q.y *q.z + q.x *q.w);
+			out._m[2][0] = 2.0f * (q.x * q.z + q.y * q.w);
+			out._m[2][1] = 2.0f * (q.y *q.z - q.x *q.w);
+			out._m[2][2] = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
+		}
+		
+		void Matrix::PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf)
+		{
+			out.Identity();
+
+			out._m[0][0] = 1.0f / (aspect * tanf(fovy/2.0f));
+			out._m[1][1] = 1.0f / tanf(fovy/2.0f);
+			out._m[2][2] = zf / (zf - zn);
+			out._m[2][3] = 1.0f;
+			out._m[3][2] = (zf * zn) / (zn - zf);
+			out._m[3][3] = 0.0f;
+		}
+
+		void Matrix::OrthoLH(Matrix& out, float w, float h, float zn, float zf)
+		{
+			out.Identity();
+
+			out._m[0][0] = 2.0f / w;
+			out._m[1][1] = 2.0f / h;
+			out._m[2][2] = 1.0f / (zf - zn);
+			out._m[3][2] = zn / (zn - zf);
+		}
+
+		void Matrix::RotationAxis(Matrix& out, const Vector3& v, float angle)
+		{
+			Vector3 nv = Vector3::Normalize(v);
+			float sangle, cangle, cdiff;
+
+			sangle = sinf(angle);
+			cangle = cosf(angle);
+			cdiff = 1.0f - cangle;
+
+			out._m[0][0] = cdiff * nv.x * nv.x + cangle;
+			out._m[1][0] = cdiff * nv.x * nv.y - sangle * nv.z;
+			out._m[2][0] = cdiff * nv.x * nv.z + sangle * nv.y;
+			out._m[3][0] = 0.0f;
+			out._m[0][1] = cdiff * nv.y * nv.x + sangle * nv.z;
+			out._m[1][1] = cdiff * nv.y * nv.y + cangle;
+			out._m[2][1] = cdiff * nv.y * nv.z - sangle * nv.x;
+			out._m[3][1] = 0.0f;
+			out._m[0][2] = cdiff * nv.z * nv.x - sangle * nv.y;
+			out._m[1][2] = cdiff * nv.z * nv.y + sangle * nv.x;
+			out._m[2][2] = cdiff * nv.z * nv.z + cangle;
+			out._m[3][2] = 0.0f;
+			out._m[0][3] = 0.0f;
+			out._m[1][3] = 0.0f;
+			out._m[2][3] = 0.0f;
+			out._m[3][3] = 1.0f;
+		}
+
 }

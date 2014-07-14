@@ -1,4 +1,6 @@
 #include "Vector3.h"
+#include "MathCommon.h"
+#include "Matrix.h"
 
 namespace Math
 {
@@ -76,6 +78,54 @@ namespace Math
 		return Vector3(x/d, y/d, z/d);
 	}
 
+	float Vector3::operator[](unsigned int idx) const
+	{
+		if(idx == 0)			return x;
+		else if(idx == 1)		return y;
+		else if(idx == 2)		return z;
+
+		return 0.0f;
+	}
+
+	Vector3& Vector3::operator += (const Vector3& a)
+	{
+		x += a.x;
+		y += a.y;
+		z += a.z;
+
+		return (*this);
+	}
+
+	Vector3& Vector3::operator -= (const Vector3& a)
+	{
+		x -= a.x;
+		y -= a.y;
+		z -= a.z;
+
+		return (*this);
+	}
+
+	Vector3& Vector3::operator *= (const Vector3& a)
+	{
+		x *= a.x;
+		y *= a.y;
+		z *= a.z;
+
+		return (*this);
+	}
+
+	Vector3& Vector3::operator *= (float f)
+	{
+		x *= f; y *= f; z *= f;
+		return (*this);
+	}
+
+	Vector3& Vector3::operator /= (float f)
+	{
+		x /= f; y /= f; z /= f;
+		return (*this);
+	}
+
 	Vector3 Vector3::Forward()
 	{
 		return Vector3(0, 0, 1);
@@ -104,7 +154,7 @@ namespace Math
 	float Vector3::AngleDir(const Vector3& from, const Vector3& to, bool radian)
 	{
 		float dot = Vector3::Dot(from, to);
-		return radian ? dot : dot * Common::Rad2Deg();
+		return radian ? dot : Common::Rad2Deg( dot );
 	}
 
 	Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
@@ -150,14 +200,14 @@ namespace Math
 		return Vector3(x, y, z);
 	}
 
-	float Vector3::Legnth(const Vector3& a)
+	float Vector3::Length(const Vector3& a)
 	{
 		return sqrtf((a.x * a.x) + (a.y + a.y) + (a.z * a.z));
 	}
 
 	Vector3 Vector3::Normalize(const Vector3& value)
 	{
-		float v = Vector3::Legnth(value);
+		float v = Vector3::Length(value);
 		return value / v;
 	}
 
@@ -191,8 +241,18 @@ namespace Math
 
 	void Vector3::Normalize()
 	{
-		float v = Vector3::Legnth(*this);
+		float v = Vector3::Length(*this);
 		*this = *this / v;
+	}
+
+	float Vector3::Length()
+	{
+		return Vector3::Length((*this));
+	}
+
+	float Vector3::Dot(const Vector3& v)
+	{
+		return Vector3::Dot((*this), v);
 	}
 
 	void Vector3::Scale(const Vector3& scale)
@@ -207,5 +267,14 @@ namespace Math
 		x = newX;
 		y = newY;
 		z = newZ;
+	}
+
+	void Vector3::TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat)
+	{
+		float norm = mat._m[0][3] * v.x + mat._m[1][3] * v.y + mat._m[2][3] *v.z + mat._m[3][3];
+
+		out.x = (mat._m[0][0] * v.x + mat._m[1][0] * v.y + mat._m[2][0] * v.z + mat._m[3][0]) / norm;
+		out.y = (mat._m[0][1] * v.x + mat._m[1][1] * v.y + mat._m[2][1] * v.z + mat._m[3][1]) / norm;
+		out.z = (mat._m[0][2] * v.x + mat._m[1][2] * v.y + mat._m[2][2] * v.z + mat._m[3][2]) / norm;
 	}
 }
