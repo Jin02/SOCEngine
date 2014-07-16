@@ -10,7 +10,7 @@ namespace Math
 	}
 
 	Vector3::Vector3(float x, float y)
-		: z(0)
+		: z(0.0f)
 	{
 		this->x = x;
 		this->y = y;
@@ -151,10 +151,20 @@ namespace Math
 		return Vector3(0, 0, 0);
 	}
 
-	float Vector3::AngleDir(const Vector3& from, const Vector3& to, bool radian)
+	float Vector3::AnglebyDirect(const Vector3& from, const Vector3& to, bool radian)
 	{
 		float dot = Vector3::Dot(from, to);
-		return radian ? dot : Common::Rad2Deg( dot );
+		return radian ? acos(dot) : Common::Rad2Deg( acos(dot) );
+	}
+
+	float AnglebyPoint(const Vector3& from, const Vector3& to, bool radian = true)
+	{
+		float sx = (from.x - to.x) * (from.x - to.x);
+		float sy = (from.y - to.y) * (from.y - to.y);
+		float z  = (from.z - to.z);
+		float distanceXtoY = sqrtf(sx+sy);
+
+		return radian ? atan2f(z, distanceXtoY) : Common::Rad2Deg( atan2f(z, distanceXtoY));
 	}
 
 	Vector3 Vector3::Cross(const Vector3& a, const Vector3& b)
@@ -179,7 +189,7 @@ namespace Math
 	Vector3 Vector3::Lerp(const Vector3& from, const Vector3& to, float t)
 	{
 		Vector3 a = to - from;
-		return a * t;
+		return (a * t) + from;
 	}
 
 	Vector3 Vector3::Min(const Vector3& a, const Vector3& b)
@@ -229,11 +239,6 @@ namespace Math
 		return inDirection - Vector3(x, y, z);
 	}
 
-	Vector3 Vector3::Scale(const Vector3& a, const Vector3& b)
-	{
-		return Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
-	}
-
 	float Vector3::SqrLegnth(const Vector3& a)
 	{
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z);
@@ -253,13 +258,6 @@ namespace Math
 	float Vector3::Dot(const Vector3& v)
 	{
 		return Vector3::Dot((*this), v);
-	}
-
-	void Vector3::Scale(const Vector3& scale)
-	{
-		x *= scale.x;
-		y *= scale.y;
-		z *= scale.z;
 	}
 
 	void Vector3::Set(float newX, float newY, float newZ)

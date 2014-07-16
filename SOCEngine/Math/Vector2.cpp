@@ -84,13 +84,18 @@ namespace Math
 		return Vector2(1, 1);
 	}
 
-	float Vector2::Angle(const Vector2 &from, const Vector2 &to, bool radian)
+	float Vector2::AnglebyPoint(const Vector2 &from, const Vector2 &to, bool radian)
 	{
 		float x = to.x - from.x;
 		float y = to.y - from.y;
 
 		return radian ? atan2f(y, x) : Common::Rad2Deg( atan2f(y, x) );
 	}
+    
+    float AnglebyDirect(const Vector2 &from, const Vector2 &to, bool radian = true)
+    {
+        return radian ? acos( Vector2::Dot(from, to)) : Common::Rad2Deg( acos( Vector2::Dot(from,to)));
+    }
 
 	float Vector2::Distance(const Vector2 &a, const Vector2 &b)
 	{
@@ -127,37 +132,26 @@ namespace Math
 		return Vector2(x, y);
 	}
 
-	float Vector2::Legnth(const Vector2 &a)
+	float Vector2::Length(const Vector2 &a)
 	{
 		return sqrtf((a.x * a.x) + (a.y + a.y));
 	}
 
 	Vector2 Vector2::Normalize(const Vector2 &value)
 	{
-		float v = Vector2::Legnth(value);
+		float v = Vector2::Length(value);
 		return value / v;
 	}
 
-	Vector2 Vector2::Scale(const Vector2 &a, const Vector2 &b)
-	{
-		return Vector2(a.x * b.x, a.y * b.y);
-	}
-
-	float Vector2::SqrLegnth(const Vector2 &a)
+	float Vector2::SqrLength(const Vector2 &a)
 	{
 		return (a.x * a.x) + (a.y + a.y);
 	}
 
 	void Vector2::Normalize()
 	{
-		float v = Vector2::Legnth(*this);
+		float v = Vector2::Length(*this);
 		*this = *this / v;
-	}
-
-	void Vector2::Scale(const Vector2 &scale)
-	{
-		x *= scale.x;
-		y *= scale.y;
 	}
 
 	void Vector2::Set(float newX, float newY)
