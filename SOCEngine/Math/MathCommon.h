@@ -17,6 +17,6 @@ namespace Math
 		static float Deg2Rad(float a);
 
 	public:
-		static void EulerNormalize(Vector3& out, const Vector3& eulerAngels);
+		static void EulerNormalize(Vector3& out, const Vector3& eulerAngles);
 	};
 }

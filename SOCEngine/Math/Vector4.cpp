@@ -119,7 +119,7 @@ namespace Math
 	Vector4 Vector4::Lerp(const Vector4& from, const Vector4& to, float t)
 	{ 
 		Vector4 a = to - from;
-		return a * t;
+		return (a * t) + from;
 	}
 
 	Vector4 Vector4::Min(const Vector4& a, const Vector4& b)
@@ -153,11 +153,6 @@ namespace Math
 		return value / v;
 	}
 
-	Vector4 Vector4::Scale(const Vector4& a, const Vector4& b)
-	{
-		return Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
-	}
-
 	float Vector4::SqrLegnth(const Vector4& a)
 	{
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z) + (a.w * a.w);
@@ -167,14 +162,6 @@ namespace Math
 	{
 		float v = Vector4::Legnth(*this);
 		*this = *this / v;
-	}
-
-	void Vector4::Scale(const Vector4& scale)
-	{
-		x *= scale.x;
-		y *= scale.y;
-		z *= scale.z;
-		w *= scale.w;
 	}
 
 	void Vector4::Set(float newX, float newY, float newZ, float newW)

@@ -50,12 +50,10 @@ namespace Math
 		static Vector4 Max(const Vector4& a, const Vector4& b);
 		static float Legnth(const Vector4& a);
 		static Vector4 Normalize(Vector4& value);
-		static Vector4 Scale(const Vector4& a, const Vector4& b);
 		static float SqrLegnth(const Vector4& a);
 
 	public:
 		void Normalize();
-		void Scale(const Vector4& scale);
 		void Set(float newX, float newY, float newZ, float newW);
 	};
 
