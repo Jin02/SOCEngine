@@ -1,7 +1,7 @@
 #include "Cone.h"
 #include "Sphere.h"
 
-namespace Collision
+namespace Intersection
 {
 	Cone::Cone(void) :
 		angle(0), range(0), axis(0, 0, 0), vertex(0, 0, 0)
@@ -14,12 +14,12 @@ namespace Collision
 	{
 	}
 
-	bool Cone::Intersection(const Sphere &sphere)
+	bool Cone::Intersects(const Sphere &sphere)
 	{
-		return Intersection(sphere, (*this));
+		return Intersects(sphere, (*this));
 	}
 
-	bool Cone::Intersection(const Sphere& sphere, const Cone& cone)
+	bool Cone::Intersects(const Sphere& sphere, const Cone& cone)
 	{
 		float sinAngle = sin(cone.angle);
 		float cosAngle = cos(cone.angle);

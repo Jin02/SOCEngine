@@ -1,10 +1,9 @@
 #pragma once
 
 #include "LightForm.h"
-#include "Utility.h"
 #include "Frustum.h"
-
-using namespace std;
+#include "Common.h"
+#include <vector>
 
 namespace Rendering
 {
@@ -13,15 +12,15 @@ namespace Rendering
 		class LightManager
 		{
 		private:
-			std::vector<LightForm*> lights;
+			std::vector<LightForm*> _lights;
 
 		public:
 			LightManager(void);
 			~LightManager(void);
 
 		public:
-			bool Intersect(Frustum *frustum, std::vector<LightForm*> *out);
-			bool Intersect(Frustum *frustum, LightForm* light);
+			bool Intersects(std::vector<LightForm*>& outLights, Rendering::Frustum *frustum);
+			bool Intersects(Rendering::Frustum *frustum, const LightForm* light);
 
 		public:
 			bool AddLight(LightForm* light);

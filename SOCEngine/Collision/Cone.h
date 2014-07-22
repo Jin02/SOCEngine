@@ -2,7 +2,7 @@
 
 #include "EngineMath.h"
 
-namespace Collision
+namespace Intersection
 {
 	class Sphere;
 
@@ -19,8 +19,8 @@ namespace Collision
 		Cone(float angle, float range, const Math::Vector3 &axis, const Math::Vector3 &vertex);
 
 	public:
-		static bool Intersection(const Sphere &sphere, const Cone &cone);
-		bool Intersection(const Sphere &sphere);
+		static bool Intersects(const Sphere &sphere, const Cone &cone);
+		bool Intersects(const Sphere &sphere);
 	};
 
 }

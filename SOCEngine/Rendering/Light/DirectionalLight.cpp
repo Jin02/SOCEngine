@@ -6,14 +6,14 @@ namespace Rendering
 	{
 		DirectionalLight::DirectionalLight() : LightForm()
 		{
-			type = DIRECTIONAL;
+			_type = DIRECTIONAL;
 		}
 
 		DirectionalLight::~DirectionalLight()
 		{
 		}
 
-		bool DirectionalLight::Intersect(Intersection::Sphere &sphere)
+		bool DirectionalLight::Intersects(const Intersection::Sphere &sphere)
 		{
 			return true;
 		}

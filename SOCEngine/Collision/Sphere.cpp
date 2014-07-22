@@ -1,6 +1,6 @@
 #include "Sphere.h"
 
-namespace Collision
+namespace Intersection
 {
 	Sphere::Sphere(void) : radius(0.0f), center(0, 0, 0)
 	{
@@ -11,7 +11,7 @@ namespace Collision
 	{
 	}
 
-	bool Sphere::Intersection(const Sphere& sphere1, const Sphere& sphere2)
+	bool Sphere::Intersects(const Sphere& sphere1, const Sphere& sphere2)
 	{
 		Math::Vector3 between = sphere1.center - sphere2.center;
 		float distance = between.Length();
@@ -22,8 +22,13 @@ namespace Collision
 		return true;
 	}
 
-	bool Sphere::Intersection(Sphere &sphere)
+	bool Sphere::Intersects(const Sphere &sphere)
 	{
-		return Sphere::Intersection( (*this), sphere );
+		return Sphere::Intersects( (*this), sphere );
+	}
+
+	bool Sphere::Intersects(const Math::Vector3& center, float radius)
+	{
+		return Intersects(Sphere(center, radius));
 	}
 }

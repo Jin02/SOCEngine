@@ -57,14 +57,7 @@ namespace Rendering
 			static const char *GetLightSpotAngle();
 
 		public:
-			static std::string GetMaterialElement(const char* materialComponent)
-			{
-				std::string str = GetMaterial();
-				str += ".";
-				str += materialComponent;
-
-				return str;
-			}
+			static void GetMaterialElement(std::string& outString, const char* materialComponent);
 		};
 	}
 }

@@ -1,13 +1,29 @@
 #include "TransformParameters.h"
 
-namespace Rendering
+namespace Core
 {
+
 	TransformParameters::TransformParameters()
-		:	_worldMatrix(nullptr), _viewMatrix(nullptr), 
-			_projMatrix(nullptr),  _viewProjMatrix(nullptr), 
-			_worldViewProjMatrix(nullptr)
+		:	worldMatrix(nullptr), viewMatrix(nullptr), projMatrix(nullptr),
+			viewProjMatrix(nullptr), worldViewProjMatrix(nullptr), worldViewInvTns(nullptr)
 	{
 
+	}
+
+	TransformParameters::TransformParameters(
+								  const Math::Matrix* worldMat,
+								  const Math::Matrix* viewMat,
+								  const Math::Matrix* projMat,
+								  const Math::Matrix* viewProjMat,
+								  const Math::Matrix* worldViewProjMat,
+								  const Math::Matrix* worldViewInvTns)
+	{
+		this->worldMatrix = worldMat;
+		this->viewMatrix = viewMat;
+		this->projMatrix = projMat;
+		this->viewProjMatrix = viewProjMat;
+		this->worldViewProjMatrix = worldViewProjMat;
+		this->worldViewInvTns = worldViewInvTns;
 	}
 
 	TransformParameters::~TransformParameters()
@@ -22,12 +38,12 @@ namespace Rendering
 								  const Math::Matrix* worldViewProjMat,
 								  const Math::Matrix* worldViewInvTns)
 	{
-		_worldMatrix = worldMat;
-		_viewMatrix = viewMat;
-		_projMatrix = projMat;
-		_viewProjMatrix = viewProjMat;
-		_worldViewProjMatrix = worldViewProjMat;
-		_worldViewInvTns = worldViewInvTns;
+		this->worldMatrix = worldMat;
+		this->viewMatrix = viewMat;
+		this->projMatrix = projMat;
+		this->viewProjMatrix = viewProjMat;
+		this->worldViewProjMatrix = worldViewProjMat;
+		this->worldViewInvTns = worldViewInvTns;
 	}
 
 }

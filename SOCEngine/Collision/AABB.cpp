@@ -3,7 +3,7 @@
 #include "Utility.h"
 #include "Ray.h"
 
-namespace Collision
+namespace Intersection
 {
 	AABB::AABB() :
 		_center(0, 0, 0), _size(1, 1, 1)

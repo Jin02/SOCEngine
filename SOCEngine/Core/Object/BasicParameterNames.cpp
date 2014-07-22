@@ -129,5 +129,14 @@ namespace Rendering
 			static const char *n = "lightCount";
 			return n;
 		}
+
+		void BasicParameterNames::GetMaterialElement(std::string& outString, const char* materialComponent)
+		{
+			std::string str = GetMaterial();
+			str += ".";
+			str += materialComponent;
+
+			outString = str;
+		}
 	}
 }

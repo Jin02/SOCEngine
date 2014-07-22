@@ -6,10 +6,13 @@ public:
 	enum STATE{ STATE_INIT = 0, STATE_LOOP, STATE_END, STATE_NUM };
 
 private:
-	STATE state;
+	STATE _state;
 
 public:
 	BaseScene();
+	~BaseScene();
+
+public:
 	void NextState();
 	STATE GetState();
 

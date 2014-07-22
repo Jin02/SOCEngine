@@ -1,20 +1,17 @@
 #pragma once
 
-//#include "Transform.h"
-#include "Graphics.h"
+#include "DX.h"
 #include "Component.h"
 #include "Frustum.h"
 #include "LightManager.h"
 #include "Component.h"
-#include "Shader.h"
-//#include "RenderTarget.h"
 
 namespace Rendering
 {
-	class Camera : public Component
+	class Camera : public Core::Component
 	{
 	public:
-		static const Component::Type ComponentType = Component::Type::Camera;
+		static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
 
 	public:
 		enum Type { Perspective, Orthographic };
@@ -23,11 +20,8 @@ namespace Rendering
 
 	private:
 		Frustum					*frustum;
-		Shader::Shader			*rtShader;
-		Texture::RenderTarget	*renderTarget;
-
-	private:
-		Math::Rect<float>	  normalizedViewPortRect;
+		//Shader::Shader			*rtShader;
+		//Texture::RenderTarget	*renderTarget;
 
 	public:  //굳이 private로 할 필요는 없지.
 		float				FOV;
@@ -37,8 +31,6 @@ namespace Rendering
 		Type				camType;
 		float				aspect;
 		Color				clearColor;
-		//Skybox				*skybox;
-
 
 	public:
 		Camera();
@@ -46,29 +38,23 @@ namespace Rendering
 
 	private:
 		void CalcAspect();
-		void Clear(Device::Graphics *gp);
-		void RenderObjects(std::vector<Object*>::iterator &objectBegin,	std::vector<Object*>::iterator &objectEnd,	Light::LightManager* sceneLights);
+		void Clear(Device::DX *dx);
+		void RenderObjects(std::vector<Core::Object*>::iterator &objectBegin,	std::vector<Core::Object*>::iterator &objectEnd,	Light::LightManager* sceneLights);
 
 	public:
-		void GetPerspectiveMatrix(Math::Matrix *outMatrix, float farGap);
-		void GetOrthoGraphicMatrix(Math::Matrix *outMatrix);
-		void GetProjectionMatrix(Math::Matrix *outMatrix, float farGap = 0);
-		void GetViewMatrix(Math::Matrix *outMatrix);
-		void GetViewProjectionMatrix(Math::Matrix *outMatrix, float farGap = 0);
+		void ProjectionMatrix(Math::Matrix &outMatrix);
+		void ViewMatrix(Math::Matrix& outMatrix);
 
 	public:
 		//static void SceneUpdate(float dt, std::vector<Object*> *sceneObjects);
 		static void SceneRender(Camera *cam, 
-			std::vector<Object*>::iterator &objectBegin,
-			std::vector<Object*>::iterator &objectEnd,
+			std::vector<Core::Object*>::iterator &objectBegin,
+			std::vector<Core::Object*>::iterator &objectEnd,
 			Light::LightManager* sceneLights);
 
-		void Render(std::vector<Object*>::iterator &objectBegin,
-			std::vector<Object*>::iterator &objectEnd,
+		void Render(std::vector<Core::Object*>::iterator &objectBegin,
+			std::vector<Core::Object*>::iterator &objectEnd,
 			Light::LightManager* sceneLights);
-
-	public:
-		void SetViewPort(Math::Rect<float> rect);
 
 	public:
 		virtual void Initialize();

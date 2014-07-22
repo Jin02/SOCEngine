@@ -1,16 +1,13 @@
 #pragma once
 
-#include "SOCHashMap.h"
-
-#include <string>
-#include "SingleTon.h"
+#include "Structure.h"
 
 namespace Rendering
 {
-	class TagManager : public Utility::SingleTon<TagManager>
+	class TagManager : public Singleton<TagManager>
 	{
 	protected:
-		SOCHashMap<std::string, int> hash;
+		HashMap<std::string, int> hash;
 
 	public:
 		bool AddTag(std::string key, int id);

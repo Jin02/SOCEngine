@@ -4,3 +4,4 @@
 #include "Container.h"
 #include "Dictionary.h"
 #include "HashMap.h"
+#include "Singleton.h"

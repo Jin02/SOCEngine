@@ -1,5 +1,11 @@
 #include "LightManager.h"
 #include "Object.h"
+#include "EngineMath.h"
+
+
+using namespace Math;
+using namespace std;
+using namespace Rendering;
 
 namespace Rendering
 {
@@ -7,30 +13,30 @@ namespace Rendering
 	{
 		LightManager::LightManager(void)
 		{
-			lights.reserve(MAX_LIGHT);
 		}
 
 		LightManager::~LightManager(void)
 		{
 		}
 
-		bool LightManager::Intersect(Frustum *frustum, std::vector<LightForm*> *out)
+		bool LightManager::Intersects(std::vector<LightForm*>& outLights, Frustum *frustum)
 		{
 			bool intersect = false;
 
-			for(vector<LightForm*>::iterator iter = lights.begin(); iter != lights.end(); ++iter)
+			for(auto iter = _lights.begin(); iter != _lights.end(); ++iter)
 			{
-				Vector3 worldP = (*iter)->GetWorldPosition();
+				Vector3 worldP;
+				(*iter)->GetOwner()->GetTransform()->WorldPosition(worldP);
 				float radius = (*iter)->range;
 				
-				if((*iter)->GetType() == LightForm::LightType::DIRECTIONAL)
+				if((*iter)->GetLightType() == LightForm::LightType::DIRECTIONAL)
 				{
-					out->push_back(*iter);
+					outLights.push_back(*iter);
 					intersect = true;
 				}
 				else if( frustum->In( worldP, radius ) )
 				{
-					out->push_back( *iter );
+					outLights.push_back( *iter );
 					intersect = true;
 				}
 			}
@@ -38,40 +44,36 @@ namespace Rendering
 			return intersect;
 		}
 
-		bool LightManager::Intersect(Frustum *frustum, LightForm* light)
+		bool LightManager::Intersects(Frustum *frustum, const LightForm* light)
 		{
 			bool intersect = false;
 
-			for(vector<LightForm*>::iterator iter = lights.begin(); iter != lights.end(); ++iter)
-			{
-				Vector3 worldP = (*iter)->GetWorldPosition();
-				float radius = (*iter)->range;
-				if( frustum->In( worldP, radius ) )
-				{
-					intersect = true;
-					break;
-				}
-			}
+			Vector3 worldP;
+			light->GetOwner()->GetTransform()->WorldPosition(worldP);
+			float radius = light->range;
+
+			if( frustum->In( worldP, radius ) )
+				intersect = true;
 
 			return intersect;
 		}
 
 		bool LightManager::AddLight(LightForm* light)
 		{
-			lights.push_back(light);
+			_lights.push_back(light);
 			return true;
 		}
 
 		void LightManager::Delete(LightForm* light, bool remove)
 		{
-			for(vector<LightForm*>::iterator iter = lights.begin(); iter != lights.end(); ++iter)
+			for(auto iter = _lights.begin(); iter != _lights.end(); ++iter)
 			{
 				if( (*iter) == light )
 				{
 					if(remove)
 						delete (*iter);
 
-					lights.erase(iter);
+					_lights.erase(iter);
 					return;
 				}
 			}
@@ -81,11 +83,11 @@ namespace Rendering
 		{
 			if(remove)
 			{
-				for(vector<LightForm*>::iterator iter = lights.begin(); iter != lights.end(); ++iter)
-					Utility::SAFE_DELETE((*iter));
+				for(auto iter = _lights.begin(); iter != _lights.end(); ++iter)
+					SAFE_DELETE((*iter));
 			}
 
-			lights.clear();
+			_lights.clear();
 		}
 	}
 }

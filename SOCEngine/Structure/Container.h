@@ -2,25 +2,25 @@
 
 #include <vector>
 #include <string>
+#include "Common.h"
 
 template <class Object>
 class Container
 {
 protected:
-	int order;
-	bool clone;
-	std::vector<Object*> objects;
+	int _order;
+	bool _clone;
+	std::vector<Object*> _objects;
 
-public:
-	std::string name;
-	std::string tag;
-	std::string layer;
+	std::string _name;
+	std::string _tag;
+	std::string _layer;
 
 public:
 	Container(void)
 	{
-		order = 0;
-		clone = false;
+		_order = 0;
+		_clone = false;
 	}
 
 	~Container(void)
@@ -35,9 +35,9 @@ private:
 		std::vector<Object*> v;
 		typename std::vector<Object*>::iterator iter;
 
-		for(iter = objects.begin(); iter != objects.end(); ++iter)
+		for(iter = _objects.begin(); iter != _objects.end(); ++iter)
 		{
-			std::string *findItem = e == FIND_ENUM_NAME ? &(*iter)->name : &(*iter)->tag;
+			std::string *findItem = e == FIND_ENUM_NAME ? &(*iter)->_name : &(*iter)->_tag;
 			if( (*findItem) == str )
 			{
 				v.push_back((*iter));
@@ -48,25 +48,25 @@ private:
 	}
 
 public:
-	std::vector<Object*> FindObjects(std::string name)
+	std::vector<Object*> FindObjects(std::string _name)
 	{
-		return _FindObject(name, FIND_ENUM_NAME, false);
+		return _FindObject(_name, FIND_ENUM_NAME, false);
 	}
 
-	std::vector<Object*> FindObjectsWithTag(std::string tag)
+	std::vector<Object*> FindObjectsWithTag(std::string _tag)
 	{
-		return _FindObject(name, FIND_ENUM_TAG, false);
+		return _FindObject(_name, FIND_ENUM_TAG, false);
 	}
 
-	Object* Find(std::string name)
+	Object* Find(std::string _name)
 	{
-		std::vector<Object*> v = _FindObject(name, FIND_ENUM_NAME, true);
+		std::vector<Object*> v = _FindObject(_name, FIND_ENUM_NAME, true);
 		return v.size() == 0 ? NULL : v[0];
 	}
 
-	Object* FindWithTag(std::string tag)
+	Object* FindWithTag(std::string _tag)
 	{
-		std::vector<Object*> v = _FindObject(tag, FIND_ENUM_TAG, true);
+		std::vector<Object*> v = _FindObject(_tag, FIND_ENUM_TAG, true);
 		return v.size() == 0 ? NULL : v[0];
 	}
 
@@ -75,7 +75,7 @@ public:
 		std::vector<Object*> v;
 		typename std::vector<Object*>::iterator iter;
 
-		for(iter = objects.begin(); iter != objects.end(); ++iter)
+		for(iter = _objects.begin(); iter != _objects.end(); ++iter)
 		{
 			if( (*iter) == object )
 				return true;
@@ -88,26 +88,26 @@ public:
 	{
 		Object *c = copy == false ? child : new Object(*child);
 
-		c->order = objects.size() != 0 ? (*(objects.end() - 1))->order + 1 : 0;
-		c->clone = copy;
-		objects.push_back(c);
+		c->_order = _objects.size() != 0 ? (*(_objects.end() - 1))->_order + 1 : 0;
+		c->_clone = copy;
+		_objects.push_back(c);
 
 		return c;
 	}
 
-	Object* Add(Object *child, int order, bool copy = false)
+	Object* Add(Object *child, int _order, bool copy = false)
 	{
 		Object *c = copy == false ? child : new Object(*child);
 
 		typename std::vector<Object*>::iterator iter;
 
-		for(iter = objects.begin(); iter != objects.end(); ++iter)
+		for(iter = _objects.begin(); iter != _objects.end(); ++iter)
 		{
-			if( (*iter)->order <= order )
+			if( (*iter)->_order <= _order )
 			{
-				c->order = (*iter)->order == order ? order + 1 : order;
-				c->clone = copy;
-				objects.insert(iter + 1, c);
+				c->_order = (*iter)->_order == _order ? _order + 1 : _order;
+				c->_clone = copy;
+				_objects.insert(iter + 1, c);
 				return c;
 			}
 		}
@@ -119,14 +119,14 @@ public:
 	{
 		typename std::vector<Object*>::iterator iter;
 
-		for(iter = objects.begin(); iter != objects.end(); ++iter)
+		for(iter = _objects.begin(); iter != _objects.end(); ++iter)
 		{
 			if((*iter) == child)
 			{
 				if(remove)
 					Utility::SAFE_DELETE(*iter);
 
-				objects.erase(iter);
+				_objects.erase(iter);
 				return;
 			}
 		}
@@ -135,37 +135,37 @@ public:
 
 	void DeleteAll(bool deleteClone)
 	{
-		for(typename std::vector<Object*>::iterator iter = objects.begin(); iter != objects.end(); ++iter)
+		for(typename std::vector<Object*>::iterator iter = _objects.begin(); iter != _objects.end(); ++iter)
 		{
-			if( deleteClone && clone )
-				Utility::SAFE_DELETE(*iter);
+			if( deleteClone && _clone )
+				SAFE_DELETE(*iter);
 		}
 
-		objects.clear();
+		_objects.clear();
 	}
 
 public:
 	typename std::vector<Object*>::iterator GetBeginIter()
 	{
-		return objects.begin();
+		return _objects.begin();
 	}
 
 	typename std::vector<Object*>::iterator GetEndIter()
 	{
-		return objects.end();
+		return _objects.end();
 	}
 
 	int GetCount()
 	{
-		return objects.size();
+		return _objects.size();
 	}
 
 	Object* Get(unsigned int index)
 	{
-		return *(objects.begin()+index); 
+		return *(_objects.begin()+index); 
 	}
 
-
-
-
+	GET_ACCESSOR(Name, const std::string&, _name);
+	GET_ACCESSOR(Tag,  const std::string&, _tag);
+	GET_ACCESSOR(Layer, const std::string&, _layer);
 };

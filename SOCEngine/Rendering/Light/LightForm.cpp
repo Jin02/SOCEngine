@@ -15,29 +15,18 @@ namespace Rendering
 			specular = Color::white();
 		}
 
-		Vector3& LightForm::GetWorldPosition()
+		LightForm::~LightForm()
 		{
-			return ownerTransform->GetWorldPosition();
-		}
-
-		Vector3& LightForm::GetDirection()
-		{
-			return ownerTransform->GetForward();
-		}
-
-		LightForm::LightType LightForm::GetType()
-		{
-			return type;
 		}
 
 		void LightForm::Initialize()
 		{
-
+			//null
 		}
 
 		void LightForm::Destroy()
 		{
-
+			//null
 		}
 	}
 }

@@ -42,5 +42,4 @@ namespace Device
 	protected:
 		SET_ACCESSOR(Rect, const Math::Rect<int>&, _rect);
 	};
-
 }

@@ -1,31 +1,27 @@
 #include "Component.h"
 #include "Object.h"
+#include "LightForm.h"
 
-Component::Component(void)
+namespace Core
 {
-}
 
-Component::~Component(void)
-{
-}
+	Component::Component(void)
+		:_owner(nullptr)
+	{
+	}
 
-void Component::Update(float deltaTime)
-{
-	//null
-}
+	Component::~Component(void)
+	{
+	}
 
-void Component::Render(Rendering::TransformParameters *transform, std::vector<Rendering::Light::LightParameters> *lights, Vector4 &viewPos)
-{
-	//null
-}
+	void Component::Update(float deltaTime)
+	{
+		//null
+	}
 
-void Component::SetOwner(Rendering::Object *object)
-{
-	this->owner = object;
-	this->ownerTransform = object->GetTransform();
-}
+	void Component::Render(TransformParameters *transform, std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos)
+	{
+		//null
+	}
 
-Rendering::Object* Component::GetOwner()
-{
-	return owner;
 }

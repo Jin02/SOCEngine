@@ -2,7 +2,7 @@
 
 using namespace Math;
 
-namespace Rendering
+namespace Core
 {
 	Transform::Transform(Transform *parent)
 	{

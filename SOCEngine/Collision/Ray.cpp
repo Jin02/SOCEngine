@@ -1,7 +1,7 @@
 #include "Ray.h"
 
 
-namespace Collision
+namespace Intersection
 {
 	Ray::Ray(const Math::Vector3& _origin, const Math::Vector3& _direction)
 		: origin(_origin), direction(_direction)

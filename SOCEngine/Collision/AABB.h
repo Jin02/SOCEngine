@@ -2,7 +2,7 @@
 
 #include "EngineMath.h"
 
-namespace Collision
+namespace Intersection
 {
 	class Ray;
 
