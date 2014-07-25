@@ -3,7 +3,7 @@
 using namespace Rendering;
 using namespace Core;
 
-CameraManager::CameraManager() : Container()
+CameraManager::CameraManager()
 {
 
 }
@@ -15,20 +15,19 @@ CameraManager::~CameraManager()
 
 void CameraManager::SetMainCamera(Camera *cam)
 {
-	_objects.insert(_objects.begin(), cam);
+	_vector.insert(_vector.begin(), Vector::Type("Main", Vector::Data(false, cam)));
 }
 
-Camera* CameraManager::GetMainCamera()
+const Camera* CameraManager::GetMainCamera()
 {
-	return (*_objects.begin());
+	return (*_vector.begin()).second.second;
 }
 
 void CameraManager::Render(std::vector<Object*>::iterator& objectBegin,
 			std::vector<Object*>::iterator& objectEnd, Light::LightManager* sceneLights)
 {
-	for(std::vector<Camera*>::iterator iter = _objects.begin();
-		iter != _objects.end(); ++iter)
+	for(auto iter = _vector.begin();iter != _vector.end(); ++iter)
 	{
-		(*iter)->Render(objectBegin, objectEnd, sceneLights);
+		(*iter).second.second->Render(objectBegin, objectEnd, sceneLights);
 	}
 }

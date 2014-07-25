@@ -9,7 +9,7 @@
 
 namespace Core
 {
-	class Object : public Container<Object>
+	class Object : public Structure::Vector<Object>
 	{
 	protected:
 		bool _use;
@@ -17,6 +17,8 @@ namespace Core
 		bool _hasMesh;
 
 	protected:
+		std::string _name;
+
 		Object *_parent;
 		Object *_root;
 		Transform *_transform;
@@ -39,7 +41,6 @@ namespace Core
 
 	public:
 		Object* AddObject(Object *child, bool copy = false);
-		Object* AddObject(Object *child, int renderQueueOrder, bool copy = false);
 
 		template<typename ComponentType>
 		ComponentType* AddComponent()

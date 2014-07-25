@@ -51,13 +51,12 @@
     <ClInclude Include="..\..\SOCEngine\Rendering\Light\LightParameters.h" />
     <ClInclude Include="..\..\SOCEngine\Rendering\Light\PointLight.h" />
     <ClInclude Include="..\..\SOCEngine\Rendering\Light\SpotLight.h" />
-    <ClInclude Include="..\..\SOCEngine\Structure\Container.h" />
-    <ClInclude Include="..\..\SOCEngine\Structure\Dictionary.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\BaseStructure.h" />
+    <ClInclude Include="..\..\SOCEngine\Structure\Vector.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\Map.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\Singleton.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\Structure.h" />
-    <ClInclude Include="..\..\SOCEngine\Utility\Utility.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Director.h" />
     <ClInclude Include="DX.h" />
@@ -100,8 +99,6 @@
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightParameters.cpp" />
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\SpotLight.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Structure\Dictionary.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Structure\Map.cpp" />
     <ClCompile Include="Director.cpp" />
     <ClCompile Include="DX.cpp" />
     <ClCompile Include="main.cpp" />

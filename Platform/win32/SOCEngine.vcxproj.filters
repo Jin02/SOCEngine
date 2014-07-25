@@ -173,23 +173,8 @@
     <ClInclude Include="..\..\SOCEngine\Core\Transform\Transform.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Structure\Container.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Structure\Dictionary.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Structure\Map.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Structure\Structure.h">
       <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Utility\Utility.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Collision\Intersection.h">
       <Filter>Collision</Filter>
@@ -269,6 +254,18 @@
     <ClInclude Include="..\..\SOCEngine\Structure\Singleton.h">
       <Filter>Structure</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Structure\BaseStructure.h">
+      <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Structure\Vector.h">
+      <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Structure\Map.h">
+      <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h">
+      <Filter>Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -324,12 +321,6 @@
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Structure\Dictionary.cpp">
-      <Filter>Structure</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Structure\Map.cpp">
-      <Filter>Structure</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Core\Object\BasicParameterNames.cpp">
       <Filter>Common</Filter>

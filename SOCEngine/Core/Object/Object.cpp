@@ -1,6 +1,5 @@
 ﻿#include "Object.h"
 #include "Math.h"
-#include "Utility.h"
 
 using namespace std;
 using namespace Intersection;
@@ -11,7 +10,7 @@ namespace Core
 {
 	using namespace Rendering::Light;
 
-	Object::Object(Object* parent /* = NULL */) : Container(),
+	Object::Object(Object* parent /* = NULL */) :
 		_culled(false), _parent(parent), _use(true), _hasMesh(false)
 	{
 		_transform = new Transform( parent ? parent->_transform : nullptr);		
@@ -26,17 +25,9 @@ namespace Core
 		DeleteAllComponent();
 	}
 
-	Object* Object::AddObject(Object *child, int renderQueue, bool copy/* = false */)
-	{
-		Object *c =  Container::Add(child, renderQueue, copy);
-		_transform->CalcRadius(c->_transform);
-
-		return c;
-	}
-
 	Object* Object::AddObject(Object *child, bool copy/* = false */)
 	{
-		Object *c =  Container::Add(child, copy);
+		Object *c =  Vector::Add(child->_name, child, copy);
 		_transform->CalcRadius(c->_transform);
 
 		return c;
@@ -47,10 +38,8 @@ namespace Core
 		if(_use == false)
 			return;
 
-		vector<Object*>::iterator iter;
-
-		for(iter = _objects.begin(); iter != _objects.end(); ++iter)
-			(*iter)->Update(delta);
+		for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
+			(*iter).second.second->Update(delta);
 	}
 
 	bool Object::CompareIsChildOfParent(Object *parent)
@@ -66,8 +55,8 @@ namespace Core
 
 		if(_culled == false)
 		{
-			for(auto iter = _objects.begin(); iter != _objects.end(); ++iter)
-				(*iter)->Culling(frustum);
+			for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
+				(*iter).second.second->Culling(frustum);
 		}
 
 		return _culled;
@@ -114,8 +103,8 @@ namespace Core
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->Render(&transformParam, &intersectLights, viewPos);
 
-		for(auto iter = _objects.begin(); iter != _objects.end(); ++iter)
-			(*iter)->Render(lights, viewMat, projMat, viewProjMat);
+		for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
+			(*iter).second.second->Render(lights, viewMat, projMat, viewProjMat);
 	}
 
 	bool Object::Intersect(Intersection::Sphere &sphere)

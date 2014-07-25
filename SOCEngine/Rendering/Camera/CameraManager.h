@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Container.h"
+#include "Structure.h"
 #include "Camera.h"
 
 namespace Rendering
 {
-	class CameraManager : public Container<Camera>
+	class CameraManager : public Structure::Vector<Camera>
 	{
 	public:
 		CameraManager(void);
@@ -13,7 +13,7 @@ namespace Rendering
 
 	public:
 		void SetMainCamera(Camera* cam);
-		Camera* GetMainCamera();
+		const Camera* GetMainCamera();
 
 	public:
 		void Render(std::vector<Core::Object*>::iterator& objectBegin,

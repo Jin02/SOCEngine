@@ -1,6 +1,5 @@
 #include "AABB.h"
 #include "Common.h"
-#include "Utility.h"
 #include "Ray.h"
 
 namespace Intersection
@@ -112,7 +111,7 @@ namespace Intersection
 				float t2 = ( -ray.origin[i] - realMax[i]) * denom;
 
 				if( t1 > t2 )
-					Utility::Swap(t1, t2);
+					std::swap(t1, t2);
 
 				rayMin = MAX(rayMin, t1);
 				rayMax = MIN(rayMax, t2);
