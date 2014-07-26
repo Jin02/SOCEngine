@@ -24,7 +24,7 @@ namespace Structure
 			std::map<std::string, BaseStructure<Object>::Data>::iterator iter = _map.find(key);
 
 			if(iter != _map.end())
-				return GET_CONTENT_FROM_TYPE(iter);
+				return GET_CONTENT_FROM_ITERATOR(iter);
 
 			BaseStructure<Object>::Data data;
 			data.first = copy;
@@ -38,7 +38,7 @@ namespace Structure
 		virtual Object* Find(const std::string& key)
 		{
 			std::map<std::string, BaseStructure<Object>::Data>::iterator iter = _map.find(key);
-			return iter == _map.end() ? nullptr : GET_CONTENT_FROM_TYPE(iter);
+			return iter == _map.end() ? nullptr : GET_CONTENT_FROM_ITERATOR(iter);
 		}
 
 		virtual void Delete(const std::string& key, bool contentRemove = false)
@@ -49,7 +49,7 @@ namespace Structure
 				return;
 
 			if(contentRemove)
-				SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+				SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 
 			_map.erase(iter);
 		}
@@ -61,8 +61,8 @@ namespace Structure
 				typename std::map<std::string, BaseStructure<Object>::Data>::iterator iter;
 				for(iter = _map.begin();iter != _map.end(); ++iter)
 				{
-					if( GET_IS_COPY_FROM_TYPE(iter) )
-						SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+					if( GET_IS_COPY_FROM_ITERATOR(iter) )
+						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 				}
 			}
 

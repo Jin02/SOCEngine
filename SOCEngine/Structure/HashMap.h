@@ -24,7 +24,7 @@ namespace Structure
 			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
 
 			if(iter != _hash.end())
-				return GET_CONTENT_FROM_TYPE(iter);
+				return GET_CONTENT_FROM_ITERATOR(iter);
 
 			BaseStructure<Object>::Data data;
 			data.first = copy;
@@ -38,7 +38,7 @@ namespace Structure
 		virtual Object* Find(const std::string& key)
 		{
 			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
-			return iter == _hash.end() ? nullptr : GET_CONTENT_FROM_TYPE(iter);
+			return iter == _hash.end() ? nullptr : GET_CONTENT_FROM_ITERATOR(iter);
 		}
 
 		virtual void Delete(const std::string& key, bool contentRemove = false)
@@ -49,7 +49,7 @@ namespace Structure
 				return;
 
 			if(contentRemove)
-				SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+				SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 
 			_hash.erase(iter);
 		}
@@ -60,8 +60,8 @@ namespace Structure
 			{
 				for(std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.begin();iter != _hash.end(); ++iter)
 				{
-					if( GET_IS_COPY_FROM_TYPE(iter) )
-						SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+					if( GET_IS_COPY_FROM_ITERATOR(iter) )
+						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 				}
 			}
 

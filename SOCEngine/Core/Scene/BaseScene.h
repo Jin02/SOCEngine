@@ -3,10 +3,10 @@
 class BaseScene
 {
 public:
-	enum STATE{ STATE_INIT = 0, STATE_LOOP, STATE_END, STATE_NUM };
+	enum State{ Init = 0, Loop, End, Num };
 
 private:
-	STATE _state;
+	State _state;
 
 public:
 	BaseScene();
@@ -14,7 +14,7 @@ public:
 
 public:
 	void NextState();
-	STATE GetState();
+	State GetState();
 
 public:
 	virtual void Initialize() = 0;

@@ -29,7 +29,7 @@ namespace Rendering
 				(*iter)->GetOwner()->GetTransform()->WorldPosition(worldP);
 				float radius = (*iter)->range;
 				
-				if((*iter)->GetLightType() == LightForm::LightType::DIRECTIONAL)
+				if((*iter)->GetLightType() == LightForm::LightType::Directional)
 				{
 					outLights.push_back(*iter);
 					intersect = true;

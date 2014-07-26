@@ -11,16 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\SOCEngine\Collision\AABB.h" />
-    <ClInclude Include="..\..\SOCEngine\Collision\Intersection.h" />
-    <ClInclude Include="..\..\SOCEngine\Collision\Cone.h" />
-    <ClInclude Include="..\..\SOCEngine\Collision\Ray.h" />
-    <ClInclude Include="..\..\SOCEngine\Collision\Sphere.h" />
     <ClInclude Include="..\..\SOCEngine\Common\Common.h" />
-    <ClInclude Include="..\..\SOCEngine\Common\ResourcesFolder.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Component\Component.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Layer\LayerManager.h" />
-    <ClInclude Include="..\..\SOCEngine\Core\Object\BasicParameterNames.h" />
+    <ClInclude Include="..\..\SOCEngine\Core\Object\BasicParameterNames.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Core\Object\Object.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Scene\BaseScene.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Scene\Scene.h">
@@ -30,6 +26,11 @@
     <ClInclude Include="..\..\SOCEngine\Core\Time\Timer.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Transform\Transform.h" />
     <ClInclude Include="..\..\SOCEngine\Core\Transform\TransformParameters.h" />
+    <ClInclude Include="..\..\SOCEngine\Intersection\AABB.h" />
+    <ClInclude Include="..\..\SOCEngine\Intersection\Cone.h" />
+    <ClInclude Include="..\..\SOCEngine\Intersection\Intersection.h" />
+    <ClInclude Include="..\..\SOCEngine\Intersection\Ray.h" />
+    <ClInclude Include="..\..\SOCEngine\Intersection\Sphere.h" />
     <ClInclude Include="..\..\SOCEngine\Math\EngineMath.h" />
     <ClInclude Include="..\..\SOCEngine\Math\MathCommon.h" />
     <ClInclude Include="..\..\SOCEngine\Math\Matrix.h" />
@@ -57,6 +58,7 @@
     <ClInclude Include="..\..\SOCEngine\Structure\Map.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\Singleton.h" />
     <ClInclude Include="..\..\SOCEngine\Structure\Structure.h" />
+    <ClInclude Include="..\..\SOCEngine\Utility\ResourcesFolder.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Director.h" />
     <ClInclude Include="DX.h" />
@@ -64,15 +66,11 @@
     <ClInclude Include="Win32.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\SOCEngine\Collision\AABB.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Collision\Cone.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Collision\Ray.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Collision\Sphere.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Common\Common.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Common\ResourcesFolder.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Component\Component.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Layer\LayerManager.cpp" />
-    <ClCompile Include="..\..\SOCEngine\Core\Object\BasicParameterNames.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Core\Object\BasicParameterNames.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Core\Object\Object.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Scene\BaseScene.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Scene\Scene.cpp">
@@ -82,6 +80,10 @@
     <ClCompile Include="..\..\SOCEngine\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Transform\Transform.cpp" />
     <ClCompile Include="..\..\SOCEngine\Core\Transform\TransformParameters.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Intersection\AABB.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Intersection\Cone.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Intersection\Ray.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Intersection\Sphere.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\MathCommon.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Matrix.cpp" />
     <ClCompile Include="..\..\SOCEngine\Math\Plane.cpp" />
@@ -99,6 +101,7 @@
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\LightParameters.cpp" />
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\SOCEngine\Rendering\Light\SpotLight.cpp" />
+    <ClCompile Include="..\..\SOCEngine\Utility\ResourcesFolder.cpp" />
     <ClCompile Include="Director.cpp" />
     <ClCompile Include="DX.cpp" />
     <ClCompile Include="main.cpp" />
@@ -135,7 +138,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(FBX2014_DIR)include;../../SOCEngine/Rendering/Texture;../../SOCEngine/Rendering/Shader;../../SOCEngine/Rendering/Mesh;../../SOCEngine/Rendering/Material;../../SOCEngine/Rendering/Light;../../SOCEngine/Rendering/Buffer;../../SOCEngine/Rendering/Camera;../../SOCEngine/Rendering/Color;../../SOCEngine/Core/Tag;../../SOCEngine/Core/Layer;../../SOCEngine/Core/Object;../../SOCEngine/Core/Transform;../../SOCEngine/Core/Time;../../SOCEngine/Core/Component;../../SOCEngine/Core/Scene;../../SOCEngine/Rendering;../../SOCEngine/Collision;../../SOCEngine/Structure;../../SOCEngine/Math;../../SOCEngine/Common;../../SOCEngine/Core;../../SOCEngine/Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <IncludePath>$(FBX2014_DIR)include;../../SOCEngine/Rendering/Texture;../../SOCEngine/Rendering/Shader;../../SOCEngine/Rendering/Mesh;../../SOCEngine/Rendering/Material;../../SOCEngine/Rendering/Light;../../SOCEngine/Rendering/Buffer;../../SOCEngine/Rendering/Camera;../../SOCEngine/Rendering/Color;../../SOCEngine/Core/Tag;../../SOCEngine/Core/Layer;../../SOCEngine/Core/Object;../../SOCEngine/Core/Transform;../../SOCEngine/Core/Time;../../SOCEngine/Core/Component;../../SOCEngine/Core/Scene;../../SOCEngine/Rendering;../../SOCEngine/Intersection;../../SOCEngine/Structure;../../SOCEngine/Math;../../SOCEngine/Common;../../SOCEngine/Core;../../SOCEngine/Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

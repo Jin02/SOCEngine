@@ -2,7 +2,7 @@
 
 BaseScene::BaseScene()
 {
-	_state = STATE_INIT;
+	_state = State::Init;
 }
 
 BaseScene::~BaseScene()
@@ -11,10 +11,10 @@ BaseScene::~BaseScene()
 
 void BaseScene::NextState()
 {
-	_state = (STATE)(((int)_state + 1) % (int)STATE_NUM);
+	_state = (State)(((int)_state + 1) % (int)State::Num);
 }
 
-BaseScene::STATE BaseScene::GetState()
+BaseScene::State BaseScene::GetState()
 {
 	return _state;
 }

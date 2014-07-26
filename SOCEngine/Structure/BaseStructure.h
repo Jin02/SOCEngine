@@ -17,9 +17,9 @@ namespace Structure
 		virtual ~BaseStructure(void){}
 
 	protected:
-#define GET_CONTENT_FROM_TYPE(TYPE)	TYPE->second.second
-#define GET_IS_COPY_FROM_TYPE(TYPE)	TYPE->second.first
-#define GET_KEY_FROM_TYPE(TYPE)		TYPE->first
+#define GET_CONTENT_FROM_ITERATOR(iter)	iter->second.second
+#define GET_IS_COPY_FROM_ITERATOR(iter)	iter->second.first
+#define GET_KEY_FROM_ITERATOR(iter)		iter->first
 
 	public:
 		virtual Object* Add(const std::string& key, Object* object, bool copy = false) = 0;

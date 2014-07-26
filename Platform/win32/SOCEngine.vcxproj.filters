@@ -96,9 +96,6 @@
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Collision">
-      <UniqueIdentifier>{26dd6fce-5323-4faf-b8cc-61a0eb862160}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Layer">
       <UniqueIdentifier>{ac22db50-378f-4e29-819c-7fed681683d4}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,9 @@
     <Filter Include="Device\Application\Win32">
       <UniqueIdentifier>{2b4269aa-4366-4980-bba3-1419c38200b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Intersection">
+      <UniqueIdentifier>{26dd6fce-5323-4faf-b8cc-61a0eb862160}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Director.h">
@@ -130,21 +130,6 @@
     </ClInclude>
     <ClInclude Include="Win32.h">
       <Filter>Device\Application\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Collision\Cone.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Collision\Ray.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Collision\Sphere.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Collision\AABB.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Common\ResourcesFolder.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Common\Common.h">
       <Filter>Common</Filter>
@@ -175,9 +160,6 @@
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Structure\Structure.h">
       <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Collision\Intersection.h">
-      <Filter>Collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SOCEngine\Core\Object\BasicParameterNames.h">
       <Filter>Common</Filter>
@@ -266,6 +248,24 @@
     <ClInclude Include="..\..\SOCEngine\Structure\HashMap.h">
       <Filter>Structure</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Intersection\AABB.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Intersection\Cone.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Intersection\Intersection.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Intersection\Ray.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Intersection\Sphere.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Utility\ResourcesFolder.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -279,24 +279,6 @@
     </ClCompile>
     <ClCompile Include="Win32.cpp">
       <Filter>Device\Application\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Collision\Ray.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Collision\Sphere.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Collision\AABB.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Collision\Cone.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Common\ResourcesFolder.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\SOCEngine\Common\Common.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Core\Scene\BaseScene.cpp">
       <Filter>Core\Scene</Filter>
@@ -378,6 +360,21 @@
     </ClCompile>
     <ClCompile Include="..\..\SOCEngine\Rendering\Camera\Camera.cpp">
       <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Intersection\AABB.cpp">
+      <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Intersection\Cone.cpp">
+      <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Intersection\Ray.cpp">
+      <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Intersection\Sphere.cpp">
+      <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SOCEngine\Utility\ResourcesFolder.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@ namespace Rendering
 			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
 
 		public:
-			enum LightType{ DIRECTIONAL = 0, POINT, SPOT };
+			enum LightType{ Directional = 0, Point, Spot };
 
 		protected:
 			LightType _type;

@@ -9,7 +9,7 @@ namespace Rendering
 	{
 		SpotLight::SpotLight()  : LightForm()
 		{
-			_type = SPOT;
+			_type = LightType::Spot;
 			spotAngle = 1.0f;
 		}
 

@@ -8,6 +8,8 @@ using namespace Math;
 
 namespace Core
 {
+#define _child _vector
+
 	using namespace Rendering::Light;
 
 	Object::Object(Object* parent /* = NULL */) :
@@ -38,8 +40,8 @@ namespace Core
 		if(_use == false)
 			return;
 
-		for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
-			(*iter).second.second->Update(delta);
+		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
 	bool Object::CompareIsChildOfParent(Object *parent)
@@ -55,8 +57,8 @@ namespace Core
 
 		if(_culled == false)
 		{
-			for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
-				(*iter).second.second->Culling(frustum);
+			for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+				GET_CONTENT_FROM_ITERATOR(iter)->Culling(frustum);
 		}
 
 		return _culled;
@@ -103,21 +105,16 @@ namespace Core
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->Render(&transformParam, &intersectLights, viewPos);
 
-		for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
-			(*iter).second.second->Render(lights, viewMat, projMat, viewProjMat);
+		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, viewMat, projMat, viewProjMat);
 	}
 
-	bool Object::Intersect(Intersection::Sphere &sphere)
+	bool Object::Intersects(Intersection::Sphere &sphere)
 	{
 		Vector3 wp;
 		_transform->WorldPosition(wp);
 		return sphere.Intersects(wp, _transform->GetRadius());
 	}
-
-	//void Object::_Render(std::vector<LightForm*> *lights, SOC_Matrix *viewMat, SOC_Matrix *projMat, SOC_Matrix *viewProjMat)
-	//{
-	//	//null
-	//}
 
 	void Object::DeleteComponent(Component *component)
 	{

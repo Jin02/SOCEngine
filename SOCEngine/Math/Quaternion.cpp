@@ -303,23 +303,23 @@ namespace Math
 		}
 	}
 
-		void Quaternion::RotationYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll)
-		{
-			 float syaw, cyaw, spitch, cpitch, sroll, croll;      
-			 syaw = sinf(yaw / 2.0f);
-			 cyaw = cosf(yaw / 2.0f);
-			 spitch = sinf(pitch / 2.0f);
-			 cpitch = cosf(pitch / 2.0f);
-			 sroll = sinf(roll / 2.0f);
-			 croll = cosf(roll / 2.0f);
- 
-			 out.x = syaw * cpitch * sroll + cyaw * spitch * croll;
-			 out.y = syaw * cpitch * croll - cyaw * spitch * sroll;
-			 out.z = cyaw * cpitch * sroll - syaw * spitch * croll;
-			 out.w = cyaw * cpitch * croll + syaw * spitch * sroll;
-		}
+	void Quaternion::RotationYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll)
+	{
+		float syaw, cyaw, spitch, cpitch, sroll, croll;      
+		syaw = sinf(yaw / 2.0f);
+		cyaw = cosf(yaw / 2.0f);
+		spitch = sinf(pitch / 2.0f);
+		cpitch = cosf(pitch / 2.0f);
+		sroll = sinf(roll / 2.0f);
+		croll = cosf(roll / 2.0f);
 
-	void RotationAxis(Quaternion& out, const Vector3& axis, float angle)
+		out.x = syaw * cpitch * sroll + cyaw * spitch * croll;
+		out.y = syaw * cpitch * croll - cyaw * spitch * sroll;
+		out.z = cyaw * cpitch * sroll - syaw * spitch * croll;
+		out.w = cyaw * cpitch * croll + syaw * spitch * sroll;
+	}
+
+	void Quaternion::RotationAxis(Quaternion& out, const Vector3& axis, float angle)
 	{
 		Vector3 temp = Vector3::Normalize(axis);
 
@@ -329,4 +329,24 @@ namespace Math
 		out.w = cosf(angle / 2.0f);
 	}
 
+	Quaternion& Quaternion::Normalize()
+	{
+		Normalize(*this, *this);
+		return (*this);
+	}
+	Quaternion& Quaternion::Inverse()
+	{
+		Inverse(*this, *this);
+		return (*this);
+	}
+	Vector3 Quaternion::ToEuler()
+	{
+		Vector3 v;
+		ToEuler(v, *this);
+		return v;
+	}
+	void Quaternion::FromEuler(const Vector3& v)
+	{
+		FromEuler(*this, v);
+	}
 }

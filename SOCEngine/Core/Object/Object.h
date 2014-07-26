@@ -37,7 +37,7 @@ namespace Core
 			const Math::Matrix& viewMat, const Math::Matrix& projMat,
 			const Math::Matrix& viewProjMat);
 
-		bool Intersect(Intersection::Sphere &sphere);
+		bool Intersects(Intersection::Sphere &sphere);
 
 	public:
 		Object* AddObject(Object *child, bool copy = false);
@@ -108,6 +108,7 @@ namespace Core
 		GET_SET_ACCESSOR(Use, bool, _use);
 		GET_ACCESSOR(Culled, bool, _culled);
 		GET_ACCESSOR(HasMesh, bool, _hasMesh);
+		GET_SET_ACCESSOR(Name, const std::string&, _name);
 
 	public:
 		void UpdateChild(float delta);

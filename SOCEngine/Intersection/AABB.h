@@ -26,11 +26,10 @@ namespace Intersection
 		void Expand(const Math::Vector3& amount);
 
 		bool Intersects(const AABB& bounds);
-		bool Contains(const Math::Vector3& point);
-		
-		float SqrDistance(const Math::Vector3& point);
-
 		bool Intersects(const Ray& ray, Math::Vector3* outPickPoint = nullptr, float gap = 0.0);
+		bool Contains(const Math::Vector3& point);
+
+		float SqrDistance(const Math::Vector3& point);
 
 	public:
 		bool operator!=(const AABB &box);

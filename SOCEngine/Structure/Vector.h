@@ -47,8 +47,8 @@ namespace Structure
 		{
 			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
 			{
-				if(GET_KEY_FROM_TYPE(iter) == key)
-					return GET_CONTENT_FROM_TYPE(iter);
+				if(GET_KEY_FROM_ITERATOR(iter) == key)
+					return GET_CONTENT_FROM_ITERATOR(iter);
 			}
 
 			return nullptr;
@@ -58,10 +58,10 @@ namespace Structure
 		{
 			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
 			{
-				if(GET_KEY_FROM_TYPE(iter) == key)
+				if(GET_KEY_FROM_ITERATOR(iter) == key)
 				{
 					if(contentRemove)
-						SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 
 					_vector.erase(iter);
 					return;
@@ -75,8 +75,8 @@ namespace Structure
 			{
 				for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
 				{
-					if( GET_IS_COPY_FROM_TYPE(iter) )
-						SAFE_DELETE( GET_CONTENT_FROM_TYPE(iter) );
+					if( GET_IS_COPY_FROM_ITERATOR(iter) )
+						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
 				}
 			}
 
