@@ -11,10 +11,10 @@ namespace Rendering
 	struct Color
 	{
 	public:
-		float a;
-		float b;
-		float g;
 		float r;
+		float g;
+		float b;
+		float a;
 
 	public:
 		Color();

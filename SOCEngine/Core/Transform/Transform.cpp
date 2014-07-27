@@ -264,7 +264,7 @@ namespace Core
 		child->WorldPosition(childWorldPosition);
 
 		float distance = Vector3::Distance(worldPosition, childWorldPosition);
-		_radius = MAX(distance + child->_radius, _radius);
+		_radius = std::max(distance + child->_radius, _radius);
 
 		return _radius;
 	}

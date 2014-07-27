@@ -45,7 +45,7 @@ namespace Rendering
 		SAFE_DELETE(frustum);
 	}
 
-	void Camera::Clear(DX *dx)
+	void Camera::Clear(DirectX *dx)
 	{
 	}
 

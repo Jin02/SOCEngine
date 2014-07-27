@@ -82,5 +82,7 @@ namespace Structure
 
 			_vector.clear();
 		}
+
+		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
 	};
 }

@@ -13,7 +13,7 @@ namespace Rendering
 
 	public:
 		void SetMainCamera(Camera* cam);
-		const Camera* GetMainCamera();
+		Camera* GetMainCamera();
 
 	public:
 		void Render(std::vector<Core::Object*>::iterator& objectBegin,

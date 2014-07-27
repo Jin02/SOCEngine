@@ -113,8 +113,8 @@ namespace Intersection
 				if( t1 > t2 )
 					std::swap(t1, t2);
 
-				rayMin = MAX(rayMin, t1);
-				rayMax = MIN(rayMax, t2);
+				rayMin = std::max(rayMin, t1);
+				rayMax = std::min(rayMax, t2);
 
 				if(rayMin > rayMax)
 					return false;

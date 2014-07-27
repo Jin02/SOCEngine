@@ -13,7 +13,7 @@ namespace Device
 		Math::Rect<int>		_rect;
 
 		WNDCLASSEX			_windowInfo;
-		const char*			_name;
+		//const char*			_name;
 		HWND				_parentHandle;
 		HWND				_handle;
 		unsigned int		_options;

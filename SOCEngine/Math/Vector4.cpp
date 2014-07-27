@@ -89,6 +89,8 @@ namespace Math
 		else if( idx == 1 ) return y;
 		else if( idx == 2 ) return z;
 		else if( idx == 3 ) return w;
+
+		return 0.0f;
 	}
 
 	Vector4 Vector4::One()

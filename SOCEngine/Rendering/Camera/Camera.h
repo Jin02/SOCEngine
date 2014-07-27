@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DX.h"
+#include "DirectX.h"
 #include "Component.h"
 #include "Frustum.h"
 #include "LightManager.h"
@@ -38,7 +38,7 @@ namespace Rendering
 
 	private:
 		void CalcAspect();
-		void Clear(Device::DX *dx);
+		void Clear(Device::DirectX *dx);
 		void RenderObjects(std::vector<Core::Object*>::iterator &objectBegin,	std::vector<Core::Object*>::iterator &objectEnd,	Light::LightManager* sceneLights);
 
 	public:

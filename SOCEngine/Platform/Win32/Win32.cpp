@@ -4,7 +4,6 @@
 
 namespace Device
 {
-
 	LRESULT Win32::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		if(msg == WM_DESTROY || msg == WM_CLOSE)
@@ -18,6 +17,8 @@ namespace Device
 
 	Win32::Win32(Math::Rect<int> &rect, HINSTANCE Instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
 	{
+		//_name = name;
+
 		_windowInfo.cbSize			= sizeof(WNDCLASSEX);
 		_windowInfo.style			= CS_CLASSDC;
 		_windowInfo.hInstance		= Instance;//GetModuleHandle(NULL);
@@ -27,17 +28,17 @@ namespace Device
 		_windowInfo.hCursor			= NULL;
 		_windowInfo.hbrBackground	= NULL;
 		_windowInfo.hIconSm			= NULL;
-		_windowInfo.lpszMenuName		= NULL;
-		_windowInfo.lpszClassName	= _name;
+		_windowInfo.lpszMenuName	= NULL;
+		_windowInfo.lpszClassName	= name;
 
 		_windowInfo.lpfnWndProc		= WndProc;
 		_options = isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
 
 		SetRect(rect);
 
-		_name = _name;
 		_parentHandle = parentHandle;
 		_windowsMode = windowMode;
+
 	}
 
 	Win32::~Win32(void)
@@ -49,7 +50,7 @@ namespace Device
 	{
 		RegisterClassEx(&_windowInfo);
 
-		_handle = CreateWindow(_name, _name, _options, 
+		_handle = CreateWindow(_windowInfo.lpszClassName, _windowInfo.lpszClassName, _options, 
 			_rect.x, _rect.y, 
 			_rect.size.w, _rect.size.h, 
 			_parentHandle, NULL, _windowInfo.hInstance, NULL);
@@ -63,7 +64,7 @@ namespace Device
 	}
 	void Win32::Destroy()
 	{
-		UnregisterClass( _name, _windowInfo.hInstance );
+		UnregisterClass( _windowInfo.lpszClassName, _windowInfo.hInstance );
 
 		if( _options != (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN) )
 			DestroyWindow(_handle);

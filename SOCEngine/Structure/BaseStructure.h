@@ -16,16 +16,16 @@ namespace Structure
 		BaseStructure(void){}
 		virtual ~BaseStructure(void){}
 
-	protected:
-#define GET_CONTENT_FROM_ITERATOR(iter)	iter->second.second
-#define GET_IS_COPY_FROM_ITERATOR(iter)	iter->second.first
-#define GET_KEY_FROM_ITERATOR(iter)		iter->first
-
 	public:
 		virtual Object* Add(const std::string& key, Object* object, bool copy = false) = 0;
 		virtual Object* Find(const std::string& key) = 0;
 		virtual void Delete(const std::string& key, bool contentRemove = false) = 0;
 		virtual void DeleteAll(bool contentRemove = false) = 0;
+
+	public:
+#define GET_CONTENT_FROM_ITERATOR(iter)	iter->second.second
+#define GET_IS_COPY_FROM_ITERATOR(iter)	iter->second.first
+#define GET_KEY_FROM_ITERATOR(iter)		iter->first
 	};
 
 }
