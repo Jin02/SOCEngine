@@ -40,6 +40,9 @@
     <ClInclude Include="..\..\Math\Vector2.h" />
     <ClInclude Include="..\..\Math\Vector3.h" />
     <ClInclude Include="..\..\Math\Vector4.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Camera\Camera.h" />
     <ClInclude Include="..\..\Rendering\Camera\CameraManager.h" />
     <ClInclude Include="..\..\Rendering\Camera\Frustum.h" />
@@ -51,6 +54,14 @@
     <ClInclude Include="..\..\Rendering\Light\LightParameters.h" />
     <ClInclude Include="..\..\Rendering\Light\PointLight.h" />
     <ClInclude Include="..\..\Rendering\Light\SpotLight.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
+    <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
+    <ClInclude Include="..\..\Rendering\Shader\Shader.h" />
+    <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\VertexShader.h" />
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="..\..\Structure\BaseStructure.h" />
     <ClInclude Include="..\..\Structure\Vector.h" />
@@ -90,6 +101,9 @@
     <ClCompile Include="..\..\Math\Vector2.cpp" />
     <ClCompile Include="..\..\Math\Vector3.cpp" />
     <ClCompile Include="..\..\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\Camera.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\Frustum.cpp" />
@@ -100,6 +114,14 @@
     <ClCompile Include="..\..\Rendering\Light\LightParameters.cpp" />
     <ClCompile Include="..\..\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\Rendering\Light\SpotLight.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\Shader.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp" />
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="..\..\Utility\ResourcesFolder.cpp" />
     <ClCompile Include="Director.cpp" />
@@ -140,7 +162,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(FBX2014_DIR)include;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>

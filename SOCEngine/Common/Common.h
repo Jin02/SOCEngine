@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning(disable : 4005)
+
 #define SET_ACCESSOR(n, x, y)\
 	inline void Set##n(x t)	{ y = t; }
 #define GET_ACCESSOR(n, x, y)\

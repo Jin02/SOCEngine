@@ -26,8 +26,5 @@ Camera* CameraManager::GetMainCamera()
 void CameraManager::Render(std::vector<Object*>::iterator& objectBegin,
 			std::vector<Object*>::iterator& objectEnd, Light::LightManager* sceneLights)
 {
-	for(auto iter = _vector.begin();iter != _vector.end(); ++iter)
-	{
-		(*iter).second.second->Render(objectBegin, objectEnd, sceneLights);
-	}
+
 }

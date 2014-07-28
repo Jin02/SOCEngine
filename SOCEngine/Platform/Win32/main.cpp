@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include "Director.h"
 #include "TestScene.h"
 

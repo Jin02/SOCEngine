@@ -22,27 +22,26 @@ namespace Rendering
 
 	void Camera::Initialize()
 	{
-		FOV = 60;
-		clippingNear = 0.01f;
-		clippingFar = 1000.0f;
+		_FOV = 60;
+		_clippingNear = 0.01f;
+		_clippingFar = 1000.0f;
 
-		//이게 정상인가? 그런갑지;
 		Size<int> windowSize = Director::GetInstance()->GetWindowSize();
-		aspect = (float)windowSize.w / (float)windowSize.h;
+		_aspect = (float)windowSize.w / (float)windowSize.h;
 
-		camType    = Type::Perspective;
-		clearColor = Color(0.5f, 0.5f, 1.0f,1.0f);
+		_camType    = Type::Perspective;
+		_clearColor = Color(0.5f, 0.5f, 1.0f,1.0f);
 
-		frustum = new Frustum(0.0f);		
+		_frustum = new Frustum(0.0f);		
 
-		clearFlag = ClearFlag::FlagSolidColor;
+		_clearFlag = ClearFlag::FlagSolidColor;
 	}
 
 	void Camera::Destroy()
 	{
 		//Utility::SAFE_DELETE(rtShader);
 		//Utility::SAFE_DELETE(renderTarget);
-		SAFE_DELETE(frustum);
+		SAFE_DELETE(_frustum);
 	}
 
 	void Camera::Clear(DirectX *dx)
@@ -52,20 +51,20 @@ namespace Rendering
 	void Camera::CalcAspect()
 	{
 		Size<int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
-		aspect = (float)windowSize.w / (float)windowSize.h;
+		_aspect = (float)windowSize.w / (float)windowSize.h;
 	}
 
 	void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 	{
-		if(camType == Type::Perspective)
+		if(_camType == Type::Perspective)
 		{
-			float radian = FOV * PI / 180.0f;
-			Matrix::PerspectiveFovLH(outMatrix, aspect, radian, clippingNear, clippingFar);
+			float radian = _FOV * PI / 180.0f;
+			Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, _clippingNear, _clippingFar);
 		}
-		else if(camType == Type::Orthographic)
+		else if(_camType == Type::Orthographic)
 		{
 			Size<int> windowSize = Device::Director::GetInstance()->GetWindowSize();
-			Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), clippingNear, clippingFar);
+			Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), _clippingNear, _clippingFar);
 		}
 	}
 
@@ -96,30 +95,26 @@ namespace Rendering
 		viewProjMat = viewMat * projMat;
 
 		//Clear();
-		frustum->Make(viewProjMat);
+		_frustum->Make(viewProjMat);
 
 		//추후 작업.
 
 		vector<LightForm*> lights;
-		if( sceneLights->Intersects(lights, frustum) )
+		if( sceneLights->Intersects(lights, _frustum) )
 		{
 			//월드 상의 빛에서 절두체에 겹치는거 모두 찾음.
 
 			for(auto iter = objectBegin; iter != objectEnd; ++iter)
 			{
-				(*iter)->Culling(frustum);
+				(*iter)->Culling(_frustum);
 				(*iter)->Render(lights, viewMat, projMat, viewProjMat);
 			}
 		}
 	}
 
-	void Camera::Render(std::vector<Object*>::iterator &objectBegin, std::vector<Object*>::iterator &objectEnd,	Light::LightManager* sceneLights)
+	void Camera::Render(const Structure::Vector<Core::Object>& objects, Light::LightManager* sceneLights)
 	{
-	}
 
-	void Camera::SceneRender(Camera *cam, std::vector<Object*>::iterator& objectBegin,
-			std::vector<Object*>::iterator& objectEnd, Light::LightManager* sceneLights)
-	{
 	}
 
 }

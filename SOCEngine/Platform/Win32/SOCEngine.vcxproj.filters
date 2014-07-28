@@ -117,6 +117,18 @@
     <Filter Include="Intersection">
       <UniqueIdentifier>{26dd6fce-5323-4faf-b8cc-61a0eb862160}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Buffer\Vertex">
+      <UniqueIdentifier>{415061cc-d3b2-4f15-a281-daa28176f23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Index">
+      <UniqueIdentifier>{2a09f098-c246-4c88-932f-e84066c8091e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Base">
+      <UniqueIdentifier>{278a0bce-cc59-4abc-bdad-a66da8812acf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Const">
+      <UniqueIdentifier>{5c662be9-b4ec-48ba-b4a5-07afec60f564}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Director.h">
@@ -266,6 +278,33 @@
     <ClInclude Include="DirectX.h">
       <Filter>Device\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h">
+      <Filter>Rendering\Buffer\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h">
+      <Filter>Rendering\Buffer\Index</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h">
+      <Filter>Rendering\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\Shader.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\VertexShader.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\PixelShader.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -378,6 +417,33 @@
     </ClCompile>
     <ClCompile Include="DirectX.cpp">
       <Filter>Device\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp">
+      <Filter>Rendering\Buffer\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp">
+      <Filter>Rendering\Buffer\Index</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp">
+      <Filter>Rendering\Buffer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\Shader.cpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp">
+      <Filter>Rendering\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -39,29 +39,11 @@ void Scene::Render()
 	if(mainCam == nullptr)
 		return;
 
-	//graphics->BeginScene();
-	{
-		OnRenderPreview();
+	OnRenderPreview();
 
-		/*graphics->Clear(0, NULL,
-			Graphics::ClearFlagType::FlagTarget | 
-			Graphics::ClearFlagType::FlagZBuffer, 
-			bgColour,
-			1.0f, 0);*/
-
-		//for(vector<Camera*>::iterator iter = cameraMgr->GetIteratorBegin(); iter != cameraMgr->GetIteratorEnd(); ++iter)
-		//	(*iter)->Run(dt);
+	mainCam->Render(_rootObjects, nullptr);
 		
-		//Camera::SceneRender(mainCam, rootObjects->GetBeginIter(), rootObjects->GetEndIter(), lightMgr);
-		//일단은, 이렇게 처리하고 추후에 각 카메라마다 Render to texture 세팅해준뒤, 그걸 처리하도록 해야할듯.
-		//추후 조정이 필요함.
-
-		//cameraMgr->Render(rootObjects->GetBeginIter(), rootObjects->GetEndIter(), lightMgr);
-
-		OnRenderPost();
-	}
-	//graphics->EndScene();
-	//graphics->Present();
+	OnRenderPost();
 }
 
 void Scene::Destroy()
