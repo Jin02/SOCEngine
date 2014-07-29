@@ -3,8 +3,9 @@
 
 using namespace Rendering::Shader;
 
-PixelShader::PixelShader() : Shader(), _shader(nullptr), _layout(nullptr)
+PixelShader::PixelShader() : Shader(), _shader(nullptr)
 {
+	_type = Type::Pixel;
 }
 
 PixelShader::~PixelShader(void)

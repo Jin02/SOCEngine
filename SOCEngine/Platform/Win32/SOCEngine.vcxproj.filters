@@ -305,6 +305,12 @@
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h">
       <Filter>Rendering\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rendering\Mesh\Mesh.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -443,6 +449,9 @@
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
   </ItemGroup>

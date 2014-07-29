@@ -11,11 +11,20 @@ namespace Rendering
 
 		class Shader
 		{
+		public:
+			enum Type
+			{
+				Invalid,
+				Vertex,
+				Pixel
+			};
+
 		protected:
 			ID3DBlob*		_blob;
+			Type			_type;
 
 		public:
-			Shader() : _blob(nullptr)
+			Shader() : _blob(nullptr), _type(Type::Invalid)
 			{
 			}
 
@@ -24,7 +33,7 @@ namespace Rendering
 			}
 
 		public:
-			static bool CompileFromMemory(ID3DBlob** outBlob, const std::string &shaderCode, const char* shaderModel, const char* funcName)
+			static bool CompileFromMemory(ID3DBlob** outBlob, const std::string &shaderCode, const std::string& shaderModel, const std::string& funcName)
 			{
 				DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
@@ -36,9 +45,9 @@ namespace Rendering
 
 				HRESULT hr = D3DX11CompileFromMemory(
 					shaderCode.data(), shaderCode.size(),
-					nullptr, nullptr, nullptr, funcName,
-					shaderModel, dwShaderFlags, 0, nullptr,
-					outShader, &pErrorBlob, nullptr);
+					nullptr, nullptr, nullptr, funcName.data(),
+					shaderModel.data(), dwShaderFlags, 0, nullptr,
+					outBlob, &pErrorBlob, nullptr);
 
 				if( FAILED(hr) )
 				{
@@ -53,7 +62,7 @@ namespace Rendering
 
 				return true;
 			}
-			static bool CompileFromFile(ID3DBlob** outBlob, const std::string &fileName, const char* shaderModel, const char* funcName)
+			static bool CompileFromFile(ID3DBlob** outBlob, const std::string &fileName, const std::string& shaderModel, const std::string& funcName)
 			{
 				HRESULT hr = S_OK;
 
@@ -67,8 +76,8 @@ namespace Rendering
 #endif
 
 				ID3DBlob* pErrorBlob;
-				hr = D3DX11CompileFromFile( fileName.data(), NULL, NULL, funcName, shaderModel, 
-					dwShaderFlags, 0, NULL, outShader, &pErrorBlob, NULL );
+				hr = D3DX11CompileFromFile( fileName.data(), NULL, NULL, funcName.data(), shaderModel.data(), 
+					dwShaderFlags, 0, NULL, outBlob, &pErrorBlob, NULL );
 				if( FAILED(hr) )
 				{
 					if( pErrorBlob != NULL )
@@ -83,16 +92,17 @@ namespace Rendering
 			}
 
 		public:
-			bool CompileFromMemory(const std::string &shaderCode, const char* shaderModel, const char* funcName)
+			bool CompileFromMemory(const std::string &shaderCode, const std::string& shaderModel, const std::string& funcName)
 			{
 				return CompileFromMemory(&_blob, shaderCode, shaderModel, funcName);
 			}
-			bool CompileFromFile(const std::string &fileName, const char* shaderModel, const char* funcName)
+			bool CompileFromFile(const std::string &fileName, const std::string& shaderModel, const std::string& funcName)
 			{
 				return CompileFromFile(&_blob, fileName, shaderModel, funcName);
 			}
 
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);
+			GET_ACCESSOR(ShaderType, Type, _type);
 		};
 	}
 }

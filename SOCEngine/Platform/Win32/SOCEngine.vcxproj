@@ -54,12 +54,13 @@
     <ClInclude Include="..\..\Rendering\Light\LightParameters.h" />
     <ClInclude Include="..\..\Rendering\Light\PointLight.h" />
     <ClInclude Include="..\..\Rendering\Light\SpotLight.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\Mesh.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\Shader.h" />
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Shader\VertexShader.h" />
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h" />
@@ -70,6 +71,7 @@
     <ClInclude Include="..\..\Structure\Singleton.h" />
     <ClInclude Include="..\..\Structure\Structure.h" />
     <ClInclude Include="..\..\Utility\ResourcesFolder.h" />
+    <ClInclude Include="..\..\Utility\Utility.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Director.h" />
     <ClInclude Include="DirectX.h" />
@@ -114,12 +116,13 @@
     <ClCompile Include="..\..\Rendering\Light\LightParameters.cpp" />
     <ClCompile Include="..\..\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\Rendering\Light\SpotLight.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\Shader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp" />
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp" />

@@ -10,7 +10,6 @@ namespace Rendering
 		{
 		private:
 			ID3D11PixelShader* _shader;
-			ID3D11InputLayout*	_layout;
 
 		public:
 			PixelShader();

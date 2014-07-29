@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SOCHashMap.h"
 #include <string>
 #include <fstream>
-#include "ShaderCode.h"
-#include "Graphics.h"
-#include "Shader.h"
+#include "HashMap.h"
+#include "VertexShader.h"
+#include "PixelShader.h"
+#include "Utility.h"
 
 namespace Rendering
 {
@@ -14,29 +14,65 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Device::Graphics *graphics;
-			SOCHashMap<std::string, std::pair<ShaderCode, Shader*>> hash;
-
-		private:
-			const char *shaderDir;
-			int dirLen;
+			Structure::HashMap<Shader> _shaders;
+			Structure::HashMap<ShaderCode> _shaderCodes;
 
 		public:
-			ShaderManager(Device::Graphics *graphics);
-			~ShaderManager(void);
+			ShaderManager()
+			{
+			}
 
-		private:
-			bool LoadShaderFromFile( std::string &path, std::pair<ShaderCode, Shader*> *outPair, bool shaderClone, bool inShaderFolder = true);
-			bool FindShader(std::string &path, std::pair<ShaderCode, Shader*> *outPair, bool shaderClone);
+			~ShaderManager(void)
+			{
+			}
 
 		public:
-			bool LoadShaderFromFile( std::string path, ShaderCode *outShaderCode, bool inShaderFolder = true);
-			bool FindShader(std::string path, ShaderCode *outShaderCode);
+			bool Test(const std::string& folderPath, const std::string& command, bool recycle)
+			{
+				std::vector<std::string> commands;
+				Utility::Tokenize(command, commands, ":");
 
-			bool LoadShaderFromFile( std::string path, Shader **outShader, bool shaderClone, bool inShaderFolder = true);
-			bool FindShader(std::string path, Shader **outShader, bool shaderClone);
+				if(commands.size() != 3)
+					return false;
 
-			void DeleteAll();
+				std::string fileName	= commands[0];
+				std::string shaderType	= commands[1];
+				std::string mainFunc	= commands[2];
+
+				std::string code;
+
+				if(recycle)
+				{
+					std::ifstream file;
+					const char* extension[2] = {".fx", ".hlsl"};
+					for(int i=0; i<2; ++i)
+					{
+						file.open(folderPath+fileName+extension[i]);
+
+						if(file.is_open())
+							break;
+					}
+
+					if(file.good() == false)
+					{
+						file.close();
+						return false;
+					}
+
+					std::string buff;
+
+					while(std::getline(file, buff))
+					{
+						code += buff;
+						code += "\n";
+					}
+				}
+
+				ID3DBlob* blob;
+				Rendering::Shader::Shader::CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc);
+
+				return true;
+			}
 		};
 
 	}

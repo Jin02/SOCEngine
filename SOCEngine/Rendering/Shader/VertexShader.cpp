@@ -5,6 +5,7 @@ using namespace Rendering::Shader;
 
 VertexShader::VertexShader() : Shader(), _shader(nullptr), _layout(nullptr)
 {
+	_type = Type::Vertex;
 }
 
 VertexShader::~VertexShader(void)
