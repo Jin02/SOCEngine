@@ -266,9 +266,6 @@
     <ClInclude Include="..\..\Intersection\Sphere.h">
       <Filter>Intersection</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Utility\ResourcesFolder.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h">
       <Filter>Rendering\Texture</Filter>
     </ClInclude>
@@ -309,6 +306,9 @@
       <Filter>Rendering\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Utility\Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\DirectoryManager.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -409,9 +409,6 @@
     <ClCompile Include="..\..\Intersection\Sphere.cpp">
       <Filter>Intersection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Utility\ResourcesFolder.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp">
       <Filter>Rendering\Texture</Filter>
     </ClCompile>
@@ -453,6 +450,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Utility\DirectoryManager.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
