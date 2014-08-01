@@ -13,11 +13,14 @@ namespace Rendering
 			ID3D11InputLayout*	_layout;
 
 		public:
-			VertexShader();
+			VertexShader(ID3DBlob* blob);
 			~VertexShader(void);
 
 		public:
-			bool Create(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count);
+			bool CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count);
+
+			virtual void Begin();
+			virtual void End();
 		};
 	}
 }

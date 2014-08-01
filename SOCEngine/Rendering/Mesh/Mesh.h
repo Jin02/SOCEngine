@@ -10,10 +10,11 @@ namespace Rendering
 		class Mesh
 		{
 		private:
-			MeshFilter* _filter;
+			MeshFilter*			_filter;
+			MeshRenderer*		_renderer;
 
 		public:
-			Mesh() : _filter(nullptr)
+			Mesh() : _filter(nullptr), _renderer(nullptr)
 			{
 			}
 
@@ -22,6 +23,21 @@ namespace Rendering
 			}
 
 		public:
+			bool Create()
+			{
+				_filter = new MeshFilter;
+				_renderer = new MeshRenderer;
+
+
+				_filter->CreateBuffer(vbData, vbCount, vbSize, indices, indicesCount, dynamicMesh);
+
+				 
+				return true;
+			}
+
+		public:
+			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
+			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
 		};
 	}
 }

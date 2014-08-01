@@ -311,6 +311,18 @@
     <ClInclude Include="..\..\Utility\Utility.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rendering\Material\MaterialManager.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Material\Material.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Material\MaterialElements.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Mesh\MeshBasicData.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -452,6 +464,15 @@
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Material\MaterialManager.cpp">
+      <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Material\Material.cpp">
+      <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Mesh\MeshBasicData.cpp">
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
   </ItemGroup>

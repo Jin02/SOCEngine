@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Shader.h"
-#include "MaterialElements.h"
-#include <vector>
+#include "VertexShader.h"
+#include "PixelShader.h"
+#include "Common.h"
 
 namespace Rendering
 {
@@ -11,69 +11,35 @@ namespace Rendering
 		class Material
 		{
 		private:
-			std::string name;
-			std::vector<Shader::Shader*> shaders;
-			Shader::Shader* useShader;
-
-			Material::MaterialElements elements;
+			Shader::VertexShader*	_vertexShader;
+			Shader::PixelShader*	_pixelShader;
 
 		public:
-			Material(const char *name = nullptr);
-			~Material(void);
-
-		public:
-			void Begin();
-			void BeginPass(int pass = 0);
-			void End();
-			void EndPass();
-
-		public:
-			bool SelectUseShader(SOC_uint idx);
-			bool SelectUseShader( std::string name );
-			bool SelectUseShader(Shader::Shader *shader);
-
-			void AddShader( Shader::Shader *shader );
-			void DeleteShader( Shader::Shader *shader );
-			void DeleteAllShader();
-
-			Shader::Shader* FindShader( const char *name );
-			bool HasShader(Shader::Shader *shader);
-
-		public:
-			template<typename Type>
-			void SetVariable(int idx, char *parameter, Type value)
+			Material() : _vertexShader(nullptr), _pixelShader(nullptr)
 			{
-				(*(shaders.begin() + idx))->SetVariable(parameter, value);
 			}
-			template<typename Type>
-			void SetVariable(int idx, char *parameter, Type value, SOC_uint count)
+
+			~Material(void)
 			{
-				(*(shaders.begin() + idx))->SetVariable(parameter, value, count);
-			}
-			template<typename Type>
-			void SetVariable(char *parameter, Type value)
-			{
-				useShader->SetVariable(parameter, value);
-			}
-			template<typename Type>
-			void SetVariable(char *parameter, Type value, SOC_uint count)
-			{
-				useShader->SetVariable(parameter, value, count);
 			}
 
 		public:
-			int GetShaderCount();
-			SOC_uint GetUseShaderPass();
-			const char* GetName();
+			void Begin()
+			{
+				_vertexShader->Begin();
+				_pixelShader->Begin();
+			}
 
-			bool GetShaderRequiredParameters(unsigned int index, SOC_byte *outMatrixParameters, SOC_byte *outLightParameters);
-			bool GetUseShaderRequiredParameters(SOC_byte *outMatrixParameters, SOC_byte *outLightParameters);
+			//꼭 호출이 필수는 아님.
+			void End()
+			{
+				_vertexShader->End();
+				_pixelShader->End();
+			}
 
-			void SetUseShaderRequiredParameters(TransformParameters *transform, std::vector<Light::LightParameters> *lights, SOC_Vector4 &viewPos);
-
-			virtual void ConnectParamater(){}
-
-			void SetElements(MaterialElements &element);
+		public:
+			GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
+			GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
 		};
 
 	}

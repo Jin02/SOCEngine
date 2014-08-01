@@ -17,3 +17,9 @@ bool VertexBuffer::Create( const void* sysMem, unsigned int byteWidth, bool isDy
 		isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT, 
 		sysMem, byteWidth);
 }
+
+void VertexBuffer::UpdateBuffer()
+{
+	ID3D11DeviceContext* context;
+	context->IASetVertexBuffers(
+}

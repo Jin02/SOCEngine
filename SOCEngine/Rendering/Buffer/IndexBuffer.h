@@ -14,6 +14,7 @@ namespace Rendering
 
 		public:
 			bool Create(const WORD* sysMem, unsigned int byteWidth);
+			void UpdateBuffer();
 		};
 	}
 }

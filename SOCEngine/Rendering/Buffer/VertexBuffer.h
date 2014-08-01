@@ -14,6 +14,7 @@ namespace Rendering
 
 		public:
 			bool Create(const void* sysMem, unsigned int byteWidth, bool isDynamic);
+			void UpdateBuffer();
 		};
 	}
 }

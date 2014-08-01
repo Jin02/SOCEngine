@@ -12,11 +12,14 @@ namespace Rendering
 			ID3D11PixelShader* _shader;
 
 		public:
-			PixelShader();
+			PixelShader(ID3DBlob* blob);
 			~PixelShader(void);
 
 		public:
-			bool Create();
+			bool CreateShader();
+
+			virtual void Begin();
+			virtual void End();
 		};
 	}
 }
