@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "ConstBuffer.h"
 
 namespace Rendering
 {
@@ -19,8 +20,7 @@ namespace Rendering
 		public:
 			bool CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count);
 
-			virtual void Begin();
-			virtual void End();
+			void UpdateShader(const std::vector<BufferType>& constBuffers, const std::vector<TextureType>& textures);
 		};
 	}
 }

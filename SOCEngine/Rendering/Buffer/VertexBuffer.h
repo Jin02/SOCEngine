@@ -8,12 +8,15 @@ namespace Rendering
 	{
 		class VertexBuffer : public BaseBuffer
 		{
+		private:
+			unsigned int _stride;
+
 		public:
 			VertexBuffer();
 			~VertexBuffer();
 
 		public:
-			bool Create(const void* sysMem, unsigned int byteWidth, bool isDynamic);
+			bool Create(const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic);
 			void UpdateBuffer();
 		};
 	}

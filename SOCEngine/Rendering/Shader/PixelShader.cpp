@@ -29,14 +29,23 @@ bool PixelShader::CreateShader()
 	return true;
 }
 
-void PixelShader::Begin()
+void PixelShader::UpdateShader(const std::vector<BufferType>& constBuffers, const std::vector<TextureType>& textures, const SamplerType& sampler)
 {
 	ID3D11DeviceContext* context;
 	context->PSSetShader(_shader, nullptr, 0);
-}
 
-void PixelShader::End()
-{
-	ID3D11DeviceContext* context;
-	context->PSSetShader(nullptr, nullptr, 0);
+	for(auto iter = constBuffers.begin(); iter != constBuffers.end(); ++iter)
+	{
+		ID3D11Buffer* buffer = (*iter).second->GetBuffer();
+		context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
+	}
+
+	for(auto iter = textures.begin(); iter != textures.end(); ++iter)
+	{
+		ID3D11ShaderResourceView* srv = (*iter).second->GetShaderResourceView();
+		context->PSSetShaderResources( (*iter).first, 1, &srv );
+	}
+
+	ID3D11SamplerState* samplerState = sampler.second->GetSampler();
+	context->PSSetSamplers(sampler.first, 1, &samplerState);
 }

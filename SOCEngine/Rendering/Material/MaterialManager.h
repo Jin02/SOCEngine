@@ -1,15 +1,17 @@
 #pragma once
 
-//
-//#include "Material.h"
-//
-//namespace Rendering
-//{
-//	namespace Material
-//	{
-//		class MaterialManager : public Dictionary<Material>
-//		{
-//		};
-//
-//	}
-//}
+#include "Material.h"
+#include "Structure.h"
+
+namespace Rendering
+{
+	namespace Material
+	{
+		class MaterialManager : public Structure::HashMap<Material>
+		{
+		public:
+			MaterialManager() : Structure::HashMap<Material>(){}
+			~MaterialManager(){}
+		};
+	}
+}

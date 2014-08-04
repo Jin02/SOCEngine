@@ -13,33 +13,16 @@ namespace Rendering
 		private:
 			Shader::VertexShader*	_vertexShader;
 			Shader::PixelShader*	_pixelShader;
+			std::string	_name;
 
 		public:
-			Material() : _vertexShader(nullptr), _pixelShader(nullptr)
-			{
-			}
-
-			~Material(void)
-			{
-			}
+			Material(const std::string& name, Shader::VertexShader* vertexShader, Shader::PixelShader* pixelShader);
+			~Material(void);
 
 		public:
-			void Begin()
-			{
-				_vertexShader->Begin();
-				_pixelShader->Begin();
-			}
-
-			//꼭 호출이 필수는 아님.
-			void End()
-			{
-				_vertexShader->End();
-				_pixelShader->End();
-			}
-
-		public:
-			GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
-			GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
+			GET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
+			GET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
+			GET_ACCESSOR(Name, const std::string&, _name);
 		};
 
 	}

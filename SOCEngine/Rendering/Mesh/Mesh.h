@@ -2,6 +2,7 @@
 
 #include "MeshFilter.h"
 #include "MeshRenderer.h"
+#include "MeshBasicData.h"
 
 namespace Rendering
 {
@@ -14,24 +15,15 @@ namespace Rendering
 			MeshRenderer*		_renderer;
 
 		public:
-			Mesh() : _filter(nullptr), _renderer(nullptr)
-			{
-			}
-
-			~Mesh()
-			{
-			}
+			Mesh();
+			~Mesh();
 
 		public:
-			bool Create()
+			bool Create(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, std::vector<ENGINE_INDEX_TYPE>& indices, Material::Material* material, bool isDynamic);
+			bool Test()
 			{
-				_filter = new MeshFilter;
-				_renderer = new MeshRenderer;
 
 
-				_filter->CreateBuffer(vbData, vbCount, vbSize, indices, indicesCount, dynamicMesh);
-
-				 
 				return true;
 			}
 

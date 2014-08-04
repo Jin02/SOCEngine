@@ -2,6 +2,9 @@
 
 #include <string>
 #include "DirectX.h"
+#include "ConstBuffer.h"
+#include "Texture.h"
+#include <vector>
 
 namespace Rendering
 {
@@ -24,18 +27,12 @@ namespace Rendering
 			Type			_type;
 
 		public:
-			Shader(ID3DBlob* blob) : _blob(blob), _type(Type::Invalid)
-			{
-
-			}
-
-			virtual ~Shader(void)
-			{
-			}
+			Shader(ID3DBlob* blob);
+			virtual ~Shader(void);
 
 		public:
-			virtual void Begin() = 0;
-			virtual void End() = 0;
+			typedef std::pair<int, Rendering::Buffer::ConstBuffer*> BufferType;
+			typedef std::pair<int, Rendering::Texture::Texture*> TextureType;
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);

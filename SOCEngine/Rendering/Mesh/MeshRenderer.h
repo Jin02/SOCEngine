@@ -13,16 +13,11 @@ namespace Rendering
 			Structure::Vector<Material::Material> _materials;
 
 		public:
-			MeshRenderer()
-			{
-			}
-
-			~MeshRenderer()
-			{
-			}
+			MeshRenderer();
+			~MeshRenderer();
 
 		public:
-
+			bool AddMaterial(Material::Material* material, bool copy = false);			void UpdateMaterial();
 		};
 	}
 }

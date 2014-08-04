@@ -3,6 +3,9 @@
 #include "Structure.h"
 #include "Object.h"
 #include "CameraManager.h"
+#include "ShaderManager.h"
+#include "TextureManager.h"
+#include "MaterialManager.h"
 
 namespace Core
 {
@@ -15,8 +18,11 @@ namespace Core
 		State _state;
 
 	protected:
-		Structure::Vector<Core::Object>		_rootObjects;	
-		Rendering::CameraManager*			_cameraMgr;
+		Structure::Vector<Core::Object>			_rootObjects;	
+		Rendering::CameraManager*				_cameraMgr;
+		Rendering::Shader::ShaderManager*		_shaderMgr;
+		Rendering::Texture::TextureManager*		_textureMgr;
+		Rendering::Material::MaterialManager*	_materialMgr;
 
 	public:
 		Scene(void);
@@ -38,5 +44,10 @@ namespace Core
 	public:
 		void NextState();
 		GET_ACCESSOR(State, const State, _state);
+
+		GET_ACCESSOR(CameraManager, Rendering::CameraManager*, _cameraMgr);
+		GET_ACCESSOR(TextureManager, Rendering::Texture::TextureManager*, _textureMgr);
+		GET_ACCESSOR(ShaderManager, Rendering::Shader::ShaderManager*, _shaderMgr);
+		GET_ACCESSOR(MaterialManager, Rendering::Material::MaterialManager*, _materialMgr);
 	};
 }

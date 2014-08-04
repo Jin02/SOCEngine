@@ -5,7 +5,7 @@ using namespace std;
 using namespace Structure;
 using namespace Rendering;
 
-Scene::Scene(void)
+Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr)
 {
 	_state = State::Init;
 }
@@ -18,6 +18,7 @@ Scene::~Scene(void)
 void Scene::Initialize()
 {
 	_cameraMgr = new CameraManager;
+
 
 	NextState();
 	OnInitialize();
@@ -49,6 +50,9 @@ void Scene::Render()
 void Scene::Destroy()
 {
 	SAFE_DELETE(_cameraMgr);
+	SAFE_DELETE(_shaderMgr);
+	SAFE_DELETE(_textureMgr);
+	SAFE_DELETE(_materialMgr);
 
 	OnDestroy();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "Sampler.h"
 
 namespace Rendering
 {
@@ -18,8 +19,8 @@ namespace Rendering
 		public:
 			bool CreateShader();
 
-			virtual void Begin();
-			virtual void End();
+			typedef std::pair<int, const Sampler*> SamplerType;
+			void UpdateShader(const std::vector<BufferType>& constBuffers, const std::vector<TextureType>& textures, const SamplerType& sampler);
 		};
 	}
 }

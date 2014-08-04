@@ -36,16 +36,21 @@ bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations
 	return true;
 }
 
-void VertexShader::Begin()
+void VertexShader::UpdateShader(const std::vector<BufferType>& constBuffers, const std::vector<TextureType>& textures)
 {
 	static ID3D11DeviceContext* context = nullptr;
 	context->IASetInputLayout(_layout);
 	context->VSSetShader(_shader, nullptr, 0);
-}
 
-void VertexShader::End()
-{
-	static ID3D11DeviceContext* context = nullptr;
-	context->IASetInputLayout(nullptr);
-	context->VSSetShader(nullptr, nullptr, 0);
+	for(auto iter = constBuffers.begin(); iter != constBuffers.end(); ++iter)
+	{
+		ID3D11Buffer* buffer = (*iter).second->GetBuffer();
+		context->VSSetConstantBuffers( (*iter).first, 1, &buffer );
+	}
+
+	for(auto iter = textures.begin(); iter != textures.end(); ++iter)
+	{
+		ID3D11ShaderResourceView* srv = (*iter).second->GetShaderResourceView();
+		context->VSSetShaderResources( (*iter).first, 1, &srv );
+	}
 }

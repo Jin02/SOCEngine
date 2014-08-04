@@ -41,6 +41,7 @@
     <ClInclude Include="..\..\Math\Vector3.h" />
     <ClInclude Include="..\..\Math\Vector4.h" />
     <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBuffer.h" />
     <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Camera\Camera.h" />
@@ -55,12 +56,12 @@
     <ClInclude Include="..\..\Rendering\Light\PointLight.h" />
     <ClInclude Include="..\..\Rendering\Light\SpotLight.h" />
     <ClInclude Include="..\..\Rendering\Material\Material.h" />
-    <ClInclude Include="..\..\Rendering\Material\MaterialElements.h" />
     <ClInclude Include="..\..\Rendering\Material\MaterialManager.h" />
     <ClInclude Include="..\..\Rendering\Mesh\Mesh.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshBasicData.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
+    <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\Shader.h" />
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
@@ -68,6 +69,8 @@
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Shader\VertexShader.h" />
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h" />
+    <ClInclude Include="..\..\Rendering\Texture\Texture.h" />
+    <ClInclude Include="..\..\Rendering\Texture\TextureManager.h" />
     <ClInclude Include="..\..\Structure\BaseStructure.h" />
     <ClInclude Include="..\..\Structure\Vector.h" />
     <ClInclude Include="..\..\Structure\HashMap.h" />
@@ -108,6 +111,7 @@
     <ClCompile Include="..\..\Math\Vector3.cpp" />
     <ClCompile Include="..\..\Math\Vector4.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\Camera.cpp" />
@@ -121,11 +125,11 @@
     <ClCompile Include="..\..\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\Rendering\Light\SpotLight.cpp" />
     <ClCompile Include="..\..\Rendering\Material\Material.cpp" />
-    <ClCompile Include="..\..\Rendering\Material\MaterialManager.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshBasicData.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\Shader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
@@ -133,6 +137,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp" />
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp" />
+    <ClCompile Include="..\..\Rendering\Texture\Texture.cpp" />
+    <ClCompile Include="..\..\Rendering\Texture\TextureManager.cpp" />
     <ClCompile Include="..\..\Utility\ResourcesFolder.cpp" />
     <ClCompile Include="Director.cpp" />
     <ClCompile Include="DirectX.cpp" />
@@ -172,7 +178,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>
