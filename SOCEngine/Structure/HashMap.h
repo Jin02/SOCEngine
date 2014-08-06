@@ -67,6 +67,9 @@ namespace Structure
 
 			_hash.clear();
 		}
+
+		inline const std::hash_map<std::string, BaseStructure<Object>::Data>& GetHashMap() const { return _hash;}
+		GET_ACCESSOR(Size, unsigned int, _hash.size());
 	};
 
 }

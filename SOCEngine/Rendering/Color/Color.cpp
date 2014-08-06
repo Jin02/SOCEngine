@@ -176,39 +176,4 @@ namespace Rendering
 
 		return Color(_r,_g,_b,_a);
 	}
-
-	void Color::SetColor(Color &color)
-	{
-		r = color.r;
-		g = color.g;
-		b = color.b;
-		a = color.a;
-		CalculateColor(this);
-	}
-
-	Color& Color::GetColor()
-	{
-		return (*this); 
-	}
-
-	Math::Vector3 Color::GetVector3()
-	{
-		Math::Vector3 color;
-		color.x = r;
-		color.y = g;
-		color.z = b;
-
-		return color;
-	}
-
-	Math::Vector4 Color::GetVector4()
-	{
-		Math::Vector4 color;
-		color.x = r;
-		color.y = g;
-		color.z = b;
-		color.w = a;
-
-		return color;
-	}
 }

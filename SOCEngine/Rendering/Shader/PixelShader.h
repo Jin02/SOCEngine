@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Shader.h"
+#include "BaseShader.h"
 #include "Sampler.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class PixelShader : public Shader
+		class PixelShader : public BaseShader
 		{
 		private:
 			ID3D11PixelShader* _shader;
@@ -20,7 +20,7 @@ namespace Rendering
 			bool CreateShader();
 
 			typedef std::pair<int, const Sampler*> SamplerType;
-			void UpdateShader(const std::vector<BufferType>& constBuffers, const std::vector<TextureType>& textures, const SamplerType& sampler);
+			void UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<const Texture::Texture*>& textures, const SamplerType& sampler);
 		};
 	}
 }

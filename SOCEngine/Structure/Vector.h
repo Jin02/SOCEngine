@@ -84,5 +84,6 @@ namespace Structure
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
+		GET_ACCESSOR(Size, unsigned int, _vector.size());
 	};
 }

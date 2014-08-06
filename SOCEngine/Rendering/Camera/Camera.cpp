@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Director.h"
+#include "TransformPipelineParam.h"
 
 using namespace Math;
 using namespace std;
@@ -44,10 +45,6 @@ namespace Rendering
 		SAFE_DELETE(_frustum);
 	}
 
-	void Camera::Clear(DirectX *dx)
-	{
-	}
-
 	void Camera::CalcAspect()
 	{
 		Size<int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
@@ -70,46 +67,54 @@ namespace Rendering
 
 	void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	{
-		//_owner->GetTransform()->WorldMatrix(outMatrix);
-		//ownerTransform->GetWorldMatrix(outMatrix);
+		Transform* ownerTransform = _owner->GetTransform();
+		ownerTransform->WorldMatrix(outMatrix);
 
-		//Vector3 worldPos = ownerTransform->GetWorldPosition();
+		Vector3 worldPos;
+		ownerTransform->WorldPosition(worldPos);
 
-		//Vector3 p = Vector3(
-		//	-SOCVec3Dot(&ownerTransform->GetRight(), &worldPos),
-		//	-SOCVec3Dot(&ownerTransform->GetUp(), &worldPos),
-		//	-SOCVec3Dot(&ownerTransform->GetForward(), &worldPos));
+		Vector3 p;
+		p.x = -Vector3::Dot(ownerTransform->GetRight(), worldPos);
+		p.y = -Vector3::Dot(ownerTransform->GetUp(), worldPos);
+		p.z = -Vector3::Dot(ownerTransform->GetForward(), worldPos);
 
-		//outMatrix->_41 = p.x;
-		//outMatrix->_42 = p.y;
-		//outMatrix->_43 = p.z;
-		//outMatrix->_44 = 1.0f;
+		outMatrix._41 = p.x;
+		outMatrix._42 = p.y;
+		outMatrix._43 = p.z;
+		outMatrix._44 = 1.0f;
 	}
 
-	void Camera::RenderObjects(std::vector<Object*>::iterator &objectBegin,	std::vector<Object*>::iterator &objectEnd, Light::LightManager* sceneLights)
+	void Camera::Clear(ID3D11DeviceContext* context)
 	{
-		Math::Matrix projMat, viewMat, viewProjMat;
-		ProjectionMatrix(projMat);
-		ViewMatrix(viewMat);
 
-		viewProjMat = viewMat * projMat;
+	}
 
-		//Clear();
-		_frustum->Make(viewProjMat);
+	void Camera::RenderObjects(Device::DirectX* dx, std::vector<Object*>::iterator &objectBegin,	std::vector<Object*>::iterator &objectEnd, Light::LightManager* sceneLights)
+	{
+		ID3D11DeviceContext* context = dx->GetContext();
+		context->ClearRenderTargetView(dx->GetRenderTarget(), _clearColor.color);
+		context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-		//추후 작업.
+		TransformPipelineParam tfParam;
+		ProjectionMatrix(tfParam.projMat);
+		ViewMatrix(tfParam.viewMat);
+
+		tfParam.viewProjMat = tfParam.viewMat * tfParam.projMat;
+		_frustum->Make(tfParam.viewProjMat);
 
 		vector<LightForm*> lights;
-		if( sceneLights->Intersects(lights, _frustum) )
+		//if( sceneLights->Intersects(lights, _frustum) )
 		{
 			//월드 상의 빛에서 절두체에 겹치는거 모두 찾음.
-
 			for(auto iter = objectBegin; iter != objectEnd; ++iter)
 			{
 				(*iter)->Culling(_frustum);
-				(*iter)->Render(lights, viewMat, projMat, viewProjMat);
+				(*iter)->Render(lights, tfParam);
 			}
 		}
+
+		IDXGISwapChain* swapChain = dx->GetSwapChain();
+		swapChain->Present(0, 0);
 	}
 
 	void Camera::Render(const Structure::Vector<Core::Object>& objects, Light::LightManager* sceneLights)

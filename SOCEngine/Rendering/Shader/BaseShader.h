@@ -12,7 +12,7 @@ namespace Rendering
 	{
 		typedef std::string ShaderCode;
 
-		class Shader
+		class BaseShader
 		{
 		public:
 			enum Type
@@ -27,12 +27,11 @@ namespace Rendering
 			Type			_type;
 
 		public:
-			Shader(ID3DBlob* blob);
-			virtual ~Shader(void);
+			BaseShader(ID3DBlob* blob);
+			virtual ~BaseShader(void);
 
 		public:
 			typedef std::pair<int, Rendering::Buffer::ConstBuffer*> BufferType;
-			typedef std::pair<int, Rendering::Texture::Texture*> TextureType;
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);

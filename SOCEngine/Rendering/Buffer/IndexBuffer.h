@@ -14,7 +14,7 @@ namespace Rendering
 
 		public:
 			bool Create(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth);
-			void UpdateBuffer();
+			void UpdateBuffer(ID3D11DeviceContext* context);
 		};
 	}
 }

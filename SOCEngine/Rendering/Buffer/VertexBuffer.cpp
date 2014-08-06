@@ -20,9 +20,8 @@ bool VertexBuffer::Create( const void* sysMem, unsigned int bufferSize, unsigned
 		sysMem, bufferSize * count);
 }
 
-void VertexBuffer::UpdateBuffer()
+void VertexBuffer::UpdateBuffer(ID3D11DeviceContext* context)
 {
-	ID3D11DeviceContext* context;
 	unsigned int offset = 0;
 	context->IASetVertexBuffers(0, 1, &_buffer, &_stride, &offset); 
 }

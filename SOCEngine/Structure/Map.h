@@ -68,5 +68,8 @@ namespace Structure
 
 			_map.clear();
 		}
+
+		inline const std::map<std::string, BaseStructure<Object>::Data>& GetMap() const { return _map; }
+		GET_ACCESSOR(Size, unsigned int, _map.size());
 	};
 }

@@ -158,9 +158,6 @@
     <ClInclude Include="..\..\Core\Layer\LayerManager.h">
       <Filter>Core\Layer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Core\Transform\TransformParameters.h">
-      <Filter>Core\Transform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Core\Transform\Transform.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
@@ -293,9 +290,6 @@
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Rendering\Shader\Shader.h">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rendering\Shader\VertexShader.h">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
@@ -335,6 +329,15 @@
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h">
       <Filter>Rendering\Sampler</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\BaseShader.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Director.cpp">
@@ -357,9 +360,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Layer\LayerManager.cpp">
       <Filter>Core\Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Core\Transform\TransformParameters.cpp">
-      <Filter>Core\Transform</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
@@ -460,9 +460,6 @@
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
       <Filter>Rendering\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rendering\Shader\Shader.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp">
       <Filter>Rendering\Shader</Filter>
     </ClCompile>
@@ -495,6 +492,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp">
       <Filter>Rendering\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp">
+      <Filter>Rendering\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

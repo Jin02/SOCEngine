@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "Light.h"
 #include "Frustum.h"
+#include "TransformPipelineParam.h"
 
 namespace Core
 {
@@ -32,10 +33,7 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void Render(
-			const std::vector<Rendering::Light::LightForm*>& lights,
-			const Math::Matrix& viewMat, const Math::Matrix& projMat,
-			const Math::Matrix& viewProjMat);
+		void Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 

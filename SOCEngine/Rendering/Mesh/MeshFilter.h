@@ -32,7 +32,7 @@ namespace Rendering
 
 		public:
 			bool CreateBuffer(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, const std::vector<ENGINE_INDEX_TYPE>& indices, bool isDynamic);
-			void UpdateBuffer();
+			void UpdateBuffer(ID3D11DeviceContext* context);
 		};
 	}
 }

@@ -70,11 +70,9 @@ namespace Core
 			(*iter)->Update(delta);
 	}
 
-	void Object::Render(const std::vector<Rendering::Light::LightForm*>& lights,
-						const Math::Matrix& viewMat, const Math::Matrix& projMat,
-						const Math::Matrix& viewProjMat)
+	void Object::Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam)
 	{
-		if(_culled)	return;
+//		if(_culled)	return;
 
 		Vector3 wp;
 		_transform->WorldPosition(wp);
@@ -87,26 +85,18 @@ namespace Core
 			if((*iter)->Intersects(thisObject))
 				intersectLights.push_back((*iter));
 		}
+
+		_transform->WorldMatrix(transformParam.worldMat);
+		transformParam.worldViewProjMat = transformParam.worldMat * transformParam.viewProjMat;
 		
-		Matrix worldMat, worldViewProjMat;
-
-		_transform->WorldMatrix(worldMat);
-		worldViewProjMat = worldMat * viewProjMat;
-
-		Matrix worldViewInvTns;
-		worldViewInvTns = worldMat * viewMat;
-		worldViewInvTns.Inverse();
-		worldViewInvTns.Transpose();
-
-		TransformParameters transformParam(&worldMat, &viewMat, &projMat, &viewProjMat, &worldViewProjMat, &worldViewInvTns);
-
+		const Math::Matrix& viewMat = transformParam.viewMat;
 		Vector4 viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
-			(*iter)->Render(&transformParam, &intersectLights, viewPos);
+			(*iter)->Render(transformParam, &intersectLights, viewPos);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, viewMat, projMat, viewProjMat);
+			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, transformParam);
 	}
 
 	bool Object::Intersects(Intersection::Sphere &sphere)

@@ -169,7 +169,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-Shader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	std::string fileName, mainFunc;
 
@@ -177,7 +177,7 @@ Shader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std
 		return nullptr;
 
 	std::string fullCommand = fileName+":vs:"+mainFunc;
-	Shader* shader = _shaders.Find(fullCommand);
+	BaseShader* shader = _shaders.Find(fullCommand);
 
 	if(shader == nullptr)
 	{
@@ -193,7 +193,7 @@ Shader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std
 	return shader;
 }
 
-Shader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode)
+BaseShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode)
 {
 	std::string fileName, mainFunc;
 
@@ -201,7 +201,7 @@ Shader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std:
 		return nullptr;
 
 	std::string fullCommand = fileName+":ps:"+mainFunc;
-	Shader* shader = _shaders.Find(fullCommand);
+	BaseShader* shader = _shaders.Find(fullCommand);
 
 	if(shader == nullptr)
 	{

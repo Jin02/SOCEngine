@@ -18,9 +18,8 @@ namespace Rendering
 				return BaseBuffer::Create(D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DEFAULT, nullptr, size);
 			}
 
-			void UpdateSubresource(const void* data)
+			void UpdateSubresource(ID3D11DeviceContext* context, const void* data)
 			{
-				ID3D11DeviceContext* context;
 				context->UpdateSubresource(_buffer, 0, nullptr, data, 0, 0);
 			}
 		};

@@ -14,7 +14,7 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Structure::HashMap<Shader> _shaders;
+			Structure::HashMap<BaseShader> _shaders;
 			Structure::HashMap<ShaderCode> _shaderCodes;
 
 		public:
@@ -35,8 +35,8 @@ namespace Rendering
 
 		public:
 			//declation을 직접 입력하는 방식
-			Shader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
-			Shader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
+			BaseShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			BaseShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
 
 		public:
 			void RemoveAllShaderCode();

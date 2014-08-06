@@ -17,7 +17,7 @@ namespace Rendering
 
 		public:
 			bool Create(const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic);
-			void UpdateBuffer();
+			void UpdateBuffer(ID3D11DeviceContext* context);
 		};
 	}
 }

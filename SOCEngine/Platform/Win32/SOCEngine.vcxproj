@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\Core\Tag\TagManager.h" />
     <ClInclude Include="..\..\Core\Time\Timer.h" />
     <ClInclude Include="..\..\Core\Transform\Transform.h" />
-    <ClInclude Include="..\..\Core\Transform\TransformParameters.h" />
+    <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h" />
     <ClInclude Include="..\..\Intersection\AABB.h" />
     <ClInclude Include="..\..\Intersection\Cone.h" />
     <ClInclude Include="..\..\Intersection\Intersection.h" />
@@ -42,6 +42,7 @@
     <ClInclude Include="..\..\Math\Vector4.h" />
     <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h" />
     <ClInclude Include="..\..\Rendering\Buffer\ConstBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h" />
     <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Camera\Camera.h" />
@@ -63,7 +64,7 @@
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
-    <ClInclude Include="..\..\Rendering\Shader\Shader.h" />
+    <ClInclude Include="..\..\Rendering\Shader\BaseShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -98,7 +99,6 @@
     <ClCompile Include="..\..\Core\Tag\TagManager.cpp" />
     <ClCompile Include="..\..\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\Core\Transform\Transform.cpp" />
-    <ClCompile Include="..\..\Core\Transform\TransformParameters.cpp" />
     <ClCompile Include="..\..\Intersection\AABB.cpp" />
     <ClCompile Include="..\..\Intersection\Cone.cpp" />
     <ClCompile Include="..\..\Intersection\Ray.cpp" />
@@ -112,6 +112,7 @@
     <ClCompile Include="..\..\Math\Vector4.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\ConstBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\Camera.cpp" />
@@ -131,7 +132,7 @@
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
-    <ClCompile Include="..\..\Rendering\Shader\Shader.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
