@@ -25,7 +25,7 @@ bool MeshFilter::CreateBuffer(const std::vector<const void*>& vbDatas, unsigned 
 	_numOfVertex = vbDatas.size();
 
 	_vertexBuffer = new Buffer::VertexBuffer;
-	if( _vertexBuffer->Create(vbDatas.data(), _numOfVertex, vertexBufferSize, isDynamic) == false )
+	if( _vertexBuffer->Create(vbDatas.data(), vertexBufferSize, _numOfVertex, isDynamic) == false )
 		return false;
 
 	_indexBuffer = new Buffer::IndexBuffer;

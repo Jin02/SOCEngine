@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Director.h"
 
 using namespace Core;
 using namespace std;
@@ -17,8 +18,11 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_cameraMgr = new CameraManager;
-
+	_cameraMgr		= new CameraManager;
+	_shaderMgr		= new Shader::ShaderManager;
+	_textureMgr		= new Texture::TextureManager;
+	_materialMgr	= new Material::MaterialManager;
+	_constBufferMgr = new Buffer::ConstBufferManager;
 
 	NextState();
 	OnInitialize();
@@ -42,7 +46,7 @@ void Scene::Render()
 
 	OnRenderPreview();
 
-	mainCam->Render(_rootObjects, nullptr);
+	mainCam->Render(_rootObjects);
 		
 	OnRenderPost();
 }

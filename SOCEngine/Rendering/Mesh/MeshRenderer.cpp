@@ -8,7 +8,7 @@ namespace Rendering
 	MeshRenderer::MeshRenderer() : _optionalVertexShaderConstBuffers(nullptr),
 		_vertexShaderUsingTextures(nullptr), _pixelShaderUsingConstBuffer(nullptr)
 	{
-		_usingMatrix = UsingTransformMatrix::AllCalculate;
+		_usingMatrix = UsingTransformMatrix::OneByOne;
 		_vertexShaderConstBufferUpdateType = VertexShaderConstBufferUpdateType::Add;
 	}
 

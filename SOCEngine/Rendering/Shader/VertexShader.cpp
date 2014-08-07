@@ -30,10 +30,9 @@ namespace Rendering
 		hr = device->CreateInputLayout(vertexDeclations, count,
 			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
+		_blob->Release();
 		if( FAILED( hr ) )
 			return false;
-
-		_blob->Release();
 
 		return true;
 	}

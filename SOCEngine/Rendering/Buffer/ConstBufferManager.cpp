@@ -29,6 +29,7 @@ ConstBuffer* ConstBufferManager::AddBuffer(const std::string& key, unsigned int 
 		SAFE_DELETE(cb);
 		return nullptr;
 	}
+	_hash.Add(key,cb);
 
 	return cb;
 }

@@ -22,13 +22,18 @@ bool BaseBuffer::Create(unsigned int bindFlags, D3D11_USAGE usage, const void* s
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = sysMem;
-	initData.SysMemPitch = 0;
-	initData.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA* initData = nullptr;
+	if(bindFlags == D3D11_BIND_INDEX_BUFFER || bindFlags == D3D11_BIND_VERTEX_BUFFER)
+	{
+		D3D11_SUBRESOURCE_DATA data;
+		initData = &data;
+
+		memset(&data, 0, sizeof(D3D11_SUBRESOURCE_DATA));
+		data.pSysMem = sysMem;
+	}
 
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&bufferDesc, &initData, &_buffer);
+	HRESULT hr = device->CreateBuffer(&bufferDesc, initData, &_buffer);
 	if( FAILED( hr ) )
 		return false;
 

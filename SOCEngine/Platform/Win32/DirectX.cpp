@@ -17,22 +17,22 @@ DirectX::~DirectX(void)
 
 bool DirectX::CreateRasterize()
 {
-	D3D11_RASTERIZER_DESC rsState;
-	rsState.FillMode = D3D11_FILL_SOLID;
-	rsState.CullMode = D3D11_CULL_BACK;
-	rsState.FrontCounterClockwise = true;
-	rsState.DepthBias = 0;
-	rsState.DepthBiasClamp = 0;
-	rsState.SlopeScaledDepthBias = 0;
-	rsState.DepthClipEnable = false;
-	rsState.ScissorEnable = false;
-	rsState.MultisampleEnable = _multiSample > 1;
-	rsState.AntialiasedLineEnable = false;
+	//D3D11_RASTERIZER_DESC rsState;
+	//rsState.FillMode = D3D11_FILL_SOLID;
+	//rsState.CullMode = D3D11_CULL_BACK;
+	//rsState.FrontCounterClockwise = true;
+	//rsState.DepthBias = 0;
+	//rsState.DepthBiasClamp = 0;
+	//rsState.SlopeScaledDepthBias = 0;
+	//rsState.DepthClipEnable = false;
+	//rsState.ScissorEnable = false;
+	//rsState.MultisampleEnable = _multiSample > 1;
+	//rsState.AntialiasedLineEnable = false;
 
-	if( FAILED(_device->CreateRasterizerState(&rsState, &_rasterizerState)) )
-		return false;
+	//if( FAILED(_device->CreateRasterizerState(&rsState, &_rasterizerState)) )
+	//	return false;
 
-	_immediateContext->RSSetState( _rasterizerState );
+	//_immediateContext->RSSetState( _rasterizerState );
 	return true;
 }
 
@@ -46,10 +46,10 @@ bool DirectX::CreateRenderTargetView()
 		return false;
 
 	hr = _device->CreateRenderTargetView( backBuffer, nullptr, &_renderTargetView );
+	backBuffer->Release();
+
 	if( FAILED(hr) )
 		return false;
-
-	backBuffer->Release();
 
 	return true;
 }
@@ -103,18 +103,18 @@ D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 	if( FAILED(hr) )
 		return false;
 
-	D3D11_DEPTH_STENCIL_DESC dsState;
-	memset(&dsState, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
-	dsState.DepthEnable = true;
-	dsState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsState.DepthFunc = D3D11_COMPARISON_LESS;
-	dsState.StencilEnable = false;
+	//D3D11_DEPTH_STENCIL_DESC dsState;
+	//memset(&dsState, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	//dsState.DepthEnable = true;
+	//dsState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	//dsState.DepthFunc = D3D11_COMPARISON_LESS;
+	//dsState.StencilEnable = false;
 
-	ID3D11DepthStencilState* depthStencilState = nullptr;
-	if( FAILED(_device->CreateDepthStencilState( &dsState, &depthStencilState)) )
-		return false;
+	//ID3D11DepthStencilState* depthStencilState = nullptr;
+	//if( FAILED(_device->CreateDepthStencilState( &dsState, &depthStencilState)) )
+	//	return false;
 
-	_immediateContext->OMSetDepthStencilState(depthStencilState, 0);
+	//_immediateContext->OMSetDepthStencilState(depthStencilState, 0);
 
 	return true;
 }
@@ -137,8 +137,8 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win)
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.OutputWindow = win->GetHandle();
 	sd.Windowed = win->GetIsWindowMode();
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	//sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	//sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	//msaa
 	sd.SampleDesc.Count = 1;
@@ -228,6 +228,7 @@ bool DirectX::InitDevice(const Win32* win)
 		return false;
 
 	_immediateContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+	_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	CreateViewport(win->GetSize());
 

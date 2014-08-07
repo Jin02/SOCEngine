@@ -4,6 +4,9 @@
 
 class TestScene : public Core::Scene
 {
+private:
+	Core::Transform* _test;
+
 public:
 	TestScene(void);
 	~TestScene(void);

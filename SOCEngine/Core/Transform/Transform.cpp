@@ -220,17 +220,16 @@ namespace Core
 
 	void Transform::UpdateMatrix()
 	{
-		Matrix matrix;
-		Matrix::RotationQuaternion(matrix, _rotation);
+		Matrix::RotationQuaternion(_matrix, _rotation);
 
-		matrix._11 *= _localScale.x;
-		matrix._22 *= _localScale.y;
-		matrix._33 *= _localScale.z;
+		_matrix._11 *= _localScale.x;
+		_matrix._22 *= _localScale.y;
+		_matrix._33 *= _localScale.z;
 
-		matrix._41 = _localPosition.x;
-		matrix._42 = _localPosition.y;
-		matrix._43 = _localPosition.z;
-		matrix._44 = 1.0f;
+		_matrix._41 = _localPosition.x;
+		_matrix._42 = _localPosition.y;
+		_matrix._43 = _localPosition.z;
+		_matrix._44 = 1.0f;
 	}
 
 	void Transform::WorldPosition(Math::Vector3& outPosition)

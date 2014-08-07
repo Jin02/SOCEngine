@@ -28,9 +28,8 @@ namespace Structure
 			data.first = copy;
 			data.second = copy ? new Object((*object)) : object;
 
-			Type type;
-			type.first = key;
-			type.second = data;
+			out.first = key;
+			out.second = data;
 		}
 
 	public:

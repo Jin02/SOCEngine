@@ -51,7 +51,10 @@ namespace Rendering
 			context->PSSetShaderResources( index, 1, &srv );
 		}
 
-		ID3D11SamplerState* samplerState = sampler.second->GetSampler();
-		context->PSSetSamplers(sampler.first, 1, &samplerState);
+		if(sampler.second)
+		{
+			ID3D11SamplerState* samplerState = sampler.second->GetSampler();
+			context->PSSetSamplers(sampler.first, 1, &samplerState);
+		}
 	}
 }

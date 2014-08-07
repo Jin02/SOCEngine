@@ -89,7 +89,7 @@ namespace Rendering
 
 	}
 
-	void Camera::RenderObjects(Device::DirectX* dx, std::vector<Object*>::iterator &objectBegin,	std::vector<Object*>::iterator &objectEnd, Light::LightManager* sceneLights)
+	void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects)
 	{
 		ID3D11DeviceContext* context = dx->GetContext();
 		context->ClearRenderTargetView(dx->GetRenderTarget(), _clearColor.color);
@@ -105,11 +105,11 @@ namespace Rendering
 		vector<LightForm*> lights;
 		//if( sceneLights->Intersects(lights, _frustum) )
 		{
-			//월드 상의 빛에서 절두체에 겹치는거 모두 찾음.
-			for(auto iter = objectBegin; iter != objectEnd; ++iter)
-			{
-				(*iter)->Culling(_frustum);
-				(*iter)->Render(lights, tfParam);
+			auto& dataInobjects = objects.GetVector();
+			for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+			{				
+				GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
+				GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, tfParam);
 			}
 		}
 
@@ -117,9 +117,10 @@ namespace Rendering
 		swapChain->Present(0, 0);
 	}
 
-	void Camera::Render(const Structure::Vector<Core::Object>& objects, Light::LightManager* sceneLights)
+	void Camera::Render(const Structure::Vector<Core::Object>& objects)
 	{
-
+		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		RenderObjects(dx, objects);
 	}
 
 }
