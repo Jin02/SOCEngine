@@ -1,11 +1,12 @@
 #include "Scene.h"
+#include "Director.h"
 
 using namespace Core;
 using namespace std;
 using namespace Structure;
 using namespace Rendering;
 
-Scene::Scene(void)
+Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr), _constBufferMgr(nullptr), _sampler(nullptr)
 {
 	_state = State::Init;
 }
@@ -17,7 +18,11 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_cameraMgr = new CameraManager;
+	_cameraMgr		= new CameraManager;
+	_shaderMgr		= new Shader::ShaderManager;
+	_textureMgr		= new Texture::TextureManager;
+	_materialMgr	= new Material::MaterialManager;
+	_constBufferMgr = new Buffer::ConstBufferManager;
 
 	NextState();
 	OnInitialize();
@@ -41,7 +46,7 @@ void Scene::Render()
 
 	OnRenderPreview();
 
-	mainCam->Render(_rootObjects, nullptr);
+	mainCam->Render(_rootObjects);
 		
 	OnRenderPost();
 }
@@ -49,7 +54,11 @@ void Scene::Render()
 void Scene::Destroy()
 {
 	SAFE_DELETE(_cameraMgr);
-
+	SAFE_DELETE(_shaderMgr);
+	SAFE_DELETE(_textureMgr);
+	SAFE_DELETE(_materialMgr);
+	SAFE_DELETE(_constBufferMgr);
+ 
 	OnDestroy();
 }
 

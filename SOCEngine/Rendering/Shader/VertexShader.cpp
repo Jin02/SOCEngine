@@ -1,39 +1,64 @@
 #include "VertexShader.h"
 #include "Director.h"
 
-using namespace Rendering::Shader;
-
-VertexShader::VertexShader() : Shader(), _shader(nullptr), _layout(nullptr)
+namespace Rendering
 {
-	_type = Type::Vertex;
-}
+	using namespace Shader;
 
-VertexShader::~VertexShader(void)
-{
-}
+	VertexShader::VertexShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr), _layout(nullptr)
+	{
+		_type = Type::Vertex;
+	}
 
-bool VertexShader::Create(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count)
-{
-	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+	VertexShader::~VertexShader(void)
+	{
+		SAFE_RELEASE(_shader);
+	}
 
-	HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
+	bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count)
+	{
+		if(_blob == nullptr)
+			return false;
 
-	if( FAILED( hr ) )
-		return false;
+		ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
 
-	hr = device->CreateInputLayout(vertexDeclations, count,
-		_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
+		HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
 
-	if( FAILED( hr ) )
-		return false;
+		if( FAILED( hr ) )
+			return false;
 
-	_blob->Release();
+		hr = device->CreateInputLayout(vertexDeclations, count,
+			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
-	//ID3D11DeviceContext *context 
-	//	= Device::Director::GetInstance()->GetDirectX()->GetContext();
+		_blob->Release();
+		if( FAILED( hr ) )
+			return false;
 
-	//context->IASetInputLayout( _layout );
+		return true;
+	}
 
+	void VertexShader::UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<const Texture::Texture*>* textures)
+	{
+		context->IASetInputLayout(_layout);
+		context->VSSetShader(_shader, nullptr, 0);
 
-	return true;
+		if(constBuffers)
+		{
+			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
+			{
+				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
+				context->VSSetConstantBuffers( (*iter).first, 1, &buffer );
+			}
+		}
+
+		if(textures)
+		{
+			unsigned int index = 0;
+			for(auto iter = textures->begin(); iter != textures->end(); ++iter, ++index)
+			{
+				ID3D11ShaderResourceView* srv = (*iter)->GetShaderResourceView();
+				context->VSSetShaderResources( index, 1, &srv );
+			}
+		}
+	}
 }

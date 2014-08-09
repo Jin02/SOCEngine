@@ -14,66 +14,35 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Structure::HashMap<Shader> _shaders;
+			Structure::HashMap<BaseShader> _shaders;
 			Structure::HashMap<ShaderCode> _shaderCodes;
 
 		public:
-			ShaderManager()
-			{
-			}
-
-			~ShaderManager(void)
-			{
-			}
+			ShaderManager();
+			~ShaderManager(void);
 
 		public:
-			bool Test(const std::string& folderPath, const std::string& command, bool recycle)
-			{
-				std::vector<std::string> commands;
-				Utility::Tokenize(command, commands, ":");
+			static bool CompileFromMemory(ID3DBlob** outBlob, const std::string &shaderCode, const std::string& shaderModel, const std::string& funcName);
+			static bool CompileFromFile(ID3DBlob** outBlob, const std::string &fileName, const std::string& shaderModel, const std::string& funcName);
 
-				if(commands.size() != 3)
-					return false;
+		private:
+			bool LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode);
+			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode);
+			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode);
 
-				std::string fileName	= commands[0];
-				std::string shaderType	= commands[1];
-				std::string mainFunc	= commands[2];
+			bool CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc);
+			bool CommandValidator(const std::string& partlyCommand, const std::string& shaderType, std::string* outFileName, std::string* outMainFunc);
 
-				std::string code;
+		public:
+			//declation을 직접 입력하는 방식
+			BaseShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			BaseShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
 
-				if(recycle)
-				{
-					std::ifstream file;
-					const char* extension[2] = {".fx", ".hlsl"};
-					for(int i=0; i<2; ++i)
-					{
-						file.open(folderPath+fileName+extension[i]);
-
-						if(file.is_open())
-							break;
-					}
-
-					if(file.good() == false)
-					{
-						file.close();
-						return false;
-					}
-
-					std::string buff;
-
-					while(std::getline(file, buff))
-					{
-						code += buff;
-						code += "\n";
-					}
-				}
-
-				ID3DBlob* blob;
-				Rendering::Shader::Shader::CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc);
-
-				return true;
-			}
+		public:
+			void RemoveAllShaderCode();
+			void RemoveAllShader();
+			void RemoveShaderCode(const std::string& command);
+			void RemoveShader(const std::string& command);
 		};
-
 	}
 }

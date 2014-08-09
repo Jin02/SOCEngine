@@ -202,7 +202,7 @@ namespace Math
 
 	float Vector3::Length(const Vector3& a)
 	{
-		return sqrtf((a.x * a.x) + (a.y + a.y) + (a.z * a.z));
+		return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 	}
 
 	Vector3 Vector3::Normalize(const Vector3& value)

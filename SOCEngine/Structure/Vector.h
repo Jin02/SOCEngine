@@ -28,9 +28,8 @@ namespace Structure
 			data.first = copy;
 			data.second = copy ? new Object((*object)) : object;
 
-			Type type;
-			type.first = key;
-			type.second = data;
+			out.first = key;
+			out.second = data;
 		}
 
 	public:
@@ -84,5 +83,6 @@ namespace Structure
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
+		GET_ACCESSOR(Size, unsigned int, _vector.size());
 	};
 }

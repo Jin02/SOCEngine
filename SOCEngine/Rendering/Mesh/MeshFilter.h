@@ -27,44 +27,13 @@ namespace Rendering
 			unsigned int _numOfVertex;
 
 		public:
-			MeshFilter() : _vertexBuffer(nullptr), _indexBuffer(nullptr)
-			{
-				_alloc = false;
-				_numOfVertex = 0;
-			}
-
-			~MeshFilter()
-			{
-				if(_alloc == false)
-					return;
-
-				SAFE_DELETE(_vertexBuffer);
-				SAFE_DELETE(_indexBuffer);
-			}
+			MeshFilter();
+			~MeshFilter();
 
 		public:
-			bool CreateBuffer(
-				const void* vertexBufferDatas,
-				unsigned int vertexBufferCount, 
-				unsigned int vertexBufferSize,
-				const WORD* indices, unsigned int indexCount,
-				bool isDynamic)
-			{
-				if(vertexBufferDatas == nullptr)
-					return false;
-
-				_numOfVertex = vertexBufferCount;
-
-				_vertexBuffer = new Buffer::VertexBuffer;
-				if( _vertexBuffer->Create(vertexBufferDatas, vertexBufferCount * vertexBufferSize, isDynamic) == false )
-					return false;
-
-				_indexBuffer = new Buffer::IndexBuffer;
-				if( _indexBuffer->Create(indices, sizeof(WORD) * indexCount) == false )
-					return false;
-
-				return true;
-			}
+			bool CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic);
+			void UpdateBuffer(ID3D11DeviceContext* context);
 		};
 	}
 }

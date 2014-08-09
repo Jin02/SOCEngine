@@ -38,9 +38,9 @@ namespace Rendering
 		~Camera(void);
 
 	private:
+		void Clear(ID3D11DeviceContext* context);
 		void CalcAspect();
-		void Clear(Device::DirectX *dx);
-		void RenderObjects(std::vector<Core::Object*>::iterator &objectBegin,	std::vector<Core::Object*>::iterator &objectEnd,	Light::LightManager* sceneLights);
+		void RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects);
 
 	public:
 		void ProjectionMatrix(Math::Matrix &outMatrix);
@@ -48,7 +48,7 @@ namespace Rendering
 
 	public:
 		//static void SceneUpdate(float dt, std::vector<Object*> *sceneObjects);
-		void Render( const Structure::Vector<Core::Object>& objects, Light::LightManager* sceneLights);
+		void Render( const Structure::Vector<Core::Object>& objects);
 
 	public:
 		virtual void Initialize();

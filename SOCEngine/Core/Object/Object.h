@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "Light.h"
 #include "Frustum.h"
+#include "TransformPipelineParam.h"
 
 namespace Core
 {
@@ -32,10 +33,7 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void Render(
-			const std::vector<Rendering::Light::LightForm*>& lights,
-			const Math::Matrix& viewMat, const Math::Matrix& projMat,
-			const Math::Matrix& viewProjMat);
+		void Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 
@@ -45,14 +43,14 @@ namespace Core
 		template<typename ComponentType>
 		ComponentType* AddComponent()
 		{
-			if( ComponentType::ComponentType < Component::Type::User )
+			if( ComponentType::GetComponentType() < Component::Type::User )
 			{
 				typename std::vector<Component*>::iterator iter;
-				for(iter = components.begin(); iter != components.end(); ++iter)
+				for(iter = _components.begin(); iter != _components.end(); ++iter)
 				{
 					ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
 
-					if( compareComponent->ComponentType == ComponentType::ComponentType )
+					if( compareComponent->GetComponentType() == ComponentType::GetComponentType() )
 						return compareComponent;
 				}
 			}
@@ -60,12 +58,12 @@ namespace Core
 			ComponentType *compo = new ComponentType;
 			compo->SetOwner(this);
 
-			if(compo->ComponentType == Component::Type::Mesh)
-				hasMesh = true;
+			if(compo->GetComponentType() == Component::Type::Mesh)
+				_hasMesh = true;
 
 			//오직 유저 컴포넌트만 중복 가능
 			compo->Initialize();
-			components.push_back(compo);
+			_components.push_back(compo);
 
 			return compo;
 		}
@@ -74,11 +72,11 @@ namespace Core
 		ComponentType* GetComponent()
 		{
 			typename std::vector<Component*>::iterator iter;
-			for(iter = components.begin(); iter != components.end(); ++iter)
+			for(iter = _components.begin(); iter != _components.end(); ++iter)
 			{
 				ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
 
-				if(compareComponent->ComponentType == ComponentType::ComponentType)
+				if(compareComponent->GetComponentType() == ComponentType::GetComponentType())
 					return compareComponent;
 			}
 
@@ -86,13 +84,15 @@ namespace Core
 		}
 
 		template<class ComponentType>
-		std::vector<ComponentType*> GetComponents()
+		std::vector<Component*> GetComponents()
 		{
 			std::vector<Component*> v;
 			typename std::vector<Component*>::iterator iter;
-			for(iter = components.begin(); iter != components.end(); ++iter)
+			for(iter = _components.begin(); iter != _components.end(); ++iter)
 			{
-				if((*iter)->ComponentType == ComponentType::ComponentType)
+				ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
+
+				if(compareComponent->GetComponentType() == ComponentType::GetComponentType())
 					v.push_back((*iter));
 			}
 

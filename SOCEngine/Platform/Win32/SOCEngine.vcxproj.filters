@@ -129,6 +129,9 @@
     <Filter Include="Rendering\Buffer\Const">
       <UniqueIdentifier>{5c662be9-b4ec-48ba-b4a5-07afec60f564}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Sampler">
+      <UniqueIdentifier>{6731c20f-0e30-44a7-9ab4-ad96d062b317}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Director.h">
@@ -154,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\Layer\LayerManager.h">
       <Filter>Core\Layer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Core\Transform\TransformParameters.h">
-      <Filter>Core\Transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Core\Transform\Transform.h">
       <Filter>Core\Transform</Filter>
@@ -287,9 +287,6 @@
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Rendering\Shader\Shader.h">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rendering\Shader\VertexShader.h">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
@@ -307,6 +304,36 @@
     </ClInclude>
     <ClInclude Include="..\..\Utility\Utility.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Material\MaterialManager.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Material\Material.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Mesh\MeshBasicData.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBuffer.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Texture\Texture.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Texture\TextureManager.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Sampler\Sampler.h">
+      <Filter>Rendering\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\BaseShader.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h">
+      <Filter>Core\Transform</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Utility\DirectoryManager.h">
       <Filter>Utility</Filter>
@@ -333,9 +360,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Layer\LayerManager.cpp">
       <Filter>Core\Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Core\Transform\TransformParameters.cpp">
-      <Filter>Core\Transform</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
@@ -433,9 +457,6 @@
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
       <Filter>Rendering\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rendering\Shader\Shader.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp">
       <Filter>Rendering\Shader</Filter>
     </ClCompile>
@@ -450,6 +471,30 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Material\Material.cpp">
+      <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Mesh\MeshBasicData.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBuffer.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Texture\Texture.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Texture\TextureManager.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp">
+      <Filter>Rendering\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp">
+      <Filter>Rendering\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Utility\DirectoryManager.cpp">
       <Filter>Utility</Filter>
