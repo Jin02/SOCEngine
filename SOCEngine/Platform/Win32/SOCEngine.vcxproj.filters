@@ -266,9 +266,6 @@
     <ClInclude Include="..\..\Intersection\Sphere.h">
       <Filter>Intersection</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Utility\ResourcesFolder.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h">
       <Filter>Rendering\Texture</Filter>
     </ClInclude>
@@ -337,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\DirectoryManager.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -433,9 +433,6 @@
     <ClCompile Include="..\..\Intersection\Sphere.cpp">
       <Filter>Intersection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Utility\ResourcesFolder.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp">
       <Filter>Rendering\Texture</Filter>
     </ClCompile>
@@ -498,6 +495,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp">
       <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Utility\DirectoryManager.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
