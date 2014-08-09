@@ -32,7 +32,8 @@ namespace Rendering
 			~Mesh();
 
 		public:
-			bool Create(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, std::vector<ENGINE_INDEX_TYPE>& indices, Material::Material* material, bool isDynamic);
+			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material::Material* material, bool isDynamic);
 
 		public:
 			virtual void Initialize();

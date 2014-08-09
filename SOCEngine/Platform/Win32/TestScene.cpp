@@ -28,11 +28,9 @@ void TestScene::OnInitialize()
 		Rendering::Mesh::Mesh* mesh = testObj->AddComponent<Rendering::Mesh::Mesh>();
 		Core::Transform* tf = testObj->GetTransform();
 		_test = tf;
-		tf->UpdatePosition(Math::Vector3(0,0,1));
+		tf->UpdatePosition(Math::Vector3(0, 0, 50));
 		_rootObjects.Add("Test", testObj);
 		{
-			std::vector<const void*> vbDatas;
-
 			struct TestVertex
 			{
 				Math::Vector3 v;
@@ -71,12 +69,6 @@ void TestScene::OnInitialize()
 				Math::Vector3( -1.0f, 1.0f, 1.0f )
 			};
 
-			int size = ARRAYSIZE(vertices);
-			for(int i=0; i<size; ++i)
-			{
-				vbDatas.push_back(&vertices[i]);
-			}
-
 			static WORD indices[] =
 			{
 				3,1,0,
@@ -98,11 +90,6 @@ void TestScene::OnInitialize()
 				23,20,22
 			};
 
-			std::vector<ENGINE_INDEX_TYPE> indicesDatas;
-			size = ARRAYSIZE(indices);
-			for(int i=0; i<size; ++i)
-				indicesDatas.push_back(indices[i]);
-
 			Rendering::Shader::VertexShader* vs = nullptr;
 			Rendering::Shader::PixelShader* ps = nullptr;
 
@@ -120,7 +107,7 @@ void TestScene::OnInitialize()
 			ps = dynamic_cast<Rendering::Shader::PixelShader*>(_shaderMgr->LoadPixelShader("../../../Test/", "Test:PS", false));
 
 			Rendering::Material::Material* material = new Rendering::Material::Material("TestMaterial", vs, ps);
-			mesh->Create(vbDatas, sizeof(TestVertex), indicesDatas, material, false);
+			mesh->Create(vertices, ARRAYSIZE(vertices), sizeof(TestVertex), indices, ARRAYSIZE(indices), material, false);
 		}
 	}
 }
@@ -131,9 +118,9 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnUpdate(float dt)
 {
-	static float t = 0.0f;
-	t+=0.01f;
-	_test->UpdatePosition(Math::Vector3(0,0,t));
+	//static float t = 0.0f;
+	//t+=0.01f;
+	//_test->UpdatePosition(Math::Vector3(0,t,0));
 }
 
 void TestScene::OnRenderPost()

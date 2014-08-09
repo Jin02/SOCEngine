@@ -31,7 +31,8 @@ namespace Rendering
 			~MeshFilter();
 
 		public:
-			bool CreateBuffer(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, const std::vector<ENGINE_INDEX_TYPE>& indices, bool isDynamic);
+			bool CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic);
 			void UpdateBuffer(ID3D11DeviceContext* context);
 		};
 	}

@@ -321,11 +321,14 @@ namespace Math
 		{
 			out.Identity();
 
-			out._m[0][0] = 1.0f / (aspect * tanf(fovy/2.0f));
-			out._m[1][1] = 1.0f / tanf(fovy/2.0f);
+			float yScale = 1.0f / tanf(fovy/2.0f);
+			float xScale = yScale / aspect;
+
+			out._m[0][0] = xScale;
+			out._m[1][1] = yScale;
 			out._m[2][2] = zf / (zf - zn);
-			out._m[2][3] = 1.0f;
-			out._m[3][2] = (zf * zn) / (zn - zf);
+			out._m[2][3] = -zn * zf / (zf - zn);
+			out._m[3][2] = 1.0f;
 			out._m[3][3] = 0.0f;
 		}
 

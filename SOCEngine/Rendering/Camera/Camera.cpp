@@ -23,7 +23,7 @@ namespace Rendering
 
 	void Camera::Initialize()
 	{
-		_FOV = 60;
+		_FOV = 45.0f;
 		_clippingNear = 0.01f;
 		_clippingFar = 1000.0f;
 
@@ -78,9 +78,9 @@ namespace Rendering
 		p.y = -Vector3::Dot(ownerTransform->GetUp(), worldPos);
 		p.z = -Vector3::Dot(ownerTransform->GetForward(), worldPos);
 
-		outMatrix._41 = p.x;
-		outMatrix._42 = p.y;
-		outMatrix._43 = p.z;
+		outMatrix._14 = p.x;
+		outMatrix._24 = p.y;
+		outMatrix._34 = p.z;
 		outMatrix._44 = 1.0f;
 	}
 

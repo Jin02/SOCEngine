@@ -15,15 +15,17 @@ namespace Rendering
 			Destroy();
 		}
 
-		bool Mesh::Create(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, std::vector<ENGINE_INDEX_TYPE>& indices, Material::Material* material, bool isDynamic)
+		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material::Material* material, bool isDynamic)
 		{
 			_filter = new MeshFilter;
-			if(_filter->CreateBuffer(vbDatas, vertexBufferSize, indices, isDynamic) == false)
+			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
+				indicesData, indicesCount, isDynamic) == false)
 			{
 				SAFE_DELETE(_filter);
 				return false;
 			}
-			_indexCount = indices.size();
+			_indexCount = indicesCount;
 
 			_renderer = new MeshRenderer;
 			if(_renderer->AddMaterial(material, false) == false)

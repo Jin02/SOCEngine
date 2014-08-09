@@ -17,19 +17,17 @@ MeshFilter::~MeshFilter()
 	SAFE_DELETE(_indexBuffer);
 }
 
-bool MeshFilter::CreateBuffer(const std::vector<const void*>& vbDatas, unsigned int vertexBufferSize, const std::vector<ENGINE_INDEX_TYPE>& indices, bool isDynamic)
+bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic)
 {
-	if(vbDatas.size() == 0)
-		return false;
-
-	_numOfVertex = vbDatas.size();
+	_numOfVertex = vertexBufferDataCount;
 
 	_vertexBuffer = new Buffer::VertexBuffer;
-	if( _vertexBuffer->Create(vbDatas.data(), vertexBufferSize, _numOfVertex, isDynamic) == false )
+	if( _vertexBuffer->Create(vertexBufferDatas, vertexBufferSize, _numOfVertex, isDynamic) == false )
 		return false;
 
 	_indexBuffer = new Buffer::IndexBuffer;
-	if( _indexBuffer->Create(indices.data(), sizeof(ENGINE_INDEX_TYPE) * indices.size()) == false )
+	if( _indexBuffer->Create(indicesData, sizeof(ENGINE_INDEX_TYPE) * indicesCount) == false )
 		return false;
 
 	return true;

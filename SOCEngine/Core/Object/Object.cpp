@@ -90,7 +90,7 @@ namespace Core
 		transformParam.worldViewProjMat = transformParam.worldMat * transformParam.viewProjMat;
 		
 		const Math::Matrix& viewMat = transformParam.viewMat;
-		Vector4 viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
+		Vector4 viewPos = Vector4(viewMat._14, viewMat._24, viewMat._34, 1.0f);
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->Render(transformParam, &intersectLights, viewPos);
