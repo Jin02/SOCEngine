@@ -1,5 +1,7 @@
 #include "PointLight.h"
-#include "Transform.h"
+#include "Object.h"
+
+using namespace Intersection;
 
 namespace Rendering
 {
@@ -7,16 +9,20 @@ namespace Rendering
 	{
 		PointLight::PointLight() : LightForm()
 		{
-			type = POINT;
+			_type = LightType::Point;
 		}
 
 		PointLight::~PointLight(void)
 		{
 		}
 
-		bool PointLight::Intersect(Intersection::Sphere &sphere)
+		bool PointLight::Intersects(const Sphere &sphere)
 		{
-			return sphere.Intersection(ownerTransform->GetWorldPosition(), range);
+			Core::Transform* tf = _owner->GetTransform();
+			Math::Vector3 wp;
+			tf->WorldPosition(wp);
+
+			return Sphere::Intersects(sphere, Sphere(wp, range));
 		}
 
 	}

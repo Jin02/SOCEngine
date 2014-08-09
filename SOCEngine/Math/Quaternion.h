@@ -45,6 +45,10 @@ namespace Math
 
 	public:
 		void Set(float x,  float y, float z, float w);
+		Quaternion& Normalize();
+		Quaternion& Inverse();
+		Vector3 ToEuler();
+		void FromEuler(const Vector3& v);
 	};
 
 }

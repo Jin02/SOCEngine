@@ -48,7 +48,6 @@ namespace Rendering
 
 		for(int i=0; i<6; ++i)
 		{
-
 			dist = Math::Plane::DotCoord( _plane[i], v );
 			if(dist < (radius + _gap) ) return false;
 		}

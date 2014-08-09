@@ -57,9 +57,11 @@ namespace Math
 		static Vector3 Reflect(const Vector3& inDirection, const Vector3& inNormal);
 		static float SqrLegnth(const Vector3& a);
 		static void TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat);
+		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
 
 	public:
-		void Normalize();
+		Vector3& Normalize();
+
 		float Length();
 		float Dot(const Vector3& v);
 		void Set(float newX, float newY, float newZ);

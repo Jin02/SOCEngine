@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\Common.h" />
+    <ClInclude Include="..\..\Core\Component\Component.h" />
+    <ClInclude Include="..\..\Core\Layer\LayerManager.h" />
+    <ClInclude Include="..\..\Core\Object\BasicParameterNames.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Object\Object.h" />
+    <ClInclude Include="..\..\Core\Scene\Scene.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Core\Tag\TagManager.h" />
+    <ClInclude Include="..\..\Core\Time\Timer.h" />
+    <ClInclude Include="..\..\Core\Transform\Transform.h" />
+    <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h" />
+    <ClInclude Include="..\..\Intersection\AABB.h" />
+    <ClInclude Include="..\..\Intersection\Cone.h" />
+    <ClInclude Include="..\..\Intersection\Intersection.h" />
+    <ClInclude Include="..\..\Intersection\Ray.h" />
+    <ClInclude Include="..\..\Intersection\Sphere.h" />
+    <ClInclude Include="..\..\Math\EngineMath.h" />
+    <ClInclude Include="..\..\Math\MathCommon.h" />
+    <ClInclude Include="..\..\Math\Matrix.h" />
+    <ClInclude Include="..\..\Math\Plane.h" />
+    <ClInclude Include="..\..\Math\Quaternion.h" />
+    <ClInclude Include="..\..\Math\Rect.h" />
+    <ClInclude Include="..\..\Math\Size.h" />
+    <ClInclude Include="..\..\Math\Vector2.h" />
+    <ClInclude Include="..\..\Math\Vector3.h" />
+    <ClInclude Include="..\..\Math\Vector4.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Camera\Camera.h" />
+    <ClInclude Include="..\..\Rendering\Camera\CameraManager.h" />
+    <ClInclude Include="..\..\Rendering\Camera\Frustum.h" />
+    <ClInclude Include="..\..\Rendering\Color\Color.h" />
+    <ClInclude Include="..\..\Rendering\Light\DirectionalLight.h" />
+    <ClInclude Include="..\..\Rendering\Light\Light.h" />
+    <ClInclude Include="..\..\Rendering\Light\LightForm.h" />
+    <ClInclude Include="..\..\Rendering\Light\LightManager.h" />
+    <ClInclude Include="..\..\Rendering\Light\LightParameters.h" />
+    <ClInclude Include="..\..\Rendering\Light\PointLight.h" />
+    <ClInclude Include="..\..\Rendering\Light\SpotLight.h" />
+    <ClInclude Include="..\..\Rendering\Material\Material.h" />
+    <ClInclude Include="..\..\Rendering\Material\MaterialManager.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\Mesh.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\MeshBasicData.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
+    <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
+    <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
+    <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
+    <ClInclude Include="..\..\Rendering\Shader\BaseShader.h" />
+    <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\VertexShader.h" />
+    <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h" />
+    <ClInclude Include="..\..\Rendering\Texture\Texture.h" />
+    <ClInclude Include="..\..\Rendering\Texture\TextureManager.h" />
+    <ClInclude Include="..\..\Structure\BaseStructure.h" />
+    <ClInclude Include="..\..\Structure\Vector.h" />
+    <ClInclude Include="..\..\Structure\HashMap.h" />
+    <ClInclude Include="..\..\Structure\Map.h" />
+    <ClInclude Include="..\..\Structure\Singleton.h" />
+    <ClInclude Include="..\..\Structure\Structure.h" />
+    <ClInclude Include="..\..\Utility\DirectoryManager.h" />
+    <ClInclude Include="..\..\Utility\Utility.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="Director.h" />
+    <ClInclude Include="DirectX.h" />
+    <ClInclude Include="TestScene.h" />
+    <ClInclude Include="Win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Core\Component\Component.cpp" />
+    <ClCompile Include="..\..\Core\Layer\LayerManager.cpp" />
+    <ClCompile Include="..\..\Core\Object\BasicParameterNames.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Object\Object.cpp" />
+    <ClCompile Include="..\..\Core\Scene\Scene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Core\Tag\TagManager.cpp" />
+    <ClCompile Include="..\..\Core\Time\Timer.cpp" />
+    <ClCompile Include="..\..\Core\Transform\Transform.cpp" />
+    <ClCompile Include="..\..\Intersection\AABB.cpp" />
+    <ClCompile Include="..\..\Intersection\Cone.cpp" />
+    <ClCompile Include="..\..\Intersection\Ray.cpp" />
+    <ClCompile Include="..\..\Intersection\Sphere.cpp" />
+    <ClCompile Include="..\..\Math\MathCommon.cpp" />
+    <ClCompile Include="..\..\Math\Matrix.cpp" />
+    <ClCompile Include="..\..\Math\Plane.cpp" />
+    <ClCompile Include="..\..\Math\Quaternion.cpp" />
+    <ClCompile Include="..\..\Math\Vector2.cpp" />
+    <ClCompile Include="..\..\Math\Vector3.cpp" />
+    <ClCompile Include="..\..\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Camera\Camera.cpp" />
+    <ClCompile Include="..\..\Rendering\Camera\CameraManager.cpp" />
+    <ClCompile Include="..\..\Rendering\Camera\Frustum.cpp" />
+    <ClCompile Include="..\..\Rendering\Color\Color.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\DirectionalLight.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\LightForm.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\LightManager.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\LightParameters.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\PointLight.cpp" />
+    <ClCompile Include="..\..\Rendering\Light\SpotLight.cpp" />
+    <ClCompile Include="..\..\Rendering\Material\Material.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\MeshBasicData.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
+    <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp" />
+    <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp" />
+    <ClCompile Include="..\..\Rendering\Texture\Texture.cpp" />
+    <ClCompile Include="..\..\Rendering\Texture\TextureManager.cpp" />
+    <ClCompile Include="..\..\Utility\DirectoryManager.cpp" />
+    <ClCompile Include="Director.cpp" />
+    <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Win32.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D2F8E424-3F82-4761-840D-187B4405A969}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SOCEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

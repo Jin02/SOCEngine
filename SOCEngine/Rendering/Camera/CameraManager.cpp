@@ -1,8 +1,9 @@
 #include "CameraManager.h"
 
 using namespace Rendering;
+using namespace Core;
 
-CameraManager::CameraManager() : Container()
+CameraManager::CameraManager()
 {
 
 }
@@ -14,20 +15,16 @@ CameraManager::~CameraManager()
 
 void CameraManager::SetMainCamera(Camera *cam)
 {
-	objects.insert(objects.begin(), cam);
+	_vector.insert(_vector.begin(), Vector::Type("Main", Vector::Data(false, cam)));
 }
 
 Camera* CameraManager::GetMainCamera()
 {
-	return (*objects.begin());
+	return _vector.size() != 0 ? (*_vector.begin()).second.second : nullptr;
 }
 
 void CameraManager::Render(std::vector<Object*>::iterator& objectBegin,
 			std::vector<Object*>::iterator& objectEnd, Light::LightManager* sceneLights)
 {
-	for(std::vector<Camera*>::iterator iter = objects.begin();
-		iter != objects.end(); ++iter)
-	{
-		(*iter)->Render(objectBegin, objectEnd, sceneLights);
-	}
+
 }

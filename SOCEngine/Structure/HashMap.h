@@ -1,33 +1,75 @@
-﻿//
-//  SOCHashMap.h
-//  Rendering
-//
-//  Created by Jiman Jeong on 13. 8. 17..
-//  Copyright (c) 2013년 SOC. All rights reserved.
-//
+#pragma once
 
-#ifndef HashMap_h
-#define HashMap_h
-
-#if defined(WIN32)
-
+#include "BaseStructure.h"
 #include <hash_map>
 
-template<typename key, typename value>
-class HashMap : public std::hash_map<key, value> {};
+namespace Structure
+{
+	template <class Object>
+	class HashMap : public BaseStructure<Object>
+	{
+	private:
+		std::hash_map<std::string, BaseStructure<Object>::Data> _hash;
 
-#elif defined(__APPLE__)
+	public:
+		HashMap(void){}
+		virtual ~HashMap(void)
+		{
+			DeleteAll(true);
+		}
 
-#ifndef __DEPRECATED
-#include <ext/hash_map>
-template <typename key, typename value>
-class HashMap : public __gnu_cxx::hash_map<key, value> {};
-#else
-#include <unordered_map>
-template <typename key, typename value>
-class HashMap : public std::unordered_map<key, value> {};
-#endif
+	public:
+		virtual Object* Add(const std::string& key, Object* object, bool copy = false)
+		{
+			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
 
-#endif
+			if(iter != _hash.end())
+				return GET_CONTENT_FROM_ITERATOR(iter);
 
-#endif
+			BaseStructure<Object>::Data data;
+			data.first = copy;
+			data.second = copy ? new Object((*object)) : object;
+
+			_hash.insert(std::hash_map<std::string, BaseStructure<Object>::Data>::value_type(key, data));
+
+			return object;
+		}
+
+		virtual Object* Find(const std::string& key)
+		{
+			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
+			return iter == _hash.end() ? nullptr : GET_CONTENT_FROM_ITERATOR(iter);
+		}
+
+		virtual void Delete(const std::string& key, bool contentRemove = false)
+		{
+			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
+
+			if( iter == _hash.end() )
+				return;
+
+			if(contentRemove)
+				SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
+
+			_hash.erase(iter);
+		}
+
+		virtual void DeleteAll(bool contentRemove = false)
+		{
+			if(contentRemove)
+			{
+				for(std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.begin();iter != _hash.end(); ++iter)
+				{
+					if( GET_IS_COPY_FROM_ITERATOR(iter) )
+						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
+				}
+			}
+
+			_hash.clear();
+		}
+
+		inline const std::hash_map<std::string, BaseStructure<Object>::Data>& GetHashMap() const { return _hash;}
+		GET_ACCESSOR(Size, unsigned int, _hash.size());
+	};
+
+}

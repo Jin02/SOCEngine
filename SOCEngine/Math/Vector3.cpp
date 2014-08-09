@@ -212,7 +212,7 @@ namespace Math
 
 	float Vector3::Length(const Vector3& a)
 	{
-		return sqrtf((a.x * a.x) + (a.y + a.y) + (a.z * a.z));
+		return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 	}
 
 	Vector3 Vector3::Normalize(const Vector3& value)
@@ -244,10 +244,12 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z);
 	}
 
-	void Vector3::Normalize()
+	Vector3& Vector3::Normalize()
 	{
 		float v = Vector3::Length(*this);
 		*this = *this / v;
+
+		return (*this);
 	}
 
 	float Vector3::Length()
@@ -274,5 +276,12 @@ namespace Math
 		out.x = (mat._m[0][0] * v.x + mat._m[1][0] * v.y + mat._m[2][0] * v.z + mat._m[3][0]) / norm;
 		out.y = (mat._m[0][1] * v.x + mat._m[1][1] * v.y + mat._m[2][1] * v.z + mat._m[3][1]) / norm;
 		out.z = (mat._m[0][2] * v.x + mat._m[1][2] * v.y + mat._m[2][2] * v.z + mat._m[3][2]) / norm;
+	}
+
+	void Vector3::TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat)
+	{
+		out.x = (mat._m[0][0] * v.x + mat._m[1][0] * v.y + mat._m[2][0] * v.z);
+		out.y = (mat._m[0][1] * v.x + mat._m[1][1] * v.y + mat._m[2][1] * v.z);
+		out.z = (mat._m[0][2] * v.x + mat._m[1][2] * v.y + mat._m[2][2] * v.z);
 	}
 }

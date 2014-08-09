@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common.h"
+
 namespace Math
 {
 	class Vector3;
@@ -11,10 +13,15 @@ namespace Rendering
 	struct Color
 	{
 	public:
-		float a;
-		float b;
-		float g;
-		float r;
+		union
+		{
+			struct
+			{
+				float        r,g,b,a;
+			};
+
+			float color[4];
+		};
 
 	public:
 		Color();
@@ -50,14 +57,6 @@ namespace Rendering
 		static Color yellow();
 
 		static Color Lerp(Color a, Color b, float t);
-
-	public:
-		Color& GetColor();
-		Math::Vector3 GetVector3();
-		Math::Vector4 GetVector4();
-
-	public:
-		void SetColor(Color &color);
 
 	private:
 		void CalculateColor(Color *color);

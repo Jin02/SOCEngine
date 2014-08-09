@@ -49,10 +49,10 @@ namespace Math
 		static void Transpose(Matrix& out, const Matrix& mat);
 		static void Inverse(Matrix& out, const Matrix& mat); 		//using cramer's rule
 
-		void Transpose();
-		void Inverse();
-		void Identity();
-		void Zero();
+		Matrix& Transpose();
+		Matrix&Inverse();
+		Matrix& Identity();
+		Matrix& Zero();
 
 	public:
 		union

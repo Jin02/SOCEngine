@@ -1,10 +1,10 @@
 #pragma once
 
 #include "EngineMath.h"
-#include "Collision.h"
+#include "Intersection.h"
 #include "Common.h"
 
-namespace Rendering
+namespace Core
 {
 	class Transform
 	{
@@ -32,7 +32,7 @@ namespace Rendering
 
 	private:
 		float _radius;
-		Collision::AABB _bound;
+		Intersection::AABB _bound;
 
 	public:
 		Transform(Transform* parent);
@@ -66,7 +66,7 @@ namespace Rendering
 		void UpdateDirection(const Math::Vector3& dir);
 
 	public:
-		GET_SET_ACCESSOR(Bound, const Collision::AABB&, _bound);
+		GET_SET_ACCESSOR(Bound, const Intersection::AABB&, _bound);
 		GET_SET_ACCESSOR(Radius, const float, _radius);
 		GET_ACCESSOR(Matrix, const Math::Matrix&, _matrix);
 		GET_ACCESSOR(LocalPosition, const Math::Vector3&, _localPosition);

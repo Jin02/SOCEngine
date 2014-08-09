@@ -1,50 +1,59 @@
 #pragma once
 
-#include "Rendering.h"
-#include "Container.h"
-#include "BaseScene.h"
+#include "Structure.h"
+#include "Object.h"
+#include "CameraManager.h"
+#include "ShaderManager.h"
+#include "TextureManager.h"
+#include "MaterialManager.h"
+#include "ConstBufferManager.h"
+#include "Sampler.h"
 
-
-class Scene : public BaseScene
+namespace Core
 {
-public:
-	bool destroyMgr;
+	class Scene
+	{
+	public:
+		enum State{ Init = 0, Loop, End, Num };
 
-protected:
-	Container<Rendering::Object> *rootObjects;
+	private:
+		State _state;
 
-protected:
-	Device::Graphics			*graphics;
-	Rendering::Light::LightManager			*lightMgr;
-	Rendering::Texture::TextureManager		*textureMgr;
-	Rendering::Shader::ShaderManager		*shaderMgr;
-	Rendering::CameraManager				*cameraMgr;
-	Rendering::Material::MaterialManager	*materialMgr;
-	//Rendering::Mesh::VBElementsManager		*vbElementsMgr;
-	Rendering::MeshDataManager				*meshDataMgr;
+	protected:
+		Structure::Vector<Core::Object>			_rootObjects;	
+		Rendering::CameraManager*				_cameraMgr;
+		Rendering::Shader::ShaderManager*		_shaderMgr;
+		Rendering::Texture::TextureManager*		_textureMgr;
+		Rendering::Material::MaterialManager*	_materialMgr;
+		Rendering::Buffer::ConstBufferManager*	_constBufferMgr;
+		Rendering::Sampler*						_sampler;
 
-public:
-	Scene(void);
-	~Scene(void);
+	public:
+		Scene(void);
+		~Scene(void);
 
-private:
-	virtual void Initialize();
-	virtual void Update(float dt);
-	virtual void Render();
-	virtual void Destroy();
+	public:
+		void Initialize();
+		void Update(float dt);
+		void Render();
+		void Destroy();
 
-public:
-	virtual void OnInitialize() = 0;
-	virtual void OnRenderPreview() = 0;
-	virtual void OnUpdate(float dt) = 0;
-	virtual void OnRenderPost() = 0;
-	virtual void OnDestroy() = 0;
+	protected:
+		virtual void OnInitialize() = 0;
+		virtual void OnRenderPreview() = 0;
+		virtual void OnUpdate(float dt) = 0;
+		virtual void OnRenderPost() = 0;
+		virtual void OnDestroy() = 0;
 
-public:
-	Rendering::Light::LightManager* GetLightManager();
-	Rendering::Texture::TextureManager* GetTextureManager();
-	Rendering::Shader::ShaderManager* GetShaderManager();
-	Rendering::CameraManager* GetCameraManager();
-	Rendering::MeshDataManager* GetMeshDataMgr();
-	Rendering::Material::MaterialManager* GetMaterialMgr();
-};
+	public:
+		void NextState();
+		GET_ACCESSOR(State, const State, _state);
+
+		GET_ACCESSOR(CameraManager, Rendering::CameraManager*, _cameraMgr);
+		GET_ACCESSOR(TextureManager, Rendering::Texture::TextureManager*, _textureMgr);
+		GET_ACCESSOR(ShaderManager, Rendering::Shader::ShaderManager*, _shaderMgr);
+		GET_ACCESSOR(MaterialManager, Rendering::Material::MaterialManager*, _materialMgr);
+		GET_ACCESSOR(ConstBufferManager, Rendering::Buffer::ConstBufferManager*, _constBufferMgr);
+		GET_ACCESSOR(Sampler, Rendering::Sampler*, _sampler);
+	};
+}

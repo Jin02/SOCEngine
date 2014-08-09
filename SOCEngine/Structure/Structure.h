@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Map.h"
-#include "Container.h"
-#include "Dictionary.h"
+#include "Vector.h"
 #include "HashMap.h"
+#include "HashMap.h"
+#include "Singleton.h"

@@ -167,14 +167,16 @@ namespace Math
 				out._m[j][i] = mat._m[i][j];
 	}
 
-	void Matrix::Transpose()
+	Matrix& Matrix::Transpose()
 	{
 		Matrix::Transpose((*this), (*this));
+		return (*this);
 	}
 
-	void Matrix::Inverse()
+	Matrix& Matrix::Inverse()
 	{
 		Matrix::Inverse((*this), (*this));
+		return (*this);
 	}
 
 	void Matrix::Set( float _11, float _12, float _13, float _14,
@@ -207,15 +209,17 @@ namespace Math
 		}
 	}
 
-	void Matrix::Identity()
+	Matrix& Matrix::Identity()
 	{
 		memset(&_m, 0, sizeof(Matrix));
 		_11 = _22 = _33 = _44 = 1.0f;
+		return (*this);
 	}
 
-	void Matrix::Zero()
+	Matrix& Matrix::Zero()
 	{
 		memset(&_m, 0, sizeof(Matrix));
+		return (*this);
 	}
 
 	void Matrix::Inverse(Matrix& out, const Matrix& mat)
@@ -317,11 +321,14 @@ namespace Math
 		{
 			out.Identity();
 
-			out._m[0][0] = 1.0f / (aspect * tanf(fovy/2.0f));
-			out._m[1][1] = 1.0f / tanf(fovy/2.0f);
+			float yScale = 1.0f / tanf(fovy/2.0f);
+			float xScale = yScale / aspect;
+
+			out._m[0][0] = xScale;
+			out._m[1][1] = yScale;
 			out._m[2][2] = zf / (zf - zn);
-			out._m[2][3] = 1.0f;
-			out._m[3][2] = (zf * zn) / (zn - zf);
+			out._m[2][3] = -zn * zf / (zf - zn);
+			out._m[3][2] = 1.0f;
 			out._m[3][3] = 0.0f;
 		}
 

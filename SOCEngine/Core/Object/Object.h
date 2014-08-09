@@ -1,39 +1,31 @@
 #pragma once
 
-//#include <stdarg.h>
-#include <vector>
-#include <string>
-
-#include "Platform.h"
-#include "Sphere.h"
-
-#include "Container.h"
-
-#include "Mesh.h"
+#include "EngineMath.h"
+#include "Structure.h"
+#include "Transform.h"
+#include "Component.h"
 #include "Light.h"
-#include "Camera.h"
+#include "Frustum.h"
+#include "TransformPipelineParam.h"
 
-//#include "Component.h"
-
-//#include "Frustum.h"
-//#include "Transform.h"
-
-namespace Rendering
+namespace Core
 {
-	class Object : public Container<Object>
+	class Object : public Structure::Vector<Object>
 	{
 	protected:
-		bool use;
-		bool culled;
-		bool hasMesh;
+		bool _use;
+		bool _culled;
+		bool _hasMesh;
 
 	protected:
-		Object *parent;
-		Object *root;
-		Transform *transform;
+		std::string _name;
+
+		Object *_parent;
+		Object *_root;
+		Transform *_transform;
 
 	protected:
-		std::vector<Component*> components;
+		std::vector<Component*> _components;
 
 	public:
 		Object(Object* parent = NULL);
@@ -41,25 +33,24 @@ namespace Rendering
 
 	public:
 		void Update(float delta);
-		void Render(std::vector<Light::LightForm*> *lights, SOC_Matrix *viewMat, SOC_Matrix *projMat, SOC_Matrix *viewProjMat);
+		void Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam);
 
-		bool Intersect(Intersection::Sphere &sphere);
+		bool Intersects(Intersection::Sphere &sphere);
 
 	public:
 		Object* AddObject(Object *child, bool copy = false);
-		Object* AddObject(Object *child, int renderQueueOrder, bool copy = false);
 
 		template<typename ComponentType>
 		ComponentType* AddComponent()
 		{
-			if( ComponentType::ComponentType < Component::Type::User )
+			if( ComponentType::GetComponentType() < Component::Type::User )
 			{
 				typename std::vector<Component*>::iterator iter;
-				for(iter = components.begin(); iter != components.end(); ++iter)
+				for(iter = _components.begin(); iter != _components.end(); ++iter)
 				{
 					ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
 
-					if( compareComponent->ComponentType == ComponentType::ComponentType )
+					if( compareComponent->GetComponentType() == ComponentType::GetComponentType() )
 						return compareComponent;
 				}
 			}
@@ -67,12 +58,12 @@ namespace Rendering
 			ComponentType *compo = new ComponentType;
 			compo->SetOwner(this);
 
-			if(compo->ComponentType == Component::Type::Mesh)
-				hasMesh = true;
+			if(compo->GetComponentType() == Component::Type::Mesh)
+				_hasMesh = true;
 
 			//오직 유저 컴포넌트만 중복 가능
 			compo->Initialize();
-			components.push_back(compo);
+			_components.push_back(compo);
 
 			return compo;
 		}
@@ -81,11 +72,11 @@ namespace Rendering
 		ComponentType* GetComponent()
 		{
 			typename std::vector<Component*>::iterator iter;
-			for(iter = components.begin(); iter != components.end(); ++iter)
+			for(iter = _components.begin(); iter != _components.end(); ++iter)
 			{
 				ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
 
-				if(compareComponent->ComponentType == ComponentType::ComponentType)
+				if(compareComponent->GetComponentType() == ComponentType::GetComponentType())
 					return compareComponent;
 			}
 
@@ -93,13 +84,15 @@ namespace Rendering
 		}
 
 		template<class ComponentType>
-		std::vector<ComponentType*> GetComponents()
+		std::vector<Component*> GetComponents()
 		{
 			std::vector<Component*> v;
 			typename std::vector<Component*>::iterator iter;
-			for(iter = components.begin(); iter != components.end(); ++iter)
+			for(iter = _components.begin(); iter != _components.end(); ++iter)
 			{
-				if((*iter)->ComponentType == ComponentType::ComponentType)
+				ComponentType *compareComponent = dynamic_cast<ComponentType*>(*iter);
+
+				if(compareComponent->GetComponentType() == ComponentType::GetComponentType())
 					v.push_back((*iter));
 			}
 
@@ -109,19 +102,20 @@ namespace Rendering
 		void DeleteComponent(Component *component);
 		void DeleteAllComponent();
 
-		bool Culling(Frustum *frustum);
-		bool IsChildOf(Object *parent);
+		bool Culling(Rendering::Frustum *frustum);
+		bool CompareIsChildOfParent(Object *parent);
 
-		void SetUse(bool is);
-		bool GetUse();
-		bool Culled();
+		GET_SET_ACCESSOR(Use, bool, _use);
+		GET_ACCESSOR(Culled, bool, _culled);
+		GET_ACCESSOR(HasMesh, bool, _hasMesh);
+		GET_SET_ACCESSOR(Name, const std::string&, _name);
 
 	public:
 		void UpdateChild(float delta);
 
 	public:
 		static Object* Copy(Object *obj);
-		Transform *GetTransform();
+		GET_ACCESSOR(Transform, Transform*, _transform);
 	};
 
 }

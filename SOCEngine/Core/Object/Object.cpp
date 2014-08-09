@@ -1,186 +1,119 @@
 ﻿#include "Object.h"
 #include "Math.h"
-#include "Utility.h"
 
 using namespace std;
 using namespace Intersection;
+using namespace Rendering;
+using namespace Math;
 
-namespace Rendering
+namespace Core
 {
-	using namespace Light;
+#define _child _vector
 
-	Object::Object(Object* parent /* = NULL */) : Container()
+	using namespace Rendering::Light;
+
+	Object::Object(Object* parent /* = NULL */) :
+		_culled(false), _parent(parent), _use(true), _hasMesh(false)
 	{
-		culled = false;
-		transform = new Transform( parent ? parent->transform : nullptr);
-		
-		this->parent = parent;
-		this->root = parent ? parent->root : this;
-		this->use = true;
-		this->hasMesh = false;
+		_transform = new Transform( parent ? parent->_transform : nullptr);		
+		_root = parent ? parent->_root : this;
 	}
 
 	Object::~Object(void)
 	{
-		if(transform)
-			delete transform;
+		SAFE_DELETE(_transform);
 
 		DeleteAll(true);
 		DeleteAllComponent();
 	}
 
-	Object* Object::AddObject(Object *child, int renderQueue, bool copy/* = false */)
-	{
-		Object *c =  Container::Add(child, renderQueue, copy);
-		transform->CalcRadius(c->transform);
-
-		return c;
-	}
-
 	Object* Object::AddObject(Object *child, bool copy/* = false */)
 	{
-		Object *c =  Container::Add(child, copy);
-		transform->CalcRadius(c->transform);
+		Object *c =  Vector::Add(child->_name, child, copy);
+		_transform->CalcRadius(c->_transform);
 
 		return c;
 	}
 
 	void Object::UpdateChild(float delta)
 	{
-		if(use == false)
+		if(_use == false)
 			return;
 
-		vector<Object*>::iterator iter;
-
-		for(iter = objects.begin(); iter != objects.end(); ++iter)
-			(*iter)->Update(delta);
+		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
-	void Object::SetUse(bool is)
+	bool Object::CompareIsChildOfParent(Object *parent)
 	{
-		use = is;
-	}
-
-	bool Object::IsChildOf(Object *parent)
-	{
-		return (parent == this->parent); 
+		return (parent == _parent); 
 	}
 
 	bool Object::Culling(Frustum *frustum)
 	{
-		culled = frustum->In(transform->GetWorldPosition(), transform->GetRadius());
+		Vector3 wp;
+		_transform->WorldPosition(wp);
+		_culled = frustum->In(wp, _transform->GetRadius());
 
-		if(culled == false)
+		if(_culled == false)
 		{
-			for(vector<Object*>::iterator iter = objects.begin(); iter != objects.end(); ++iter)
-				(*iter)->Culling(frustum);
+			for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+				GET_CONTENT_FROM_ITERATOR(iter)->Culling(frustum);
 		}
 
-		return culled;
-	}
-
-	bool Object::GetUse()
-	{
-		return use;
-	}
-
-	bool Object::Culled()
-	{
-		return culled;
+		return _culled;
 	}
 
 	void Object::Update(float delta)
 	{
-		for(std::vector<Component*>::iterator iter = components.begin(); iter != components.end(); ++iter)
+		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->Update(delta);
 	}
 
-	void Object::Render(std::vector<LightForm*> *lights, SOC_Matrix *viewMat, SOC_Matrix *projMat, SOC_Matrix *viewProjMat)
+	void Object::Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam)
 	{
-		if(culled)	return;
+//		if(_culled)	return;
 
-		Sphere thisObject(transform->GetWorldPosition(), transform->GetRadius());
+		Vector3 wp;
+		_transform->WorldPosition(wp);
+
+		Sphere thisObject(wp, _transform->GetRadius());
 		std::vector<LightForm*> intersectLights;
 
-		for(std::vector<LightForm*>::iterator iter = lights->begin(); iter != lights->end(); ++iter)
+		for(auto iter = lights.begin(); iter != lights.end(); ++iter)
 		{
-			if((*iter)->Intersect(thisObject))
+			if((*iter)->Intersects(thisObject))
 				intersectLights.push_back((*iter));
 		}
+
+		_transform->WorldMatrix(transformParam.worldMat);
+		transformParam.worldViewProjMat = transformParam.worldMat * transformParam.viewProjMat;
 		
-		SOC_Matrix worldMat, worldViewProjMat;
+		const Math::Matrix& viewMat = transformParam.viewMat;
+		Vector4 viewPos = Vector4(viewMat._14, viewMat._24, viewMat._34, 1.0f);
 
-		transform->GetWorldMatrix(&worldMat);
-		SOCMatrixMultiply(&worldViewProjMat, &worldMat, viewProjMat);
+		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
+			(*iter)->Render(transformParam, &intersectLights, viewPos);
 
-		if(this->components.size() != 0)
-		{
-			//debug break point
-			int a= 5;
-			a=3;
-		}
-
-		SOC_Matrix worldViewInvTns;
-		SOCMatrixMultiply(&worldViewInvTns, &worldMat, viewMat);
-		SOCMatrixInverse(&worldViewInvTns, nullptr, &worldViewInvTns);
-		SOCMatrixTranspose(&worldViewInvTns, &worldViewInvTns);
-
-		TransformParameters transformParam;
-		transformParam.SetMatrix(&worldMat, viewMat, projMat, viewProjMat, &worldViewProjMat, &worldViewInvTns);
-
-		vector<LightParameters> lightParam;
-		SOC_Vector4 viewPos = SOC_Vector4(viewMat->_41, viewMat->_42, viewMat->_43, 1.0f);
-
-		if(hasMesh)
-		{
-			int intersectLightCount = intersectLights.size();
-			int count = intersectLightCount > MAX_LIGHT ? MAX_LIGHT : intersectLightCount;
-
-			for(int i=0; i < count; ++i)
-			{
-				LightForm *light = intersectLights[i];
-				SOC_Vector3 w = light->GetWorldPosition();
-				SOC_Vector3 d = light->GetDirection();
-
-				LightParameters lp;
-				lp.SetData(light->ambient.GetVector3(),
-					light->diffuse.GetVector3(),
-					light->specular.GetVector3(), 
-					light->range, 
-					w,
-					d,
-					LightForm::SPOT == light->GetType() ? static_cast<SpotLight*>(light)->spotAngle : 1.0f,
-					(int)light->GetType());
-
-				lightParam.push_back(lp);
-			}
-		}
-
-		for(std::vector<Component*>::iterator iter = components.begin(); iter != components.end(); ++iter)
-			(*iter)->Render(&transformParam, &lightParam, viewPos);
-
-		for(std::vector<Object*>::iterator iter = objects.begin(); iter != objects.end(); ++iter)
-			(*iter)->Render(lights, viewMat, projMat, viewProjMat);
+		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, transformParam);
 	}
 
-	bool Object::Intersect(Intersection::Sphere &sphere)
+	bool Object::Intersects(Intersection::Sphere &sphere)
 	{
-		return sphere.Intersection(transform->GetWorldPosition(), transform->GetRadius());
+		Vector3 wp;
+		_transform->WorldPosition(wp);
+		return sphere.Intersects(wp, _transform->GetRadius());
 	}
-
-	//void Object::_Render(std::vector<LightForm*> *lights, SOC_Matrix *viewMat, SOC_Matrix *projMat, SOC_Matrix *viewProjMat)
-	//{
-	//	//null
-	//}
 
 	void Object::DeleteComponent(Component *component)
 	{
-		for(std::vector<Component*>::iterator iter = components.begin(); iter != components.end(); ++iter)
+		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 		{
 			if((*iter) == component)
 			{
 				(*iter)->Destroy();
-				components.erase(iter);
+				_components.erase(iter);
 				delete (*iter);
 				return;
 			}
@@ -193,16 +126,11 @@ namespace Rendering
 		return new Object(*obj);
 	}
 
-	Transform* Object::GetTransform()
-	{
-		return transform;
-	}
-
 	void Object::DeleteAllComponent()
 	{
-		for(std::vector<Component*>::iterator iter = components.begin(); iter != components.end(); ++iter)
+		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			delete (*iter);
 
-		components.clear();
+		_components.clear();
 	}
 }

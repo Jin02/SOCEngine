@@ -3,18 +3,19 @@
 #include "Sphere.h"
 #include "Component.h"
 #include "Color.h"
+#include "Common.h"
 
 namespace Rendering
 {
 	namespace Light
 	{
-		class LightForm : public Component
+		class LightForm : public Core::Component
 		{
 		public:
-			static const Component::Type ComponentType = Component::Type::Light;
+			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
 
 		public:
-			enum LightType{ DIRECTIONAL = 0, POINT, SPOT };
+			enum LightType{ Directional = 0, Point, Spot };
 
 		protected:
 			LightType _type;
@@ -31,14 +32,15 @@ namespace Rendering
 			LightForm();
 
 		public:
-			virtual bool Intersect(Collision::Sphere &sphere) = 0;
-			Math::Vector3& GetWorldPosition();
-			Math::Vector3& GetDirection();
+			virtual ~LightForm();
 
 		public:
 			virtual void Initialize();
 			virtual void Destroy();
-			LightType GetType();
+
+		public:
+			virtual bool Intersects(const Intersection::Sphere &sphere) = 0;
+			GET_ACCESSOR(LightType, const LightType, _type);
 		};
 	}
 }

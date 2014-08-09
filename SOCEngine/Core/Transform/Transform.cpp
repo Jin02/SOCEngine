@@ -2,7 +2,7 @@
 
 using namespace Math;
 
-namespace Rendering
+namespace Core
 {
 	Transform::Transform(Transform *parent)
 	{
@@ -48,36 +48,38 @@ namespace Rendering
 		dir.Normalize();
 
 		_forward = dir;
-		_right = Vector3::Normalize( Vector3::Cross(Vector3::Up(), dir) );
-		_up = Vector3::Normalize( Vector3::Cross(dir, _right) );
+		_right = Vector3::Cross(Vector3::Up(), dir);
+		_up = Vector3::Cross(dir, _right);
+		_right.Normalize();
+		_up.Normalize();
 
 		Matrix rotationMatrix;
 
-		rotationMatrix._11 = _right.x;
-		rotationMatrix._12 = _up.x;
-		rotationMatrix._13 = _forward.x;
-		rotationMatrix._14 = 0;
+		rotationMatrix._m[0][0] = _right.x;
+		rotationMatrix._m[1][0] = _right.y;
+		rotationMatrix._m[2][0] = _right.z;
+		rotationMatrix._m[3][0] = 0.0f;
 
-		rotationMatrix._21 = _right.y;
-		rotationMatrix._22 = _up.y;
-		rotationMatrix._23 = _forward.y;
-		rotationMatrix._24 = 0;
+		rotationMatrix._m[0][1] = _up.x;
+		rotationMatrix._m[1][1] = _up.y;
+		rotationMatrix._m[2][1] = _up.z;
+		rotationMatrix._m[3][1] = 0.0f;
 
-		rotationMatrix._31 = _right.z;
-		rotationMatrix._32 = _up.z;
-		rotationMatrix._33 = _forward.z;
-		rotationMatrix._34 = 0;
+		rotationMatrix._m[0][2] = _forward.x;
+		rotationMatrix._m[1][2] = _forward.y;
+		rotationMatrix._m[2][2] = _forward.z;
+		rotationMatrix._m[3][2] = 0.0f;
 
-		rotationMatrix._41 = 0;
-		rotationMatrix._42 = 0;
-		rotationMatrix._43 = 0;
-		rotationMatrix._44 = 1.0f;
+		rotationMatrix._m[0][3] = 0;
+		rotationMatrix._m[1][3] = 0;
+		rotationMatrix._m[2][3] = 0;
+		rotationMatrix._m[3][3] = 1.0f;
 
 		Quaternion::RotationMatrix(_rotation, rotationMatrix);
 
-		_localEulerAngle.y = Math::Common::Rad2Deg( atan2(-rotationMatrix._31, rotationMatrix._11) );
-		_localEulerAngle.x = Math::Common::Rad2Deg( atan2(-rotationMatrix._23, rotationMatrix._22) );
-		_localEulerAngle.z = Math::Common::Rad2Deg( asin(rotationMatrix._21) );
+		_localEulerAngle.y = Math::Common::Rad2Deg( atan2(-rotationMatrix._13, rotationMatrix._11) );
+		_localEulerAngle.x = Math::Common::Rad2Deg( atan2(-rotationMatrix._33, rotationMatrix._22) );
+		_localEulerAngle.z = Math::Common::Rad2Deg( asin(rotationMatrix._12) );
 
 		Math::Common::EulerNormalize(_localEulerAngle, _localEulerAngle);
 
@@ -182,9 +184,9 @@ namespace Rendering
 		Quaternion::RotationYawPitchRoll(_rotation, re.y, re.x, re.z);
 		Matrix::RotationQuaternion(rotationMatrix, _rotation);
 
-		_right		= Vector3(rotationMatrix._11, rotationMatrix._21, rotationMatrix._31);
-		_up 		= Vector3(rotationMatrix._12, rotationMatrix._22, rotationMatrix._32);
-		_forward	= Vector3(rotationMatrix._13, rotationMatrix._23, rotationMatrix._33);
+		_right		= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[1][0], rotationMatrix._m[2][0]);
+		_up 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
+		_forward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
 
 		UpdateMatrix();
 	}
@@ -220,17 +222,16 @@ namespace Rendering
 
 	void Transform::UpdateMatrix()
 	{
-		Matrix matrix;
-		Matrix::RotationQuaternion(matrix, _rotation);
+		Matrix::RotationQuaternion(_matrix, _rotation);
 
-		matrix._11 *= _localScale.x;
-		matrix._22 *= _localScale.y;
-		matrix._33 *= _localScale.z;
+		_matrix._11 *= _localScale.x;
+		_matrix._22 *= _localScale.y;
+		_matrix._33 *= _localScale.z;
 
-		matrix._41 = _localPosition.x;
-		matrix._42 = _localPosition.y;
-		matrix._43 = _localPosition.z;
-		matrix._44 = 1.0f;
+		_matrix._14 = _localPosition.x;
+		_matrix._24 = _localPosition.y;
+		_matrix._34 = _localPosition.z;
+		_matrix._44 = 1.0f;
 	}
 
 	void Transform::WorldPosition(Math::Vector3& outPosition)
@@ -264,7 +265,7 @@ namespace Rendering
 		child->WorldPosition(childWorldPosition);
 
 		float distance = Vector3::Distance(worldPosition, childWorldPosition);
-		_radius = MAX(distance + child->_radius, _radius);
+		_radius = std::max(distance + child->_radius, _radius);
 
 		return _radius;
 	}
