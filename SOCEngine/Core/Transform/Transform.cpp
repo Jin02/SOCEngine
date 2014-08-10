@@ -6,254 +6,33 @@ namespace Core
 {
 	Transform::Transform(Transform *parent)
 	{
+		_rotation		= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+		_scale			= Vector3::One();
+
 		_parent = parent;
-
 		if(parent)
-			_root = parent->_root;
-		else _root = this;
-
-		_forward = Vector3(0.0f, 0.0f, 1.0f);
-		_right	 = Vector3(1.0f, 0.0f, 0.0f);
-		_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
-
-		_localPosition	  = Vector3(0.0f, 0.0f, 0.0f);
-		_rotation		  = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-		_localScale		  = Vector3(1.0f, 1.0f, 1.0f);
-		_localEulerAngle = Vector3(0.0f, 0.0f, 0.0f);
-
-		for(Transform *o = this; o != NULL; o = o->_parent)
 		{
-			_position += o->_localPosition;
+			_root = parent->_root;
 
-			_scale.x *= o->_localScale.x;
-			_scale.y *= o->_localScale.y;
-			_scale.z *= o->_localScale.z;
+			_forward = parent->_forward;
+			_right	 = parent->_right;
+			_up	 	 = parent->_up;
+		}
+		else
+		{
+			_root = this;
 
-			_eulerAngles += _localEulerAngle;
+			_forward = Vector3(0.0f, 0.0f, 1.0f);
+			_right	 = Vector3(1.0f, 0.0f, 0.0f);
+			_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
 		}
 
-		_radius = 0.0f; // default
+		_radius = 0.0f;
 	}
 
 	Transform::~Transform(void)
 	{
 
-	}
-
-	void Transform::LookAt(const Vector3& worldPosition)
-	{
-		UpdateWorldTransform();
-
-		Vector3 dir = worldPosition - _position;
-		dir.Normalize();
-
-		_forward = dir;
-		_right = Vector3::Cross(Vector3::Up(), dir);
-		_up = Vector3::Cross(dir, _right);
-		_right.Normalize();
-		_up.Normalize();
-
-		Matrix rotationMatrix;
-
-		rotationMatrix._m[0][0] = _right.x;
-		rotationMatrix._m[1][0] = _right.y;
-		rotationMatrix._m[2][0] = _right.z;
-		rotationMatrix._m[3][0] = 0.0f;
-
-		rotationMatrix._m[0][1] = _up.x;
-		rotationMatrix._m[1][1] = _up.y;
-		rotationMatrix._m[2][1] = _up.z;
-		rotationMatrix._m[3][1] = 0.0f;
-
-		rotationMatrix._m[0][2] = _forward.x;
-		rotationMatrix._m[1][2] = _forward.y;
-		rotationMatrix._m[2][2] = _forward.z;
-		rotationMatrix._m[3][2] = 0.0f;
-
-		rotationMatrix._m[0][3] = 0;
-		rotationMatrix._m[1][3] = 0;
-		rotationMatrix._m[2][3] = 0;
-		rotationMatrix._m[3][3] = 1.0f;
-
-		Quaternion::RotationMatrix(_rotation, rotationMatrix);
-
-		_localEulerAngle.y = Math::Common::Rad2Deg( atan2(-rotationMatrix._13, rotationMatrix._11) );
-		_localEulerAngle.x = Math::Common::Rad2Deg( atan2(-rotationMatrix._33, rotationMatrix._22) );
-		_localEulerAngle.z = Math::Common::Rad2Deg( asin(rotationMatrix._12) );
-
-		Math::Common::EulerNormalize(_localEulerAngle, _localEulerAngle);
-
-		UpdateMatrix();
-	}
-
-	void Transform::LookAt(Transform *target)
-	{
-		target->UpdateWorldTransform();
-		LookAt(target->_position);
-	}
-
-	void Transform::Rotate(const Vector3& eulerAngles)
-	{
-		Vector3 euler = _localEulerAngle + eulerAngles;
-		UpdateEulerAngles(euler);
-	}
-
-	void Transform::Rotate(float x, float y, float z)
-	{
-		Vector3 euler = _localEulerAngle + Vector3(x, y, z);
-		UpdateEulerAngles(euler);
-	}
-
-	void Transform::Translate(const Vector3& translation)
-	{
-		Vector3 p = _localPosition + translation;
-		UpdateEulerAngles(p);
-	}
-
-	void Transform::TranslateWithUpVec(float units)
-	{
-		_localPosition += _up * units;
-	}
-
-	void Transform::TranslateWithForwardVec(float units)
-	{
-		_localPosition += _forward * units;
-	}
-
-	void Transform::TranslateWithRightVec(float units)
-	{
-		_localPosition += _right * units;
-	}
-
-	void Transform::WorldMatrix(Math::Matrix& outMatrix)
-	{
-		Matrix mat;
-		mat.Identity();
-
-		UpdateMatrix();
-
-		for(Transform *o = this; o != NULL; o = o->_parent)
-			mat *= o->_matrix;
-
-		outMatrix = mat;
-	}
-
-	void Transform::UpdatePosition(const Math::Vector3& position)
-	{
-		_localPosition = position;
-		UpdateMatrix();
-	}
-
-	void Transform::UpdateRotation(const Math::Quaternion& quaternion)
-	{
-		_rotation = quaternion; 
-
-		Matrix rotationMatrix;
-		Matrix::RotationQuaternion(rotationMatrix, quaternion);
-
-		_right	 = Vector3(rotationMatrix._11, rotationMatrix._21, rotationMatrix._31);
-		_up		 = Vector3(rotationMatrix._12, rotationMatrix._22, rotationMatrix._32);
-		_forward = Vector3(rotationMatrix._13, rotationMatrix._23, rotationMatrix._33);
-
-		Vector3 euler;
-		Math::Quaternion::ToEuler(euler, _rotation);
-
-		_localEulerAngle.x = Math::Common::Rad2Deg( euler.x );
-		_localEulerAngle.y = Math::Common::Rad2Deg( euler.y );
-		_localEulerAngle.z = Math::Common::Rad2Deg( euler.z );
-
-		UpdateMatrix();
-	}
-
-	void Transform::UpdateScale(const Vector3& scale)
-	{
-		_localScale = scale;
-		UpdateMatrix();
-	}
-
-	void Transform::UpdateEulerAngles(const Vector3& euler)
-	{
-		Math::Common::EulerNormalize(_localEulerAngle, euler);
-
-		Vector3 re;
-		re.x = Math::Common::Deg2Rad( euler.x );
-		re.y = Math::Common::Deg2Rad( euler.y );
-		re.z = Math::Common::Deg2Rad( euler.z );
-
-		Matrix rotationMatrix;
-		Quaternion::RotationYawPitchRoll(_rotation, re.y, re.x, re.z);
-		Matrix::RotationQuaternion(rotationMatrix, _rotation);
-
-		_right		= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[1][0], rotationMatrix._m[2][0]);
-		_up 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
-		_forward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
-
-		UpdateMatrix();
-	}
-
-	void Transform::UpdateDirection(const Math::Vector3& dir)
-	{
-		Vector3 worldPos;
-		WorldPosition(worldPos);
-
-		Vector3 p = worldPos + dir;
-		LookAt(p);
-	}
-
-	void Transform::UpdateWorldTransform()
-	{
-		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
-
-		for(Transform *o = this; o != NULL; o = o->_parent)
-		{
-			p += o->_localPosition;
-
-			s.x *= o->_localScale.x;
-			s.y *= o->_localScale.y;
-			s.z *= o->_localScale.z;
-
-			e += _localEulerAngle;
-		}
-
-		 Math::Common::EulerNormalize(_eulerAngles, e);
-		_position = p;
-		_scale = s;
-	}
-
-	void Transform::UpdateMatrix()
-	{
-		Matrix::RotationQuaternion(_matrix, _rotation);
-
-		_matrix._11 *= _localScale.x;
-		_matrix._22 *= _localScale.y;
-		_matrix._33 *= _localScale.z;
-
-		_matrix._14 = _localPosition.x;
-		_matrix._24 = _localPosition.y;
-		_matrix._34 = _localPosition.z;
-		_matrix._44 = 1.0f;
-	}
-
-	void Transform::WorldPosition(Math::Vector3& outPosition)
-	{
-		Vector3 p(0, 0, 0);
-
-		for(Transform *o = this; o != NULL; o = o->_parent)
-			p += o->_localPosition;
-
-		outPosition = p;
-	}
-
-	void Transform::Billboard(Math::Matrix& outMatrix, const Math::Matrix& camWorldMat)
-	{
-		Matrix mat = camWorldMat;
-
-		mat._11 = camWorldMat._11;
-		mat._13 = camWorldMat._13;
-		mat._31 = camWorldMat._31;
-		mat._33 = camWorldMat._33;
-
-		Matrix::Inverse(outMatrix, mat);
 	}
 
 	float Transform::CalcRadius(Transform *child)
@@ -270,12 +49,198 @@ namespace Core
 		return _radius;
 	}
 
+	void Transform::LookAt(const Vector3& targetPosition)
+	{
+		Vector3 worldPos;
+		WorldPosition(worldPos);
+
+		Vector3 dir = targetPosition - worldPos;
+		dir.Normalize();
+
+		_forward = dir;
+		_right = Vector3::Cross(Vector3::Up(), dir);
+		_up = Vector3::Cross(dir, _right);
+		_right.Normalize();
+		_up.Normalize();
+
+		Matrix rotationMatrix;
+		UpdateAxisToRotationMatrix(rotationMatrix, _right, _up, _forward);
+		Quaternion::RotationMatrix(_rotation, rotationMatrix);
+
+		_eulerAngle = _rotation.ToEuler();
+		_eulerAngle.y = Math::Common::Rad2Deg( _eulerAngle.y );
+		_eulerAngle.x = Math::Common::Rad2Deg( _eulerAngle.x );
+		_eulerAngle.z = Math::Common::Rad2Deg( _eulerAngle.z );
+
+		Math::Common::EulerNormalize(_eulerAngle, _eulerAngle);
+	}
+
+	void Transform::LookAt(Transform *target)
+	{
+		Vector3 targetPos;
+		target->WorldPosition(targetPos);
+
+		LookAt(targetPos);
+	}
+
+	void Transform::Rotate(const Vector3& eulerAngles)
+	{
+		_eulerAngle += eulerAngles;
+	}
+
+	void Transform::Rotate(float x, float y, float z)
+	{
+		_eulerAngle += Vector3(x, y, z);
+	}
+
+	void Transform::Translate(const Vector3& translation)
+	{
+		_position += translation;
+	}
+
+	void Transform::TranslateWithUpVec(float units)
+	{
+		_position += _up * units;
+	}
+
+	void Transform::TranslateWithForwardVec(float units)
+	{
+		_position += _forward * units;
+	}
+
+	void Transform::TranslateWithRightVec(float units)
+	{
+		_position += _right * units;
+	}
+
+	void Transform::WorldMatrix(Math::Matrix& outMatrix)
+	{
+		Transform tf(nullptr);
+		WorldTransform(tf);
+
+		Matrix::RotationQuaternion(outMatrix, tf._rotation);
+		outMatrix._14 = tf._position.x;
+		outMatrix._24 = tf._position.y;
+		outMatrix._34 = tf._position.z;
+		outMatrix._44 = 1.0f;
+
+		outMatrix._11 *= tf._scale.x;
+		outMatrix._22 *= tf._scale.y;
+		outMatrix._33 *= tf._scale.z;
+	}
+
+	void Transform::UpdatePosition(const Math::Vector3& position)
+	{
+		_position = position;
+	}
+
+	void Transform::UpdateRotation(const Math::Quaternion& quaternion, bool updateAxis)
+	{
+		_rotation = quaternion; 
+
+		Vector3 euler;
+		Math::Quaternion::ToEuler(euler, _rotation);
+
+		_eulerAngle.x = Math::Common::Rad2Deg( euler.x );
+		_eulerAngle.y = Math::Common::Rad2Deg( euler.y );
+		_eulerAngle.z = Math::Common::Rad2Deg( euler.z );
+
+		if(updateAxis)
+		{
+			Matrix rotationMatrix;
+			Matrix::RotationQuaternion(rotationMatrix, _rotation);
+			UpdateRotationMatrixToAxis(rotationMatrix, _right, _up, _forward);
+		}
+	}
+
+	void Transform::UpdateEulerAngles(const Vector3& euler, bool updateAxis)
+	{
+		Math::Common::EulerNormalize(_eulerAngle, euler);
+
+		Vector3 re;
+		re.x = Math::Common::Deg2Rad( _eulerAngle.x );
+		re.y = Math::Common::Deg2Rad( _eulerAngle.y );
+		re.z = Math::Common::Deg2Rad( _eulerAngle.z );
+
+		Quaternion::RotationYawPitchRoll(_rotation, re.y, re.x, re.z);
+
+		if(updateAxis)
+		{
+			Matrix rotationMatrix;
+			Matrix::RotationQuaternion(rotationMatrix, _rotation);
+			UpdateRotationMatrixToAxis(rotationMatrix, _right, _up, _forward);
+		}
+	}
+
+	void Transform::UpdateScale(const Vector3& scale)
+	{
+		_scale = scale;
+	}
+
+	void Transform::UpdateDirection(const Math::Vector3& dir)
+	{
+		Vector3 worldPos;
+		WorldPosition(worldPos);
+
+		Vector3 p = worldPos + dir;
+		LookAt(p);
+	}
+
+	void Transform::WorldTransform(Transform& out)
+	{
+		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
+		Quaternion q;
+
+		for(Transform *o = this; o != NULL; o = o->_parent)
+		{
+			p += o->_position;
+
+			s.x *= o->_scale.x;
+			s.y *= o->_scale.y;
+			s.z *= o->_scale.z;
+
+			e += _eulerAngle;
+		}
+
+		out._position = p;
+		Math::Common::EulerNormalize(out._eulerAngle, e);
+		out._scale = s;
+
+		float yaw = Math::Common::Deg2Rad(out._eulerAngle.y);
+		float pitch = Math::Common::Deg2Rad(out._eulerAngle.x);
+		float roll = Math::Common::Deg2Rad(out._eulerAngle.z);
+
+		Quaternion::RotationYawPitchRoll(out._rotation, yaw, pitch, roll);
+	}
+
+	void Transform::WorldPosition(Math::Vector3& outPosition)
+	{
+		Vector3 p(0, 0, 0);
+
+		for(Transform *o = this; o != NULL; o = o->_parent)
+			p += o->_position;
+
+		outPosition = p;
+	}
+
+	void Transform::Billboard(Math::Matrix& outMatrix, const Math::Matrix& camWorldMat)
+	{
+		Matrix mat = camWorldMat;
+
+		mat._11 = camWorldMat._11;
+		mat._13 = camWorldMat._13;
+		mat._31 = camWorldMat._31;
+		mat._33 = camWorldMat._33;
+
+		Matrix::Inverse(outMatrix, mat);
+	}
+
 	void Transform::WorldEulerAngle(Math::Vector3& outEuler)
 	{
 		Vector3 p(0, 0, 0);
 
 		for(Transform *o = this; o != NULL; o = o->_parent)
-			p += o->_localEulerAngle;
+			p += o->_eulerAngle;
 
 		outEuler = p;
 	}
@@ -286,11 +251,41 @@ namespace Core
 
 		for(Transform *o = this; o != NULL; o = o->_parent)
 		{
-			p.x *= o->_localScale.x;
-			p.y *= o->_localScale.y;
-			p.z *= o->_localScale.z;
+			p.x *= o->_scale.x;
+			p.y *= o->_scale.y;
+			p.z *= o->_scale.z;
 		}
 
 		outScale = p;
+	}
+
+	void Transform::UpdateAxisToRotationMatrix(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward)
+	{
+		outMatrix._m[0][0] = right.x;
+		outMatrix._m[1][0] = right.y;
+		outMatrix._m[2][0] = right.z;
+		outMatrix._m[3][0] = 0.0f;
+
+		outMatrix._m[0][1] = up.x;
+		outMatrix._m[1][1] = up.y;
+		outMatrix._m[2][1] = up.z;
+		outMatrix._m[3][1] = 0.0f;
+
+		outMatrix._m[0][2] = forward.x;
+		outMatrix._m[1][2] = forward.y;
+		outMatrix._m[2][2] = forward.z;
+		outMatrix._m[3][2] = 0.0f;
+
+		outMatrix._m[0][3] = 0;
+		outMatrix._m[1][3] = 0;
+		outMatrix._m[2][3] = 0;
+		outMatrix._m[3][3] = 1.0f;
+	}
+
+	void Transform::UpdateRotationMatrixToAxis(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward)
+	{
+		outRight	= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[1][0], rotationMatrix._m[2][0]);
+		outUp 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
+		outForward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
 	}
 }

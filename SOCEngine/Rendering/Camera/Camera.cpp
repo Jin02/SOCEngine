@@ -71,7 +71,9 @@ namespace Rendering
 		ownerTransform->WorldMatrix(outMatrix);
 
 		Vector3 worldPos;
-		ownerTransform->WorldPosition(worldPos);
+		worldPos.x = outMatrix._14;
+		worldPos.y = outMatrix._24;
+		worldPos.z = outMatrix._34;
 
 		Vector3 p;
 		p.x = -Vector3::Dot(ownerTransform->GetRight(), worldPos);
