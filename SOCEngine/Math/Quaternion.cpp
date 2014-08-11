@@ -259,9 +259,9 @@ namespace Math
 		if (trace > 1.0f)
 		{
 			s = 2.0f * sqrtf(trace);
-			out.x = (m._m[1][2] - m._m[2][1]) / s;
-			out.y = (m._m[2][0] - m._m[0][2]) / s;
-			out.z = (m._m[0][1] - m._m[1][0]) / s;
+			out.x = (m._m[2][1] - m._m[1][2]) / s;
+			out.y = (m._m[0][2] - m._m[2][0]) / s;
+			out.z = (m._m[1][0] - m._m[0][1]) / s;
 			out.w = 0.25f * s;
 		}
 		else
@@ -279,25 +279,25 @@ namespace Math
 			case 0:
 				s = 2.0f * sqrtf(1.0f + m._m[0][0] - m._m[1][1] - m._m[2][2]);
 				out.x = 0.25f * s;
-				out.y = (m._m[0][1] + m._m[1][0]) / s;
-				out.z = (m._m[0][2] + m._m[2][0]) / s;
-				out.w = (m._m[1][2] - m._m[2][1]) / s;
+				out.y = (m._m[1][0] + m._m[0][1]) / s;
+				out.z = (m._m[2][0] + m._m[0][2]) / s;
+				out.w = (m._m[2][1] - m._m[1][2]) / s;
 				break;
 
 			case 1:
 				s = 2.0f * sqrtf(1.0f + m._m[1][1] - m._m[0][0] - m._m[2][2]);
-				out.x = (m._m[0][1] + m._m[1][0]) / s;
+				out.x = (m._m[1][0] + m._m[0][1]) / s;
 				out.y = 0.25f * s;
-				out.z = (m._m[1][2] + m._m[2][1]) / s;
-				out.w = (m._m[2][0] - m._m[0][2]) / s;
+				out.z = (m._m[2][1] + m._m[1][2]) / s;
+				out.w = (m._m[0][2] - m._m[2][0]) / s;
 				break;
 
 			case 2:
 				s = 2.0f * sqrtf(1.0f + m._m[2][2] - m._m[0][0] - m._m[1][1]);
-				out.x = (m._m[0][2] + m._m[2][0]) / s;
-				out.y = (m._m[1][2] + m._m[2][1]) / s;
+				out.x = (m._m[2][0] + m._m[0][2]) / s;
+				out.y = (m._m[2][1] + m._m[1][2]) / s;
 				out.z = 0.25f * s;
-				out.w = (m._m[0][1] - m._m[1][0]) / s;
+				out.w = (m._m[1][0] - m._m[0][1]) / s;
 				break;
 			}
 		}

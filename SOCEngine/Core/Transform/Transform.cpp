@@ -262,30 +262,30 @@ namespace Core
 	void Transform::UpdateAxisToRotationMatrix(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward)
 	{
 		outMatrix._m[0][0] = right.x;
-		outMatrix._m[1][0] = right.y;
-		outMatrix._m[2][0] = right.z;
-		outMatrix._m[3][0] = 0.0f;
+		outMatrix._m[0][1] = right.y;
+		outMatrix._m[0][2] = right.z;
+		outMatrix._m[0][3] = 0.0f;
 
-		outMatrix._m[0][1] = up.x;
+		outMatrix._m[1][0] = up.x;
 		outMatrix._m[1][1] = up.y;
-		outMatrix._m[2][1] = up.z;
-		outMatrix._m[3][1] = 0.0f;
+		outMatrix._m[1][2] = up.z;
+		outMatrix._m[1][3] = 0.0f;
 
-		outMatrix._m[0][2] = forward.x;
-		outMatrix._m[1][2] = forward.y;
+		outMatrix._m[2][0] = forward.x;
+		outMatrix._m[2][1] = forward.y;
 		outMatrix._m[2][2] = forward.z;
-		outMatrix._m[3][2] = 0.0f;
+		outMatrix._m[2][3] = 0.0f;
 
-		outMatrix._m[0][3] = 0;
-		outMatrix._m[1][3] = 0;
-		outMatrix._m[2][3] = 0;
+		outMatrix._m[3][0] = 0;
+		outMatrix._m[3][1] = 0;
+		outMatrix._m[3][2] = 0;
 		outMatrix._m[3][3] = 1.0f;
 	}
 
 	void Transform::UpdateRotationMatrixToAxis(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward)
 	{
-		outRight	= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[1][0], rotationMatrix._m[2][0]);
-		outUp 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
-		outForward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
+		outRight	= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[0][1], rotationMatrix._m[0][2]);
+		outUp 		= Vector3(rotationMatrix._m[1][0], rotationMatrix._m[1][1], rotationMatrix._m[1][2]);
+		outForward	= Vector3(rotationMatrix._m[2][0], rotationMatrix._m[2][1], rotationMatrix._m[2][2]);
 	}
 }
