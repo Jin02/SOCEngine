@@ -193,18 +193,17 @@ namespace Math
 
 	void Matrix::Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
 	{
-		for(int k=0; k<4; ++k)
+		for(int i=0; i<4; ++i)
 		{
-			for(int i=0; i<4; ++i)
+			for(int j=0; j<4; ++j)
 			{
 				float f = 0.0f;
-
-				for(int j=0; j<4; ++j)
+				for(int k=0; k<4; ++k)
 				{
-					f += lhs._m[j][k] * rhs._m[i][j];
+					f += lhs._m[i][k] * rhs._m[k][j];
 				}
 
-				out._m[i][k] = f;
+				out._m[i][j] = f;
 			}
 		}
 	}
