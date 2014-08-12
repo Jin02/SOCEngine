@@ -31,7 +31,7 @@ namespace Rendering
 			virtual ~BaseShader(void);
 
 		public:
-			typedef std::pair<int, Rendering::Buffer::ConstBuffer*> BufferType;
+			typedef std::pair<int, Rendering::Buffer::BaseBuffer*> BufferType;
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);

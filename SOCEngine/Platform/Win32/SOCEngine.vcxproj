@@ -14,9 +14,6 @@
     <ClInclude Include="..\..\Common\Common.h" />
     <ClInclude Include="..\..\Core\Component\Component.h" />
     <ClInclude Include="..\..\Core\Layer\LayerManager.h" />
-    <ClInclude Include="..\..\Core\Object\BasicParameterNames.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\Core\Object\Object.h" />
     <ClInclude Include="..\..\Core\Scene\Scene.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -80,18 +77,14 @@
     <ClInclude Include="..\..\Structure\Structure.h" />
     <ClInclude Include="..\..\Utility\DirectoryManager.h" />
     <ClInclude Include="..\..\Utility\Utility.h" />
-    <ClInclude Include="Device.h" />
-    <ClInclude Include="Director.h" />
-    <ClInclude Include="DirectX.h" />
+    <ClInclude Include="..\Director\Director.h" />
+    <ClInclude Include="..\DirectX\DirectX.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Win32.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Core\Component\Component.cpp" />
     <ClCompile Include="..\..\Core\Layer\LayerManager.cpp" />
-    <ClCompile Include="..\..\Core\Object\BasicParameterNames.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\Core\Object\Object.cpp" />
     <ClCompile Include="..\..\Core\Scene\Scene.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -141,8 +134,8 @@
     <ClCompile Include="..\..\Rendering\Texture\Texture.cpp" />
     <ClCompile Include="..\..\Rendering\Texture\TextureManager.cpp" />
     <ClCompile Include="..\..\Utility\DirectoryManager.cpp" />
-    <ClCompile Include="Director.cpp" />
-    <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="..\Director\Director.cpp" />
+    <ClCompile Include="..\DirectX\DirectX.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Win32.cpp" />
@@ -179,7 +172,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/Graphics;../../Platform/Win32;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(FBX2014_DIR)include;../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>
