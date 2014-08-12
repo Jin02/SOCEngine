@@ -35,20 +35,6 @@ namespace Core
 
 	}
 
-	float Transform::CalcRadius(Transform *child)
-	{
-		Vector3 worldPosition;
-		WorldPosition(worldPosition);
-
-		Vector3 childWorldPosition;
-		child->WorldPosition(childWorldPosition);
-
-		float distance = Vector3::Distance(worldPosition, childWorldPosition);
-		_radius = std::max(distance + child->_radius, _radius);
-
-		return _radius;
-	}
-
 	void Transform::LookAt(const Vector3& targetPosition)
 	{
 		Vector3 worldPos;

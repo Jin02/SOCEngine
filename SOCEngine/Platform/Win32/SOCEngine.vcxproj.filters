@@ -60,14 +60,8 @@
     <Filter Include="Device\Director">
       <UniqueIdentifier>{05e124f2-c444-4ea3-ac4e-d6984e6510e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Device\Graphics">
-      <UniqueIdentifier>{a2a293d6-1f83-48ac-90d6-0ad840993cf5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{986f2004-69a4-4ef1-9a6b-8a2f38a4fe74}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Device\Application">
-      <UniqueIdentifier>{681a8791-32da-4887-9cac-d973e58e4b43}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Component">
       <UniqueIdentifier>{1ac893bb-c50b-44ad-944d-07fec3dec7b9}</UniqueIdentifier>
@@ -111,9 +105,6 @@
     <Filter Include="Core\Transform">
       <UniqueIdentifier>{1aa6cca6-9c13-4a75-a3fc-f2b6a0f5d45f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Device\Application\Win32">
-      <UniqueIdentifier>{2b4269aa-4366-4980-bba3-1419c38200b0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Intersection">
       <UniqueIdentifier>{26dd6fce-5323-4faf-b8cc-61a0eb862160}</UniqueIdentifier>
     </Filter>
@@ -132,13 +123,16 @@
     <Filter Include="Rendering\Sampler">
       <UniqueIdentifier>{6731c20f-0e30-44a7-9ab4-ad96d062b317}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Device\Win32">
+      <UniqueIdentifier>{2b4269aa-4366-4980-bba3-1419c38200b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device\DirectX">
+      <UniqueIdentifier>{a2a293d6-1f83-48ac-90d6-0ad840993cf5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Director.h">
-      <Filter>Device\Director</Filter>
-    </ClInclude>
     <ClInclude Include="Win32.h">
-      <Filter>Device\Application\Win32</Filter>
+      <Filter>Device\Win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Common.h">
       <Filter>Common</Filter>
@@ -163,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Structure\Structure.h">
       <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Core\Object\BasicParameterNames.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Light\DirectionalLight.h">
       <Filter>Rendering\Light</Filter>
@@ -233,9 +224,6 @@
     <ClInclude Include="..\..\Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Device.h">
-      <Filter>Device</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Structure\Singleton.h">
       <Filter>Structure</Filter>
     </ClInclude>
@@ -268,12 +256,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Texture\RenderTexture.h">
       <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX.h">
-      <Filter>Device\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h">
       <Filter>Rendering\Buffer\Vertex</Filter>
@@ -338,13 +320,19 @@
     <ClInclude Include="..\..\Utility\DirectoryManager.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\Director\Director.h">
+      <Filter>Device\Director</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DirectX\DirectX.h">
+      <Filter>Device\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Director.cpp">
-      <Filter>Device\Director</Filter>
-    </ClCompile>
     <ClCompile Include="Win32.cpp">
-      <Filter>Device\Application\Win32</Filter>
+      <Filter>Device\Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Core\Scene\Scene.cpp">
       <Filter>Core\Scene</Filter>
@@ -363,9 +351,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Core\Object\BasicParameterNames.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Light\DirectionalLight.cpp">
       <Filter>Rendering\Light</Filter>
@@ -436,15 +421,6 @@
     <ClCompile Include="..\..\Rendering\Texture\RenderTexture.cpp">
       <Filter>Rendering\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectX.cpp">
-      <Filter>Device\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp">
       <Filter>Rendering\Buffer\Vertex</Filter>
     </ClCompile>
@@ -498,6 +474,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Utility\DirectoryManager.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Director\Director.cpp">
+      <Filter>Device\Director</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DirectX\DirectX.cpp">
+      <Filter>Device\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

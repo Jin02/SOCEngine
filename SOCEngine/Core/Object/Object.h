@@ -111,9 +111,6 @@ namespace Core
 		GET_SET_ACCESSOR(Name, const std::string&, _name);
 
 	public:
-		void UpdateChild(float delta);
-
-	public:
 		static Object* Copy(Object *obj);
 		GET_ACCESSOR(Transform, Transform*, _transform);
 	};

@@ -30,18 +30,7 @@ namespace Core
 	Object* Object::AddObject(Object *child, bool copy/* = false */)
 	{
 		Object *c =  Vector::Add(child->_name, child, copy);
-		_transform->CalcRadius(c->_transform);
-
 		return c;
-	}
-
-	void Object::UpdateChild(float delta)
-	{
-		if(_use == false)
-			return;
-
-		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
 	bool Object::CompareIsChildOfParent(Object *parent)
@@ -66,13 +55,20 @@ namespace Core
 
 	void Object::Update(float delta)
 	{
+		if(_use == false)
+			return;
+
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->Update(delta);
+
+		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
 	void Object::Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam)
 	{
-//		if(_culled)	return;
+		if(_use == false || _culled)
+			return;
 
 		Vector3 wp;
 		_transform->WorldPosition(wp);
@@ -87,7 +83,6 @@ namespace Core
 		}
 
 		_transform->WorldMatrix(transformParam.worldMat);
-		transformParam.worldViewProjMat = transformParam.worldMat * transformParam.viewProjMat;
 		
 		const Math::Matrix& viewMat = transformParam.viewMat;
 		Vector4 viewPos = Vector4(viewMat._14, viewMat._24, viewMat._34, 1.0f);

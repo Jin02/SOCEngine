@@ -45,7 +45,6 @@ namespace Core
 		void TranslateWithRightVec(float units);
 
 		void Billboard(Math::Matrix& outMatrix, const Math::Matrix& camWorldMat);
-		float CalcRadius(Transform *child);
 
 	public:
 		void UpdatePosition(const Math::Vector3& position);		
@@ -55,7 +54,7 @@ namespace Core
 		void UpdateDirection(const Math::Vector3& dir);
 
 	public:
-		GET_ACCESSOR(Radius, float, _radius);
+		GET_SET_ACCESSOR(Radius, float, _radius);
 		GET_ACCESSOR(LocalPosition, const Math::Vector3&, _position);
 		GET_ACCESSOR(LocalEulerAngle, const Math::Vector3&, _eulerAngle);
 		GET_ACCESSOR(LocalScale, const Math::Vector3&, _scale);

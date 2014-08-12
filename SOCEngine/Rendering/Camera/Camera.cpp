@@ -101,8 +101,8 @@ namespace Rendering
 		ProjectionMatrix(tfParam.projMat);
 		ViewMatrix(tfParam.viewMat);
 
-		tfParam.viewProjMat = tfParam.viewMat * tfParam.projMat;
-		_frustum->Make(tfParam.viewProjMat);
+		Matrix viewProj = tfParam.viewMat * tfParam.projMat;
+		_frustum->Make(viewProj);
 
 		vector<LightForm*> lights;
 		//if( sceneLights->Intersects(lights, _frustum) )

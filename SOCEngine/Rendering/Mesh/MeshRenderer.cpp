@@ -8,7 +8,6 @@ namespace Rendering
 	MeshRenderer::MeshRenderer() : _optionalVertexShaderConstBuffers(nullptr),
 		_vertexShaderUsingTextures(nullptr), _pixelShaderUsingConstBuffer(nullptr)
 	{
-		_usingMatrix = UsingTransformMatrix::OneByOne;
 		_vertexShaderConstBufferUpdateType = VertexShaderConstBufferUpdateType::Add;
 	}
 
@@ -29,27 +28,11 @@ namespace Rendering
 	{
 		Buffer::ConstBufferManager* cbMgr = Device::Director::GetInstance()->GetCurrentScene()->GetConstBufferManager();
 
-		unsigned int bufferSize = 0;
-		const char* bufferType = "";
-		const void* bufferData = nullptr;
-		if(_usingMatrix == UsingTransformMatrix::OneByOne)
-		{
-			bufferSize = sizeof(Math::Matrix) * 3; //world,view,proj 행렬 3개
-			bufferType = "Transform_OneByOne";
-			bufferData = &transform; //wvp가 앞이라 걱정 ㄴㄴ
-		}
-		else if(_usingMatrix == UsingTransformMatrix::AllCalculate)
-		{
-			bufferSize = sizeof(Math::Matrix); //wvp 통합
-			bufferType = "Transform_AllCalculate";
-			bufferData = &(transform.worldViewProjMat);
-		}
-
-		Buffer::ConstBuffer* cb = cbMgr->Find(bufferType);
+		Buffer::ConstBuffer* cb = cbMgr->Find("Transform");
 		if(cb == nullptr)
-			cb = cbMgr->AddBuffer(bufferType, bufferSize);
+			cb = cbMgr->AddBuffer("Transform", sizeof(Math::Matrix) * 3);
 
-		cb->UpdateSubresource(context, bufferData);
+		cb->UpdateSubresource(context, &transform);
 		vertexShaderConstBuffers.push_back(Shader::BaseShader::BufferType(0, cb));
 
 		if(_optionalVertexShaderConstBuffers)

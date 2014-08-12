@@ -28,7 +28,7 @@ void TestScene::OnInitialize()
 		Rendering::Mesh::Mesh* mesh = testObj->AddComponent<Rendering::Mesh::Mesh>();
 		Core::Transform* tf = testObj->GetTransform();
 		_test = tf;
-		tf->UpdatePosition(Math::Vector3(0, 0, 50));
+		tf->UpdatePosition(Math::Vector3(0, 0, 10));
 		_rootObjects.Add("Test", testObj);
 		{
 			struct TestVertex

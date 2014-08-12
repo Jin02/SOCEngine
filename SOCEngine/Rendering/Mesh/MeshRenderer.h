@@ -11,11 +11,6 @@ namespace Rendering
 		class MeshRenderer
 		{
 		public:
-			enum UsingTransformMatrix
-			{
-				OneByOne,
-				AllCalculate
-			};
 			enum VertexShaderConstBufferUpdateType
 			{
 				Replace,
@@ -23,9 +18,7 @@ namespace Rendering
 			};
 
 		private:
-
 			Structure::Vector<Material::Material> _materials;
-			UsingTransformMatrix				_usingMatrix;
 
 			const std::vector<Shader::BaseShader::BufferType>*	_optionalVertexShaderConstBuffers;			
 			VertexShaderConstBufferUpdateType					_vertexShaderConstBufferUpdateType;
