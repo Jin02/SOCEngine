@@ -132,6 +132,9 @@
     <Filter Include="Importer">
       <UniqueIdentifier>{7bea5a55-516d-4542-85d2-f139666b8712}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Importer\Obj">
+      <UniqueIdentifier>{c820752c-d594-4730-bdaf-28e035ebdcad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -333,7 +336,7 @@
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Importer\ObjImporter.h">
-      <Filter>Importer</Filter>
+      <Filter>Importer\Obj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -494,7 +497,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Importer\ObjImporter.cpp">
-      <Filter>Importer</Filter>
+      <Filter>Importer\Obj</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

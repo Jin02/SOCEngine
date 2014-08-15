@@ -31,7 +31,7 @@ namespace Rendering
 		_aspect = (float)windowSize.w / (float)windowSize.h;
 
 		_camType    = Type::Perspective;
-		_clearColor = Color(0.5f, 0.5f, 1.0f,1.0f);
+		_clearColor = Color(0.5f, 0.5f, 1.0f);
 
 		_frustum = new Frustum(0.0f);		
 
