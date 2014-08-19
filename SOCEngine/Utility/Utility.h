@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 
-namespace Utility
+class Utility
 {
+public:
 	//http://www.joinc.co.kr/modules/moniwiki/wiki.php/Site/C++/Documents/C++ProgramingHowToPerPage/standardstring.html
 	static void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ")
 	{
@@ -23,4 +24,4 @@ namespace Utility
 			pos = str.find_first_of(delimiters, lastPos);
 		}
 	}
-}
+};

@@ -1,4 +1,5 @@
 #include "TextureManager.h"
+#include "Director.h"
 
 using namespace Rendering::Texture;
 
@@ -13,8 +14,7 @@ TextureManager::~TextureManager()
 
 bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& path, const std::string& nameWithExtension)
 {
-	ID3D11Device* device;
-
+	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, (path+nameWithExtension).c_str(), nullptr, nullptr, outShaderResourceView, nullptr);
 	if( FAILED(hr) )
 		return false;

@@ -3,11 +3,7 @@
 
 INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )
 {
-	Structure::Map<int> m;
-	m.GetSize();
-
-	Structure::HashMap<int> h;
-	h.GetSize();
+	void* data = nullptr;
 
 	std::vector<std::string> t;
 	Utility::Tokenize("\tNs 10.0000", t);

@@ -7,6 +7,7 @@
 #include "Light.h"
 #include "Frustum.h"
 #include "TransformPipelineParam.h"
+#include "Mesh.h"
 
 namespace Core
 {

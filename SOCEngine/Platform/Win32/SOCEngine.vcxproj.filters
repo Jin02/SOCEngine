@@ -135,6 +135,9 @@
     <Filter Include="Importer\Obj">
       <UniqueIdentifier>{c820752c-d594-4730-bdaf-28e035ebdcad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Importer\Obj\tiny">
+      <UniqueIdentifier>{8ba5f2b3-3967-4271-b59e-db8496225c9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -338,6 +341,9 @@
     <ClInclude Include="..\..\Importer\ObjImporter.h">
       <Filter>Importer\Obj</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Importer\tiny_obj_loader.h">
+      <Filter>Importer\Obj\tiny</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Win32.cpp">
@@ -498,6 +504,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Importer\tiny_obj_loader.cc">
+      <Filter>Importer\Obj\tiny</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
