@@ -1,5 +1,5 @@
 SOCEngine/Platform/Win32/Debug/
-SOCTestProject/Debug/
+SOCTestProject/SOCTestProject/Debug/
 *.sdf
 *.opensdf
 *.ipch
