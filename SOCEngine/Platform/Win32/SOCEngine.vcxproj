@@ -79,7 +79,6 @@
     <ClInclude Include="..\..\Utility\Utility.h" />
     <ClInclude Include="..\Director\Director.h" />
     <ClInclude Include="..\DirectX\DirectX.h" />
-    <ClInclude Include="TestScene.h" />
     <ClInclude Include="Win32.h" />
   </ItemGroup>
   <ItemGroup>
@@ -136,8 +135,6 @@
     <ClCompile Include="..\..\Utility\DirectoryManager.cpp" />
     <ClCompile Include="..\Director\Director.cpp" />
     <ClCompile Include="..\DirectX\DirectX.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Win32.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -147,7 +144,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>

@@ -4,5 +4,5 @@ SOCEngine/Platform/Win32/Debug/
 *.ipch
 *.v11.suo
 
-SOCTestProject//Debug/
+SOCTestProject/Debug/
 SOCTestProject/SOCTestProject/Debug/
