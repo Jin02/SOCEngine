@@ -69,7 +69,7 @@ void TestScene::OnInitialize()
 				Math::Vector3( -1.0f, 1.0f, 1.0f )
 			};
 
-			static WORD indices[] =
+			static unsigned int indices[] =
 			{
 				3,1,0,
 				2,1,3,

@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\Core\Time\Timer.h" />
     <ClInclude Include="..\..\Core\Transform\Transform.h" />
     <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h" />
+    <ClInclude Include="..\..\Importer\ImporterUtility.h" />
     <ClInclude Include="..\..\Importer\ObjImporter.h" />
     <ClInclude Include="..\..\Importer\tiny_obj_loader.h" />
     <ClInclude Include="..\..\Intersection\AABB.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="..\..\Core\Tag\TagManager.cpp" />
     <ClCompile Include="..\..\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\Core\Transform\Transform.cpp" />
+    <ClCompile Include="..\..\Importer\ImporterUtility.cpp" />
     <ClCompile Include="..\..\Importer\ObjImporter.cpp" />
     <ClCompile Include="..\..\Importer\tiny_obj_loader.cc" />
     <ClCompile Include="..\..\Intersection\AABB.cpp" />

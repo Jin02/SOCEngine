@@ -53,6 +53,7 @@ namespace Rendering
 		static Color yellow();
 
 		static Color Lerp(Color a, Color b, float t);
+		void SetColor(const float* color);
 
 	private:
 		void CalculateColor(Color *color);

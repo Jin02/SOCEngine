@@ -2,14 +2,14 @@
 
 using namespace Rendering::Material;
 
-Material::LightColor::LightColor() 
+Material::Color::Color() 
 	:diffuse(1.0f, 1.0f, 1.0f), ambient(0.5f, 0.5f, 0.5f),
 	specular(1.0f, 1.0f, 1.0f), emissive(0.0f, 0.0f, 0.0f),
-	specularExponent(0.0f)
+	shiness(0.0f), opacity(1.0f)
 {
 }
 
-Material::LightColor::~LightColor()
+Material::Color::~Color()
 {
 }
 
@@ -20,8 +20,8 @@ Material::Material(const std::string& name)
 
 }
 
-Material::Material(const std::string& name, const LightColor& lightColor) 
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _lightColor(lightColor)
+Material::Material(const std::string& name, const Color& color) 
+	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color)
 {
 
 }

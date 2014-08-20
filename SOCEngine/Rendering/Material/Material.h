@@ -12,17 +12,18 @@ namespace Rendering
 		class Material
 		{
 		public:
-			struct LightColor
+			struct Color
 			{
-				Color diffuse;
-				Color ambient;
-				Color specular;
-				Color emissive;
+				Rendering::Color diffuse;
+				Rendering::Color ambient;
+				Rendering::Color specular;
+				Rendering::Color emissive;
 
-				float specularExponent;
+				float shiness;
+				float opacity;
 
-				LightColor();
-				~LightColor();
+				Color();
+				~Color();
 			};
 
 			enum TextureType
@@ -38,13 +39,13 @@ namespace Rendering
 			Shader::VertexShader*					_vertexShader;
 			Shader::PixelShader*					_pixelShader;
 			std::string								_name;
-			LightColor								_lightColor;
+			Color									_color;
 
 			std::vector<const Texture::Texture*>	_textures;
 
 		public:
 			Material(const std::string& name);
-			Material(const std::string& name, const LightColor& lightColor);
+			Material(const std::string& name, const Color& lightColor);
 			~Material(void);
 
 		public:
@@ -59,7 +60,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
 			GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
 			GET_SET_ACCESSOR(Textures, const std::vector<const Texture::Texture*>&, _textures);
-			GET_SET_ACCESSOR(LightColor, const LightColor&, _lightColor);
+			GET_SET_ACCESSOR(Color, const Color&, _color);
 		};
 
 	}

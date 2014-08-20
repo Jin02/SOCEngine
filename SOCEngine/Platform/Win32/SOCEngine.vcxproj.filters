@@ -344,6 +344,9 @@
     <ClInclude Include="..\..\Importer\tiny_obj_loader.h">
       <Filter>Importer\Obj\tiny</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Importer\ImporterUtility.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Win32.cpp">
@@ -507,6 +510,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Importer\tiny_obj_loader.cc">
       <Filter>Importer\Obj\tiny</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Importer\ImporterUtility.cpp">
+      <Filter>Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

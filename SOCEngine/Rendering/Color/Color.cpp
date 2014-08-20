@@ -143,4 +143,11 @@ namespace Rendering
 
 		return Color(_r,_g,_b);
 	}
+
+	void Color::SetColor(const float* color)
+	{
+		r = color[0];
+		g = color[1];
+		b = color[2];
+	}
 }

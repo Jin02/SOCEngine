@@ -1,5 +1,7 @@
 #include "ObjImporter.h"
 #include "Utility.h"
+#include "MaterialManager.h"
+#include "Director.h"
 
 using namespace Importer;
 using namespace Rendering::Material;
@@ -13,7 +15,7 @@ ObjImporter::~ObjImporter()
 {
 }
 
-Core::Object* ObjImporter::Load(const std::string& fileFolderPath, const std::string& fileNameWithExtension, bool useNormalMap)
+Core::Object* ObjImporter::Load(const std::string& fileFolderPath, const std::string& fileNameWithExtension)
 {
 	std::vector<tinyobj::shape_t> shapes;
 	std::string error = tinyobj::LoadObj(shapes, (fileFolderPath+fileNameWithExtension).data());
@@ -31,38 +33,74 @@ Core::Object* ObjImporter::Load(const std::string& fileFolderPath, const std::st
 	Core::Object* parent = new Core::Object;
 	parent->SetName(fileName);
 
+	MaterialManager* materialMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMaterialManager();
+
 	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
 	{
 		Core::Object* child = new Core::Object;
 		child->SetName(iter->name);
 		Mesh* mesh = child->AddComponent<Mesh>();
 
-		{
-			unsigned int indexCount = iter->mesh.indices.size();
-			const std::vector<unsigned int>& indices = iter->mesh.indices;
-
-			unsigned int num = iter->mesh.positions.size();
-			int stride = useNormalMap == false ?
-						(sizeof(Math::Vector3) * 2 + sizeof(Math::Vector2))
+		const unsigned int num = iter->mesh.positions.size() / 3;
+		int stride = (sizeof(Math::Vector3) * 2 + sizeof(Math::Vector2));
 						// Position, Normal				  TexCoord
-						: (sizeof(Math::Vector3) * 4 + sizeof(Math::Vector2));
-						// Position, Normal,			  TexCoord
-						// Tangetnt, Binormal
-			size_t size = num * stride;
+		size_t size = num * stride;
+
+		const void* vertexBufferData = nullptr;
+		{
 			void* buffer = malloc(size);
+		
+			const std::vector<float>& positions = iter->mesh.positions;
+			const std::vector<float>& normals = iter->mesh.normals;
+			const std::vector<float>& texcoords = iter->mesh.texcoords;
 
-			unsigned int count = num / 3;
-			for(unsigned int i = 0; i < count; ++i)
+#define INSERT_BUFFER_DATA(type, buf, value) *((type*)buf) = value; buf = (type*)buffer + 1; 
+
+			unsigned int vec3Idx = 0;
+			unsigned int vec2Idx = 0;
+			for(unsigned int i = 0; i < num; ++i)
 			{
-#define INSERT_BUFFER_DATA(type, buf, value) *((type*)buf) = value; 
+				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 0]);
+				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 1]);
+				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 2]);
 
-				*((float*)buffer) = 10.0f;
-				buffer = (float*)buffer + 1;
+				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 0]);
+				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 1]);
+				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 2]);
+				vec3Idx += 3;
+
+				INSERT_BUFFER_DATA(float, buffer, texcoords[vec2Idx + 0]);
+				INSERT_BUFFER_DATA(float, buffer, texcoords[vec2Idx + 1]);
+				vec2Idx += 2;
 			}
-			iter->mesh.normals;
-			iter->mesh.positions;
-			iter->mesh.texcoords;
+
+			vertexBufferData = buffer;
 		}
+
+		const tinyobj::material_t& objMaterial = iter->material;
+		const std::string& materialName = objMaterial.name;
+
+		Material* material = materialMgr->Find(materialName);
+		if( material == nullptr )
+		{
+			Material::Color lightColor;
+			lightColor.diffuse.SetColor(objMaterial.diffuse);
+			lightColor.specular.SetColor(objMaterial.specular);
+			lightColor.emissive.SetColor(objMaterial.emission);
+			lightColor.ambient.SetColor(objMaterial.ambient);
+			lightColor.shiness = objMaterial.shininess;
+			lightColor.opacity = objMaterial.dissolve;
+
+			material = new Material(materialName, lightColor);
+			materialMgr->Add(fileName+":"+materialName, material, false);
+		}
+
+		objMaterial.diffuse_texname;
+		objMaterial.normal_texname;
+		objMaterial.specular_texname;
+
+		const std::vector<unsigned int>& indices = iter->mesh.indices;
+		mesh->Create(vertexBufferData, num, size, indices.data(), indices.size(), nullptr, false);
 	}
 
 	return nullptr;
