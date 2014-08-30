@@ -76,6 +76,30 @@
     <ClInclude Include="..\..\Structure\Singleton.h" />
     <ClInclude Include="..\..\Structure\Structure.h" />
     <ClInclude Include="..\..\Utility\DirectoryManager.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\allocators.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\document.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\encodedstream.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\encodings.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\error\en.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\error\error.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\filereadstream.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\filestream.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\itoa.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\meta.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\memorybuffer.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\memorystream.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\reader.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\..\Utility\rapidjson\writer.h" />
     <ClInclude Include="..\..\Utility\Utility.h" />
     <ClInclude Include="..\Director\Director.h" />
     <ClInclude Include="..\DirectX\DirectX.h" />
@@ -169,7 +193,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>

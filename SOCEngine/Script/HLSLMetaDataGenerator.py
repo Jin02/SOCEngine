@@ -6,7 +6,7 @@ import json
 NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
 CONSOLE_LINE = "***********************************************"
 
-print CONSOLE_LINE
+print CONSOLE_LINE + '\n'
 
 print "SOC FrameWork Shader MetaData Generator"
 
@@ -16,6 +16,8 @@ def Dump():
 	print "-ProjectDir ./Test/ -MetaDataCustomTargetDir ./MetaDataFiles/ -IsShaderWithMetaData False -UseEasyView True\n"
 	print 'Example 2 :'
 	print "-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n"
+	print 'Example 3 :'
+	print "-ProjectDir ./ -IsShaderWithMetaData True\n"
 	print CONSOLE_LINE
 
 #parameter!
@@ -295,7 +297,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 
 	shaderFile = open(shaderFilePath, 'rU')
 	parser = ParseCode()
-	print parser
+	#print parser
 
 	while 1:	
 		line = shaderFile.readline()
