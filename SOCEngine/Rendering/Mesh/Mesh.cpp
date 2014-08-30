@@ -45,6 +45,9 @@ namespace Rendering
 
 		void Mesh::Render(const Core::TransformPipelineParam& transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos)
 		{
+			if(_renderer == nullptr || _filter == nullptr)
+				return;
+
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_filter->UpdateBuffer(context);
 

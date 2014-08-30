@@ -36,6 +36,8 @@ bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Textu
 		return false;
 
 	_textures[index] = texture;
+
+	return true;
 }
 
 void Material::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)

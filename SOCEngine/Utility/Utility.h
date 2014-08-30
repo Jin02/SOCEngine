@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <stdio.h>
 
 class Utility
 {
@@ -23,5 +24,22 @@ public:
 			// 다음 구분자가 아닌 글자를 찾는다
 			pos = str.find_first_of(delimiters, lastPos);
 		}
+	}
+
+	static std::string WinCmd(const std::string& cmd)
+	{
+		FILE* fp = _popen(cmd.c_str(), "r");
+		if( fp == nullptr )
+			return "ERROR";
+
+		char buffer[128];
+		std::string result = "";
+		while(!feof(fp))
+		{
+			if(fgets(buffer, 128, fp) != nullptr)
+				result += buffer;
+		}
+		_pclose(fp);
+		return result;
 	}
 };

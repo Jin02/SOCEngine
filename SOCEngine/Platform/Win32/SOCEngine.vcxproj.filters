@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{fe7ae6ba-29d6-4a15-99e9-41816367b37e}</UniqueIdentifier>
     </Filter>
@@ -137,6 +129,9 @@
     </Filter>
     <Filter Include="Importer\Obj\tiny">
       <UniqueIdentifier>{8ba5f2b3-3967-4271-b59e-db8496225c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\RapidJson">
+      <UniqueIdentifier>{cd7838c5-e36b-41a1-a5fc-631d42964fca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -335,8 +330,77 @@
     <ClInclude Include="..\DirectX\DirectX.h">
       <Filter>Device\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>소스 파일</Filter>
+    <ClInclude Include="..\..\Utility\rapidjson\allocators.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\document.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\encodedstream.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\encodings.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\error\en.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\error\error.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filereadstream.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filestream.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filewritestream.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\dtoa.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\itoa.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\meta.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\pow10.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\stack.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\strfunc.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\memorybuffer.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\memorystream.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\inttypes.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\stdint.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\prettywriter.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\rapidjson.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\reader.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\stringbuffer.h">
+      <Filter>Utility\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\writer.h">
+      <Filter>Utility\RapidJson</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Importer\ObjImporter.h">
       <Filter>Importer\Obj</Filter>
@@ -498,12 +562,6 @@
     </ClCompile>
     <ClCompile Include="..\DirectX\DirectX.cpp">
       <Filter>Device\DirectX</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>

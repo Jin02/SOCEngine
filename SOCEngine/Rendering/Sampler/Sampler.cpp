@@ -1,4 +1,5 @@
 #include "Sampler.h"
+#include "Director.h"
 
 using namespace Rendering;
 
@@ -24,7 +25,7 @@ void Sampler::Create()
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	ID3D11Device* device;
+	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr  = device->CreateSamplerState( &sampDesc, &_sampler );
 }
 
