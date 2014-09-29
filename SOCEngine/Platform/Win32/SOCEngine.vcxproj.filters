@@ -121,6 +121,12 @@
     <Filter Include="Device\DirectX">
       <UniqueIdentifier>{a2a293d6-1f83-48ac-90d6-0ad840993cf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{0e9b2d5a-600b-4d4f-b4e5-33525b5bff28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\RapidJson">
+      <UniqueIdentifier>{cd7838c5-e36b-41a1-a5fc-631d42964fca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -317,6 +323,78 @@
     </ClInclude>
     <ClInclude Include="..\DirectX\DirectX.h">
       <Filter>Device\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\allocators.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\document.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\encodedstream.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\encodings.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\error\en.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\error\error.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filereadstream.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filestream.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\filewritestream.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\dtoa.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\itoa.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\meta.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\pow10.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\stack.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\internal\strfunc.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\memorybuffer.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\memorystream.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\inttypes.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\msinttypes\stdint.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\prettywriter.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\rapidjson.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\reader.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\stringbuffer.h">
+      <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utility\rapidjson\writer.h">
+      <Filter>Tools\RapidJson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
