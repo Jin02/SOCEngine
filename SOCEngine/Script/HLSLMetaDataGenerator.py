@@ -91,14 +91,17 @@ class ParseCode:
 	currentState 		= 0		#StateEnum.None
 	beforeState 		= 0		#StateEnum.None
 	structDictionary 	= None
+	mainFuncUsingStructName = None
 	def __init__(self):
 		self.StateEnum = enum('None', 'Comment', 'FindingStructName', 'FindingSemanticVariable')
 		self.currentState = self.StateEnum.None
 		self.beforeState = self.StateEnum.None
 		self.structDictionary = dict()
+		self.mainFuncUsingStructName = dict()
 		return
 	def __del__(self):
 		del self.structDictionary
+		del self.mainFuncUsingStructName
 		return
 	def SetCurrentState(self, state):
 		self.beforeState = self.currentState
@@ -111,6 +114,24 @@ class ParseCode:
 			self.structDictionary[self.currentStructName] = list()
 		elif self.currentState == self.StateEnum.FindingSemanticVariable:			
 			self.ParseSemanticVariable(code, self.structDictionary[self.currentStructName])
+		else:
+			start = code.find('(')
+			end = code.find(')')
+			if end != -1 and start != -1:
+				data = code[start+1:end]
+				for structName in self.structDictionary:
+					if data.find(structName) != -1:
+						tokens = code[:start].split(' ')
+						count = len(tokens)
+						for i in xrange(0, count):
+							idx = count-i-1
+							if idx < 0:
+								break
+							elif tokens[idx] != '':
+								self.mainFuncUsingStructName[tokens[idx]] = structName
+								break
+
+
 
 	def RemoveComment(self, code):
 		splitCode = code.split("//")	# remove //
@@ -306,6 +327,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	shaderFile.close()
 
 	#insert instancing data
+	deleteKeys = list()
 	for item in parser.structDictionary:
 		if len(parser.structDictionary[item]) > 0:
 			if type(parser.structDictionary[item][0]) == str:
@@ -320,6 +342,11 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 						data.alignedByteOffset = i * 16 # 16 = float4
 						layoutList.insert(len(layoutList), data)
 					layoutList.remove("Instance")
+		else:
+			deleteKeys.append(item)
+
+	for structKey in deleteKeys:
+		del parser.structDictionary[structKey]
 
 	#############    metaData    ################################################################################
 
@@ -334,6 +361,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 
 	def AddComa(component, index):
 		if index != len(component) -1:
+			print str(index) + " / " + str(len(component)-1)
 			return ',' + nextLine
 		return nextLine
 	def QuotationMarks(code):
@@ -343,31 +371,52 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	outData = '{' + nextLine
 	outData += tap + QuotationMarks("ShaderFileModifyTime") + ": " + QuotationMarks(time.ctime(shaderFileModifyTime)) + ',' + nextLine
 
+	outData += tap + QuotationMarks("SemanticStructure") + ': {' + nextLine
 	structIdx = 0
 	for structName in parser.structDictionary:
-		outData += tap + QuotationMarks(structName) + ": {" + nextLine
-		#print tap + "/" + QuotationMarks(structName)# + ": {" + nextLine
-		index = 0
 		layoutList = parser.structDictionary[structName]
+		if len(layoutList) == 0:
+			continue
 
+		outData += tap*2 + QuotationMarks(structName) + ": {" + nextLine
+
+		index = 0
 		for item in layoutList:
-			outData += tap*2 + QuotationMarks(str(index)) + ": {" + nextLine
+			outData += tap*4 + QuotationMarks(str(index)) + ": {" + nextLine
 
-			outData += tap*3 + QuotationMarks("SemanticName") 		+ ": " + QuotationMarks(item.semanticName)	+ ',' + nextLine
-			outData += tap*3 + QuotationMarks("SemanticIndex") 		+ ": " + str(item.semanticIndex) 			+ ',' + nextLine
-			outData += tap*3 + QuotationMarks("Foramt") 			+ ": " + QuotationMarks(item.format) 		+ ',' + nextLine
-			outData += tap*3 + QuotationMarks("UsingType") 			+ ": " + QuotationMarks(item.usingType) 	+ ',' + nextLine
-			outData += tap*3 + QuotationMarks("AlignedByteOffset") 	+ ": " + str(item.alignedByteOffset) 		+ nextLine
+			outData += tap*5 + QuotationMarks("SemanticName") 		+ ": " + QuotationMarks(item.semanticName)	+ ',' + nextLine
+			outData += tap*5 + QuotationMarks("SemanticIndex") 		+ ": " + str(item.semanticIndex) 			+ ',' + nextLine
+			outData += tap*5 + QuotationMarks("Foramt") 			+ ": " + QuotationMarks(item.format) 		+ ',' + nextLine
+			outData += tap*5 + QuotationMarks("UsingType") 			+ ": " + QuotationMarks(item.usingType) 	+ ',' + nextLine
+			outData += tap*5 + QuotationMarks("AlignedByteOffset") 	+ ": " + str(item.alignedByteOffset) 		+ nextLine
 
-			outData += tap*2 + '}' + AddComa(layoutList, index)
+			outData += tap*4 + '}' + AddComa(layoutList, index)
 			index += 1
 
-		outData += tap + '}' + AddComa(parser.structDictionary, structIdx)
+		outData += tap*2 + '}' + AddComa(parser.structDictionary, structIdx)
 		metaDataFile.write(outData)
 		outData = ""
 		structIdx += 1
+	metaDataFile.write(tap + '}') 
 
-	metaDataFile.write('}')
+	#mainFunc data write
+	mfusCount = len(parser.mainFuncUsingStructName)
+	if mfusCount != 0:
+		outData = ',' + nextLine + tap + QuotationMarks("MainFunctions") + ": {" + nextLine
+		idx = 0
+		for mainFuncName in parser.mainFuncUsingStructName:
+			#print mainFuncName + "/" + parser.mainFuncUsingStructName[mainFuncName]
+			idx += 1
+			outData += tap*2 + QuotationMarks(mainFuncName) + ":" + QuotationMarks(parser.mainFuncUsingStructName[mainFuncName])
+			if mfusCount != idx:
+				outData += ',' + nextLine
+			else:
+				outData += nextLine
+
+		outData += tap + '}'
+		metaDataFile.write(outData)
+
+	metaDataFile.write(nextLine + '}')
 	metaDataFile.close()
 	del parser
 	return

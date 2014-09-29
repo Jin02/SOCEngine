@@ -6,6 +6,11 @@ cbuffer Transform : register( b0 )
 	matrix proj;
 };
 
+struct TEST
+{
+
+};
+
 struct VS_INPUT
 {
 	float4 Pos : POSITION;
@@ -16,7 +21,7 @@ struct PS_INPUT
 	float4 Pos : SV_POSITION;
 };
 
-PS_INPUT VS( VS_INPUT input )
+ PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
 	ps.Pos = mul( input.Pos, world );
