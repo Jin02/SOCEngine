@@ -388,7 +388,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 
 			outData += tap*5 + QuotationMarks("SemanticName") 		+ ": " + QuotationMarks(item.semanticName)	+ ',' + nextLine
 			outData += tap*5 + QuotationMarks("SemanticIndex") 		+ ": " + str(item.semanticIndex) 			+ ',' + nextLine
-			outData += tap*5 + QuotationMarks("Foramt") 			+ ": " + QuotationMarks(item.format) 		+ ',' + nextLine
+			outData += tap*5 + QuotationMarks("Format") 			+ ": " + QuotationMarks(item.format) 		+ ',' + nextLine
 			outData += tap*5 + QuotationMarks("UsingType") 			+ ": " + QuotationMarks(item.usingType) 	+ ',' + nextLine
 			outData += tap*5 + QuotationMarks("AlignedByteOffset") 	+ ": " + str(item.alignedByteOffset) 		+ nextLine
 
