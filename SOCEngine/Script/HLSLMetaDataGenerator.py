@@ -219,7 +219,7 @@ class ParseCode:
 			self.isStructArea = False
 		return structName
 	def ParseSemanticVariable(self, code, layoutList):
-		semancVariableNames = ["POSITION", "NORMAL", "TANGENT", "BINORMAL", "TEXCOORD", "SV_InstanceID"]
+		semancVariableNames = ["POSITION", "NORMAL", "TANGENT", "BINORMAL", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
 		code = CleanUpCode(code)
 
 		if code.find('}') != -1:
@@ -227,8 +227,16 @@ class ParseCode:
 			self.SetCurrentState(self.StateEnum.None)			
 			return
 
+		def ParseSemanticName(code):
+			pos = code.find(":")
+			if pos == -1:
+				return None
+			pos2 = code.find(";")
+			return code[pos+1:pos2].strip()
+
 		semanticIndex = 0
 		semanticName = ""
+		usingType = "VERTEX"
 		foundNamePos = -1
 		for name in semancVariableNames:
 			foundNamePos = code.find(name)
@@ -242,19 +250,29 @@ class ParseCode:
 					semanticIndex = i
 					break
 		elif semanticName == "SV_InstanceID":
-			self.structDictionary[self.currentStructName].insert(0, "Instance")
+			#self.structDictionary[self.currentStructName].insert(0, "Instance")
 			#print "!!!Instance!!!"
 			return
+		elif semanticName == "INSTANCE":
+			semanticName = ParseSemanticName(code)
+			usingType = "INSTANCE"
+		elif semanticName == "POSITION":
+			if code.find("SV_POSITION") != -1:
+				semanticName = "SV_POSITION"
+				foundNamePos -= 3
 
 		code = code[:foundNamePos]
-		if semanticName == '':
-			return
 
-		typeNames = ["float", "int", "unit"] #if other types required, when will add other types in that time.
+		if semanticName == '':
+			semanticName = ParseSemanticName(code)
+			if semanticName == None:
+				return
+
+		#typeNames = ["float", "int", "unit"] #if other types required, when will add other types in that time.
 
 		splitCodes = code.split(' ')
 		typeOfVariable = ''
-		nameOfVariable = ''
+		nameOfVariable = ''		
 		for t in splitCodes:
 			if t != '':
 				if typeOfVariable == '':
@@ -266,27 +284,31 @@ class ParseCode:
 
 		def CalculateAlignedByteOffset(layoutList):
 			count = len(layoutList)
-			if count == 0:
+			if count < 1:
 				return 0
-
-			beforeElementOfList = layoutList[count-1]
-			beforeFormat = beforeElementOfList.format
-			number = beforeFormat[len(beforeFormat)-1:]
-			alignedByteOffset = 4 * int(number) + beforeElementOfList.alignedByteOffset
-			if beforeElementOfList.semanticName == 'POSITION':
+			lastLayout = layoutList[count-1]
+			lastFormat = lastLayout.format
+			num = lastFormat[len(lastFormat)-1:]
+			alignedByteOffset = 4 * int(num) + lastLayout.alignedByteOffset
+			if lastLayout.semanticName == 'POSITION':
 				alignedByteOffset -= 4
 			return alignedByteOffset
+		def MakeInputLayout(name, variableType, index, offset, usingType):
+			layout = InputLayout()
+			layout.semanticName = name
+			layout.semanticIndex = index
+			layout.alignedByteOffset = offset
+			layout.format = variableType
+			layout.usingType = usingType;
+			return layout
 
-		layout = InputLayout()
-		layout.semanticName = semanticName
-		layout.beforeFormat = typeOfVariable
-		layout.semanticIndex = semanticIndex
-		layout.alignedByteOffset = CalculateAlignedByteOffset(layoutList)
-		layout.format = typeOfVariable
-
-		count = len(layoutList)
-		layoutList.insert(count, layout)
-		#print "Current StructName :", self.currentStructName, "type :", typeOfVariable, "name :", nameOfVariable, "semanticName :", semanticName
+		if typeOfVariable == "matrix" or typeOfVariable == "float4x4":
+			for i in xrange(0, 4):
+				layout = MakeInputLayout(semanticName, "float4", i, CalculateAlignedByteOffset(layoutList), usingType)
+				layoutList.append(layout)
+		else:
+			layout = MakeInputLayout(semanticName, typeOfVariable, semanticIndex, CalculateAlignedByteOffset(layoutList), usingType)
+			layoutList.append(layout)
 		return
 
 ####### Run ################################################################################################
@@ -329,27 +351,24 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	shaderFile.close()
 
 	#insert instancing data
+	def CalcTypeSize(variableType):
+		num = variableType[len(variableType)-1:]
+		return 4 * int(num)
+
 	deleteKeys = list()
-	for item in parser.structDictionary:
-		if len(parser.structDictionary[item]) > 0:
-			if type(parser.structDictionary[item][0]) == str:
-				if parser.structDictionary[item][0] == "Instance":
-					layoutList = parser.structDictionary[item]
-					for i in xrange(0, 4):
-						data = InputLayout()
-						data.semanticName = "MATRIX"
-						data.semanticIndex = i
-						data.usingType = 'INSTANCE'
-						data.format = 'float4'
-						data.alignedByteOffset = i * 16 # 16 = float4
-						layoutList.insert(len(layoutList), data)
-					layoutList.remove("Instance")
+	for structName in parser.structDictionary:
+		if len(parser.structDictionary[structName]) > 0:
+			layoutList = parser.structDictionary[structName]
+			instancingOffset = 0
+			for item in layoutList:				
+				if item.usingType == "INSTANCE":
+					item.alignedByteOffset = instancingOffset
+					instancingOffset  += CalcTypeSize(item.format)
+					pass
 		else:
-			deleteKeys.append(item)
-
-	for structKey in deleteKeys:
-		del parser.structDictionary[structKey]
-
+			deleteKeys.append(structName)
+	for structName in deleteKeys:
+		del parser.structDictionary[structName]	
 	#############    metaData    ################################################################################
 
 	metaDataFile = open(metaDataFilePath, 'w')
@@ -363,12 +382,24 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 
 	def AddComa(component, index):
 		if index != len(component) -1:
-			print str(index) + " / " + str(len(component)-1)
 			return ',' + nextLine
 		return nextLine
 	def QuotationMarks(code):
 		code = "\"" + code +"\""
 		return code
+
+	# PS DATA REMOVE
+	deleteStructNames = list()
+	for structName in parser.structDictionary:
+		for item in parser.structDictionary[structName]:
+			if item.semanticName == "SV_POSITION":
+				deleteStructNames.append(structName)
+				break
+
+	for name in deleteStructNames:
+		del parser.structDictionary[name]
+	del deleteStructNames
+	#END
 
 	outData = '{' + nextLine
 	outData += tap + QuotationMarks("ShaderFileModifyTime") + ": " + QuotationMarks(time.ctime(shaderFileModifyTime)) + ',' + nextLine
