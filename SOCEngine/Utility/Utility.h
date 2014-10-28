@@ -4,8 +4,9 @@
 #include <vector>
 #include <stdio.h>
 
-namespace Utility
+class Utility
 {
+public:
 	//http://www.joinc.co.kr/modules/moniwiki/wiki.php/Site/C++/Documents/C++ProgramingHowToPerPage/standardstring.html
 	static void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ")
 	{
@@ -41,4 +42,4 @@ namespace Utility
 		_pclose(fp);
 		return result;
 	}
-}
+};

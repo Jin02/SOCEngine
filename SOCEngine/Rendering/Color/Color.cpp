@@ -5,40 +5,13 @@
 
 namespace Rendering
 {
-	Color::Color()
+	Color::Color() : r(1.0f), g(1.0f), b(1.0f)
 	{
-		r = g = b = a = 1.0f;
 	}
 
-	Color::Color(float r, float g, float b)
+	Color::Color(float _r, float _g, float _b) :
+		r(_r), g(_g), b(_b)
 	{
-		this->r = r;
-		this->g = g;
-		this->b = b;
-	}
-
-	Color::Color(float r, float g, float b, float a)
-	{
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = a;
-	}
-
-	Color::Color(double r, double g, double b)
-	{
-		this->r = (float)r;
-		this->g = (float)g;
-		this->b = (float)b;
-		this->a = 1.0f;
-	}
-
-	Color::Color(double r, double g, double b, double a)
-	{
-		this->r = (float)r;
-		this->g = (float)g;
-		this->b = (float)b;
-		this->a = (float)a;
 	}
 
 	Color Color::operator -(Color c)
@@ -48,7 +21,6 @@ namespace Rendering
 		color.r -= c.r;
 		color.g -= c.g;
 		color.b -= c.b;
-		color.a -= c.a;
 
 		CalculateColor(&color);
 		return color;
@@ -56,24 +28,24 @@ namespace Rendering
 
 	bool Color::operator !=(Color c)
 	{
-		return (r != c.r) || (g != c.g) || (b != c.b) || (a != c.a);
+		return (r != c.r) || (g != c.g) || (b != c.b);
 	}
 
 	Color Color::operator *(Color c)
 	{
-		Color color = Color( r * c.r, g * c.g, b * c.b, a * c.a );
+		Color color = Color( r * c.r, g * c.g, b * c.b);
 		CalculateColor(&color);
 		return color;
 	}
 
 	Color Color::operator *(float f)
 	{
-		return Color(r * f, g * f, b * f, a * f);
+		return Color(r * f, g * f, b * f);
 	}
 
 	Color Color::operator /(float f)
 	{
-		return Color(r / f, g / f, b / f, a / f);
+		return Color(r / f, g / f, b / f);
 	}
 
 	Color Color::operator +(Color c)
@@ -83,7 +55,6 @@ namespace Rendering
 		color.r += c.r;
 		color.g += c.g;
 		color.b += c.b;
-		color.a += c.a;
 
 		CalculateColor(&color);
 		return color;
@@ -91,7 +62,7 @@ namespace Rendering
 
 	bool Color::operator ==(Color c)
 	{
-		return (r == c.r) && (g == c.g) && (b == c.b) && (a == c.a);
+		return (r == c.r) && (g == c.g) && (b == c.b);
 	}
 
 	void Color::CalculateColor(Color *color)
@@ -104,24 +75,21 @@ namespace Rendering
 
 		if(color->b > 1.0f) color->b = 1.0f;
 		else if(color->b < 0.0f) color->b = 0.0f;
-
-		if(color->a > 1.0f) color->a = 1.0f;
-		else if(color->a < 0.0f) color->a = 0.0f;
 	}
 
 	Color Color::black()
 	{
-		return Color(0.0f, 0.0f, 0.0f, 0.0f);
+		return Color(0.0f, 0.0f, 0.0f);
 	}
 
 	Color Color::blue()
 	{
-		return Color(0.0f, 0.0f, 1.0f, 1.0f);
+		return Color(0.0f, 0.0f, 1.0f);
 	}
 
 	Color Color::clear()
 	{
-		return Color(0.0f, 0.0f, 0.0f, 0.0f);
+		return Color(0.0f, 0.0f, 0.0f);
 	}
 
 	Color Color::cyan()
@@ -131,7 +99,7 @@ namespace Rendering
 
 	Color Color::gray()
 	{
-		return Color(0.5f, 0.5f, 0.5f, 1.0f);
+		return Color(0.5f, 0.5f, 0.5f);
 	}
 
 	float Color::grayscale()
@@ -169,11 +137,17 @@ namespace Rendering
 #define LERP(a, b, t)\
 	a - (a * t) + (b * t)
 
-		float _a = LERP(a.a, b.a, t);
 		float _r = LERP(a.r, b.r, t);
 		float _g = LERP(a.g, b.g, t);
 		float _b = LERP(a.b, b.b, t);		
 
-		return Color(_r,_g,_b,_a);
+		return Color(_r,_g,_b);
+	}
+
+	void Color::SetColor(const float* color)
+	{
+		r = color[0];
+		g = color[1];
+		b = color[2];
 	}
 }

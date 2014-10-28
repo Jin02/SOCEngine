@@ -17,19 +17,15 @@ namespace Rendering
 		{
 			struct
 			{
-				float        r,g,b,a;
+				float        r,g,b;
 			};
 
-			float color[4];
+			float color[3];
 		};
 
 	public:
 		Color();
 		Color(float r, float g, float b);
-		Color(float r, float g, float b, float a);
-		Color(double r, double g, double b);
-		Color(double r, double g, double b, double a);
-
 
 	public:
 		Color operator -(Color c);
@@ -57,6 +53,7 @@ namespace Rendering
 		static Color yellow();
 
 		static Color Lerp(Color a, Color b, float t);
+		void SetColor(const float* color);
 
 	private:
 		void CalculateColor(Color *color);

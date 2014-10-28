@@ -11,4 +11,4 @@
 #define SAFE_DELETE_ARRAY(x) { if(x){ delete[] x; x = nullptr; } }
 #define SAFE_RELEASE(x) { if(x){ x->Release(); x = nullptr; } }
 
-#define ENGINE_INDEX_TYPE unsigned short
+#define ENGINE_INDEX_TYPE unsigned int

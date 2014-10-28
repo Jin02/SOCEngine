@@ -19,10 +19,10 @@ namespace Rendering
 			~TextureManager();
 
 		public:
-			static bool LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& path, const std::string& name);
+			static bool LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& path, const std::string& nameWithExtension);
 
 		public:
-			Texture* LoadTextureFromFile(const std::string& path, const std::string& name);
+			Texture* LoadTextureFromFile(const std::string& path, const std::string& nameWithExtension, const std::string& key);
 			Texture* Find(const std::string& name);
 			void Remoave(const std::string& name);
 			void RemoveAll();

@@ -76,7 +76,7 @@ void RenderTexture::Clear(const DirectX* dx, const Rendering::Color& color)
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	// Clear the back buffer.
-	const float colorValue[] = {color.r, color.g, color.b, color.a};
+	const float colorValue[] = {color.r, color.g, color.b, 1.0f};
 	context->ClearRenderTargetView(_renderTargetView, colorValue);
 
 	// Clear the depth buffer.
