@@ -301,7 +301,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	isCreateMetadata = ((NOT_CREATE_META_DATA in firstLine) == False)
 
 	if isCreateMetadata:
-		print "Create Metadata"
+		print "Create Metadata\n"
 	else:
 		return #assert
 
@@ -424,7 +424,7 @@ NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
-print "SOC FrameWork Shader MetaData Generator"
+print "SOC Framework Shader MetaData Generator\n"
 
 def Dump():
 	print "\nParamater Error!!\n"
@@ -434,33 +434,31 @@ def Dump():
 	print "-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n"
 	print 'Example 3 :'
 	print "-ProjectDir ./ -IsShaderWithMetaData True\n"
-	print CONSOLE_LINE
+	
 def CheckParameter():
 	scriptRunStartDir 		= 'undefined'
 	metaDataCustomTargetDir = 'undefined'
 	useEasyView 			= True
 	isShaderWithMetaData 	= True
 
-	if len(sys.argv) < 4:
-		Dump()
-		exit()
+	argvCount = len(sys.argv)-1
+	if argvCount >= 4:
+		count = 7
+		if count > argvCount:
+			count = argvCount
 
-	count = 7
-	if count > len(sys.argv):
-		count = len(sys.argv)
-
-	for i in xrange(0, count):
-		if sys.argv[i] == '-ProjectDir':
-			scriptRunStartDir 		= sys.argv[i+1]
-		elif sys.argv[i] == '-IsShaderWithMetaData':
-			isShaderWithMetaData 	= (sys.argv[i+1] == 'True')
-		elif sys.argv[i] == '-UseEasyView':
-			useEasyView 			= (sys.argv[i+1] == 'True')
-		elif sys.argv[i] == '-MetaDataCustomTargetDir':
-			metaDataCustomtargetDir = sys.argv[i+1]
-		else:
-			i-=1
-		i+=1
+		for i in xrange(1, count):
+			if sys.argv[i] == '-ProjectDir':
+				scriptRunStartDir 		= sys.argv[i+1]
+			elif sys.argv[i] == '-IsShaderWithMetaData':
+				isShaderWithMetaData 	= (sys.argv[i+1] == 'True')
+			elif sys.argv[i] == '-UseEasyView':
+				useEasyView 			= (sys.argv[i+1] == 'True')
+			elif sys.argv[i] == '-MetaDataCustomTargetDir':
+				metaDataCustomtargetDir = sys.argv[i+1]
+			else:
+				i-=1
+			i+=1
 
 	result = True
 	if isShaderWithMetaData == False:
@@ -475,6 +473,7 @@ result, scriptRunStartDir, metaDataCustomTargetDir, useEasyView, isShaderWithMet
 
 if result == False:
 	Dump()
+	print CONSOLE_LINE
 	exit()
 
 targetDir = os.path.normpath(scriptRunStartDir)
@@ -495,5 +494,5 @@ for (path, dirs, files) in os.walk(targetDir):
         		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
         	Work(shaderFilePath, metaDataFilePath, useEasyView)
 
-print "Success!"
+print "Success!\n"
 print CONSOLE_LINE
