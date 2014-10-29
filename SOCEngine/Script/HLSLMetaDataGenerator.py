@@ -3,303 +3,266 @@ import os, os.path
 import time
 import json
 
-NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
-CONSOLE_LINE = "***********************************************"
+METADATA_FILE_EXTENSION = ".metadata"
 
-print CONSOLE_LINE + '\n'
-
-print "SOC FrameWork Shader MetaData Generator"
-
-def Dump():
-	print "\nParamater Error!!\n"
-	print 'Example 1 :'
-	print "-ProjectDir ./Test/ -MetaDataCustomTargetDir ./MetaDataFiles/ -IsShaderWithMetaData False -UseEasyView True\n"
-	print 'Example 2 :'
-	print "-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n"
-	print 'Example 3 :'
-	print "-ProjectDir ./ -IsShaderWithMetaData True\n"
-	print CONSOLE_LINE
-
-#parameter!
-baseDir = 'undefined'
-metaDataCustomTargetDir = 'undefined'
-useEasyView = True
-isShaderWithMetaData = True
-
-#print sys.argv, len(sys.argv)
-
-if len(sys.argv) < 4:
-	Dump()
-	exit()
-
-count = 7
-if count > len(sys.argv):
-	count = len(sys.argv)
-
-for i in xrange(0, count):
-	if sys.argv[i] == '-ProjectDir':
-		baseDir = sys.argv[i+1]
-	elif sys.argv[i] == '-IsShaderWithMetaData':
-		isShaderWithMetaData = sys.argv[i+1] == 'True'
-	elif sys.argv[i] == '-UseEasyView':
-		useEasyView = sys.argv[i+1] == 'True'
-	elif sys.argv[i] == '-MetaDataCustomTargetDir':
-		metaDataCustomtargetDir = sys.argv[i+1]
-	else:
-		i-=1
-	i+=1
-
-if isShaderWithMetaData == False:
-	if metaDataCustomTargetDir == 'undefined':
-		Dump()
-		exit()
-else:
-	if baseDir == 'undefined':
-		Dump()
-		exit()
-
-def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
+# EnumGenerator
+def Enum(*sequential, **named):
+    enums 	= dict(zip(sequential, range(len(sequential))), **named)
     reverse = dict((value, key) for key, value in enums.iteritems())
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
+
+# First return value is success or fail
+# Second return value is replaceString
 def ReplaceString(srcStr, fromStr, toStr):
-	found = srcStr.find(fromStr)
-	replaceStr = srcStr.replace(fromStr, toStr)
-	return found != -1, replaceStr
-def CleanUpCode(code):
+	replaceStr 	= srcStr.replace(fromStr, toStr)
+	return fromStr in srcStr, replaceStr
+
+# Remove Tap and Empty Space.
+# ex:) struct \t \t \t Test -> struct Test
+def CleanUpCode(lineCode):
 	while 1: # "struct \t\t\t name" -> "struct     name"
-		t, code = ReplaceString(code, '\t', ' ')
+		t, lineCode = ReplaceString(lineCode, '\t', ' ')
 		if t == False:
 			break
-
 	while 1: # "struct     name" -> "struct name"
-		t, code = ReplaceString(code, "  ", ' ')
+		t, lineCode = ReplaceString(lineCode, "  ", ' ')
 		if t == False:
 			break
-	return code
+	return lineCode
 
+#same struct.
+#data in struct likes most D3D11_INPUT_ELEMENT_DESC
 class InputLayout:
 	semanticName = ''
 	semanticIndex = 0
-	format = ''
-	usingType = 'VERTEX'
+	format = ''				# format only use uint, int, float and matrix.
+	usingType = 'VERTEX'	# or INSTANCE
 	alignedByteOffset = 0
+
+# main of script.
+# hlsl parser
 class ParseCode:
-	StateEnum 			= 0		#enum('None', 'Comment', 'FindingStructName')
-	isStructArea 		= False
-	isCommentArea 		= False
-	currentStructName 	= ""
-	currentState 		= 0		#StateEnum.None
-	beforeState 		= 0		#StateEnum.None
-	structDictionary 	= None
+	StateEnum 				= Enum('None', 'Comment', 'FindingStructName', 'FindingSemanticVariable')
+	isStructArea 			= False	
+	isCommentArea 			= False
+	currentStructName 		= ""
+	currentState 			= 0		#init value is StateEnum.None
+	beforeState 			= 0		#init value is StateEnum.None
+	structDictionary 		= None
 	mainFuncUsingStructName = None
 	def __init__(self):
-		self.StateEnum = enum('None', 'Comment', 'FindingStructName', 'FindingSemanticVariable')
-		self.currentState = self.StateEnum.None
-		self.beforeState = self.StateEnum.None
-		self.structDictionary = dict()
-		self.mainFuncUsingStructName = dict()
-		return
+		self.currentState 				= self.StateEnum.None
+		self.beforeState 				= self.StateEnum.None
+		self.structDictionary 			= dict()
+		self.mainFuncUsingStructName 	= dict()
 	def __del__(self):
 		del self.structDictionary
 		del self.mainFuncUsingStructName
-		return
-	def SetCurrentState(self, state):
-		self.beforeState = self.currentState
-		self.currentState = state
+	def UpdateState(self, state):
+		self.beforeState 	= self.currentState
+		self.currentState 	= state
 	def Run(self, lineCode):
-		code = self.RemoveComment(lineCode)
+		def RemoveComment(code):
+			commentSplitCode 	= code.split("//")	# remove //
+			splitCodeCount 		= len(commentSplitCode)
+			modifiedCode 		= commentSplitCode[0]
 
-		if self.currentState == self.StateEnum.FindingStructName or code.find('struct') != -1:
+			if splitCodeCount > 1:
+				modifiedCode += '\n'
+
+			#remove /* */
+			def RemoveGlobalComment(code):
+				while 1: 
+					start 	= code.find("/*")
+					end 	= code.find("*/")
+
+					if ((start != -1) and (end != -1)) and (start < end):
+						code = code[:start] + code[end+2:]
+					else:
+						break
+
+				return code
+
+			modifiedCode = RemoveGlobalComment(modifiedCode)
+
+			if self.isCommentArea:
+				end = modifiedCode.find("*/")
+				if end != -1:
+					self.UpdateState(self.beforeState)
+					self.isCommentArea 	= False
+					modifiedCode 		= RemoveGlobalComment( modifiedCode[(end+2):] )
+				else:
+					modifiedCode = ""
+			elif "/*" in modifiedCode: #also isCommentArea == false
+				self.UpdateState(self.StateEnum.Comment)
+				self.isCommentArea 	= True
+				modifiedCode 		= modifiedCode[:start]
+
+			return modifiedCode
+
+		code = RemoveComment(lineCode)
+
+		if (self.currentState == self.StateEnum.FindingStructName) or ('struct' in code):
 			self.currentStructName = self.ParseStructName(code)
 			self.structDictionary[self.currentStructName] = list()
 		elif self.currentState == self.StateEnum.FindingSemanticVariable:			
 			self.ParseSemanticVariable(code, self.structDictionary[self.currentStructName])
 		else:
-			start = code.find('(')
-			end = code.find(')')
+			start 	= code.find('(')
+			end 	= code.find(')')
+
+			#Find part of func define.
 			if end != -1 and start != -1:
-				data = code[start+1:end]
-				for structName in self.structDictionary:
-					if data.find(structName) != -1:
+				# funcArgumentCodePart is (VS_INPUT input)
+				# but does not inclde '(' and ')'
+				funcArgumentCodePart = code[start+1:end]
+				for structName in self.structDictionary:					
+					if structName in funcArgumentCodePart:
 						tokens = code[:start].split(' ')
 						count = len(tokens)
 						for i in xrange(0, count):
-							idx = count-i-1
+							idx = count -i -1
 							if idx < 0:
 								break
 							elif tokens[idx] != '':
-								self.mainFuncUsingStructName[tokens[idx]] = structName
+								self.mainFuncUsingStructName[ tokens[idx] ] = structName
 								break
-
-
-
-	def RemoveComment(self, code):
-		splitCode = code.split("//")	# remove //
-		splitCodeCount = len(splitCode)	
-		code = splitCode[0]
-		if splitCodeCount > 1:
-			code += '\n'
-
-		def RemoveSubComment(code):
-			while 1: #remove /**/
-				start = code.find("/*")
-				end = code.find("*/")
-
-				if start != -1 and end != -1:
-					if start < end:
-						code = code[:start] + code[(end+2):]
-					else:
-						break
-				else:
-					break
-
-			return code
-
-		code = RemoveSubComment(code)
-
-		if self.isCommentArea != True:
-			start = code.find("/*")
-			if start != -1:
-				self.SetCurrentState(self.StateEnum.Comment)
-				self.isCommentArea = True
-				code = code[:start]
-		else:
-			end = code.find("*/")
-			if end != -1:
-				self.SetCurrentState(self.beforeState)
-				self.isCommentArea = False
-				code = code[(end+2):]
-				code = RemoveSubComment(code)
-			else:
-				code = ""
-
-		return code
 	def ParseStructName(self, code):
 		if self.currentState == self.StateEnum.Comment:
 			return
 
-		code = code.replace('\n', '')
+		structName 		= ""
+		modifiedCode 	= CleanUpCode( code.replace('\n', '') )
+		splitCodeSpace 	= modifiedCode.split(' ') # struct name -> [' ', 'struct', 'name']
 
-		structName = ""
 		if self.isStructArea == False:
-			structFound = code.find("struct")
-			structName = ""
-			if structFound != -1:
-				code = CleanUpCode(code)
-				splitStr = code.split(' ')
+			if "struct" in modifiedCode:
 
-				idx = 0
-				for item in splitStr:
-					if item == "struct":
+				structPos = 0
+				# find 'struct' position
+				for codePiece in splitCodeSpace:
+					if codePiece == "struct":
 						break
-					idx += 1
+					structPos += 1
 			
-				splitStrNum = len(splitStr)
-				for i in xrange(idx+1, splitStrNum):
-					if splitStr[i] != '{':
-						structName = splitStr[i]
-						break	
+				length = len(splitCodeSpace)
+				# find struct name
+				for i in xrange(structPos+1, length):
+					if splitCodeSpace[i] != '{':
+						structName = splitCodeSpace[i]
+						break
 
-			if structName != '':
-				self.SetCurrentState(self.StateEnum.FindingSemanticVariable)
+			# not found
+			if structName != "":
+				self.UpdateState(self.StateEnum.FindingSemanticVariable)
 			else:
-				self.SetCurrentState(self.StateEnum.FindingStructName)
-			self.isStructArea = structName != ''
+				self.UpdateState(self.StateEnum.FindingStructName)
+
+			self.isStructArea = (structName != '')
 		else:
-			code = CleanUpCode(code)
-			splitCodes = code.split(' ')
-			for name in splitCodes:
-				if name != '' or name != '{':
+			# find struct name
+			for name in splitCodeSpace:
+				if (name != '') or (name != '{'):
 					structName = name
 					break
 
-			self.SetCurrentState(self.StateEnum.FindingSemanticVariable)
+			self.UpdateState(self.StateEnum.FindingSemanticVariable)
 			self.isStructArea = False
+
 		return structName
 	def ParseSemanticVariable(self, code, layoutList):
 		semancVariableNames = ["POSITION", "NORMAL", "TANGENT", "BINORMAL", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
-		code = CleanUpCode(code)
+		modifiedCode 		= CleanUpCode(code)
 
-		if code.find('}') != -1:
+		if '}' in modifiedCode:
 			self.isStructArea = False
-			self.SetCurrentState(self.StateEnum.None)			
+			self.UpdateState(self.StateEnum.None)			
 			return
 
 		def ParseSemanticName(code):
-			pos = code.find(":")
-			if pos == -1:
+			colonPos = code.find(":")
+			if colonPos == -1:
 				return None
-			pos2 = code.find(";")
-			return code[pos+1:pos2].strip()
+			semiColonPos = code.find(";")
+			return code[colonPos+1 : semiColonPos].strip()
 
-		semanticIndex = 0
-		semanticName = ""
-		usingType = "VERTEX"
-		foundNamePos = -1
+		semanticIndex 	= 0
+		semanticName 	= ""
+		usingType 		= "VERTEX"
+		foundNamePos 	= -1
+
+		# find semanticName
 		for name in semancVariableNames:
-			foundNamePos = code.find(name)
+			foundNamePos = modifiedCode.find(name)
 			if foundNamePos != -1:
 				semanticName = name
 				break
+
+		# find texcoord semanticIndex
 		if semanticName == "TEXCOORD":
 			for i in xrange(0,10):
-				if code.find(semanticName+str(i)) != -1:
+				if (semanticName+str(i)) in modifiedCode:
 					semanticName = semanticName
 					semanticIndex = i
 					break
-		elif semanticName == "SV_InstanceID":
-			#self.structDictionary[self.currentStructName].insert(0, "Instance")
-			#print "!!!Instance!!!"
+		elif semanticName == "SV_InstanceID": # not write
 			return
 		elif semanticName == "INSTANCE":
-			semanticName = ParseSemanticName(code)
-			usingType = "INSTANCE"
+			semanticName 	= ParseSemanticName(code)
+			usingType 		= "INSTANCE"
 		elif semanticName == "POSITION":
-			if code.find("SV_POSITION") != -1:
+			if "SV_POSITION" in modifiedCode:
 				semanticName = "SV_POSITION"
-				foundNamePos -= 3
+				foundNamePos -= 3 # 3 is len('SV_')
 
-		code = code[:foundNamePos]
+		modifiedCode = modifiedCode[:foundNamePos]
 
+		# parse other semanticName
 		if semanticName == '':
-			semanticName = ParseSemanticName(code)
+			semanticName = ParseSemanticName(modifiedCode)
 			if semanticName == None:
 				return
 
-		#typeNames = ["float", "int", "unit"] #if other types required, when will add other types in that time.
+		#splitCodes have ['', 'float4', 'Pos', ':', '']
+		splitCodes 		= modifiedCode.split(' ')
 
-		splitCodes = code.split(' ')
-		typeOfVariable = ''
-		nameOfVariable = ''		
-		for t in splitCodes:
-			if t != '':
+
+		typeOfVariable 	= ''
+		nameOfVariable 	= ''		
+		#find type and name
+		for codePiece in splitCodes:
+			if codePiece != '':
 				if typeOfVariable == '':
-					typeOfVariable = t
-				else:
-					if nameOfVariable == '':
-						nameOfVariable = t
+					typeOfVariable = codePiece
+				elif nameOfVariable == '':
+					nameOfVariable = codePiece
 					break
 
 		def CalculateAlignedByteOffset(layoutList):
 			count = len(layoutList)
 			if count < 1:
 				return 0
-			lastLayout = layoutList[count-1]
-			lastFormat = lastLayout.format
-			num = lastFormat[len(lastFormat)-1:]
-			alignedByteOffset = 4 * int(num) + lastLayout.alignedByteOffset
-			if lastLayout.semanticName == 'POSITION':
+
+			beforeLayout = layoutList[count-1]
+			beforeFormat = beforeLayout.format
+
+			# foramt = float4 or float2 or int2.
+			# so, beforeFormat[len(beforeFormat)-1:] is 4 or 2 etc..
+			numTxt = beforeFormat[len(beforeFormat)-1:]
+			alignedByteOffset = 4 * int(numTxt) + beforeLayout.alignedByteOffset
+
+			if beforeLayout.semanticName == 'POSITION':
 				alignedByteOffset -= 4
-			return alignedByteOffset
+
+			return alignedByteOffset		
 		def MakeInputLayout(name, variableType, index, offset, usingType):
-			layout = InputLayout()
-			layout.semanticName = name
-			layout.semanticIndex = index
-			layout.alignedByteOffset = offset
-			layout.format = variableType
-			layout.usingType = usingType;
+			layout 						= InputLayout()
+			layout.semanticName 		= name
+			layout.semanticIndex 		= index
+			layout.alignedByteOffset 	= offset
+			layout.format 				= variableType
+			layout.usingType 			= usingType;
 			return layout
 
 		if typeOfVariable == "matrix" or typeOfVariable == "float4x4":
@@ -309,6 +272,7 @@ class ParseCode:
 		else:
 			layout = MakeInputLayout(semanticName, typeOfVariable, semanticIndex, CalculateAlignedByteOffset(layoutList), usingType)
 			layoutList.append(layout)
+
 		return
 
 ####### Run ################################################################################################
@@ -318,34 +282,37 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	print "Shader File Modify Time : " + time.ctime(shaderFileModifyTime)
 
 	isCreateMetadata = True
-	if os.path.isfile(metaDataFilePath) == True:
-	 	f = open(metaDataFilePath, 'rU')
-	 	js = json.loads(f.read())
-	 	f. close()
-	 	
+
+	# check original file
+	if os.path.isfile(metaDataFilePath):
+	 	metadataFile = open(metaDataFilePath, 'rU')
+	 	js = json.loads(metadataFile.read())
+	 	metadataFile.close()	 	
+
 	 	#check Date
-	 	isCreateMetadata = js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime)
+	 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
 
  	#check Shader File
- 	f = open(shaderFilePath, 'rU')
- 	firstLine = f.readline()
- 	f.close()
- 	if firstLine.find(NOT_CREATE_META_DATA) != -1:
-		isCreateMetadata = False
+ 	shaderFile 	= open(shaderFilePath, 'rU')
+ 	firstLine 	= shaderFile.readline()
+ 	shaderFile.close()
 
-	if isCreateMetadata == False:
-		return
-	else:
+ 	#check create file
+	isCreateMetadata = ((NOT_CREATE_META_DATA in firstLine) == False)
+
+	if isCreateMetadata:
 		print "Create Metadata"
+	else:
+		return #assert
 
-	shaderFile = open(shaderFilePath, 'rU')
-	parser = ParseCode()
-	#print parser
+	shaderFile 	= open(shaderFilePath, 'rU')
+	parser 		= ParseCode()
 
+	# parser work
 	while 1:	
 		line = shaderFile.readline()
 		parser.Run(line)
-		if not line : 
+		if not line :
 			break
 
 	shaderFile.close()
@@ -358,17 +325,17 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	deleteKeys = list()
 	for structName in parser.structDictionary:
 		if len(parser.structDictionary[structName]) > 0:
-			layoutList = parser.structDictionary[structName]
-			instancingOffset = 0
+			layoutList 			= parser.structDictionary[structName]
+			instancingOffset 	= 0
 			for item in layoutList:				
 				if item.usingType == "INSTANCE":
-					item.alignedByteOffset = instancingOffset
-					instancingOffset  += CalcTypeSize(item.format)
-					pass
+					item.alignedByteOffset 	 = instancingOffset
+					instancingOffset  		+= CalcTypeSize(item.format)					
 		else:
 			deleteKeys.append(structName)
 	for structName in deleteKeys:
 		del parser.structDictionary[structName]	
+	
 	#############    metaData    ################################################################################
 
 	metaDataFile = open(metaDataFilePath, 'w')
@@ -438,7 +405,6 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 		outData = ',' + nextLine + tap + QuotationMarks("MainFunctions") + ": {" + nextLine
 		idx = 0
 		for mainFuncName in parser.mainFuncUsingStructName:
-			#print mainFuncName + "/" + parser.mainFuncUsingStructName[mainFuncName]
 			idx += 1
 			outData += tap*2 + QuotationMarks(mainFuncName) + ":" + QuotationMarks(parser.mainFuncUsingStructName[mainFuncName])
 			if mfusCount != idx:
@@ -454,22 +420,79 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	del parser
 	return
 
-targetDir = os.path.normpath(baseDir)
+NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
+CONSOLE_LINE = "***********************************************"
+
+print CONSOLE_LINE + '\n'
+print "SOC FrameWork Shader MetaData Generator"
+
+def Dump():
+	print "\nParamater Error!!\n"
+	print 'Example 1 :'
+	print "-ProjectDir ./Test/ -MetaDataCustomTargetDir ./MetaDataFiles/ -IsShaderWithMetaData False -UseEasyView True\n"
+	print 'Example 2 :'
+	print "-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n"
+	print 'Example 3 :'
+	print "-ProjectDir ./ -IsShaderWithMetaData True\n"
+	print CONSOLE_LINE
+def CheckParameter():
+	scriptRunStartDir 		= 'undefined'
+	metaDataCustomTargetDir = 'undefined'
+	useEasyView 			= True
+	isShaderWithMetaData 	= True
+
+	if len(sys.argv) < 4:
+		Dump()
+		exit()
+
+	count = 7
+	if count > len(sys.argv):
+		count = len(sys.argv)
+
+	for i in xrange(0, count):
+		if sys.argv[i] == '-ProjectDir':
+			scriptRunStartDir 		= sys.argv[i+1]
+		elif sys.argv[i] == '-IsShaderWithMetaData':
+			isShaderWithMetaData 	= (sys.argv[i+1] == 'True')
+		elif sys.argv[i] == '-UseEasyView':
+			useEasyView 			= (sys.argv[i+1] == 'True')
+		elif sys.argv[i] == '-MetaDataCustomTargetDir':
+			metaDataCustomtargetDir = sys.argv[i+1]
+		else:
+			i-=1
+		i+=1
+
+	result = True
+	if isShaderWithMetaData == False:
+		if metaDataCustomTargetDir == 'undefined':
+			result = False
+	elif scriptRunStartDir == 'undefined':
+		result = False
+
+	return result, scriptRunStartDir, metaDataCustomTargetDir, useEasyView, isShaderWithMetaData
+
+result, scriptRunStartDir, metaDataCustomTargetDir, useEasyView, isShaderWithMetaData = CheckParameter()
+
+if result == False:
+	Dump()
+	exit()
+
+targetDir = os.path.normpath(scriptRunStartDir)
 for (path, dirs, files) in os.walk(targetDir):
     for fileNameWithExtension in files:
-    	fileFullPath = path + "/" + fileNameWithExtension    	
-        extensionPos = fileNameWithExtension.rfind('.')
-        
-        fileExtension = fileNameWithExtension[extensionPos:]
-        fileName = fileNameWithExtension[:extensionPos]
+    	fileFullPath 	= path + "/" + fileNameWithExtension    	
+        extensionPos 	= fileNameWithExtension.rfind('.')        
+        fileExtension 	= fileNameWithExtension[extensionPos:]
+        fileName 		= fileNameWithExtension[:extensionPos]
 
-        if fileExtension == '.fx' or fileExtension == '.hlsl':
+        if (fileExtension == '.fx') or (fileExtension == '.hlsl'):
         	print "Found!!!", fileFullPath
         	shaderFilePath = fileFullPath
-        	if isShaderWithMetaData == True:
-        		metaDataFilePath = path + "/" + fileName + ".metadata"
+
+        	if isShaderWithMetaData:
+        		metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
         	else:
-        		metaDataFilePath = metaDataCustomTargetDir + fileName + ".metadata"
+        		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
         	Work(shaderFilePath, metaDataFilePath, useEasyView)
 
 print "Success!"
