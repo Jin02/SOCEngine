@@ -78,6 +78,7 @@
     <ClInclude Include="..\..\Structure\Map.h" />
     <ClInclude Include="..\..\Structure\Singleton.h" />
     <ClInclude Include="..\..\Structure\Structure.h" />
+    <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp" />
     <ClInclude Include="..\..\Utility\DirectoryManager.h" />
     <ClInclude Include="..\..\Utility\rapidjson\allocators.h" />
     <ClInclude Include="..\..\Utility\rapidjson\document.h" />
@@ -199,7 +200,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Template;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -219,7 +220,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python ../../Script/HLSLMetaDataGenerator.py</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

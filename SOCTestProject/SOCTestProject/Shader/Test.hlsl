@@ -6,11 +6,6 @@ cbuffer Transform : register( b0 )
 	matrix proj;
 };
 
-struct TEST
-{
-
-};
-
 struct VS_INPUT
 {
 	float4 Pos : POSITION;

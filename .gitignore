@@ -6,3 +6,6 @@ SOCEngine/Platform/Win32/Debug/
 
 SOCTestProject/Debug/
 SOCTestProject/SOCTestProject/Debug/
+
+ShaderFactory.hpp
+*.metadata
