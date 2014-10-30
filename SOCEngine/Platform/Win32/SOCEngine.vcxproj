@@ -75,6 +75,7 @@
     <ClInclude Include="..\..\Structure\Map.h" />
     <ClInclude Include="..\..\Structure\Singleton.h" />
     <ClInclude Include="..\..\Structure\Structure.h" />
+    <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp" />
     <ClInclude Include="..\..\Utility\DirectoryManager.h" />
     <ClInclude Include="..\..\Utility\rapidjson\allocators.h" />
     <ClInclude Include="..\..\Utility\rapidjson\document.h" />
@@ -213,7 +214,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python ../../Script/HLSLMetaDataGenerator.py</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

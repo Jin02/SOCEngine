@@ -163,7 +163,7 @@ for (path, dirs, files) in os.walk(targetDir):
 		        code += nextLine(1)
 
 		code += tap(3) + '}' + nextLine(1)
-        code += tap(2) + '}' + nextLine(1)
+        code += tap(2) + '}' + nextLine(1) + tap(2)
 
         for structName in jsonData["SemanticStructure"]:
         	del mainFuncs[structName]

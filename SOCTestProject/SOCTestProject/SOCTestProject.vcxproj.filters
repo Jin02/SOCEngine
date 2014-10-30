@@ -29,7 +29,7 @@
     <ClInclude Include="Code\TestScene.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SOCEngine\Template\ShaderFactoryTemplate.hpp">
+    <ClInclude Include="Template\ShaderFactory.hpp">
       <Filter>템플릿</Filter>
     </ClInclude>
   </ItemGroup>

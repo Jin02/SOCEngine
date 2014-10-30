@@ -127,6 +127,9 @@
     <Filter Include="Tools\RapidJson">
       <UniqueIdentifier>{cd7838c5-e36b-41a1-a5fc-631d42964fca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Template">
+      <UniqueIdentifier>{e86b05aa-b1a7-4f38-a51c-a90ee7c640cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -395,6 +398,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Utility\rapidjson\writer.h">
       <Filter>Tools\RapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp">
+      <Filter>Template</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
