@@ -10,7 +10,7 @@ class ShaderFactory:
 	originFileDir = None
 	saveDir = None
 	addCodeBeginCommand = "/** Script Begin **/"
-	addCodeEndCommand = "\t\t/** Script End **/"
+	addCodeEndCommand = "/** Script End **/"
 	def __init__(self, originFileDir, saveDir):
 		self.originFileDir 	= originFileDir
 		self.saveDir 		= saveDir
