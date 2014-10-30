@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="템플릿">
+      <UniqueIdentifier>{86b23ec8-24af-4766-b1aa-a932fc89bb56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\main.cpp">
@@ -25,6 +28,9 @@
   <ItemGroup>
     <ClInclude Include="Code\TestScene.h">
       <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SOCEngine\Template\ShaderFactoryTemplate.hpp">
+      <Filter>템플릿</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
