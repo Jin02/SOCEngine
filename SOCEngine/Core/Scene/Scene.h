@@ -8,6 +8,7 @@
 #include "MaterialManager.h"
 #include "ConstBufferManager.h"
 #include "Sampler.h"
+#include "MeshImporter.h"
 
 namespace Core
 {
@@ -27,6 +28,8 @@ namespace Core
 		Rendering::Material::MaterialManager*	_materialMgr;
 		Rendering::Buffer::ConstBufferManager*	_constBufferMgr;
 		Rendering::Sampler*						_sampler;
+		Importer::MeshImporter*					_meshImporter;
+
 
 	public:
 		Scene(void);

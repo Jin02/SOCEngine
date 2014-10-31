@@ -6,7 +6,7 @@ using namespace std;
 using namespace Structure;
 using namespace Rendering;
 
-Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr), _constBufferMgr(nullptr), _sampler(nullptr)
+Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr), _constBufferMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr)
 {
 	_state = State::Init;
 }
@@ -23,6 +23,7 @@ void Scene::Initialize()
 	_textureMgr		= new Texture::TextureManager;
 	_materialMgr	= new Material::MaterialManager;
 	_constBufferMgr = new Buffer::ConstBufferManager;
+	_meshImporter	= new Importer::MeshImporter;
 
 	NextState();
 	OnInitialize();
@@ -58,6 +59,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_textureMgr);
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_constBufferMgr);
+	SAFE_DELETE(_meshImporter);
  
 	OnDestroy();
 }

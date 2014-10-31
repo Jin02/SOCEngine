@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\Core\Transform\Transform.h" />
     <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h" />
     <ClInclude Include="..\..\Importer\ImporterUtility.h" />
+    <ClInclude Include="..\..\Importer\MeshImporter.h" />
     <ClInclude Include="..\..\Importer\ObjImporter.h" />
     <ClInclude Include="..\..\Importer\tiny_obj_loader.h" />
     <ClInclude Include="..\..\Intersection\AABB.h" />
@@ -120,6 +121,7 @@
     <ClCompile Include="..\..\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\Core\Transform\Transform.cpp" />
     <ClCompile Include="..\..\Importer\ImporterUtility.cpp" />
+    <ClCompile Include="..\..\Importer\MeshImporter.cpp" />
     <ClCompile Include="..\..\Importer\ObjImporter.cpp" />
     <ClCompile Include="..\..\Importer\tiny_obj_loader.cc" />
     <ClCompile Include="..\..\Intersection\AABB.cpp" />
@@ -149,6 +151,7 @@
     <ClCompile Include="..\..\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="..\..\Rendering\Light\SpotLight.cpp" />
     <ClCompile Include="..\..\Rendering\Material\Material.cpp" />
+    <ClCompile Include="..\..\Rendering\Material\MaterialManager.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshBasicData.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
@@ -200,7 +203,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Intersection;../../Template;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Importer;../../Intersection;../../Template;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>

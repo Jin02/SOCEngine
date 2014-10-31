@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <assert.h>
 
 class Utility
 {
@@ -42,4 +43,46 @@ public:
 		_pclose(fp);
 		return result;
 	}
+
+	static bool ParseDirectory(const std::string& path, std::string& outFolderPath, std::string& outFileName, std::string& outFileExtension)
+	{
+		return ParseDirectory(path, &outFolderPath, &outFileName, &outFileExtension);
+	}
+
+	static bool ParseDirectory(const std::string& path, std::string* outFolderPath, std::string* outFileName, std::string* outFileExtension)
+	{
+		unsigned int fileNameStartPos = path.rfind('/');
+		if( fileNameStartPos == -1 )
+		{
+			fileNameStartPos = path.rfind('\\');
+			if(fileNameStartPos == -1)
+				return false;
+		}
+
+		const std::string fileNameWithExtension = &path.c_str()[fileNameStartPos+1];
+
+		if(outFolderPath)
+			*outFolderPath = path.substr(0, fileNameStartPos+1);
+
+		unsigned int extensionPos = fileNameWithExtension.find('.');
+		if( extensionPos == -1 )
+			return false;
+
+		if(outFileExtension)
+			*outFileExtension = &fileNameWithExtension.c_str()[extensionPos+1];
+
+		if(outFileName)
+			*outFileName = fileNameWithExtension.substr(0, extensionPos); 
+
+		return true;
+	}
 };
+
+#if defined(_DEBUG)
+#define DEBUG_LOG(X)\
+	OutputDebugString(X);
+#else
+	#define DEBUG_LOG(X) X;
+#endif
+
+#define ASSERT(MSG) assert(!MSG)

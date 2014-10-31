@@ -28,11 +28,12 @@ namespace Rendering
 
 			enum TextureType
 			{
-				Diffuse = 0,
+				Ambient = 0,
+				Diffuse,
 				Normal,
 				Specular,
 				Opacity,
-				Other
+				User
 			};
 
 		private:
@@ -50,6 +51,7 @@ namespace Rendering
 
 		public:
 			bool UpdateTexture(unsigned int index, const Texture::Texture* texture);
+			void UpdateAmbientMap(const Texture::Texture* tex);
 			void UpdateDiffuseMap(const Texture::Texture* tex);
 			void UpdateNormalMap(const Texture::Texture* tex);
 			void UpdateSpecularMap(const Texture::Texture* tex);

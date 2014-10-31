@@ -20,6 +20,6 @@ namespace Importer
 		~ObjImporter();
 
 	public:
-		Core::Object* Load(const std::string& fileFolderPath, const std::string& fileNameWithExtension);
+		Core::Object* Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder);
 	};
 }

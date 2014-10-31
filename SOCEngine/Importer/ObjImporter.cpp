@@ -6,6 +6,7 @@
 using namespace Importer;
 using namespace Rendering::Material;
 using namespace Rendering::Mesh;
+using namespace Rendering::Texture;
 
 ObjImporter::ObjImporter()
 {
@@ -15,92 +16,77 @@ ObjImporter::~ObjImporter()
 {
 }
 
-Core::Object* ObjImporter::Load(const std::string& fileFolderPath, const std::string& fileNameWithExtension)
+Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder)
 {
-	std::vector<tinyobj::shape_t> shapes;
-	std::string error = tinyobj::LoadObj(shapes, (fileFolderPath+fileNameWithExtension).data());
+	std::vector<tinyobj::shape_t>		shapes;
+	std::vector<tinyobj::material_t>	materials;
 
-	if(error.empty() == false)
-		return nullptr;
+	std::string error = tinyobj::LoadObj(shapes, materials, fileDir.c_str(), materialFileFolder.c_str());
 
-	std::string fileName;
+	if( error.empty() == false )
 	{
-		std::vector<std::string> tokens;
-		Utility::Tokenize(fileNameWithExtension, tokens, ".");
-		fileName = tokens[0];
+		DEBUG_LOG(error.c_str());
+		return nullptr;
 	}
 
-	Core::Object* parent = new Core::Object;
-	parent->SetName(fileName);
-
-	MaterialManager* materialMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMaterialManager();
-
-	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	TextureManager* textureMgr = currentScene->GetTextureManager();
+	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{
-		Core::Object* child = new Core::Object;
-		child->SetName(iter->name);
-		Mesh* mesh = child->AddComponent<Mesh>();
+		const std::string materialName = iter->name;
+		if( materialName.empty() )
+			ASSERT("Material has not key");
 
-		const unsigned int num = iter->mesh.positions.size() / 3;
-		int stride = (sizeof(Math::Vector3) * 2 + sizeof(Math::Vector2));
-						// Position, Normal				  TexCoord
-		size_t size = num * stride;
+		Material* material = materialMgr->Find(fileName, materialName);
 
-		const void* vertexBufferData = nullptr;
+		if(material == nullptr)
 		{
-			void* buffer = malloc(size);
-		
-			const std::vector<float>& positions = iter->mesh.positions;
-			const std::vector<float>& normals = iter->mesh.normals;
-			const std::vector<float>& texcoords = iter->mesh.texcoords;
+			Material::Color color;
+			color.ambient.SetColor(iter->ambient);
+			color.diffuse.SetColor(iter->diffuse);
+			color.specular.SetColor(iter->specular);
+			color.emissive.SetColor(iter->emission);
+			color.shiness = iter->shininess;
+			color.opacity = iter->dissolve;
 
-#define INSERT_BUFFER_DATA(type, buf, value) *((type*)buf) = value; buf = (type*)buffer + 1; 
+			std::string fileName, extension;
+			material = new Material(materialName,  color);
 
-			unsigned int vec3Idx = 0;
-			unsigned int vec2Idx = 0;
-			for(unsigned int i = 0; i < num; ++i)
+			if(iter->ambient_texname.empty() == false)
 			{
-				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 0]);
-				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 1]);
-				INSERT_BUFFER_DATA(float, buffer, positions[vec3Idx + 2]);
-
-				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 0]);
-				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 1]);
-				INSERT_BUFFER_DATA(float, buffer, normals[vec3Idx + 2]);
-				vec3Idx += 3;
-
-				INSERT_BUFFER_DATA(float, buffer, texcoords[vec2Idx + 0]);
-				INSERT_BUFFER_DATA(float, buffer, texcoords[vec2Idx + 1]);
-				vec2Idx += 2;
+				Utility::ParseDirectory(iter->ambient_texname, nullptr, &fileName, &extension);
+				Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + iter->ambient_texname + extension, materialName + fileName);
+				material->UpdateAmbientMap(texture);
 			}
 
-			vertexBufferData = buffer;
+			if(iter->diffuse_texname.empty() == false)
+			{
+				Utility::ParseDirectory(iter->diffuse_texname, nullptr, &fileName, &extension);
+				Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + iter->ambient_texname + extension, materialName + fileName);
+				material->UpdateDiffuseMap(texture);
+			}
+
+			if(iter->normal_texname.empty() == false)
+			{
+				Utility::ParseDirectory(iter->normal_texname, nullptr, &fileName, &extension);
+				Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + iter->ambient_texname + extension, materialName + fileName);
+				material->UpdateNormalMap(texture);
+			}
+
+			if(iter->specular_texname.empty() == false)
+			{
+				Utility::ParseDirectory(iter->specular_texname, nullptr, &fileName, &extension);
+				Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + iter->ambient_texname + extension, materialName + fileName);
+				material->UpdateSpecularMap(texture);
+			}
+
+			materialMgr->Add(fileName, materialName, material, false);
 		}
-
-		const tinyobj::material_t& objMaterial = iter->material;
-		const std::string& materialName = objMaterial.name;
-
-		Material* material = materialMgr->Find(materialName);
-		if( material == nullptr )
+		else
 		{
-			Material::Color lightColor;
-			lightColor.diffuse.SetColor(objMaterial.diffuse);
-			lightColor.specular.SetColor(objMaterial.specular);
-			lightColor.emissive.SetColor(objMaterial.emission);
-			lightColor.ambient.SetColor(objMaterial.ambient);
-			lightColor.shiness = objMaterial.shininess;
-			lightColor.opacity = objMaterial.dissolve;
-
-			material = new Material(materialName, lightColor);
-			materialMgr->Add(fileName+":"+materialName, material, false);
+			ASSERT("Material Manager already has new mateiral. Please check key from new material");
 		}
-
-		objMaterial.diffuse_texname;
-		objMaterial.normal_texname;
-		objMaterial.specular_texname;
-
-		const std::vector<unsigned int>& indices = iter->mesh.indices;
-		mesh->Create(vertexBufferData, num, size, indices.data(), indices.size(), nullptr, false);
 	}
 
 	return nullptr;

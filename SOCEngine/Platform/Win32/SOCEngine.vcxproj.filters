@@ -136,6 +136,9 @@
     <Filter Include="Template">
       <UniqueIdentifier>{e86b05aa-b1a7-4f38-a51c-a90ee7c640cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Importer\Utility">
+      <UniqueIdentifier>{017d46aa-8d43-4e48-bcd5-cf547e0aa77b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -411,11 +414,14 @@
     <ClInclude Include="..\..\Importer\tiny_obj_loader.h">
       <Filter>Importer\Obj\tiny</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Importer\ImporterUtility.h">
-      <Filter>Importer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp">
       <Filter>Template</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Importer\ImporterUtility.h">
+      <Filter>Importer\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Importer\MeshImporter.h">
+      <Filter>Importer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -576,7 +582,13 @@
       <Filter>Importer\Obj\tiny</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Importer\ImporterUtility.cpp">
+      <Filter>Importer\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Importer\MeshImporter.cpp">
       <Filter>Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Material\MaterialManager.cpp">
+      <Filter>Rendering\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

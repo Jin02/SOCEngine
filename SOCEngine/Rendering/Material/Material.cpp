@@ -31,9 +31,9 @@ Material::~Material(void)
 }
 
 bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Texture* texture)
-{
+{	
 	if( index >= _textures.size() )
-		return false;
+		_textures.resize(index+1);
 
 	_textures[index] = texture;
 
@@ -61,5 +61,11 @@ void Material::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
 void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Opacity, tex) == false)
+		_textures.push_back(tex);
+}
+
+void Material::UpdateAmbientMap(const Texture::Texture* tex)
+{
+	if(UpdateTexture(TextureType::Ambient, tex) == false)
 		_textures.push_back(tex);
 }

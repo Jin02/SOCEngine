@@ -12,10 +12,10 @@ TextureManager::~TextureManager()
 	RemoveAll();
 }
 
-bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& path, const std::string& nameWithExtension)
+bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& fileDir)
 {
 	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, (path+nameWithExtension).c_str(), nullptr, nullptr, outShaderResourceView, nullptr);
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, fileDir.c_str(), nullptr, nullptr, outShaderResourceView, nullptr);
 	if( FAILED(hr) )
 		return false;
 
@@ -23,14 +23,14 @@ bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderRes
 }
 
 
-Texture* TextureManager::LoadTextureFromFile(const std::string& path, const std::string& nameWithExtension, const std::string& key)
+Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, const std::string& key)
 {
 	Texture* tex = _hash.Find(key);
 	if(tex)
 		return tex;
 
 	ID3D11ShaderResourceView* srv = nullptr;
-	if( LoadTextureFromFile(&srv, path, nameWithExtension) == false )
+	if( LoadTextureFromFile(&srv, fileDir) == false )
 		return nullptr;
 
 	return _hash.Add(key, new Texture(srv));
