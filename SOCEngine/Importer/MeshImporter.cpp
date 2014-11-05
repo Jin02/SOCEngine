@@ -13,7 +13,7 @@ MeshImporter::~MeshImporter()
 	SAFE_DELETE(_objImporter);
 }
 
-Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder)
+Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, const Rendering::Shader::VertexShader* vs)
 {
 	std::string fileName, fileExtension, folderDir;
 	if( Utility::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
@@ -22,7 +22,7 @@ Object* MeshImporter::Load(const std::string& fileDir, const std::string& materi
 	
 	Object* meshObject = nullptr;
 	if(fileExtension == "obj")
-		meshObject = _objImporter->Load(fileDir, fileName, materialFolder);
+		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, vs);
 
 	return meshObject;
 }

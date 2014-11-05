@@ -11,6 +11,8 @@
 #include "tiny_obj_loader.h"
 #include "Object.h"
 
+//#include "VertexShader.h"
+
 namespace Importer
 {
 	class ObjImporter
@@ -20,6 +22,6 @@ namespace Importer
 		~ObjImporter();
 
 	public:
-		Core::Object* Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder);
+		Core::Object* Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder, const Rendering::Shader::VertexShader* vs);
 	};
 }

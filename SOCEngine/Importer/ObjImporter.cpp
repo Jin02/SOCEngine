@@ -16,7 +16,7 @@ ObjImporter::~ObjImporter()
 {
 }
 
-Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder)
+Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder, const Rendering::Shader::VertexShader* vs)
 {
 	std::vector<tinyobj::shape_t>		shapes;
 	std::vector<tinyobj::material_t>	materials;
@@ -30,6 +30,32 @@ Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& f
 	}
 
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+
+	Core::Object* parent = new Core::Object;
+	parent->SetName(fileName);
+
+	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
+	{
+		if((iter->mesh.indices.size() % 3) != 0)
+			ASSERT("Indices must be made only 3 units.");
+
+		Core::Object* child = new Core::Object(parent);
+		child->SetName(iter->name);
+
+		Mesh* mesh = child->AddComponent<Mesh>();
+
+		if((iter->mesh.indices.size() % 3) != 0)
+			ASSERT("Index count must has 3 units. ex:) [x1,y1,z1,x2,y2,z2] ");
+
+		iter->mesh.indices;
+
+		iter->mesh.material_ids;
+
+		iter->mesh.normals;
+		iter->mesh.positions;
+		iter->mesh.texcoords;
+	}
+
 	MaterialManager* materialMgr = currentScene->GetMaterialManager();
 	TextureManager* textureMgr = currentScene->GetTextureManager();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)

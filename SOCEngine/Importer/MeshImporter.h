@@ -14,6 +14,6 @@ namespace Importer
 		~MeshImporter();
 
 	public:
-		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder);
+		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, const Rendering::Shader::VertexShader* vs);
 	};
 }

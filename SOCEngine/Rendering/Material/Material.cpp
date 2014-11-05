@@ -64,7 +64,7 @@ void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 		_textures.push_back(tex);
 }
 
-void Material::UpdateAmbientMap(const Texture::Texture* tex)
+void Material::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Ambient, tex) == false)
 		_textures.push_back(tex);

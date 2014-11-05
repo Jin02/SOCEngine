@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Scene.h"
+#include "ShaderFactory.hpp"
 
 class TestScene : public Core::Scene
 {
 private:
-	Core::Transform* _test;
+	Core::Transform*					_test;
+	Rendering::Shader::ShaderFactory*	_factory;
 
 public:
 	TestScene(void);
