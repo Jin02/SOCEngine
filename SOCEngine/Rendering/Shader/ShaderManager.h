@@ -35,7 +35,7 @@ namespace Rendering
 
 		public:
 			//declation을 직접 입력하는 방식
-			BaseShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			BaseShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, unsigned int flag = 0);
 			BaseShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
 
 		public:

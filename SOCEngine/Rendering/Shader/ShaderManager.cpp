@@ -169,7 +169,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, unsigned int flag)
 {
 	std::string fileName, mainFunc;
 
@@ -186,7 +186,7 @@ BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new VertexShader(blob);
-		if(dynamic_cast<VertexShader*>(shader)->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
+		if(dynamic_cast<VertexShader*>(shader)->CreateShader(vertexDeclations.data(), vertexDeclations.size(), flag))
 			_shaders.Add(fullCommand, shader, false);
 	}
 
