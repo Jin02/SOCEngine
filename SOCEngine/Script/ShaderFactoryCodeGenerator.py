@@ -103,8 +103,8 @@ for (path, dirs, files) in os.walk(targetDir):
         #write Code
         #write Code
         #write Code
-        code += nextLine(1) + tap(2)+ 'if(shaderName == \"' + fileName + '\")' + nextLine(1)+tap(2)+"{" +nextLine(1)
-        code += tap(3) + "folderPath = \""+ path +"/\";" + nextLine(1)
+        code += nextLine(1) + tap(4)+ 'if(shaderName == \"' + fileName + '\")' + nextLine(1)+tap(4)+"{" +nextLine(1)
+        code += tap(5) + "folderPath = \""+ path +"/\";" + nextLine(1)
 
         for struct in jsonData["SemanticStructure"]:
         	if struct in mainFuncs == False:
@@ -113,11 +113,11 @@ for (path, dirs, files) in os.walk(targetDir):
    	        if count == 0:
    	        	continue
 
-   	        code += tap(3) + "if(mainVSFuncName == " + QuotationMarks(mainFuncs[struct][0])
+   	        code += tap(5) + "if(mainVSFuncName == " + QuotationMarks(mainFuncs[struct][0])
 	       	for i in xrange(1, count):
    	       		code += "|| mainVSFuncName == " + QuotationMarks(mainFuncs[struct][i])
    	        code += ")" + nextLine(1)
-   	        code += tap(3) + "{" + nextLine(1)
+   	        code += tap(5) + "{" + nextLine(1)
 
         	for order in jsonData["SemanticStructure"][struct]:
         		element = jsonData["SemanticStructure"][struct][order]
@@ -156,14 +156,14 @@ for (path, dirs, files) in os.walk(targetDir):
 		        #end
 
 		        #name, index, format, offset, slotClass, slot, steprate 
-		        code += tap(4)
+		        code += tap(6)
 		        code += "AddInputElementDesc(" + '\"' + element["SemanticName"] + '\"' + ',' 
 	        	code += str(element["SemanticIndex"]) + ',' + format + ',' + str(element["AlignedByteOffset"]) + ','
 		        code += inputSlotClass + ',' + str(inputSlot) + ',' + str(instanceDataStepRate) + ");"
 		        code += nextLine(1)
 
-		code += tap(3) + '}' + nextLine(1)
-        code += tap(2) + '}' + nextLine(1) + tap(2)
+		code += tap(5) + '}' + nextLine(1)
+        code += tap(4) + '}' + nextLine(1) + tap(4)
 
         for structName in jsonData["SemanticStructure"]:
         	del mainFuncs[structName]
