@@ -239,12 +239,21 @@ class ParseCode:
 					nameOfVariable = codePiece
 					break
 
-		def CalculateAlignedByteOffset(layoutList):
+		def CalculateAlignedByteOffset(layoutList, addUsingType):
 			count = len(layoutList)
 			if count < 1:
 				return 0
 
-			beforeLayout = layoutList[count-1]
+			beforeLayout 	= None
+
+			for i in xrange(0, count):
+				beforeLayout = layoutList[count - 1 - i]
+				if addUsingType == beforeLayout.usingType:
+					break
+
+			if beforeLayout.usingType != addUsingType:
+				return 0
+
 			beforeFormat = beforeLayout.format
 
 			# foramt = float4 or float2 or int2.
@@ -256,6 +265,7 @@ class ParseCode:
 				alignedByteOffset -= 4
 
 			return alignedByteOffset		
+
 		def MakeInputLayout(name, variableType, index, offset, usingType):
 			layout 						= InputLayout()
 			layout.semanticName 		= name
@@ -267,10 +277,10 @@ class ParseCode:
 
 		if typeOfVariable == "matrix" or typeOfVariable == "float4x4":
 			for i in xrange(0, 4):
-				layout = MakeInputLayout(semanticName, "float4", i, CalculateAlignedByteOffset(layoutList), usingType)
+				layout = MakeInputLayout(semanticName, "float4", i, CalculateAlignedByteOffset(layoutList, usingType), usingType)
 				layoutList.append(layout)
 		else:
-			layout = MakeInputLayout(semanticName, typeOfVariable, semanticIndex, CalculateAlignedByteOffset(layoutList), usingType)
+			layout = MakeInputLayout(semanticName, typeOfVariable, semanticIndex, CalculateAlignedByteOffset(layoutList, usingType), usingType)
 			layoutList.append(layout)
 
 		return
@@ -317,21 +327,10 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 
 	shaderFile.close()
 
-	#insert instancing data
-	def CalcTypeSize(variableType):
-		num = variableType[len(variableType)-1:]
-		return 4 * int(num)
-
+	#remove dumy data
 	deleteKeys = list()
 	for structName in parser.structDictionary:
-		if len(parser.structDictionary[structName]) > 0:
-			layoutList 			= parser.structDictionary[structName]
-			instancingOffset 	= 0
-			for item in layoutList:				
-				if item.usingType == "INSTANCE":
-					item.alignedByteOffset 	 = instancingOffset
-					instancingOffset  		+= CalcTypeSize(item.format)					
-		else:
+		if len(parser.structDictionary[structName]) == 0:
 			deleteKeys.append(structName)
 	for structName in deleteKeys:
 		del parser.structDictionary[structName]	
