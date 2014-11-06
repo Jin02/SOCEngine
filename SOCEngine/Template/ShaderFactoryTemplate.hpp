@@ -30,7 +30,7 @@ namespace Rendering
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
 				D3D11_INPUT_ELEMENT_DESC desc;
-				unsigned int vsFlag = 0;
+				std::vector<std::string> vsTags;
 
 				typedef unsigned int uint;
 				auto AddInputElementDesc = [&](const std::string& semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
@@ -50,20 +50,7 @@ namespace Rendering
 					MakeInputElementDesc(desc);
 					vertexDeclations.push_back(desc);
 
-					if(semanticName == "POSITION")
-						vsFlag |= Shader::VertexShader::Flag::POSITION;
-					else if(semanticName == "NORMAL")
-						vsFlag |= Shader::VertexShader::Flag::NORMAL;
-					else if(semanticName == "BINORMAL")
-						vsFlag |= Shader::VertexShader::Flag::BINORMAL;
-					else if(semanticName == "TANGENT")
-						vsFlag |= Shader::VertexShader::Flag::TANGENT;
-					else if(semanticName == "TEXCOORD")
-						vsFlag |= (Shader::VertexShader::Flag::TEXCOORD0 << semanticIndex);
-					//else if(semanticName.find("INSTANCE") != -1)
-					//{
-					//	//추후 처리
-					//}
+					vsTags.push_back(semanticName);
 				};
 				/** Script Begin **/
 				/** Script End **/
