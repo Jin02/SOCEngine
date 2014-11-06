@@ -29,7 +29,8 @@ namespace Rendering
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
-				unsigned int vsFlag = 0;
+				D3D11_INPUT_ELEMENT_DESC desc;
+				std::vector<std::string> vsTags;
 
 				typedef unsigned int uint;
 				auto AddInputElementDesc = [&](const std::string& semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
@@ -47,7 +48,8 @@ namespace Rendering
 
 					D3D11_INPUT_ELEMENT_DESC desc;
 					MakeInputElementDesc(desc);
-					vertexDeclations.push_back(desc);		
+					vertexDeclations.push_back(desc);
+					vsTags.push_back(semanticName);
 				};
 
 				/** Script Begin **/

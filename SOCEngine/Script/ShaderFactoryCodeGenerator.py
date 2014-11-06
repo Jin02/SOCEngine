@@ -119,8 +119,8 @@ for (path, dirs, files) in os.walk(targetDir):
    	        code += ")" + nextLine(1)
    	        code += tap(5) + "{" + nextLine(1)
 
-        	for order in jsonData["SemanticStructure"][struct]:
-        		element = jsonData["SemanticStructure"][struct][order]
+        	for idx in xrange(0, len(jsonData["SemanticStructure"][struct])):
+        		element = jsonData["SemanticStructure"][struct][str(idx)]
 
 		        # Make InputSlotClass
 		    	inputSlotClass = "D3D11_INPUT_PER_"
