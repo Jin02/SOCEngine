@@ -1,6 +1,7 @@
 #include "ShaderManager.h"
 
 using namespace Rendering::Shader;
+using namespace Utility;
 
 ShaderManager::ShaderManager()
 {
@@ -138,7 +139,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc)
 {
 	std::vector<std::string> commands;
-	Utility::Tokenize(fullCommand, commands, ":");
+	String::Tokenize(fullCommand, commands, ":");
 
 	if(commands.size() != 3)
 		return false;
@@ -156,7 +157,7 @@ bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string
 bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std::string& shaderType, std::string* outFileName, std::string* outMainFunc)			
 {
 	std::vector<std::string> commands;
-	Utility::Tokenize(partlyCommand, commands, ":");
+	String::Tokenize(partlyCommand, commands, ":");
 
 	if(commands.size() != 2)
 		return false;
@@ -169,7 +170,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, unsigned int flag)
+BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	std::string fileName, mainFunc;
 
@@ -186,7 +187,7 @@ BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new VertexShader(blob);
-		if(dynamic_cast<VertexShader*>(shader)->CreateShader(vertexDeclations.data(), vertexDeclations.size(), flag))
+		if(dynamic_cast<VertexShader*>(shader)->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
 			_shaders.Add(fullCommand, shader, false);
 	}
 

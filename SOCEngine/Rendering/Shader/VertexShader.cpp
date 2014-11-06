@@ -15,7 +15,7 @@ namespace Rendering
 		SAFE_RELEASE(_shader);
 	}
 
-	bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count, unsigned int flag)
+	bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count)
 	{
 		if(_blob == nullptr)
 			return false;
@@ -34,8 +34,6 @@ namespace Rendering
 
 		if( FAILED( hr ) )
 			return false;
-
-		_flags = flag;
 
 		return true;
 	}

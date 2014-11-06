@@ -3,6 +3,7 @@
 
 using namespace Importer;
 using namespace Core;
+using namespace Utility;
 
 MeshImporter::MeshImporter() : _objImporter(nullptr)
 {
@@ -16,7 +17,7 @@ MeshImporter::~MeshImporter()
 Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, const Rendering::Shader::VertexShader* vs)
 {
 	std::string fileName, fileExtension, folderDir;
-	if( Utility::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
+	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
 		return nullptr;
 
 	

@@ -17,7 +17,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	_factory = new Shader::ShaderFactory(_shaderMgr);
+	_factory = new Shader::Factory(_shaderMgr);
 
 	Shader::VertexShader* vs = nullptr;
 	Shader::PixelShader* ps = nullptr;
@@ -28,7 +28,7 @@ void TestScene::OnInitialize()
 	Shader::ShaderManager* mgr = _shaderMgr;
 
 	_meshImporter->Load("./Resource/cube.obj", "./Resource/", vs);
-//	_meshImporter->Load("./Resource/sponza/sponza.obj", "./Resource/sponza/");
+//	_meshImporter->Load("./Resource/sponza/sponza.obj", "./Resource/sponza/", vs);
 
 	//Camera
 	{

@@ -29,7 +29,6 @@ namespace Rendering
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
-				D3D11_INPUT_ELEMENT_DESC desc;
 				unsigned int vsFlag = 0;
 
 				typedef unsigned int uint;
@@ -48,25 +47,12 @@ namespace Rendering
 
 					D3D11_INPUT_ELEMENT_DESC desc;
 					MakeInputElementDesc(desc);
-					vertexDeclations.push_back(desc);
-
-					if(semanticName == "POSITION")
-						vsFlag |= Shader::VertexShader::Flag::POSITION;
-					else if(semanticName == "NORMAL")
-						vsFlag |= Shader::VertexShader::Flag::NORMAL;
-					else if(semanticName == "BINORMAL")
-						vsFlag |= Shader::VertexShader::Flag::BINORMAL;
-					else if(semanticName == "TANGENT")
-						vsFlag |= Shader::VertexShader::Flag::TANGENT;
-					else if(semanticName == "TEXCOORD")
-						vsFlag |= (Shader::VertexShader::Flag::TEXCOORD0 << semanticIndex);
-					//else if(semanticName.find("INSTANCE") != -1)
-					//{
-					//	//추후 처리
-					//}
+					vertexDeclations.push_back(desc);		
 				};
+
 				/** Script Begin **/
 				/** Script End **/
+				
 				const std::string baseCommand = shaderName+":";
 				outVertexShader = dynamic_cast<Rendering::Shader::VertexShader*>(_shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations));
 				outPixelShader	= dynamic_cast<Rendering::Shader::PixelShader*>(_shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, false));
