@@ -172,7 +172,7 @@ class ParseCode:
 
 		return structName
 	def ParseSemanticVariable(self, code, layoutList):
-		semancVariableNames = ["POSITION", "NORMAL", "TANGENT", "BINORMAL", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
+		semancVariableNames = ["POSITION", "BINORMAL", "NORMAL", "TANGENT", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
 		modifiedCode 		= CleanUpCode(code)
 
 		if '}' in modifiedCode:
@@ -208,6 +208,9 @@ class ParseCode:
 					break
 		elif semanticName == "SV_InstanceID": # not write
 			return
+		elif semanticName == "NORMAL":
+			if "BINORMAL" in modifiedCode:
+				semanticName = "BINORMAL"
 		elif semanticName == "INSTANCE":
 			semanticName 	= ParseSemanticName(code)
 			usingType 		= "INSTANCE"
