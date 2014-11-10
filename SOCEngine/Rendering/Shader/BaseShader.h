@@ -6,6 +6,12 @@
 #include "Texture.h"
 #include <vector>
 
+#define BASIC_SHADER_NAME "Basic"
+#define BASIC_NORMAL_MAPPING_SHADER_NAME "BasicNormalMapping"
+
+#define BASIC_VS_MAIN_FUNC_NAME "VS"
+#define BASIC_PS_MAIN_FUNC_NAME "PS"
+
 namespace Rendering
 {
 	namespace Shader

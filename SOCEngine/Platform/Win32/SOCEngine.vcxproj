@@ -65,6 +65,7 @@
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
+    <ClInclude Include="..\..\Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\BaseShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
@@ -225,8 +226,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)..\..\Template\Shader -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)..\..\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)..\..\Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)..\..\Template\Shader</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

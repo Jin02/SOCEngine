@@ -14,16 +14,15 @@ MeshImporter::~MeshImporter()
 	SAFE_DELETE(_objImporter);
 }
 
-Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, const Rendering::Shader::VertexShader* vs)
+Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, bool isDynamicMesh)
 {
 	std::string fileName, fileExtension, folderDir;
 	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
 		return nullptr;
 
-	
 	Object* meshObject = nullptr;
 	if(fileExtension == "obj")
-		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, vs);
+		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, isDynamicMesh);
 
 	return meshObject;
 }

@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Director.h"
 
+#include "EngineShaderFactory.hpp"
+
 using namespace Core;
 using namespace std;
 using namespace Structure;
@@ -25,6 +27,19 @@ void Scene::Initialize()
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Buffer::Manager;
 	_originObjMgr	= new Core::ObjectManager;
+
+	// Load Basic Shader
+	{
+		Shader::Factory factory(_shaderMgr);
+
+		//Basic. Only TexMapping
+		if(factory.LoadShader(BASIC_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+			ASSERT("Not Found Basic.hlsl");
+
+		//Normal Mapping
+		if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+			ASSERT("Not Found BasicNormalMapping.hlsl");
+	}
 
 	NextState();
 	OnInitialize();

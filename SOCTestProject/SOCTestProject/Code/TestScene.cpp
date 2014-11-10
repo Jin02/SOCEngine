@@ -22,7 +22,7 @@ void TestScene::OnInitialize()
 	Shader::VertexShader* vs = nullptr;
 	Shader::PixelShader* ps = nullptr;
 
-	if(_factory->LoadShader("Test", "VS", "PS", vs, ps) == false)
+	if(_factory->LoadShader("Test", "VS", "PS", &vs, &ps) == false)
 		ASSERT("테스트. 쉐이더가 로딩되지 않음.");
 
 	Shader::ShaderManager* mgr = _shaderMgr;

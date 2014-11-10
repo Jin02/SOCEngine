@@ -24,8 +24,8 @@ namespace Rendering
 		public:
 			bool LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
-				Rendering::Shader::VertexShader*& outVertexShader,
-				Rendering::Shader::PixelShader*& outPixelShader)
+				Rendering::Shader::VertexShader** outVertexShader,
+				Rendering::Shader::PixelShader** outPixelShader)
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
@@ -53,8 +53,16 @@ namespace Rendering
 				/** Script End **/
 				
 				const std::string baseCommand = shaderName+':';
-				outVertexShader = dynamic_cast<Rendering::Shader::VertexShader*>(_shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations));
-				outPixelShader	= dynamic_cast<Rendering::Shader::PixelShader*>(_shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, false));
+
+				VertexShader* vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations);
+				PixelShader* ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true);
+
+				if(outVertexShader)
+					(*outVertexShader) = vs;
+	
+				if(outPixelShader)
+					(*outPixelShader) = ps;
+
 				return (outVertexShader && outPixelShader);
 			}
 		};
