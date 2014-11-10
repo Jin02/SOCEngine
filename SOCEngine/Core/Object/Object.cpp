@@ -116,7 +116,7 @@ namespace Core
 
 	}
 
-	Object* Object::Copy(Object *obj)
+	Object* Object::Copy(const Object *obj)
 	{
 		return new Object(*obj);
 	}

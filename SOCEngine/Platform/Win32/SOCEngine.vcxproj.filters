@@ -318,9 +318,6 @@
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h">
       <Filter>Rendering\Sampler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rendering\Shader\BaseShader.h">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
@@ -422,6 +419,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Importer\MeshImporter.h">
       <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Buffer\BufferManager.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\LPVoidType.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Structure\MapInMap.h">
+      <Filter>Structure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -560,9 +566,6 @@
     <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp">
       <Filter>Rendering\Sampler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp">
       <Filter>Rendering\Shader</Filter>
     </ClCompile>
@@ -589,6 +592,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Buffer\BufferManager.cpp">
+      <Filter>Rendering\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

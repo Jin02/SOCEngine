@@ -6,9 +6,9 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "MaterialManager.h"
-#include "ConstBufferManager.h"
 #include "Sampler.h"
 #include "MeshImporter.h"
+#include "BufferManager.h"
 
 namespace Core
 {
@@ -26,9 +26,10 @@ namespace Core
 		Rendering::Shader::ShaderManager*		_shaderMgr;
 		Rendering::Texture::TextureManager*		_textureMgr;
 		Rendering::Material::MaterialManager*	_materialMgr;
-		Rendering::Buffer::ConstBufferManager*	_constBufferMgr;
 		Rendering::Sampler*						_sampler;
 		Importer::MeshImporter*					_meshImporter;
+		Rendering::Buffer::Manager*				_bufferManager;
+		Core::ObjectManager*					_originObjMgr;
 
 
 	public:
@@ -56,7 +57,8 @@ namespace Core
 		GET_ACCESSOR(TextureManager, Rendering::Texture::TextureManager*, _textureMgr);
 		GET_ACCESSOR(ShaderManager, Rendering::Shader::ShaderManager*, _shaderMgr);
 		GET_ACCESSOR(MaterialManager, Rendering::Material::MaterialManager*, _materialMgr);
-		GET_ACCESSOR(ConstBufferManager, Rendering::Buffer::ConstBufferManager*, _constBufferMgr);
 		GET_ACCESSOR(Sampler, Rendering::Sampler*, _sampler);
+		GET_ACCESSOR(BufferManager, Rendering::Buffer::Manager*, _bufferManager);
+		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
 	};
 }

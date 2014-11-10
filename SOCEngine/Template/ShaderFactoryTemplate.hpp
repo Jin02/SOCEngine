@@ -29,8 +29,6 @@ namespace Rendering
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
-				D3D11_INPUT_ELEMENT_DESC desc;
-				std::vector<std::string> vsTags;
 
 				typedef unsigned int uint;
 				auto AddInputElementDesc = [&](const std::string& semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
@@ -49,13 +47,12 @@ namespace Rendering
 					D3D11_INPUT_ELEMENT_DESC desc;
 					MakeInputElementDesc(desc);
 					vertexDeclations.push_back(desc);
-					vsTags.push_back(semanticName);
 				};
 
 				/** Script Begin **/
 				/** Script End **/
 				
-				const std::string baseCommand = shaderName+":";
+				const std::string baseCommand = shaderName+':';
 				outVertexShader = dynamic_cast<Rendering::Shader::VertexShader*>(_shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations));
 				outPixelShader	= dynamic_cast<Rendering::Shader::PixelShader*>(_shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, false));
 				return (outVertexShader && outPixelShader);

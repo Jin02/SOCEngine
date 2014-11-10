@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\Common.h" />
+    <ClInclude Include="..\..\Common\LPVoidType.h" />
     <ClInclude Include="..\..\Core\Component\Component.h" />
     <ClInclude Include="..\..\Core\Layer\LayerManager.h" />
     <ClInclude Include="..\..\Core\Object\Object.h" />
@@ -42,8 +43,8 @@
     <ClInclude Include="..\..\Math\Vector3.h" />
     <ClInclude Include="..\..\Math\Vector4.h" />
     <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h" />
+    <ClInclude Include="..\..\Rendering\Buffer\BufferManager.h" />
     <ClInclude Include="..\..\Rendering\Buffer\ConstBuffer.h" />
-    <ClInclude Include="..\..\Rendering\Buffer\ConstBufferManager.h" />
     <ClInclude Include="..\..\Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="..\..\Rendering\Camera\Camera.h" />
@@ -74,6 +75,7 @@
     <ClInclude Include="..\..\Rendering\Texture\Texture.h" />
     <ClInclude Include="..\..\Rendering\Texture\TextureManager.h" />
     <ClInclude Include="..\..\Structure\BaseStructure.h" />
+    <ClInclude Include="..\..\Structure\MapInMap.h" />
     <ClInclude Include="..\..\Structure\Vector.h" />
     <ClInclude Include="..\..\Structure\HashMap.h" />
     <ClInclude Include="..\..\Structure\Map.h" />
@@ -136,8 +138,8 @@
     <ClCompile Include="..\..\Math\Vector3.cpp" />
     <ClCompile Include="..\..\Math\Vector4.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp" />
+    <ClCompile Include="..\..\Rendering\Buffer\BufferManager.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\ConstBuffer.cpp" />
-    <ClCompile Include="..\..\Rendering\Buffer\ConstBufferManager.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="..\..\Rendering\Camera\Camera.cpp" />

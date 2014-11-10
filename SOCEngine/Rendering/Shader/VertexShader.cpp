@@ -32,6 +32,45 @@ namespace Rendering
 
 		_blob->Release();
 
+		for(unsigned int i=0; i<count; ++i)
+		{
+			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
+			std::string semanticName = desc.SemanticName;
+
+			if(semanticName == "TEXCOORD")
+				semanticName += ('0' + desc.SemanticIndex);
+
+			SemanticInfo info;
+			info.name = semanticName;
+
+			if( (i+1) != count )
+				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+
+			_semanticInfo.push_back(info);
+		}
+
+		unsigned int& size = _semanticInfo.back().size;
+		switch(vertexDeclations[count-1].Format)
+		{
+			case DXGI_FORMAT_R32G32B32_FLOAT:
+			case DXGI_FORMAT_R32G32B32_UINT:
+			case DXGI_FORMAT_R32G32B32_SINT:
+				size = 12;
+				break;
+
+			case DXGI_FORMAT_R32G32_FLOAT:
+			case DXGI_FORMAT_R32G32_UINT:
+			case DXGI_FORMAT_R32G32_SINT:
+				size = 8;
+				break;
+
+			case DXGI_FORMAT_R32_FLOAT:
+			case DXGI_FORMAT_R32_UINT:
+			case DXGI_FORMAT_R32_SINT:
+				size = 4;
+				break;
+		}
+
 		if( FAILED( hr ) )
 			return false;
 

@@ -112,8 +112,9 @@ namespace Core
 		GET_SET_ACCESSOR(Name, const std::string&, _name);
 
 	public:
-		static Object* Copy(Object *obj);
+		static Object* Copy(const Object *obj);
 		GET_ACCESSOR(Transform, Transform*, _transform);
 	};
 
+	class ObjectManager : public Structure::HashMap<const Object>{};
 }

@@ -15,11 +15,11 @@ namespace Rendering
 			Destroy();
 		}
 
-		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+		bool Mesh::Create(const LPVoidType vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
 				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material::Material* material, bool isDynamic)
 		{
 			_filter = new MeshFilter;
-			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
+			if(_filter->CreateBuffer(vertexBufferDatas.GetBuffer(), vertexBufferDataCount, vertexBufferSize,
 				indicesData, indicesCount, isDynamic) == false)
 			{
 				SAFE_DELETE(_filter);
@@ -29,6 +29,9 @@ namespace Rendering
 
 			_renderer = new MeshRenderer;
 			if(_renderer->AddMaterial(material, false) == false)
+				return false;
+
+			if(_renderer->init() == false)
 				return false;
 
 			return true;
