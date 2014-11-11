@@ -6,18 +6,18 @@ namespace Rendering
 {
 	namespace Shader
 	{
-		class Factory
+		class [ClassName]
 		{
 		private:
 			Rendering::Shader::ShaderManager	*_shaderMgr;
 
 		public:
-			Factory(Rendering::Shader::ShaderManager*& shaderManager)
+			[ClassName](Rendering::Shader::ShaderManager*& shaderManager)
 			{
 				_shaderMgr = shaderManager;
 			}
 
-			~Factory(void)
+			~[ClassName](void)
 			{
 			}
 

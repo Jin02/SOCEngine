@@ -69,7 +69,7 @@
       <ShaderType>Effect</ShaderType>
     </FxCompile>
     <PreBuildEvent>
-      <Command>python $(SolutionDir)..\SOCEngine\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(SolutionDir)..\SOCEngine\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(SolutionDir)..\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory)</Command>
+      <Command>python $(SolutionDir)..\SOCEngine\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(SolutionDir)..\SOCEngine\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(SolutionDir)..\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory) -ClassName Test</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
