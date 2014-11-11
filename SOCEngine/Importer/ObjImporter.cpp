@@ -43,34 +43,36 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 		color.shiness = tinyMaterial.shininess;
 		color.opacity = tinyMaterial.dissolve;
 
-		std::string fileName, extension;
 		material = new Material(materialName,  color);
+
+		// Using Utility::String::ParseDirectory
+		std::string textureFileName, textureExtension;
 
 		if(tinyMaterial.ambient_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.ambient_texname, nullptr, &fileName, &extension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + extension, materialName + fileName);
+			String::ParseDirectory(tinyMaterial.ambient_texname, nullptr, &textureFileName, &textureExtension);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
 			material->UpdateAmbientMap(texture);
 		}
 
 		if(tinyMaterial.diffuse_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.diffuse_texname, nullptr, &fileName, &extension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + extension, materialName + fileName);
+			String::ParseDirectory(tinyMaterial.diffuse_texname, nullptr, &textureFileName, &textureExtension);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
 			material->UpdateDiffuseMap(texture);
 		}
 
 		if(tinyMaterial.normal_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.normal_texname, nullptr, &fileName, &extension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + extension, materialName + fileName);
+			String::ParseDirectory(tinyMaterial.normal_texname, nullptr, &textureFileName, &textureExtension);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
 			material->UpdateNormalMap(texture);
 		}
 
 		if(tinyMaterial.specular_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.specular_texname, nullptr, &fileName, &extension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + extension, materialName + fileName);
+			String::ParseDirectory(tinyMaterial.specular_texname, nullptr, &textureFileName, &textureExtension);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
 			material->UpdateSpecularMap(texture);
 		}
 

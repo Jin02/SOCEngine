@@ -30,7 +30,7 @@ void Scene::Initialize()
 
 	// Load Basic Shader
 	{
-		Shader::Factory factory(_shaderMgr);
+		Shader::EngineFactory factory(_shaderMgr);
 
 		//Basic. Only TexMapping
 		if(factory.LoadShader(BASIC_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)

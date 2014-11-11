@@ -5,29 +5,28 @@
 
 using namespace Rendering;
 
-TestScene::TestScene(void) : _factory(nullptr)
+TestScene::TestScene(void)
 {
 
 }
 
 TestScene::~TestScene(void)
 {
-	SAFE_DELETE(_factory);
 }
 
 void TestScene::OnInitialize()
 {
-	_factory = new Shader::Factory(_shaderMgr);
+	Shader::Factory factory(_shaderMgr);
 
 	Shader::VertexShader* vs = nullptr;
 	Shader::PixelShader* ps = nullptr;
 
-	if(_factory->LoadShader("Test", "VS", "PS", &vs, &ps) == false)
+	if(factory.LoadShader("Test", "VS", "PS", &vs, &ps) == false)
 		ASSERT("테스트. 쉐이더가 로딩되지 않음.");
 
 	Shader::ShaderManager* mgr = _shaderMgr;
 
-	_meshImporter->Load("./Resource/cube.obj", "./Resource/", vs);
+	_meshImporter->Load("./Resource/cube.obj", "./Resource/");
 //	_meshImporter->Load("./Resource/sponza/sponza.obj", "./Resource/sponza/", vs);
 
 	//Camera

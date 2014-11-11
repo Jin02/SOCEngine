@@ -192,6 +192,8 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		shader = new VertexShader(blob);
 		if(shader->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
 			_shaders.Add(fullCommand, shader, false);
+		else
+			ASSERT("Error, Not Created VS");
 	}
 
 	return shader;
@@ -216,6 +218,8 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 		shader = new PixelShader(blob);
 		if(shader->CreateShader())
 			_shaders.Add(fullCommand, shader, false);
+		else
+			ASSERT("Error, Not Created PS");
 	}
 
 	return shader;

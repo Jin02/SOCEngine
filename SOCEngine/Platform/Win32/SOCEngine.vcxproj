@@ -228,7 +228,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)..\..\Template\Shader -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)..\..\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)..\..\Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)..\..\Template\Shader</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)..\..\Template\Shader -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)..\..\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)..\..\Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)..\..\Template\Shader -ClassName EngineFactory</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

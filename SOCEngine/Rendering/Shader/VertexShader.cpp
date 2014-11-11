@@ -32,6 +32,9 @@ namespace Rendering
 
 		_blob->Release();
 
+		if( FAILED( hr ) )
+			return false;
+
 		for(unsigned int i=0; i<count; ++i)
 		{
 			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
@@ -70,9 +73,6 @@ namespace Rendering
 				size = 4;
 				break;
 		}
-
-		if( FAILED( hr ) )
-			return false;
 
 		return true;
 	}

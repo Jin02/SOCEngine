@@ -31,11 +31,11 @@ namespace Rendering
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
 
 				typedef unsigned int uint;
-				auto AddInputElementDesc = [&](const std::string& semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
+				auto AddInputElementDesc = [&](const char* semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
 				{
 					auto MakeInputElementDesc = [&](D3D11_INPUT_ELEMENT_DESC& out)
 					{
-						out.SemanticName = semanticName.c_str();
+						out.SemanticName = semanticName;
 						out.SemanticIndex = semanticIndex;
 						out.AlignedByteOffset = alignedByteOffset;
 						out.Format = format;
@@ -63,7 +63,7 @@ namespace Rendering
 				if(outPixelShader)
 					(*outPixelShader) = ps;
 
-				return (outVertexShader && outPixelShader);
+				return (vs && ps);
 			}
 		};
 	}

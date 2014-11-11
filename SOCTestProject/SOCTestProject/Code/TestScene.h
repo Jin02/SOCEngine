@@ -7,7 +7,6 @@ class TestScene : public Core::Scene
 {
 private:
 	Core::Transform*				_test;
-	Rendering::Shader::Factory*		_factory;
 
 public:
 	TestScene(void);
