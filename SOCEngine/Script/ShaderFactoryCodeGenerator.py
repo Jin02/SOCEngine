@@ -15,10 +15,13 @@ class ShaderFactory:
 		self.originFileDir 	= originFileDir
 		self.saveDir 		= saveDir
 		return
-	def Run(self, code):
+	def Run(self, code, className):
 		factoryFile = open(self.originFileDir, 'rU')
 		source 		= factoryFile.read()
-		factoryFile.close()		
+		factoryFile.close()
+
+		source = source.replace("[ClassName]", className)
+
 		begin 		= source.find(self.addCodeBeginCommand) + len(self.addCodeBeginCommand)
 		end 		= source.find(self.addCodeEndCommand)
 		source 		= source[:begin] + code + source[end:]
@@ -43,6 +46,7 @@ def CheckParameter():
 	originFactory 		= None
 	saveFactory 		= None
 	runDir				= None
+	className 			= None
 
 	count = len(sys.argv)-1
 	if count >= 6:
@@ -53,23 +57,28 @@ def CheckParameter():
 				saveFactory = sys.argv[i+1]
 			elif sys.argv[i] == "-ScriptRunStartDir":
 				runDir = sys.argv[i+1]
+			elif sys.argv[i] == "-ClassName":
+				className = sys.argv[i+1]
 			else:
 				i-=1
 			i+=1
 
+	if className == None:
+		className = "Factory"
+
 	result = (originFactory != None and saveFactory != None and runDir != None)
-	return result, originFactory, saveFactory, runDir
+	return result, originFactory, saveFactory, runDir, className
 def Dump():
 	print "\nParamater Error!!\n"
 	print 'Example 1 :'
-	print "-OriginalShaderFactoryFile ./origin.hpp -SaveShaderFactoryFile ./save.hpp -ScriptRunStartDir ./Shader \n"
+	print "-OriginalShaderFactoryFile ./origin.hpp -SaveShaderFactoryFile ./save.hpp -ScriptRunStartDir ./Shader -ClassName Factory\n"
 
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
 print "SOC Framework ShaderFactoryCode Generator"
 
-result, originalShaderFactoryFileDir, saveShaderFactoryFileDir, scriptRunStartDir = CheckParameter()
+result, originalShaderFactoryFileDir, saveShaderFactoryFileDir, scriptRunStartDir, className = CheckParameter()
 if result == False:
 	Dump()
 	print CONSOLE_LINE
@@ -170,7 +179,7 @@ for (path, dirs, files) in os.walk(targetDir):
         del mainFuncs
 
 shaderFactory = ShaderFactory(originalShaderFactoryFileDir, saveShaderFactoryFileDir)
-shaderFactory.Run(code)
+shaderFactory.Run(code, className)
 
 print "Success!\n"
 print CONSOLE_LINE

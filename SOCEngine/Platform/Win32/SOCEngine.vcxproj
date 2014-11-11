@@ -75,7 +75,9 @@
     <ClInclude Include="..\..\Structure\Map.h" />
     <ClInclude Include="..\..\Structure\Singleton.h" />
     <ClInclude Include="..\..\Structure\Structure.h" />
-    <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp" />
+    <ClInclude Include="..\..\Template\ShaderFactoryTemplate.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Utility\DirectoryManager.h" />
     <ClInclude Include="..\..\Utility\rapidjson\allocators.h" />
     <ClInclude Include="..\..\Utility\rapidjson\document.h" />
