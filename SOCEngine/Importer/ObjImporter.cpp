@@ -117,6 +117,19 @@ void ObjImporter::LoadMaterials(Structure::BaseStructure<Material>** outMaterial
 	}
 }
 
+bool ObjImporter::Load(std::vector<tinyobj::shape_t>& outShapes, std::vector<tinyobj::material_t>& outMaterials, const std::string& fileDir, const std::string& materialFileFolder)
+{
+	std::string error = tinyobj::LoadObj(outShapes, outMaterials, fileDir.c_str(), materialFileFolder.c_str());
+
+	if( error.empty() == false )
+	{
+		DEBUG_LOG(error.c_str());
+		return false;
+	}
+
+	return true;
+}
+
 Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder, bool isDynamicMesh)
 {
 	std::vector<tinyobj::shape_t>		shapes;
@@ -180,12 +193,6 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 
 	auto& semanticInfos = material->GetVertexShader()->GetSemanticInfos();
 
-	unsigned int stride = 0;
-	{
-		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
-			stride += iter->size;
-	}
-
 	struct InputSemanticData
 	{
 		CustomSemantic customData;
@@ -195,12 +202,13 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	};
 
 	std::vector<InputSemanticData> vertexDatas;
-	bool isCustomPos		= false;
-	bool isCustomNormal		= false;
-	bool isCustomTexcoord	= false;
-	bool isCustomTangent	= false;
-	bool isCustomBinormal	= false;
 	{
+		bool isCustomPos		= false;
+		bool isCustomNormal		= false;
+		bool isCustomTexcoord	= false;
+		bool isCustomTangent	= false;
+		bool isCustomBinormal	= false;
+
 		// CustomSemantic convert to InputSemanticData
 		// And, check custom data
 		for(auto iter = customSemanticData.begin(); iter != customSemanticData.end(); ++iter)
@@ -218,24 +226,30 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 
 			vertexDatas.push_back((*iter));
 		}
+
+		if(isCustomPos == false)
+			vertexDatas.push_back(CustomSemantic("POSITION", positions.data()));
+
+		if(isCustomNormal == false && normals.empty() == false)
+			vertexDatas.push_back(CustomSemantic("NORMAL", normals.data()));
+
+		if(tangents.empty() == false && isCustomTangent == false)
+			vertexDatas.push_back(CustomSemantic("TANGENT",	tangents.data()));
+
+		if(binormals.empty() == false && isCustomBinormal == false)
+			vertexDatas.push_back(CustomSemantic("BINORMAL", binormals.data()));
+
+		if(texcoords.empty() == false && isCustomTexcoord == false)
+			vertexDatas.push_back(CustomSemantic("TEXCOORD0", texcoords.data()));
 	}
 
-	if(isCustomPos == false)
-		vertexDatas.push_back(CustomSemantic("POSITION", positions.data()));
-
-	if(isCustomNormal == false && normals.empty() == false)
-		vertexDatas.push_back(CustomSemantic("NORMAL", normals.data()));
-
-	if(tangents.empty() == false && isCustomTangent == false)
-		vertexDatas.push_back(CustomSemantic("TANGENT",	tangents.data()));
-
-	if(binormals.empty() == false && isCustomBinormal == false)
-		vertexDatas.push_back(CustomSemantic("BINORMAL", binormals.data()));
-
-	if(texcoords.empty() == false && isCustomTexcoord == false)
-		vertexDatas.push_back(CustomSemantic("TEXCOORD0", texcoords.data()));
-
 	unsigned int vtxCount = tinyShape.mesh.positions.size() / 3;
+	unsigned int stride = 0;
+	{
+		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
+			stride += iter->size;
+	}
+
 	void* buffer = malloc(vtxCount * stride);
 
 	for(unsigned int vtxIndex = 0; vtxIndex < vtxCount; ++vtxIndex)

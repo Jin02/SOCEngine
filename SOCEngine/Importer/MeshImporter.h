@@ -15,5 +15,7 @@ namespace Importer
 
 	public:
 		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, bool isDynamicMesh = false);
+
+
 	};
 }

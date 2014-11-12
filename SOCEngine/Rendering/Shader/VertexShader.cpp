@@ -1,6 +1,8 @@
 #include "VertexShader.h"
 #include "Director.h"
 
+using namespace Device;
+
 namespace Rendering
 {
 	using namespace Shader;
@@ -20,7 +22,8 @@ namespace Rendering
 		if(_blob == nullptr)
 			return false;
 
-		ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+		const DirectX* dx = Director::GetInstance()->GetDirectX();
+		ID3D11Device* device = dx->GetDevice();
 
 		HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
 
@@ -52,27 +55,7 @@ namespace Rendering
 			_semanticInfo.push_back(info);
 		}
 
-		unsigned int& size = _semanticInfo.back().size;
-		switch(vertexDeclations[count-1].Format)
-		{
-			case DXGI_FORMAT_R32G32B32_FLOAT:
-			case DXGI_FORMAT_R32G32B32_UINT:
-			case DXGI_FORMAT_R32G32B32_SINT:
-				size = 12;
-				break;
-
-			case DXGI_FORMAT_R32G32_FLOAT:
-			case DXGI_FORMAT_R32G32_UINT:
-			case DXGI_FORMAT_R32G32_SINT:
-				size = 8;
-				break;
-
-			case DXGI_FORMAT_R32_FLOAT:
-			case DXGI_FORMAT_R32_UINT:
-			case DXGI_FORMAT_R32_SINT:
-				size = 4;
-				break;
-		}
+		_semanticInfo.back().size = dx->CalcFormatSize(vertexDeclations[count-1].Format);
 
 		return true;
 	}

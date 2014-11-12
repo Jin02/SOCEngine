@@ -29,6 +29,9 @@ void TestScene::OnInitialize()
 	_meshImporter->Load("./Resource/cube.obj", "./Resource/");
 //	_meshImporter->Load("./Resource/sponza/sponza.obj", "./Resource/sponza/", vs);
 
+	Importer::ObjImporter testObj;
+
+
 	//Camera
 	{
 		Core::Object* camObj = new Core::Object(nullptr);

@@ -44,10 +44,11 @@ namespace Device
 		bool CreateDeviceAndSwapChain(const Win32* win);
 		bool CreateViewport(const Math::Size<int>& winSize);
 		bool CreateSwapChain(const Win32* win);
-		void CalcMaxMultiSampler(unsigned int& outAbleMultiSample, unsigned int& outQualityLevel, DXGI_FORMAT format);
+		void CalcMaxMultiSampler(unsigned int& outAbleMultiSample, unsigned int& outQualityLevel, DXGI_FORMAT format);		
 
 	public:
 		bool InitDevice(const Win32* win);
+		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
 
 	public:
 		GET_ACCESSOR(Device, ID3D11Device*, _device);
