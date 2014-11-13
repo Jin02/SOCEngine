@@ -1,6 +1,10 @@
 #include "ShaderManager.h"
 
 using namespace Rendering::Shader;
+using namespace Utility;
+
+#define VS_FULL_COMMAND(fileName, mainFunc) fileName + ":vs:" + mainFunc
+#define PS_FULL_COMMAND(fileName, mainFunc) fileName + ":ps:" + mainFunc
 
 ShaderManager::ShaderManager()
 {
@@ -138,7 +142,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc)
 {
 	std::vector<std::string> commands;
-	Utility::Tokenize(fullCommand, commands, ":");
+	String::Tokenize(fullCommand, commands, ":");
 
 	if(commands.size() != 3)
 		return false;
@@ -156,7 +160,7 @@ bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string
 bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std::string& shaderType, std::string* outFileName, std::string* outMainFunc)			
 {
 	std::vector<std::string> commands;
-	Utility::Tokenize(partlyCommand, commands, ":");
+	String::Tokenize(partlyCommand, commands, ":");
 
 	if(commands.size() != 2)
 		return false;
@@ -169,15 +173,15 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	std::string fileName, mainFunc;
 
 	if(CommandValidator(partlyCommand, "vs", &fileName, &mainFunc) == false)
 		return nullptr;
 
-	std::string fullCommand = fileName+":vs:"+mainFunc;
-	BaseShader* shader = _shaders.Find(fullCommand);
+	std::string fullCommand = VS_FULL_COMMAND(fileName, mainFunc);
+	VertexShader* shader = dynamic_cast<VertexShader*>(_shaders.Find(fullCommand));
 
 	if(shader == nullptr)
 	{
@@ -186,22 +190,24 @@ BaseShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new VertexShader(blob);
-		if(dynamic_cast<VertexShader*>(shader)->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
+		if(shader->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
 			_shaders.Add(fullCommand, shader, false);
+		else
+			ASSERT("Error, Not Created VS");
 	}
 
 	return shader;
 }
 
-BaseShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode)
 {
 	std::string fileName, mainFunc;
 
 	if(CommandValidator(partlyCommand, "ps", &fileName, &mainFunc) == false)
 		return nullptr;
 
-	std::string fullCommand = fileName+":ps:"+mainFunc;
-	BaseShader* shader = _shaders.Find(fullCommand);
+	std::string fullCommand = PS_FULL_COMMAND(fileName, mainFunc);
+	PixelShader* shader = dynamic_cast<PixelShader*>(_shaders.Find(fullCommand));
 
 	if(shader == nullptr)
 	{
@@ -210,8 +216,10 @@ BaseShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const 
 			return nullptr;
 
 		shader = new PixelShader(blob);
-		if(dynamic_cast<PixelShader*>(shader)->CreateShader())
+		if(shader->CreateShader())
 			_shaders.Add(fullCommand, shader, false);
+		else
+			ASSERT("Error, Not Created PS");
 	}
 
 	return shader;
@@ -235,4 +243,24 @@ void ShaderManager::RemoveShaderCode(const std::string& command)
 void ShaderManager::RemoveShader(const std::string& command)
 {
 	_shaders.Delete(command, true);
+}
+
+BaseShader* ShaderManager::FindShader(const std::string& fileName, const std::string& mainFunc, BaseShader::Type type)
+{
+	if(type == BaseShader::Type::Vertex)
+		return FindVertexShader(fileName, mainFunc);
+	else if(type == BaseShader::Type::Pixel)
+		return FindPixelShader(fileName, mainFunc);
+
+	return nullptr;
+}
+
+VertexShader* ShaderManager::FindVertexShader(const std::string& fileName, const std::string& mainFunc)
+{
+	return dynamic_cast<VertexShader*>(_shaders.Find(VS_FULL_COMMAND(fileName, mainFunc)));
+}
+
+PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const std::string& mainFunc)
+{
+	return dynamic_cast<PixelShader*>(_shaders.Find(PS_FULL_COMMAND(fileName, mainFunc)));
 }

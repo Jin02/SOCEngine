@@ -15,10 +15,13 @@ class ShaderFactory:
 		self.originFileDir 	= originFileDir
 		self.saveDir 		= saveDir
 		return
-	def Run(self, code):
+	def Run(self, code, className):
 		factoryFile = open(self.originFileDir, 'rU')
 		source 		= factoryFile.read()
-		factoryFile.close()		
+		factoryFile.close()
+
+		source = source.replace("[ClassName]", className)
+
 		begin 		= source.find(self.addCodeBeginCommand) + len(self.addCodeBeginCommand)
 		end 		= source.find(self.addCodeEndCommand)
 		source 		= source[:begin] + code + source[end:]
@@ -43,6 +46,7 @@ def CheckParameter():
 	originFactory 		= None
 	saveFactory 		= None
 	runDir				= None
+	className 			= None
 
 	count = len(sys.argv)-1
 	if count >= 6:
@@ -53,23 +57,28 @@ def CheckParameter():
 				saveFactory = sys.argv[i+1]
 			elif sys.argv[i] == "-ScriptRunStartDir":
 				runDir = sys.argv[i+1]
+			elif sys.argv[i] == "-ClassName":
+				className = sys.argv[i+1]
 			else:
 				i-=1
 			i+=1
 
+	if className == None:
+		className = "Factory"
+
 	result = (originFactory != None and saveFactory != None and runDir != None)
-	return result, originFactory, saveFactory, runDir
+	return result, originFactory, saveFactory, runDir, className
 def Dump():
 	print "\nParamater Error!!\n"
 	print 'Example 1 :'
-	print "-OriginalShaderFactoryFile ./origin.hpp -SaveShaderFactoryFile ./save.hpp -ScriptRunStartDir ./Shader \n"
+	print "-OriginalShaderFactoryFile ./origin.hpp -SaveShaderFactoryFile ./save.hpp -ScriptRunStartDir ./Shader -ClassName Factory\n"
 
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
 print "SOC Framework ShaderFactoryCode Generator"
 
-result, originalShaderFactoryFileDir, saveShaderFactoryFileDir, scriptRunStartDir = CheckParameter()
+result, originalShaderFactoryFileDir, saveShaderFactoryFileDir, scriptRunStartDir, className = CheckParameter()
 if result == False:
 	Dump()
 	print CONSOLE_LINE
@@ -103,8 +112,8 @@ for (path, dirs, files) in os.walk(targetDir):
         #write Code
         #write Code
         #write Code
-        code += nextLine(1) + tap(2)+ 'if(shaderName == \"' + fileName + '\")' + nextLine(1)+tap(2)+"{" +nextLine(1)
-        code += tap(3) + "folderPath = \""+ path +"/\";" + nextLine(1)
+        code += nextLine(1) + tap(4)+ 'if(shaderName == \"' + fileName + '\")' + nextLine(1)+tap(4)+"{" +nextLine(1)
+        code += tap(5) + "folderPath = \""+ path +"/\";" + nextLine(1)
 
         for struct in jsonData["SemanticStructure"]:
         	if struct in mainFuncs == False:
@@ -113,14 +122,14 @@ for (path, dirs, files) in os.walk(targetDir):
    	        if count == 0:
    	        	continue
 
-   	        code += tap(3) + "if(mainVSFuncName == " + QuotationMarks(mainFuncs[struct][0])
+   	        code += tap(5) + "if(mainVSFuncName == " + QuotationMarks(mainFuncs[struct][0])
 	       	for i in xrange(1, count):
    	       		code += "|| mainVSFuncName == " + QuotationMarks(mainFuncs[struct][i])
    	        code += ")" + nextLine(1)
-   	        code += tap(3) + "{" + nextLine(1)
+   	        code += tap(5) + "{" + nextLine(1)
 
-        	for order in jsonData["SemanticStructure"][struct]:
-        		element = jsonData["SemanticStructure"][struct][order]
+        	for idx in xrange(0, len(jsonData["SemanticStructure"][struct])):
+        		element = jsonData["SemanticStructure"][struct][str(idx)]
 
 		        # Make InputSlotClass
 		    	inputSlotClass = "D3D11_INPUT_PER_"
@@ -156,21 +165,21 @@ for (path, dirs, files) in os.walk(targetDir):
 		        #end
 
 		        #name, index, format, offset, slotClass, slot, steprate 
-		        code += tap(4)
+		        code += tap(6)
 		        code += "AddInputElementDesc(" + '\"' + element["SemanticName"] + '\"' + ',' 
 	        	code += str(element["SemanticIndex"]) + ',' + format + ',' + str(element["AlignedByteOffset"]) + ','
 		        code += inputSlotClass + ',' + str(inputSlot) + ',' + str(instanceDataStepRate) + ");"
 		        code += nextLine(1)
 
-		code += tap(3) + '}' + nextLine(1)
-        code += tap(2) + '}' + nextLine(1) + tap(2)
+		code += tap(5) + '}' + nextLine(1)
+        code += tap(4) + '}' + nextLine(1) + tap(4)
 
         for structName in jsonData["SemanticStructure"]:
         	del mainFuncs[structName]
         del mainFuncs
 
 shaderFactory = ShaderFactory(originalShaderFactoryFileDir, saveShaderFactoryFileDir)
-shaderFactory.Run(code)
+shaderFactory.Run(code, className)
 
 print "Success!\n"
 print CONSOLE_LINE

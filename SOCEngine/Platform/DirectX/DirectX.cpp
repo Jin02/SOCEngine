@@ -1,4 +1,5 @@
 #include "DirectX.h"
+#include "Utility.h"
 
 using namespace Device;
 
@@ -236,4 +237,31 @@ bool DirectX::InitDevice(const Win32* win)
 		return false;
 
 	return true;
+}
+
+unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
+{
+	if(		DXGI_FORMAT_R32G32B32A32_TYPELESS	<= format && format <= DXGI_FORMAT_R32G32B32A32_SINT)
+		return 16;
+	else if(DXGI_FORMAT_R32G32B32_TYPELESS		<= format && format <= DXGI_FORMAT_R32G32B32_SINT)
+		return 12;
+	else if(DXGI_FORMAT_R16G16B16A16_TYPELESS	<= format && format <= DXGI_FORMAT_R16G16B16A16_SINT)
+		return 8;
+	else if(DXGI_FORMAT_R32G32_TYPELESS			<= format && format <= DXGI_FORMAT_R32G32_SINT)
+		return 8;
+	else if(DXGI_FORMAT_R8G8B8A8_TYPELESS		<= format && format <= DXGI_FORMAT_R8G8B8A8_SINT)
+		return 4;
+	else if(DXGI_FORMAT_R16G16_TYPELESS			<= format && format <= DXGI_FORMAT_R16G16_SINT)
+		return 4;
+	else if(DXGI_FORMAT_R32_TYPELESS			<= format && format <= DXGI_FORMAT_R32_SINT)
+		return 4;
+	else if(DXGI_FORMAT_R8G8_TYPELESS			<= format && format <= DXGI_FORMAT_R8G8_SINT)
+		return 4;
+	else if(DXGI_FORMAT_R16_TYPELESS			<= format && format <= DXGI_FORMAT_R16_SINT)
+		return 2;
+	else if(DXGI_FORMAT_R8_TYPELESS				<= format && format <= DXGI_FORMAT_R8_SINT)
+		return 1;
+
+	DEBUG_LOG("Not Support Format");
+	return 0;
 }

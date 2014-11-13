@@ -26,6 +26,8 @@ namespace Rendering
 			const std::vector<const Texture::Texture*>*			_vertexShaderUsingTextures;
 			const std::vector<Shader::BaseShader::BufferType>*	_pixelShaderUsingConstBuffer;
 
+			Buffer::ConstBuffer*								_constBuffer;
+
 		public:
 			MeshRenderer();
 			~MeshRenderer();
@@ -34,6 +36,7 @@ namespace Rendering
 			void UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<Shader::BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform);
 
 		public:
+			bool init();
 			bool AddMaterial(Material::Material* material, bool copy = false);
 			void UpdateAllMaterial(ID3D11DeviceContext* context, const Core::TransformPipelineParam& transform);
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Core::TransformPipelineParam& transform);

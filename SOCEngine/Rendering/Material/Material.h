@@ -11,27 +11,58 @@ namespace Rendering
 	{
 		class Material
 		{
+		public:
+			struct Color
+			{
+				Rendering::Color diffuse;
+				Rendering::Color ambient;
+				Rendering::Color specular;
+				Rendering::Color emissive;
+
+				float shiness;
+				float opacity;
+
+				Color();
+				~Color();
+			};
+
+			enum TextureType
+			{
+				Ambient = 0,
+				Diffuse,
+				Normal,
+				Specular,
+				Opacity,
+				User
+			};
+
 		private:
 			Shader::VertexShader*					_vertexShader;
 			Shader::PixelShader*					_pixelShader;
 			std::string								_name;
-			Color									_mainColor;
+			Color									_color;
+
 			std::vector<const Texture::Texture*>	_textures;
 
 		public:
-			Material(const std::string& name, Shader::VertexShader* vertexShader, Shader::PixelShader* pixelShader);
+			Material(const std::string& name);
+			Material(const std::string& name, const Color& lightColor);
 			~Material(void);
 
 		public:
-			bool UpdateTextures(unsigned int index, const Texture::Texture* texture);
-
+			bool UpdateTexture(unsigned int index, const Texture::Texture* texture);
+			void UpdateAmbientMap(const Texture::Texture* tex);
+			void UpdateDiffuseMap(const Texture::Texture* tex);
+			void UpdateNormalMap(const Texture::Texture* tex);
+			void UpdateSpecularMap(const Texture::Texture* tex);
+			void UpdateOpacityMap(const Texture::Texture* tex);
 
 		public:
-			GET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
-			GET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
 			GET_ACCESSOR(Name, const std::string&, _name);
-			GET_SET_ACCESSOR(MainColor, const Color&, _mainColor);
+			GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
+			GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
 			GET_SET_ACCESSOR(Textures, const std::vector<const Texture::Texture*>&, _textures);
+			GET_SET_ACCESSOR(Color, const Color&, _color);
 		};
 
 	}

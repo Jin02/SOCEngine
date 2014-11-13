@@ -1,6 +1,8 @@
 #include "VertexShader.h"
 #include "Director.h"
 
+using namespace Device;
+
 namespace Rendering
 {
 	using namespace Shader;
@@ -20,7 +22,8 @@ namespace Rendering
 		if(_blob == nullptr)
 			return false;
 
-		ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+		const DirectX* dx = Director::GetInstance()->GetDirectX();
+		ID3D11Device* device = dx->GetDevice();
 
 		HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
 
@@ -31,8 +34,28 @@ namespace Rendering
 			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
 		_blob->Release();
+
 		if( FAILED( hr ) )
 			return false;
+
+		for(unsigned int i=0; i<count; ++i)
+		{
+			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
+			std::string semanticName = desc.SemanticName;
+
+			if(semanticName == "TEXCOORD")
+				semanticName += ('0' + desc.SemanticIndex);
+
+			SemanticInfo info;
+			info.name = semanticName;
+
+			if( (i+1) != count )
+				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+
+			_semanticInfo.push_back(info);
+		}
+
+		_semanticInfo.back().size = dx->CalcFormatSize(vertexDeclations[count-1].Format);
 
 		return true;
 	}

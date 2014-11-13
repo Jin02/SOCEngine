@@ -53,6 +53,14 @@ namespace Structure
 			return nullptr;
 		}
 
+		Object* Get(unsigned int index)
+		{
+			if(index > _vector.size())
+				return nullptr;
+
+			return _vector[index];
+		}
+
 		virtual void Delete(const std::string& key, bool contentRemove = false)
 		{
 			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)

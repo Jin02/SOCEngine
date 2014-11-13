@@ -4,6 +4,7 @@
 #include "MeshRenderer.h"
 #include "MeshBasicData.h"
 #include "Component.h"
+#include "LPVoidType.h"
 
 namespace Rendering
 {
@@ -32,7 +33,7 @@ namespace Rendering
 			~Mesh();
 
 		public:
-			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
+			bool Create(const LPVoidType vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
 				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material::Material* material, bool isDynamic);
 
 		public:

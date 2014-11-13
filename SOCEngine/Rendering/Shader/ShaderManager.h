@@ -2,7 +2,7 @@
 
 #include <string>
 #include <fstream>
-#include "HashMap.h"
+#include "Map.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "Utility.h"
@@ -14,8 +14,8 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Structure::HashMap<BaseShader> _shaders;
-			Structure::HashMap<ShaderCode> _shaderCodes;
+			Structure::Map<BaseShader>		_shaders;
+			Structure::Map<ShaderCode>		_shaderCodes;
 
 		public:
 			ShaderManager();
@@ -35,8 +35,14 @@ namespace Rendering
 
 		public:
 			//declation을 직접 입력하는 방식
-			BaseShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
-			BaseShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
+			VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			
+			PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode);
+
+		public:
+			BaseShader*		FindShader(const std::string& fileName, const std::string& mainFunc, BaseShader::Type type);
+			VertexShader*	FindVertexShader(const std::string& fileName, const std::string& mainFunc);
+			PixelShader*	FindPixelShader(const std::string& fileName, const std::string& mainFunc);
 
 		public:
 			void RemoveAllShaderCode();

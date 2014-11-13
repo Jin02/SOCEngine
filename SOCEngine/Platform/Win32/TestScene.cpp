@@ -69,7 +69,7 @@ void TestScene::OnInitialize()
 				Math::Vector3( -1.0f, 1.0f, 1.0f )
 			};
 
-			static WORD indices[] =
+			static unsigned int indices[] =
 			{
 				3,1,0,
 				2,1,3,
@@ -106,7 +106,9 @@ void TestScene::OnInitialize()
 			vs = dynamic_cast<Rendering::Shader::VertexShader*>(_shaderMgr->LoadVertexShader("../../../Test/", "Test:VS", true, vertexDeclations));
 			ps = dynamic_cast<Rendering::Shader::PixelShader*>(_shaderMgr->LoadPixelShader("../../../Test/", "Test:PS", false));
 
-			Rendering::Material::Material* material = new Rendering::Material::Material("TestMaterial", vs, ps);
+			Rendering::Material::Material::LightColor lightColor;
+			Rendering::Material::Material* material = new Rendering::Material::Material("TestMaterial", lightColor);
+			material->SetVertexShader(vs); material->SetPixelShader(ps);
 			mesh->Create(vertices, ARRAYSIZE(vertices), sizeof(TestVertex), indices, ARRAYSIZE(indices), material, false);
 		}
 	}
