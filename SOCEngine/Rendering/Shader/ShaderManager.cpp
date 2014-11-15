@@ -38,6 +38,8 @@ bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &sha
 			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
 		if( pErrorBlob ) pErrorBlob->Release();
 
+		ASSERT("Shader Compile Error!");
+
 		return false;
 	}
 	if( pErrorBlob )
@@ -67,7 +69,7 @@ bool ShaderManager::CompileFromFile(ID3DBlob** outBlob, const std::string &fileN
 		if( pErrorBlob != NULL )
 			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
 		if( pErrorBlob ) pErrorBlob->Release();
-
+		ASSERT("Shader Compile Error!");
 		return false;
 	}
 	if( pErrorBlob ) pErrorBlob->Release();
@@ -99,6 +101,7 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	if(file.good() == false)
 	{
 		file.close();
+		ASSERT("InValid File");
 		return false;
 	}
 
@@ -124,8 +127,11 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 
 	ID3DBlob* blob = nullptr;
 	if( CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc) == false )
+	{
+		ASSERT("Shader Compile Error!");
 		return nullptr;
 
+	}
 	return blob;
 }
 
@@ -134,7 +140,10 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 	std::string fileName, mainFunc, shaderType;
 
 	if(CommandValidator(command, &fileName, &shaderType, &mainFunc) == false)
+	{
+		ASSERT("Command Error");
 		return nullptr;
+	}
 
 	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode);
 }
@@ -146,7 +155,6 @@ bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string
 
 	if(commands.size() != 3)
 		return false;
-
 	if(outFileName)
 		(*outFileName) = commands[0];
 	if(outShaderType)
@@ -164,7 +172,6 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 
 	if(commands.size() != 2)
 		return false;
-
 	if(outFileName)
 		(*outFileName) = commands[0];
 	if(outMainFunc)
@@ -178,8 +185,10 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	std::string fileName, mainFunc;
 
 	if(CommandValidator(partlyCommand, "vs", &fileName, &mainFunc) == false)
+	{
+		ASSERT("Command Error");
 		return nullptr;
-
+	}
 	std::string fullCommand = VS_FULL_COMMAND(fileName, mainFunc);
 	VertexShader* shader = dynamic_cast<VertexShader*>(_shaders.Find(fullCommand));
 

@@ -49,6 +49,9 @@ namespace Core
 		virtual void OnRenderPost() = 0;
 		virtual void OnDestroy() = 0;
 
+	protected:
+		Core::Object* AddObject(Core::Object* object, bool clone = true);
+
 	public:
 		void NextState();
 		GET_ACCESSOR(State, const State, _state);

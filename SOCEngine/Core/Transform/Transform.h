@@ -6,11 +6,12 @@
 
 namespace Core
 {
+	class Object;
+
 	class Transform
 	{
 	private:
-		Transform *_root;
-		Transform *_parent;
+		Object		*_owner;
 
 	protected:		
 		Math::Vector3 _forward;
@@ -25,7 +26,7 @@ namespace Core
 		float _radius;
 
 	public:
-		Transform(Transform* parent);
+		Transform(Object* owner);
 		~Transform(void);
 
 	public:

@@ -32,9 +32,23 @@ void Scene::Initialize()
 	{
 		Shader::EngineFactory factory(_shaderMgr);
 
-		//Basic. Only TexMapping
-		if(factory.LoadShader(BASIC_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-			ASSERT("Not Found Basic.hlsl");
+		//Basic
+		{
+			const std::string tags[2] = {"N_", "N_T0"};
+			for(unsigned int i = 0; i < 3; ++i)
+			{
+				std::string shaderName = BASIC_SHADER_NAME;
+				if( i >= 1 )
+					shaderName += tags[i-1];
+
+				if(factory.LoadShader(shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+				{
+					std::string error = "Not Found";
+					error += shaderName + ".hlsl";
+					ASSERT(error.c_str());
+				}
+			}
+		}
 
 		//Normal Mapping
 		if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
@@ -84,4 +98,9 @@ void Scene::Destroy()
 void Scene::NextState()
 {
 	_state = (State)(((int)_state + 1) % (int)State::Num);
+}
+
+Core::Object* Scene::AddObject(Core::Object* object, bool clone)
+{
+	return _rootObjects.Add(object->GetName(), object, clone);
 }

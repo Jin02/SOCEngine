@@ -1,33 +1,33 @@
 #include "Transform.h"
+#include "Object.h"
 
 using namespace Math;
 
 namespace Core
 {
-	Transform::Transform(Transform *parent)
+	Transform::Transform(Object* owner) : _owner(owner)
 	{
-		_rotation		= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-		_scale			= Vector3::One();
+		_rotation	= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+		_scale		= Vector3::One();
+		_radius		= 0.0f;
 
-		_parent = parent;
-		if(parent)
+		if(owner == nullptr)
+			return;
+
+		if(owner->GetParent())
 		{
-			_root = parent->_root;
+			Transform* parentTransform = owner->GetParent()->GetTransform();
 
-			_forward = parent->_forward;
-			_right	 = parent->_right;
-			_up	 	 = parent->_up;
+			_forward = parentTransform->_forward;
+			_right	 = parentTransform->_right;
+			_up	 	 = parentTransform->_up;
 		}
 		else
 		{
-			_root = this;
-
 			_forward = Vector3(0.0f, 0.0f, 1.0f);
 			_right	 = Vector3(1.0f, 0.0f, 0.0f);
 			_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
 		}
-
-		_radius = 0.0f;
 	}
 
 	Transform::~Transform(void)
@@ -177,13 +177,15 @@ namespace Core
 		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
 		Quaternion q;
 
-		for(Transform *o = this; o != NULL; o = o->_parent)
+		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
-			p += o->_position;
+			Transform* tf = obj->GetTransform();
 
-			s.x *= o->_scale.x;
-			s.y *= o->_scale.y;
-			s.z *= o->_scale.z;
+			p += tf->_position;
+
+			s.x *= tf->_scale.x;
+			s.y *= tf->_scale.y;
+			s.z *= tf->_scale.z;
 
 			e += _eulerAngle;
 		}
@@ -203,8 +205,11 @@ namespace Core
 	{
 		Vector3 p(0, 0, 0);
 
-		for(Transform *o = this; o != NULL; o = o->_parent)
-			p += o->_position;
+		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		{
+			Transform* tf = obj->GetTransform();
+			p += tf->_position;
+		}
 
 		outPosition = p;
 	}
@@ -225,8 +230,11 @@ namespace Core
 	{
 		Vector3 p(0, 0, 0);
 
-		for(Transform *o = this; o != NULL; o = o->_parent)
-			p += o->_eulerAngle;
+		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		{
+			Transform* tf = obj->GetTransform();
+			p += tf->_eulerAngle;
+		}
 
 		outEuler = p;
 	}
@@ -235,11 +243,13 @@ namespace Core
 	{
 		Vector3 p(1, 1, 1);
 
-		for(Transform *o = this; o != NULL; o = o->_parent)
+		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
-			p.x *= o->_scale.x;
-			p.y *= o->_scale.y;
-			p.z *= o->_scale.z;
+			Transform* tf = obj->GetTransform();
+
+			p.x *= tf->_scale.x;
+			p.y *= tf->_scale.y;
+			p.z *= tf->_scale.z;
 		}
 
 		outScale = p;

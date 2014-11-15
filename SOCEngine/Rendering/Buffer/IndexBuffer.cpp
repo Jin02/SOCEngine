@@ -18,5 +18,5 @@ bool IndexBuffer::Create(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth
 
 void IndexBuffer::UpdateBuffer(ID3D11DeviceContext* context)
 {
-	context->IASetIndexBuffer(_buffer, DXGI_FORMAT_R16_UINT, 0);
+	context->IASetIndexBuffer(_buffer, DXGI_FORMAT_R32_UINT, 0);
 }

@@ -16,21 +16,11 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	//Object - Cube
 	Shader::Factory factory(_shaderMgr);
-
-	Shader::VertexShader* vs = nullptr;
-	Shader::PixelShader* ps = nullptr;
-
-	if(factory.LoadShader("Test", "VS", "PS", &vs, &ps) == false)
-		ASSERT("테스트. 쉐이더가 로딩되지 않음.");
-
-	Shader::ShaderManager* mgr = _shaderMgr;
-
-	_meshImporter->Load("./Resource/cube.obj", "./Resource/");
-//	_meshImporter->Load("./Resource/sponza/sponza.obj", "./Resource/sponza/", vs);
-
-	Importer::ObjImporter testObj;
-
+	Core::Object* cube = _meshImporter->Load("./Resource/cube.obj", "./Resource/");
+	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 10));
+	AddObject(cube);
 
 	//Camera
 	{
@@ -40,18 +30,6 @@ void TestScene::OnInitialize()
 		camObjTf->UpdatePosition(Math::Vector3(0,0,0));
 		camObjTf->UpdateDirection(Math::Vector3(0,0,1));
 		_cameraMgr->Add("mainCamera", cam, false);
-	}
-
-	{
-		Core::Object* testObj = new Core::Object(nullptr);
-		Rendering::Mesh::Mesh* mesh = testObj->AddComponent<Rendering::Mesh::Mesh>();
-		Core::Transform* tf = testObj->GetTransform();
-		_test = tf;
-		tf->UpdatePosition(Math::Vector3(0, 0, 10));
-		_rootObjects.Add("Test", testObj);
-		{
-
-		}
 	}
 }
 

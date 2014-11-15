@@ -15,7 +15,7 @@ namespace Core
 	Object::Object(Object* parent /* = NULL */) :
 		_culled(false), _parent(parent), _use(true), _hasMesh(false)
 	{
-		_transform = new Transform( parent ? parent->_transform : nullptr);		
+		_transform = new Transform( this );		
 		_root = parent ? parent->_root : this;
 	}
 
@@ -28,8 +28,9 @@ namespace Core
 	}
 
 	Object* Object::AddObject(Object *child, bool copy/* = false */)
-	{
-		Object *c =  Vector::Add(child->_name, child, copy);
+	{		
+		Object *c =  Add(child->_name, child, copy);
+		child->_parent = this;
 		return c;
 	}
 

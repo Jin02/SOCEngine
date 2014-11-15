@@ -110,6 +110,7 @@ namespace Core
 		GET_ACCESSOR(Culled, bool, _culled);
 		GET_ACCESSOR(HasMesh, bool, _hasMesh);
 		GET_SET_ACCESSOR(Name, const std::string&, _name);
+		GET_SET_ACCESSOR(Parent, Object*, _parent);
 
 	public:
 		static Object* Copy(const Object *obj);
