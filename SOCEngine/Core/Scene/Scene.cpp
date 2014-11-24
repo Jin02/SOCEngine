@@ -41,18 +41,28 @@ void Scene::Initialize()
 				if( i >= 1 )
 					shaderName += tags[i-1];
 
-				if(factory.LoadShader(shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+				Rendering::Shader::VertexShader* vs = nullptr;			
+				Rendering::Shader::PixelShader*	 ps = nullptr;
+
+				if(factory.LoadShader(shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, &vs, &ps) == false)
 				{
 					std::string error = "Not Found";
 					error += shaderName + ".hlsl";
 					ASSERT(error.c_str());
 				}
+
+				Material::Material* material = new Material::Material(shaderName);
+				material->SetVertexShader(vs);
+				material->SetPixelShader(ps);
+				_materialMgr->Add("Basic", shaderName, material);
 			}
 		}
 
 		//Normal Mapping
 		if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
 			ASSERT("Not Found BasicNormalMapping.hlsl");
+
+
 	}
 
 	NextState();

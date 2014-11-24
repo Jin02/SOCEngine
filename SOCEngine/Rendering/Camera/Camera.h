@@ -24,7 +24,7 @@ namespace Rendering
 		//Shader::Shader			*rtShader;
 		//Texture::RenderTarget	*renderTarget;
 
-	public:  //굳이 private로 할 필요는 없지.
+	private:
 		float				_FOV;
 		float				_clippingNear;
 		float				_clippingFar;

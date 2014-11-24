@@ -18,8 +18,8 @@ void TestScene::OnInitialize()
 {
 	//Object - Cube
 	Shader::Factory factory(_shaderMgr);
-	Core::Object* cube = _meshImporter->Load("./Resource/cube.obj", "./Resource/");
-	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 10));
+	Core::Object* cube = _meshImporter->Load("./Resource/rabbit.obj", "./Resource/");
+	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 1));
 	AddObject(cube);
 
 	//Camera

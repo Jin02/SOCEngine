@@ -296,8 +296,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	const std::vector<float>& normals		 = tinyShape.mesh.normals;
 	const std::vector<unsigned int>& indices = tinyShape.mesh.indices;
 
-	const tinyobj::material_t& objMtl = tinyMaterials[ tinyShape.mesh.material_ids[0] ];
-	bool isNormalMapUse = (objMtl.normal_texname.empty() == false);
+	
+	const tinyobj::material_t* objMtl = (tinyMaterials.empty() == false) ? &tinyMaterials[ tinyShape.mesh.material_ids[0] ] : nullptr;
+	bool isNormalMapUse = objMtl ? (objMtl->normal_texname.empty() == false) : false;
 
 	std::vector<Math::Vector3> tangents;
 	std::vector<Math::Vector3> binormals;
@@ -359,18 +360,13 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 	MaterialManager* materialMgr = currentScene->GetMaterialManager();
-	Rendering::Material::Material* material = materialMgr->Find(fileName, objMtl.name);
 
-	if(material->GetVertexShader() == nullptr && material->GetPixelShader() == nullptr)
+	auto GetBasicShaderName = [&]()
 	{
-		Rendering::Shader::VertexShader* vs = nullptr;			
-		Rendering::Shader::PixelShader*	 ps = nullptr;
-
-		Rendering::Shader::ShaderManager* shaderMgr = currentScene->GetShaderManager();
-
+		std::string shaderName;
 		if(isNormalMapUse == false)
 		{
-			std::string shaderName = BASIC_SHADER_NAME;
+			shaderName = BASIC_SHADER_NAME;
 
 			if(normals.empty() == false)
 				shaderName += "N_";
@@ -378,14 +374,32 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 			if(texcoords.empty() == false)
 				shaderName += "T0";
 
-			vs = shaderMgr->FindVertexShader(shaderName, BASIC_VS_MAIN_FUNC_NAME);
-			ps = shaderMgr->FindPixelShader(shaderName, BASIC_PS_MAIN_FUNC_NAME);
+			return shaderName;
 		}
-		else
-		{
-			vs = shaderMgr->FindVertexShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME);
-			ps = shaderMgr->FindPixelShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_PS_MAIN_FUNC_NAME);
-		}
+
+		shaderName = BASIC_NORMAL_MAPPING_SHADER_NAME;
+		return shaderName;
+	};
+
+	Rendering::Material::Material* material = nullptr;	
+	if(objMtl)	material = materialMgr->Find(fileName, objMtl->name);
+	else
+	{
+		std::string shaderName = GetBasicShaderName();
+		material = materialMgr->Find("Basic", shaderName);
+	}
+
+	if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
+	{
+		Rendering::Shader::VertexShader* vs = nullptr;			
+		Rendering::Shader::PixelShader*	 ps = nullptr;
+
+		Rendering::Shader::ShaderManager* shaderMgr = currentScene->GetShaderManager();
+
+		std::string shaderName = GetBasicShaderName();
+
+		vs = shaderMgr->FindVertexShader(shaderName, BASIC_VS_MAIN_FUNC_NAME);
+		ps = shaderMgr->FindPixelShader(shaderName, BASIC_PS_MAIN_FUNC_NAME);
 
 		material->SetVertexShader(vs);
 		material->SetPixelShader(ps);

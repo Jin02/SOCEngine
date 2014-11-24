@@ -23,7 +23,7 @@ namespace Rendering
 
 	void Camera::Initialize()
 	{
-		_FOV = 45.0f;
+		_FOV = 60.0f;
 		_clippingNear = 0.01f;
 		_clippingFar = 1000.0f;
 
