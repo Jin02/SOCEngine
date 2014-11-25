@@ -57,12 +57,7 @@ namespace Rendering
 			if(_updateType == MaterialUpdateType::All)
 				_renderer->UpdateAllMaterial(context, transform);
 			else if(_updateType == MaterialUpdateType::One)
-			{
-				if(_renderer->UpdateMaterial(context, _selectMaterialIndex, transform) == false)
-				{
-					//??
-				}
-			}
+				_renderer->UpdateMaterial(context, _selectMaterialIndex, transform);
 
 			context->DrawIndexed(_indexCount, 0, 0);
 		}

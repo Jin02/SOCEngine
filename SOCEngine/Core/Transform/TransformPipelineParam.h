@@ -9,5 +9,6 @@ namespace Core
 		Math::Matrix worldMat;
 		Math::Matrix viewMat;
 		Math::Matrix projMat;
+		Math::Matrix worldViewProjMat;
 	};
 }

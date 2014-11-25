@@ -169,13 +169,15 @@ namespace Math
 
 	Matrix& Matrix::Transpose()
 	{
-		Matrix::Transpose((*this), (*this));
+		Matrix origin = (*this);
+		Matrix::Transpose((*this), origin);
 		return (*this);
 	}
 
 	Matrix& Matrix::Inverse()
 	{
-		Matrix::Inverse((*this), (*this));
+		Matrix origin = (*this);
+		Matrix::Inverse((*this), origin);
 		return (*this);
 	}
 

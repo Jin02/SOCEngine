@@ -25,7 +25,7 @@ namespace Rendering
 	{
 		_FOV = 60.0f;
 		_clippingNear = 0.01f;
-		_clippingFar = 1000.0f;
+		_clippingFar = 100.0f;
 
 		Size<int> windowSize = Director::GetInstance()->GetWindowSize();
 		_aspect = (float)windowSize.w / (float)windowSize.h;
