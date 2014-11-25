@@ -105,9 +105,9 @@ namespace Core
 		WorldTransform(tf);
 
 		Matrix::RotationQuaternion(outMatrix, tf._rotation);
-		outMatrix._14 = tf._position.x;
-		outMatrix._24 = tf._position.y;
-		outMatrix._34 = tf._position.z;
+		outMatrix._41 = tf._position.x;
+		outMatrix._42 = tf._position.y;
+		outMatrix._43 = tf._position.z;
 		outMatrix._44 = 1.0f;
 
 		outMatrix._11 *= tf._scale.x;

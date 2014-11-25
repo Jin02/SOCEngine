@@ -46,7 +46,7 @@ namespace Rendering
 
 		}
 
-		void Mesh::Render(const Core::TransformPipelineParam& transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos)
+		void Mesh::Render(const Core::TransformPipelineParam& transpose_Transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos)
 		{
 			if(_renderer == nullptr || _filter == nullptr)
 				return;
@@ -55,9 +55,9 @@ namespace Rendering
 			_filter->UpdateBuffer(context);
 
 			if(_updateType == MaterialUpdateType::All)
-				_renderer->UpdateAllMaterial(context, transform);
+				_renderer->UpdateAllMaterial(context, transpose_Transform);
 			else if(_updateType == MaterialUpdateType::One)
-				_renderer->UpdateMaterial(context, _selectMaterialIndex, transform);
+				_renderer->UpdateMaterial(context, _selectMaterialIndex, transpose_Transform);
 
 			context->DrawIndexed(_indexCount, 0, 0);
 		}

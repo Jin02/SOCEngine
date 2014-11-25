@@ -84,12 +84,19 @@ namespace Core
 		}
 
 		_transform->WorldMatrix(transformParam.worldMat);
-		
+		transformParam.worldViewProjMat = (transformParam.worldMat * transformParam.viewMat * transformParam.projMat);
+
 		const Math::Matrix& viewMat = transformParam.viewMat;
-		Vector4 viewPos = Vector4(viewMat._14, viewMat._24, viewMat._34, 1.0f);
+		Vector4 viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
+
+		TransformPipelineParam transposeTransform;
+		Matrix::Transpose(transposeTransform.worldMat, transformParam.worldMat);
+		Matrix::Transpose(transposeTransform.viewMat, transformParam.viewMat);
+		Matrix::Transpose(transposeTransform.projMat, transformParam.projMat);
+		Matrix::Transpose(transposeTransform.worldViewProjMat, transformParam.worldViewProjMat);
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
-			(*iter)->Render(transformParam, &intersectLights, viewPos);
+			(*iter)->Render(transposeTransform, &intersectLights, viewPos);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, transformParam);

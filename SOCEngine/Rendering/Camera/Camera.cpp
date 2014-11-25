@@ -71,18 +71,18 @@ namespace Rendering
 		ownerTransform->WorldMatrix(outMatrix);
 
 		Vector3 worldPos;
-		worldPos.x = outMatrix._14;
-		worldPos.y = outMatrix._24;
-		worldPos.z = outMatrix._34;
+		worldPos.x = outMatrix._41;
+		worldPos.y = outMatrix._42;
+		worldPos.z = outMatrix._43;
 
 		Vector3 p;
 		p.x = -Vector3::Dot(ownerTransform->GetRight(), worldPos);
 		p.y = -Vector3::Dot(ownerTransform->GetUp(), worldPos);
 		p.z = -Vector3::Dot(ownerTransform->GetForward(), worldPos);
 
-		outMatrix._14 = p.x;
-		outMatrix._24 = p.y;
-		outMatrix._34 = p.z;
+		outMatrix._41 = p.x;
+		outMatrix._42 = p.y;
+		outMatrix._43 = p.z;
 		outMatrix._44 = 1.0f;
 	}
 

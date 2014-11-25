@@ -48,11 +48,7 @@ namespace Math
 		static void Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs);
 		static void Transpose(Matrix& out, const Matrix& mat);
 		static void Inverse(Matrix& out, const Matrix& mat); 		//using cramer's rule
-
-		Matrix& Transpose();
-		Matrix&Inverse();
-		Matrix& Identity();
-		Matrix& Zero();
+		static void Identity(Matrix& out);
 
 	public:
 		union

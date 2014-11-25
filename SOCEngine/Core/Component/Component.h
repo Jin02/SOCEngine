@@ -37,7 +37,7 @@ namespace Core
 	public:
 		virtual void Initialize() = 0;
 		virtual void Update(float deltaTime);
-		virtual void Render(const TransformPipelineParam& transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos);
+		virtual void Render(const TransformPipelineParam& transpose_Transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos);
 		virtual void Destroy() = 0;
 
 	public:

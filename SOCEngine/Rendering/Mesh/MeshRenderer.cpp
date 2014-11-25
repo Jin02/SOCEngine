@@ -7,20 +7,20 @@ namespace Rendering
 
 	MeshRenderer::MeshRenderer() : _optionalVertexShaderConstBuffers(nullptr),
 		_vertexShaderUsingTextures(nullptr), _pixelShaderUsingConstBuffer(nullptr),
-		_constBuffer(nullptr)
+		_transformBuffer(nullptr)
 	{
 		_vertexShaderConstBufferUpdateType = VertexShaderConstBufferUpdateType::Add;
 	}
 
 	MeshRenderer::~MeshRenderer()
 	{
-		SAFE_DELETE(_constBuffer);
+		SAFE_DELETE(_transformBuffer);
 	}
 
 	bool MeshRenderer::init()
 	{
-		_constBuffer = new Buffer::ConstBuffer;
-		return _constBuffer->Create(sizeof(Math::Matrix) * 3);
+		_transformBuffer = new Buffer::ConstBuffer;
+		return _transformBuffer->Create(sizeof(Math::Matrix) * 3);
 	}
 
 	bool MeshRenderer::AddMaterial(Material::Material* material, bool copy)
@@ -34,8 +34,8 @@ namespace Rendering
 
 	void MeshRenderer::UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<Shader::BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform)
 	{	
-		_constBuffer->UpdateSubresource(context, &transform);
-		vertexShaderConstBuffers.push_back(Shader::BaseShader::BufferType(0, _constBuffer));
+		_transformBuffer->UpdateSubresource(context, &transform);
+		vertexShaderConstBuffers.push_back(Shader::BaseShader::BufferType(0, _transformBuffer));
 
 		if(_optionalVertexShaderConstBuffers)
 			vertexShaderConstBuffers.insert(vertexShaderConstBuffers.end(), _optionalVertexShaderConstBuffers->begin(), _optionalVertexShaderConstBuffers->end());
@@ -48,15 +48,13 @@ namespace Rendering
 		if(_vertexShaderConstBufferUpdateType == VertexShaderConstBufferUpdateType::Add)
 			UpdateVSBasicConstBufferData(context, vertexShaderConstBuffers, transform);
 		else
-		{
 			vsConstBufferTarget = _optionalVertexShaderConstBuffers;
-		}
 
 		Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
 
-		auto& v = _materials.GetVector();
+		auto& materials = _materials.GetVector();
 		unsigned int index = 0;
-		for(auto iter = v.begin(); iter != v.end(); ++iter, ++index)
+		for(auto iter = materials.begin(); iter != materials.end(); ++iter, ++index)
 		{
 			Shader::VertexShader* vs = GET_CONTENT_FROM_ITERATOR(iter)->GetVertexShader();
 			vs->UpdateShader(context, vsConstBufferTarget, _vertexShaderUsingTextures);

@@ -26,7 +26,7 @@ namespace Rendering
 			const std::vector<const Texture::Texture*>*			_vertexShaderUsingTextures;
 			const std::vector<Shader::BaseShader::BufferType>*	_pixelShaderUsingConstBuffer;
 
-			Buffer::ConstBuffer*								_constBuffer;
+			Buffer::ConstBuffer*								_transformBuffer;
 
 		public:
 			MeshRenderer();
