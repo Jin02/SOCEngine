@@ -23,7 +23,7 @@ namespace Rendering
 			const std::vector<Shader::BaseShader::BufferType>*	_optionalVertexShaderConstBuffers;			
 			VertexShaderConstBufferUpdateType					_vertexShaderConstBufferUpdateType;
 
-			const std::vector<const Texture::Texture*>*			_vertexShaderUsingTextures;
+			const std::vector<Shader::BaseShader::TextureType>*	_vertexShaderUsingTextures;
 			const std::vector<Shader::BaseShader::BufferType>*	_pixelShaderUsingConstBuffer;
 
 			Buffer::ConstBuffer*								_transformBuffer;
@@ -43,7 +43,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
-			SET_ACCESSOR(VertexShaderUsingTextures, const std::vector<const Texture::Texture*>*, _vertexShaderUsingTextures);
+			SET_ACCESSOR(VertexShaderUsingTextures, const std::vector<Shader::BaseShader::TextureType>*, _vertexShaderUsingTextures);
 			SET_ACCESSOR(PixelShaderUsingConstBuffer, const std::vector<Shader::BaseShader::BufferType>*, _pixelShaderUsingConstBuffer);
 
 			void SetOptionalVSConstBuffers(const std::vector<Shader::BaseShader::BufferType>* constBuffers, VertexShaderConstBufferUpdateType updateType);

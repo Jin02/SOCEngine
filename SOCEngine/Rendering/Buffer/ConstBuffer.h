@@ -9,6 +9,13 @@ namespace Rendering
 		class ConstBuffer : public BaseBuffer
 		{	
 		public:
+			enum BasicSlot
+			{
+				Transform = 0,
+				MaterialColor
+			};
+
+		public:
 			ConstBuffer();
 			~ConstBuffer();
 

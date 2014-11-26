@@ -31,24 +31,35 @@ namespace Rendering
 		return true;
 	}
 
-	void PixelShader::UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<const Texture::Texture*>& textures, const SamplerType& sampler)
+	void PixelShader::UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* rendererConstBuffers, const std::vector<BufferType>* materialConstBuffers, const std::vector<TextureType>* textures, const SamplerType& sampler)
 	{
 		context->PSSetShader(_shader, nullptr, 0);
 
-		if(constBuffers)
+		if(rendererConstBuffers)
 		{
-			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
+			for(auto iter = rendererConstBuffers->begin(); iter != rendererConstBuffers->end(); ++iter)
 			{
 				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
 				context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
 			}
 		}
 
-		unsigned int index = 0;
-		for(auto iter = textures.begin(); iter != textures.end(); ++iter, ++index)
+		if(materialConstBuffers)
 		{
-			ID3D11ShaderResourceView* srv = (*iter)-> GetShaderResourceView();
-			context->PSSetShaderResources( index, 1, &srv );
+			for(auto iter = materialConstBuffers->begin(); iter != materialConstBuffers->end(); ++iter)
+			{
+				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
+				context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
+			}
+		}
+
+		if(textures)
+		{
+			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
+			{
+				ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
+				context->PSSetShaderResources( iter->first, 1, &srv );
+			}
 		}
 
 		if(sampler.second)

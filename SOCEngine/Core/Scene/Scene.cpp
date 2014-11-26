@@ -34,8 +34,8 @@ void Scene::Initialize()
 
 		//Basic
 		{
-			const std::string tags[2] = {"N_", "N_T0"};
-			for(unsigned int i = 0; i < 3; ++i)
+			const std::string tags[] = {"T0", "N_", "N_T0"};
+			for(unsigned int i = 0; i < ARRAYSIZE(tags); ++i)
 			{
 				std::string shaderName = BASIC_SHADER_NAME;
 				if( i >= 1 )

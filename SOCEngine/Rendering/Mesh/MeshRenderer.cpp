@@ -4,6 +4,8 @@
 namespace Rendering
 {
 	using namespace Mesh;
+	using namespace Buffer;
+	using namespace Shader;
 
 	MeshRenderer::MeshRenderer() : _optionalVertexShaderConstBuffers(nullptr),
 		_vertexShaderUsingTextures(nullptr), _pixelShaderUsingConstBuffer(nullptr),
@@ -19,7 +21,7 @@ namespace Rendering
 
 	bool MeshRenderer::init()
 	{
-		_transformBuffer = new Buffer::ConstBuffer;
+		_transformBuffer = new ConstBuffer;
 		return _transformBuffer->Create(sizeof(Math::Matrix) * 3);
 	}
 
@@ -32,10 +34,10 @@ namespace Rendering
 		return true;
 	}
 
-	void MeshRenderer::UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<Shader::BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform)
+	void MeshRenderer::UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform)
 	{	
 		_transformBuffer->UpdateSubresource(context, &transform);
-		vertexShaderConstBuffers.push_back(Shader::BaseShader::BufferType(0, _transformBuffer));
+		vertexShaderConstBuffers.push_back(BaseShader::BufferType(ConstBuffer::BasicSlot::Transform, _transformBuffer));
 
 		if(_optionalVertexShaderConstBuffers)
 			vertexShaderConstBuffers.insert(vertexShaderConstBuffers.end(), _optionalVertexShaderConstBuffers->begin(), _optionalVertexShaderConstBuffers->end());
@@ -43,8 +45,8 @@ namespace Rendering
 
 	void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Core::TransformPipelineParam& transform)
 	{
-		std::vector<Shader::BaseShader::BufferType> vertexShaderConstBuffers;
-		const std::vector<Shader::BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
+		std::vector<BaseShader::BufferType> vertexShaderConstBuffers;
+		const std::vector<BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
 		if(_vertexShaderConstBufferUpdateType == VertexShaderConstBufferUpdateType::Add)
 			UpdateVSBasicConstBufferData(context, vertexShaderConstBuffers, transform);
 		else
@@ -53,15 +55,16 @@ namespace Rendering
 		Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
 
 		auto& materials = _materials.GetVector();
-		unsigned int index = 0;
-		for(auto iter = materials.begin(); iter != materials.end(); ++iter, ++index)
+		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		{
-			Shader::VertexShader* vs = GET_CONTENT_FROM_ITERATOR(iter)->GetVertexShader();
+			VertexShader* vs = GET_CONTENT_FROM_ITERATOR(iter)->GetVertexShader();
 			vs->UpdateShader(context, vsConstBufferTarget, _vertexShaderUsingTextures);
 
-			Shader::PixelShader* ps = GET_CONTENT_FROM_ITERATOR(iter)->GetPixelShader();
-			const std::vector<const Texture::Texture*>& textures = GET_CONTENT_FROM_ITERATOR(iter)->GetTextures();
-			ps->UpdateShader(context, _pixelShaderUsingConstBuffer, textures, Shader::PixelShader::SamplerType(0, sampler));
+			PixelShader* ps = GET_CONTENT_FROM_ITERATOR(iter)->GetPixelShader();
+			const std::vector<BaseShader::TextureType>& textures = GET_CONTENT_FROM_ITERATOR(iter)->GetTextures();
+			ps->UpdateShader(context,	_pixelShaderUsingConstBuffer, 
+										&GET_CONTENT_FROM_ITERATOR(iter)->GetConstBuffers(),
+										&textures, PixelShader::SamplerType(0, sampler));
 		}
 	}
 
@@ -70,8 +73,8 @@ namespace Rendering
 		if( index >= _materials.GetSize() )
 			return false;
 
-		std::vector<Shader::BaseShader::BufferType> vertexShaderConstBuffers;
-		const std::vector<Shader::BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
+		std::vector<BaseShader::BufferType> vertexShaderConstBuffers;
+		const std::vector<BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
 		if(_vertexShaderConstBufferUpdateType == VertexShaderConstBufferUpdateType::Add)
 			UpdateVSBasicConstBufferData(context, vertexShaderConstBuffers, transform);
 		else
@@ -81,17 +84,18 @@ namespace Rendering
 
 		Material::Material* material = GET_CONTENT_FROM_ITERATOR((_materials.GetVector().begin()+index));
 
-		Shader::VertexShader* vs = material->GetVertexShader();
+		VertexShader* vs = material->GetVertexShader();
 		vs->UpdateShader(context, vsConstBufferTarget, _vertexShaderUsingTextures);
 
-		Shader::PixelShader* ps = material->GetPixelShader();
+
+		PixelShader* ps = material->GetPixelShader();
 		Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
-		ps->UpdateShader(context, _pixelShaderUsingConstBuffer, material->GetTextures(), Shader::PixelShader::SamplerType(0, sampler));
+		ps->UpdateShader(context, _pixelShaderUsingConstBuffer, &material->GetConstBuffers(), &material->GetTextures(), PixelShader::SamplerType(0, sampler));
 
 		return true;
 	}
 
-	void MeshRenderer::SetOptionalVSConstBuffers(const std::vector<Shader::BaseShader::BufferType>* constBuffers, VertexShaderConstBufferUpdateType updateType)
+	void MeshRenderer::SetOptionalVSConstBuffers(const std::vector<BaseShader::BufferType>* constBuffers, VertexShaderConstBufferUpdateType updateType)
 	{
 		_optionalVertexShaderConstBuffers = constBuffers;
 		_vertexShaderConstBufferUpdateType = updateType;

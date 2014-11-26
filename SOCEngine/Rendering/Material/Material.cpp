@@ -1,6 +1,8 @@
 #include "Material.h"
+#include "Utility.h"
 
 using namespace Rendering::Material;
+using namespace Rendering::Buffer;
 
 Material::Color::Color() 
 	:diffuse(1.0f, 1.0f, 1.0f), ambient(0.5f, 0.5f, 0.5f),
@@ -15,9 +17,8 @@ Material::Color::~Color()
 
 
 Material::Material(const std::string& name)	
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name)
+	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _colorBuffer(nullptr)
 {
-
 }
 
 Material::Material(const std::string& name, const Color& color) 
@@ -28,44 +29,60 @@ Material::Material(const std::string& name, const Color& color)
 
 Material::~Material(void)
 {
+	SAFE_DELETE(_colorBuffer);
+}
+
+void Material::InitColorBuffer(ID3D11DeviceContext* context)
+{
+	Buffer::ConstBuffer* colorBuffer = new Buffer::ConstBuffer;
+	colorBuffer->Create(sizeof(Color));
+	UpdateColorBuffer(context);
+	_constBuffer.push_back(std::make_pair(ConstBuffer::BasicSlot::MaterialColor, colorBuffer));
+
+	_colorBuffer = dynamic_cast<Buffer::ConstBuffer*>(_constBuffer[0].second);
+}
+
+void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
+{
+	if(_colorBuffer)
+		_colorBuffer->UpdateSubresource(context, &_color);
 }
 
 bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Texture* texture)
 {	
-	if( index >= _textures.size() )
-		_textures.resize(index+1);
+	if( index < TextureType::User )
+		ASSERT("warning, index value is overlap with basic texture index.");
 
-	_textures[index] = texture;
-
+	_textures.push_back(std::make_pair(index, texture));
 	return true;
 }
 
 void Material::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Diffuse, tex) == false)
-		_textures.push_back(tex);
+		_textures.push_back(std::make_pair(TextureType::Diffuse, tex));
 }
 
 void Material::UpdateNormalMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Normal, tex) == false)
-		_textures.push_back(tex);
+		_textures.push_back(std::make_pair(TextureType::Normal, tex));
 }
 
 void Material::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Specular, tex) == false)
-		_textures.push_back(tex);
+		_textures.push_back(std::make_pair(TextureType::Specular, tex));
 }
 
 void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Opacity, tex) == false)
-		_textures.push_back(tex);
+		_textures.push_back(std::make_pair(TextureType::Opacity, tex));
 }
 
 void Material::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
 {
 	if(UpdateTexture(TextureType::Ambient, tex) == false)
-		_textures.push_back(tex);
+		_textures.push_back(std::make_pair(TextureType::Ambient, tex));
 }

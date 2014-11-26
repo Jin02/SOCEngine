@@ -76,6 +76,8 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 			material->UpdateSpecularMap(texture);
 		}
 
+		auto context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		material->InitColorBuffer(context);
 		materialMgr->Add(fileName, materialName, material, false);
 	}
 	else
