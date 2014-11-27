@@ -13,6 +13,7 @@ ConstBuffer::~ConstBuffer()
 
 bool ConstBuffer::Create(unsigned int size)
 {
+	size = 16 * (size/16) + ((size%16) != 0) * 16;
 	return BaseBuffer::Create(D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DEFAULT, nullptr, size);
 }
 

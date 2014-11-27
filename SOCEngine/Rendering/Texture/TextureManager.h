@@ -22,7 +22,7 @@ namespace Rendering
 			static bool LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& fileDir);
 
 		public:
-			Texture* LoadTextureFromFile(const std::string& fileDir, const std::string& key);
+			Texture* LoadTextureFromFile(const std::string& fileDir);
 			Texture* Find(const std::string& name);
 			void Remoave(const std::string& name);
 			void RemoveAll();

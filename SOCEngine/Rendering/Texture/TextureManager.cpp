@@ -1,5 +1,6 @@
 #include "TextureManager.h"
 #include "Director.h"
+#include "Utility.h"
 
 using namespace Rendering::Texture;
 
@@ -23,17 +24,22 @@ bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderRes
 }
 
 
-Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, const std::string& key)
+Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir)
 {
-	Texture* tex = _hash.Find(key);
+	std::string folderPath, name, extension;
+	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &extension);
+
+	Texture* tex = _hash.Find(name);
 	if(tex)
 		return tex;
 
 	ID3D11ShaderResourceView* srv = nullptr;
 	if( LoadTextureFromFile(&srv, fileDir) == false )
+	{
+		ASSERT("Fail, Not Load Texture!");
 		return nullptr;
-
-	return _hash.Add(key, new Texture(srv));
+	}
+	return _hash.Add(name+extension, new Texture(srv));
 }
 
 Texture* TextureManager::Find(const std::string& name)

@@ -20,6 +20,9 @@ struct PS_INPUT
 	float2 tex		: TEXCOORD0;
 };
 
+Texture2D txDiffuse : register( t1 );
+SamplerState testSampler : register( s0 );
+
  PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
@@ -35,6 +38,6 @@ struct PS_INPUT
 }
 
 float4 PS( PS_INPUT input ) : SV_Target
-{
-	return float4(0.0f, 0.0f, 1.0f, 1.0f);
+{		
+	return txDiffuse.Sample(testSampler, input.tex);
 }

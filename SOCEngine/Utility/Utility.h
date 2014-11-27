@@ -36,30 +36,33 @@ namespace Utility
 
 		static bool ParseDirectory(const std::string& path, std::string* outFolderPath, std::string* outFileName, std::string* outFileExtension)
 		{
+			auto ParseNameAndExtension = [&](const std::string& fileNameWithExtension)
+			{
+				unsigned int extensionPos = fileNameWithExtension.find('.');
+				if( extensionPos == -1 )
+					return false;
+
+				if(outFileExtension)
+					*outFileExtension = &fileNameWithExtension.c_str()[extensionPos+1];
+
+				if(outFileName)
+					*outFileName = fileNameWithExtension.substr(0, extensionPos); 
+
+				return true;
+			};
+
 			unsigned int fileNameStartPos = path.rfind('/');
 			if( fileNameStartPos == -1 )
 			{
 				fileNameStartPos = path.rfind('\\');
 				if(fileNameStartPos == -1)
-					return false;
+					return ParseNameAndExtension(path);
 			}
-
-			const std::string fileNameWithExtension = &path.c_str()[fileNameStartPos+1];
 
 			if(outFolderPath)
 				*outFolderPath = path.substr(0, fileNameStartPos+1);
 
-			unsigned int extensionPos = fileNameWithExtension.find('.');
-			if( extensionPos == -1 )
-				return false;
-
-			if(outFileExtension)
-				*outFileExtension = &fileNameWithExtension.c_str()[extensionPos+1];
-
-			if(outFileName)
-				*outFileName = fileNameWithExtension.substr(0, extensionPos); 
-
-			return true;
+			return ParseNameAndExtension( &path.c_str()[fileNameStartPos+1] );
 		}
 	};
 }

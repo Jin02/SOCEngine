@@ -50,29 +50,25 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 		if(tinyMaterial.ambient_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.ambient_texname, nullptr, &textureFileName, &textureExtension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname);
 			material->UpdateAmbientMap(texture);
 		}
 
 		if(tinyMaterial.diffuse_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.diffuse_texname, nullptr, &textureFileName, &textureExtension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname);
 			material->UpdateDiffuseMap(texture);
 		}
 
 		if(tinyMaterial.normal_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.normal_texname, nullptr, &textureFileName, &textureExtension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname);
 			material->UpdateNormalMap(texture);
 		}
 
 		if(tinyMaterial.specular_texname.empty() == false)
 		{
-			String::ParseDirectory(tinyMaterial.specular_texname, nullptr, &textureFileName, &textureExtension);
-			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname + textureExtension, materialName + textureFileName);
+			Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname);
 			material->UpdateSpecularMap(texture);
 		}
 
@@ -384,7 +380,8 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	};
 
 	Rendering::Material::Material* material = nullptr;	
-	if(objMtl)	material = materialMgr->Find(fileName, objMtl->name);
+	if(objMtl)	
+		material = materialMgr->Find(fileName, objMtl->name);
 	else
 	{
 		std::string shaderName = GetBasicShaderName();

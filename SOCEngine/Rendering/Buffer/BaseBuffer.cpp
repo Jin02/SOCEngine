@@ -35,7 +35,9 @@ bool BaseBuffer::Create(unsigned int bindFlags, D3D11_USAGE usage, const void* s
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, initData, &_buffer);
 	if( FAILED( hr ) )
+	{
+		ASSERT("Error!. Not create constant buffer");
 		return false;
-
+	}
 	return true;
 }

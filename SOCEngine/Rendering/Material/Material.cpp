@@ -22,7 +22,7 @@ Material::Material(const std::string& name)
 }
 
 Material::Material(const std::string& name, const Color& color) 
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color)
+	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color), _colorBuffer(nullptr)
 {
 
 }
@@ -35,11 +35,11 @@ Material::~Material(void)
 void Material::InitColorBuffer(ID3D11DeviceContext* context)
 {
 	Buffer::ConstBuffer* colorBuffer = new Buffer::ConstBuffer;
-	colorBuffer->Create(sizeof(Color));
-	UpdateColorBuffer(context);
-	_constBuffer.push_back(std::make_pair(ConstBuffer::BasicSlot::MaterialColor, colorBuffer));
-
+	colorBuffer->Create(sizeof(Material::Color));
+	_constBuffer.push_back(std::make_pair(ConstBuffer::BasicSlot::MaterialColor, colorBuffer));	
 	_colorBuffer = dynamic_cast<Buffer::ConstBuffer*>(_constBuffer[0].second);
+
+	UpdateColorBuffer(context);
 }
 
 void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
@@ -49,10 +49,7 @@ void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
 }
 
 bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Texture* texture)
-{	
-	if( index < TextureType::User )
-		ASSERT("warning, index value is overlap with basic texture index.");
-
+{
 	_textures.push_back(std::make_pair(index, texture));
 	return true;
 }
