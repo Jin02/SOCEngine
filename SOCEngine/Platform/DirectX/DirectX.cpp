@@ -6,7 +6,9 @@ using namespace Device;
 DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
 	_depthStencil(nullptr), _depthStencilView(nullptr),
-	_renderTargetView(nullptr), _disableCulling(nullptr), _depthStencilSRV(nullptr)
+	_renderTargetView(nullptr), _disableCulling(nullptr), _depthStencilSRV(nullptr),
+	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _depthLessEqual(nullptr),
+	_depthEqualAndDisableDepthWrite(nullptr)
 {
 
 }
@@ -218,20 +220,57 @@ bool DirectX::InitDevice(const Win32* win)
 
 	//Create disableCulling rasterizer State
 	{
-		D3D11_RASTERIZER_DESC rsState;
-		rsState.FillMode				= D3D11_FILL_SOLID;
-		rsState.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
-		rsState.FrontCounterClockwise	= true;
-		rsState.DepthBias				= 0;
-		rsState.DepthBiasClamp			= 0.0f;
-		rsState.SlopeScaledDepthBias	= 0.0f;
-		rsState.DepthClipEnable			= true;
-		rsState.ScissorEnable			= false;
-		rsState.MultisampleEnable		= false;
-		rsState.AntialiasedLineEnable	= false;
+		D3D11_RASTERIZER_DESC desc;
+		desc.FillMode				= D3D11_FILL_SOLID;
+		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.FrontCounterClockwise	= true;
+		desc.DepthBias				= 0;
+		desc.DepthBiasClamp			= 0.0f;
+		desc.SlopeScaledDepthBias	= 0.0f;
+		desc.DepthClipEnable			= true;
+		desc.ScissorEnable			= false;
+		desc.MultisampleEnable		= false;
+		desc.AntialiasedLineEnable	= false;
 
-		if( FAILED(_device->CreateRasterizerState(&rsState, &_disableCulling)) )
-			return false;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
+			ASSERT("Error!, device does not create rasterizer state");
+	}
+	
+	//Create Blend State
+	{
+		D3D11_BLEND_DESC desc;
+		desc.AlphaToCoverageEnable					= false;
+		desc.IndependentBlendEnable					= false;
+		desc.RenderTarget[0].BlendEnable			= false;
+		desc.RenderTarget[0].BlendOp				= D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlend				= D3D11_BLEND_ONE; 
+		desc.RenderTarget[0].DestBlend				= D3D11_BLEND_ZERO; 
+		desc.RenderTarget[0].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha			= D3D11_BLEND_ONE; 
+		desc.RenderTarget[0].DestBlendAlpha			= D3D11_BLEND_ZERO; 
+		desc.RenderTarget[0].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+		if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlend)) )
+			ASSERT("Error!, device does not create opaque blend state");
+		desc.AlphaToCoverageEnable = true;
+		if( FAILED(_device->CreateBlendState(&desc, &_alphaToCoverageBlend)) )
+			ASSERT("Error!, device does not create alphaToCoverage blend state");
+	}
+
+	//Create Depth State
+	{
+		D3D11_DEPTH_STENCIL_DESC desc;
+		desc.DepthEnable		= true; 
+		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL; 
+		desc.DepthFunc			= D3D11_COMPARISON_LESS_EQUAL;
+		desc.StencilEnable		= false; 
+		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
+		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLessEqual)) )
+			ASSERT("Error!, device does not create lessEqual dpeth state");
+		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
+		desc.DepthFunc			= D3D11_COMPARISON_EQUAL; 
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
+			ASSERT("Error!, device does not create depth state equal and disable writing");
 	}
 
 	return true;

@@ -25,11 +25,17 @@ namespace Device
 		ID3D11DepthStencilView		*_depthStencilView;
 		ID3D11ShaderResourceView	*_depthStencilSRV;
 
-		ID3D11RenderTargetView	*_renderTargetView;
-		ID3D11RasterizerState	*_disableCulling;
+		ID3D11RenderTargetView		*_renderTargetView;
 
-		D3D_FEATURE_LEVEL		 _featureLevel;
-		D3D_DRIVER_TYPE			 _driverType;
+		D3D_FEATURE_LEVEL			_featureLevel;
+		D3D_DRIVER_TYPE				_driverType;
+
+		ID3D11RasterizerState		*_disableCulling;
+		ID3D11BlendState			*_opaqueBlend;
+		ID3D11BlendState			*_alphaToCoverageBlend;
+
+		ID3D11DepthStencilState		*_depthLessEqual;
+		ID3D11DepthStencilState		*_depthEqualAndDisableDepthWrite;
 
 	public:
 		DirectX();
