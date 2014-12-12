@@ -23,6 +23,9 @@
     <ClInclude Include="..\..\Core\Time\Timer.h" />
     <ClInclude Include="..\..\Core\Transform\Transform.h" />
     <ClInclude Include="..\..\Core\Transform\TransformPipelineParam.h" />
+    <ClInclude Include="..\..\GPGPU\ComputeShader.h" />
+    <ClInclude Include="..\..\GPGPU\InputBuffer.h" />
+    <ClInclude Include="..\..\GPGPU\OutputBuffer.h" />
     <ClInclude Include="..\..\Importer\ImporterUtility.h" />
     <ClInclude Include="..\..\Importer\MeshImporter.h" />
     <ClInclude Include="..\..\Importer\ObjImporter.h" />
@@ -65,7 +68,6 @@
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
-    <ClInclude Include="..\..\Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\BaseShader.h" />
@@ -126,6 +128,9 @@
     <ClCompile Include="..\..\Core\Tag\TagManager.cpp" />
     <ClCompile Include="..\..\Core\Time\Timer.cpp" />
     <ClCompile Include="..\..\Core\Transform\Transform.cpp" />
+    <ClCompile Include="..\..\GPGPU\ComputeShader.cpp" />
+    <ClCompile Include="..\..\GPGPU\InputBuffer.cpp" />
+    <ClCompile Include="..\..\GPGPU\OutputBuffer.cpp" />
     <ClCompile Include="..\..\Importer\ImporterUtility.cpp" />
     <ClCompile Include="..\..\Importer\MeshImporter.cpp" />
     <ClCompile Include="..\..\Importer\ObjImporter.cpp" />
@@ -163,7 +168,6 @@
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp" />
-    <ClCompile Include="..\..\Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
@@ -210,7 +214,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../Rendering;../../Importer;../../Intersection;../../Template;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>../../Rendering/Sampler;../../Rendering/Texture;../../Rendering/Shader;../../Rendering/Mesh;../../Rendering/Material;../../Rendering/Light;../../Rendering/Buffer;../../Rendering/Camera;../../Rendering/Color;../../Core/Tag;../../Core/Layer;../../Core/Object;../../Core/Transform;../../Core/Time;../../Core/Component;../../Core/Scene;../../GPGPU;../../Rendering;../../Importer;../../Intersection;../../Template;../../Structure;../../Math;../../Common;../../Core;../../Utility;../../Utility/rapidjson;../../Platform;../../Platform/DirectX;../../Platform/Director;../../Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>

@@ -2,7 +2,7 @@
 #include "Director.h"
 
 using namespace Device;
-using namespace Rendering;
+using namespace GPGPU::DirectCompute;
 using namespace Rendering::Shader;
 
 ComputeShader::ComputeShader(ID3DBlob* blob) : BaseShader(blob),
@@ -16,7 +16,7 @@ ComputeShader::~ComputeShader(void)
 	SAFE_RELEASE(_shader);
 }
 
-bool ComputeShader::CreateShader()
+bool ComputeShader::Create()
 {
 	if(_blob == nullptr)
 		return false;
@@ -25,6 +25,7 @@ bool ComputeShader::CreateShader()
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateComputeShader(_blob->GetBufferPointer(), _blob->GetBufferSize(), 0, &_shader);
+
 	if( FAILED(hr) )
 		return false;
 

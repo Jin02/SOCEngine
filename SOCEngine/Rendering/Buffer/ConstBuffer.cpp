@@ -35,53 +35,6 @@ bool ConstBuffer::CreateUsageVSPS(unsigned int size)
 	return true;
 }
 
-bool ConstBuffer::CreateUsageCSInput(unsigned int size, unsigned int stride, const void* sysMem)
-{
-	D3D11_BUFFER_DESC desc;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.ByteWidth = size;
-    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
-	desc.StructureByteStride = stride;
-    desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = sysMem;
-
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&desc, &data, &_buffer);
-
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. Not create constant buffer");
-		return false;
-	}
-
-	return true;
-}
-
-bool ConstBuffer::CreateUsageCSOutput(unsigned int size, unsigned int stride)
-{
-	D3D11_BUFFER_DESC desc;
-    desc.ByteWidth = size;
-	desc.StructureByteStride = stride;
-    desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
-	desc.CPUAccessFlags = 0;
-
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
-
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. Not create constant buffer");
-		return false;
-	}
-
-	return true;
-}
-
 bool ConstBuffer::CreateUsageStaging(unsigned int size, unsigned int stride)
 {
 	D3D11_BUFFER_DESC desc;
@@ -113,10 +66,6 @@ bool ConstBuffer::Create(unsigned int size, unsigned int stride, Usage usage, co
 	case Usage::VertexShader:
 	case Usage::PixelShader:
 		return CreateUsageVSPS(size);
-	case Usage::ComputeShader_Input:
-		return CreateUsageCSInput(size, stride, sysMem);
-	case Usage::ComputeShader_Output:
-		return CreateUsageCSOutput(size, stride);
 	case Usage::Staging:
 		return CreateUsageStaging(size, stride);
 	}

@@ -13,8 +13,6 @@ namespace Rendering
 			{
 				VertexShader,
 				PixelShader,
-				ComputeShader_Input,
-				ComputeShader_Output,
 				Staging
 			};
 
@@ -24,8 +22,6 @@ namespace Rendering
 
 		private:
 			bool CreateUsageVSPS(unsigned int size);
-			bool CreateUsageCSInput(unsigned int size, unsigned int stride, const void* sysMem);
-			bool CreateUsageCSOutput(unsigned int size, unsigned int stride);
 			bool CreateUsageStaging(unsigned int size, unsigned int stride);
 
 		public:

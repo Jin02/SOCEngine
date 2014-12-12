@@ -2,11 +2,11 @@
 
 #include "BaseShader.h"
 
-namespace Rendering
+namespace GPGPU
 {
-	namespace Shader
+	namespace DirectCompute
 	{
-		class ComputeShader : public BaseShader
+		class ComputeShader : public Rendering::Shader::BaseShader
 		{
 		private:
 			ID3D11ComputeShader*	_shader;
@@ -15,7 +15,7 @@ namespace Rendering
 			ComputeShader(ID3DBlob* blob);
 			~ComputeShader(void);
 		public:
-			bool CreateShader();
+			bool Create();
 		};
 	}
 }
