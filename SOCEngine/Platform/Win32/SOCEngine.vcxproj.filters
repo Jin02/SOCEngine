@@ -139,6 +139,18 @@
     <Filter Include="Importer\Utility">
       <UniqueIdentifier>{017d46aa-8d43-4e48-bcd5-cf547e0aa77b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shader\Pixel">
+      <UniqueIdentifier>{c9c99ffc-afaa-4030-96a2-fa42d5150698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Vertex">
+      <UniqueIdentifier>{e0c47a67-31e3-4c81-b6ac-50ad293c1ef9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Mgr">
+      <UniqueIdentifier>{3487cdc5-5d70-428c-8d14-ef81a680dde5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Compute">
+      <UniqueIdentifier>{7f11dba4-0308-4794-a2cb-c261a8ad665f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32.h">
@@ -275,15 +287,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Buffer\BaseBuffer.h">
       <Filter>Rendering\Buffer\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Rendering\Shader\VertexShader.h">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Rendering\Shader\PixelShader.h">
-      <Filter>Rendering\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h">
       <Filter>Rendering\Mesh</Filter>
@@ -432,6 +435,18 @@
     <ClInclude Include="..\..\Rendering\Shader\EngineShaderFactory.hpp">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\PixelShader.h">
+      <Filter>Rendering\Shader\Pixel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\VertexShader.h">
+      <Filter>Rendering\Shader\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\ShaderManager.h">
+      <Filter>Rendering\Shader\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rendering\Shader\ComputeShader.h">
+      <Filter>Rendering\Shader\Compute</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Win32.cpp">
@@ -533,15 +548,6 @@
     <ClCompile Include="..\..\Rendering\Buffer\BaseBuffer.cpp">
       <Filter>Rendering\Buffer\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp">
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
@@ -598,6 +604,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Rendering\Buffer\BufferManager.cpp">
       <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp">
+      <Filter>Rendering\Shader\Pixel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\VertexShader.cpp">
+      <Filter>Rendering\Shader\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
+      <Filter>Rendering\Shader\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rendering\Shader\ComputeShader.cpp">
+      <Filter>Rendering\Shader\Compute</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

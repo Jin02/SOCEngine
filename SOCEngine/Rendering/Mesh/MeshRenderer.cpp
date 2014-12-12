@@ -22,7 +22,7 @@ namespace Rendering
 	bool MeshRenderer::init()
 	{
 		_transformBuffer = new ConstBuffer;
-		return _transformBuffer->Create(sizeof(Math::Matrix) * 3);
+		return _transformBuffer->Create(sizeof(Math::Matrix) * 3, 0, ConstBuffer::Usage::VertexShader);
 	}
 
 	bool MeshRenderer::AddMaterial(Material::Material* material, bool copy)
@@ -37,7 +37,7 @@ namespace Rendering
 	void MeshRenderer::UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform)
 	{	
 		_transformBuffer->UpdateSubresource(context, &transform);
-		vertexShaderConstBuffers.push_back(BaseShader::BufferType(ConstBuffer::BasicSlot::Transform, _transformBuffer));
+		vertexShaderConstBuffers.push_back(BaseShader::BufferType(Material::Material::BasicConstBuffercSlot::Transform, _transformBuffer));
 
 		if(_optionalVertexShaderConstBuffers)
 			vertexShaderConstBuffers.insert(vertexShaderConstBuffers.end(), _optionalVertexShaderConstBuffers->begin(), _optionalVertexShaderConstBuffers->end());

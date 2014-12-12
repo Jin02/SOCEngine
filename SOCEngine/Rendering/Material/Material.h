@@ -12,6 +12,12 @@ namespace Rendering
 		class Material
 		{
 		public:
+			enum BasicConstBuffercSlot
+			{
+				Transform = 0,
+				MaterialColor
+			};
+
 			struct Color
 			{
 				Rendering::Color diffuse;

@@ -65,6 +65,7 @@
     <ClInclude Include="..\..\Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="..\..\Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="..\..\Rendering\Sampler\Sampler.h" />
+    <ClInclude Include="..\..\Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="..\..\Rendering\Shader\PixelShader.h" />
     <ClInclude Include="..\..\Rendering\Shader\BaseShader.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="..\..\Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="..\..\Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Rendering\Sampler\Sampler.cpp" />
+    <ClCompile Include="..\..\Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\BaseShader.cpp" />
     <ClCompile Include="..\..\Rendering\Shader\ShaderManager.cpp">
