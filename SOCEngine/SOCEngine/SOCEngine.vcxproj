@@ -210,7 +210,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light;Rendering/Buffer;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(ProjectDir)\Output</OutDir>
+    <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
