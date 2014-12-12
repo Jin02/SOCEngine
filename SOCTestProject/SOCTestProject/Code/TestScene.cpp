@@ -17,7 +17,7 @@ TestScene::~TestScene(void)
 void TestScene::OnInitialize()
 {
 	//Object - Cube
-	Shader::Factory factory(_shaderMgr);
+	Factory::ShaderFactory factory(_shaderMgr);
 	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/");
 	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 3));
 	cube->GetTransform()->UpdateScale(Math::Vector3(0.5, 0.5, 0.5));
@@ -26,7 +26,7 @@ void TestScene::OnInitialize()
 	//Camera
 	{
 		Core::Object* camObj = new Core::Object(nullptr);
-		Rendering::Camera* cam = camObj->AddComponent<Rendering::Camera>();
+		Camera::Camera* cam = camObj->AddComponent<Camera::Camera>();
 		Core::Transform* camObjTf = camObj->GetTransform();
 		camObjTf->UpdatePosition(Math::Vector3(0,0,0));
 		camObjTf->UpdateDirection(Math::Vector3(0,0,1));

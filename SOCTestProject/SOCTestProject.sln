@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOCTestProject", "SOCTestPr
 		{D2F8E424-3F82-4761-840D-187B4405A969} = {D2F8E424-3F82-4761-840D-187B4405A969}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOCEngine", "..\SOCEngine\Platform\Win32\SOCEngine.vcxproj", "{D2F8E424-3F82-4761-840D-187B4405A969}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOCEngine", "..\SOCEngine\SOCEngine\SOCEngine.vcxproj", "{D2F8E424-3F82-4761-840D-187B4405A969}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

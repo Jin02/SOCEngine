@@ -1,4 +1,5 @@
-SOCEngine/Platform/Win32/Debug/
+SOCEngine/SOCEngine/Debug/
+SOCEngine/Output/
 *.sdf
 *.opensdf
 *.ipch

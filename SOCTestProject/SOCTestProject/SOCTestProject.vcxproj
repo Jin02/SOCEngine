@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>./Template;./Shader;./Code;../../SOCEngine/Rendering/Sampler;../../SOCEngine/Rendering/Texture;../../SOCEngine/Rendering/Shader;../../SOCEngine/Rendering/Mesh;../../SOCEngine/Rendering/Material;../../SOCEngine/Rendering/Light;../../SOCEngine/Rendering/Buffer;../../SOCEngine/Rendering/Camera;../../SOCEngine/Rendering/Color;../../SOCEngine/Core/Tag;../../SOCEngine/Core/Layer;../../SOCEngine/Core/Object;../../SOCEngine/Core/Transform;../../SOCEngine/Core/Time;../../SOCEngine/Core/Component;../../SOCEngine/Core/Scene;../../SOCEngine/Rendering;../../SOCEngine/Intersection;../../SOCEngine/Importer;../../SOCEngine/Template;../../SOCEngine/Structure;../../SOCEngine/Math;../../SOCEngine/Common;../../SOCEngine/GPGPU;../../SOCEngine/Core;../../SOCEngine/Utility;../../SOCEngine/Platform;../../SOCEngine/Platform/DirectX;../../SOCEngine/Platform/Director;../../SOCEngine/Platform/Win32;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Template;Shader;Code;../../SOCEngine/SOCEngine/Rendering/Sampler;../../SOCEngine/SOCEngine/Rendering/Texture;../../SOCEngine/SOCEngine/Rendering/Shader;../../SOCEngine/SOCEngine/Rendering/Mesh;../../SOCEngine/SOCEngine/Rendering/Material;../../SOCEngine/SOCEngine/Rendering/Light;../../SOCEngine/SOCEngine/Rendering/Buffer;../../SOCEngine/SOCEngine/Rendering/Camera;../../SOCEngine/SOCEngine/Rendering/Color;../../SOCEngine/SOCEngine/Core/Tag;../../SOCEngine/SOCEngine/Core/Layer;../../SOCEngine/SOCEngine/Core/Object;../../SOCEngine/SOCEngine/Core/Transform;../../SOCEngine/SOCEngine/Core/Time;../../SOCEngine/SOCEngine/Core/Component;../../SOCEngine/SOCEngine/Core/Scene;../../SOCEngine/SOCEngine/Rendering;../../SOCEngine/SOCEngine/Intersection;../../SOCEngine/SOCEngine/Importer;../../SOCEngine/SOCEngine/Template;../../SOCEngine/SOCEngine/Structure;../../SOCEngine/SOCEngine/Math;../../SOCEngine/SOCEngine/Common;../../SOCEngine/SOCEngine/GPGPU;../../SOCEngine/SOCEngine/Core;../../SOCEngine/SOCEngine/Utility;../../SOCEngine/SOCEngine/Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <CustomBuildBeforeTargets>
     </CustomBuildBeforeTargets>
@@ -69,7 +69,7 @@
       <ShaderType>Effect</ShaderType>
     </FxCompile>
     <PreBuildEvent>
-      <Command>python $(SolutionDir)..\SOCEngine\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(SolutionDir)..\SOCEngine\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(SolutionDir)..\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory)</Command>
+      <Command>python $(SolutionDir)..\SOCEngine\SOCEngine\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(SolutionDir)..\SOCEngine\SOCEngine\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(SolutionDir)..\SOCEngine\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory) -ClassName ShaderFactory</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,16 +90,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SOCEngine\Platform\Win32\SOCEngine.vcxproj">
-      <Project>{d2f8e424-3f82-4761-840d-187b4405a969}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\TestScene.cpp" />
   </ItemGroup>
@@ -109,6 +99,11 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Test.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SOCEngine\SOCEngine\SOCEngine.vcxproj">
+      <Project>{d2f8e424-3f82-4761-840d-187b4405a969}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
