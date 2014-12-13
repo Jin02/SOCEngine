@@ -12,6 +12,8 @@
 #include "Common.h"
 #include "Win32.h"
 
+#include "Color.h"
+
 namespace Device
 {
 	class DirectX
@@ -58,11 +60,16 @@ namespace Device
 		GET_ACCESSOR(Device, ID3D11Device*, _device);
 		GET_ACCESSOR(SwapChain, IDXGISwapChain*, _swapChain);
 		GET_ACCESSOR(Context, ID3D11DeviceContext*, _immediateContext);
-		//GET_ACCESSOR(Adapter, IDXGIAdapter*, _adapter);
 
 		GET_ACCESSOR(DetpthStencilTexture, ID3D11Texture2D*, _depthStencil);
 		GET_ACCESSOR(DepthStencilView, ID3D11DepthStencilView*, _depthStencilView);
+		GET_ACCESSOR(RenderTargetView, ID3D11RenderTargetView*, _renderTargetView);
 
-		GET_ACCESSOR(RenderTarget, ID3D11RenderTargetView*, _renderTargetView);
+		GET_ACCESSOR(DisableCullingRasterizerState, ID3D11RasterizerState*, _disableCulling);
+		GET_ACCESSOR(OpaqueBlendState, ID3D11BlendState*, _opaqueBlend);
+		GET_ACCESSOR(AlphaToCoverageBlendState, ID3D11BlendState*, _alphaToCoverageBlend);
+
+		GET_ACCESSOR(DepthLessEqualState, ID3D11DepthStencilState*, _depthLessEqual);
+		GET_ACCESSOR(DepthEuqalAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthEqualAndDisableDepthWrite);
 	};
 }
