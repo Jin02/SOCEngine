@@ -16,7 +16,7 @@ ConstBuffer::~ConstBuffer()
 bool ConstBuffer::Create(unsigned int size)
 {
 	D3D11_BUFFER_DESC desc;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.CPUAccessFlags = 0;
