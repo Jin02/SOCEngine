@@ -426,12 +426,6 @@
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
       <Filter>Rendering\Shader\Mgr</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\OutputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\InputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\ComputeShader.h">
       <Filter>GPGPU\DirectCompute</Filter>
     </ClInclude>
@@ -446,6 +440,15 @@
     </ClInclude>
     <ClInclude Include="Utility\DirectoryManager.h">
       <Filter>Utility\DirectoryManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\CPUReadConstBuffer.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSInputBuffer.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSOutputBuffer.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -593,12 +596,6 @@
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <Filter>Rendering\Shader\Mgr</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\InputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\OutputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\ComputeShader.cpp">
       <Filter>GPGPU\DirectCompute</Filter>
     </ClCompile>
@@ -613,6 +610,15 @@
     </ClCompile>
     <ClCompile Include="Utility\DirectoryManager.cpp">
       <Filter>Utility\DirectoryManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\CPUReadConstBuffer.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSInputBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
