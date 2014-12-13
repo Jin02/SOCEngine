@@ -40,6 +40,7 @@ namespace Rendering
 			bool AddMaterial(Material* material, bool copy = false);
 			void UpdateAllMaterial(ID3D11DeviceContext* context, const Core::TransformPipelineParam& transform);
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Core::TransformPipelineParam& transform);
+			void ClearResource(ID3D11DeviceContext* context);
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());

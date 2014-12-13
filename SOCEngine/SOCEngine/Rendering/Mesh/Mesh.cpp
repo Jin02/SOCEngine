@@ -60,6 +60,7 @@ namespace Rendering
 				_renderer->UpdateMaterial(context, _selectMaterialIndex, transpose_Transform);
 
 			context->DrawIndexed(_indexCount, 0, 0);
+			_renderer->ClearResource(context);
 		}
 
 		void Mesh::Destroy()
