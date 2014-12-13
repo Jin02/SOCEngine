@@ -35,7 +35,10 @@ Material::~Material(void)
 void Material::InitColorBuffer(ID3D11DeviceContext* context)
 {
 	Buffer::ConstBuffer* colorBuffer = new Buffer::ConstBuffer;
-	colorBuffer->Create(sizeof(Material::Color), 0, ConstBuffer::Usage::PixelShader);
+
+	// const buffer size certainly is 16 multiple
+	colorBuffer->Create(sizeof(Material::Color) + 8);
+
 	_constBuffer.push_back(std::make_pair(BasicConstBuffercSlot::MaterialColor, colorBuffer));	
 	_colorBuffer = dynamic_cast<Buffer::ConstBuffer*>(_constBuffer[0].second);
 
@@ -45,7 +48,7 @@ void Material::InitColorBuffer(ID3D11DeviceContext* context)
 void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
 {
 	if(_colorBuffer)
-		_colorBuffer->UpdateSubresource(context, &_color);
+		_colorBuffer->Update(context, &_color);
 }
 
 bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Texture* texture)
