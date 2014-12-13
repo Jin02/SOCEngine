@@ -16,6 +16,9 @@ namespace Rendering
 			virtual ~BaseBuffer();
 
 		public:
+			void Update(ID3D11DeviceContext* context, const void* data);
+
+		public:
 			GET_ACCESSOR(Buffer, ID3D11Buffer*, _buffer);
 		};
 	}
