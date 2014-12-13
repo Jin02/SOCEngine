@@ -40,7 +40,6 @@ namespace Rendering
 			~Camera(void);
 
 		private:
-			void Clear(ID3D11DeviceContext* context);
 			void CalcAspect();
 			void RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects);
 

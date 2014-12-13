@@ -85,17 +85,8 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::Clear(ID3D11DeviceContext* context)
-{
-
-}
-
 void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects)
 {
-	ID3D11DeviceContext* context = dx->GetContext();
-	context->ClearRenderTargetView(dx->GetRenderTarget(), _clearColor.color);
-	context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
 	ViewMatrix(tfParam.viewMat);
@@ -103,19 +94,53 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Co
 	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
 	_frustum->Make(viewProj);
 
-	vector<LightForm*> lights;
-	//if( sceneLights->Intersects(lights, _frustum) )
+	//graphics part
 	{
-		auto& dataInobjects = objects.GetVector();
-		for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
-		{				
-			GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, tfParam);
-		}
-	}
+		ID3D11DeviceContext* context = dx->GetContext();
 
-	IDXGISwapChain* swapChain = dx->GetSwapChain();
-	swapChain->Present(0, 0);
+		//depth clear
+		{
+			context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);
+			context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		}
+
+		//off alpha blending
+		{
+			//float blendFactor[1] = { 0.0f };
+			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+		}
+
+		//Render
+		{
+			//Early-Z
+			{
+
+			}
+
+			//Light Culling
+			{
+
+			}
+
+			//Forward Rendering
+			{
+
+			}
+		}
+
+		vector<LightForm*> lights;
+		{
+			auto& dataInobjects = objects.GetVector();
+			for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+			{				
+				GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
+				GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, tfParam);
+			}
+		}
+
+		IDXGISwapChain* swapChain = dx->GetSwapChain();
+		swapChain->Present(0, 0);
+	}
 }
 
 void Camera::Render(const Structure::Vector<Core::Object>& objects)
