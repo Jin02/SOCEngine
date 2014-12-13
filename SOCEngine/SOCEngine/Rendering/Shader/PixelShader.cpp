@@ -68,4 +68,15 @@ namespace Rendering
 			context->PSSetSamplers(sampler.first, 1, &samplerState);
 		}
 	}
+
+	void PixelShader::ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures)
+	{
+		if(textures)
+		{
+			ID3D11ShaderResourceView* nullSrv = nullptr;
+
+			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
+				context->PSSetShaderResources( iter->first, 1, &nullSrv );
+		}
+	}
 }

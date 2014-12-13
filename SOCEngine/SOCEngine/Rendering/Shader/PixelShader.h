@@ -21,6 +21,7 @@ namespace Rendering
 
 			typedef std::pair<int, const Sampler*> SamplerType;
 			void UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* rendererConstBuffers, const std::vector<BufferType>* materialConstBuffers, const std::vector<TextureType>* textures, const SamplerType& sampler);
+			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
 		};
 	}
 }
