@@ -28,6 +28,9 @@ void Scene::Initialize()
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
 
+	_sampler = new Sampler;
+	_sampler->Create();
+
 	// Load Basic Shader
 	{
 		Factory::EngineFactory factory(_shaderMgr);
@@ -101,6 +104,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_meshImporter);
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
+	SAFE_DELETE(_sampler);
  
 	OnDestroy();
 }
