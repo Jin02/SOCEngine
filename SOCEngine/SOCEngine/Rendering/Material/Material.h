@@ -16,6 +16,12 @@ namespace Rendering
 			MaterialColor
 		};
 
+		enum UpdateCBMethod
+		{
+			Default,
+			Custom
+		};
+
 		struct Color
 		{
 			Rendering::Color diffuse;
@@ -40,7 +46,17 @@ namespace Rendering
 			User
 		};
 
-
+	private:
+		struct ConstBuffers
+		{
+			std::vector<Shader::BaseShader::BufferType> usageVS;
+			std::vector<Shader::BaseShader::BufferType> usagePS;
+		};
+		struct Textures
+		{
+			std::vector<Shader::BaseShader::TextureType> usageVS;
+			std::vector<Shader::BaseShader::TextureType> usagePS;
+		};
 
 	private:
 		Shader::VertexShader*	_vertexShader;
@@ -48,10 +64,10 @@ namespace Rendering
 		std::string				_name;
 		Color					_color;
 
-		std::vector<Shader::BaseShader::BufferType> _constBuffer;				
 		Buffer::ConstBuffer*	_colorBuffer;				
-
-		std::vector<Shader::BaseShader::TextureType>	_textures;
+		ConstBuffers			_constbuffers;
+		Textures				_textures;
+		UpdateCBMethod			_updateConstBufferMethod;
 
 	public:
 		Material(const std::string& name);
@@ -61,6 +77,7 @@ namespace Rendering
 	public:
 		void InitColorBuffer(ID3D11DeviceContext* context);
 		void UpdateColorBuffer(ID3D11DeviceContext* context);
+		void UpdateTransformBuffer(ID3D11DeviceContext* context, Buffer::ConstBuffer* transform);
 
 		bool UpdateTexture(unsigned int index, const Texture::Texture* texture);
 		void UpdateAmbientMap(const Texture::Texture* tex);
@@ -70,13 +87,16 @@ namespace Rendering
 		void UpdateOpacityMap(const Texture::Texture* tex);
 
 	public:
+		void ClearResource(ID3D11DeviceContext* context);
+		void UpdateShader(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers);
+
+	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
 		GET_ACCESSOR(ColorBuffer, Buffer::ConstBuffer*, _colorBuffer);
-		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::BufferType>&, _constBuffer);
 
 		GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
 		GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
-		GET_SET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);
 		GET_SET_ACCESSOR(Color, const Color&, _color);
+		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
 	};
 }
