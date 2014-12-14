@@ -128,14 +128,11 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Co
 			}
 		}
 
-		vector<LightForm*> lights;
-		{
-			auto& dataInobjects = objects.GetVector();
-			for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
-			{				
-				GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-				GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, tfParam);
-			}
+		auto& dataInobjects = objects.GetVector();
+		for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+		{				
+			GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
+			GET_CONTENT_FROM_ITERATOR(iter)->Render(tfParam);
 		}
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
