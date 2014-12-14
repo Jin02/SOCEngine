@@ -20,8 +20,9 @@ namespace Rendering
 			};
 
 		private:
-			MeshFilter*			_filter;
-			MeshRenderer*		_renderer;
+			MeshFilter*				_filter;
+			MeshRenderer*			_renderer;
+			Buffer::ConstBuffer*	_transformConstBuffer;
 
 			MaterialUpdateType	_updateType;
 			unsigned int		_selectMaterialIndex;
@@ -39,7 +40,8 @@ namespace Rendering
 		public:
 			virtual void Initialize();
 			virtual void Update(float deltaTime);
-			virtual void Render(const Core::TransformPipelineParam& transpose_Transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos);
+			virtual void UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform);
+			virtual void Render();
 			virtual void Destroy();
 
 		public:
