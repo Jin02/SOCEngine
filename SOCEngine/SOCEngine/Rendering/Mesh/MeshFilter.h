@@ -33,7 +33,7 @@ namespace Rendering
 		public:
 			bool CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
 				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic);
-			void UpdateBuffer(ID3D11DeviceContext* context);
+			void IASetBuffer(ID3D11DeviceContext* context);
 		};
 	}
 }
