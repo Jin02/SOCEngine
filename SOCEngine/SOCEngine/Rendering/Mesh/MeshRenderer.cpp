@@ -7,22 +7,12 @@ namespace Rendering
 	using namespace Buffer;
 	using namespace Shader;
 
-	MeshRenderer::MeshRenderer() : _optionalVertexShaderConstBuffers(nullptr),
-		_vertexShaderUsingTextures(nullptr), _pixelShaderUsingConstBuffer(nullptr),
-		_transformBuffer(nullptr)
+	MeshRenderer::MeshRenderer()
 	{
-		_vertexShaderConstBufferUpdateType = VertexShaderConstBufferUpdateType::Add;
 	}
 
 	MeshRenderer::~MeshRenderer()
 	{
-		SAFE_DELETE(_transformBuffer);
-	}
-
-	bool MeshRenderer::init()
-	{
-		_transformBuffer = new ConstBuffer;
-		return _transformBuffer->Create(sizeof(Math::Matrix) * 3);
 	}
 
 	bool MeshRenderer::AddMaterial(Material* material, bool copy)
@@ -34,82 +24,46 @@ namespace Rendering
 		return true;
 	}
 
-	void MeshRenderer::UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform)
-	{	
-		_transformBuffer->Update(context, &transform);
-		vertexShaderConstBuffers.push_back(BaseShader::BufferType(Material::BasicConstBuffercSlot::Transform, _transformBuffer));
-
-		if(_optionalVertexShaderConstBuffers)
-			vertexShaderConstBuffers.insert(vertexShaderConstBuffers.end(), _optionalVertexShaderConstBuffers->begin(), _optionalVertexShaderConstBuffers->end());
-	}
-
-	void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Core::TransformPipelineParam& transform)
+	void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, Buffer::ConstBuffer* transformBuffer)
 	{
-		std::vector<BaseShader::BufferType> vertexShaderConstBuffers;
-		const std::vector<BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
-		if(_vertexShaderConstBufferUpdateType == VertexShaderConstBufferUpdateType::Add)
-			UpdateVSBasicConstBufferData(context, vertexShaderConstBuffers, transform);
-		else
-			vsConstBufferTarget = _optionalVertexShaderConstBuffers;
-
 		Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
+		std::vector<Shader::PixelShader::SamplerType> samplers;
+		
+		//임시로, 0번에 linear만 넣음.
+		samplers.push_back(std::make_pair(0, sampler));
 
 		auto& materials = _materials.GetVector();
 		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		{
-			VertexShader* vs = GET_CONTENT_FROM_ITERATOR(iter)->GetVertexShader();
-			vs->UpdateShader(context, vsConstBufferTarget, _vertexShaderUsingTextures);
-
-			PixelShader* ps = GET_CONTENT_FROM_ITERATOR(iter)->GetPixelShader();
-			const std::vector<BaseShader::TextureType>& textures = GET_CONTENT_FROM_ITERATOR(iter)->GetTextures();
-			ps->UpdateShader(context,	_pixelShaderUsingConstBuffer, 
-										&GET_CONTENT_FROM_ITERATOR(iter)->GetConstBuffers(),
-										&textures, PixelShader::SamplerType(0, sampler));
+			Material* material = GET_CONTENT_FROM_ITERATOR(iter);
+			material->UpdateTransformBuffer(context, transformBuffer);
+			material->UpdateShader(context, samplers);
 		}
 	}
 
-	bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Core::TransformPipelineParam& transform)
+	bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer)
 	{
 		if( index >= _materials.GetSize() )
 			return false;
 
-		std::vector<BaseShader::BufferType> vertexShaderConstBuffers;
-		const std::vector<BaseShader::BufferType>* vsConstBufferTarget = &vertexShaderConstBuffers;
-		if(_vertexShaderConstBufferUpdateType == VertexShaderConstBufferUpdateType::Add)
-			UpdateVSBasicConstBufferData(context, vertexShaderConstBuffers, transform);
-		else
-		{
-			vsConstBufferTarget = _optionalVertexShaderConstBuffers;
-		}
+		Material* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
+		if(material == nullptr)
+			return false;
 
-		Material* material = GET_CONTENT_FROM_ITERATOR((_materials.GetVector().begin()+index));
-
-		VertexShader* vs = material->GetVertexShader();
-		vs->UpdateShader(context, vsConstBufferTarget, _vertexShaderUsingTextures);
-
-		PixelShader* ps = material->GetPixelShader();
 		Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
-		ps->UpdateShader(context, _pixelShaderUsingConstBuffer, &material->GetConstBuffers(), &material->GetTextures(), PixelShader::SamplerType(0, sampler));
-
+		std::vector<Shader::PixelShader::SamplerType> samplers;
+		
+		//임시로, 0번에 linear만 넣음.
+		samplers.push_back(std::make_pair(0, sampler));
+		material->UpdateTransformBuffer(context, transformBuffer);
+		material->UpdateShader(context, samplers);
 		return true;
-	}
-
-	void MeshRenderer::SetOptionalVSConstBuffers(const std::vector<BaseShader::BufferType>* constBuffers, VertexShaderConstBufferUpdateType updateType)
-	{
-		_optionalVertexShaderConstBuffers = constBuffers;
-		_vertexShaderConstBufferUpdateType = updateType;
 	}
 
 	void MeshRenderer::ClearResource(ID3D11DeviceContext* context)
 	{
 		auto& materials = _materials.GetVector();
 		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-		{
-			PixelShader* ps = GET_CONTENT_FROM_ITERATOR(iter)->GetPixelShader();
-			VertexShader* vs = GET_CONTENT_FROM_ITERATOR(iter)->GetVertexShader();
-
-			vs->ClearResource(context, _vertexShaderUsingTextures);
-			ps->ClearResource(context, &GET_CONTENT_FROM_ITERATOR(iter)->GetTextures());
-		}
+			GET_CONTENT_FROM_ITERATOR(iter)->ClearResource(context);
 	}
 }
