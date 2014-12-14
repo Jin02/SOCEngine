@@ -34,7 +34,7 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam);
+		void Render(TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 
