@@ -25,7 +25,7 @@ bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderRes
 }
 
 
-Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir)
+Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool hasAlpha)
 {
 	std::string folderPath, name, extension;
 	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &extension);
@@ -40,7 +40,9 @@ Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir)
 		ASSERT("Fail, Not Load Texture!");
 		return nullptr;
 	}
-	return _hash.Add(name+extension, new Texture::Texture(srv));
+	tex = new Texture::Texture(srv, hasAlpha);
+
+	return _hash.Add(name+extension, tex);
 }
 
 Texture* TextureManager::Find(const std::string& name)
