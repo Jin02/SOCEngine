@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdio.h>
 #include <assert.h>
+#include <Windows.h>
 
 namespace Utility
 {
