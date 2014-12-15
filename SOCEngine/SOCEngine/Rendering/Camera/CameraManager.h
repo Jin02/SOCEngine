@@ -7,7 +7,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class CameraManager : public Structure::Vector<Camera::Camera>
+		class CameraManager : public Structure::Vector<std::string, Camera::Camera>
 		{
 		public:
 			CameraManager(void);

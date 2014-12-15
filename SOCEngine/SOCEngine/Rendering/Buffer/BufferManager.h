@@ -14,9 +14,9 @@ namespace Rendering
 		class BufferManager
 		{
 		private:
-			Structure::MapInMap<Buffer::VertexBuffer>	_vertexBuffers;
-			Structure::MapInMap<Buffer::IndexBuffer>	_indexBuffers;
-			Structure::MapInMap<LPVoidType>				_originVertexBufferDatas;
+			Structure::MapInMap<std::string, Buffer::VertexBuffer>		_vertexBuffers;
+			Structure::MapInMap<std::string, Buffer::IndexBuffer>		_indexBuffers;
+			Structure::MapInMap<std::string, LPVoidType>				_originVertexBufferDatas;
 
 		public:
 			BufferManager();

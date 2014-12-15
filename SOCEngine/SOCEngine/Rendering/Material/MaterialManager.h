@@ -10,8 +10,8 @@ namespace Rendering
 		class MaterialManager
 		{
 		private:
-			Structure::Map< Structure::Map<Material> >	_map;
-			Structure::HashMap<Material>				_hash;
+			Structure::Map<std::string, Structure::Map<std::string, Material> >	_map;
+			Structure::HashMap<std::string, Material>							_hash;
 
 		public:
 			MaterialManager();
