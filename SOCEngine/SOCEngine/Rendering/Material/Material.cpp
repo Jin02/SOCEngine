@@ -18,7 +18,8 @@ Material::Color::~Color()
 
 Material::Material(const std::string& name)	
 	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _colorBuffer(nullptr),
-	_updateConstBufferMethod(UpdateCBMethod::Default)
+	_updateConstBufferMethod(UpdateCBMethod::Default),
+	_hasAlpha(false)
 {
 }
 
@@ -26,7 +27,7 @@ Material::Material(const std::string& name, const Color& color)
 	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color), _colorBuffer(nullptr),
 	_updateConstBufferMethod(UpdateCBMethod::Default)
 {
-
+	_hasAlpha = color.opacity < 1.0f;
 }
 
 Material::~Material(void)
@@ -79,40 +80,59 @@ void Material::UpdateTransformBuffer(ID3D11DeviceContext* context, Buffer::Const
 	}
 }
 
-bool Material::UpdateTexture(unsigned int index, const Rendering::Texture::Texture* texture)
+const Rendering::Texture::Texture* Material::FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex)
 {
-	_textures.usagePS.push_back(std::make_pair(index, texture));
-	return true;
+	auto textures = _textures.usagePS;
+	for(int i=0; i<textures.size(); ++i)
+	{
+		if(textures[i].first == shaderSlotIndex)
+		{
+			outIndex = i;
+			return textures[i].second;
+		}
+	}
+
+	outIndex = 0;
+	return nullptr;
+}
+
+void Material::UpdateMap(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture)
+{
+	unsigned int index = 0;
+	auto map = FindMap(index, shaderSlotIndex);
+	if(map == nullptr)
+		_textures.usagePS.push_back(std::make_pair(shaderSlotIndex, texture));
+	else
+	{
+		_textures.usagePS[index].second = texture;
+	}
 }
 
 void Material::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 {
-	if(UpdateTexture(TextureType::Diffuse, tex) == false)
-		_textures.usagePS.push_back(std::make_pair(TextureType::Diffuse, tex));
+	UpdateMap(TextureType::Diffuse, tex);
+	_hasAlpha = tex->GetHasAlpha();
 }
 
 void Material::UpdateNormalMap(const Rendering::Texture::Texture* tex)
 {
-	if(UpdateTexture(TextureType::Normal, tex) == false)
-		_textures.usagePS.push_back(std::make_pair(TextureType::Normal, tex));
+	UpdateMap(TextureType::Normal, tex);
 }
 
 void Material::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
 {
-	if(UpdateTexture(TextureType::Specular, tex) == false)
-		_textures.usagePS.push_back(std::make_pair(TextureType::Specular, tex));
+	UpdateMap(TextureType::Specular, tex);
 }
 
 void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 {
-	if(UpdateTexture(TextureType::Opacity, tex) == false)
-		_textures.usagePS.push_back(std::make_pair(TextureType::Opacity, tex));
+	UpdateMap(TextureType::Opacity, tex);
+	_hasAlpha = tex != nullptr;
 }
 
 void Material::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
 {
-	if(UpdateTexture(TextureType::Ambient, tex) == false)
-		_textures.usagePS.push_back(std::make_pair(TextureType::Ambient, tex));
+	UpdateMap(TextureType::Ambient, tex);
 }
 
 void Material::ClearResource(ID3D11DeviceContext* context)
@@ -125,4 +145,10 @@ void Material::UpdateShader(ID3D11DeviceContext* context, const std::vector<Shad
 {
 	_vertexShader->UpdateShader(context, &_constbuffers.usageVS, &_textures.usageVS);
 	_pixelShader->UpdateShader(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
+}
+
+void Material::UpdateColor(const Color& color)
+{
+	_color = color;
+	_hasAlpha = _color.opacity < 1.0f;
 }

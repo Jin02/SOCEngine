@@ -36,7 +36,7 @@ namespace Rendering
 			~Color();
 		};
 
-		enum TextureType
+		enum TextureType : unsigned int
 		{
 			Ambient = 0,
 			Diffuse,
@@ -69,6 +69,8 @@ namespace Rendering
 		Textures				_textures;
 		UpdateCBMethod			_updateConstBufferMethod;
 
+		bool _hasAlpha;
+
 	public:
 		Material(const std::string& name);
 		Material(const std::string& name, const Color& lightColor);
@@ -79,12 +81,15 @@ namespace Rendering
 		void UpdateColorBuffer(ID3D11DeviceContext* context);
 		void UpdateTransformBuffer(ID3D11DeviceContext* context, Buffer::ConstBuffer* transform);
 
-		bool UpdateTexture(unsigned int index, const Texture::Texture* texture);
+		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
 		void UpdateAmbientMap(const Texture::Texture* tex);
 		void UpdateDiffuseMap(const Texture::Texture* tex);
 		void UpdateNormalMap(const Texture::Texture* tex);
 		void UpdateSpecularMap(const Texture::Texture* tex);
 		void UpdateOpacityMap(const Texture::Texture* tex);
+
+		const Rendering::Texture::Texture* FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex);
+		void UpdateColor(const Color& color);
 
 	public:
 		void ClearResource(ID3D11DeviceContext* context);
@@ -96,7 +101,8 @@ namespace Rendering
 
 		GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
 		GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
-		GET_SET_ACCESSOR(Color, const Color&, _color);
+		GET_ACCESSOR(Color, const Color&, _color);
 		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
+		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 	};
 }
