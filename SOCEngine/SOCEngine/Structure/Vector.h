@@ -5,11 +5,11 @@
 
 namespace Structure
 {
-	template <class Object>
-	class Vector : public BaseStructure<Object>
+	template <typename Key, class Object>
+	class Vector : public BaseStructure<Key, Object>
 	{
 	public:
-		typedef std::pair<std::string, BaseStructure<Object>::Data>	Type;
+		typedef std::pair<Key, BaseStructure<Key, Object>::Data>	Type;
 
 	protected:
 		std::vector<Type> _vector;
@@ -22,7 +22,7 @@ namespace Structure
 		}
 
 	private:
-		static void PackingType(Type& out, const std::string& key, Object* object, bool copy)
+		static void PackingType(Type& out, const Key& key, Object* object, bool copy)
 		{
 			Data data;
 			data.first = copy;
@@ -33,7 +33,7 @@ namespace Structure
 		}
 
 	public:
-		virtual Object* Add(const std::string& key, Object* object, bool copy = false)
+		virtual Object* Add(const Key& key, Object* object, bool copy = false)
 		{
 			Type type;
 			PackingType(type, key, object, copy);
@@ -42,7 +42,7 @@ namespace Structure
 			return object;
 		}
 
-		virtual Object* Find(const std::string& key)
+		virtual Object* Find(const Key& key)
 		{
 			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
 			{
@@ -61,7 +61,7 @@ namespace Structure
 			return _vector[index];
 		}
 
-		virtual void Delete(const std::string& key, bool contentRemove = false)
+		virtual void Delete(const Key& key, bool contentRemove = false)
 		{
 			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
 			{

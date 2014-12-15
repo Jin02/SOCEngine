@@ -5,11 +5,11 @@
 
 namespace Structure
 {
-	template <class Object>
-	class Map : public BaseStructure<Object>
+	template <typename Key, class Object>
+	class Map : public BaseStructure<Key, Object>
 	{
 	private:
-		std::map<std::string, BaseStructure<Object>::Data> _map;
+		std::map<Key, BaseStructure<Key, Object>::Data> _map;
 
 	public:
 		Map(void){}
@@ -19,31 +19,26 @@ namespace Structure
 		}
 
 	public:
-		virtual Object* Add(const std::string& key, Object* object, bool copy = false)
+		virtual Object* Add(const Key& key, Object* object, bool copy = false)
 		{
-			std::map<std::string, BaseStructure<Object>::Data>::iterator iter = _map.find(key);
-
-			if(iter != _map.end())
-				return GET_CONTENT_FROM_ITERATOR(iter);
-
-			BaseStructure<Object>::Data data;
+			BaseStructure<Key, Object>::Data data;
 			data.first = copy;
 			data.second = copy ? new Object((*object)) : object;
 
-			_map.insert(std::map<std::string, BaseStructure<Object>::Data>::value_type(key, data));
+			_map.insert(std::map<Key, BaseStructure<Key, Object>::Data>::value_type(key, data));
 
 			return object;
 		}
 
-		virtual Object* Find(const std::string& key)
+		virtual Object* Find(const Key& key)
 		{
-			std::map<std::string, BaseStructure<Object>::Data>::iterator iter = _map.find(key);
+			std::map<Key, BaseStructure<Key, Object>::Data>::iterator iter = _map.find(key);
 			return iter == _map.end() ? nullptr : GET_CONTENT_FROM_ITERATOR(iter);
 		}
 
-		virtual void Delete(const std::string& key, bool contentRemove = false)
+		virtual void Delete(const Key& key, bool contentRemove = false)
 		{
-			std::map<std::string, BaseStructure<Object>::Data>::iterator iter = _map.find(key);
+			std::map<Key, BaseStructure<Key, Object>::Data>::iterator iter = _map.find(key);
 
 			if( iter == _map.end() )
 				return;
@@ -58,7 +53,7 @@ namespace Structure
 		{
 			if(contentRemove)
 			{
-				typename std::map<std::string, BaseStructure<Object>::Data>::iterator iter;
+				typename std::map<Key, BaseStructure<Key, Object>::Data>::iterator iter;
 				for(iter = _map.begin();iter != _map.end(); ++iter)
 				{
 					if( GET_IS_COPY_FROM_ITERATOR(iter) )
@@ -69,7 +64,7 @@ namespace Structure
 			_map.clear();
 		}
 
-		inline const std::map<std::string, BaseStructure<Object>::Data>& GetMap() const { return _map; }
+		inline const std::map<Key, BaseStructure<Key, Object>::Data>& GetMap() const { return _map; }
 		GET_ACCESSOR(Size, unsigned int, _map.size());
 	};
 }
