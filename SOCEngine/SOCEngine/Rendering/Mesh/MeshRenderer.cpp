@@ -66,4 +66,18 @@ namespace Rendering
 		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 			GET_CONTENT_FROM_ITERATOR(iter)->ClearResource(context);
 	}
+
+	bool MeshRenderer::CheckAlphaMaterial()
+	{
+		auto& materials = _materials.GetVector();
+		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
+		{
+			Material* material = GET_CONTENT_FROM_ITERATOR(iter);
+			bool hasAlpha = material->GetHasAlpha();
+			if(hasAlpha)
+				return true;
+		}
+
+		return false;
+	}
 }

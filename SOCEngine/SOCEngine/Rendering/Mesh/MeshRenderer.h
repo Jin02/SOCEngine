@@ -11,7 +11,7 @@ namespace Rendering
 		class MeshRenderer
 		{
 		private:
-			Structure::Vector<Material> _materials;
+			Structure::Vector<std::string, Material> _materials;
 
 		public:
 			MeshRenderer();
@@ -24,6 +24,7 @@ namespace Rendering
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer);
 
 			void ClearResource(ID3D11DeviceContext* context);
+			bool CheckAlphaMaterial();
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
