@@ -24,10 +24,11 @@ namespace Rendering
 			MeshRenderer*			_renderer;
 			Buffer::ConstBuffer*	_transformConstBuffer;
 
-			MaterialUpdateType	_updateType;
-			unsigned int		_selectMaterialIndex;
+			MaterialUpdateType		_updateType;
+			unsigned int			_selectMaterialIndex;
 
-			unsigned int		_indexCount;
+			unsigned int			_indexCount;
+			bool					_alphaMesh;
 
 		public:
 			Mesh();
@@ -47,6 +48,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
 			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
+			GET_ACCESSOR(IsAlphaMesh, bool, _alphaMesh);
 
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);

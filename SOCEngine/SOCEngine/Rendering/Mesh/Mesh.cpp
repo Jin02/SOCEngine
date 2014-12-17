@@ -3,9 +3,14 @@
 
 namespace Rendering
 {
+	using namespace Manager;
 	namespace Mesh
 	{
-		Mesh::Mesh() : _filter(nullptr), _renderer(nullptr), _selectMaterialIndex(0), _indexCount(0), _transformConstBuffer(nullptr)
+		Mesh::Mesh() : 
+			_filter(nullptr), _renderer(nullptr), 
+			_selectMaterialIndex(0), _indexCount(0), 
+			_transformConstBuffer(nullptr),
+			_alphaMesh(false)
 		{
 			_updateType = MaterialUpdateType::All;
 		}
@@ -43,6 +48,7 @@ namespace Rendering
 				return false;
 			}
 
+			_alphaMesh = material->GetHasAlpha();
 			return true;
 		}
 
@@ -52,13 +58,29 @@ namespace Rendering
 
 		void Mesh::Update(float deltaTime)
 		{
-
 		}
 
 		void Mesh::UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform)
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);
+
+			//±ÍÂúÀ¸´Ï ¿©±â¼­ °â»ç°â»ç Ã¼Å© ÇÏÀÚ
+			{
+				bool hasAlphaMaterial = _renderer->CheckAlphaMaterial();
+				if(_alphaMesh != hasAlphaMaterial)
+				{
+					MeshManager* meshMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMeshManager();
+					MeshManager::MeshType type = hasAlphaMaterial ? MeshManager::MeshType::hasAlpha : MeshManager::MeshType::nonAlpha;
+					unsigned int address = reinterpret_cast<unsigned int>(this);
+					if(meshMgr->Find(address, type) == nullptr)
+						meshMgr->Change(this, type);
+					else
+						meshMgr->Add(this, type);
+
+					_alphaMesh = hasAlphaMaterial;
+				}
+			}
 		}
 
 		void Mesh::Render()
