@@ -8,7 +8,10 @@ using namespace std;
 using namespace Structure;
 using namespace Rendering;
 
-Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), _bufferManager(nullptr), _originObjMgr(nullptr)
+Scene::Scene(void) : 
+	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
+	_materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), 
+	_bufferManager(nullptr), _originObjMgr(nullptr), _meshManager(nullptr)
 {
 	_state = State::Init;
 }
@@ -27,6 +30,7 @@ void Scene::Initialize()
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
+	_meshManager	= new Manager::MeshManager;
 
 	_sampler = new Sampler;
 	_sampler->Create();
@@ -81,17 +85,24 @@ void Scene::Update(float dt)
 		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
 }
 
+void Scene::RenderPreview()
+{
+	OnRenderPreview();
+
+	Camera::Camera *mainCam = _cameraMgr->GetMainCamera();
+	if(mainCam)
+		mainCam->UpdateTransformAndCheckRender(_rootObjects);
+}
+
 void Scene::Render()
 {
 	Camera::Camera *mainCam = _cameraMgr->GetMainCamera();
 
-	if(mainCam == nullptr)
-		return;
+	if(mainCam)
+	{
 
-	OnRenderPreview();
+	}
 
-	mainCam->Render(_rootObjects);
-		
 	OnRenderPost();
 }
 
@@ -105,6 +116,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
 	SAFE_DELETE(_sampler);
+	SAFE_DELETE(_meshManager);
  
 	OnDestroy();
 }
