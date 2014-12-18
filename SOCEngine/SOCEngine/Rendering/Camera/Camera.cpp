@@ -34,7 +34,7 @@ void Camera::Initialize()
 
 	_frustum = new Frustum(0.0f);		
 
-	_clearFlag = ClearFlag::FlagSolidColor;
+	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
 void Camera::Destroy()
@@ -85,7 +85,7 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects)
+void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -93,6 +93,36 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Co
 
 	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
 	_frustum->Make(viewProj);
+
+	auto& dataInobjects = objects.GetVector();
+	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+	{				
+		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
+		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformAndCheckRender(tfParam);
+	}
+}
+
+void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::MeshManager* meshMgr)
+{
+	auto NonAlphaMeshRender = [&]()
+	{
+		auto NonAlphaMeshIter = [](Mesh::Mesh* mesh)
+		{
+			mesh->Render();
+			return;
+		};
+		meshMgr->Iterate(NonAlphaMeshIter, Manager::MeshManager::MeshType::nonAlpha);
+	};
+	auto AlphaMeshRender = [&]()
+	{
+		auto AlphaMeshIter = [](Mesh::Mesh* mesh)
+		{
+			mesh->Render();
+			return;
+		};
+
+		meshMgr->Iterate(AlphaMeshIter, Manager::MeshManager::MeshType::hasAlpha);
+	};
 
 	//graphics part
 	{
@@ -128,21 +158,9 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Co
 			}
 		}
 
-		auto& dataInobjects = objects.GetVector();
-		for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
-		{				
-			GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-			GET_CONTENT_FROM_ITERATOR(iter)->Render(tfParam);
-		}
+		NonAlphaMeshRender();
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
 		swapChain->Present(0, 0);
 	}
 }
-
-void Camera::Render(const Structure::Vector<Core::Object>& objects)
-{
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-	RenderObjects(dx, objects);
-}
-
