@@ -26,6 +26,7 @@ void TestScene::OnInitialize()
 	//Camera
 	{
 		Core::Object* camObj = new Core::Object(nullptr);
+		camObj->SetName("MainCam");
 		Camera::Camera* cam = camObj->AddComponent<Camera::Camera>();
 		Core::Transform* camObjTf = camObj->GetTransform();
 		camObjTf->UpdatePosition(Math::Vector3(0,0,0));
