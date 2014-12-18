@@ -33,7 +33,7 @@ namespace Rendering
 			Mesh::Mesh* Find(unsigned int meshAddress, MeshType* outType);
 
 		public:
-			void Iterate(const std::function<void(Mesh::Mesh* mesh)>& recvFunc, MeshType type);
+			void Iterate(const std::function<void(Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
 		};
 	}
 }

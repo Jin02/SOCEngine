@@ -73,7 +73,7 @@ Mesh::Mesh* MeshManager::Find(unsigned int meshAddress, MeshType* outType)
 	return nullptr;
 }
 
-void MeshManager::Iterate(const std::function<void(Mesh::Mesh* mesh)>& recvFunc, MeshType type)
+void MeshManager::Iterate(const std::function<void(Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
 {
 	if(type == MeshType::hasAlpha)
 	{
