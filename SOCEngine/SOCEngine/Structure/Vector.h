@@ -92,10 +92,10 @@ namespace Structure
 		}
 
 		
-		void Iterate(const std::function<void(Object* mesh)>& recvFunc)
+		void Iterate(const std::function<void(bool isCopy, const Key& key, Object* obj)>& recvFunc) const
 		{
-			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
-				recvFunc(GET_CONTENT_FROM_ITERATOR(iter));
+			for(std::vector<Type>::const_iterator iter = _vector.cbegin(); iter != _vector.cend(); ++iter)
+				recvFunc(GET_IS_COPY_FROM_ITERATOR(iter), GET_KEY_FROM_ITERATOR(iter), GET_CONTENT_FROM_ITERATOR(iter));
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
