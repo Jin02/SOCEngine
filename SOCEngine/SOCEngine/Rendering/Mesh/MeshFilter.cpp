@@ -33,8 +33,8 @@ bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertex
 	return true;
 }
 
-void MeshFilter::UpdateBuffer(ID3D11DeviceContext* context)
+void MeshFilter::IASetBuffer(ID3D11DeviceContext* context)
 {
-	_vertexBuffer->UpdateBuffer(context);
-	_indexBuffer->UpdateBuffer(context);
+	_vertexBuffer->IASetBuffer(context);
+	_indexBuffer->IASetBuffer(context);
 }

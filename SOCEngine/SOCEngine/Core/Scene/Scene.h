@@ -9,6 +9,7 @@
 #include "Sampler.h"
 #include "MeshImporter.h"
 #include "BufferManager.h"
+#include "MeshManager.h"
 
 namespace Core
 {
@@ -21,7 +22,8 @@ namespace Core
 		State _state;
 
 	protected:
-		Structure::Vector<Core::Object>			_rootObjects;	
+		Structure::Vector<std::string, Core::Object>	_rootObjects;	
+
 		Rendering::Manager::CameraManager*		_cameraMgr;
 		Rendering::Manager::ShaderManager*		_shaderMgr;
 		Rendering::Manager::TextureManager*		_textureMgr;
@@ -30,6 +32,7 @@ namespace Core
 		Importer::MeshImporter*					_meshImporter;
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Core::ObjectManager*					_originObjMgr;
+		Rendering::Manager::MeshManager*		_meshManager;	
 
 
 	public:
@@ -39,6 +42,7 @@ namespace Core
 	public:
 		void Initialize();
 		void Update(float dt);
+		void RenderPreview();
 		void Render();
 		void Destroy();
 
@@ -63,5 +67,6 @@ namespace Core
 		GET_ACCESSOR(Sampler, Rendering::Sampler*, _sampler);
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
+		GET_ACCESSOR(MeshManager, Rendering::Manager::MeshManager*, _meshManager);
 	};
 }

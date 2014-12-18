@@ -7,7 +7,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class CameraManager : public Structure::Vector<Camera::Camera>
+		class CameraManager : public Structure::Vector<std::string, Camera::Camera>
 		{
 		public:
 			CameraManager(void);
@@ -16,10 +16,6 @@ namespace Rendering
 		public:
 			void SetMainCamera(Camera::Camera* cam);
 			Camera::Camera* GetMainCamera();
-
-		public:
-			void Render(std::vector<Core::Object*>::iterator& objectBegin,
-				std::vector<Core::Object*>::iterator& objectEnd, LightManager* sceneLights);
 		}; 
 	}
 }

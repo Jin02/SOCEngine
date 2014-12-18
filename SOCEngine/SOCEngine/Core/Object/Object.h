@@ -11,7 +11,7 @@
 
 namespace Core
 {
-	class Object : public Structure::Vector<Object>
+	class Object : public Structure::Vector<std::string, Object>
 	{
 	protected:
 		bool _use;
@@ -34,7 +34,7 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void Render(const std::vector<Rendering::Light::LightForm*>& lights, TransformPipelineParam& transformParam);
+		void UpdateTransformAndCheckRender(TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 
@@ -117,5 +117,5 @@ namespace Core
 		GET_ACCESSOR(Transform, Transform*, _transform);
 	};
 
-	class ObjectManager : public Structure::HashMap<const Object>{};
+	class ObjectManager : public Structure::HashMap<std::string, const Object>{};
 }

@@ -2,7 +2,8 @@
 
 using namespace Rendering::Texture;
 
-Texture::Texture(ID3D11ShaderResourceView* srv) : _srv(srv)
+Texture::Texture(ID3D11ShaderResourceView* srv, bool hasAlpha) :
+	_srv(srv), _hasAlpha(hasAlpha)
 {
 }
 

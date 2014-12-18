@@ -5,11 +5,11 @@
 
 namespace Structure
 {
-	template <class Object>
-	class HashMap : public BaseStructure<Object>
+	template <typename Key, class Object>
+	class HashMap : public BaseStructure<Key, Object>
 	{
 	private:
-		std::hash_map<std::string, BaseStructure<Object>::Data> _hash;
+		std::hash_map<Key, BaseStructure<Key, Object>::Data> _hash;
 
 	public:
 		HashMap(void){}
@@ -19,31 +19,26 @@ namespace Structure
 		}
 
 	public:
-		virtual Object* Add(const std::string& key, Object* object, bool copy = false)
+		virtual Object* Add(const Key& key, Object* object, bool copy = false)
 		{
-			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
-
-			if(iter != _hash.end())
-				return GET_CONTENT_FROM_ITERATOR(iter);
-
-			BaseStructure<Object>::Data data;
+			BaseStructure<Key, Object>::Data data;
 			data.first = copy;
 			data.second = copy ? new Object((*object)) : object;
 
-			_hash.insert(std::hash_map<std::string, BaseStructure<Object>::Data>::value_type(key, data));
+			_hash.insert(std::hash_map<Key, BaseStructure<Key, Object>::Data>::value_type(key, data));
 
 			return object;
 		}
 
-		virtual Object* Find(const std::string& key)
+		virtual Object* Find(const Key& key)
 		{
-			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
+			std::hash_map<Key, BaseStructure<Key, Object>::Data>::iterator iter = _hash.find(key);
 			return iter == _hash.end() ? nullptr : GET_CONTENT_FROM_ITERATOR(iter);
 		}
 
-		virtual void Delete(const std::string& key, bool contentRemove = false)
+		virtual void Delete(const Key& key, bool contentRemove = false)
 		{
-			std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.find(key);
+			std::hash_map<Key, BaseStructure<Key, Object>::Data>::iterator iter = _hash.find(key);
 
 			if( iter == _hash.end() )
 				return;
@@ -58,7 +53,7 @@ namespace Structure
 		{
 			if(contentRemove)
 			{
-				for(std::hash_map<std::string, BaseStructure<Object>::Data>::iterator iter = _hash.begin();iter != _hash.end(); ++iter)
+				for(std::hash_map<Key, BaseStructure<Key,Object>::Data>::iterator iter = _hash.begin();iter != _hash.end(); ++iter)
 				{
 					if( GET_IS_COPY_FROM_ITERATOR(iter) )
 						SAFE_DELETE( GET_CONTENT_FROM_ITERATOR(iter) );
@@ -68,7 +63,7 @@ namespace Structure
 			_hash.clear();
 		}
 
-		inline const std::hash_map<std::string, BaseStructure<Object>::Data>& GetHashMap() const { return _hash;}
+		inline const std::hash_map<Key, BaseStructure<Key, Object>::Data>& GetHashMap() const { return _hash;}
 		GET_ACCESSOR(Size, unsigned int, _hash.size());
 	};
 

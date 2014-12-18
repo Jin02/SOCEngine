@@ -10,43 +10,24 @@ namespace Rendering
 	{
 		class MeshRenderer
 		{
-		public:
-			enum VertexShaderConstBufferUpdateType
-			{
-				Replace,
-				Add
-			};
-
 		private:
-			Structure::Vector<Material> _materials;
-
-			const std::vector<Shader::BaseShader::BufferType>*	_optionalVertexShaderConstBuffers;			
-			VertexShaderConstBufferUpdateType					_vertexShaderConstBufferUpdateType;
-
-			const std::vector<Shader::BaseShader::TextureType>*	_vertexShaderUsingTextures;
-			const std::vector<Shader::BaseShader::BufferType>*	_pixelShaderUsingConstBuffer;
-
-			Buffer::ConstBuffer*								_transformBuffer;
+			Structure::Vector<std::string, Material> _materials;
 
 		public:
 			MeshRenderer();
 			~MeshRenderer();
 
-		private:
-			void UpdateVSBasicConstBufferData(ID3D11DeviceContext* context, std::vector<Shader::BaseShader::BufferType>& vertexShaderConstBuffers, const Core::TransformPipelineParam& transform);
-
 		public:
-			bool init();
 			bool AddMaterial(Material* material, bool copy = false);
-			void UpdateAllMaterial(ID3D11DeviceContext* context, const Core::TransformPipelineParam& transform);
-			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Core::TransformPipelineParam& transform);
+
+			void UpdateAllMaterial(ID3D11DeviceContext* context, Buffer::ConstBuffer* transformBuffer);
+			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer);
+
+			void ClearResource(ID3D11DeviceContext* context);
+			bool CheckAlphaMaterial();
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
-			SET_ACCESSOR(VertexShaderUsingTextures, const std::vector<Shader::BaseShader::TextureType>*, _vertexShaderUsingTextures);
-			SET_ACCESSOR(PixelShaderUsingConstBuffer, const std::vector<Shader::BaseShader::BufferType>*, _pixelShaderUsingConstBuffer);
-
-			void SetOptionalVSConstBuffers(const std::vector<Shader::BaseShader::BufferType>* constBuffers, VertexShaderConstBufferUpdateType updateType);
 		};
 	}
 }

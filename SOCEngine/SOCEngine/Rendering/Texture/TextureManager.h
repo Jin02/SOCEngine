@@ -12,7 +12,7 @@ namespace Rendering
 		class TextureManager
 		{
 		private:
-			Structure::HashMap<Texture::Texture> _hash;
+			Structure::HashMap<std::string, Texture::Texture> _hash;
 
 		public:
 			TextureManager();
@@ -22,7 +22,7 @@ namespace Rendering
 			static bool LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& fileDir);
 
 		public:
-			Texture::Texture* LoadTextureFromFile(const std::string& fileDir);
+			Texture::Texture* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha);
 			Texture::Texture* Find(const std::string& name);
 			void Remoave(const std::string& name);
 			void RemoveAll();

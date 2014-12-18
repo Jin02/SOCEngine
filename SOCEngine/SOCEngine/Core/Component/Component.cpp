@@ -19,7 +19,12 @@ namespace Core
 		//null
 	}
 
-	void Component::Render(const TransformPipelineParam& transpose_Transform, const std::vector<Rendering::Light::LightForm*> *lights, const Math::Vector4& viewPos)
+	void Component::UpdateConstBuffer(const TransformPipelineParam& transpose_Transform)
+	{
+		//null
+	}
+
+	void Component::Render()
 	{
 		//null
 	}

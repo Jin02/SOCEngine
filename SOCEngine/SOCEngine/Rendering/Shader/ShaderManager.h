@@ -14,8 +14,8 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Structure::Map<Shader::BaseShader>		_shaders;
-			Structure::Map<Shader::ShaderCode>		_shaderCodes;
+			Structure::Map<std::string, Shader::BaseShader>		_shaders;
+			Structure::Map<std::string, Shader::ShaderCode>		_shaderCodes;
 
 		public:
 			ShaderManager();

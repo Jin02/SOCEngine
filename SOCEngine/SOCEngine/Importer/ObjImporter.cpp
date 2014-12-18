@@ -50,25 +50,25 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 		if(tinyMaterial.ambient_texname.empty() == false)
 		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname);
+			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname, false);
 			material->UpdateAmbientMap(texture);
 		}
 
 		if(tinyMaterial.diffuse_texname.empty() == false)
 		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname);
+			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
 			material->UpdateDiffuseMap(texture);
 		}
 
 		if(tinyMaterial.normal_texname.empty() == false)
 		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname);
+			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
 			material->UpdateNormalMap(texture);
 		}
 
 		if(tinyMaterial.specular_texname.empty() == false)
 		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname);
+			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
 			material->UpdateSpecularMap(texture);
 		}
 
@@ -84,7 +84,7 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 	return material;
 }
 
-void ObjImporter::LoadMaterials(Structure::BaseStructure<Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder)
+void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder)
 {
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 

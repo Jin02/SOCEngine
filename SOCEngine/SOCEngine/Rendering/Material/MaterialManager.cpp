@@ -14,9 +14,9 @@ MaterialManager::~MaterialManager()
 
 Material* MaterialManager::Add(const std::string& file, const std::string& name, Material* material, bool copy)
 {
-	Structure::Map<Material>* inMap = _map.Find(file);
+	Structure::Map<std::string, Material>* inMap = _map.Find(file);
 	if(inMap == nullptr)
-		inMap = _map.Add(file, new Structure::Map<Material>, false);					
+		inMap = _map.Add(file, new Structure::Map<std::string, Material>, false);					
 
 	return inMap->Add(name, material, copy);
 }
@@ -24,7 +24,7 @@ Material* MaterialManager::Add(const std::string& file, const std::string& name,
 Material* MaterialManager::Find(const std::string& file, const std::string& name)
 {
 	Material* material = nullptr;
-	Structure::Map<Material>* inMap = _map.Find(file);
+	Structure::Map<std::string, Material>* inMap = _map.Find(file);
 	if( inMap )
 		material = inMap->Find(name);
 
@@ -33,7 +33,7 @@ Material* MaterialManager::Find(const std::string& file, const std::string& name
 
 void MaterialManager::Delete(const std::string& file, const std::string& name, bool contentRemove)
 {
-	Structure::Map<Material>* inMap = _map.Find(file);
+	Structure::Map<std::string, Material>* inMap = _map.Find(file);
 	if(inMap)
 		_map.Delete(name, contentRemove);
 }

@@ -80,6 +80,7 @@ void Director::Run()
 				if(state == Core::Scene::State::Loop)
 				{
 					_scene->Update(_elapse);
+					_scene->RenderPreview();
 					_scene->Render();
 				}
 				else if(state == Core::Scene::State::Init)

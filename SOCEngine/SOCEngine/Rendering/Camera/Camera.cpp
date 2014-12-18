@@ -34,7 +34,7 @@ void Camera::Initialize()
 
 	_frustum = new Frustum(0.0f);		
 
-	_clearFlag = ClearFlag::FlagSolidColor;
+	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
 void Camera::Destroy()
@@ -85,17 +85,8 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::Clear(ID3D11DeviceContext* context)
+void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
 {
-
-}
-
-void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-	context->ClearRenderTargetView(dx->GetRenderTarget(), _clearColor.color);
-	context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
 	ViewMatrix(tfParam.viewMat);
@@ -103,24 +94,73 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Structure::Vector<Co
 	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
 	_frustum->Make(viewProj);
 
-	vector<LightForm*> lights;
-	//if( sceneLights->Intersects(lights, _frustum) )
-	{
-		auto& dataInobjects = objects.GetVector();
-		for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
-		{				
-			GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-			GET_CONTENT_FROM_ITERATOR(iter)->Render(lights, tfParam);
-		}
+	auto& dataInobjects = objects.GetVector();
+	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+	{				
+		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
+		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformAndCheckRender(tfParam);
 	}
-
-	IDXGISwapChain* swapChain = dx->GetSwapChain();
-	swapChain->Present(0, 0);
 }
 
-void Camera::Render(const Structure::Vector<Core::Object>& objects)
+void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::MeshManager* meshMgr)
 {
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-	RenderObjects(dx, objects);
-}
+	auto NonAlphaMeshRender = [&]()
+	{
+		auto NonAlphaMeshIter = [](Mesh::Mesh* mesh)
+		{
+			mesh->Render();
+			return;
+		};
+		meshMgr->Iterate(NonAlphaMeshIter, Manager::MeshManager::MeshType::nonAlpha);
+	};
+	auto AlphaMeshRender = [&]()
+	{
+		auto AlphaMeshIter = [](Mesh::Mesh* mesh)
+		{
+			mesh->Render();
+			return;
+		};
 
+		meshMgr->Iterate(AlphaMeshIter, Manager::MeshManager::MeshType::hasAlpha);
+	};
+
+	//graphics part
+	{
+		ID3D11DeviceContext* context = dx->GetContext();
+
+		//depth clear
+		{
+			context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);
+			context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		}
+
+		//off alpha blending
+		{
+			//float blendFactor[1] = { 0.0f };
+			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+		}
+
+		//Render
+		{
+			//Early-Z
+			{
+
+			}
+
+			//Light Culling
+			{
+
+			}
+
+			//Forward Rendering
+			{
+
+			}
+		}
+
+		NonAlphaMeshRender();
+
+		IDXGISwapChain* swapChain = dx->GetSwapChain();
+		swapChain->Present(0, 0);
+	}
+}

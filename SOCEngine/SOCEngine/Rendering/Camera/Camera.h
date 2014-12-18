@@ -3,9 +3,8 @@
 #include "DirectX.h"
 #include "Component.h"
 #include "Frustum.h"
-#include "LightManager.h"
-#include "Component.h"
 #include "Structure.h"
+#include "MeshManager.h"
 
 namespace Rendering
 {
@@ -18,19 +17,16 @@ namespace Rendering
 
 		public:
 			enum Type { Perspective, Orthographic };
-			enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
-			//CLEAR_FLAG_DEPTHONLY는 제외함. 어떻게 구현하라는건지 잘 모르겠음 -ㅠ-;
+			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
 
 		private:
 			Frustum					*_frustum;
-			//Shader::Shader			*rtShader;
-			//Texture::RenderTarget	*renderTarget;
 
 		private:
 			float				_FOV;
 			float				_clippingNear;
 			float				_clippingFar;
-			ClearFlag			_clearFlag;
+			//ClearFlag			_clearFlag;
 			Type				_camType;
 			float				_aspect;
 			Color				_clearColor;
@@ -40,22 +36,25 @@ namespace Rendering
 			~Camera(void);
 
 		private:
-			void Clear(ID3D11DeviceContext* context);
 			void CalcAspect();
-			void RenderObjects(const Device::DirectX* dx, const Structure::Vector<Core::Object>& objects);
+
+		private:
+			//사용하지 않음.
+			//virtual void Render(){}
+			//virtual void Update(float deltaTime){}
+			//virtual void UpdateConstBuffer(const TransformPipelineParam& transpose_Transform){}
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);
 			void ViewMatrix(Math::Matrix& outMatrix);
 
 		public:
-			//static void SceneUpdate(float dt, std::vector<Object*> *sceneObjects);
-			void Render( const Structure::Vector<Core::Object>& objects);
-
-		public:
 			virtual void Initialize();
 			virtual void Destroy();
-			//		virtual Component::Type GetComponentType();
+
+		public:
+			void UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
+			void RenderObjects(const Device::DirectX* dx, const Manager::MeshManager* meshMgr);
 		};
 	}
 }

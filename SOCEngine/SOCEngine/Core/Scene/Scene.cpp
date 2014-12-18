@@ -8,7 +8,10 @@ using namespace std;
 using namespace Structure;
 using namespace Rendering;
 
-Scene::Scene(void) : _cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), _materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), _bufferManager(nullptr), _originObjMgr(nullptr)
+Scene::Scene(void) : 
+	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
+	_materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), 
+	_bufferManager(nullptr), _originObjMgr(nullptr), _meshManager(nullptr)
 {
 	_state = State::Init;
 }
@@ -27,6 +30,10 @@ void Scene::Initialize()
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
+	_meshManager	= new Manager::MeshManager;
+
+	_sampler = new Sampler;
+	_sampler->Create();
 
 	// Load Basic Shader
 	{
@@ -78,17 +85,29 @@ void Scene::Update(float dt)
 		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
 }
 
-void Scene::Render()
+void Scene::RenderPreview()
 {
-	Camera::Camera *mainCam = _cameraMgr->GetMainCamera();
-
-	if(mainCam == nullptr)
-		return;
-
 	OnRenderPreview();
 
-	mainCam->Render(_rootObjects);
-		
+	auto CamIteration = [&](Camera::Camera* cam)
+	{
+		cam->UpdateTransformAndCheckRender(_rootObjects);
+	};
+
+	_cameraMgr->Iterate(CamIteration);
+}
+
+void Scene::Render()
+{
+	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+
+	auto CamIteration = [&](Camera::Camera* cam)
+	{
+		cam->RenderObjects(dx, _meshManager);
+	};
+
+	_cameraMgr->Iterate(CamIteration);
+
 	OnRenderPost();
 }
 
@@ -101,6 +120,8 @@ void Scene::Destroy()
 	SAFE_DELETE(_meshImporter);
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
+	SAFE_DELETE(_sampler);
+	SAFE_DELETE(_meshManager);
  
 	OnDestroy();
 }

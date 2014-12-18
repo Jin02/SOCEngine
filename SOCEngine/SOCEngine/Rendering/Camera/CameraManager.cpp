@@ -23,9 +23,3 @@ Camera::Camera* CameraManager::GetMainCamera()
 {
 	return _vector.size() != 0 ? (*_vector.begin()).second.second : nullptr;
 }
-
-void CameraManager::Render(std::vector<Object*>::iterator& objectBegin,
-			std::vector<Object*>::iterator& objectEnd, Manager::LightManager* sceneLights)
-{
-
-}

@@ -41,7 +41,7 @@ namespace Importer
 			//Materail
 		public:
 			Rendering::Material* LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder);
-			void LoadMaterials(Structure::BaseStructure<Rendering::Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder);
+			void LoadMaterials(Structure::BaseStructure<std::string, Rendering::Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder);
 
 		public:
 			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::vector<CustomSemantic>& customSemanticData, Rendering::Material* material, bool isDynamicMesh = false);
