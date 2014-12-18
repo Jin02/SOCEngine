@@ -89,19 +89,24 @@ void Scene::RenderPreview()
 {
 	OnRenderPreview();
 
-	Camera::Camera *mainCam = _cameraMgr->GetMainCamera();
-	if(mainCam)
-		mainCam->UpdateTransformAndCheckRender(_rootObjects);
+	auto CamIteration = [&](Camera::Camera* cam)
+	{
+		cam->UpdateTransformAndCheckRender(_rootObjects);
+	};
+
+	_cameraMgr->Iterate(CamIteration);
 }
 
 void Scene::Render()
 {
-	Camera::Camera *mainCam = _cameraMgr->GetMainCamera();
+	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 
-	if(mainCam)
+	auto CamIteration = [&](Camera::Camera* cam)
 	{
+		cam->RenderObjects(dx, _meshManager);
+	};
 
-	}
+	_cameraMgr->Iterate(CamIteration);
 
 	OnRenderPost();
 }
