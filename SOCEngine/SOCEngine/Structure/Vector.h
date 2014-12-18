@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "BaseStructure.h"
+#include <functional>
 
 namespace Structure
 {
@@ -88,6 +89,13 @@ namespace Structure
 			}
 
 			_vector.clear();
+		}
+
+		
+		void Iterate(const std::function<void(Object* mesh)>& recvFunc)
+		{
+			for(std::vector<Type>::iterator iter = _vector.begin(); iter != _vector.end(); ++iter)
+				recvFunc(GET_CONTENT_FROM_ITERATOR(iter));
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
