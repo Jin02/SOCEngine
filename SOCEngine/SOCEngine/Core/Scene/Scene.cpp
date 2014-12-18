@@ -94,7 +94,7 @@ void Scene::RenderPreview()
 		cam->UpdateTransformAndCheckRender(_rootObjects);
 	};
 
-	_cameraMgr->Iterate(CamIteration);
+	_cameraMgr->IterateContent(CamIteration);
 }
 
 void Scene::Render()
@@ -106,7 +106,7 @@ void Scene::Render()
 		cam->RenderObjects(dx, _meshManager);
 	};
 
-	_cameraMgr->Iterate(CamIteration);
+	_cameraMgr->IterateContent(CamIteration);
 
 	OnRenderPost();
 }

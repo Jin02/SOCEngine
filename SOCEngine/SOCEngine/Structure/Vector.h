@@ -97,6 +97,12 @@ namespace Structure
 			for(std::vector<Type>::const_iterator iter = _vector.cbegin(); iter != _vector.cend(); ++iter)
 				recvFunc(GET_IS_COPY_FROM_ITERATOR(iter), GET_KEY_FROM_ITERATOR(iter), GET_CONTENT_FROM_ITERATOR(iter));
 		}
+		
+		void IterateContent(const std::function<void(Object* obj)>& recvFunc) const
+		{
+			for(std::vector<Type>::const_iterator iter = _vector.cbegin(); iter != _vector.cend(); ++iter)
+				recvFunc(GET_CONTENT_FROM_ITERATOR(iter));
+		}
 
 		GET_ACCESSOR(Vector, const std::vector<Type>&, _vector);
 		GET_ACCESSOR(Size, unsigned int, _vector.size());
