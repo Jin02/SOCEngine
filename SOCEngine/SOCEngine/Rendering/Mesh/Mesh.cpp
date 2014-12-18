@@ -49,6 +49,7 @@ namespace Rendering
 			}
 
 			_alphaMesh = material->GetHasAlpha();
+			UpdateMeshManager(_alphaMesh);
 			return true;
 		}
 
@@ -58,6 +59,17 @@ namespace Rendering
 
 		void Mesh::Update(float deltaTime)
 		{
+		}
+
+		void Mesh::UpdateMeshManager(bool isAlphaMesh)
+		{
+			MeshManager* meshMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMeshManager();
+			MeshManager::MeshType type = isAlphaMesh ? MeshManager::MeshType::hasAlpha : MeshManager::MeshType::nonAlpha;
+			unsigned int address = reinterpret_cast<unsigned int>(this);
+			if(meshMgr->Find(address, type) == nullptr)
+				meshMgr->Change(this, type);
+			else
+				meshMgr->Add(this, type);
 		}
 
 		void Mesh::UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform)
@@ -70,14 +82,7 @@ namespace Rendering
 				bool hasAlphaMaterial = _renderer->CheckAlphaMaterial();
 				if(_alphaMesh != hasAlphaMaterial)
 				{
-					MeshManager* meshMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMeshManager();
-					MeshManager::MeshType type = hasAlphaMaterial ? MeshManager::MeshType::hasAlpha : MeshManager::MeshType::nonAlpha;
-					unsigned int address = reinterpret_cast<unsigned int>(this);
-					if(meshMgr->Find(address, type) == nullptr)
-						meshMgr->Change(this, type);
-					else
-						meshMgr->Add(this, type);
-
+					UpdateMeshManager(hasAlphaMaterial);
 					_alphaMesh = hasAlphaMaterial;
 				}
 			}

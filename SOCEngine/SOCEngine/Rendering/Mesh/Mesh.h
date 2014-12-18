@@ -34,6 +34,9 @@ namespace Rendering
 			Mesh();
 			~Mesh();
 
+		private:
+			void UpdateMeshManager(bool isAlphaMesh);
+
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
 				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic);
