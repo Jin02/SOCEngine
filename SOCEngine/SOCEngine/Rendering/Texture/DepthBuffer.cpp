@@ -16,14 +16,37 @@ DepthBuffer::~DepthBuffer()
 
 bool DepthBuffer::Create(const Math::Size<unsigned int>& size)
 {
-	return _Create(size, DXGI_FORMAT_R32_FLOAT, D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_RENDER_TARGET, true);
+	if(_Create(size, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_RENDER_TARGET, true) == false)
+	{
+		ASSERT("Error");
+		return false;
+	}
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
+	memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	desc.Format = DXGI_FORMAT_D32_FLOAT;
+	{
+		D3D11_TEXTURE2D_DESC texDesc;
+		_texture->GetDesc(&texDesc);
+		desc.ViewDimension = texDesc.SampleDesc.Count > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
+	}
+	desc.Texture2D.MipSlice = 0;
+
+	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+	HRESULT hr = device->CreateDepthStencilView(_texture, &desc, &_depthStencilView); 
+	if(FAILED(hr))
+	{
+		ASSERT("Error");
+		return false;
+	}
+
+	return true;
 }
 
 void DepthBuffer::Destroy()
 {
-	SAFE_RELEASE(_texture);
+	RenderTexture::Destroy();
 	SAFE_RELEASE(_depthStencilView);
-	SAFE_RELEASE(_shaderResourceView);
 }
 
 void DepthBuffer::SetRenderTarget(const Device::DirectX* dx)
