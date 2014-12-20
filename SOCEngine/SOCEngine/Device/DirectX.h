@@ -23,10 +23,6 @@ namespace Device
 		IDXGISwapChain				*_swapChain;
 		ID3D11DeviceContext			*_immediateContext;
 
-		ID3D11Texture2D				*_depthStencil;
-		ID3D11DepthStencilView		*_depthStencilView;
-		ID3D11ShaderResourceView	*_depthStencilSRV;
-
 		ID3D11RenderTargetView		*_renderTargetView;
 
 		D3D_FEATURE_LEVEL			_featureLevel;
@@ -45,9 +41,8 @@ namespace Device
 
 	private:
 		bool CreateRenderTargetView();
-		bool CreateDepthStencilRenderTarget(const Math::Size<int>& winSize, IDXGISwapChain* swapChain);
 		bool CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC* multiSampler = nullptr);
-		bool CreateViewport(const Math::Size<int>& winSize);
+		bool CreateViewport(const Math::Size<unsigned int>& winSize);
 		bool CreateSwapChain(const Win32* win);
 	
 		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);		
@@ -61,8 +56,6 @@ namespace Device
 		GET_ACCESSOR(SwapChain, IDXGISwapChain*, _swapChain);
 		GET_ACCESSOR(Context, ID3D11DeviceContext*, _immediateContext);
 
-		GET_ACCESSOR(DetpthStencilTexture, ID3D11Texture2D*, _depthStencil);
-		GET_ACCESSOR(DepthStencilView, ID3D11DepthStencilView*, _depthStencilView);
 		GET_ACCESSOR(RenderTargetView, ID3D11RenderTargetView*, _renderTargetView);
 
 		GET_ACCESSOR(DisableCullingRasterizerState, ID3D11RasterizerState*, _disableCulling);

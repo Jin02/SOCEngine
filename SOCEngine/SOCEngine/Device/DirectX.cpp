@@ -5,8 +5,7 @@ using namespace Device;
 
 DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
-	_depthStencil(nullptr), _depthStencilView(nullptr),
-	_renderTargetView(nullptr), _disableCulling(nullptr), _depthStencilSRV(nullptr),
+	_renderTargetView(nullptr), _disableCulling(nullptr),
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _depthLessEqual(nullptr),
 	_depthEqualAndDisableDepthWrite(nullptr)
 {
@@ -35,72 +34,13 @@ bool DirectX::CreateRenderTargetView()
 	return true;
 }
 
-bool DirectX::CreateDepthStencilRenderTarget(const Math::Size<int>& winSize, IDXGISwapChain* swapChain)
-{
-	D3D11_TEXTURE2D_DESC descDepth;
-	memset(&descDepth, 0, sizeof(D3D11_TEXTURE2D_DESC));
-	descDepth.Width					= winSize.w;
-	descDepth.Height				= winSize.h;
-	descDepth.MipLevels				= 1;
-	descDepth.ArraySize				= 1;
-	descDepth.Format				= DXGI_FORMAT_R32_TYPELESS;
-	descDepth.Usage					= D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags				= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	descDepth.CPUAccessFlags		= 0;
-	descDepth.MiscFlags				= 0;
-
-	//multisampler
-	{
-		DXGI_SWAP_CHAIN_DESC swapChainDesc;
-		swapChain->GetDesc(&swapChainDesc);
-		descDepth.SampleDesc.Count		= swapChainDesc.SampleDesc.Count;
-		descDepth.SampleDesc.Quality	= swapChainDesc.SampleDesc.Quality;
-	}
-
-	HRESULT hr = _device->CreateTexture2D( &descDepth, nullptr, &_depthStencil );
-	if( FAILED( hr ) )
-	{
-		ASSERT("not create depthStencil Texture");
-		return false;
-	}
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	memset(&descDSV, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
-
-	descDSV.ViewDimension = descDepth.SampleDesc.Count > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-
-	hr = _device->CreateDepthStencilView( _depthStencil, &descDSV, &_depthStencilView );
-	if( FAILED(hr) )
-	{
-		ASSERT("Not Create Depth Stencil View");
-		return false;
-	}
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
-	srdesc.Format = DXGI_FORMAT_R32_FLOAT;
-	srdesc.ViewDimension = descDepth.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
-	srdesc.Texture2D.MostDetailedMip = 0;
-	srdesc.Texture2D.MipLevels = 1;
-
-	hr = _device->CreateShaderResourceView(_depthStencil, &srdesc, &_depthStencilSRV);
-	if( FAILED(hr) )
-	{
-		ASSERT("Error");
-		return false;
-	}
-
-	return true;
-}
-
 bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC* multiSampler)
 {
 	//swapChain setting
 	DXGI_SWAP_CHAIN_DESC	sd;
 	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	const Math::Size<int>& winSize = win->GetSize();
+	const Math::Size<unsigned int>& winSize = win->GetSize();
 	sd.BufferDesc.Width = winSize.w;
 	sd.BufferDesc.Height = winSize.h;
 
@@ -168,7 +108,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	return true;
 }
 
-bool DirectX::CreateViewport(const Math::Size<int>& winSize)
+bool DirectX::CreateViewport(const Math::Size<unsigned int>& winSize)
 {
 	D3D11_VIEWPORT vp;
 
@@ -210,10 +150,6 @@ bool DirectX::InitDevice(const Win32* win)
 	if( CreateRenderTargetView() == false )
 		return false;
 
-	if( CreateDepthStencilRenderTarget(win->GetSize(), _swapChain) == false)
-		return false;
-
-	_immediateContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
 	_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	CreateViewport(win->GetSize());
