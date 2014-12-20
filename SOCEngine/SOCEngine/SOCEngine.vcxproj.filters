@@ -465,6 +465,9 @@
     <ClInclude Include="Rendering\Mesh\MeshManager.h">
       <Filter>Rendering\Mesh\Mgr</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -637,6 +640,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
       <Filter>Rendering\Mesh\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
+      <Filter>Rendering\Texture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
