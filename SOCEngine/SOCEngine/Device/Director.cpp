@@ -43,7 +43,7 @@ void Director::CalculateFPS()
 	}
 }
 
-bool Director::Initialize(Math::Rect<int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
+bool Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
 {
 	_win = new Win32(rect, instance, name, windowMode, isChild, parentHandle);
 	if( _win->Initialize() == false )

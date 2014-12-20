@@ -10,20 +10,19 @@ namespace Device
 	class Win32
 	{
 	private:
-		Math::Rect<int>		_rect;
+		Math::Rect<unsigned int>	_rect;
 
-		WNDCLASSEX			_windowInfo;
-		//const char*			_name;
-		HWND				_parentHandle;
-		HWND				_handle;
-		unsigned int		_options;
-		bool				_windowsMode;
+		WNDCLASSEX					_windowInfo;
+		HWND						_parentHandle;
+		HWND						_handle;
+		unsigned int				_options;
+		bool						_windowsMode;
 
 	private:
 		static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	public:
-		Win32(Math::Rect<int> &rect, HINSTANCE Instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
+		Win32(Math::Rect<unsigned int> &rect, HINSTANCE Instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		~Win32(void);
 
 	public:
@@ -36,10 +35,10 @@ namespace Device
 		GET_ACCESSOR(Handle, HWND, _handle);
 
 	public:
-		GET_ACCESSOR(Rect, const Math::Rect<int>&, _rect);
-		GET_ACCESSOR(Size, const Math::Size<int>&, _rect.size);
+		GET_ACCESSOR(Rect, const Math::Rect<unsigned int>&, _rect);
+		GET_ACCESSOR(Size, const Math::Size<unsigned int>&, _rect.size);
 		
 	protected:
-		SET_ACCESSOR(Rect, const Math::Rect<int>&, _rect);
+		SET_ACCESSOR(Rect, const Math::Rect<unsigned int>&, _rect);
 	};
 }

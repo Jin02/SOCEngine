@@ -31,13 +31,13 @@ namespace Device
 		void CalculateFPS();
 
 	public:
-		bool Initialize(Math::Rect<int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
+		bool Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		void Run();
 
 	public:
 		GET_ACCESSOR(Win, const Win32*, _win);
 		GET_ACCESSOR(DirectX, const DirectX*, _directX);
-		GET_ACCESSOR(WindowSize, const Math::Size<int>&, _win->GetSize());
+		GET_ACCESSOR(WindowSize, const Math::Size<unsigned int>&, _win->GetSize());
 
 		GET_SET_ACCESSOR(CurrentScene, Core::Scene*, _scene);
 		GET_SET_ACCESSOR(NextScene, Core::Scene*, _nextScene);

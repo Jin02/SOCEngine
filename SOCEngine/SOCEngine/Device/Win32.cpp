@@ -15,7 +15,7 @@ namespace Device
 		return DefWindowProc( hWnd, msg, wParam, lParam );
 	}
 
-	Win32::Win32(Math::Rect<int> &rect, HINSTANCE Instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
+	Win32::Win32(Math::Rect<unsigned int> &rect, HINSTANCE Instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
 	{
 		//_name = name;
 
