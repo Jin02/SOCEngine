@@ -10,7 +10,8 @@ using namespace Device;
 using namespace Core;
 using namespace Rendering::Camera;
 
-Camera::Camera() : Component()
+Camera::Camera() : Component(),
+	_frustum(nullptr), _depthBuffer(nullptr), _renderTarget(nullptr)
 {
 
 }
@@ -26,7 +27,7 @@ void Camera::Initialize()
 	_clippingNear = 0.01f;
 	_clippingFar = 100.0f;
 
-	Size<int> windowSize = Director::GetInstance()->GetWindowSize();
+	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 
 	_camType    = Type::Perspective;
@@ -34,19 +35,25 @@ void Camera::Initialize()
 
 	_frustum = new Frustum(0.0f);		
 
+	_depthBuffer = new Texture::DepthBuffer;
+	_depthBuffer->Create(windowSize);
+
+	_renderTarget = new Texture::RenderTexture;
+	_renderTarget->Create(windowSize);
+
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
 void Camera::Destroy()
 {
-	//Utility::SAFE_DELETE(rtShader);
-	//Utility::SAFE_DELETE(renderTarget);
 	SAFE_DELETE(_frustum);
+	SAFE_DELETE(_depthBuffer);
+	SAFE_DELETE(_renderTarget);
 }
 
 void Camera::CalcAspect()
 {
-	Size<int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
+	Size<unsigned int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 }
 
@@ -59,7 +66,7 @@ void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 	}
 	else if(_camType == Type::Orthographic)
 	{
-		Size<int> windowSize = Device::Director::GetInstance()->GetWindowSize();
+		Size<unsigned int> windowSize = Device::Director::GetInstance()->GetWindowSize();
 		Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), _clippingNear, _clippingFar);
 	}
 }
@@ -124,27 +131,38 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 		meshMgr->Iterate(AlphaMeshIter, Manager::MeshManager::MeshType::hasAlpha);
 	};
 
+	//_renderTarget->SetRenderTarget(_depthBuffer, dx);
+
 	//graphics part
 	{
 		ID3D11DeviceContext* context = dx->GetContext();
 
 		//depth clear
 		{
-			context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);
-			context->ClearDepthStencilView(dx->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+			//context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);
+			_renderTarget->Clear(_clearColor, dx);
+			_depthBuffer->Clear(1.0f, 0, dx);
 		}
 
 		//off alpha blending
 		{
-			//float blendFactor[1] = { 0.0f };
-			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+			float blendFactor[1] = { 0.0f };
+			context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
 		}
 
 		//Render
 		{
 			//Early-Z
 			{
+				//ID3D11RenderTargetView* rtv = dx->GetRenderTargetView();
+				//context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView());
+				_depthBuffer->SetRenderTarget(dx);
+				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
+				NonAlphaMeshRender();
 
+				context->RSSetState(dx->GetDisableCullingRasterizerState());
+				AlphaMeshRender();
+				context->RSSetState(nullptr);
 			}
 
 			//Light Culling
@@ -158,7 +176,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			}
 		}
 
-		NonAlphaMeshRender();
+//		NonAlphaMeshRender();
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
 		swapChain->Present(0, 0);

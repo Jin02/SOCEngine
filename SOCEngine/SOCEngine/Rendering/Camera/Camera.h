@@ -5,6 +5,8 @@
 #include "Frustum.h"
 #include "Structure.h"
 #include "MeshManager.h"
+#include "RenderTexture.h"
+#include "DepthBuffer.h"
 
 namespace Rendering
 {
@@ -21,6 +23,8 @@ namespace Rendering
 
 		private:
 			Frustum					*_frustum;
+			Texture::DepthBuffer	*_depthBuffer;
+			Texture::RenderTexture	*_renderTarget;
 
 		private:
 			float				_FOV;
@@ -37,12 +41,6 @@ namespace Rendering
 
 		private:
 			void CalcAspect();
-
-		private:
-			//사용하지 않음.
-			//virtual void Render(){}
-			//virtual void Update(float deltaTime){}
-			//virtual void UpdateConstBuffer(const TransformPipelineParam& transpose_Transform){}
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);
