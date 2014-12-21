@@ -15,7 +15,7 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags, bool depthBuffer)
+bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
 {
 	const DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
@@ -43,9 +43,9 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 
 		return DXGI_FORMAT_UNKNOWN;
 	};
-	textureDesc.Format = depthBuffer ?  GetDepthBufferTexDesc(format) : format;
+	textureDesc.Format = bindFlags & D3D11_BIND_DEPTH_STENCIL ?  GetDepthBufferTexDesc(format) : format;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = bindFlags | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.BindFlags = bindFlags;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
@@ -64,28 +64,43 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 		return false;
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
-	srdesc.Format = format;
-	srdesc.ViewDimension = textureDesc.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
-	srdesc.Texture2D.MostDetailedMip = 0;
-	srdesc.Texture2D.MipLevels = 1;
-
-	hr = device->CreateShaderResourceView(_texture, &srdesc, &_shaderResourceView);
-	if( FAILED(hr) )
+	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
-		ASSERT("Error");
-		return false;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
+
+		if( format == DXGI_FORMAT_D32_FLOAT )
+			srdesc.Format = DXGI_FORMAT_R32_FLOAT;
+		else if( format == DXGI_FORMAT_D16_UNORM)
+			srdesc.Format = DXGI_FORMAT_R16_FLOAT;
+		else if( format == DXGI_FORMAT_D24_UNORM_S8_UINT )
+			srdesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		else
+			srdesc.Format = format;
+
+		srdesc.ViewDimension = textureDesc.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		srdesc.Texture2D.MostDetailedMip = 0;
+		srdesc.Texture2D.MipLevels = 1;
+
+		hr = device->CreateShaderResourceView(_texture, &srdesc, &_shaderResourceView);
+		if( FAILED(hr) )
+		{
+			ASSERT("Error");
+			return false;
+		}
 	}
 
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	renderTargetViewDesc.Format = format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-	if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
+	if(bindFlags & D3D11_BIND_RENDER_TARGET)
 	{
-		ASSERT("E");
-		return false;
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		renderTargetViewDesc.Format = format;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+		if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
+		{
+			ASSERT("E");
+			return false;
+		}
 	}
 
 	return true;
@@ -93,7 +108,7 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 
 bool RenderTexture::Create(const Math::Size<unsigned int>& size)
 {
-	return _Create(size, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET, false);
+	return _Create(size, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 }
 
 void RenderTexture::Destroy()

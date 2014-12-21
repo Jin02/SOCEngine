@@ -26,7 +26,7 @@ namespace Rendering
 			~RenderTexture();
 
 		protected:
-			bool _Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags, bool depthBuffer);
+			bool _Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags);
 
 		public:
 			bool Create(const Math::Size<unsigned int>& size);

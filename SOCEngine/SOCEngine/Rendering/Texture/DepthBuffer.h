@@ -15,11 +15,13 @@ namespace Rendering
 			DepthBuffer();
 			~DepthBuffer();
 
+		private:
+			void SetRenderTarget(const Device::DirectX* dx = nullptr);
+
 		public:
-			bool Create(const Math::Size<unsigned int>& size);
+			bool Create(const Math::Size<unsigned int>& size, bool useShaderResource = false);
 			void Destroy();
 
-			void SetRenderTarget(const Device::DirectX* dx = nullptr);
 			void Clear(float depth, unsigned char stencil, const Device::DirectX* dx = nullptr);
 
 		public:
