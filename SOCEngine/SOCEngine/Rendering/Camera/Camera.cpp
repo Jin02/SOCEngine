@@ -111,19 +111,21 @@ void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, 
 
 void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::MeshManager* meshMgr)
 {
-	auto NonAlphaMeshRender = [&]()
+	auto NonAlphaMeshRender = [&](ID3D11DeviceContext* context)
 	{
-		auto NonAlphaMeshIter = [](Mesh::Mesh* mesh)
+		auto NonAlphaMeshIter = [&](Material* material, Mesh::Mesh* mesh)
 		{
+			material->UpdateShader(context);
 			mesh->Render();
 			return;
 		};
 		meshMgr->Iterate(NonAlphaMeshIter, Manager::MeshManager::MeshType::nonAlpha);
 	};
-	auto AlphaMeshRender = [&]()
+	auto AlphaMeshRender = [&](ID3D11DeviceContext* context)
 	{
-		auto AlphaMeshIter = [](Mesh::Mesh* mesh)
+		auto AlphaMeshIter = [&](Material* material, Mesh::Mesh* mesh)
 		{
+			material->UpdateShader(context);
 			mesh->Render();
 			return;
 		};
@@ -139,30 +141,30 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 		//depth clear
 		{
-			//context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);
-			_renderTarget->Clear(_clearColor, dx);
+			context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);			
+			//_renderTarget->Clear(_clearColor, dx);
 			_depthBuffer->Clear(1.0f, 0, dx);
 		}
 
 		//off alpha blending
 		{
-			float blendFactor[1] = { 0.0f };
-			context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+			//float blendFactor[1] = { 0.0f };
+			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
 		}
 
 		//Render
 		{
 			//Early-Z
 			{
-				//ID3D11RenderTargetView* rtv = dx->GetRenderTargetView();
-				//context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView());
-				_depthBuffer->SetRenderTarget(dx);
+				ID3D11RenderTargetView* rtv = dx->GetRenderTargetView();
+				context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView());
+			/*_depthBuffer->SetRenderTarget(dx);
 				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
 				NonAlphaMeshRender();
 
 				context->RSSetState(dx->GetDisableCullingRasterizerState());
 				AlphaMeshRender();
-				context->RSSetState(nullptr);
+				context->RSSetState(nullptr);*/
 			}
 
 			//Light Culling
@@ -172,11 +174,10 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 			//Forward Rendering
 			{
-
+				NonAlphaMeshRender(context);
 			}
 		}
 
-//		NonAlphaMeshRender();
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
 		swapChain->Present(0, 0);
