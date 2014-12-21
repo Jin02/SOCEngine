@@ -60,11 +60,14 @@ namespace Rendering
 		return true;
 	}
 
-	void VertexShader::UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures)
+	void VertexShader::UpdateShader(ID3D11DeviceContext* context)
 	{
-		context->IASetInputLayout(_layout);
 		context->VSSetShader(_shader, nullptr, 0);
+		context->IASetInputLayout(_layout);
+	}
 
+	void VertexShader::UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures)
+	{
 		if(constBuffers)
 		{
 			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)

@@ -31,10 +31,13 @@ namespace Rendering
 		return true;
 	}
 
-	void PixelShader::UpdateShader(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures, const std::vector<SamplerType>& samplers)
+	void PixelShader::UpdateShader(ID3D11DeviceContext* context)
 	{
 		context->PSSetShader(_shader, nullptr, 0);
+	}
 
+	void PixelShader::UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures, const std::vector<SamplerType>& samplers)
+	{
 		if(constBuffers)
 		{
 			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
