@@ -9,7 +9,7 @@
 #include "Sampler.h"
 #include "MeshImporter.h"
 #include "BufferManager.h"
-#include "MeshManager.h"
+#include "RenderManager.h"
 
 namespace Core
 {
@@ -32,7 +32,7 @@ namespace Core
 		Importer::MeshImporter*					_meshImporter;
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Core::ObjectManager*					_originObjMgr;
-		Rendering::Manager::MeshManager*		_meshManager;	
+		Rendering::Manager::RenderManager*		_meshManager;	
 
 
 	public:
@@ -67,6 +67,6 @@ namespace Core
 		GET_ACCESSOR(Sampler, Rendering::Sampler*, _sampler);
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
-		GET_ACCESSOR(MeshManager, Rendering::Manager::MeshManager*, _meshManager);
+		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _meshManager);
 	};
 }

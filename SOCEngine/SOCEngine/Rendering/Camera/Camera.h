@@ -4,7 +4,7 @@
 #include "Component.h"
 #include "Frustum.h"
 #include "Structure.h"
-#include "MeshManager.h"
+#include "RenderManager.h"
 #include "RenderTexture.h"
 #include "DepthBuffer.h"
 
@@ -52,7 +52,7 @@ namespace Rendering
 
 		public:
 			void UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
-			void RenderObjects(const Device::DirectX* dx, const Manager::MeshManager* meshMgr);
+			void RenderObjects(const Device::DirectX* dx, const Manager::RenderManager* renderMgr);
 		};
 	}
 }

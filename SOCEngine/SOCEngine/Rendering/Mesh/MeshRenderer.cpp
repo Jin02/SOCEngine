@@ -68,9 +68,9 @@ void MeshRenderer::ClearResource(ID3D11DeviceContext* context)
 		GET_CONTENT_FROM_ITERATOR(iter)->ClearResource(context);
 }
 
-void MeshRenderer::Test(void* mesh)
+void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 {
-	MeshManager* meshMgr = Device::Director::GetInstance()->GetCurrentScene()->GetMeshManager();
+	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	Rendering::Mesh::Mesh* parent = static_cast<Rendering::Mesh::Mesh*>(mesh);
 
 	auto IterMaterials = [&](Material* material)
@@ -79,12 +79,12 @@ void MeshRenderer::Test(void* mesh)
 		if(changd)
 		{
 			bool hasAlpha = material->GetHasAlpha();
-			MeshManager::MeshType type = hasAlpha ? MeshManager::MeshType::hasAlpha : MeshManager::MeshType::nonAlpha;
+			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::hasAlpha : RenderManager::MeshType::nonAlpha;
 
-			if(meshMgr->Find(material, parent, type == MeshManager::MeshType::hasAlpha ? MeshManager::MeshType::nonAlpha : MeshManager::MeshType::hasAlpha))
-				meshMgr->Change(material, parent, type);
-			else if(meshMgr->Find(material, parent, type) == nullptr)
-				meshMgr->Add(material, parent, type);
+			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::hasAlpha ? RenderManager::MeshType::nonAlpha : RenderManager::MeshType::hasAlpha))
+				renderMgr->Change(material, parent, type);
+			else if(renderMgr->Find(material, parent, type) == nullptr)
+				renderMgr->Add(material, parent, type);
 
 			material->SetChangedAlpha(false);
 		}

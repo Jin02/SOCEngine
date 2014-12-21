@@ -64,8 +64,8 @@
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h" />
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
-    <ClInclude Include="Rendering\Mesh\MeshManager.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
+    <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\Sampler\Sampler.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\PixelShader.h" />
@@ -164,8 +164,8 @@
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
-    <ClCompile Include="Rendering\Mesh\MeshManager.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
+    <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Sampler\Sampler.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="Rendering\Shader\BaseShader.cpp" />
@@ -214,7 +214,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light;Rendering/Buffer;Rendering/RenderObjectManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>

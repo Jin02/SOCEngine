@@ -30,7 +30,7 @@ void Scene::Initialize()
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
-	_meshManager	= new Manager::MeshManager;
+	_meshManager	= new Manager::RenderManager;
 
 	_sampler = new Sampler;
 	_sampler->Create();

@@ -109,7 +109,7 @@ void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, 
 	}
 }
 
-void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::MeshManager* meshMgr)
+void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::RenderManager* renderMgr)
 {
 	auto NonAlphaMeshRender = [&](ID3D11DeviceContext* context)
 	{
@@ -119,7 +119,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			mesh->Render();
 			return;
 		};
-		meshMgr->Iterate(NonAlphaMeshIter, Manager::MeshManager::MeshType::nonAlpha);
+		renderMgr->Iterate(NonAlphaMeshIter, Manager::RenderManager::MeshType::nonAlpha);
 	};
 	auto AlphaMeshRender = [&](ID3D11DeviceContext* context)
 	{
@@ -130,7 +130,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			return;
 		};
 
-		meshMgr->Iterate(AlphaMeshIter, Manager::MeshManager::MeshType::hasAlpha);
+		renderMgr->Iterate(AlphaMeshIter, Manager::RenderManager::MeshType::hasAlpha);
 	};
 
 	//_renderTarget->SetRenderTarget(_depthBuffer, dx);

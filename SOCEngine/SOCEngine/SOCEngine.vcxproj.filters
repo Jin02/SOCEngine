@@ -163,8 +163,8 @@
     <Filter Include="Rendering\Mesh\data">
       <UniqueIdentifier>{ee6cd56b-b4d5-48b9-9210-70faa266a6d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Mesh\Mgr">
-      <UniqueIdentifier>{fdecf6a4-130a-426d-9734-ed427879959e}</UniqueIdentifier>
+    <Filter Include="Rendering\Manager">
+      <UniqueIdentifier>{2bb07164-6800-4a02-8eb8-eb09a7a69905}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -462,11 +462,11 @@
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshManager.h">
-      <Filter>Rendering\Mesh\Mgr</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Texture\DepthBuffer.h">
       <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderManager\RenderManager.h">
+      <Filter>Rendering\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -638,11 +638,11 @@
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
-      <Filter>Rendering\Mesh\Mgr</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
       <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderManager\RenderManager.cpp">
+      <Filter>Rendering\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ namespace Rendering
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer);
 
 			void ClearResource(ID3D11DeviceContext* context);
-			void Test(void* mesh);
+			void ClassifyMaterialWithMesh(void* mesh);
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
