@@ -2,6 +2,7 @@
 
 #include <map>
 #include "BaseStructure.h"
+#include <functional>
 
 namespace Structure
 {
@@ -62,6 +63,18 @@ namespace Structure
 			}
 
 			_map.clear();
+		}
+
+		void Iterate(const std::function<void(bool isCopy, const Key& key, Object* obj)>& recvFunc) const
+		{
+			for(auto iter = _map.cbegin(); iter != _map.cend(); ++iter)
+				recvFunc(GET_IS_COPY_FROM_ITERATOR(iter), GET_KEY_FROM_ITERATOR(iter), GET_CONTENT_FROM_ITERATOR(iter));
+		}
+		
+		void IterateContent(const std::function<void(Object* obj)>& recvFunc) const
+		{
+			for(auto iter = _map.cbegin(); iter != _map.cend(); ++iter)
+				recvFunc(GET_CONTENT_FROM_ITERATOR(iter));
 		}
 
 		inline const std::map<Key, BaseStructure<Key, Object>::Data>& GetMap() const { return _map; }
