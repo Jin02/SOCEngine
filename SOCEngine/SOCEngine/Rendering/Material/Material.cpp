@@ -19,13 +19,13 @@ Material::Color::~Color()
 Material::Material(const std::string& name)	
 	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _colorBuffer(nullptr),
 	_updateConstBufferMethod(UpdateCBMethod::Default),
-	_hasAlpha(false)
+	_hasAlpha(false), _changedAlpha(true)
 {
 }
 
 Material::Material(const std::string& name, const Color& color) 
 	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color), _colorBuffer(nullptr),
-	_updateConstBufferMethod(UpdateCBMethod::Default)
+	_updateConstBufferMethod(UpdateCBMethod::Default), _changedAlpha(true)
 {
 	_hasAlpha = color.opacity < 1.0f;
 }
@@ -83,7 +83,7 @@ void Material::UpdateTransformBuffer(ID3D11DeviceContext* context, Buffer::Const
 const Rendering::Texture::Texture* Material::FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex)
 {
 	auto textures = _textures.usagePS;
-	for(int i=0; i<textures.size(); ++i)
+	for(unsigned int i=0; i<textures.size(); ++i)
 	{
 		if(textures[i].first == shaderSlotIndex)
 		{
@@ -112,6 +112,7 @@ void Material::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 {
 	UpdateMap(TextureType::Diffuse, tex);
 	_hasAlpha = tex->GetHasAlpha();
+	_changedAlpha = true;
 }
 
 void Material::UpdateNormalMap(const Rendering::Texture::Texture* tex)
@@ -128,6 +129,7 @@ void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 {
 	UpdateMap(TextureType::Opacity, tex);
 	_hasAlpha = tex != nullptr;
+	_changedAlpha = true;
 }
 
 void Material::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
@@ -141,14 +143,21 @@ void Material::ClearResource(ID3D11DeviceContext* context)
 	_pixelShader->ClearResource(context, &_textures.usagePS);
 }
 
-void Material::UpdateShader(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers)
+void Material::UpdateShader(ID3D11DeviceContext* context)
 {
-	_vertexShader->UpdateShader(context, &_constbuffers.usageVS, &_textures.usageVS);
-	_pixelShader->UpdateShader(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
+	_vertexShader->UpdateShader(context);
+	_pixelShader->UpdateShader(context);
+}
+
+void Material::UpdateResources(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers)
+{
+	_vertexShader->UpdateResources(context, &_constbuffers.usageVS, &_textures.usageVS);
+	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
 }
 
 void Material::UpdateColor(const Color& color)
 {
 	_color = color;
-	_hasAlpha = _color.opacity < 1.0f;
+	_hasAlpha = (_color.opacity < 1.0f);
+	_changedAlpha = true;
 }

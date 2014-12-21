@@ -70,6 +70,7 @@ namespace Rendering
 		UpdateCBMethod			_updateConstBufferMethod;
 
 		bool _hasAlpha;
+		bool _changedAlpha;
 
 	public:
 		Material(const std::string& name);
@@ -93,7 +94,8 @@ namespace Rendering
 
 	public:
 		void ClearResource(ID3D11DeviceContext* context);
-		void UpdateShader(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers);
+		void UpdateShader(ID3D11DeviceContext* context);
+		void UpdateResources(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers);
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
@@ -104,5 +106,6 @@ namespace Rendering
 		GET_ACCESSOR(Color, const Color&, _color);
 		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
 		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
+		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 	};
 }
