@@ -1,19 +1,19 @@
-#include "MeshManager.h"
+#include "RenderManager.h"
 
 using namespace Rendering;
 using namespace Rendering::Manager;
 
-MeshManager::MeshManager()
+RenderManager::RenderManager()
 {
 }
 
-MeshManager::~MeshManager()
+RenderManager::~RenderManager()
 {
 	_alphaMeshes.DeleteAll(true);
 	_nonAlphaMeshes.DeleteAll(true);
 }
 
-bool MeshManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
@@ -35,7 +35,7 @@ bool MeshManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
 	return true;
 }
 
-void MeshManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshType type)
+void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
@@ -56,7 +56,7 @@ void MeshManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshT
 	}
 }
 
-std::pair<Material*, Mesh::Mesh*>* MeshManager::Find(Material* material, Mesh::Mesh* mesh, MeshType type)
+std::pair<Material*, Mesh::Mesh*>* RenderManager::Find(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
@@ -70,7 +70,7 @@ std::pair<Material*, Mesh::Mesh*>* MeshManager::Find(Material* material, Mesh::M
 	return nullptr;
 }
 
-void MeshManager::Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
+void RenderManager::Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
 {
 	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<Material*, Mesh::Mesh*>>* content)
 	{

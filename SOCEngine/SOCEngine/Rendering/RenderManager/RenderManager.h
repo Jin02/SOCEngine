@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class MeshManager
+		class RenderManager
 		{
 		public:
 			enum MeshType
@@ -23,8 +23,8 @@ namespace Rendering
 			Structure::MapInMap<unsigned int, std::pair<Material*, Mesh::Mesh*>>	_nonAlphaMeshes;
 			 
 		public:
-			MeshManager();
-			~MeshManager();
+			RenderManager();
+			~RenderManager();
 
 		public:
 			bool Add(Material* material, Mesh::Mesh* mesh, MeshType type);
