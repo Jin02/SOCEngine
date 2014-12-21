@@ -28,14 +28,9 @@ namespace Rendering
 			unsigned int			_selectMaterialIndex;
 
 			unsigned int			_indexCount;
-			bool					_alphaMesh;
-
 		public:
 			Mesh();
 			~Mesh();
-
-		private:
-			void UpdateMeshManager(bool isAlphaMesh);
 
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
@@ -45,14 +40,14 @@ namespace Rendering
 			virtual void Initialize();
 			virtual void Update(float deltaTime);
 			virtual void UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform);
-			virtual void Render();
 			virtual void Destroy();
+
+		public:
+			void Render();
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
 			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
-			GET_ACCESSOR(IsAlphaMesh, bool, _alphaMesh);
-
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 		};
