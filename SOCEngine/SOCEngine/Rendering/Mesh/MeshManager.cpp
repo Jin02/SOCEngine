@@ -9,14 +9,23 @@ MeshManager::MeshManager()
 
 MeshManager::~MeshManager()
 {
+	_alphaMeshes.DeleteAll(true);
+	_nonAlphaMeshes.DeleteAll(true);
 }
-bool MeshManager::Add(Mesh::Mesh* mesh, MeshType type)
+
+bool MeshManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
-	unsigned int key = reinterpret_cast<unsigned int>(mesh);
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+
+	std::pair<Material*, Mesh::Mesh*>* pair = Find(material, mesh, type);
+	if(pair == nullptr)
+		pair = new std::pair<Material*, Mesh::Mesh*>(material, mesh);
+
 	if(type == MeshType::hasAlpha)
-		_alphaMeshes.Add(key, mesh);
+		_alphaMeshes.Add(materialAddress, meshAddress, pair);
 	else if(type == MeshType::nonAlpha)
-		_nonAlphaMeshes.Add(key, mesh);
+		_nonAlphaMeshes.Add(materialAddress, meshAddress, pair);
 	else
 	{
 		DEBUG_LOG("undeclartion MeshType");
@@ -25,68 +34,57 @@ bool MeshManager::Add(Mesh::Mesh* mesh, MeshType type)
 
 	return true;
 }
-void MeshManager::Change(Mesh::Mesh* mesh, MeshType type)
+
+void MeshManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshType type)
 {
-	unsigned int key = reinterpret_cast<unsigned int>(mesh);
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
 	if( type == MeshType::hasAlpha )
 	{
-		_nonAlphaMeshes.Delete(key);
-		_alphaMeshes.Add(key, mesh);
+		auto pair = _nonAlphaMeshes.Find(materialAddress, meshAddress);
+		_nonAlphaMeshes.Delete(materialAddress, meshAddress, false);
+
+		_alphaMeshes.Add(materialAddress, meshAddress, pair);
 	}
 	else if( type == MeshType::nonAlpha )
 	{
-		_alphaMeshes.Delete(key);
-		_nonAlphaMeshes.Add(key, mesh);
+		auto pair = _alphaMeshes.Find(materialAddress, meshAddress);
+		_alphaMeshes.Delete(materialAddress, meshAddress, false);
+
+		_nonAlphaMeshes.Add(materialAddress, meshAddress, pair);
 	}
 }
-Mesh::Mesh* MeshManager::Find(unsigned int meshAddress, MeshType type)
+
+std::pair<Material*, Mesh::Mesh*>* MeshManager::Find(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+	
 	if(type == MeshType::hasAlpha)
-		return _alphaMeshes.Find(meshAddress);
+		return _alphaMeshes.Find(materialAddress, meshAddress);
 	else if(type == MeshType::nonAlpha)
-		return _nonAlphaMeshes.Find(meshAddress);
+		return _nonAlphaMeshes.Find(materialAddress, meshAddress);
 
 	ASSERT("Error!, undefined MeshType");
 	return nullptr;
 }
-Mesh::Mesh* MeshManager::Find(unsigned int meshAddress, MeshType* outType)
+
+void MeshManager::Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
 {
-	Mesh::Mesh* res = Find(meshAddress, MeshType::hasAlpha);
-	if(res)
+	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<Material*, Mesh::Mesh*>>* content)
 	{
-		if(outType)
-			(*outType) = MeshType::hasAlpha;
-		return res;
-	}
-	else
-	{
-		res = Find(meshAddress, MeshType::nonAlpha);
-		if(res)
+		auto MapIter = [&](std::pair<Material*, Mesh::Mesh*>* content)
 		{
-			if(outType)
-				(*outType) = MeshType::nonAlpha;
-			return res;
-		}
-	}
+			recvFunc(content->first, content->second);
+		};
+		content->IterateContent(MapIter);
+	};
 
-	return nullptr;
-}
-
-void MeshManager::Iterate(const std::function<void(Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
-{
 	if(type == MeshType::hasAlpha)
-	{
-		auto map = _alphaMeshes.GetMap();
-		for(auto iter = map.begin(); iter != map.end(); ++iter)
-			recvFunc(iter->second.second);
-	}
+		_alphaMeshes.GetMapInMap().IterateContent(MapInMapIter);
 	else if(type == MeshType::nonAlpha)
-	{
-		auto map = _nonAlphaMeshes.GetMap();
-		for(auto iter = map.begin(); iter != map.end(); ++iter)
-			recvFunc(iter->second.second);
-	}
+		_nonAlphaMeshes.GetMapInMap().IterateContent(MapInMapIter);
 	else
 	{
 		ASSERT("Error!, undefined MeshType");
