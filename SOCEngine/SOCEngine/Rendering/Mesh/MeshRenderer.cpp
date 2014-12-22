@@ -27,18 +27,12 @@ bool MeshRenderer::AddMaterial(Material* material, bool copy)
 
 void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, Buffer::ConstBuffer* transformBuffer)
 {
-	Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
-	std::vector<Shader::PixelShader::SamplerType> samplers;
-
-	//임시로, 0번에 linear만 넣음.
-	samplers.push_back(std::make_pair(0, sampler));
-
 	auto& materials = _materials.GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{
 		Material* material = GET_CONTENT_FROM_ITERATOR(iter);
 		material->UpdateTransformBuffer(context, transformBuffer);
-		material->UpdateResources(context, samplers);
+		material->UpdateResources(context);
 	}
 }
 
@@ -51,13 +45,8 @@ bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int ind
 	if(material == nullptr)
 		return false;
 
-	Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
-	std::vector<Shader::PixelShader::SamplerType> samplers;
-
-	//임시로, 0번에 linear만 넣음.
-	samplers.push_back(std::make_pair(0, sampler));
 	material->UpdateTransformBuffer(context, transformBuffer);
-	material->UpdateResources(context, samplers);
+	material->UpdateResources(context);
 	return true;
 }
 

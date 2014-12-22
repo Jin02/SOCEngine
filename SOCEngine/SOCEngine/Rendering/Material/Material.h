@@ -95,7 +95,7 @@ namespace Rendering
 	public:
 		void ClearResource(ID3D11DeviceContext* context);
 		void UpdateShader(ID3D11DeviceContext* context);
-		void UpdateResources(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers);
+		void UpdateResources(ID3D11DeviceContext* context);
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);

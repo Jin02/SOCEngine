@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "Utility.h"
+#include "Director.h"
 
 using namespace Rendering;
 using namespace Rendering::Buffer;
@@ -149,9 +150,17 @@ void Material::UpdateShader(ID3D11DeviceContext* context)
 	_pixelShader->UpdateShader(context);
 }
 
-void Material::UpdateResources(ID3D11DeviceContext* context, const std::vector<Shader::PixelShader::SamplerType>& samplers)
+void Material::UpdateResources(ID3D11DeviceContext* context)
 {
 	_vertexShader->UpdateResources(context, &_constbuffers.usageVS, &_textures.usageVS);
+
+	Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
+	std::vector<Shader::PixelShader::SamplerType> samplers;
+
+	//임시로, 0번에 linear만 넣음.
+	samplers.push_back(std::make_pair(0, sampler));
+
+
 	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
 }
 
