@@ -11,7 +11,7 @@ using namespace Core;
 using namespace Rendering::Camera;
 
 Camera::Camera() : Component(),
-	_frustum(nullptr), _depthBuffer(nullptr), _renderTarget(nullptr)
+	_frustum(nullptr), _renderTarget(nullptr), _depthBuffer(nullptr)
 {
 
 }
@@ -35,9 +35,6 @@ void Camera::Initialize()
 
 	_frustum = new Frustum(0.0f);		
 
-	_depthBuffer = new Texture::DepthBuffer;
-	_depthBuffer->Create(windowSize);
-
 	_renderTarget = new Texture::RenderTexture;
 	_renderTarget->Create(windowSize);
 
@@ -47,7 +44,6 @@ void Camera::Initialize()
 void Camera::Destroy()
 {
 	SAFE_DELETE(_frustum);
-	SAFE_DELETE(_depthBuffer);
 	SAFE_DELETE(_renderTarget);
 }
 
@@ -138,9 +134,10 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 		//depth clear
 		{
-			context->ClearRenderTargetView(dx->GetRenderTargetView(), _clearColor.color);			
+			context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);			
+			dx->GetDepthBuffer()->Clear(1.0f, 0);
 			//_renderTarget->Clear(_clearColor, dx);
-			_depthBuffer->Clear(1.0f, 0, dx);
+			//_depthBuffer->Clear(1.0f, 0, dx);
 		}
 
 		//off alpha blending
@@ -153,8 +150,8 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 		{
 			//Early-Z
 			{
-				ID3D11RenderTargetView* rtv = dx->GetRenderTargetView();
-				context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView());
+				ID3D11RenderTargetView* rtv = dx->GetBackBuffer();
+				context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
 			/*_depthBuffer->SetRenderTarget(dx);
 				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
 				NonAlphaMeshRender();

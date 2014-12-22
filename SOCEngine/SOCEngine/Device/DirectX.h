@@ -13,6 +13,7 @@
 #include "Win32.h"
 
 #include "Color.h"
+#include "DepthBuffer.h"
 
 namespace Device
 {
@@ -35,6 +36,8 @@ namespace Device
 		ID3D11DepthStencilState		*_depthLessEqual;
 		ID3D11DepthStencilState		*_depthEqualAndDisableDepthWrite;
 
+		Rendering::Texture::DepthBuffer *_depthBuffer;
+
 	public:
 		DirectX();
 		~DirectX(void);
@@ -56,7 +59,8 @@ namespace Device
 		GET_ACCESSOR(SwapChain, IDXGISwapChain*, _swapChain);
 		GET_ACCESSOR(Context, ID3D11DeviceContext*, _immediateContext);
 
-		GET_ACCESSOR(RenderTargetView, ID3D11RenderTargetView*, _renderTargetView);
+		GET_ACCESSOR(BackBuffer,	ID3D11RenderTargetView*,			_renderTargetView);
+		GET_ACCESSOR(DepthBuffer,	Rendering::Texture::DepthBuffer*,	_depthBuffer);
 
 		GET_ACCESSOR(DisableCullingRasterizerState, ID3D11RasterizerState*, _disableCulling);
 		GET_ACCESSOR(OpaqueBlendState, ID3D11BlendState*, _opaqueBlend);
@@ -64,5 +68,6 @@ namespace Device
 
 		GET_ACCESSOR(DepthLessEqualState, ID3D11DepthStencilState*, _depthLessEqual);
 		GET_ACCESSOR(DepthEuqalAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthEqualAndDisableDepthWrite);
+
 	};
 }

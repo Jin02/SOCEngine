@@ -6,7 +6,6 @@
 #include "Structure.h"
 #include "RenderManager.h"
 #include "RenderTexture.h"
-#include "DepthBuffer.h"
 
 namespace Rendering
 {
@@ -23,7 +22,6 @@ namespace Rendering
 
 		private:
 			Frustum					*_frustum;
-			Texture::DepthBuffer	*_depthBuffer;
 			Texture::RenderTexture	*_renderTarget;
 
 		private:
