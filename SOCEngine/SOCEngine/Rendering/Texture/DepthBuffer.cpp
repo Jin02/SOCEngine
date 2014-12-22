@@ -4,7 +4,8 @@
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-DepthBuffer::DepthBuffer() : _depthStencilView(nullptr), RenderTexture()
+DepthBuffer::DepthBuffer(const Device::DirectX* dx) : _depthStencilView(nullptr), RenderTexture(),
+	_dx(dx)
 {
 
 }
@@ -56,10 +57,7 @@ void DepthBuffer::SetRenderTarget(const Device::DirectX* dx)
 	//null
 }
 
-void DepthBuffer::Clear(float depth, unsigned char stencil, const Device::DirectX* dx)
+void DepthBuffer::Clear(float depth, unsigned char stencil)
 {
-	if(dx == nullptr)
-		dx = Device::Director::GetInstance()->GetDirectX();
-
-	dx->GetContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
+	_dx->GetContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
 }
