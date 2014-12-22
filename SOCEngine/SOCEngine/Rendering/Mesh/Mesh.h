@@ -43,7 +43,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void Render();
+			void Render(Material* custom);
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);

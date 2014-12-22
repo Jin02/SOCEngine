@@ -68,7 +68,7 @@ namespace Rendering
 			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
-		void Mesh::Render()
+		void Mesh::Render(Material* custom)
 		{
 			if(_renderer == nullptr || _filter == nullptr)
 				return;
@@ -76,10 +76,20 @@ namespace Rendering
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_filter->IASetBuffer(context);
 
-			if(_updateType == MaterialUpdateType::All)
-				_renderer->UpdateAllMaterial(context, _transformConstBuffer);
-			else if(_updateType == MaterialUpdateType::One)
-				_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer);
+			if(custom == nullptr)
+			{
+				if(_updateType == MaterialUpdateType::All)
+					_renderer->UpdateAllMaterial(context, _transformConstBuffer);
+				else if(_updateType == MaterialUpdateType::One)
+					_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer);
+			}
+			else
+			{
+				//직접 입력하는 Material의 경우,
+				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
+				custom->UpdateResources(context);
+				custom->UpdateTransformBuffer(context, _transformConstBuffer);
+			}
 
 			context->DrawIndexed(_indexCount, 0, 0);
 			_renderer->ClearResource(context);

@@ -111,29 +111,26 @@ void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, 
 
 void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::RenderManager* renderMgr)
 {
-	auto NonAlphaMeshRender = [&](ID3D11DeviceContext* context)
+	auto MeshRender = [&](ID3D11DeviceContext* context, Material* customMaterial, Manager::RenderManager::MeshType type)
 	{
-		auto NonAlphaMeshIter = [&](Material* material, Mesh::Mesh* mesh)
+		Material* currentUseMaterial = nullptr;
+		auto RenderIter = [&](Material* material, Mesh::Mesh* mesh)
 		{
-			material->UpdateShader(context);
-			mesh->Render();
-			return;
-		};
-		renderMgr->Iterate(NonAlphaMeshIter, Manager::RenderManager::MeshType::nonAlpha);
-	};
-	auto AlphaMeshRender = [&](ID3D11DeviceContext* context)
-	{
-		auto AlphaMeshIter = [&](Material* material, Mesh::Mesh* mesh)
-		{
-			material->UpdateShader(context);
-			mesh->Render();
+			if(customMaterial)
+				material = customMaterial;
+
+			if(currentUseMaterial != material)
+			{
+				currentUseMaterial = material;	
+				currentUseMaterial->UpdateShader(context);
+			}
+
+			mesh->Render(customMaterial);
 			return;
 		};
 
-		renderMgr->Iterate(AlphaMeshIter, Manager::RenderManager::MeshType::hasAlpha);
+		renderMgr->Iterate(RenderIter, type);
 	};
-
-	//_renderTarget->SetRenderTarget(_depthBuffer, dx);
 
 	//graphics part
 	{
@@ -174,7 +171,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 			//Forward Rendering
 			{
-				NonAlphaMeshRender(context);
+				MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
 			}
 		}
 
