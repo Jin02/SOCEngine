@@ -22,6 +22,7 @@ namespace Rendering
 
 		private:
 			Frustum					*_frustum;
+			Texture::RenderTexture	*_depthBuffer;
 			Texture::RenderTexture	*_renderTarget;
 
 		private:

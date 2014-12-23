@@ -9,6 +9,7 @@ using namespace Rendering::Light;
 using namespace Device;
 using namespace Core;
 using namespace Rendering::Camera;
+using namespace Rendering::Manager;
 
 Camera::Camera() : Component(),
 	_frustum(nullptr), _renderTarget(nullptr), _depthBuffer(nullptr)
@@ -38,6 +39,9 @@ void Camera::Initialize()
 	_renderTarget = new Texture::RenderTexture;
 	_renderTarget->Create(windowSize);
 
+	_depthBuffer =  new Texture::RenderTexture;
+	_depthBuffer->Create(windowSize);
+
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
@@ -45,6 +49,7 @@ void Camera::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
+	SAFE_DELETE(_depthBuffer);
 }
 
 void Camera::CalcAspect()
@@ -142,23 +147,22 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 		//off alpha blending
 		{
-			//float blendFactor[1] = { 0.0f };
-			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+			float blendFactor[1] = { 0.0f };
+			context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
 		}
 
 		//Render
 		{
 			//Early-Z
 			{
-				ID3D11RenderTargetView* rtv = dx->GetBackBuffer();
+				ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
 				context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
-			/*_depthBuffer->SetRenderTarget(dx);
 				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
-				NonAlphaMeshRender();
+				MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha);
 
 				context->RSSetState(dx->GetDisableCullingRasterizerState());
-				AlphaMeshRender();
-				context->RSSetState(nullptr);*/
+				MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha);
+				context->RSSetState(nullptr);
 			}
 
 			//Light Culling
