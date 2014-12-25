@@ -112,22 +112,36 @@ void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, 
 
 void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::RenderManager* renderMgr)
 {
-	auto MeshRender = [&](ID3D11DeviceContext* context, Material* customMaterial, Manager::RenderManager::MeshType type)
+	enum MeshRenderOption
+	{
+		DepthWriteWithTest,
+		AlphaTest,
+		Common,
+	};
+	auto MeshRender = [&](ID3D11DeviceContext* context, Material* customMaterial, Manager::RenderManager::MeshType type, MeshRenderOption option)
 	{
 		Material* currentUseMaterial = nullptr;
+		if(customMaterial && 
+			(option == MeshRenderOption::DepthWriteWithTest || 
+			 option == MeshRenderOption::AlphaTest) )
+			ASSERT("Invalid Arg");
+
 		auto RenderIter = [&](Material* material, Mesh::Mesh* mesh)
 		{
 			if(customMaterial)
 				material = customMaterial;
+			else if(option == MeshRenderOption::DepthWriteWithTest)
+				material = mesh->GetMeshRenderer()->GetDepthWriteMaterial();
+			else if(option == MeshRenderOption::AlphaTest)
+				material =  mesh->GetMeshRenderer()->GetAlphaTestMaterial();
 
 			if(currentUseMaterial != material)
 			{
 				currentUseMaterial = material;	
 				currentUseMaterial->UpdateShader(context);
 			}
-
+			
 			mesh->Render(customMaterial);
-			return;
 		};
 
 		renderMgr->Iterate(RenderIter, type);
@@ -137,32 +151,38 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 	{
 		ID3D11DeviceContext* context = dx->GetContext();
 
-		//depth clear
+		//Test
 		{
+			ID3D11RenderTargetView* rtv = dx->GetBackBuffer();
+			context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
 			context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);			
 			dx->GetDepthBuffer()->Clear(1.0f, 0);
-			//_renderTarget->Clear(_clearColor, dx);
-			//_depthBuffer->Clear(1.0f, 0, dx);
+			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::AlphaTest);
+		}
+
+		//depth clear
+		{
+
 		}
 
 		//off alpha blending
 		{
 			float blendFactor[1] = { 0.0f };
-			context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
 		}
 
 		//Render
 		{
 			//Early-Z
 			{
-				ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
+		/*		ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
 				context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
 				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
-				MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha);
+				MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha, MeshRenderOption::Depth);
 
 				context->RSSetState(dx->GetDisableCullingRasterizerState());
 				MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha);
-				context->RSSetState(nullptr);
+				context->RSSetState(nullptr);*/
 			}
 
 			//Light Culling
@@ -172,7 +192,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 			//Forward Rendering
 			{
-				MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
+				//MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
 			}
 		}
 
