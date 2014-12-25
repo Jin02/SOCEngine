@@ -131,9 +131,15 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			if(customMaterial)
 				material = customMaterial;
 			else if(option == MeshRenderOption::DepthWriteWithTest)
+			{
 				material = mesh->GetMeshRenderer()->GetDepthWriteMaterial();
+				customMaterial = material;
+			}
 			else if(option == MeshRenderOption::AlphaTest)
+			{
 				material =  mesh->GetMeshRenderer()->GetAlphaTestMaterial();
+				customMaterial = material;
+			}
 
 			if(currentUseMaterial != material)
 			{
