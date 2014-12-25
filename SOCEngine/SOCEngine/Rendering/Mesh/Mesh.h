@@ -34,7 +34,7 @@ namespace Rendering
 
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic);
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, Material* depthWriteMaterial, Material* alphaTest, bool isDynamic);
 
 		public:
 			virtual void Initialize();

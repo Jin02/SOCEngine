@@ -21,7 +21,7 @@ namespace Rendering
 		}
 
 		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic)
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, Material* depthWriteMaterial, Material* alphaTest, bool isDynamic)
 		{
 			_filter = new MeshFilter;
 			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
@@ -33,7 +33,7 @@ namespace Rendering
 			}
 			_indexCount = indicesCount;
 
-			_renderer = new MeshRenderer;
+			_renderer = new MeshRenderer(depthWriteMaterial, alphaTest);
 			if(_renderer->AddMaterial(material, false) == false)
 			{
 				ASSERT("Error, renderer addmaterial");
@@ -87,8 +87,8 @@ namespace Rendering
 			{
 				//직접 입력하는 Material의 경우,
 				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
-				custom->UpdateResources(context);
 				custom->UpdateTransformBuffer(context, _transformConstBuffer);
+				custom->UpdateResources(context);
 			}
 
 			context->DrawIndexed(_indexCount, 0, 0);
