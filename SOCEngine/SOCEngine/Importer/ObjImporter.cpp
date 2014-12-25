@@ -96,6 +96,17 @@ void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>*
 		if(material && outMaterials)
 			(*outMaterials)->Add(iter->name, material);
 	}
+
+	//DepthWrite Material
+	{
+		Material* depthWrite = new Material("DepthWrite");
+		materialMgr->Add(fileName, "DepthWrite", depthWrite, false);
+	}
+	//AlphaTest Material
+	{
+		Material* alphaTest = new Material("AlphaTest");
+		materialMgr->Add(fileName, "AlphaTest", alphaTest, false);
+	}
 }
 
 bool ObjImporter::Load(std::vector<tinyobj::shape_t>& outShapes, std::vector<tinyobj::material_t>& outMaterials, const std::string& fileDir, const std::string& materialFileFolder)
@@ -138,7 +149,14 @@ Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& f
 	return parent;
 }
 
-Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::vector<CustomSemantic>& customSemanticData, Material* material, bool isDynamicMesh)
+Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, 
+									const std::vector<tinyobj::material_t>& tinyMaterials, 
+									const std::string& fileName, 
+									const std::vector<CustomSemantic>& customSemanticData, 
+									Material* material,
+									Material* depthWriteMaterial,
+									Rendering::Material* alphaTestMaterial, 
+									bool isDynamicMesh)
 {
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
 	{
@@ -267,7 +285,10 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	LPVoidType* bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
-	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, indices.data(), indices.size(), material, isDynamicMesh);
+	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, 
+		indices.data(), indices.size(), 
+		material, depthWriteMaterial, alphaTestMaterial,
+		isDynamicMesh);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
 	currentScene->GetOriginObjectManager()->Add(objKey, object);
@@ -379,30 +400,27 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 		return shaderName;
 	};
 
-	Material* material = nullptr;	
-	if(objMtl)	
-		material = materialMgr->Find(fileName, objMtl->name);
-	else
+	auto InsertShaderIntoMaterial = [&](const std::string& shaderName, const std::string& materialName, const std::string& vsMainFuncName, const std::string& psMainFuncName)
 	{
-		std::string shaderName = GetBasicShaderName();
-		material = materialMgr->Find("Basic", shaderName);
-	}
+		Material* material = materialMgr->Find(fileName, materialName);
+		assert(material != nullptr);
 
-	if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
-	{
-		Shader::VertexShader* vs = nullptr;			
-		Shader::PixelShader*	 ps = nullptr;
+		if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
+		{
+			Shader::VertexShader*	vs = nullptr;			
+			Shader::PixelShader*	ps = nullptr;
 
-		Manager::ShaderManager* shaderMgr = currentScene->GetShaderManager();
+			Manager::ShaderManager* shaderMgr = currentScene->GetShaderManager();
 
-		std::string shaderName = GetBasicShaderName();
+			vs = shaderMgr->FindVertexShader(shaderName, vsMainFuncName);
+			ps = shaderMgr->FindPixelShader(shaderName, psMainFuncName);
 
-		vs = shaderMgr->FindVertexShader(shaderName, BASIC_VS_MAIN_FUNC_NAME);
-		ps = shaderMgr->FindPixelShader(shaderName, BASIC_PS_MAIN_FUNC_NAME);
+			material->SetVertexShader(vs);
+			material->SetPixelShader(ps);
+		}
 
-		material->SetVertexShader(vs);
-		material->SetPixelShader(ps);
-	}
+		return material;
+	};
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	
@@ -412,7 +430,20 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 
 	bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
-	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, indices.data(), indices.size(), material, isDynamicMesh);
+
+	std::string materialName = objMtl ? objMtl->name : GetBasicShaderName();
+	Material* material	 = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
+
+	materialName = "DepthWrite";
+	Material* depthWrite = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
+
+	materialName = "AlphaTest";
+	Material* alphaTest = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
+
+	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, 
+		indices.data(), indices.size(), 
+		material, depthWrite, alphaTest,
+		isDynamicMesh);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
 	currentScene->GetOriginObjectManager()->Add(objKey, object);
