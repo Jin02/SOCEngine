@@ -12,10 +12,13 @@ namespace Rendering
 		{
 		private:
 			Structure::Vector<std::string, Material>	_materials;
-			std::vector<bool>							_materialsCheckUpdate;
+
+		private:
+			Material*	_depthWriteMaterial;
+			Material*	_alphaTestMaterial;
 
 		public:
-			MeshRenderer();
+			MeshRenderer(Material* depthWriteMaterial = nullptr, Material*	alphaTestMaterial = nullptr);
 			~MeshRenderer();
 
 		public:
@@ -23,12 +26,14 @@ namespace Rendering
 
 			void UpdateAllMaterial(ID3D11DeviceContext* context, Buffer::ConstBuffer* transformBuffer);
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer);
-
+			
 			void ClearResource(ID3D11DeviceContext* context);
 			void ClassifyMaterialWithMesh(void* mesh);
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
+			GET_ACCESSOR(DepthWriteMaterial, Material*, _depthWriteMaterial);
+			GET_ACCESSOR(AlphaTestMaterial, Material*, _alphaTestMaterial);
 		};
 	}
 }

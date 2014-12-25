@@ -8,8 +8,10 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-MeshRenderer::MeshRenderer()
+MeshRenderer::MeshRenderer(Material* depthWriteMaterial, Material*	alphaTestMaterial) 
+	: _depthWriteMaterial(depthWriteMaterial), _alphaTestMaterial(alphaTestMaterial)
 {
+
 }
 
 MeshRenderer::~MeshRenderer()
