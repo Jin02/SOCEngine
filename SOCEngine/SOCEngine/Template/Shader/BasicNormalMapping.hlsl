@@ -8,21 +8,43 @@ cbuffer Transform : register( b0 )
 
 struct VS_INPUT
 {
-	float4 Pos : POSITION;
+	float4 pos : posITION;
 };
 
 struct PS_INPUT
 {
-	float4 Pos : SV_POSITION;
+	float4 pos : SV_posITION;
 };
+
+struct DEPTH_WRITE_PS_INPUT
+{
+	float4 pos : SV_posITION;	
+};
+
+DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
+{
+	DEPTH_WRITE_PS_INPUT ps;
+
+	ps.pos = mul( input.pos, world );
+	ps.pos = mul( ps.pos, view);
+	ps.pos = mul( ps.pos, proj);
+
+    return ps;
+}
+
+
+float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+{
+	return float4(0.0f, 0.0f, 1.0f, 1.0f);
+}
 
  PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
-	ps.Pos = mul( input.Pos, world );
-	ps.Pos = mul( ps.Pos, view);
-	ps.Pos = mul( ps.Pos, proj);
-	//ps.Pos = input.Pos;
+	ps.pos = mul( input.pos, world );
+	ps.pos = mul( ps.pos, view);
+	ps.pos = mul( ps.pos, proj);
+	//ps.pos = input.pos;
 
     return ps;
 }
