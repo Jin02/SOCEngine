@@ -163,7 +163,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
 			context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);			
 			dx->GetDepthBuffer()->Clear(1.0f, 0);
-			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::AlphaTest);
+			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::Common);
 		}
 
 		//depth clear

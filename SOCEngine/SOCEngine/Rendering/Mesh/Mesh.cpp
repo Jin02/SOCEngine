@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "Director.h"
+//#include "TransformPipelineParam.h"
 
 namespace Rendering
 {
@@ -41,7 +42,7 @@ namespace Rendering
 			}
 
 			_transformConstBuffer = new Buffer::ConstBuffer;
-			if(_transformConstBuffer->Create(sizeof(Math::Matrix) * 3) == false)
+			if(_transformConstBuffer->Create(sizeof(Core::TransformPipelineShaderInput)) == false)
 			{
 				ASSERT("Error, transformBuffer->Create");
 				return false;
@@ -59,7 +60,7 @@ namespace Rendering
 		{
 		}
 
-		void Mesh::UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform)
+		void Mesh::UpdateConstBuffer(const Core::TransformPipelineShaderInput& transpose_Transform)
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);

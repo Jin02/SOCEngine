@@ -37,7 +37,7 @@ namespace Core
 	public:
 		virtual void Initialize() = 0;
 		virtual void Update(float deltaTime);
-		virtual void UpdateConstBuffer(const TransformPipelineParam& transpose_Transform);
+		virtual void UpdateConstBuffer(const TransformPipelineShaderInput& transpose_Transform);
 		virtual void Render();
 		virtual void Destroy() = 0;
 

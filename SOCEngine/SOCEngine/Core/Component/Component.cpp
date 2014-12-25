@@ -19,7 +19,7 @@ namespace Core
 		//null
 	}
 
-	void Component::UpdateConstBuffer(const TransformPipelineParam& transpose_Transform)
+	void Component::UpdateConstBuffer(const TransformPipelineShaderInput& transpose_Transform)
 	{
 		//null
 	}

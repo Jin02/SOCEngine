@@ -77,16 +77,18 @@ namespace Core
 		Sphere thisObject(wp, _transform->GetRadius());
 
 		_transform->WorldMatrix(transformParam.worldMat);
-		transformParam.worldViewProjMat = (transformParam.worldMat * transformParam.viewMat * transformParam.projMat);
 
 		const Math::Matrix& viewMat = transformParam.viewMat;
 		Vector4 viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
 
-		TransformPipelineParam transposeTransform;
+		TransformPipelineShaderInput transposeTransform;
 		Matrix::Transpose(transposeTransform.worldMat, transformParam.worldMat);
-		Matrix::Transpose(transposeTransform.viewMat, transformParam.viewMat);
-		Matrix::Transpose(transposeTransform.projMat, transformParam.projMat);
-		Matrix::Transpose(transposeTransform.worldViewProjMat, transformParam.worldViewProjMat);
+
+		Matrix worldView = transformParam.worldMat * transformParam.viewMat;
+		Matrix::Transpose(transposeTransform.worldViewMat, worldView);
+
+		Matrix worldViewProj = worldView * transformParam.projMat;
+		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->UpdateConstBuffer(transposeTransform);

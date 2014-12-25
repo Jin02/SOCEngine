@@ -39,7 +39,7 @@ namespace Rendering
 		public:
 			virtual void Initialize();
 			virtual void Update(float deltaTime);
-			virtual void UpdateConstBuffer(const Core::TransformPipelineParam& transpose_Transform);
+			virtual void UpdateConstBuffer(const Core::TransformPipelineShaderInput& transpose_Transform);
 			virtual void Destroy();
 
 		public:

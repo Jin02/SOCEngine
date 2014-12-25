@@ -9,6 +9,12 @@ namespace Core
 		Math::Matrix worldMat;
 		Math::Matrix viewMat;
 		Math::Matrix projMat;
+	};
+
+	struct TransformPipelineShaderInput
+	{
+		Math::Matrix worldMat;
+		Math::Matrix worldViewMat;
 		Math::Matrix worldViewProjMat;
 	};
 }

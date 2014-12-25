@@ -2,8 +2,8 @@
 cbuffer Transform : register( b0 )
 {
 	matrix world;
-	matrix view;
-	matrix proj;
+	matrix worldView;
+	matrix worldViewProj;
 };
 
 struct VS_INPUT
@@ -32,10 +32,7 @@ DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
 {
 	DEPTH_WRITE_PS_INPUT ps;
 
-	ps.pos = mul( input.pos, world );
-	ps.pos = mul( ps.pos, view);
-	ps.pos = mul( ps.pos, proj);
-
+	ps.pos = mul( input.pos, worldViewProj );
     return ps;
 }
 
@@ -48,10 +45,7 @@ PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
 
-	ps.pos = mul( input.pos, world );
-	ps.pos = mul( ps.pos, view);
-	ps.pos = mul( ps.pos, proj);
-
+	ps.pos = mul( input.pos, worldViewProj );
 	ps.normal 	= normalize( mul( input.normal, world ) );
 	ps.tex		= input.tex;
 
@@ -67,10 +61,7 @@ PS_INPUT AlphaTestVS ( VS_INPUT input )
 {
 	PS_INPUT ps;
 
-	ps.pos = mul( input.pos, world );
-	ps.pos = mul( ps.pos, view);
-	ps.pos = mul( ps.pos, proj);
-
+	ps.pos = mul( input.pos, worldViewProj );
 	ps.normal 	= normalize( mul( input.normal, world ) );
 	ps.tex		= input.tex;
 
