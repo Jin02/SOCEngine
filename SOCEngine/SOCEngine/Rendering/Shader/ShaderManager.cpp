@@ -274,3 +274,11 @@ PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const s
 {
 	return dynamic_cast<PixelShader*>(_shaders.Find(PS_FULL_COMMAND(fileName, mainFunc)));
 }
+
+bool ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseShader* shader)
+{
+	if(CommandValidator(fullCommand, nullptr, nullptr, nullptr) == false)
+		ASSERT("Error, invalied command");
+
+	return _shaders.Add(fullCommand, shader, false) ? true : false;
+}
