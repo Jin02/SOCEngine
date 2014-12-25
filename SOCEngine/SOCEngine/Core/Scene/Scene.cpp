@@ -39,6 +39,25 @@ void Scene::Initialize()
 	{
 		Factory::EngineFactory factory(_shaderMgr);
 
+		auto LoadBasicMaterial = [&](const std::string& shaderName, const std::string& MaterialName,
+			const std::string& vsMainFuncName, const std::string& psMainFuncName)
+		{
+			Rendering::Shader::VertexShader* vs = nullptr;			
+			Rendering::Shader::PixelShader*	 ps = nullptr;
+
+			if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &vs, &ps) == false)
+			{
+				std::string error = "Not Found";
+				error += shaderName + ".hlsl";
+				ASSERT(error.c_str());
+			}
+
+			Material* material = new Material(MaterialName);
+			material->SetVertexShader(vs);
+			material->SetPixelShader(ps);
+			_materialMgr->Add("Basic", MaterialName, material);
+		};
+
 		//Basic
 		{
 			const std::string tags[] = {"T0", "N_", "N_T0"};
@@ -48,28 +67,25 @@ void Scene::Initialize()
 				if( i >= 1 )
 					shaderName += tags[i-1];
 
-				Rendering::Shader::VertexShader* vs = nullptr;			
-				Rendering::Shader::PixelShader*	 ps = nullptr;
-
-				if(factory.LoadShader(shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, &vs, &ps) == false)
-				{
-					std::string error = "Not Found";
-					error += shaderName + ".hlsl";
-					ASSERT(error.c_str());
-				}
-
-				Material* material = new Material(shaderName);
-				material->SetVertexShader(vs);
-				material->SetPixelShader(ps);
-				_materialMgr->Add("Basic", shaderName, material);
+				LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
+				LoadBasicMaterial(shaderName, shaderName + "_DepthWrite", DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
+				LoadBasicMaterial(shaderName, shaderName + "_AlphaTest", ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
 			}
 		}
 
 		//Normal Mapping
-		if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-			ASSERT("Not Found BasicNormalMapping.hlsl");
+		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+		//	ASSERT("Not Found BasicNormalMapping.hlsl");
+
+		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
+		//	ASSERT("Not Found BasicNormalMapping_DepthWrite.hlsl");
 
 
+		//Null Shader
+		{
+			_shaderMgr->Add("null:vs:NullVS", new Shader::VertexShader(nullptr));
+			_shaderMgr->Add("null:vs:NullPS", new Shader::PixelShader(nullptr));
+		}
 	}
 
 	NextState();
