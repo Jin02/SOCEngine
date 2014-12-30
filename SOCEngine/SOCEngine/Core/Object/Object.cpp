@@ -66,7 +66,7 @@ namespace Core
 			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
-	void Object::UpdateConstBuffersAndCheckRender(TransformPipelineParam& transformParam)
+	void Object::UpdateTransformCBAndCheckRender(TransformPipelineParam& transformParam)
 	{
 		if(_use == false || _culled)
 			return;
@@ -88,7 +88,7 @@ namespace Core
 			(*iter)->UpdateConstBuffer(transposeTransform);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			GET_CONTENT_FROM_ITERATOR(iter)->UpdateConstBuffersAndCheckRender(transformParam);
+			GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(transformParam);
 	}
 
 	bool Object::Intersects(Intersection::Sphere &sphere)

@@ -97,7 +97,7 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::UpdateConstBuffersAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
+void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -122,7 +122,7 @@ void Camera::UpdateConstBuffersAndCheckRender(const Structure::Vector<std::strin
 	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
 	{				
 		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-		GET_CONTENT_FROM_ITERATOR(iter)->UpdateConstBuffersAndCheckRender(tfParam);
+		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(tfParam);
 	}
 }
 

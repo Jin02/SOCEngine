@@ -107,7 +107,7 @@ void Scene::RenderPreview()
 
 	auto CamIteration = [&](Camera::Camera* cam)
 	{
-		cam->UpdateConstBuffersAndCheckRender(_rootObjects);
+		cam->UpdateTransformCBAndCheckRender(_rootObjects);
 	};
 
 	_cameraMgr->IterateContent(CamIteration);

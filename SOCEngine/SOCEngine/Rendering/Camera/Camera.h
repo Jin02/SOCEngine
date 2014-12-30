@@ -52,7 +52,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void UpdateConstBuffersAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
+			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
 			void RenderObjects(const Device::DirectX* dx, const Manager::RenderManager* renderMgr);
 		};
 	}

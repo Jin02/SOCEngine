@@ -34,7 +34,7 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void UpdateConstBuffersAndCheckRender(TransformPipelineParam& transformParam);
+		void UpdateTransformCBAndCheckRender(TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 
