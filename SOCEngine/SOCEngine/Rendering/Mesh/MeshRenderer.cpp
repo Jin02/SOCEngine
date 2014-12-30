@@ -27,18 +27,18 @@ bool MeshRenderer::AddMaterial(Material* material, bool copy)
 	return true;
 }
 
-void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, Buffer::ConstBuffer* transformBuffer)
+void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
 {
 	auto& materials = _materials.GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{
 		Material* material = GET_CONTENT_FROM_ITERATOR(iter);
-		material->UpdateTransformBuffer(context, transformBuffer);
+		material->UpdateBasicConstBuffer(context, transformBuffer, camera);
 		material->UpdateResources(context);
 	}
 }
 
-bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, Buffer::ConstBuffer* transformBuffer)
+bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
 {
 	if( index >= _materials.GetSize() )
 		return false;
@@ -47,7 +47,7 @@ bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int ind
 	if(material == nullptr)
 		return false;
 
-	material->UpdateTransformBuffer(context, transformBuffer);
+	material->UpdateBasicConstBuffer(context, transformBuffer, camera);
 	material->UpdateResources(context);
 	return true;
 }
