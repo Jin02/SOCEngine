@@ -10,10 +10,11 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum BasicConstBuffercSlot
+		enum BasicConstBuffercSlot : unsigned int
 		{
-			Transform = 0,
-			MaterialColor
+			Transform		= 0,
+			Camera			= 1,
+			MaterialColor	= 2,
 		};
 
 		enum UpdateCBMethod
@@ -80,7 +81,7 @@ namespace Rendering
 	public:
 		void InitColorBuffer(ID3D11DeviceContext* context);
 		void UpdateColorBuffer(ID3D11DeviceContext* context);
-		void UpdateTransformBuffer(ID3D11DeviceContext* context, Buffer::ConstBuffer* transform);
+		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
 
 		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
 		void UpdateAmbientMap(const Texture::Texture* tex);
