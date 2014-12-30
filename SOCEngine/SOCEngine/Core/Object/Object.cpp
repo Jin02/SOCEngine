@@ -66,35 +66,29 @@ namespace Core
 			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
-	void Object::UpdateTransformAndCheckRender(TransformPipelineParam& transformParam)
+	void Object::UpdateConstBuffersAndCheckRender(TransformPipelineParam& transformParam)
 	{
 		if(_use == false || _culled)
 			return;
 
-		Vector3 wp;
-		_transform->WorldPosition(wp);
-
-		Sphere thisObject(wp, _transform->GetRadius());
-
 		_transform->WorldMatrix(transformParam.worldMat);
 
-		const Math::Matrix& viewMat = transformParam.viewMat;
-		Vector4 viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
-
 		TransformPipelineShaderInput transposeTransform;
-		Matrix::Transpose(transposeTransform.worldMat, transformParam.worldMat);
+		{
+			Matrix::Transpose(transposeTransform.worldMat, transformParam.worldMat);
 
-		Matrix worldView = transformParam.worldMat * transformParam.viewMat;
-		Matrix::Transpose(transposeTransform.worldViewMat, worldView);
+			Matrix worldView = transformParam.worldMat * transformParam.viewMat;
+			Matrix::Transpose(transposeTransform.worldViewMat, worldView);
 
-		Matrix worldViewProj = worldView * transformParam.projMat;
-		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
+			Matrix worldViewProj = worldView * transformParam.projMat;
+			Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
+		}
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 			(*iter)->UpdateConstBuffer(transposeTransform);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformAndCheckRender(transformParam);
+			GET_CONTENT_FROM_ITERATOR(iter)->UpdateConstBuffersAndCheckRender(transformParam);
 	}
 
 	bool Object::Intersects(Intersection::Sphere &sphere)
