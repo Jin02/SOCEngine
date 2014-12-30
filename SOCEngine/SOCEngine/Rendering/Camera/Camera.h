@@ -6,11 +6,12 @@
 #include "Structure.h"
 #include "RenderManager.h"
 #include "RenderTexture.h"
+#include "CameraConstBuffer.h"
 
 namespace Rendering
 {
 	namespace Camera
-	{
+	{		
 		class Camera : public Core::Component
 		{
 		public:
@@ -24,6 +25,7 @@ namespace Rendering
 			Frustum					*_frustum;
 			Texture::RenderTexture	*_depthBuffer;
 			Texture::RenderTexture	*_renderTarget;
+			Buffer::ConstBuffer		*_constBuffer;
 
 		private:
 			float				_FOV;
@@ -50,7 +52,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
+			void UpdateConstBuffersAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
 			void RenderObjects(const Device::DirectX* dx, const Manager::RenderManager* renderMgr);
 		};
 	}

@@ -42,6 +42,10 @@ void Camera::Initialize()
 	_depthBuffer =  new Texture::RenderTexture;
 	_depthBuffer->Create(windowSize);
 
+	_constBuffer = new Buffer::ConstBuffer;
+	if(_constBuffer->Create(sizeof(CameraConstBuffer)) == false)
+		ASSERT("Error, cam->constbuffer->Create");
+
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
@@ -93,7 +97,7 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
+void Camera::UpdateConstBuffersAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -102,11 +106,23 @@ void Camera::UpdateTransformAndCheckRender(const Structure::Vector<std::string, 
 	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
 	_frustum->Make(viewProj);
 
+	CameraConstBuffer camCB;
+	{
+		const Math::Matrix& viewMat = tfParam.viewMat;
+		camCB.viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
+		camCB.clippingNear = _clippingNear;
+		camCB.clippingFar = _clippingFar;
+		camCB.screenSize = Device::Director::GetInstance()->GetWindowSize();
+	}
+
+	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+	_constBuffer->Update(context, &camCB);
+
 	auto& dataInobjects = objects.GetVector();
 	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
 	{				
 		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformAndCheckRender(tfParam);
+		GET_CONTENT_FROM_ITERATOR(iter)->UpdateConstBuffersAndCheckRender(tfParam);
 	}
 }
 
@@ -147,7 +163,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 				currentUseMaterial->UpdateShader(context);
 			}
 			
-			mesh->Render(customMaterial);
+			mesh->Render(customMaterial, _constBuffer);
 		};
 
 		renderMgr->Iterate(RenderIter, type);
@@ -166,41 +182,43 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::Common);
 		}
 
-		//depth clear
-		{
+		////clear backbuffer, depthbuffer
+		//{
+		//	context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);
+		//	dx->GetDepthBuffer()->Clear(0.0f, 0);
+		//	_depthBuffer->Clear(Rendering::Color::white(), dx);
+		//}
 
-		}
+		////off alpha blending
+		//{
+		//	float blendFactor[1] = { 0.0f };
+		//	context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+		//}
 
-		//off alpha blending
-		{
-			float blendFactor[1] = { 0.0f };
-			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
-		}
+		////Render
+		//{
+		//	//Early-Z
+		//	{
+		//		ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
+		//		context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
+		//		context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
+		//		MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha, MeshRenderOption::DepthWriteWithTest);
 
-		//Render
-		{
-			//Early-Z
-			{
-		/*		ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
-				context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
-				context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
-				MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha, MeshRenderOption::Depth);
+		//		context->RSSetState(dx->GetDisableCullingRasterizerState());
+		//		MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha, MeshRenderOption::AlphaTest);
+		//		context->RSSetState(nullptr);
+		//	}
 
-				context->RSSetState(dx->GetDisableCullingRasterizerState());
-				MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha);
-				context->RSSetState(nullptr);*/
-			}
+		//	//Light Culling
+		//	{
 
-			//Light Culling
-			{
+		//	}
 
-			}
-
-			//Forward Rendering
-			{
-				//MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
-			}
-		}
+		//	//Forward Rendering
+		//	{
+		//		//MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
+		//	}
+		//}
 
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
