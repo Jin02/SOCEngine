@@ -468,6 +468,9 @@
     <ClInclude Include="Rendering\RenderManager\RenderManager.h">
       <Filter>Rendering\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraConstBuffer.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

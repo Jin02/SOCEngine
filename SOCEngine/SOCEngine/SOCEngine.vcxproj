@@ -50,6 +50,7 @@
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\Camera.h" />
+    <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
