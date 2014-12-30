@@ -18,7 +18,6 @@ namespace Rendering
 		Mesh::~Mesh()
 		{
 			Destroy();
-			SAFE_DELETE(_transformConstBuffer);
 		}
 
 		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
@@ -69,7 +68,7 @@ namespace Rendering
 			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
-		void Mesh::Render(Material* custom)
+		void Mesh::Render(Material* custom, const Buffer::ConstBuffer* cameraConstBuffer)
 		{
 			if(_renderer == nullptr || _filter == nullptr)
 				return;
@@ -80,15 +79,15 @@ namespace Rendering
 			if(custom == nullptr)
 			{
 				if(_updateType == MaterialUpdateType::All)
-					_renderer->UpdateAllMaterial(context, _transformConstBuffer);
+					_renderer->UpdateAllMaterial(context, _transformConstBuffer, cameraConstBuffer);
 				else if(_updateType == MaterialUpdateType::One)
-					_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer);
+					_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer, cameraConstBuffer);
 			}
 			else
 			{
 				//직접 입력하는 Material의 경우,
 				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
-				custom->UpdateTransformBuffer(context, _transformConstBuffer);
+				custom->UpdateBasicConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
 				custom->UpdateResources(context);
 			}
 
@@ -100,6 +99,7 @@ namespace Rendering
 		{
 			SAFE_DELETE(_filter);
 			SAFE_DELETE(_renderer);
+			SAFE_DELETE(_transformConstBuffer);
 		}
 	}
 }

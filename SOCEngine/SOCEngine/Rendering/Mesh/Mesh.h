@@ -43,7 +43,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void Render(Material* custom);
+			void Render(Material* custom, const Buffer::ConstBuffer* cameraConstBuffer);
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
