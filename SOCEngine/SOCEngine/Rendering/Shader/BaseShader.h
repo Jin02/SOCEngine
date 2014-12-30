@@ -44,7 +44,7 @@ namespace Rendering
 			virtual ~BaseShader(void);
 
 		public:
-			typedef std::pair<unsigned int, Rendering::Buffer::BaseBuffer*> BufferType;
+			typedef std::pair<unsigned int, const Rendering::Buffer::BaseBuffer*> BufferType;
 			typedef std::pair<unsigned int, const Texture::Texture*> TextureType;
 
 		public:
