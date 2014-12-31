@@ -10,7 +10,7 @@ namespace Rendering
 		{
 			Math::Vector4 viewPos;
 			float clippingNear, clippingFar;
-			Math::Size<unsigned int> screenSize;
+			Math::Size<float> screenSize;
 		};
 	}
 }

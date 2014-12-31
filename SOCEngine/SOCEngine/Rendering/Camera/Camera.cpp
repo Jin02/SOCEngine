@@ -26,7 +26,7 @@ void Camera::Initialize()
 {
 	_FOV = 60.0f;
 	_clippingNear = 0.01f;
-	_clippingFar = 100.0f;
+	_clippingFar = 50.0f;
 
 	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
@@ -112,7 +112,9 @@ void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string
 		camCB.viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
 		camCB.clippingNear = _clippingNear;
 		camCB.clippingFar = _clippingFar;
-		camCB.screenSize = Device::Director::GetInstance()->GetWindowSize();
+		const auto& size = Device::Director::GetInstance()->GetWindowSize();
+		camCB.screenSize.w = static_cast<float>(size.w);
+		camCB.screenSize.h = static_cast<float>(size.h);
 	}
 
 	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
