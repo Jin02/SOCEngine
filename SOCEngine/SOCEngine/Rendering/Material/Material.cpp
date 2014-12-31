@@ -59,7 +59,7 @@ void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
 
 void Material::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
 {
-	if(_UpdateConstBufferMethod != UpdateCBMethod::Default)
+	if(_updateConstBufferMethod != UpdateCBMethod::Default)
 		return;
 
 	auto SetBufferData = [](std::vector<Shader::BaseShader::BufferType>& buffers, 
