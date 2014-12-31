@@ -6,6 +6,24 @@ cbuffer Transform : register( b0 )
 	matrix worldViewProj;
 };
 
+cbuffer Camera : register( b1 )
+{
+	float4 cameraPos;
+	float clippingNear;
+	float clippingFar;
+	float2 screenSize;
+};
+
+cbuffer Material : register( b2 )
+{
+	float3 material_diffuse;
+	float3 material_ambient;
+	float3 material_specular;
+	float3 materail_emissive;
+	float shiness;
+	float opacity;		
+};
+
 struct VS_INPUT
 {
 	float4 pos 		: POSITION;
@@ -18,6 +36,7 @@ struct PS_INPUT
 	float4 pos 		: SV_POSITION;
 	float3 normal 	: NORMAL;
 	float2 tex		: TEXCOORD0;
+	float depth 	: LINEAR_DEPTH;
 };
 
 Texture2D txDiffuse : register( t1 );
@@ -41,6 +60,15 @@ float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
 	return float4(0.0f, 0.0f, 1.0f, 1.0f);
 }
 
+
+#define PROJECTION_A  clippingFar/(clippingFar - clippingNear)
+#define PROJECTION_B (-clippingNear) / (clippingFar - clippingNear)
+
+float ConvertToLinear(float inDepth)
+{
+	return PROJECTION_B / (inDepth - PROJECTION_A);
+}
+
 PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
@@ -49,12 +77,17 @@ PS_INPUT VS ( VS_INPUT input )
 	ps.normal 	= normalize( mul( input.normal, world ) );
 	ps.tex		= input.tex;
 
+	float4 viewPos = mul(input.pos, worldView);
+	ps.depth = viewPos.z / clippingFar;
+
     return ps;
 }
 
 float4 PS( PS_INPUT input ) : SV_Target
 {		
-	return txDiffuse.Sample(testSampler, input.tex);
+	float depth = input.depth;
+	float4 color = float4(depth, depth, depth, 1.0f);
+	return color;
 }
 
 PS_INPUT AlphaTestVS ( VS_INPUT input )

@@ -5,6 +5,14 @@ cbuffer Transform : register( b0 )
 	matrix worldViewProj;
 };
 
+cbuffer Camera : register( b1 )
+{
+	float4 viewPos;
+	float clippingNear;
+	float clippingFar;
+	float2 screenSize;
+};
+
 struct VS_INPUT
 {
 	float4 pos 		: POSITION;
