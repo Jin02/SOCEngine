@@ -120,11 +120,14 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	return true;
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::string* includeCode)
 {
 	std::string code;
 	if(LoadShaderCode(code, folderPath, fileName, recycleCode) == false)
 		return nullptr;
+
+	if(includeCode)
+		code += (*includeCode);
 
 	ID3DBlob* blob = nullptr;
 	if( CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc) == false )
@@ -136,7 +139,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 	return blob;
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::string* includeCode)
 {
 	std::string fileName, mainFunc, shaderType;
 
@@ -146,7 +149,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 		return nullptr;
 	}
 
-	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode);
+	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode, includeCode);
 }
 
 bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc)
@@ -181,7 +184,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName)
 {
 	std::string fileName, mainFunc;
 
@@ -190,6 +193,11 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		ASSERT("Command Error");
 		return nullptr;
 	}
+
+	std::string optionalCode;
+	if(includeFileName)
+		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
+
 	std::string fullCommand = VS_FULL_COMMAND(fileName, mainFunc);
 	VertexShader* shader = dynamic_cast<VertexShader*>(_shaders.Find(fullCommand));
 
@@ -209,7 +217,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	return shader;
 }
 
-PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName)
 {
 	std::string fileName, mainFunc;
 
