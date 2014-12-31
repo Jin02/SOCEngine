@@ -90,13 +90,20 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	}
 
 	std::ifstream file;
-	const char* extension[2] = {".fx", ".hlsl"};
-	for(int i=0; i<2; ++i)
+	if( fileName.find(".") == -1)
 	{
-		file.open(folderPath+fileName+extension[i]);
+		const char* extension[2] = {".fx", ".hlsl"};
+		for(int i=0; i<2; ++i)
+		{
+			file.open(folderPath+fileName+extension[i]);
 
-		if(file.is_open())
-			break;
+			if(file.is_open())
+				break;
+		}
+	}
+	else //fileName has extension
+	{
+		file.open(folderPath+fileName);
 	}
 
 	if(file.good() == false)
@@ -127,7 +134,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 		return nullptr;
 
 	if(includeCode)
-		code += (*includeCode);
+		code = (*includeCode) + code;
 
 	ID3DBlob* blob = nullptr;
 	if( CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc) == false )
@@ -203,7 +210,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode, &optionalCode);
 		if(blob == nullptr)
 			return nullptr;
 
@@ -227,9 +234,13 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 	std::string fullCommand = PS_FULL_COMMAND(fileName, mainFunc);
 	PixelShader* shader = dynamic_cast<PixelShader*>(_shaders.Find(fullCommand));
 
+	std::string optionalCode;
+	if(includeFileName)
+		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
+
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, recyleCode);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, recyleCode, &optionalCode);
 		if(blob == nullptr)
 			return nullptr;
 
