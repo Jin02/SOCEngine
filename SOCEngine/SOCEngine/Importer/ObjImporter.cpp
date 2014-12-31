@@ -36,10 +36,8 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 	if(material == nullptr)
 	{
 		Material::Color color;
-		color.ambient.SetColor(tinyMaterial.ambient);
-		color.diffuse.SetColor(tinyMaterial.diffuse);
+		color.main.SetColor(tinyMaterial.diffuse);
 		color.specular.SetColor(tinyMaterial.specular);
-		color.emissive.SetColor(tinyMaterial.emission);
 		color.shiness = tinyMaterial.shininess;
 		color.opacity = tinyMaterial.dissolve;
 
