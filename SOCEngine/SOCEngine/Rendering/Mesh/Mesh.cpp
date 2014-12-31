@@ -59,7 +59,7 @@ namespace Rendering
 		{
 		}
 
-		void Mesh::UpdateConstBuffer(const Core::TransformPipelineShaderInput& transpose_Transform)
+		void Mesh::UpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);

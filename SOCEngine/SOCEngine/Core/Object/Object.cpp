@@ -85,7 +85,7 @@ namespace Core
 		}
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
-			(*iter)->UpdateConstBuffer(transposeTransform);
+			(*iter)->UpdateTransformCB(transposeTransform);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 			GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(transformParam);
