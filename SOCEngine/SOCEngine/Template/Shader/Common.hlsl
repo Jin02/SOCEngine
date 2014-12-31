@@ -2,25 +2,40 @@
 
 cbuffer Transform : register( b0 )
 {
-	matrix world;
-	matrix worldView;
-	matrix worldViewProj;
+	matrix transform_world;
+	matrix transform_worldView;
+	matrix transform_worldViewProj;
 };
 
 cbuffer Camera : register( b1 )
 {
-	float4 cameraPos;
-	float clippingNear;
-	float clippingFar;
-	float2 screenSize;
+	float4 	camera_pos;
+	float 	camera_near;
+	float 	camera_far;
+	float2 	camera_screenSize;
 };
 
 cbuffer Material : register( b2 )
 {
-	float3 material_diffuse;
-	float3 material_ambient;
-	float3 material_specular;
-	float3 materail_emissive;
-	float shiness;
-	float opacity;		
+	float3	material_mainColor;
+	float 	material_opacity;
+	float3 	material_specular;
+	float 	material_shiness;
 };
+
+struct DEPTH_WRITE_PS_INPUT
+{
+	float4 pos 		: SV_POSITION;	
+	float depth 	: LINEAR_DEPTH;
+};
+
+#define VS_CALC_DEPTH_WITH_POS(ps, inputPos) ps.pos = mul(inputPos, transform_worldViewProj); float4 viewPos = mul(inputPos, transform_worldView);	ps.depth = viewPos.z / camera_far;
+
+#define ALPHA_TEST 0.5f
+
+float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+{
+	float4 depth;
+	depth.x	= input.depth;
+	return depth;
+}

@@ -4,57 +4,68 @@ struct VS_INPUT
 	float2 tex		: TEXCOORD0;
 };
 
-struct PS_INPUT
-{
-	float4 pos 		: SV_POSITION;
-	float2 tex		: TEXCOORD0;
-};
 
-struct DEPTH_WRITE_PS_INPUT
-{
-	float4 pos : SV_POSITION;	
-};
-
+//DepthWrite
 DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
 {
 	DEPTH_WRITE_PS_INPUT ps;
 
-	ps.pos = mul( input.pos, worldViewProj );
+	ps.pos = mul( input.pos, transform_worldViewProj );
+	VS_CALC_DEPTH_WITH_POS(ps, input.pos);
+
     return ps;
 }
+//End
 
-float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+Texture2D txDiffuse 		: register( t1 );
+SamplerState testSampler 	: register( s0 );
+
+//Common
+struct PS_INPUT
 {
-	return float4(0.0f, 0.0f, 1.0f, 1.0f);
-}
+	float4 pos 		: SV_POSITION;
+	float2 uv		: TEXCOORD0;
+};
 
 PS_INPUT VS ( VS_INPUT input )
 {
 	PS_INPUT ps;
 
-	ps.pos = mul( input.pos, worldViewProj );
-	ps.tex		= input.tex;
+	ps.pos = mul( input.pos, transform_worldViewProj );
+	ps.uv		= input.tex;
 
     return ps;
 }
 
 float4 PS( PS_INPUT input ) : SV_Target
 {
-	return float4(0.0f, 0.0f, 1.0f, 1.0f);
+	float4 texDiffuse = txDiffuse.Sample(testSampler, input.uv);
+	return texDiffuse;
 }
+//End
 
-
-PS_INPUT AlphaTestVS(VS_INPUT input)
+//Alpha Test
+struct ALPHA_TEST_PS_INPUT
 {
-	PS_INPUT ps;
+	float4 pos 		: SV_POSITION;
+	float2 uv		: TEXCOORD0;
+};
 
-	ps.pos = mul( input.pos, worldViewProj );
-	ps.tex		= input.tex;
+ALPHA_TEST_PS_INPUT AlphaTestVS(VS_INPUT input)
+{
+	ALPHA_TEST_PS_INPUT ps;
+
+	ps.pos = mul( input.pos, transform_worldViewProj );
+	ps.uv  = input.tex;
 
     return ps;
 }
 
-float4 AlphaTestPS(PS_INPUT input) : SV_Target
+float4 AlphaTestPS(ALPHA_TEST_PS_INPUT input) : SV_Target
 {
-	return float4(1.0f, 1.0f, 0.0f, 1.0f);
+	float4 texDiffuse = txDiffuse.Sample(testSampler, input.uv);
+	float alpha = texDiffuse.a * material_opacity;
+	if(alpha < ALPHA_TEST) discard;
+	return texDiffuse * float4(material_mainColor, material_opacity);
 }
+//End
