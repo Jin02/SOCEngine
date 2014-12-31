@@ -59,43 +59,61 @@ void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
 
 void Material::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
 {
-	if(_updateConstBufferMethod != UpdateCBMethod::Default)
+	if(_UpdateConstBufferMethod != UpdateCBMethod::Default)
 		return;
 
-	auto& vsBuffers = _constbuffers.usageVS;
-	auto SetBufferData = [&](BasicConstBuffercSlot slotType, unsigned int idx, const Buffer::ConstBuffer* constBuffer)
+	auto SetBufferData = [](std::vector<Shader::BaseShader::BufferType>& buffers, 
+		BasicConstBuffercSlot slotType, 
+		unsigned int idx,
+		const Buffer::ConstBuffer* constBuffer)
 	{
-		BasicConstBuffercSlot bufferType = static_cast<BasicConstBuffercSlot>(vsBuffers[idx].first);
+		BasicConstBuffercSlot bufferType = static_cast<BasicConstBuffercSlot>(buffers[idx].first);
 
 		if(bufferType == slotType)
-			vsBuffers[idx].second = constBuffer;
+			buffers[idx].second = constBuffer;
 		else
 		{
 			ASSERT("vs constbuffer already has another buffer");
-			vsBuffers[idx] = std::make_pair(slotType, constBuffer);
+			buffers[idx] = std::make_pair(slotType, constBuffer);
 		}
 	};
+
+	auto& vsBuffers = _constbuffers.usageVS;
 	if(vsBuffers.size() == 0)
+	{
 		vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Transform, transform));
+		vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
+	}
 	else
 	{
 		unsigned int idx = Material::BasicConstBuffercSlot::Transform;
-		SetBufferData(Material::BasicConstBuffercSlot::Transform, idx, transform);
-	}
-	if(vsBuffers.size() == 1)
-	{
-		unsigned int idx = Material::BasicConstBuffercSlot::Transform;
-		SetBufferData(Material::BasicConstBuffercSlot::Transform, idx, transform);
+		SetBufferData(vsBuffers, Material::BasicConstBuffercSlot::Transform, idx, transform);
 
-		vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
+		if(vsBuffers.size() == 1)
+			vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
+		else if(vsBuffers.size() >= 2)
+		{
+			idx = Material::BasicConstBuffercSlot::Camera;
+			SetBufferData(vsBuffers, Material::BasicConstBuffercSlot::Camera, idx, camera);
+		}
 	}
-	else if(vsBuffers.size() >= 2)
-	{
-		unsigned int idx = Material::BasicConstBuffercSlot::Transform;
-		SetBufferData(Material::BasicConstBuffercSlot::Transform, idx, transform);
 
-		idx = Material::BasicConstBuffercSlot::Camera;
-		SetBufferData(Material::BasicConstBuffercSlot::Camera, idx, camera);
+	auto& psBuffers = _constbuffers.usagePS;
+	if(psBuffers.size() == 0)
+	{
+		psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::MaterialColor, nullptr));
+		psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
+	}
+	else
+	{
+		SetBufferData(psBuffers, Material::BasicConstBuffercSlot::MaterialColor, 0, _colorBuffer);
+
+		if(psBuffers.size() == 1)
+			psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
+		else if(vsBuffers.size() >= 2)
+		{
+			SetBufferData(psBuffers, Material::BasicConstBuffercSlot::Camera, 1, camera);
+		}
 	}
 }
 

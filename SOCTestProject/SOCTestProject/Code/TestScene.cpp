@@ -20,7 +20,8 @@ void TestScene::OnInitialize()
 	Factory::ShaderFactory factory(_shaderMgr);
 	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/");
 	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 3));
-	cube->GetTransform()->UpdateScale(Math::Vector3(0.5, 0.5, 0.5));
+	_test = cube->GetTransform();
+	cube->GetTransform()->UpdateScale(Math::Vector3(1.5, 1.5, 1.5));
 	AddObject(cube);
 
 	//Camera
@@ -41,9 +42,9 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnUpdate(float dt)
 {
-	//static float t = 0.0f;
-	//t+=0.01f;
-	//_test->UpdatePosition(Math::Vector3(0,t,0));
+	static float t = 3.0f;
+	t+=0.001f;
+	_test->UpdatePosition(Math::Vector3(0,0,t));
 }
 
 void TestScene::OnRenderPost()
