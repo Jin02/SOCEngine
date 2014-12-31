@@ -24,6 +24,7 @@ namespace Rendering
 		public:
 			bool LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
+				const std::string* includeFileName,
 				Shader::VertexShader** outVertexShader,
 				Shader::PixelShader** outPixelShader)
 			{
@@ -54,8 +55,8 @@ namespace Rendering
 				
 				const std::string baseCommand = shaderName+':';
 
-				Shader::VertexShader* vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations);
-				Shader::PixelShader* ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true);
+				Shader::VertexShader* vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName);
+				Shader::PixelShader* ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;
