@@ -294,8 +294,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
 	print "Shader File Modify Time : " + time.ctime(shaderFileModifyTime)
 
-	isCreateMetadata 	= True
-	includeFileNames	= []
+	isCreateMetadata = True
 
 	# check original file
 	if os.path.isfile(metaDataFilePath):
@@ -307,24 +306,17 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
 
  	#check Shader File
- 	shaderFile 		= open(shaderFilePath, 'rU')
- 	
- 	def init(codeLine):
- 		if NOT_CREATE_META_DATA in codeLine:
- 			shaderFile.close()
- 			exit()
- 		elif "#include" in codeLine:
- 			startPos = codeLine.find('"')+1
- 			endPos = codeLine.rfind('"')
- 			includeFileNames.append(codeLine[startPos:endPos])
-
-	init( shaderFile.readline() )
-	init( shaderFile.readline() )
-
+ 	shaderFile 	= open(shaderFilePath, 'rU')
+ 	firstLine 	= shaderFile.readline()
  	shaderFile.close()
 
-	if isCreateMetadata == True:
+ 	#check create file
+	isCreateMetadata = ((NOT_CREATE_META_DATA in firstLine) == False)
+
+	if isCreateMetadata:
 		print "Create Metadata\n"
+	else:
+		return #assert
 
 	shaderFile 	= open(shaderFilePath, 'rU')
 	parser 		= ParseCode()
@@ -423,16 +415,6 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 				outData += nextLine
 
 		outData += tap + '}'
-		metaDataFile.write(outData)
-
-	if len(includeFileNames) != 0:
-		outData = ",\n"+tap*1 + QuotationMarks("IncludeFile") + ": "
-		outData += "["
-		content = ""
-		for f in includeFileNames:
-			content += QuotationMarks(f) + ", "
-		outData += content[:content.rfind(", ")]
-		outData += "]"
 		metaDataFile.write(outData)
 
 	metaDataFile.write(nextLine + '}')
