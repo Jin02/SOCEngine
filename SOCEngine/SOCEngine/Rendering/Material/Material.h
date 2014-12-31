@@ -25,13 +25,11 @@ namespace Rendering
 
 		struct Color
 		{
-			Rendering::Color diffuse;
-			Rendering::Color ambient;
-			Rendering::Color specular;
-			Rendering::Color emissive;
-
-			float shiness;
+			Rendering::Color main;
 			float opacity;
+
+			Rendering::Color specular;
+			float shiness;
 
 			Color();
 			~Color();

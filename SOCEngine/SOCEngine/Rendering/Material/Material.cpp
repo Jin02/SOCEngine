@@ -6,8 +6,7 @@ using namespace Rendering;
 using namespace Rendering::Buffer;
 
 Material::Color::Color() 
-	:diffuse(1.0f, 1.0f, 1.0f), ambient(0.5f, 0.5f, 0.5f),
-	specular(1.0f, 1.0f, 1.0f), emissive(0.0f, 0.0f, 0.0f),
+	:main(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f), 
 	shiness(0.0f), opacity(1.0f)
 {
 }
@@ -42,10 +41,8 @@ void Material::InitColorBuffer(ID3D11DeviceContext* context)
 	if( psConstBuffers.size() != 0 )
 		ASSERT("Error!, ps constbuffer already exists");
 
-	_colorBuffer = new Buffer::ConstBuffer;
-	
-	// const buffer size certainly is 16 multiple
-	_colorBuffer->Create(sizeof(Material::Color) + 8);
+	_colorBuffer = new Buffer::ConstBuffer;	
+	_colorBuffer->Create(sizeof(Material::Color));
 
 	psConstBuffers.push_back(std::make_pair(BasicConstBuffercSlot::MaterialColor, _colorBuffer));	
 	UpdateColorBuffer(context);
