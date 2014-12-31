@@ -73,7 +73,8 @@ namespace Rendering
 			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 			{
 				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
-				context->VSSetConstantBuffers( (*iter).first, 1, &buffer );
+				if(buffer)
+					context->VSSetConstantBuffers( (*iter).first, 1, &buffer );
 			}
 		}
 
@@ -82,7 +83,8 @@ namespace Rendering
 			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 			{
 				ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
-				context->VSSetShaderResources( iter->first, 1, &srv );
+				if(srv)
+					context->VSSetShaderResources( iter->first, 1, &srv );
 			}
 		}
 	}

@@ -43,7 +43,8 @@ namespace Rendering
 			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 			{
 				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
-				context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
+				if(buffer)
+					context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
 			}
 		}
 
@@ -52,14 +53,16 @@ namespace Rendering
 			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 			{
 				ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
-				context->PSSetShaderResources( iter->first, 1, &srv );
+				if(srv)
+					context->PSSetShaderResources( iter->first, 1, &srv );
 			}
 		}
 
 		for(auto iter = samplers.begin(); iter != samplers.end(); ++iter)
 		{
 			ID3D11SamplerState* samplerState = iter->second->GetSampler();
-			context->PSSetSamplers(iter->first, 1, &samplerState);
+			if(samplerState)
+				context->PSSetSamplers(iter->first, 1, &samplerState);
 		}
 	}
 
