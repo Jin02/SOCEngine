@@ -45,7 +45,8 @@ void Scene::Initialize()
 			Rendering::Shader::VertexShader* vs = nullptr;			
 			Rendering::Shader::PixelShader*	 ps = nullptr;
 
-			if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &vs, &ps) == false)
+			const std::string includeFileName = "Common.hlsl";
+			if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &includeFileName, &vs, &ps) == false)
 			{
 				std::string error = "Not Found";
 				error += shaderName + ".hlsl";
