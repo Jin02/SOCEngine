@@ -13,10 +13,10 @@ CPUReadConstBuffer::~CPUReadConstBuffer()
 {
 }
 
-bool CPUReadConstBuffer::Create(unsigned int size, unsigned int stride)
+bool CPUReadConstBuffer::Create(unsigned int stride, unsigned int num)
 {
 	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = size;
+	desc.ByteWidth = stride * num;
 	desc.StructureByteStride = stride;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	desc.Usage = D3D11_USAGE_STAGING;
