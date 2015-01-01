@@ -49,10 +49,13 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 
 	context->Dispatch(_threadGroup.x, _threadGroup.y, _threadGroup.z);
 
+	ID3D11ShaderResourceView* nullSRV = nullptr;
 	for(auto iter = _inputBuffers.begin(); iter != _inputBuffers.end(); ++iter)
-		context->CSSetShaderResources(iter->idx, 1, nullptr);
+		context->CSSetShaderResources(iter->idx, 1, &nullSRV);
 
+	ID3D11UnorderedAccessView* nullUAV = nullptr;
 	for(auto iter = _outputBuffers.begin(); iter != _outputBuffers.end(); ++iter)
-		context->CSSetUnorderedAccessViews(iter->idx, 0, nullptr, nullptr);
+		context->CSSetUnorderedAccessViews(iter->idx, 0, &nullUAV, nullptr);
 
+	context->CSSetShader(nullptr, nullptr, 0);
 }
