@@ -184,43 +184,53 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::Common);
 		}
 
-		////clear backbuffer, depthbuffer
-		//{
-		//	context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);
-		//	dx->GetDepthBuffer()->Clear(0.0f, 0);
-		//	_depthBuffer->Clear(Rendering::Color::white(), dx);
-		//}
+		//clear backbuffer, depthbuffer
+		{
+			//context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);
+			//dx->GetDepthBuffer()->Clear(0.0f, 0);
+			//_depthBuffer->Clear(Rendering::Color::white(), dx);
+		}
 
-		////off alpha blending
-		//{
-		//	float blendFactor[1] = { 0.0f };
-		//	context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
-		//}
+		//off alpha blending
+		{
+			//float blendFactor[1] = { 0.0f };
+			//context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
+		}
 
-		////Render
-		//{
-		//	//Early-Z
-		//	{
-		//		ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
-		//		context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
-		//		context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
-		//		MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha, MeshRenderOption::DepthWriteWithTest);
+		//Render
+		{
+		/*	ID3D11RenderTargetView*		nullRTV		= nullptr;
+			ID3D11DepthStencilView*		nullDSV		= nullptr;
+			ID3D11ShaderResourceView*	nullSRV		= nullptr;
+			ID3D11UnorderedAccessView*	nullUAV		= nullptr;
+			ID3D11SamplerState*			nullSampler = nullptr;*/
 
-		//		context->RSSetState(dx->GetDisableCullingRasterizerState());
-		//		MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha, MeshRenderOption::AlphaTest);
-		//		context->RSSetState(nullptr);
-		//	}
+			//Early-Z
+			{				
+				//ID3D11RenderTargetView* rtv = _depthBuffer->GetRenderTargetView();
+				//context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
+				//context->OMSetDepthStencilState(dx->GetDepthLessEqualState(), 0);
+				//MeshRender(context, nullptr, RenderManager::MeshType::nonAlpha, MeshRenderOption::DepthWriteWithTest);
 
-		//	//Light Culling
-		//	{
+				//rtv = nullptr;
+				//context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
+				//context->RSSetState(dx->GetDisableCullingRasterizerState());
+				//MeshRender(context, nullptr, RenderManager::MeshType::hasAlpha, MeshRenderOption::AlphaTest);
+				//context->RSSetState(nullptr);
+			}
 
-		//	}
+			//Light Culling
+			{
+				//context->OMSetRenderTargets(1, &nullRTV, nullDSV);
+				//context->VSSetShader(nullptr, nullptr, 0);
+				//context->PSSetShader(nullptr, nullptr, 0);
+				//context->CSSetShader(
+			}
 
-		//	//Forward Rendering
-		//	{
-		//		//MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha);
-		//	}
-		//}
+			//Forward Rendering
+			{
+			}
+		}
 
 
 		IDXGISwapChain* swapChain = dx->GetSwapChain();
