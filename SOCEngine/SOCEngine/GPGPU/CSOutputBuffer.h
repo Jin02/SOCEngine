@@ -19,6 +19,9 @@ namespace GPGPU
 		public:
 			bool Create(unsigned int stride, unsigned int num);
 
+		private:
+			void Update(ID3D11DeviceContext* context, const void* data){}
+
 		public:
 			GET_ACCESSOR(UnorderedAccessView, ID3D11UnorderedAccessView*, _uav);
 		};
