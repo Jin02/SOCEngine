@@ -2,6 +2,7 @@
 #include <fstream>
 #include "ShaderManager.h"
 #include "Mesh.h"
+#include "LightCulling.h"
 
 using namespace Rendering;
 
@@ -34,6 +35,13 @@ void TestScene::OnInitialize()
 		camObjTf->UpdateDirection(Math::Vector3(0,0,1));
 		_cameraMgr->Add("mainCamera", cam, false);
 	}
+
+	GPGPU::DirectCompute::ComputeShader::ThreadGroup tg;
+	tg.x = 1;
+	tg.y = 1;
+	tg.z = 1;
+	Rendering::Light::LightCulling lc(tg);
+	lc.Init("./", "Fuuuuuck.hlsl");
 }
 
 void TestScene::OnRenderPreview()
