@@ -8,7 +8,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-MeshRenderer::MeshRenderer(Material* depthWriteMaterial, Material*	alphaTestMaterial) 
+MeshRenderer::MeshRenderer(BasicMaterial* depthWriteMaterial, BasicMaterial*	alphaTestMaterial) 
 	: _depthWriteMaterial(depthWriteMaterial), _alphaTestMaterial(alphaTestMaterial)
 {
 
@@ -18,7 +18,7 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-bool MeshRenderer::AddMaterial(Material* material, bool copy)
+bool MeshRenderer::AddMaterial(BasicMaterial* material, bool copy)
 {
 	if(_materials.Find(material->GetName()) )
 		return false;
@@ -32,7 +32,7 @@ void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer:
 	auto& materials = _materials.GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{
-		Material* material = GET_CONTENT_FROM_ITERATOR(iter);
+		BasicMaterial* material = GET_CONTENT_FROM_ITERATOR(iter);
 		material->UpdateBasicConstBuffer(context, transformBuffer, camera);
 		material->UpdateResources(context);
 	}
@@ -43,7 +43,7 @@ bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int ind
 	if( index >= _materials.GetSize() )
 		return false;
 
-	Material* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
+	BasicMaterial* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
 	if(material == nullptr)
 		return false;
 
@@ -64,7 +64,7 @@ void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	Rendering::Mesh::Mesh* parent = static_cast<Rendering::Mesh::Mesh*>(mesh);
 
-	auto IterMaterials = [&](Material* material)
+	auto IterMaterials = [&](BasicMaterial* material)
 	{
 		bool changd = material->GetChangedAlpha();
 		if(changd)

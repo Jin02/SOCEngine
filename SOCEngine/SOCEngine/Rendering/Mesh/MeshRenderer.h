@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Material.h"
+#include "BasicMaterial.h"
 #include "Structure.h"
 #include "TransformPipelineParam.h"
 
@@ -11,18 +11,18 @@ namespace Rendering
 		class MeshRenderer
 		{
 		private:
-			Structure::Vector<std::string, Material>	_materials;
+			Structure::Vector<std::string, BasicMaterial>	_materials;
 
 		private:
-			Material*	_depthWriteMaterial;
-			Material*	_alphaTestMaterial;
+			BasicMaterial*	_depthWriteMaterial;
+			BasicMaterial*	_alphaTestMaterial;
 
 		public:
-			MeshRenderer(Material* depthWriteMaterial = nullptr, Material*	alphaTestMaterial = nullptr);
+			MeshRenderer(BasicMaterial* depthWriteMaterial = nullptr, BasicMaterial*	alphaTestMaterial = nullptr);
 			~MeshRenderer();
 
 		public:
-			bool AddMaterial(Material* material, bool copy = false);
+			bool AddMaterial(BasicMaterial* material, bool copy = false);
 
 			void UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera);
 			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera);
@@ -32,8 +32,8 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
-			GET_ACCESSOR(DepthWriteMaterial, Material*, _depthWriteMaterial);
-			GET_ACCESSOR(AlphaTestMaterial, Material*, _alphaTestMaterial);
+			GET_ACCESSOR(DepthWriteMaterial, BasicMaterial*, _depthWriteMaterial);
+			GET_ACCESSOR(AlphaTestMaterial, BasicMaterial*, _alphaTestMaterial);
 		};
 	}
 }

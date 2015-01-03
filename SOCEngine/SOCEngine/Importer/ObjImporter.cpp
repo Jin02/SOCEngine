@@ -20,7 +20,7 @@ ObjImporter::~ObjImporter()
 {
 }
 
-Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder)
+BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder)
 {
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 
@@ -29,19 +29,19 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 	const std::string materialName = tinyMaterial.name;
 	if( materialName.empty() )
-		ASSERT("Material has not key");
+		ASSERT("BasicMaterial has not key");
 
-	Material* material = materialMgr->Find(fileName, materialName);
+	BasicMaterial* material = materialMgr->Find(fileName, materialName);
 
 	if(material == nullptr)
 	{
-		Material::Color color;
+		BasicMaterial::Color color;
 		color.main.SetColor(tinyMaterial.diffuse);
 		color.specular.SetColor(tinyMaterial.specular);
-		color.shiness = tinyMaterial.shininess;
-		color.opacity = tinyMaterial.dissolve;
+		color.specular.a = tinyMaterial.shininess;
+		color.main.a = tinyMaterial.dissolve;
 
-		material = new Material(materialName,  color);
+		material = new BasicMaterial(materialName, color);
 
 		// Using Utility::String::ParseDirectory
 		std::string textureFileName, textureExtension;
@@ -76,13 +76,13 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 	}
 	else
 	{
-		DEBUG_LOG("Material Manager already has new mateiral. Please check key from new material");
+		DEBUG_LOG("BasicMaterial Manager already has new mateiral. Please check key from new material");
 	}
 
 	return material;
 }
 
-void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder)
+void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, BasicMaterial>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder)
 {
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 
@@ -90,19 +90,19 @@ void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>*
 	TextureManager* textureMgr = currentScene->GetTextureManager();
 	for(auto iter = tinyMaterials.begin(); iter != tinyMaterials.end(); ++iter)
 	{
-		Material* material = LoadMaterial((*iter), fileName, materialFileFolder);
+		BasicMaterial* material = LoadMaterial((*iter), fileName, materialFileFolder);
 		if(material && outMaterials)
 			(*outMaterials)->Add(iter->name, material);
 	}
 
-	//DepthWrite Material
+	//DepthWrite BasicMaterial
 	{
-		Material* depthWrite = new Material("DepthWrite");
+		BasicMaterial* depthWrite = new BasicMaterial("DepthWrite");
 		materialMgr->Add(fileName, "DepthWrite", depthWrite, false);
 	}
-	//AlphaTest Material
+	//AlphaTest BasicMaterial
 	{
-		Material* alphaTest = new Material("AlphaTest");
+		BasicMaterial* alphaTest = new BasicMaterial("AlphaTest");
 		materialMgr->Add(fileName, "AlphaTest", alphaTest, false);
 	}
 }
@@ -151,9 +151,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 									const std::vector<tinyobj::material_t>& tinyMaterials, 
 									const std::string& fileName, 
 									const std::vector<CustomSemantic>& customSemanticData, 
-									Material* material,
-									Material* depthWriteMaterial,
-									Rendering::Material* alphaTestMaterial, 
+									BasicMaterial* material,
+									BasicMaterial* depthWriteMaterial,
+									Rendering::BasicMaterial* alphaTestMaterial, 
 									bool isDynamicMesh)
 {
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
@@ -400,7 +400,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 
 	auto InsertShaderIntoMaterial = [&](const std::string& shaderName, const std::string& materialName, const std::string& vsMainFuncName, const std::string& psMainFuncName)
 	{
-		Material* material = materialMgr->Find(fileName, materialName);
+		BasicMaterial* material = materialMgr->Find(fileName, materialName);
 		assert(material != nullptr);
 
 		if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
@@ -430,13 +430,13 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
 	std::string materialName = objMtl ? objMtl->name : GetBasicShaderName();
-	Material* material	 = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
+	BasicMaterial* material	 = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
 
 	materialName = "DepthWrite";
-	Material* depthWrite = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
+	BasicMaterial* depthWrite = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
 
 	materialName = "AlphaTest";
-	Material* alphaTest = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
+	BasicMaterial* alphaTest = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
 
 	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, 
 		indices.data(), indices.size(), 
