@@ -12,6 +12,12 @@ DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
 
     return ps;
 }
+float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+{
+	float4 depth;
+	depth.x	= input.depth;
+	return depth;
+}
 /* end */
 
 
@@ -33,6 +39,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 {
 	return float4(1.0f, 0.0f, 1.0f, 1.0f);
 }
+/* end */
 
 //alphatest
 struct ALPHA_TEST_PS_INPUT

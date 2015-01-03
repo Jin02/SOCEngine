@@ -15,6 +15,12 @@ DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
 
     return ps;
 }
+float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+{
+	float4 depth;
+	depth.x	= input.depth;
+	return depth;
+}
 //End
 
 Texture2D txDiffuse 		: register( t1 );
