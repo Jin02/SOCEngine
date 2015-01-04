@@ -301,3 +301,8 @@ bool ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseS
 
 	return _shaders.Add(fullCommand, shader, false) ? true : false;
 }
+
+const std::string* ShaderManager::FindShaderCode(const std::string& fileName)
+{
+	return _shaderCodes.Find(fileName);
+}
