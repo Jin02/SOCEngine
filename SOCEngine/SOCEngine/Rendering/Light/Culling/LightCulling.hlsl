@@ -6,28 +6,30 @@
 #define MAX_LIGHT_NUM					2048
 #define FLOAT_MAX						3.402823466e+38F
 
-Buffer<float4> 		g_bPointLightCenterWithRadius : register(t0);
-Buffer<float4> 		g_bSpotLightCenterWithRadius : register(t1);
+Buffer<float4> 		g_bPointLightCenterWithRadius 	: register(t0);
+Buffer<float4> 		g_bSpotLightCenterWithRadius 	: register(t1);
+Texture2D<float> 	g_tDepthTexture 				: register(t2);
+RWBuffer<uint> 		g_orwbTileLightIndex 			: register(u0);
 
-Texture2D<float> 	g_tDepthTexture : register(t2);
-RWBuffer<uint> 		g_orwbTileLightIndex : register(u0);
-
-cbuffer LightCullingRequiredData : register( b0 )
+cbuffer LightCullingGlobalData : register( b0 )
 {
 	matrix	g_worldViewMat;
 	matrix 	g_invProjMat;
-	uint 	g_lightNum;
+	float2	g_screenSize;
+	float 	g_clippingFar;
 	uint 	g_maxLightNumInTile; //한 타일당 최대 빛 갯수.
+	uint 	g_lightNum;
+	uint3	dummy;	
 };
 
 uint GetNumTilesX()
 {
-	return (uint)((camera_screenSize.x + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((g_screenSize.x + TILE_RES - 1) / (float)TILE_RES);
 }
 
 uint GetNumTilesY()
 {
-	return (uint)((camera_screenSize.y + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((g_screenSize.y + TILE_RES - 1) / (float)TILE_RES);
 }
 
 float4 ConvertProjToView( float4 p )
@@ -52,12 +54,6 @@ float InFrustum( float4 p, float4 frusutmNormal )
 {
 	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
 	return dot( frusutmNormal.xyz, p.xyz );
-}
-
-float ConvertProjDepthToView( float z )
-{
-	z = 1.f / (z * g_invProjMat._34 + g_invProjMat._44);
-	return z;
 }
 
 groupshared uint s_zMax;
@@ -116,12 +112,11 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 
 	//shared min, max 계산
 	{
-		float depth = g_tDepthTexture.Load( uint3(globalIdx.x,globalIdx.y,0) ).x;
+		float depth = g_tDepthTexture.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
 
 		//non linear depth to viewPos
-		float viewPosZ = ConvertProjDepthToView( depth );
+		uint z = asuint( depth * g_clippingFar );
 
-		uint z = asuint( viewPosZ );
 		if( depth != 0.f )
 		{
 			//Shared memory에 있는 값과 입력된 값을 비교하여, 결과를 dest에 저장한다.
