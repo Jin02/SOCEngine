@@ -54,6 +54,11 @@ namespace Rendering
 		public:
 			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
 			void RenderObjects(const Device::DirectX* dx, const Manager::RenderManager* renderMgr);
+
+		public:
+			GET_SET_ACCESSOR(Near, float, _clippingNear);
+			GET_SET_ACCESSOR(Far, float, _clippingFar);
+			GET_SET_ACCESSOR(FOV, float, _FOV);
 		};
 	}
 }
