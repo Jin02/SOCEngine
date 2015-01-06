@@ -61,6 +61,7 @@
     <ClInclude Include="Rendering\Light\LightManager.h" />
     <ClInclude Include="Rendering\Light\PointLight.h" />
     <ClInclude Include="Rendering\Light\SpotLight.h" />
+    <ClInclude Include="Rendering\Material\BasicMaterial.h" />
     <ClInclude Include="Rendering\Material\Material.h" />
     <ClInclude Include="Rendering\Material\MaterialManager.h" />
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Rendering\Light\LightManager.cpp" />
     <ClCompile Include="Rendering\Light\PointLight.cpp" />
     <ClCompile Include="Rendering\Light\SpotLight.cpp" />
+    <ClCompile Include="Rendering\Material\BasicMaterial.cpp" />
     <ClCompile Include="Rendering\Material\Material.cpp" />
     <ClCompile Include="Rendering\Material\MaterialManager.cpp" />
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />

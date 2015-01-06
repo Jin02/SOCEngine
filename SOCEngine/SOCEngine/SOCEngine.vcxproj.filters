@@ -480,6 +480,9 @@
     <ClInclude Include="Rendering\Light\SpotLight.h">
       <Filter>Rendering\Light\Other</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Material\BasicMaterial.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -658,6 +661,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Light\SpotLight.cpp">
       <Filter>Rendering\Light\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\BasicMaterial.cpp">
+      <Filter>Rendering\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
