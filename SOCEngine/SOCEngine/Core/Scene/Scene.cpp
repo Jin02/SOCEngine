@@ -53,7 +53,7 @@ void Scene::Initialize()
 				ASSERT(error.c_str());
 			}
 
-			Material* material = new Material(MaterialName);
+			BasicMaterial* material = new BasicMaterial(MaterialName);
 			material->SetVertexShader(vs);
 			material->SetPixelShader(ps);
 			_materialMgr->Add("Basic", MaterialName, material);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include <array>
 
 namespace Math
 {
@@ -17,7 +18,7 @@ namespace Rendering
 		{
 			struct
 			{
-				float        r,g,b;
+				float r,g,b,a;
 			};
 
 			float color[3];
@@ -25,7 +26,7 @@ namespace Rendering
 
 	public:
 		Color();
-		Color(float r, float g, float b);
+		Color(float r, float g, float b, float a);
 
 	public:
 		Color operator -(Color c);
@@ -54,6 +55,9 @@ namespace Rendering
 
 		static Color Lerp(Color a, Color b, float t);
 		void SetColor(const float* color);
+
+		unsigned long Get32BitUintColor();
+		void Get16BitFloat4Color(std::array<unsigned short, 4>& outArray);
 
 	private:
 		void CalculateColor(Color *color);

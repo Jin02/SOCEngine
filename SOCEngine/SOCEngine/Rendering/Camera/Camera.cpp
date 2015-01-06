@@ -32,7 +32,7 @@ void Camera::Initialize()
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 
 	_camType    = Type::Perspective;
-	_clearColor = Color(0.5f, 0.5f, 1.0f);
+	_clearColor = Color(0.5f, 0.5f, 1.0f, 1.0f);
 
 	_frustum = new Frustum(0.0f);		
 
@@ -136,15 +136,15 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 		AlphaTest,
 		Common,
 	};
-	auto MeshRender = [&](ID3D11DeviceContext* context, Material* customMaterial, Manager::RenderManager::MeshType type, MeshRenderOption option)
+	auto MeshRender = [&](ID3D11DeviceContext* context, BasicMaterial* customMaterial, Manager::RenderManager::MeshType type, MeshRenderOption option)
 	{
-		Material* currentUseMaterial = nullptr;
+		BasicMaterial* currentUseMaterial = nullptr;
 		if(customMaterial && 
 			(option == MeshRenderOption::DepthWriteWithTest || 
 			 option == MeshRenderOption::AlphaTest) )
 			ASSERT("Invalid Arg");
 
-		auto RenderIter = [&](Material* material, Mesh::Mesh* mesh)
+		auto RenderIter = [&](BasicMaterial* material, Mesh::Mesh* mesh)
 		{
 			if(customMaterial)
 				material = customMaterial;

@@ -15,7 +15,7 @@ cbuffer Camera : register( b1 )
 	float2 	camera_screenSize;
 };
 
-cbuffer Material : register( b2 )
+cbuffer BasicMaterial : register( b2 )
 {
 	float3	material_mainColor;
 	float 	material_opacity;
@@ -33,9 +33,3 @@ struct DEPTH_WRITE_PS_INPUT
 
 #define ALPHA_TEST 0.5f
 
-float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
-{
-	float4 depth;
-	depth.x	= input.depth;
-	return depth;
-}

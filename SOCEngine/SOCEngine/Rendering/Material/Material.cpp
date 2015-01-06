@@ -5,53 +5,16 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 
-Material::Color::Color() 
-	:main(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f), 
-	shiness(0.0f), opacity(1.0f)
-{
-}
-
-Material::Color::~Color()
-{
-}
-
-
 Material::Material(const std::string& name)	
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _colorBuffer(nullptr),
+	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name),
 	_updateConstBufferMethod(UpdateCBMethod::Default),
 	_hasAlpha(false), _changedAlpha(true)
 {
 }
 
-Material::Material(const std::string& name, const Color& color) 
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name), _color(color), _colorBuffer(nullptr),
-	_updateConstBufferMethod(UpdateCBMethod::Default), _changedAlpha(true)
-{
-	_hasAlpha = color.opacity < 1.0f;
-}
-
 Material::~Material(void)
 {
-	SAFE_DELETE(_colorBuffer);
-}
 
-void Material::InitColorBuffer(ID3D11DeviceContext* context)
-{	
-	auto& psConstBuffers = _constbuffers.usagePS;
-	if( psConstBuffers.size() != 0 )
-		ASSERT("Error!, ps constbuffer already exists");
-
-	_colorBuffer = new Buffer::ConstBuffer;	
-	_colorBuffer->Create(sizeof(Material::Color));
-
-	psConstBuffers.push_back(std::make_pair(BasicConstBuffercSlot::MaterialColor, _colorBuffer));	
-	UpdateColorBuffer(context);
-}
-
-void Material::UpdateColorBuffer(ID3D11DeviceContext* context)
-{
-	if(_colorBuffer)
-		_colorBuffer->Update(context, &_color);
 }
 
 void Material::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
@@ -97,20 +60,10 @@ void Material::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer
 
 	auto& psBuffers = _constbuffers.usagePS;
 	if(psBuffers.size() == 0)
-	{
-		psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::MaterialColor, nullptr));
 		psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
-	}
 	else
 	{
-		SetBufferData(psBuffers, Material::BasicConstBuffercSlot::MaterialColor, 0, _colorBuffer);
-
-		if(psBuffers.size() == 1)
-			psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
-		else if(vsBuffers.size() >= 2)
-		{
-			SetBufferData(psBuffers, Material::BasicConstBuffercSlot::Camera, 1, camera);
-		}
+		SetBufferData(psBuffers, Material::BasicConstBuffercSlot::Camera, 0, camera);
 	}
 }
 
@@ -195,11 +148,4 @@ void Material::UpdateResources(ID3D11DeviceContext* context)
 
 
 	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
-}
-
-void Material::UpdateColor(const Color& color)
-{
-	_color = color;
-	_hasAlpha = (_color.opacity < 1.0f);
-	_changedAlpha = true;
 }

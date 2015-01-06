@@ -43,6 +43,7 @@ namespace Rendering
 			Shader::BaseShader*		FindShader(const std::string& fileName, const std::string& mainFunc, Shader::BaseShader::Type type);
 			Shader::VertexShader*	FindVertexShader(const std::string& fileName, const std::string& mainFunc);
 			Shader::PixelShader*	FindPixelShader(const std::string& fileName, const std::string& mainFunc);
+			const std::string*		FindShaderCode(const std::string& fileName);
 
 		public:
 			void RemoveAllShaderCode();

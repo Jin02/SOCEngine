@@ -12,19 +12,19 @@ MaterialManager::~MaterialManager()
 	DeleteAll(true);
 }
 
-Material* MaterialManager::Add(const std::string& file, const std::string& name, Material* material, bool copy)
+BasicMaterial* MaterialManager::Add(const std::string& file, const std::string& name, BasicMaterial* material, bool copy)
 {
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
+	Structure::Map<std::string, BasicMaterial>* inMap = _map.Find(file);
 	if(inMap == nullptr)
-		inMap = _map.Add(file, new Structure::Map<std::string, Material>, false);					
+		inMap = _map.Add(file, new Structure::Map<std::string, BasicMaterial>, false);					
 
 	return inMap->Add(name, material, copy);
 }
 
-Material* MaterialManager::Find(const std::string& file, const std::string& name)
+BasicMaterial* MaterialManager::Find(const std::string& file, const std::string& name)
 {
-	Material* material = nullptr;
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
+	BasicMaterial* material = nullptr;
+	Structure::Map<std::string, BasicMaterial>* inMap = _map.Find(file);
 	if( inMap )
 		material = inMap->Find(name);
 
@@ -33,7 +33,7 @@ Material* MaterialManager::Find(const std::string& file, const std::string& name
 
 void MaterialManager::Delete(const std::string& file, const std::string& name, bool contentRemove)
 {
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
+	Structure::Map<std::string, BasicMaterial>* inMap = _map.Find(file);
 	if(inMap)
 		_map.Delete(name, contentRemove);
 }
@@ -49,12 +49,12 @@ void MaterialManager::DeleteAll(bool remove)
 	_hash.DeleteAll(remove);
 }
 
-Material* MaterialManager::Add(const std::string& key, Material* material, bool copy)
+BasicMaterial* MaterialManager::Add(const std::string& key, BasicMaterial* material, bool copy)
 {
 	return _hash.Add(key, material, copy);
 }
 
-Material* MaterialManager::Find(const std::string& key)
+BasicMaterial* MaterialManager::Find(const std::string& key)
 {
 	return _hash.Find(key);
 }

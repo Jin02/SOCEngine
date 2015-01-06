@@ -23,18 +23,6 @@ namespace Rendering
 			Custom
 		};
 
-		struct Color
-		{
-			Rendering::Color main;
-			float opacity;
-
-			Rendering::Color specular;
-			float shiness;
-
-			Color();
-			~Color();
-		};
-
 		enum TextureType : unsigned int
 		{
 			Ambient = 0,
@@ -45,7 +33,7 @@ namespace Rendering
 			User
 		};
 
-	private:
+	protected:
 		struct ConstBuffers
 		{
 			std::vector<Shader::BaseShader::BufferType> usageVS;
@@ -57,13 +45,10 @@ namespace Rendering
 			std::vector<Shader::BaseShader::TextureType> usagePS;
 		};
 
-	private:
+	protected:
 		Shader::VertexShader*	_vertexShader;
 		Shader::PixelShader*	_pixelShader;
 		std::string				_name;
-		Color					_color;
-
-		Buffer::ConstBuffer*	_colorBuffer;				
 		ConstBuffers			_constbuffers;
 		Textures				_textures;
 		UpdateCBMethod			_updateConstBufferMethod;
@@ -73,12 +58,9 @@ namespace Rendering
 
 	public:
 		Material(const std::string& name);
-		Material(const std::string& name, const Color& lightColor);
 		~Material(void);
 
 	public:
-		void InitColorBuffer(ID3D11DeviceContext* context);
-		void UpdateColorBuffer(ID3D11DeviceContext* context);
 		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
 
 		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
@@ -89,7 +71,6 @@ namespace Rendering
 		void UpdateOpacityMap(const Texture::Texture* tex);
 
 		const Rendering::Texture::Texture* FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex);
-		void UpdateColor(const Color& color);
 
 	public:
 		void ClearResource(ID3D11DeviceContext* context);
@@ -98,11 +79,8 @@ namespace Rendering
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
-		GET_ACCESSOR(ColorBuffer, Buffer::ConstBuffer*, _colorBuffer);
-
 		GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
 		GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
-		GET_ACCESSOR(Color, const Color&, _color);
 		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
 		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
