@@ -14,7 +14,7 @@ namespace GPGPU
 
 		public:
 			CSInputBuffer();
-			~CSInputBuffer();
+			virtual ~CSInputBuffer();
 
 		public:
 			bool Create(unsigned int stride, unsigned int num, const void* sysMem = nullptr);
