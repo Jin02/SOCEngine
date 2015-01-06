@@ -11,3 +11,5 @@ SOCTestProject/SOCTestProject/Debug/
 EngineShaderFactory.hpp
 ShaderFactory.hpp
 *.metadata
+
+LightCulling.hlsl
