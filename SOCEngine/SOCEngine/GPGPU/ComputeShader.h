@@ -29,6 +29,7 @@ namespace GPGPU
 			{
 				unsigned int x, y, z;
 				ThreadGroup() : x(0), y(0), z(0){}
+				ThreadGroup(unsigned int _x, unsigned int _y, unsigned _z) : x(_x), y(_y), z(_z){}
 				~ThreadGroup(){}
 			};
 
@@ -47,7 +48,7 @@ namespace GPGPU
 			void Dispatch(ID3D11DeviceContext* context);
 
 		public:
-			GET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
+			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
 			GET_SET_ACCESSOR(InputBuffers, const std::vector<InputBuffer>&, _inputBuffers);
 			GET_SET_ACCESSOR(OutputBuffers, const std::vector<OutputBuffer>&, _outputBuffers);
 		};
