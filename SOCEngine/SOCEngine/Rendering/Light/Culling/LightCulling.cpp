@@ -5,17 +5,20 @@ using namespace Device;
 using namespace Core;
 using namespace Rendering;
 using namespace Rendering::Light;
+using namespace Rendering::Buffer;
 using namespace GPGPU::DirectCompute;
 
-LightCulling::LightCulling(const ComputeShader::ThreadGroup& threadGroupInfo) :
-	_computeShader(nullptr), _threadGroupInfo(threadGroupInfo)
+#define TILE_SIZE 16
+
+LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr)
 {
 
 }
 
 LightCulling::~LightCulling()
 {
-
+	SAFE_DELETE(_computeShader);
+	SAFE_DELETE(_globalDataBuffer);
 }
 
 void LightCulling::Init(const std::string& folderPath, const std::string& fileName)
@@ -23,63 +26,103 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	Scene* scene = Director::GetInstance()->GetCurrentScene();
 	auto shaderMgr = scene->GetShaderManager();
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "CS", false);
-	_computeShader = new ComputeShader(_threadGroupInfo, blob);
+	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCulling", false);
+
+	ComputeShader::ThreadGroup threadGroup;
+	UpdateThreadGroup(&threadGroup, false);
+	_computeShader = new ComputeShader(threadGroup, blob);
+
 	assert(_computeShader->Create());
 
-	ID3D11DeviceContext* context = Director::GetInstance()->GetDirectX()->GetContext();
-	std::vector<ComputeShader::InputBuffer> inputBuffer;
-	std::vector<ComputeShader::OutputBuffer> outputBuffer;
+	_globalDataBuffer = new ConstBuffer;
+	assert(_globalDataBuffer->Create(sizeof(CullingConstBuffer)));
 
-	struct TestBuff
+	ComputeShader::InputBuffer inputBufferElement;
+
+	// Input Buffer Setting
 	{
-		Math::Vector3 v1;
-		Math::Vector2 v2;
-	};
-	std::vector<TestBuff> d;
-	for(int i=0; i<100; ++i)
-	{
-		TestBuff t;
-		t.v1 = Math::Vector3(i, i, i);
-		t.v2 = Math::Vector2(-i, -i);
-		d.push_back(t);
+		// Point Light
+		{
+			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
+			assert(pointLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM));
+			inputBufferElement.idx = 0;
+			inputBufferElement.buffer = pointLightCenterWithRadius;
+			_inputBuffers.push_back(inputBufferElement);
+		}
+
+		// Spot Light
+		{
+			CSInputBuffer* spotLightCenterWithRadius = new CSInputBuffer;
+			assert(spotLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM));
+			inputBufferElement.idx = 1;
+			inputBufferElement.buffer = spotLightCenterWithRadius;
+			_inputBuffers.push_back(inputBufferElement);
+		}
+
+		// depth buffer
+		{			
+			inputBufferElement.idx = 2;
+			inputBufferElement.buffer = nullptr;
+		}
+
+		_computeShader->SetInputBuffers(_inputBuffers);
 	}
 
-
-	CSInputBuffer csInput;
-	csInput.Create(sizeof(TestBuff), 100, d.data());
-	ComputeShader::InputBuffer i;
-	i.idx = 0;
-	i.buffer = &csInput;
-	inputBuffer.push_back(i);
-
-	CSOutputBuffer csOb;
-	csOb.Create(sizeof(TestBuff), 100);
-	ComputeShader::OutputBuffer o;
-	o.idx = 0;
-	o.buffer = &csOb;
-	outputBuffer.push_back(o);
-
-	_computeShader->SetInputBuffers(inputBuffer);
-	_computeShader->SetOutputBuffers(outputBuffer);
-	_computeShader->Dispatch(context);
-
-	Buffer::CPUReadConstBuffer readCB;
-	readCB.Create(sizeof(TestBuff), 100);
-	auto what = [&](const void* data)
+	// Ouput Buffer Setting
 	{
-		std::ofstream fout("result.txt");
-		const TestBuff* dataView = reinterpret_cast<const TestBuff*>(data);
-		for(int i=0; i<100; ++i)
+		CSOutputBuffer* lightIndexBuffer = new CSOutputBuffer;
+		assert(lightIndexBuffer->Create(0, 0));
+		ComputeShader::OutputBuffer outputBuffer;
 		{
-			fout << "(" << dataView[i].v1.x << ", " << dataView[i].v1.y << ", " << dataView[i].v1.z <<
-			", " << dataView[i].v2.x << ", " << dataView[i].v2.y << ")" << std::endl;
+			outputBuffer.idx = 0;
+			outputBuffer.buffer = lightIndexBuffer;
 		}
-		fout.close();
-	};
-	readCB.Read(context, &csOb, what);
+		_outputBuffers.push_back(outputBuffer);
+		_computeShader->SetOutputBuffers(_outputBuffers);
+	}
 }
 
-void LightCulling::Run()
+void LightCulling::UpdateBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius, const Texture::RenderTexture* linearDepth)
 {
+	const Director* director = Device::Director::GetInstance();
+	ID3D11DeviceContext* context = director->GetDirectX()->GetContext();
+
+	_globalDataBuffer->Update(context, &cbData);
+
+	ComputeShader::InputBuffer inputBuffer;
+
+	// Input Buffer Setting
+	{
+		_globalDataBuffer->Update(context, &cbData);
+		_inputBuffers[0].buffer->Update(context, pointLightCenterWithRadius.data());
+		_inputBuffers[1].buffer->Update(context, spotLightCenterWithRadius.data());
+	}
+
+	// Depth Buffer Setting
+	{
+	}
+}
+
+void LightCulling::Dispatch(ID3D11DeviceContext* context)
+{
+	_computeShader->Dispatch(context);
+}
+
+void LightCulling::UpdateThreadGroup(ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader)
+{
+	auto CalcThreadLength = [](unsigned int size)
+	{
+		return (unsigned int)((size+TILE_SIZE-1) / (float)TILE_SIZE);
+	};
+
+	unsigned int width	= CalcThreadLength(Director::GetInstance()->GetWindowSize().w);
+	unsigned int height = CalcThreadLength(Director::GetInstance()->GetWindowSize().h);
+
+	ComputeShader::ThreadGroup threadGroup = ComputeShader::ThreadGroup(width, height, 1);
+
+	if(outThreadGroup)
+		(*outThreadGroup) = threadGroup;
+
+	if(updateComputeShader)
+		_computeShader->SetThreadGroupInfo(threadGroup);
 }
