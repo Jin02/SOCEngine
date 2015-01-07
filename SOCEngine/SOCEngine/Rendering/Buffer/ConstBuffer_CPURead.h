@@ -9,11 +9,11 @@ namespace Rendering
 	{
 		class ConstBuffer;
 
-		class CPUReadConstBuffer : private BaseBuffer
+		class ConstBuffer_CPURead : private BaseBuffer
 		{
 		public:
-			CPUReadConstBuffer();
-			~CPUReadConstBuffer();
+			ConstBuffer_CPURead();
+			~ConstBuffer_CPURead();
 
 		public:
 			bool Create(unsigned int stride, unsigned int num);

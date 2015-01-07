@@ -1,19 +1,19 @@
-#include "CPUReadConstBuffer.h"
+#include "ConstBuffer_CPURead.h"
 #include "Director.h"
 #include "ConstBuffer.h"
 
 using namespace Rendering::Buffer;
 using namespace Device;
 
-CPUReadConstBuffer::CPUReadConstBuffer() : BaseBuffer()
+ConstBuffer_CPURead::ConstBuffer_CPURead() : BaseBuffer()
 {
 }
 
-CPUReadConstBuffer::~CPUReadConstBuffer()
+ConstBuffer_CPURead::~ConstBuffer_CPURead()
 {
 }
 
-bool CPUReadConstBuffer::Create(unsigned int stride, unsigned int num)
+bool ConstBuffer_CPURead::Create(unsigned int stride, unsigned int num)
 {
 	D3D11_BUFFER_DESC desc;
 	desc.ByteWidth = stride * num;
@@ -35,7 +35,7 @@ bool CPUReadConstBuffer::Create(unsigned int stride, unsigned int num)
 	return true;
 }
 
-void CPUReadConstBuffer::Read(ID3D11DeviceContext* context, BaseBuffer* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc)
+void ConstBuffer_CPURead::Read(ID3D11DeviceContext* context, BaseBuffer* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc)
 {
 	context->CopyResource(_buffer, target->GetBuffer());
 
