@@ -2,7 +2,8 @@
 
 #include "BaseShader.h"
 #include "CSInputBuffer.h"
-#include "CSOutputBuffer.h"
+#include "CSOutputBuffer_ReadCPU.h"
+#include "Texture.h"
 
 namespace GPGPU
 {
@@ -18,10 +19,17 @@ namespace GPGPU
 				InputBuffer() : idx(0), buffer(nullptr){}
 				~InputBuffer(){}
 			};
+			struct InputTexture
+			{
+				unsigned int idx;
+				const Rendering::Texture::Texture* texture;
+				InputTexture() : idx(0), texture(nullptr){}
+				~InputTexture(){}
+			};
 			struct OutputBuffer
 			{
 				unsigned int idx;
-				CSOutputBuffer* buffer;
+				CSOutputBuffer_ReadCPU* buffer;
 				OutputBuffer() : idx(0), buffer(nullptr){}
 				~OutputBuffer(){}
 			};
@@ -35,7 +43,10 @@ namespace GPGPU
 
 		private:
 			std::vector<InputBuffer>	_inputBuffers;
+			std::vector<InputTexture>	_inputTextures;
+
 			std::vector<OutputBuffer>	_outputBuffers;
+
 			ID3D11ComputeShader*		_shader;
 			ThreadGroup					_threadGroup;
 
@@ -50,6 +61,8 @@ namespace GPGPU
 		public:
 			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
 			GET_SET_ACCESSOR(InputBuffers, const std::vector<InputBuffer>&, _inputBuffers);
+			GET_SET_ACCESSOR(InputTextures, const std::vector<InputTexture>&, _inputTextures);
+
 			GET_SET_ACCESSOR(OutputBuffers, const std::vector<OutputBuffer>&, _outputBuffers);
 		};
 	}
