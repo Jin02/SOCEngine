@@ -24,6 +24,7 @@
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="GPGPU\CSInputBuffer.h" />
     <ClInclude Include="GPGPU\CSOutputBuffer.h" />
+    <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Importer\ObjImporter.h" />
@@ -46,7 +47,7 @@
     <ClInclude Include="Rendering\Buffer\BaseBuffer.h" />
     <ClInclude Include="Rendering\Buffer\BufferManager.h" />
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\CPUReadConstBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\Camera.h" />
@@ -132,6 +133,7 @@
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
     <ClCompile Include="GPGPU\CSInputBuffer.cpp" />
     <ClCompile Include="GPGPU\CSOutputBuffer.cpp" />
+    <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Importer\ObjImporter.cpp" />
@@ -150,7 +152,7 @@
     <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\BufferManager.cpp" />
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\CPUReadConstBuffer.cpp" />
+    <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\Camera.cpp" />

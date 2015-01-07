@@ -432,13 +432,7 @@
     <ClInclude Include="Utility\DirectoryManager.h">
       <Filter>Utility\DirectoryManager</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Buffer\CPUReadConstBuffer.h">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\CSInputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSOutputBuffer.h">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h">
@@ -482,6 +476,15 @@
     </ClInclude>
     <ClInclude Include="Rendering\Material\BasicMaterial.h">
       <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSOutputBuffer.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
+      <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -620,13 +623,7 @@
     <ClCompile Include="Utility\DirectoryManager.cpp">
       <Filter>Utility\DirectoryManager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Buffer\CPUReadConstBuffer.cpp">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\CSInputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp">
@@ -664,6 +661,15 @@
     </ClCompile>
     <ClCompile Include="Rendering\Material\BasicMaterial.cpp">
       <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
