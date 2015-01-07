@@ -14,7 +14,7 @@ namespace Rendering
 
 		public:
 			DepthBuffer(const Device::DirectX* dx);
-			~DepthBuffer();
+			virtual ~DepthBuffer();
 
 		private:
 			void SetRenderTarget(const Device::DirectX* dx);
