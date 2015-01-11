@@ -21,7 +21,7 @@ bool CSOutputBuffer_ReadCPU::Create(unsigned int stride, unsigned int num, bool 
 	desc.StructureByteStride = stride;
     desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | useShader ? D3D11_BIND_SHADER_RESOURCE : 0;
+	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | (useShader ? D3D11_BIND_SHADER_RESOURCE : 0u);
 	desc.CPUAccessFlags = 0;
 
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
