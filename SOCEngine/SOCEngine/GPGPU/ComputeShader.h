@@ -29,7 +29,7 @@ namespace GPGPU
 			struct OutputBuffer
 			{
 				unsigned int idx;
-				CSOutputBuffer_ReadCPU* buffer;
+				CSOutputBuffer* buffer;
 				OutputBuffer() : idx(0), buffer(nullptr){}
 				~OutputBuffer(){}
 			};
