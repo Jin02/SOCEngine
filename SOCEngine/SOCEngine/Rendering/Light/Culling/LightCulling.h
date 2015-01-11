@@ -6,6 +6,8 @@
 #include "RenderTexture.h"
 #include <array>
 
+#include "LightCulling_CSOutputBuffer.h"
+
 namespace Rendering
 {
 	namespace Light
@@ -19,9 +21,10 @@ namespace Rendering
 				Math::Matrix 	invProjMat;
 				Math::Vector2	screenSize;
 				float 			clippingFar;
-				unsigned int 	maxLightNumInTile; //한 타일당 최대 빛 갯수.
+				unsigned int 	maxLightNumInTile;	// 한 타일당 최대 빛 갯수. 
+													// 이 값은 이 클래스 내부에서
+													// 알아서 계산됨
 				unsigned int 	lightNum;
-
 				unsigned int 	dummy1;
 				unsigned int 	dummy2;
 				unsigned int 	dummy3;
@@ -34,6 +37,7 @@ namespace Rendering
 		private:
 			GPGPU::DirectCompute::ComputeShader*	_computeShader;
 			Rendering::Buffer::ConstBuffer*			_globalDataBuffer;
+			LightCulling_CSOutputBuffer*			_lightIndexBuffer;
 
 			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>	_inputBuffers;
 
@@ -46,13 +50,19 @@ namespace Rendering
 			LightCulling();
 			~LightCulling();
 
+		private:
+			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
+
 		public:
 			void Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth);
 			void UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
-			void Dispatch(ID3D11DeviceContext* context);
 
-		private:
-			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
+			void Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth);
+
+			const Math::Size<unsigned int> CalcThreadSize();
+			unsigned int CalcMaxNumLightsInTile();
+
+			void Destroy();
 		};
 	}
 }

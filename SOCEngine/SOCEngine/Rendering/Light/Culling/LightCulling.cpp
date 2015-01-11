@@ -8,7 +8,9 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace GPGPU::DirectCompute;
 
-#define TILE_SIZE 16
+#define TILE_SIZE				16
+#define LIGHT_MAX_NUM_IN_TILE	544
+
 
 enum InputBuffer : unsigned int
 {
@@ -26,19 +28,21 @@ enum OutputBuffer : unsigned int
 	LightIndexBuffer = 0
 };
 
-LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr)
+LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr), _lightIndexBuffer(nullptr)
 {
 
 }
 
 LightCulling::~LightCulling()
 {
-	SAFE_DELETE(_computeShader);
-	SAFE_DELETE(_globalDataBuffer);
+	Destroy();
 }
 
 void LightCulling::Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth)
 {
+	//혹시 모르니, 한번 초기화
+	Destroy();
+
 	Director* director = Director::GetInstance();
 	Scene* scene = Director::GetInstance()->GetCurrentScene();
 	auto shaderMgr = scene->GetShaderManager();
@@ -90,10 +94,10 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 
 	// Ouput Buffer Setting
 	{
-		CSOutputBuffer_ReadCPU* lightIndexBuffer = new CSOutputBuffer_ReadCPU;
-		Math::Size<unsigned int> size = director->GetWindowSize();
+		LightCulling_CSOutputBuffer* lightIndexBuffer = new LightCulling_CSOutputBuffer;
+		Math::Size<unsigned int> size = CalcThreadSize();
+		lightIndexBuffer->Create(size, CalcMaxNumLightsInTile());
 
-		assert(lightIndexBuffer->Create(0, 0));
 		ComputeShader::OutputBuffer outputBuffer;
 		{
 			outputBuffer.idx = OutputBuffer::LightIndexBuffer;
@@ -102,6 +106,14 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		_outputBuffers.push_back(outputBuffer);
 		_computeShader->SetOutputBuffers(_outputBuffers);
 	}
+}
+
+unsigned int LightCulling::CalcMaxNumLightsInTile()
+{
+	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+	const unsigned key = 16;
+
+	return ( LIGHT_MAX_NUM_IN_TILE - ( key * ( winSize.h / 120 ) ) );
 }
 
 void LightCulling::UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius)
@@ -116,31 +128,55 @@ void LightCulling::UpdateInputBuffer(const CullingConstBuffer& cbData, const std
 	// Input Buffer Setting
 	{
 		_globalDataBuffer->Update(context, &cbData);
+
+		//0번이 pointLight 들고있음
 		_inputBuffers[0].buffer->Update(context, pointLightCenterWithRadius.data());
+
+		//1번이 spot light
 		_inputBuffers[1].buffer->Update(context, spotLightCenterWithRadius.data());
 	}
 }
 
-void LightCulling::Dispatch(ID3D11DeviceContext* context)
+void LightCulling::Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth)
 {
+	// 0번이 depth buffer 넣음
+	_inputTextures[0].texture = linearDepth;
+
 	_computeShader->Dispatch(context);
+	
+	//혹시 모르니 초기화
+	_inputTextures[0].texture = nullptr;
 }
 
 void LightCulling::UpdateThreadGroup(ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader)
 {
-	auto CalcThreadLength = [](unsigned int size)
-	{
-		return (unsigned int)((size+TILE_SIZE-1) / (float)TILE_SIZE);
-	};
-
-	unsigned int width	= CalcThreadLength(Director::GetInstance()->GetWindowSize().w);
-	unsigned int height = CalcThreadLength(Director::GetInstance()->GetWindowSize().h);
-
-	ComputeShader::ThreadGroup threadGroup = ComputeShader::ThreadGroup(width, height, 1);
+	Math::Size<unsigned int> threadSize = CalcThreadSize();
+	ComputeShader::ThreadGroup threadGroup = ComputeShader::ThreadGroup(threadSize.w, threadSize.h, 1);
 
 	if(outThreadGroup)
 		(*outThreadGroup) = threadGroup;
 
 	if(updateComputeShader)
 		_computeShader->SetThreadGroupInfo(threadGroup);
+}
+
+const Math::Size<unsigned int> LightCulling::CalcThreadSize()
+{
+	auto CalcThreadLength = [](unsigned int size)
+	{
+		return (unsigned int)((size+TILE_SIZE-1) / (float)TILE_SIZE);
+	};
+
+	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+
+	unsigned int width	= CalcThreadLength(winSize.w);
+	unsigned int height = CalcThreadLength(winSize.h);
+
+	return Math::Size<unsigned int>(width, height);
+}
+
+void LightCulling::Destroy()
+{
+	SAFE_DELETE(_computeShader);
+	SAFE_DELETE(_globalDataBuffer);
 }
