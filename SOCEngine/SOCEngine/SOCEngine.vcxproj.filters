@@ -486,6 +486,9 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -670,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp">
+      <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
