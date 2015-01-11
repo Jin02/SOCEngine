@@ -221,10 +221,38 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 			//Light Culling
 			{
-				//context->OMSetRenderTargets(1, &nullRTV, nullDSV);
-				//context->VSSetShader(nullptr, nullptr, 0);
-				//context->PSSetShader(nullptr, nullptr, 0);
-				//context->CSSetShader(
+				Director* director = Director::GetInstance();
+				LightCulling* lightCullingCS = director->GetCurrentScene()->GetCameraManager()->GetLightCullingCS();
+				
+				LightCulling::CullingConstBuffer cb;
+				{
+					// worldView
+					{
+						_owner->GetTransform()->WorldMatrix(cb.worldViewMat);
+
+						Matrix view;
+						ViewMatrix(view);
+
+						cb.worldViewMat *= view;
+					}
+
+					// proj
+					{
+						ProjectionMatrix(cb.invProjMat);
+						Matrix::Inverse(cb.invProjMat, cb.invProjMat);
+					}
+
+					// screenSize
+					{
+						cb.screenSize.x = static_cast<float>(director->GetWindowSize().w);
+						cb.screenSize.y = static_cast<float>(director->GetWindowSize().h);
+					}
+
+					cb.clippingFar = _clippingFar;				
+				}
+
+				//lightCullingCS->UpdateInputBuffer(cb, 0, 0);
+				lightCullingCS->Dispatch(context, _depthBuffer);
 			}
 
 			//Forward Rendering
