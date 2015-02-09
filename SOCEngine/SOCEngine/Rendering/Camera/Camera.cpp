@@ -179,7 +179,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 		{
 			ID3D11RenderTargetView* rtv = dx->GetBackBuffer();
 			context->OMSetRenderTargets(1, &rtv, dx->GetDepthBuffer()->GetDepthStencilView());
-			context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);			
+			context->ClearRenderTargetView(dx->GetBackBuffer(), _clearColor.color);
 			dx->GetDepthBuffer()->Clear(1.0f, 0);
 			MeshRender(context, nullptr, Manager::RenderManager::MeshType::nonAlpha, MeshRenderOption::Common);
 		}
@@ -221,38 +221,38 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 
 			//Light Culling
 			{
-				Director* director = Director::GetInstance();
-				LightCulling* lightCullingCS = director->GetCurrentScene()->GetCameraManager()->GetLightCullingCS();
-				
-				LightCulling::CullingConstBuffer cb;
-				{
-					// worldView
-					{
-						_owner->GetTransform()->WorldMatrix(cb.worldViewMat);
+				//Director* director = Director::GetInstance();
+				//LightCulling* lightCullingCS = director->GetCurrentScene()->GetCameraManager()->GetLightCullingCS();
+				//
+				//LightCulling::CullingConstBuffer cb;
+				//{
+				//	// worldView
+				//	{
+				//		_owner->GetTransform()->WorldMatrix(cb.worldViewMat);
 
-						Matrix view;
-						ViewMatrix(view);
+				//		Matrix view;
+				//		ViewMatrix(view);
 
-						cb.worldViewMat *= view;
-					}
+				//		cb.worldViewMat *= view;
+				//	}
 
-					// proj
-					{
-						ProjectionMatrix(cb.invProjMat);
-						Matrix::Inverse(cb.invProjMat, cb.invProjMat);
-					}
+				//	// proj
+				//	{
+				//		ProjectionMatrix(cb.invProjMat);
+				//		Matrix::Inverse(cb.invProjMat, cb.invProjMat);
+				//	}
 
-					// screenSize
-					{
-						cb.screenSize.x = static_cast<float>(director->GetWindowSize().w);
-						cb.screenSize.y = static_cast<float>(director->GetWindowSize().h);
-					}
+				//	// screenSize
+				//	{
+				//		cb.screenSize.x = static_cast<float>(director->GetWindowSize().w);
+				//		cb.screenSize.y = static_cast<float>(director->GetWindowSize().h);
+				//	}
 
-					cb.clippingFar = _clippingFar;				
-				}
+				//	cb.clippingFar = _clippingFar;				
+				//}
 
-				//lightCullingCS->UpdateInputBuffer(cb, 0, 0);
-				lightCullingCS->Dispatch(context, _depthBuffer);
+				////lightCullingCS->UpdateInputBuffer(cb, 0, 0);
+				//lightCullingCS->Dispatch(context, _depthBuffer);
 			}
 
 			//Forward Rendering

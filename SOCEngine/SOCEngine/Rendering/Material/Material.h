@@ -10,13 +10,6 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum BasicConstBuffercSlot : unsigned int
-		{
-			Transform		= 0,
-			Camera			= 1,
-			MaterialColor	= 2,
-		};
-
 		enum UpdateCBMethod
 		{
 			Default,
@@ -53,23 +46,19 @@ namespace Rendering
 		Textures				_textures;
 		UpdateCBMethod			_updateConstBufferMethod;
 
-		bool _hasAlpha;
-		bool _changedAlpha;
+		bool	_hasAlpha;
+		bool	_changedAlpha;
+		bool	_isInit;
 
 	public:
 		Material(const std::string& name);
 		~Material(void);
 
+	protected:
+		void Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices);
+
 	public:
-		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
-
 		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
-		void UpdateAmbientMap(const Texture::Texture* tex);
-		void UpdateDiffuseMap(const Texture::Texture* tex);
-		void UpdateNormalMap(const Texture::Texture* tex);
-		void UpdateSpecularMap(const Texture::Texture* tex);
-		void UpdateOpacityMap(const Texture::Texture* tex);
-
 		const Rendering::Texture::Texture* FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex);
 
 	public:
