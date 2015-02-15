@@ -15,7 +15,8 @@ BasicMaterial::Color::~Color()
 }
 
 
-BasicMaterial::BasicMaterial(const std::string& name) : Material(name)
+BasicMaterial::BasicMaterial(const std::string& name) 
+	: Material(name), _isInit(false)
 {
 }
 
@@ -61,7 +62,20 @@ void BasicMaterial::Init(ID3D11DeviceContext* context)
 			basicPSCBSlotIndices[idx] = idx; 
 		}
 
-		Material::Init(basicVSCBSlotIndices, basicPSCBSlotIndices);
+		count = static_cast<unsigned int>( PSTextureSlot::COUNT );
+		std::vector<unsigned int> samplePSTextureIndices(count);
+		{
+			unsigned int idx = static_cast<unsigned int>(PSTextureSlot::Diffuse);
+			samplePSTextureIndices[idx] = static_cast<unsigned int>(TextureType::Diffuse);
+
+			idx = static_cast<unsigned int>( PSTextureSlot::Normal );
+			samplePSTextureIndices[idx] = static_cast<unsigned int>(TextureType::Normal); 
+		}
+
+		std::vector<unsigned int> sampleNullVsTextureIndices;
+		Material::Init(basicVSCBSlotIndices,		basicPSCBSlotIndices, 
+					   sampleNullVsTextureIndices,	samplePSTextureIndices);
+		_isInit = true;
 	}
 
 	UpdateColorBuffer(context);
@@ -137,29 +151,31 @@ void BasicMaterial::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const B
 
 void BasicMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateMap(TextureType::Diffuse, tex);
+	auto& psTextures = _textures.usagePS;
+	{
+		unsigned int idx = static_cast<unsigned int>( PSTextureSlot::Diffuse );
+		TextureType texType = static_cast<TextureType>(psTextures[idx].first);
+
+		if(texType == TextureType::Diffuse)
+			psTextures[idx].second = tex;
+		else
+			ASSERT("ps texture already has another tex");
+	}
+
 	_hasAlpha = tex->GetHasAlpha();
 	_changedAlpha = true;
 }
 
 void BasicMaterial::UpdateNormalMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateMap(TextureType::Normal, tex);
-}
+	auto& psTextures = _textures.usagePS;
+	{
+		unsigned int idx = static_cast<unsigned int>( PSTextureSlot::Normal );
+		TextureType texType = static_cast<TextureType>(psTextures[idx].first);
 
-void BasicMaterial::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Specular, tex);
-}
-
-void BasicMaterial::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Opacity, tex);
-	_hasAlpha = tex != nullptr;
-	_changedAlpha = true;
-}
-
-void BasicMaterial::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Ambient, tex);
+		if(texType == TextureType::Normal)
+			psTextures[idx].second = tex;
+		else
+			ASSERT("ps texture already has another tex");
+	}
 }

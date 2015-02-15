@@ -27,6 +27,13 @@ namespace Rendering
 			COUNT,
 		};
 
+		enum class PSTextureSlot : unsigned int
+		{
+			Diffuse			= 0,
+			Normal			= 1,
+
+			COUNT
+		};
 
 	public:
 		struct Color
@@ -45,6 +52,8 @@ namespace Rendering
 		Color					_color;
 		Buffer::ConstBuffer*	_colorBuffer;
 
+		bool					_isInit;
+
 	public:
 		BasicMaterial(const std::string& name);
 		BasicMaterial(const std::string& name, const Color& color);
@@ -57,11 +66,8 @@ namespace Rendering
 
 		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
 
-		void UpdateAmbientMap(const Texture::Texture* tex);
 		void UpdateDiffuseMap(const Texture::Texture* tex);
 		void UpdateNormalMap(const Texture::Texture* tex);
-		void UpdateSpecularMap(const Texture::Texture* tex);
-		void UpdateOpacityMap(const Texture::Texture* tex);
 
 	public:
 		GET_ACCESSOR(ColorBuffer, Buffer::ConstBuffer*, _colorBuffer);

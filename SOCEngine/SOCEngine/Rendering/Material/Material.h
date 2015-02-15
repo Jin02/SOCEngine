@@ -10,13 +10,13 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum UpdateCBMethod
+		enum class UpdateCBMethod
 		{
 			Default,
 			Custom
 		};
 
-		enum TextureType : unsigned int
+		enum class TextureType : unsigned int
 		{
 			Ambient = 0,
 			Diffuse,
@@ -48,18 +48,20 @@ namespace Rendering
 
 		bool	_hasAlpha;
 		bool	_changedAlpha;
-		bool	_isInit;
 
 	public:
 		Material(const std::string& name);
 		~Material(void);
 
 	protected:
-		void Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices);
+		void Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
+				  const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int>& psTextureUsageIndices);
 
-	public:
-		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
-		const Rendering::Texture::Texture* FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex);
+		void InitConstBufferSlot(const std::vector<unsigned int>& vsConstBufferUsageIndices,
+								 const std::vector<unsigned int >& psConstBufferUsageIndices);
+
+		void InitTextureSlot(const std::vector<unsigned int>& vsTextureUsageIndices,
+							 const std::vector<unsigned int>& psTextureUsageIndices);
 
 	public:
 		void ClearResource(ID3D11DeviceContext* context);

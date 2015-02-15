@@ -42,15 +42,12 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 		color.main.a = tinyMaterial.dissolve;
 
 		material = new BasicMaterial(materialName, color);
+		auto context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+
+		material->Init(context);
 
 		// Using Utility::String::ParseDirectory
 		std::string textureFileName, textureExtension;
-
-		if(tinyMaterial.ambient_texname.empty() == false)
-		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.ambient_texname, false);
-			material->UpdateAmbientMap(texture);
-		}
 
 		if(tinyMaterial.diffuse_texname.empty() == false)
 		{
@@ -64,14 +61,6 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 			material->UpdateNormalMap(texture);
 		}
 
-		if(tinyMaterial.specular_texname.empty() == false)
-		{
-			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
-			material->UpdateSpecularMap(texture);
-		}
-
-		auto context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-		material->Init(context);
 		materialMgr->Add(fileName, materialName, material, false);
 	}
 	else

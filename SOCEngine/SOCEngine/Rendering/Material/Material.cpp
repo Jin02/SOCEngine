@@ -8,7 +8,7 @@ using namespace Rendering::Buffer;
 Material::Material(const std::string& name)	
 	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name),
 	_updateConstBufferMethod(UpdateCBMethod::Default),
-	_hasAlpha(false), _changedAlpha(true), _isInit(false)
+	_hasAlpha(false), _changedAlpha(true)
 {
 }
 
@@ -17,15 +17,29 @@ Material::~Material(void)
 
 }
 
-void Material::Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices)
+void Material::Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
+					const std::vector<unsigned int>& vsTextureUsageIndices,		const std::vector<unsigned int>& psTextureUsageIndices)
 {
-	for(auto& idx : vsConstBufferUsageIndices)
+	InitConstBufferSlot(vsConstBufferUsageIndices, psConstBufferUsageIndices);
+	InitTextureSlot(vsTextureUsageIndices, psTextureUsageIndices);
+}
+
+void Material::InitConstBufferSlot(const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int >& psTextureUsageIndices)
+{
+	for(auto& idx : vsTextureUsageIndices)
 		_constbuffers.usageVS.push_back( std::make_pair(idx, nullptr) );
 
-	for(auto& idx : psConstBufferUsageIndices)
+	for(auto& idx : psTextureUsageIndices)
 		_constbuffers.usagePS.push_back( std::make_pair(idx, nullptr) );
+}
 
-	_isInit = true;
+void Material::InitTextureSlot(const std::vector<unsigned int>& vsShaderSlotIndex, const std::vector<unsigned int>& psShaderSlotIndex)
+{
+	for(auto& idx : vsShaderSlotIndex)
+		_textures.usageVS.push_back(  std::make_pair(idx, nullptr) );
+
+	for(auto& idx : psShaderSlotIndex)
+		_textures.usagePS.push_back(  std::make_pair(idx, nullptr) );
 }
 
 void Material::ClearResource(ID3D11DeviceContext* context)
@@ -52,32 +66,4 @@ void Material::UpdateResources(ID3D11DeviceContext* context)
 
 
 	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
-}
-
-const Rendering::Texture::Texture* Material::FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex)
-{
-	auto textures = _textures.usagePS;
-	for(unsigned int i=0; i<textures.size(); ++i)
-	{
-		if(textures[i].first == shaderSlotIndex)
-		{
-			outIndex = i;
-			return textures[i].second;
-		}
-	}
-
-	outIndex = 0;
-	return nullptr;
-}
-
-void Material::UpdateMap(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture)
-{
-	unsigned int index = 0;
-	auto map = FindMap(index, shaderSlotIndex);
-	if(map == nullptr)
-		_textures.usagePS.push_back(std::make_pair(shaderSlotIndex, texture));
-	else
-	{
-		_textures.usagePS[index].second = texture;
-	}
 }
