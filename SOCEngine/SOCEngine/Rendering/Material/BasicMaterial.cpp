@@ -30,8 +30,8 @@ BasicMaterial::~BasicMaterial(void)
 	SAFE_DELETE(_colorBuffer);
 }
 
-void BasicMaterial::InitColorBuffer(ID3D11DeviceContext* context)
-{	
+void BasicMaterial::Init(ID3D11DeviceContext* context)
+{
 	auto& psConstBuffers = _constbuffers.usagePS;
 	if( psConstBuffers.size() != 0 )
 		ASSERT("Error!, ps constbuffer already exists");
@@ -39,14 +39,51 @@ void BasicMaterial::InitColorBuffer(ID3D11DeviceContext* context)
 	_colorBuffer = new Buffer::ConstBuffer;	
 	_colorBuffer->Create(sizeof(BasicMaterial::Color));
 
-	psConstBuffers.push_back(std::make_pair(BasicConstBuffercSlot::MaterialColor, _colorBuffer));	
+	// Basic Slot Setting
+	{
+		unsigned int count = static_cast<unsigned int>( VSConstBufferSlot::COUNT );
+		std::vector<unsigned int> basicVSCBSlotIndices(count);
+		{
+			unsigned int idx = static_cast<unsigned int>(VSConstBufferSlot::Camera);
+			basicVSCBSlotIndices[idx] = idx;
+
+			idx = static_cast<unsigned int>(VSConstBufferSlot::Transform);
+			basicVSCBSlotIndices[idx] = idx;
+		}
+
+		count = static_cast<unsigned int>( PSConstBufferSlot::COUNT );
+		std::vector<unsigned int> basicPSCBSlotIndices(count);
+		{
+			unsigned int idx = static_cast<unsigned int>(PSConstBufferSlot::Camera);
+			basicPSCBSlotIndices[idx] = idx;
+
+			idx = static_cast<unsigned int>( PSConstBufferSlot::MaterialColor );
+			basicPSCBSlotIndices[idx] = idx; 
+		}
+
+		Material::Init(basicVSCBSlotIndices, basicPSCBSlotIndices);
+	}
+
 	UpdateColorBuffer(context);
 }
 
 void BasicMaterial::UpdateColorBuffer(ID3D11DeviceContext* context)
 {
-	if(_colorBuffer)
-		_colorBuffer->Update(context, &_color);
+	if( (_colorBuffer == nullptr) && (_isInit == false) )
+		return;
+
+	_colorBuffer->Update(context, &_color);
+
+	auto& psBuffers = _constbuffers.usagePS;
+	{
+		unsigned int idx = static_cast<unsigned int>( PSConstBufferSlot::MaterialColor );
+		PSConstBufferSlot bufferType = static_cast<PSConstBufferSlot>(psBuffers[idx].first);
+
+		if(bufferType == PSConstBufferSlot::MaterialColor)
+			psBuffers[idx].second = _colorBuffer;
+		else
+			ASSERT("ps constbuffer already has another buffer");
+	}
 }
 
 void BasicMaterial::UpdateColor(const Color& color)
@@ -54,4 +91,75 @@ void BasicMaterial::UpdateColor(const Color& color)
 	_color = color;
 	_hasAlpha = (_color.main.a < 1.0f);
 	_changedAlpha = true;
+}
+
+void BasicMaterial::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
+{
+	if( (_updateConstBufferMethod != UpdateCBMethod::Default) && (_isInit == false) )
+		return;
+
+	auto& vsBuffers = _constbuffers.usageVS;
+	{
+		auto SetBufferData = []( std::vector<Shader::BaseShader::BufferType>& buffers, VSConstBufferSlot slotType, unsigned int idx, const Buffer::ConstBuffer* constBuffer)
+		{
+			VSConstBufferSlot bufferType = static_cast<VSConstBufferSlot>(buffers[idx].first);
+
+			if(bufferType == slotType)
+				buffers[idx].second = constBuffer;
+			else
+				ASSERT("vs constbuffer already has another buffer");
+		};
+
+		// Transform
+		{
+			unsigned int idx = static_cast<unsigned int>( VSConstBufferSlot::Transform );
+			SetBufferData(vsBuffers, VSConstBufferSlot::Transform, idx, transform);
+		}
+
+		// Camera
+		{
+			unsigned idx = static_cast<unsigned int>( VSConstBufferSlot::Camera );
+			SetBufferData(vsBuffers, VSConstBufferSlot::Camera, idx, camera);
+		}
+	}
+
+	auto& psBuffers = _constbuffers.usagePS;
+	{
+		unsigned int idx = static_cast<unsigned int>( PSConstBufferSlot::Camera );
+		PSConstBufferSlot bufferType = static_cast<PSConstBufferSlot>(psBuffers[idx].first);
+
+		if(bufferType == PSConstBufferSlot::Camera)
+			psBuffers[idx].second = camera;
+		else
+			ASSERT("ps constbuffer already has another buffer");
+	}
+}
+
+void BasicMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
+{
+	UpdateMap(TextureType::Diffuse, tex);
+	_hasAlpha = tex->GetHasAlpha();
+	_changedAlpha = true;
+}
+
+void BasicMaterial::UpdateNormalMap(const Rendering::Texture::Texture* tex)
+{
+	UpdateMap(TextureType::Normal, tex);
+}
+
+void BasicMaterial::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
+{
+	UpdateMap(TextureType::Specular, tex);
+}
+
+void BasicMaterial::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
+{
+	UpdateMap(TextureType::Opacity, tex);
+	_hasAlpha = tex != nullptr;
+	_changedAlpha = true;
+}
+
+void BasicMaterial::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
+{
+	UpdateMap(TextureType::Ambient, tex);
 }

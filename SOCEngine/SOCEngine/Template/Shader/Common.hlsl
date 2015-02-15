@@ -15,7 +15,7 @@ cbuffer Camera : register( b1 )
 	float2 	camera_screenSize;
 };
 
-cbuffer BasicMaterial : register( b2 )
+cbuffer BasicMaterial : register( b0 )
 {
 	float3	material_mainColor;
 	float 	material_opacity;

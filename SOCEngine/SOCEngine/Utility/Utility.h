@@ -110,3 +110,4 @@ namespace Utility
 #endif
 
 #define ASSERT(MSG) assert(!MSG)
+//#define ASSERT(CONDITION, MSG) if(CONDITION){assert(!MSG)}

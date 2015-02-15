@@ -71,7 +71,7 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 		}
 
 		auto context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-		material->InitColorBuffer(context);
+		material->Init(context);
 		materialMgr->Add(fileName, materialName, material, false);
 	}
 	else

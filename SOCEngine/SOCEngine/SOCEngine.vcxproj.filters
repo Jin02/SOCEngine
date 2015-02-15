@@ -288,6 +288,9 @@
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Material\Material.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
@@ -429,13 +432,7 @@
     <ClInclude Include="Utility\DirectoryManager.h">
       <Filter>Utility\DirectoryManager</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Buffer\CPUReadConstBuffer.h">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\CSInputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSOutputBuffer.h">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h">
@@ -480,8 +477,17 @@
     <ClInclude Include="Rendering\Material\BasicMaterial.h">
       <Filter>Rendering\Material</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\Material.h">
-      <Filter>Rendering\Material</Filter>
+    <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSOutputBuffer.h">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h">
+      <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -560,6 +566,9 @@
     <ClCompile Include="Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Material\Material.cpp">
+      <Filter>Rendering\Material</Filter>
+    </ClCompile>
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
@@ -617,13 +626,7 @@
     <ClCompile Include="Utility\DirectoryManager.cpp">
       <Filter>Utility\DirectoryManager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Buffer\CPUReadConstBuffer.cpp">
-      <Filter>Rendering\Buffer\Const</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\CSInputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp">
@@ -662,8 +665,17 @@
     <ClCompile Include="Rendering\Material\BasicMaterial.cpp">
       <Filter>Rendering\Material</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Material\Material.cpp">
-      <Filter>Rendering\Material</Filter>
+    <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp">
+      <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

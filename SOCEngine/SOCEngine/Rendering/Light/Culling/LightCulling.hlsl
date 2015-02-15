@@ -1,7 +1,6 @@
 //NOT_CREATE_META_DATA
 
 #define TILE_RES 						16
-#define TILE_RES 						16
 #define MAX_LIGHT_PER_TILE_NUM 			544
 #define MAX_LIGHT_NUM					2048
 #define FLOAT_MAX						3.402823466e+38F
@@ -107,7 +106,11 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 	//스레드 싱크 맞추기
 	GroupMemoryBarrierWithGroupSync();
 
+<<<<<<< HEAD
 	float minZ = FLOAT_MAX;
+=======
+	float minZ = 3.402823466e+38F;
+>>>>>>> #37
 	float maxZ = 0.0f;
 
 	//shared min, max 계산
