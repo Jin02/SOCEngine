@@ -11,7 +11,7 @@ CSInputBuffer::CSInputBuffer() : BaseBuffer(), _srv(nullptr)
 
 CSInputBuffer::~CSInputBuffer()
 {
-
+	SAFE_RELEASE(_srv);
 }
 
 bool CSInputBuffer::Create(unsigned int stride, unsigned int num, const void* sysMem)

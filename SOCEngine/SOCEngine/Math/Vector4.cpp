@@ -73,9 +73,16 @@ namespace Math
 		return Vector4(x * d, y * d, z * d, w * d);
 	}
 
-	Vector4 Vector4::operator * (const Vector4& a) const
+	Vector4& Vector4::operator *= (float f)
 	{
-		return Vector4(a.x * x, a.y * y, a.z * z, a.w * w);
+		x *= f; y *= f; z *= f; w *= f;
+		return (*this);
+	}
+
+	Vector4& Vector4::operator -= (const Vector4& a)
+	{
+		x -= a.x; y -= a.y; z -= a.z;w -= a.z;
+		return (*this);
 	}
 
 	Vector4 Vector4::operator / (float d) const
@@ -174,4 +181,15 @@ namespace Math
 		w = newW;
 	}
 
+	Vector4& Vector4::operator += (const Vector4& a)
+	{
+		x += a.x; y += a.y; z += a.z;w += a.z;
+		return (*this);
+	}
+
+	Vector4& Vector4::operator /= (float f)
+	{
+		x /= f; y /= f; z /= f; w /= f;
+		return (*this);
+	}
 }

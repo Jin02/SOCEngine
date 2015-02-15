@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DirectX.h"
+#include <d3d11.h>
 #include "Color.h"
 
 namespace Rendering
@@ -9,13 +9,13 @@ namespace Rendering
 	{
 		class Texture
 		{
-		private:
+		protected:
 			ID3D11ShaderResourceView *_srv;
 			bool _hasAlpha;
 
 		public:
 			Texture(ID3D11ShaderResourceView* srv, bool hasAlpha);
-			~Texture();
+			virtual ~Texture();
 
 		public:
 			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);

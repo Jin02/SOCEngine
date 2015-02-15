@@ -19,14 +19,6 @@ namespace Rendering
 
 		protected:
 			LightType _type;
-		
-		public:
-			Color ambient;
-			Color diffuse;
-			Color specular;
-		
-			float range;
-			float specularPower;
 
 		protected:
 			LightForm();

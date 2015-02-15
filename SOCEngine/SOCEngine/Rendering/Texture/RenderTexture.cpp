@@ -5,7 +5,7 @@
 using namespace Rendering::Texture;
 using namespace Device;
 
-RenderTexture::RenderTexture() :_texture(nullptr), _renderTargetView(nullptr), _shaderResourceView(nullptr)
+RenderTexture::RenderTexture() : Texture(nullptr, false), _renderTargetView(nullptr)
 {
 
 }
@@ -81,7 +81,7 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 		srdesc.Texture2D.MostDetailedMip = 0;
 		srdesc.Texture2D.MipLevels = 1;
 
-		hr = device->CreateShaderResourceView(_texture, &srdesc, &_shaderResourceView);
+		hr = device->CreateShaderResourceView(_texture, &srdesc, &_srv);
 		if( FAILED(hr) )
 		{
 			ASSERT("Error");
@@ -115,7 +115,6 @@ void RenderTexture::Destroy()
 {
 	SAFE_RELEASE(_texture);
 	SAFE_RELEASE(_renderTargetView);
-	SAFE_RELEASE(_shaderResourceView);
 }
 
 void RenderTexture::SetRenderTarget(const DepthBuffer* depthBuffer, const DirectX* dx)

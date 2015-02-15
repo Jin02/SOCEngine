@@ -17,111 +17,29 @@ Material::~Material(void)
 
 }
 
-void Material::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
+void Material::Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
+					const std::vector<unsigned int>& vsTextureUsageIndices,		const std::vector<unsigned int>& psTextureUsageIndices)
 {
-	if(_updateConstBufferMethod != UpdateCBMethod::Default)
-		return;
-
-	auto SetBufferData = [](std::vector<Shader::BaseShader::BufferType>& buffers, 
-		BasicConstBuffercSlot slotType, 
-		unsigned int idx,
-		const Buffer::ConstBuffer* constBuffer)
-	{
-		BasicConstBuffercSlot bufferType = static_cast<BasicConstBuffercSlot>(buffers[idx].first);
-
-		if(bufferType == slotType)
-			buffers[idx].second = constBuffer;
-		else
-		{
-			ASSERT("vs constbuffer already has another buffer");
-			buffers[idx] = std::make_pair(slotType, constBuffer);
-		}
-	};
-
-	auto& vsBuffers = _constbuffers.usageVS;
-	if(vsBuffers.size() == 0)
-	{
-		vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Transform, transform));
-		vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
-	}
-	else
-	{
-		unsigned int idx = Material::BasicConstBuffercSlot::Transform;
-		SetBufferData(vsBuffers, Material::BasicConstBuffercSlot::Transform, idx, transform);
-
-		if(vsBuffers.size() == 1)
-			vsBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
-		else if(vsBuffers.size() >= 2)
-		{
-			idx = Material::BasicConstBuffercSlot::Camera;
-			SetBufferData(vsBuffers, Material::BasicConstBuffercSlot::Camera, idx, camera);
-		}
-	}
-
-	auto& psBuffers = _constbuffers.usagePS;
-	if(psBuffers.size() == 0)
-		psBuffers.push_back(std::make_pair(Material::BasicConstBuffercSlot::Camera, camera));
-	else
-	{
-		SetBufferData(psBuffers, Material::BasicConstBuffercSlot::Camera, 0, camera);
-	}
+	InitConstBufferSlot(vsConstBufferUsageIndices, psConstBufferUsageIndices);
+	InitTextureSlot(vsTextureUsageIndices, psTextureUsageIndices);
 }
 
-const Rendering::Texture::Texture* Material::FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex)
+void Material::InitConstBufferSlot(const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int >& psTextureUsageIndices)
 {
-	auto textures = _textures.usagePS;
-	for(unsigned int i=0; i<textures.size(); ++i)
-	{
-		if(textures[i].first == shaderSlotIndex)
-		{
-			outIndex = i;
-			return textures[i].second;
-		}
-	}
+	for(auto& idx : vsTextureUsageIndices)
+		_constbuffers.usageVS.push_back( std::make_pair(idx, nullptr) );
 
-	outIndex = 0;
-	return nullptr;
+	for(auto& idx : psTextureUsageIndices)
+		_constbuffers.usagePS.push_back( std::make_pair(idx, nullptr) );
 }
 
-void Material::UpdateMap(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture)
+void Material::InitTextureSlot(const std::vector<unsigned int>& vsShaderSlotIndex, const std::vector<unsigned int>& psShaderSlotIndex)
 {
-	unsigned int index = 0;
-	auto map = FindMap(index, shaderSlotIndex);
-	if(map == nullptr)
-		_textures.usagePS.push_back(std::make_pair(shaderSlotIndex, texture));
-	else
-	{
-		_textures.usagePS[index].second = texture;
-	}
-}
+	for(auto& idx : vsShaderSlotIndex)
+		_textures.usageVS.push_back(  std::make_pair(idx, nullptr) );
 
-void Material::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Diffuse, tex);
-	_hasAlpha = tex->GetHasAlpha();
-	_changedAlpha = true;
-}
-
-void Material::UpdateNormalMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Normal, tex);
-}
-
-void Material::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Specular, tex);
-}
-
-void Material::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Opacity, tex);
-	_hasAlpha = tex != nullptr;
-	_changedAlpha = true;
-}
-
-void Material::UpdateAmbientMap(const Rendering::Texture::Texture* tex)
-{
-	UpdateMap(TextureType::Ambient, tex);
+	for(auto& idx : psShaderSlotIndex)
+		_textures.usagePS.push_back(  std::make_pair(idx, nullptr) );
 }
 
 void Material::ClearResource(ID3D11DeviceContext* context)

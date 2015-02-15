@@ -10,20 +10,13 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum BasicConstBuffercSlot : unsigned int
-		{
-			Transform		= 0,
-			Camera			= 1,
-			MaterialColor	= 2,
-		};
-
-		enum UpdateCBMethod
+		enum class UpdateCBMethod
 		{
 			Default,
 			Custom
 		};
 
-		enum TextureType : unsigned int
+		enum class TextureType : unsigned int
 		{
 			Ambient = 0,
 			Diffuse,
@@ -53,24 +46,22 @@ namespace Rendering
 		Textures				_textures;
 		UpdateCBMethod			_updateConstBufferMethod;
 
-		bool _hasAlpha;
-		bool _changedAlpha;
+		bool	_hasAlpha;
+		bool	_changedAlpha;
 
 	public:
 		Material(const std::string& name);
 		~Material(void);
 
-	public:
-		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
+	protected:
+		void Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
+				  const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int>& psTextureUsageIndices);
 
-		void UpdateMap(unsigned int shaderSlotIndex, const Texture::Texture* texture);
-		void UpdateAmbientMap(const Texture::Texture* tex);
-		void UpdateDiffuseMap(const Texture::Texture* tex);
-		void UpdateNormalMap(const Texture::Texture* tex);
-		void UpdateSpecularMap(const Texture::Texture* tex);
-		void UpdateOpacityMap(const Texture::Texture* tex);
+		void InitConstBufferSlot(const std::vector<unsigned int>& vsConstBufferUsageIndices,
+								 const std::vector<unsigned int >& psConstBufferUsageIndices);
 
-		const Rendering::Texture::Texture* FindMap(unsigned int& outIndex, unsigned int shaderSlotIndex);
+		void InitTextureSlot(const std::vector<unsigned int>& vsTextureUsageIndices,
+							 const std::vector<unsigned int>& psTextureUsageIndices);
 
 	public:
 		void ClearResource(ID3D11DeviceContext* context);

@@ -18,11 +18,12 @@ namespace Rendering
 
 		bool PointLight::Intersects(const Sphere &sphere)
 		{
-			Core::Transform* tf = _owner->GetTransform();
-			Math::Vector3 wp;
-			tf->WorldPosition(wp);
+			//Core::Transform* tf = _owner->GetTransform();
+			//Math::Vector3 wp;
+			//tf->WorldPosition(wp);
 
-			return Sphere::Intersects(sphere, Sphere(wp, range));
+			//return Sphere::Intersects(sphere, Sphere(wp, range));
+			return false;
 		}
 
 	}

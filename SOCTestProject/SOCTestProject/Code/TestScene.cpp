@@ -36,12 +36,6 @@ void TestScene::OnInitialize()
 		_cameraMgr->Add("mainCamera", cam, false);
 	}
 
-	GPGPU::DirectCompute::ComputeShader::ThreadGroup tg;
-	tg.x = 1;
-	tg.y = 1;
-	tg.z = 1;
-	Rendering::Light::LightCulling lc(tg);
-	lc.Init("./", "Fuuuuuck.hlsl");
 }
 
 void TestScene::OnRenderPreview()

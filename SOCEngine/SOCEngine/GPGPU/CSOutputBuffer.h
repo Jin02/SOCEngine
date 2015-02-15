@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseShader.h"
-#include "CPUReadConstBuffer.h"
+#include "ConstBuffer_CPURead.h"
 
 namespace GPGPU
 {
@@ -9,15 +9,12 @@ namespace GPGPU
 	{
 		class CSOutputBuffer : public Rendering::Buffer::BaseBuffer
 		{
-		private:
+		protected:
 			ID3D11UnorderedAccessView	*_uav;
 
 		public:
 			CSOutputBuffer();
 			~CSOutputBuffer();
-
-		public:
-			bool Create(unsigned int stride, unsigned int num);
 
 		private:
 			void Update(ID3D11DeviceContext* context, const void* data){}

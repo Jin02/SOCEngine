@@ -42,9 +42,13 @@ namespace Rendering
 		{
 			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 			{
-				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
-				if(buffer)
-					context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
+				const Buffer::BaseBuffer* constBuffer = iter->second;
+				if(constBuffer)
+				{
+					ID3D11Buffer* buffer = constBuffer->GetBuffer();
+					if(buffer)
+						context->PSSetConstantBuffers( (*iter).first, 1, &buffer );
+				}
 			}
 		}
 
@@ -52,17 +56,26 @@ namespace Rendering
 		{
 			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 			{
-				ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
-				if(srv)
-					context->PSSetShaderResources( iter->first, 1, &srv );
+				const Texture::Texture* tex = iter->second;
+				if(tex)
+				{
+					ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
+					if(srv)
+						context->PSSetShaderResources( iter->first, 1, &srv );
+				}
 			}
 		}
 
 		for(auto iter = samplers.begin(); iter != samplers.end(); ++iter)
 		{
-			ID3D11SamplerState* samplerState = iter->second->GetSampler();
-			if(samplerState)
-				context->PSSetSamplers(iter->first, 1, &samplerState);
+			const Sampler* sampler = iter->second;
+
+			if(sampler)
+			{
+				ID3D11SamplerState* samplerState = sampler->GetSampler();
+				if(samplerState)
+					context->PSSetSamplers(iter->first, 1, &samplerState);
+			}
 		}
 	}
 

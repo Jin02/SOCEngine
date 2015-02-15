@@ -1,17 +1,24 @@
 #include "CameraManager.h"
 
 using namespace Rendering;
+using namespace Rendering::Light;
 using namespace Core;
 using namespace Rendering::Manager;
 
-CameraManager::CameraManager()
+CameraManager::CameraManager() : _lightCullingCS(nullptr)
 {
 
 }
 
 CameraManager::~CameraManager()
 {
+	SAFE_DELETE(_lightCullingCS);
+}
 
+void CameraManager::InitLightCulling()
+{
+	_lightCullingCS = new LightCulling;
+	_lightCullingCS->Init("", "", nullptr);
 }
 
 void CameraManager::SetMainCamera(Camera::Camera *cam)

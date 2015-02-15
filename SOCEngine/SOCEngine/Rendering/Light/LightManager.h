@@ -18,14 +18,6 @@ namespace Rendering
 			LightManager(void);
 			~LightManager(void);
 
-		public:
-			bool Intersects(std::vector<Light::LightForm*>& outLights, Rendering::Camera::Frustum *frustum);
-			bool Intersects(Rendering::Camera::Frustum *frustum, const Light::LightForm* light);
-
-		public:
-			bool AddLight(Light::LightForm* light);
-			void Delete(Light::LightForm* light, bool remove);
-			void DeleteAll(bool remove);
 		};
 	}
 }

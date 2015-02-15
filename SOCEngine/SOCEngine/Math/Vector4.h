@@ -27,7 +27,6 @@ namespace Math
 		bool operator == (const Vector4& b) const;
 		bool operator != (const Vector4& b) const;
 		Vector4 operator * (float d) const;
-		Vector4 operator * (const Vector4& a) const;
 		Vector4 operator / (float d) const;
 
 		Vector4& operator += (const Vector4& a);
