@@ -3,6 +3,8 @@
 #define TILE_RES 						16
 #define MAX_LIGHT_PER_TILE_NUM 			544
 #define MAX_LIGHT_NUM					2048
+#define FLOAT_MAX						3.402823466e+38F
+>>>>>>> #45
 
 Buffer<float4> 		g_bPointLightCenterWithRadius 	: register(t0);
 Buffer<float4> 		g_bSpotLightCenterWithRadius 	: register(t1);
@@ -105,7 +107,7 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 	//스레드 싱크 맞추기
 	GroupMemoryBarrierWithGroupSync();
 
-	float minZ = 3.402823466e+38F;
+	float minZ = FLOAT_MAX;
 	float maxZ = 0.0f;
 
 	//shared min, max 계산
