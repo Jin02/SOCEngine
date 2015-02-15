@@ -106,11 +106,7 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 	//스레드 싱크 맞추기
 	GroupMemoryBarrierWithGroupSync();
 
-<<<<<<< HEAD
 	float minZ = FLOAT_MAX;
-=======
-	float minZ = 3.402823466e+38F;
->>>>>>> #37
 	float maxZ = 0.0f;
 
 	//shared min, max 계산
