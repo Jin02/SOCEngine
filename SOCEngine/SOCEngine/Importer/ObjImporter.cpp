@@ -28,8 +28,7 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 	TextureManager* textureMgr = currentScene->GetTextureManager();
 
 	const std::string materialName = tinyMaterial.name;
-	if( materialName.empty() )
-		ASSERT("BasicMaterial has not key");
+	ASSERT_COND_MSG(materialName.empty() == false, "BasicMaterial has not key");
 
 	BasicMaterial* material = materialMgr->Find(fileName, materialName);
 
@@ -258,8 +257,8 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 						break;
 					}
 				}
-				if( count == vertexDatas.size() )
-					ASSERT("Not Found Semantic Data!");
+
+				ASSERT_COND_MSG(count != vertexDatas.size(), "Not Found Semantic Data!");
 			}
 		}
 	}
@@ -390,7 +389,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	auto InsertShaderIntoMaterial = [&](const std::string& shaderName, const std::string& materialName, const std::string& vsMainFuncName, const std::string& psMainFuncName)
 	{
 		BasicMaterial* material = materialMgr->Find(fileName, materialName);
-		assert(material != nullptr);
+		ASSERT_COND_MSG(material != nullptr, "not found material");
 
 		if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
 		{
@@ -413,7 +412,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 	
 	LPVoidType* bufferData = nullptr;
 	if(currentScene->GetBufferManager()->Find( bufferData, fileName, tinyShape.name ))
-		ASSERT("Error, BufferMgr already has buffer");
+		ASSERT_MSG("Error, BufferMgr already has buffer");
 
 	bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
@@ -441,10 +440,10 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 void ObjImporter::CheckCorrectShape(const tinyobj::shape_t& tinyShape)
 {
 	if((tinyShape.mesh.indices.size() % 3) != 0)
-		ASSERT("Indices must be made only 3 units.");
+		ASSERT_MSG("Indices must be made only 3 units.");
 
 	if((tinyShape.mesh.positions.size() % 3) != 0)
-		ASSERT("Pos count must has 3 units. ex:) [x1,y1,z1,x2,y2,z2] ");
+		ASSERT_MSG("Pos count must has 3 units. ex:) [x1,y1,z1,x2,y2,z2] ");
 }
 
 Core::Object* ObjImporter::CloneOriginObject(const std::string& fileName, const std::string& tinyShapeName)

@@ -21,7 +21,7 @@ bool DepthBuffer::Create(const Math::Size<unsigned int>& size, bool useShaderRes
 							(useShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);
 	if(_Create(size, DXGI_FORMAT_D32_FLOAT, bindFlag) == false)
 	{
-		ASSERT("Error");
+		ASSERT_MSG("Error");
 		return false;
 	}
 
@@ -39,7 +39,7 @@ bool DepthBuffer::Create(const Math::Size<unsigned int>& size, bool useShaderRes
 	HRESULT hr = device->CreateDepthStencilView(_texture, &desc, &_depthStencilView); 
 	if(FAILED(hr))
 	{
-		ASSERT("Error");
+		ASSERT_MSG("Error");
 		return false;
 	}
 

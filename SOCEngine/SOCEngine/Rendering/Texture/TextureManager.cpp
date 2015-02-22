@@ -35,11 +35,8 @@ Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool ha
 		return tex;
 
 	ID3D11ShaderResourceView* srv = nullptr;
-	if( LoadTextureFromFile(&srv, fileDir) == false )
-	{
-		ASSERT("Fail, Not Load Texture!");
-		return nullptr;
-	}
+
+	ASSERT_COND_MSG(LoadTextureFromFile(&srv, fileDir), "Fail, Not Load Texture!");
 	tex = new Texture::Texture(srv, hasAlpha);
 
 	return _hash.Add(name+extension, tex);

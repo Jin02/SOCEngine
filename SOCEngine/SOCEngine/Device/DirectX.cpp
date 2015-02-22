@@ -66,7 +66,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	{
 		HRESULT hr = _device->CheckMultisampleQualityLevels( sd.BufferDesc.Format, sd.SampleDesc.Count, &sd.SampleDesc.Quality);
 		if( FAILED(hr) || sd.SampleDesc.Quality <= 0)
-			ASSERT("Invalid multisampler count");
+			ASSERT_MSG("Invalid multisampler count");
 		sd.SampleDesc.Quality -= 1;
 	}
 
@@ -170,7 +170,7 @@ bool DirectX::InitDevice(const Win32* win)
 		desc.AntialiasedLineEnable	= false;
 
 		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
-			ASSERT("Error!, device does not create rasterizer state");
+			ASSERT_MSG("Error!, device does not create rasterizer state");
 	}
 	
 	//Create Blend State
@@ -187,10 +187,10 @@ bool DirectX::InitDevice(const Win32* win)
 		desc.RenderTarget[0].DestBlendAlpha			= D3D11_BLEND_ZERO; 
 		desc.RenderTarget[0].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 		if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlend)) )
-			ASSERT("Error!, device does not create opaque blend state");
+			ASSERT_MSG("Error!, device does not create opaque blend state");
 		desc.AlphaToCoverageEnable = true;
 		if( FAILED(_device->CreateBlendState(&desc, &_alphaToCoverageBlend)) )
-			ASSERT("Error!, device does not create alphaToCoverage blend state");
+			ASSERT_MSG("Error!, device does not create alphaToCoverage blend state");
 	}
 
 	//Create Depth State
@@ -203,11 +203,11 @@ bool DirectX::InitDevice(const Win32* win)
 		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
 		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLessEqual)) )
-			ASSERT("Error!, device does not create lessEqual dpeth state");
+			ASSERT_MSG("Error!, device does not create lessEqual dpeth state");
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
 		desc.DepthFunc			= D3D11_COMPARISON_EQUAL; 
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
-			ASSERT("Error!, device does not create depth state equal and disable writing");
+			ASSERT_MSG("Error!, device does not create depth state equal and disable writing");
 	}
 
 	_depthBuffer = new Rendering::Texture::DepthBuffer(this);

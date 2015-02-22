@@ -50,7 +50,7 @@ void Scene::Initialize()
 			{
 				std::string error = "Not Found";
 				error += shaderName + ".hlsl";
-				ASSERT(error.c_str());
+				ASSERT_COND_MSG(error.empty() == false, error.c_str());
 			}
 
 			BasicMaterial* material = new BasicMaterial(MaterialName);
@@ -76,10 +76,10 @@ void Scene::Initialize()
 
 		//Normal Mapping
 		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT("Not Found BasicNormalMapping.hlsl");
+		//	ASSERT_MSG("Not Found BasicNormalMapping.hlsl");
 
 		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT("Not Found BasicNormalMapping_DepthWrite.hlsl");
+		//	ASSERT_MSG("Not Found BasicNormalMapping_DepthWrite.hlsl");
 
 
 		//Null Shader

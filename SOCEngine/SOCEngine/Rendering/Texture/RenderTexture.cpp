@@ -58,11 +58,7 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 	}
 
 	HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &_texture);
-	if(FAILED(hr))
-	{
-		ASSERT("Error, not create texture");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create texture");
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
@@ -82,11 +78,7 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 		srdesc.Texture2D.MipLevels = 1;
 
 		hr = device->CreateShaderResourceView(_texture, &srdesc, &_srv);
-		if( FAILED(hr) )
-		{
-			ASSERT("Error");
-			return false;
-		}
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
 	}
 
 	if(bindFlags & D3D11_BIND_RENDER_TARGET)
@@ -98,7 +90,7 @@ bool RenderTexture::_Create(const Math::Size<unsigned int>& size, DXGI_FORMAT fo
 
 		if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
 		{
-			ASSERT("E");
+			ASSERT_MSG("Error, not create render targer view, check srv desc or texture desc");
 			return false;
 		}
 	}

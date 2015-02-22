@@ -27,11 +27,7 @@ bool CSOutputBuffer_ReadCPU::Create(unsigned int stride, unsigned int num, bool 
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. does not create constant buffer");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create constant buffer");
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -41,11 +37,7 @@ bool CSOutputBuffer_ReadCPU::Create(unsigned int stride, unsigned int num, bool 
 	uavDesc.Buffer.NumElements = num;
 
 	hr = device->CreateUnorderedAccessView(_buffer, &uavDesc, &_uav);
-	if( FAILED(hr) )
-	{
-		ASSERT("Error!, does not create unordered acess view");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create unordered acess view");
 
 	return true;
 }

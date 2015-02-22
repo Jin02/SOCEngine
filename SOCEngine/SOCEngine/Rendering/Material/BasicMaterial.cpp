@@ -35,7 +35,7 @@ void BasicMaterial::Init(ID3D11DeviceContext* context)
 {
 	auto& psConstBuffers = _constbuffers.usagePS;
 	if( psConstBuffers.size() != 0 )
-		ASSERT("Error!, ps constbuffer already exists");
+		ASSERT_MSG("Error!, ps constbuffer already exists");
 
 	_colorBuffer = new Buffer::ConstBuffer;	
 	_colorBuffer->Create(sizeof(BasicMaterial::Color));
@@ -93,10 +93,11 @@ void BasicMaterial::UpdateColorBuffer(ID3D11DeviceContext* context)
 		unsigned int idx = static_cast<unsigned int>( PSConstBufferSlot::MaterialColor );
 		PSConstBufferSlot bufferType = static_cast<PSConstBufferSlot>(psBuffers[idx].first);
 
-		if(bufferType == PSConstBufferSlot::MaterialColor)
+		bool condition = (bufferType == PSConstBufferSlot::MaterialColor);
+		ASSERT_COND_MSG(condition, "ps constbuffer already has another buffer");
+		{
 			psBuffers[idx].second = _colorBuffer;
-		else
-			ASSERT("ps constbuffer already has another buffer");
+		}
 	}
 }
 
@@ -118,10 +119,10 @@ void BasicMaterial::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const B
 		{
 			VSConstBufferSlot bufferType = static_cast<VSConstBufferSlot>(buffers[idx].first);
 
-			if(bufferType == slotType)
+			ASSERT_COND_MSG(bufferType == slotType, "vs constbuffer already has another buffer");
+			{
 				buffers[idx].second = constBuffer;
-			else
-				ASSERT("vs constbuffer already has another buffer");
+			}
 		};
 
 		// Transform
@@ -142,10 +143,10 @@ void BasicMaterial::UpdateBasicConstBuffer(ID3D11DeviceContext* context, const B
 		unsigned int idx = static_cast<unsigned int>( PSConstBufferSlot::Camera );
 		PSConstBufferSlot bufferType = static_cast<PSConstBufferSlot>(psBuffers[idx].first);
 
-		if(bufferType == PSConstBufferSlot::Camera)
+		ASSERT_COND_MSG(bufferType == PSConstBufferSlot::Camera, "ps constbuffer already has another buffer");
+		{
 			psBuffers[idx].second = camera;
-		else
-			ASSERT("ps constbuffer already has another buffer");
+		}
 	}
 }
 
@@ -156,10 +157,10 @@ void BasicMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 		unsigned int idx = static_cast<unsigned int>( PSTextureSlot::Diffuse );
 		TextureType texType = static_cast<TextureType>(psTextures[idx].first);
 
-		if(texType == TextureType::Diffuse)
+		ASSERT_COND_MSG(texType == TextureType::Diffuse, "ps texture already has another tex");
+		{
 			psTextures[idx].second = tex;
-		else
-			ASSERT("ps texture already has another tex");
+		}
 	}
 
 	_hasAlpha = tex->GetHasAlpha();
@@ -173,9 +174,9 @@ void BasicMaterial::UpdateNormalMap(const Rendering::Texture::Texture* tex)
 		unsigned int idx = static_cast<unsigned int>( PSTextureSlot::Normal );
 		TextureType texType = static_cast<TextureType>(psTextures[idx].first);
 
-		if(texType == TextureType::Normal)
+		ASSERT_COND_MSG(texType == TextureType::Normal, "ps texture already has another tex");
+		{
 			psTextures[idx].second = tex;
-		else
-			ASSERT("ps texture already has another tex");
+		}
 	}
 }

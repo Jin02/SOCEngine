@@ -44,7 +44,7 @@ void Camera::Initialize()
 
 	_constBuffer = new Buffer::ConstBuffer;
 	if(_constBuffer->Create(sizeof(CameraConstBuffer)) == false)
-		ASSERT("Error, cam->constbuffer->Create");
+		ASSERT_MSG("Error, cam->constbuffer->Create");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
@@ -142,7 +142,7 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 		if(customMaterial && 
 			(option == MeshRenderOption::DepthWriteWithTest || 
 			 option == MeshRenderOption::AlphaTest) )
-			ASSERT("Invalid Arg");
+			ASSERT_MSG("Invalid Arg");
 
 		auto RenderIter = [&](BasicMaterial* material, Mesh::Mesh* mesh)
 		{
