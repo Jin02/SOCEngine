@@ -65,8 +65,9 @@ std::pair<BasicMaterial*, Mesh::Mesh*>* RenderManager::Find(BasicMaterial* mater
 		return _alphaMeshes.Find(materialAddress, meshAddress);
 	else if(type == MeshType::nonAlpha)
 		return _nonAlphaMeshes.Find(materialAddress, meshAddress);
+	else
+		ASSERT_MSG("Error!, undefined MeshType");
 
-	ASSERT("Error!, undefined MeshType");
 	return nullptr;
 }
 
@@ -87,6 +88,6 @@ void RenderManager::Iterate(const std::function<void(BasicMaterial* material, Me
 		_nonAlphaMeshes.GetMapInMap().IterateContent(MapInMapIter);
 	else
 	{
-		ASSERT("Error!, undefined MeshType");
+		ASSERT_MSG("Error!, undefined MeshType");
 	}
 }

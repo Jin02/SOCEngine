@@ -31,7 +31,7 @@ void LightCulling_CSOutputBuffer::Create(const Math::Size<unsigned int>& threadS
 
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 		if( FAILED(device->CreateBuffer( &desc, NULL, &_buffer)) )
-			ASSERT("Error!, not create buffer");
+			ASSERT_MSG("Error!, not create buffer");
 	}
 
 	//srv
@@ -43,7 +43,7 @@ void LightCulling_CSOutputBuffer::Create(const Math::Size<unsigned int>& threadS
 		desc.Buffer.ElementOffset = 0;
 		desc.Buffer.ElementWidth = maxLightNumInTile * threadTotalSize;
 		if( FAILED( device->CreateShaderResourceView( _buffer, &desc, &_srv)))
-			ASSERT("Error!, not create srv");
+			ASSERT_MSG("Error!, not create srv");
 	}
 
 	//uav
@@ -55,6 +55,6 @@ void LightCulling_CSOutputBuffer::Create(const Math::Size<unsigned int>& threadS
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.NumElements = maxLightNumInTile * threadTotalSize;
 		if( FAILED( device->CreateUnorderedAccessView( _buffer, &desc, &_uav ) ))
-			ASSERT("Error!, not create uav");
+			ASSERT_MSG("Error!, not create uav");
 	}
 }

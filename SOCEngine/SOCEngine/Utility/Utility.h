@@ -109,5 +109,5 @@ namespace Utility
 #define DEBUG_LOG(X) X;
 #endif
 
-#define ASSERT(MSG) assert(!MSG)
-//#define ASSERT(CONDITION, MSG) if(CONDITION){assert(!MSG)}
+#define ASSERT_MSG(MSG) assert(!MSG)
+#define ASSERT_COND_MSG(CONDITION, MSG) if(!(CONDITION)){assert(!MSG);}

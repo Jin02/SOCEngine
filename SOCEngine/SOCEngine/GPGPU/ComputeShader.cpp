@@ -25,9 +25,7 @@ bool ComputeShader::Create()
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateComputeShader(_blob->GetBufferPointer(), _blob->GetBufferSize(), 0, &_shader);
-
-	if( FAILED(hr) )
-		ASSERT("Error!, system does not create compute shaer component");
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, system does not create compute shaer component");
 
 	return true;
 }

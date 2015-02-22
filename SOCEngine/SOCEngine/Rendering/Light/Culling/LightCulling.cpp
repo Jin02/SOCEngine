@@ -53,10 +53,10 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	UpdateThreadGroup(&threadGroup, false);
 	_computeShader = new ComputeShader(threadGroup, blob);
 
-	assert(_computeShader->Create());
+	ASSERT_COND_MSG(_computeShader->Create(), "can not create compute shader");
 
 	_globalDataBuffer = new ConstBuffer;
-	assert(_globalDataBuffer->Create(sizeof(CullingConstBuffer)));
+	ASSERT_COND_MSG(_globalDataBuffer->Create(sizeof(CullingConstBuffer)), "can not create const buffer");
 
 	ComputeShader::InputBuffer inputBufferElement;
 
@@ -65,7 +65,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		// Point Light
 		{
 			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
-			assert(pointLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM));
+			ASSERT_COND_MSG(pointLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
 			inputBufferElement.idx = InputBuffer::PointLightRadiusWithCenter;
 			inputBufferElement.buffer = pointLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);
@@ -74,7 +74,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		// Spot Light
 		{
 			CSInputBuffer* spotLightCenterWithRadius = new CSInputBuffer;
-			assert(spotLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM));
+			ASSERT_COND_MSG(spotLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
 			inputBufferElement.idx = InputBuffer::SpotLightRadiusWithCenter;
 			inputBufferElement.buffer = spotLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);

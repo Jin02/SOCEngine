@@ -30,11 +30,7 @@ bool CSInputBuffer::Create(unsigned int stride, unsigned int num, const void* sy
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, &data, &_buffer);
 
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. does not create constant buffer");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. does not create constant buffer");
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -44,11 +40,7 @@ bool CSInputBuffer::Create(unsigned int stride, unsigned int num, const void* sy
 	srvDesc.BufferEx.NumElements = num;
 
 	hr = device->CreateShaderResourceView(_buffer, &srvDesc, &_srv);
-	if( FAILED(hr) )
-	{
-		ASSERT("Error!, does not create shader resource view");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create shader resource view");
 
 	return true;
 }

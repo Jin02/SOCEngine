@@ -27,7 +27,7 @@ namespace Rendering
 			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
 				indicesData, indicesCount, isDynamic) == false)
 			{
-				ASSERT("Error, filter->cratebuffer");
+				ASSERT_MSG("Error, filter->cratebuffer");
 				SAFE_DELETE(_filter);
 				return false;
 			}
@@ -36,14 +36,14 @@ namespace Rendering
 			_renderer = new MeshRenderer(depthWriteMaterial, alphaTest);
 			if(_renderer->AddMaterial(material, false) == false)
 			{
-				ASSERT("Error, renderer addmaterial");
+				ASSERT_MSG("Error, renderer addmaterial");
 				return false;
 			}
 
 			_transformConstBuffer = new Buffer::ConstBuffer;
 			if(_transformConstBuffer->Create(sizeof(Core::TransformPipelineShaderInput)) == false)
 			{
-				ASSERT("Error, transformBuffer->Create");
+				ASSERT_MSG("Error, transformBuffer->Create");
 				return false;
 			}
 

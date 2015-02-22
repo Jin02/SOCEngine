@@ -39,7 +39,7 @@ bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &sha
 			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
 		if( pErrorBlob ) pErrorBlob->Release();
 
-		ASSERT("Shader Compile Error!");
+		ASSERT_MSG("Shader Compile Error!");
 
 		return false;
 	}
@@ -70,7 +70,9 @@ bool ShaderManager::CompileFromFile(ID3DBlob** outBlob, const std::string &fileN
 		if( pErrorBlob != NULL )
 			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
 		if( pErrorBlob ) pErrorBlob->Release();
-		ASSERT("Shader Compile Error!");
+		
+		ASSERT_MSG("Shader Compile Error!");
+		
 		return false;
 	}
 	if( pErrorBlob ) pErrorBlob->Release();
@@ -109,7 +111,7 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	if(file.good() == false)
 	{
 		file.close();
-		ASSERT("InValid File");
+		ASSERT_MSG("InValid File");
 		return false;
 	}
 
@@ -139,7 +141,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 	ID3DBlob* blob = nullptr;
 	if( CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc) == false )
 	{
-		ASSERT("Shader Compile Error!");
+		ASSERT_MSG("Shader Compile Error!");
 		return nullptr;
 
 	}
@@ -152,7 +154,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 
 	if(CommandValidator(command, &fileName, &shaderType, &mainFunc) == false)
 	{
-		ASSERT("Command Error");
+		ASSERT_MSG("Command Error");
 		return nullptr;
 	}
 
@@ -197,7 +199,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 	if(CommandValidator(partlyCommand, "vs", &fileName, &mainFunc) == false)
 	{
-		ASSERT("Command Error");
+		ASSERT_MSG("Command Error");
 		return nullptr;
 	}
 
@@ -215,10 +217,11 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 			return nullptr;
 
 		shader = new VertexShader(blob);
-		if(shader->CreateShader(vertexDeclations.data(), vertexDeclations.size()))
-			_shaders.Add(fullCommand, shader, false);
-		else
-			ASSERT("Error, Not Created VS");
+
+		bool success = shader->CreateShader(vertexDeclations.data(), vertexDeclations.size());		
+		ASSERT_COND_MSG(success, "Error, Not Created VS");
+
+		_shaders.Add(fullCommand, shader, false);
 	}
 
 	return shader;
@@ -245,10 +248,10 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new PixelShader(blob);
-		if(shader->CreateShader())
+		ASSERT_COND_MSG(shader->CreateShader(), "Error, Not Created PS");
+		{
 			_shaders.Add(fullCommand, shader, false);
-		else
-			ASSERT("Error, Not Created PS");
+		}
 	}
 
 	return shader;
@@ -297,7 +300,7 @@ PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const s
 bool ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseShader* shader)
 {
 	if(CommandValidator(fullCommand, nullptr, nullptr, nullptr) == false)
-		ASSERT("Error, invalied command");
+		ASSERT_MSG("Error, invalied command");
 
 	return _shaders.Add(fullCommand, shader, false) ? true : false;
 }

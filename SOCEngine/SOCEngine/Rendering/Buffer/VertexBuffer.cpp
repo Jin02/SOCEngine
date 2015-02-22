@@ -31,11 +31,7 @@ bool VertexBuffer::Create( const void* sysMem, unsigned int bufferSize, unsigned
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. does not create vb");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create vb");
 
 	return true;
 }

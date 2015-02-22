@@ -29,11 +29,7 @@ bool IndexBuffer::Create(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
-	if( FAILED( hr ) )
-	{
-		ASSERT("Error!. does not create ib");
-		return false;
-	}
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create ib");
 
 	return true;
 }
