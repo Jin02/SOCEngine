@@ -103,8 +103,8 @@ namespace Utility
 	};
 }
 #if defined(_DEBUG)
-#define DEBUG_LOG(X)\
-	OutputDebugString(X);
+#define DEBUG_LOG(MSG)\
+	OutputDebugString(MSG);
 #else
 #define DEBUG_LOG(X) X;
 #endif

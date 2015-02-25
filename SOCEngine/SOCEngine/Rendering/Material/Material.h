@@ -16,14 +16,9 @@ namespace Rendering
 			Custom
 		};
 
-		enum class TextureType : unsigned int
+		enum class UsageTextureType
 		{
-			Ambient = 0,
-			Diffuse,
-			Normal,
-			Specular,
-			Opacity,
-			User
+			Vertex, Pixel
 		};
 
 	protected:
@@ -67,9 +62,19 @@ namespace Rendering
 		void ClearResource(ID3D11DeviceContext* context);
 		void UpdateShader(ID3D11DeviceContext* context);
 		void UpdateResources(ID3D11DeviceContext* context);
+		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
+
+	public:
+		const Rendering::Texture::Texture* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex, UsageTextureType usageType);
+
+		bool UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture, UsageTextureType usageType);
+		bool UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture, UsageTextureType usageType);
+
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
+		GET_ACCESSOR(Textures, const Textures&, _textures);
+
 		GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
 		GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
 		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
