@@ -72,8 +72,6 @@ void Material::UpdateResources(ID3D11DeviceContext* context)
 
 	//임시로, 0번에 linear만 넣음.
 	samplers.push_back(std::make_pair(0, sampler));
-
-
 	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
 }
 
@@ -153,9 +151,6 @@ bool Material::UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Renderi
 
 void Material::UpdateDefaultConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
 {
-	if( _updateConstBufferMethod != UpdateCBMethod::Default )
-		return;
-
 	auto SetBufferData = []( std::vector<Shader::BaseShader::BufferType>& buffers, DefaultConstBufferSlot slotType, unsigned int idx, const Buffer::ConstBuffer* constBuffer)
 	{
 		DefaultConstBufferSlot bufferType = static_cast<DefaultConstBufferSlot>(buffers[idx].first);
@@ -176,4 +171,14 @@ void Material::UpdateDefaultConstBuffer(ID3D11DeviceContext* context, const Buff
 	{
 		SetBufferData(psBuffers, DefaultConstBufferSlot::Camera, 0, camera);
 	}
+}
+
+void Material::UpdateConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
+{
+	if( _updateConstBufferMethod == UpdateCBMethod::Default )
+		UpdateDefaultConstBuffer(context, transform, camera);
+	else if(_updateConstBufferMethod == UpdateCBMethod::Custom )
+		UpdateCustomConstBuffer(context, transform, camera);
+	else
+		ASSERT_MSG("Material Error, cant support update method");
 }

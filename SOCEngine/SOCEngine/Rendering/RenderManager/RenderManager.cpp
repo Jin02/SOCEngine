@@ -13,14 +13,14 @@ RenderManager::~RenderManager()
 	_nonAlphaMeshes.DeleteAll(true);
 }
 
-bool RenderManager::Add(BasicMaterial* material, Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	std::pair<BasicMaterial*, Mesh::Mesh*>* pair = Find(material, mesh, type);
+	std::pair<Material*, Mesh::Mesh*>* pair = Find(material, mesh, type);
 	if(pair == nullptr)
-		pair = new std::pair<BasicMaterial*, Mesh::Mesh*>(material, mesh);
+		pair = new std::pair<Material*, Mesh::Mesh*>(material, mesh);
 
 	if(type == MeshType::hasAlpha)
 		_alphaMeshes.Add(materialAddress, meshAddress, pair);
@@ -35,7 +35,7 @@ bool RenderManager::Add(BasicMaterial* material, Mesh::Mesh* mesh, MeshType type
 	return true;
 }
 
-void RenderManager::Change(const BasicMaterial* material, const Mesh::Mesh* mesh, MeshType type)
+void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
@@ -56,7 +56,7 @@ void RenderManager::Change(const BasicMaterial* material, const Mesh::Mesh* mesh
 	}
 }
 
-std::pair<BasicMaterial*, Mesh::Mesh*>* RenderManager::Find(BasicMaterial* material, Mesh::Mesh* mesh, MeshType type)
+std::pair<Material*, Mesh::Mesh*>* RenderManager::Find(Material* material, Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
@@ -71,11 +71,11 @@ std::pair<BasicMaterial*, Mesh::Mesh*>* RenderManager::Find(BasicMaterial* mater
 	return nullptr;
 }
 
-void RenderManager::Iterate(const std::function<void(BasicMaterial* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
+void RenderManager::Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
 {
-	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<BasicMaterial*, Mesh::Mesh*>>* content)
+	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<Material*, Mesh::Mesh*>>* content)
 	{
-		auto MapIter = [&](std::pair<BasicMaterial*, Mesh::Mesh*>* content)
+		auto MapIter = [&](std::pair<Material*, Mesh::Mesh*>* content)
 		{
 			recvFunc(content->first, content->second);
 		};

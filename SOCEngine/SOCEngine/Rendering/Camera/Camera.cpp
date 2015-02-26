@@ -133,31 +133,17 @@ void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::
 	enum MeshRenderOption
 	{
 		DepthWriteWithTest,
-		AlphaTest,
 		Common,
 	};
-	auto MeshRender = [&](ID3D11DeviceContext* context, BasicMaterial* customMaterial, Manager::RenderManager::MeshType type, MeshRenderOption option)
+	auto MeshRender = [&](ID3D11DeviceContext* context, Material* customMaterial, Manager::RenderManager::MeshType type, MeshRenderOption option)
 	{
-		BasicMaterial* currentUseMaterial = nullptr;
-		if(customMaterial && 
-			(option == MeshRenderOption::DepthWriteWithTest || 
-			 option == MeshRenderOption::AlphaTest) )
-			ASSERT_MSG("Invalid Arg");
+		Material* currentUseMaterial = nullptr;
+		ASSERT_COND_MSG(customMaterial, "Invalid Arg");
 
-		auto RenderIter = [&](BasicMaterial* material, Mesh::Mesh* mesh)
+		auto RenderIter = [&](Material* material, Mesh::Mesh* mesh)
 		{
 			if(customMaterial)
 				material = customMaterial;
-			else if(option == MeshRenderOption::DepthWriteWithTest)
-			{
-				material = mesh->GetMeshRenderer()->GetDepthWriteMaterial();
-				customMaterial = material;
-			}
-			else if(option == MeshRenderOption::AlphaTest)
-			{
-				material =  mesh->GetMeshRenderer()->GetAlphaTestMaterial();
-				customMaterial = material;
-			}
 
 			if(currentUseMaterial != material)
 			{

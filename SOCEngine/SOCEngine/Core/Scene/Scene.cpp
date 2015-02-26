@@ -53,7 +53,7 @@ void Scene::Initialize()
 				ASSERT_COND_MSG(error.empty() == false, error.c_str());
 			}
 
-			BasicMaterial* material = new BasicMaterial(MaterialName);
+			Material* material = new Material(MaterialName);
 			material->SetVertexShader(vs);
 			material->SetPixelShader(ps);
 			_materialMgr->Add("Basic", MaterialName, material);
@@ -69,8 +69,6 @@ void Scene::Initialize()
 					shaderName += tags[i-1];
 
 				LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
-				LoadBasicMaterial(shaderName, shaderName + "_DepthWrite", DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
-				LoadBasicMaterial(shaderName, shaderName + "_AlphaTest", ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
 			}
 		}
 

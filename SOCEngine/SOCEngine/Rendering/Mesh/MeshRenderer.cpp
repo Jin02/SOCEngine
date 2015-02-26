@@ -8,8 +8,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-MeshRenderer::MeshRenderer(BasicMaterial* depthWriteMaterial, BasicMaterial*	alphaTestMaterial) 
-	: _depthWriteMaterial(depthWriteMaterial), _alphaTestMaterial(alphaTestMaterial)
+MeshRenderer::MeshRenderer()
 {
 
 }
@@ -18,7 +17,7 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-bool MeshRenderer::AddMaterial(BasicMaterial* material, bool copy)
+bool MeshRenderer::AddMaterial(Material* material, bool copy)
 {
 	if(_materials.Find(material->GetName()) )
 		return false;
@@ -32,8 +31,8 @@ void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer:
 	auto& materials = _materials.GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{
-		BasicMaterial* material = GET_CONTENT_FROM_ITERATOR(iter);
-		material->UpdateBasicConstBuffer(context, transformBuffer, camera);
+		Material* material = GET_CONTENT_FROM_ITERATOR(iter);
+		material->UpdateConstBuffer(context, transformBuffer, camera);
 		material->UpdateResources(context);
 	}
 }
@@ -43,11 +42,11 @@ bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int ind
 	if( index >= _materials.GetSize() )
 		return false;
 
-	BasicMaterial* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
+	Material* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
 	if(material == nullptr)
 		return false;
 
-	material->UpdateBasicConstBuffer(context, transformBuffer, camera);
+	material->UpdateConstBuffer(context, transformBuffer, camera);
 	material->UpdateResources(context);
 	return true;
 }
@@ -64,7 +63,7 @@ void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	Rendering::Mesh::Mesh* parent = static_cast<Rendering::Mesh::Mesh*>(mesh);
 
-	auto IterMaterials = [&](BasicMaterial* material)
+	auto IterMaterials = [&](Material* material)
 	{
 		bool changd = material->GetChangedAlpha();
 		if(changd)

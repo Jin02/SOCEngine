@@ -12,13 +12,6 @@
 #define BASIC_VS_MAIN_FUNC_NAME "VS"
 #define BASIC_PS_MAIN_FUNC_NAME "PS"
 
-#define DEPTH_WRITE_VS_MAIN_FUNC_NAME "DepthWriteVS"
-#define DEPTH_WRITE_PS_MAIN_FUNC_NAME "DepthWritePS"
-
-#define ALPHA_TEST_VS_MAIN_FUNC_NAME "AlphaTestVS"
-#define ALPHA_TEST_PS_MAIN_FUNC_NAME "AlphaTestPS"
-
-
 namespace Rendering
 {
 	namespace Shader

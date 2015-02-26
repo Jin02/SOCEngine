@@ -10,3 +10,5 @@
 #define SAFE_RELEASE(x) { if(x){ x->Release(); x = nullptr; } }
 
 #define ENGINE_INDEX_TYPE unsigned int
+
+typedef unsigned int uint;

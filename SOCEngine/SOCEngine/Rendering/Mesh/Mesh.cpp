@@ -21,7 +21,7 @@ namespace Rendering
 		}
 
 		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, BasicMaterial* material, BasicMaterial* depthWriteMaterial, BasicMaterial* alphaTest, bool isDynamic)
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic)
 		{
 			_filter = new MeshFilter;
 			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
@@ -33,7 +33,7 @@ namespace Rendering
 			}
 			_indexCount = indicesCount;
 
-			_renderer = new MeshRenderer(depthWriteMaterial, alphaTest);
+			_renderer = new MeshRenderer;
 			if(_renderer->AddMaterial(material, false) == false)
 			{
 				ASSERT_MSG("Error, renderer addmaterial");
@@ -68,7 +68,7 @@ namespace Rendering
 			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
-		void Mesh::Render(BasicMaterial* custom, const Buffer::ConstBuffer* cameraConstBuffer)
+		void Mesh::Render(Material* custom, const Buffer::ConstBuffer* cameraConstBuffer)
 		{
 			if(_renderer == nullptr || _filter == nullptr)
 				return;
@@ -85,9 +85,9 @@ namespace Rendering
 			}
 			else
 			{
-				//직접 입력하는 BasicMaterial의 경우,
+				//직접 입력하는 Material의 경우,
 				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
-				custom->UpdateBasicConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
+				custom->UpdateConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
 				custom->UpdateResources(context);
 			}
 

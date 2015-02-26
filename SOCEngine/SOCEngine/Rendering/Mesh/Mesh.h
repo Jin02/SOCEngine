@@ -34,7 +34,7 @@ namespace Rendering
 
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, BasicMaterial* material, BasicMaterial* depthWriteMaterial, BasicMaterial* alphaTest, bool isDynamic);
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic);
 
 		public:
 			virtual void Initialize();
@@ -43,7 +43,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void Render(BasicMaterial* custom, const Buffer::ConstBuffer* cameraConstBuffer);
+			void Render(Material* custom, const Buffer::ConstBuffer* cameraConstBuffer);
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
