@@ -56,34 +56,20 @@ void Scene::Initialize()
 			Material* material = new Material(MaterialName);
 			material->SetVertexShader(vs);
 			material->SetPixelShader(ps);
-			_materialMgr->Add("Basic", MaterialName, material);
+			_materialMgr->Add("Common", MaterialName, material);
 		};
 
 		//Basic
 		{
-			const std::string tags[] = {"T0", "N_", "N_T0"};
-			for(unsigned int i = 0; i <= ARRAYSIZE(tags); ++i)
-			{
-				std::string shaderName = BASIC_SHADER_NAME;
-				if( i >= 1 )
-					shaderName += tags[i-1];
+			//const std::string tags[] = {"N_T0"};
+			//for(unsigned int i = 0; i <= ARRAYSIZE(tags); ++i)
+			//{
+			//	std::string shaderName = BASIC_SHADER_NAME;
+			//	if( i >= 1 )
+			//		shaderName += tags[i-1];
 
-				LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
-			}
-		}
-
-		//Normal Mapping
-		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT_MSG("Not Found BasicNormalMapping.hlsl");
-
-		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT_MSG("Not Found BasicNormalMapping_DepthWrite.hlsl");
-
-
-		//Null Shader
-		{
-			_shaderMgr->Add("null:vs:NullVS", new Shader::VertexShader(nullptr));
-			_shaderMgr->Add("null:vs:NullPS", new Shader::PixelShader(nullptr));
+			//	LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
+			//}
 		}
 	}
 
