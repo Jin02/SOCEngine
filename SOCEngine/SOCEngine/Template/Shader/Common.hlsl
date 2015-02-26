@@ -23,13 +23,32 @@ cbuffer BasicMaterial : register( b0 )
 	float 	material_shiness;
 };
 
-struct DEPTH_WRITE_PS_INPUT
-{
-	float4 pos 		: SV_POSITION;	
-	float depth 	: LINEAR_DEPTH;
-};
 
-#define VS_CALC_DEPTH_WITH_POS(ps, inputPos) ps.pos = mul(inputPos, transform_worldViewProj); float4 viewPos = mul(inputPos, transform_worldView);	ps.depth = viewPos.z / camera_far;
-
+#define VS_CALC_DEPTH_WITH_POS(ps, inputPos) ps.position = mul(inputPos, transform_worldViewProj); float4 viewPos = mul(inputPos, transform_worldView);	ps.depth = viewPos.z / camera_far;
 #define ALPHA_TEST 0.5f
 
+
+//Linear Depth Buffer
+
+struct DEPTH_WRITE_PS_INPUT
+{
+	float4	position 	: SV_POSITION;	
+	float	depth 		: LINEAR_DEPTH;
+};
+
+DEPTH_WRITE_PS_INPUT DepthWriteVS(VS_INPUT input)
+{
+	DEPTH_WRITE_PS_INPUT ps;
+
+	ps.position = mul( input.position, transform_worldViewProj );
+	VS_CALC_DEPTH_WITH_POS(ps, input.position);
+
+    return ps;
+}
+
+float4 DepthWritePS(DEPTH_WRITE_PS_INPUT input) : SV_Target
+{
+	float4 depth;
+	depth.x	= input.depth;
+	return depth;
+}
