@@ -7,33 +7,8 @@ namespace Rendering
 	class BasicMaterial : public Material
 	{
 	public:
-		//이 값들은 인덱스 값으로도 쓰입니다.
-		//Common.hlsl에 정의되어 있는 레지스터 인덱스와 연결되어 있습니다.
-		enum class VSConstBufferSlot : unsigned int
-		{
-			Transform		= 0,
-			Camera			= 1,
-
-			COUNT,
-		};
-
-		//이 값들은 인덱스 값으로도 쓰입니다.
-		//Common.hlsl에 정의되어 있는 레지스터 인덱스와 연결되어 있습니다.
-		enum class PSConstBufferSlot : unsigned int
-		{
-			MaterialColor	= 0,
-			Camera			= 1,
-
-			COUNT,
-		};
-
-		enum class PSTextureSlot : unsigned int
-		{
-			Diffuse			= 0,
-			Normal			= 1,
-
-			COUNT
-		};
+		enum class PSConstBufferSlot : unsigned int	{ MaterialColor	= 0	};
+		enum class PSTextureSlot { Diffuse, Normal, Specular, Opacity, Ambient };
 
 	public:
 		struct Color
@@ -53,6 +28,7 @@ namespace Rendering
 		Buffer::ConstBuffer*	_colorBuffer;
 
 		bool					_isInit;
+		uint					_colorConstBufferIdx;
 
 	public:
 		BasicMaterial(const std::string& name);
@@ -64,10 +40,11 @@ namespace Rendering
 		void UpdateColorBuffer(ID3D11DeviceContext* context);
 		void UpdateColor(const Color& color);
 
-		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
-
-		void UpdateDiffuseMap(const Texture::Texture* tex);
-		void UpdateNormalMap(const Texture::Texture* tex);
+		void UpdateDiffuseMap(const Rendering::Texture::Texture* tex);
+		void UpdateNormalMap(const Rendering::Texture::Texture* tex);
+		void UpdateSpecularMap(const Rendering::Texture::Texture* tex);
+		void UpdateOpacityMap(const Rendering::Texture::Texture* tex);
+		void UpdateAmbientMap(const Rendering::Texture::Texture* tex);
 
 	public:
 		GET_ACCESSOR(ColorBuffer, Buffer::ConstBuffer*, _colorBuffer);

@@ -5,11 +5,20 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 
-Material::Material(const std::string& name)	
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name),
-	_updateConstBufferMethod(UpdateCBMethod::Default),
-	_hasAlpha(false), _changedAlpha(true)
+Material::Material(const std::string& name, UpdateCBMethod updateMethd)	
+	:	_vertexShader(nullptr), _pixelShader(nullptr), _name(name),
+		_updateConstBufferMethod(updateMethd), _hasAlpha(false), _changedAlpha(true)
 {
+	if( updateMethd == UpdateCBMethod::Default)
+	{
+		auto& vsConstBuffers = _constbuffers.usageVS;
+
+		vsConstBuffers.push_back( std::make_pair((uint)DefaultConstBufferSlot::Transform, nullptr) );
+		vsConstBuffers.push_back( std::make_pair((uint)DefaultConstBufferSlot::Camera,	nullptr) );
+
+		auto& psConstBuffers = _constbuffers.usagePS;
+		psConstBuffers.push_back( std::make_pair((uint)DefaultConstBufferSlot::Camera, nullptr) );
+	}
 }
 
 Material::~Material(void)
@@ -117,7 +126,7 @@ bool Material::UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, con
 	}
 
 	if(success == false)
-		DEBUG_LOG("Material UpdateTexture Error : cant update texture. you must check code in Material::FindTexture");
+		ASSERT_MSG("Material UpdateTexture Error : cant update texture. you must check code in Material::FindTexture");
 
 	return success;
 }
@@ -131,7 +140,7 @@ bool Material::UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Renderi
 	else if(usageType == UsageTextureType::Pixel)
 		textures = &_textures.usagePS;
 	else
-		DEBUG_LOG("Material UpdateTexture Error : undefined UsageTextureType");
+		ASSERT_MSG("Material UpdateTexture Error : undefined UsageTextureType");
 
 	if(textures)
 	{
@@ -140,4 +149,31 @@ bool Material::UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Renderi
 	}
 
 	return textures != nullptr;
+}
+
+void Material::UpdateDefaultConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera)
+{
+	if( _updateConstBufferMethod != UpdateCBMethod::Default )
+		return;
+
+	auto SetBufferData = []( std::vector<Shader::BaseShader::BufferType>& buffers, DefaultConstBufferSlot slotType, unsigned int idx, const Buffer::ConstBuffer* constBuffer)
+	{
+		DefaultConstBufferSlot bufferType = static_cast<DefaultConstBufferSlot>(buffers[idx].first);
+
+		ASSERT_COND_MSG(bufferType == slotType, "constbuffer already has another buffer");
+		{
+			buffers[idx].second = constBuffer;
+		}
+	};
+
+	auto& vsBuffers = _constbuffers.usageVS;
+	{
+		SetBufferData(vsBuffers, DefaultConstBufferSlot::Transform, 0, transform);
+		SetBufferData(vsBuffers, DefaultConstBufferSlot::Camera,	1, camera);
+	}
+
+	auto& psBuffers = _constbuffers.usagePS;
+	{
+		SetBufferData(psBuffers, DefaultConstBufferSlot::Camera, 0, camera);
+	}
 }

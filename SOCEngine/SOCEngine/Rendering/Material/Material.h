@@ -10,16 +10,17 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum class UpdateCBMethod
+		//이 값들은 인덱스 값으로도 쓰입니다.
+		//Common.hlsl에 정의되어 있는 레지스터 인덱스와 연결되어 있습니다.
+		enum class DefaultConstBufferSlot : unsigned int
 		{
-			Default,
-			Custom
+			Transform		= 0,
+			Camera			= 1,
 		};
 
-		enum class UsageTextureType
-		{
-			Vertex, Pixel
-		};
+	public:
+		enum class UpdateCBMethod	{ Default,	Custom	};
+		enum class UsageTextureType	{ Vertex,	Pixel	};
 
 	protected:
 		struct ConstBuffers
@@ -45,7 +46,7 @@ namespace Rendering
 		bool	_changedAlpha;
 
 	public:
-		Material(const std::string& name);
+		Material(const std::string& name, UpdateCBMethod updateMethd = UpdateCBMethod::Default);
 		~Material(void);
 
 	protected:
@@ -62,14 +63,14 @@ namespace Rendering
 		void ClearResource(ID3D11DeviceContext* context);
 		void UpdateShader(ID3D11DeviceContext* context);
 		void UpdateResources(ID3D11DeviceContext* context);
-		void UpdateBasicConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
 
 	public:
 		const Rendering::Texture::Texture* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex, UsageTextureType usageType);
 
-		bool UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture, UsageTextureType usageType);
+		bool UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture, UsageTextureType usageType);		
 		bool UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture, UsageTextureType usageType);
 
+		void UpdateDefaultConstBuffer(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transform, const Buffer::ConstBuffer* camera);
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
