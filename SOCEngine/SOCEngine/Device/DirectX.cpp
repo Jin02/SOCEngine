@@ -7,7 +7,8 @@ DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
 	_renderTargetView(nullptr), _disableCulling(nullptr),
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _depthLessEqual(nullptr),
-	_depthEqualAndDisableDepthWrite(nullptr), _depthBuffer(nullptr)
+	_depthEqualAndDisableDepthWrite(nullptr), _depthBuffer(nullptr),
+	_defaultCulling(nullptr)
 {
 
 }
@@ -155,20 +156,24 @@ bool DirectX::InitDevice(const Win32* win)
 
 	CreateViewport(win->GetSize());
 
-	//Create disableCulling rasterizer State
+	//Create rasterizer State
 	{
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.CullMode				= D3D11_CULL_BACK;
 		desc.FrontCounterClockwise	= true;
 		desc.DepthBias				= 0;
 		desc.DepthBiasClamp			= 0.0f;
 		desc.SlopeScaledDepthBias	= 0.0f;
-		desc.DepthClipEnable			= true;
+		desc.DepthClipEnable		= true;
 		desc.ScissorEnable			= false;
 		desc.MultisampleEnable		= false;
 		desc.AntialiasedLineEnable	= false;
 
+		if( FAILED(_device->CreateRasterizerState(&desc, &_defaultCulling)) )
+			ASSERT_MSG("Error!, device does not create rasterizer state");
+
+		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
 		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
 			ASSERT_MSG("Error!, device does not create rasterizer state");
 	}

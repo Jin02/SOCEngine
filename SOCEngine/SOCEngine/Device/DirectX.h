@@ -29,7 +29,9 @@ namespace Device
 		D3D_FEATURE_LEVEL			_featureLevel;
 		D3D_DRIVER_TYPE				_driverType;
 
+		ID3D11RasterizerState		*_defaultCulling;
 		ID3D11RasterizerState		*_disableCulling;
+
 		ID3D11BlendState			*_opaqueBlend;
 		ID3D11BlendState			*_alphaToCoverageBlend;
 
@@ -62,7 +64,9 @@ namespace Device
 		GET_ACCESSOR(BackBuffer,	ID3D11RenderTargetView*,			_renderTargetView);
 		GET_ACCESSOR(DepthBuffer,	Rendering::Texture::DepthBuffer*,	_depthBuffer);
 
+		GET_ACCESSOR(DefaultCullingRasterizerState, ID3D11RasterizerState*, _defaultCulling);
 		GET_ACCESSOR(DisableCullingRasterizerState, ID3D11RasterizerState*, _disableCulling);
+
 		GET_ACCESSOR(OpaqueBlendState, ID3D11BlendState*, _opaqueBlend);
 		GET_ACCESSOR(AlphaToCoverageBlendState, ID3D11BlendState*, _alphaToCoverageBlend);
 
