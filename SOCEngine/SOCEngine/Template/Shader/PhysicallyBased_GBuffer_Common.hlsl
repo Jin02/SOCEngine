@@ -15,10 +15,13 @@ cbuffer Camera : register( b1 )
 	float2 	camera_screenSize;
 };
 
-cbuffer MicrofacetBRDFParameter : register( b2 )
+cbuffer Material : register( b2 )
 {
-	float microfacetBRDF_roughness 	: packoffset(c0);
-	float microfacetBRDF_fresnel0	: packoffset(c0.y);
+	float3	material_mainColor;
+	float	material_opacity;
+	float 	material_roughness;
+	float 	material_fresnel0;
+	float2 	material_uvTiling;
 };
 
 struct GBuffer
