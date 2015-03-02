@@ -37,28 +37,28 @@ void Scene::Initialize()
 
 	// Load Basic Shader
 	{
-		Factory::EngineFactory factory(_shaderMgr);
+		//Factory::EngineFactory factory(_shaderMgr);
 
-		auto LoadBasicMaterial = [&](const std::string& shaderName, const std::string& MaterialName,
-			const std::string& vsMainFuncName, const std::string& psMainFuncName)
-		{
-			Rendering::Shader::VertexShader* vs = nullptr;			
-			Rendering::Shader::PixelShader*	 ps = nullptr;
+		//auto LoadBasicMaterial = [&](const std::string& shaderName, const std::string& MaterialName,
+		//	const std::string& vsMainFuncName, const std::string& psMainFuncName)
+		//{
+		//	Rendering::Shader::VertexShader* vs = nullptr;			
+		//	Rendering::Shader::PixelShader*	 ps = nullptr;
 
-			const std::string includeFileName = "Common.hlsl";
-			if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &includeFileName, &vs, &ps) == false)
-			{
-				std::string error = "Not Found";
-				error += shaderName + ".hlsl";
-				ASSERT_COND_MSG(error.empty() == false, error.c_str());
-			}
+		//	const std::string includeFileName = "Common.hlsl";
+		//	if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &includeFileName, &vs, &ps) == false)
+		//	{
+		//		std::string error = "Not Found";
+		//		error += shaderName + ".hlsl";
+		//		ASSERT_COND_MSG(error.empty() == false, error.c_str());
+		//	}
 
-			Material* material = new Material(MaterialName);
-			material->SetVertexShader(vs);
-			material->SetPixelShader(ps);
-			_materialMgr->Add("Common", MaterialName, material);
-		};
-
+		//	Material* material = new Material(MaterialName);
+		//	material->SetVertexShader(vs);
+		//	material->SetPixelShader(ps);
+		//	_materialMgr->Add("Common", MaterialName, material);
+		//};
+		//
 		//Basic
 		{
 			//const std::string tags[] = {"N_T0"};

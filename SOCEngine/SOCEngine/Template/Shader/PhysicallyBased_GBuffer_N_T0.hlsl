@@ -9,7 +9,7 @@ struct VS_INPUT
 
 struct GEOMETRY_BUFFER_PS_INPUT
 {
-	float4 position 	 	: SV_Position;
+	float4 position 	 	: SV_POSITION;
 	float3 positionView		: POSITION_VIEW; // View Space Position
 	float2 tex				: TEXCOORD0;
 	float  depth			: DEPTH;

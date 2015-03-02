@@ -19,13 +19,6 @@ namespace Rendering
 
 		public:
 			bool AddMaterial(Material* material, bool copy = false);
-
-			void UpdateAllMaterial(ID3D11DeviceContext* context,
-				const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera);
-			bool UpdateMaterial(ID3D11DeviceContext* context, unsigned int index,
-				const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera);
-			
-			void ClearResource(ID3D11DeviceContext* context);
 			void ClassifyMaterialWithMesh(void* mesh);
 
 		public:

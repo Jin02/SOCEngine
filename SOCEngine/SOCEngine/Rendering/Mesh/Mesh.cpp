@@ -78,21 +78,21 @@ namespace Rendering
 
 			if(custom == nullptr)
 			{
-				if(_updateType == MaterialUpdateType::All)
-					_renderer->UpdateAllMaterial(context, _transformConstBuffer, cameraConstBuffer);
-				else if(_updateType == MaterialUpdateType::One)
-					_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer, cameraConstBuffer);
+				//if(_updateType == MaterialUpdateType::All)
+				//	_renderer->UpdateAllMaterial(context, _transformConstBuffer, cameraConstBuffer);
+				//else if(_updateType == MaterialUpdateType::One)
+				//	_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer, cameraConstBuffer);
 			}
 			else
 			{
 				//직접 입력하는 Material의 경우,
 				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
-				custom->UpdateConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
-				custom->UpdateResources(context);
+				//custom->UpdateConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
+				//custom->UpdateResources(context);
 			}
 
 			context->DrawIndexed(_indexCount, 0, 0);
-			_renderer->ClearResource(context);
+//			_renderer->ClearResource(context);
 		}
 
 		void Mesh::Destroy()

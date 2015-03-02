@@ -26,38 +26,6 @@ bool MeshRenderer::AddMaterial(Material* material, bool copy)
 	return true;
 }
 
-void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
-{
-	auto& materials = _materials.GetVector();
-	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-	{
-		Material* material = GET_CONTENT_FROM_ITERATOR(iter);
-		material->UpdateConstBuffer(context, transformBuffer, camera);
-		material->UpdateResources(context);
-	}
-}
-
-bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
-{
-	if( index >= _materials.GetSize() )
-		return false;
-
-	Material* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
-	if(material == nullptr)
-		return false;
-
-	material->UpdateConstBuffer(context, transformBuffer, camera);
-	material->UpdateResources(context);
-	return true;
-}
-
-void MeshRenderer::ClearResource(ID3D11DeviceContext* context)
-{
-	auto& materials = _materials.GetVector();
-	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-		GET_CONTENT_FROM_ITERATOR(iter)->ClearResource(context);
-}
-
 void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 {
 	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();

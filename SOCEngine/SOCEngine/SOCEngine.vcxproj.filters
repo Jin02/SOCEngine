@@ -172,11 +172,11 @@
     <Filter Include="Rendering\Light\Other">
       <UniqueIdentifier>{23fe0e64-3f4f-439d-bbb3-52423acd04f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Material\Basic">
-      <UniqueIdentifier>{ff42acfc-3419-4873-a9d5-dcfb38cf7f0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Material\Manager">
       <UniqueIdentifier>{e950756f-4523-4bfc-a83a-af927368490a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material\PhysicallyBased">
+      <UniqueIdentifier>{ff42acfc-3419-4873-a9d5-dcfb38cf7f0f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -489,11 +489,11 @@
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\BasicMaterial.h">
-      <Filter>Rendering\Material\Basic</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -677,11 +677,11 @@
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp">
       <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Material\BasicMaterial.cpp">
-      <Filter>Rendering\Material\Basic</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
