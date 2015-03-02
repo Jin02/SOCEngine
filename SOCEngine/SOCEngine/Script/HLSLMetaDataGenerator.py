@@ -262,7 +262,20 @@ class ParseCode:
 			# foramt = float4 or float2 or int2.
 			# so, beforeFormat[len(beforeFormat)-1:] is 4 or 2 etc..
 			numTxt = beforeFormat[len(beforeFormat)-1:]
-			alignedByteOffset = 4 * int(numTxt) + beforeLayout.alignedByteOffset
+
+			def isInt(s):
+				try:
+					int(s)
+					return True
+				except ValueError:
+					return False
+
+			num = 1;
+
+			if isInt(numTxt) == True:
+				num = int(numTxt)
+
+			alignedByteOffset = 4 * num + beforeLayout.alignedByteOffset
 
 			if beforeLayout.semanticName == 'POSITION':
 				alignedByteOffset -= 4
