@@ -2,10 +2,10 @@
 
 using namespace Rendering::Mesh;
 
-MeshFilter::MeshFilter() : _vertexBuffer(nullptr), _indexBuffer(nullptr)
+MeshFilter::MeshFilter() 
+	:	_vertexBuffer(nullptr), _indexBuffer(nullptr), _flag(0),
+		_alloc(false), _numOfVertex(0)
 {
-	_alloc = false;
-	_numOfVertex = 0;
 }
 
 MeshFilter::~MeshFilter()
@@ -18,7 +18,7 @@ MeshFilter::~MeshFilter()
 }
 
 bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic)
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag)
 {
 	_numOfVertex = vertexBufferDataCount;
 
@@ -29,6 +29,8 @@ bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertex
 	_indexBuffer = new Buffer::IndexBuffer;
 	if( _indexBuffer->Create(indicesData, sizeof(ENGINE_INDEX_TYPE) * indicesCount) == false )
 		return false;
+
+	_flag = flag;
 
 	return true;
 }
