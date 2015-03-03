@@ -100,14 +100,14 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	//const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 
-	auto CamIteration = [&](Camera::Camera* cam)
-	{
-		cam->RenderObjects(dx, _meshManager);
-	};
+	//auto CamIteration = [&](Camera::Camera* cam)
+	//{
+	//	cam->RenderObjects(dx, _meshManager);
+	//};
 
-	_cameraMgr->IterateContent(CamIteration);
+	//_cameraMgr->IterateContent(CamIteration);
 
 	OnRenderPost();
 }
