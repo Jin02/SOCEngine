@@ -1,4 +1,6 @@
 #include "RenderManager.h"
+#include "EngineShaderFactory.hpp"
+#include "Director.h"
 
 using namespace Rendering;
 using namespace Rendering::Manager;
@@ -11,6 +13,55 @@ RenderManager::~RenderManager()
 {
 	_alphaMeshes.DeleteAll(true);
 	_nonAlphaMeshes.DeleteAll(true);
+}
+
+bool RenderManager::Init()
+{
+	const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
+	Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
+
+	Factory::EngineFactory shaderLoader(shaderMgr);
+
+	//Physically Based GBuffer
+	{
+		const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
+
+		const std::string frontFileName = "PhysicallyBased_GBuffer_";
+		const std::string includeFileName = "PhysicallyBased_GBuffer_Common";
+
+		for(int i = 0; i < ARRAYSIZE(keys); ++i)
+		{
+			std::string fileName = frontFileName + keys[i];
+			
+			Shaders shaders;
+			bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
+
+			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
+			{
+				shaderMgr->RemoveShaderCode(fileName+":vs:VS");
+				shaderMgr->RemoveShaderCode(fileName+":vs:PS");
+			}
+		}
+	}
+
+	//Basic GBuffer
+	{
+		//const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
+
+		//const std::string frontFileName = "GBuffer_";
+		//const std::string includeFileName = "GBuffer_Common";
+
+		//for(int i = 0; i < ARRAYSIZE(keys); ++i)
+		//{
+		//	std::string fileName = frontFileName + keys[i];
+		//	
+		//	Shaders shaders;
+		//	bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
+		//	ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
+		//}
+	}
+
+	return true;
 }
 
 bool RenderManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
@@ -90,4 +141,13 @@ void RenderManager::Iterate(const std::function<void(Material* material, Mesh::M
 	{
 		ASSERT_MSG("Error!, undefined MeshType");
 	}
+}
+
+void RenderManager::Render(const Camera::Camera* camera)
+{
+	auto NonAlphaMeshRender = [](Material* material, Mesh::Mesh* mesh)
+	{
+
+	};
+	Iterate(NonAlphaMeshRender, MeshType::nonAlpha);
 }
