@@ -4,9 +4,9 @@
 #include "Component.h"
 #include "Frustum.h"
 #include "Structure.h"
-#include "RenderManager.h"
 #include "RenderTexture.h"
 #include "CameraConstBuffer.h"
+#include "ConstBuffer.h"
 
 namespace Rendering
 {
@@ -53,7 +53,6 @@ namespace Rendering
 
 		public:
 			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
-			void RenderObjects(const Device::DirectX* dx, const Manager::RenderManager* renderMgr);
 
 		public:
 			GET_SET_ACCESSOR(Near, float, _clippingNear);

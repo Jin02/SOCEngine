@@ -127,8 +127,3 @@ void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string
 		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(tfParam);
 	}
 }
-
-void Camera::RenderObjects(const Device::DirectX* dx, const Rendering::Manager::RenderManager* renderMgr)
-{
-
-}
