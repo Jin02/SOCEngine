@@ -34,16 +34,13 @@ namespace Rendering
 
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic);
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag);
 
 		public:
 			virtual void Initialize();
 			virtual void Update(float deltaTime);
 			virtual void UpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
 			virtual void Destroy();
-
-		public:
-			void Render(Material* custom, const Buffer::ConstBuffer* cameraConstBuffer);
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
