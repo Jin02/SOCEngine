@@ -37,7 +37,10 @@ namespace Rendering
 			virtual ~BaseShader(void);
 
 		public:
+			//first value is shader slot index
 			typedef std::pair<unsigned int, const Rendering::Buffer::BaseBuffer*> BufferType;
+
+			//first value is shader slot index
 			typedef std::pair<unsigned int, const Texture::Texture*> TextureType;
 
 		public:

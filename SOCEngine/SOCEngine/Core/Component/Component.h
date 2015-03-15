@@ -20,7 +20,7 @@ namespace Core
 	class Component
 	{
 	public:
-		enum Type{
+		enum class Type{
 			Mesh,
 			Camera,
 			Light,

@@ -35,44 +35,6 @@ void Scene::Initialize()
 	_sampler = new Sampler;
 	_sampler->Create();
 
-	// Load Basic Shader
-	{
-		//Factory::EngineFactory factory(_shaderMgr);
-
-		//auto LoadBasicMaterial = [&](const std::string& shaderName, const std::string& MaterialName,
-		//	const std::string& vsMainFuncName, const std::string& psMainFuncName)
-		//{
-		//	Rendering::Shader::VertexShader* vs = nullptr;			
-		//	Rendering::Shader::PixelShader*	 ps = nullptr;
-
-		//	const std::string includeFileName = "Common.hlsl";
-		//	if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &includeFileName, &vs, &ps) == false)
-		//	{
-		//		std::string error = "Not Found";
-		//		error += shaderName + ".hlsl";
-		//		ASSERT_COND_MSG(error.empty() == false, error.c_str());
-		//	}
-
-		//	Material* material = new Material(MaterialName);
-		//	material->SetVertexShader(vs);
-		//	material->SetPixelShader(ps);
-		//	_materialMgr->Add("Common", MaterialName, material);
-		//};
-		//
-		//Basic
-		{
-			//const std::string tags[] = {"N_T0"};
-			//for(unsigned int i = 0; i <= ARRAYSIZE(tags); ++i)
-			//{
-			//	std::string shaderName = BASIC_SHADER_NAME;
-			//	if( i >= 1 )
-			//		shaderName += tags[i-1];
-
-			//	LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
-			//}
-		}
-	}
-
 	NextState();
 	OnInitialize();
 }
@@ -100,15 +62,6 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
-	//const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-
-	//auto CamIteration = [&](Camera::Camera* cam)
-	//{
-	//	cam->RenderObjects(dx, _meshManager);
-	//};
-
-	//_cameraMgr->IterateContent(CamIteration);
-
 	OnRenderPost();
 }
 

@@ -16,10 +16,11 @@ TestScene::~TestScene(void)
 }
 
 void TestScene::OnInitialize()
+
 {
 	//Object - Cube
 	Factory::ShaderFactory factory(_shaderMgr);
-	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/");
+	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/", Material::Type::PhysicallyBasedModel);
 	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 3));
 	_test = cube->GetTransform();
 	cube->GetTransform()->UpdateScale(Math::Vector3(1.5, 1.5, 1.5));

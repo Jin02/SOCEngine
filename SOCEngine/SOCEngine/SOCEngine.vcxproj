@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
+    <ClInclude Include="Common\Container.h" />
     <ClInclude Include="Common\LPVoidType.h" />
     <ClInclude Include="Core\Component\Component.h" />
     <ClInclude Include="Core\Object\Object.h" />

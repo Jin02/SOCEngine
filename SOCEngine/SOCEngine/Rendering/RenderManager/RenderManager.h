@@ -15,13 +15,14 @@ namespace Rendering
 	{
 		class RenderManager
 		{
-		private:
+		public:
 			enum class MeshType
 			{
 				hasAlpha,
 				nonAlpha
 			};
 
+		private:
 			struct Shaders
 			{
 				Shader::VertexShader*	vs;
