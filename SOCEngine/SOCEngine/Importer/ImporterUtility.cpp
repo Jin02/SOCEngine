@@ -3,12 +3,8 @@
 using namespace Importer;
 using namespace Math;
 
-void ImporterUtility::CalculateTangentBinormal(
-	std::vector<Vector3>& outTangents, std::vector<Math::Vector3>& outBinormal,
-	const Vector3* vertices, unsigned int vertexCount,
-	const Vector3* normals, const Vector2* texcoords,
-	const ENGINE_INDEX_TYPE* indices, unsigned int indexCount
-	)
+void ImporterUtility::ReCalculateTBN(std::vector<Math::Vector3>& outTangents, std::vector<Math::Vector3>& outBinormal, std::vector<Math::Vector3>& outNormal,
+					const Math::Vector3* vertices, unsigned int vertexCount, const Math::Vector3* normals, const Math::Vector2* texcoords, const ENGINE_INDEX_TYPE* indices, unsigned int indexCount)
 {
 	std::vector<Vector3> tangents(vertexCount * 2);
 
@@ -55,12 +51,18 @@ void ImporterUtility::CalculateTangentBinormal(
 		const Vector3& t = tangents[idx];
 
 		//Gram-Schmidt orthogonalize
-		outTangents.push_back((t - n * Vector3::Dot(n, t)).Normalize());
+		Vector3 tangent = (t - n * Vector3::Dot(n, t)).Normalize();
+		outTangents.push_back(tangent);
 
 		// Calculate handedness
 		float dot = Vector3::Dot( Vector3::Cross(n, t), tangents[idx + vertexCount]);
 		float handedness = (dot < 0.0f) ? -1.0f : 1.0f;
 
-		outBinormal.push_back(  Vector3::Cross(n, t) * handedness );
+		Vector3 binormal = (Vector3::Cross(n, t) * handedness).Normalize();
+		outBinormal.push_back(  binormal );
+
+		// Calculate Normal
+		Vector3 normal = Vector3::Cross(tangent, binormal).Normalize();
+		outNormal.push_back( normal );
 	}
 }
