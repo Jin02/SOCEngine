@@ -19,14 +19,14 @@ namespace Rendering
 		class MeshFilter
 		{
 		public:
-			enum class BufferElement : unsigned int
+			enum class BufferElement : unsigned char
 			{
 				Normal		= 1,
 				UV			= 2,
 				Tangent		= 4,
 				Binormal	= 8
 			};
-			typedef unsigned int BufferElementFlag;
+			typedef unsigned char BufferElementFlag;
 
 		private:
 			Buffer::VertexBuffer*	_vertexBuffer;

@@ -31,7 +31,6 @@ bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertex
 		return false;
 
 	_flag = flag;
-
 	return true;
 }
 
