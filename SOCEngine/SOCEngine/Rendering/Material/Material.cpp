@@ -5,22 +5,15 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 
-Material::Material(const std::string& name)	
+Material::Material(const std::string& name, Type type)	
 	: _name(name), _hasAlpha(false), _changedAlpha(true),
-	  _tiling(1.0f, 1.0f)
+	_tiling(1.0f, 1.0f), _type(type)
 {
-
 }
 
 Material::~Material(void)
 {
 
-}
-
-void Material::Init(const std::vector<unsigned int>& textureShaderSlotIndex)
-{
-	for(auto& idx : textureShaderSlotIndex)
-		_textures.push_back( std::make_pair(idx, nullptr) );
 }
 
 const Rendering::Texture::Texture* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
@@ -34,7 +27,7 @@ const Rendering::Texture::Texture* Material::FindTexture(unsigned int& outArrayI
 		}
 	}
 
-	DEBUG_LOG("Material FindTexture Error : Undefined UsageTextureType");
+	DEBUG_LOG("Material FindTexture Warning : Undefined UsageTextureType");
 	outArrayIndex = 0;
 	return nullptr;
 }
@@ -45,7 +38,13 @@ bool Material::UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, con
 	auto hasTexture = FindTexture(arrayIdx, shaderSlotIndex);
 
 	if(hasTexture)
+	{
 		_textures[arrayIdx].second = texture;
+	}
+	else
+	{
+		_textures.push_back(std::make_pair(shaderSlotIndex, texture));
+	}
 
 	return hasTexture != nullptr;
 }
