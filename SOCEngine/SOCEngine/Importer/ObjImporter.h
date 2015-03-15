@@ -34,17 +34,35 @@ namespace Importer
 		private:		
 			Core::Object* CloneOriginObject(const std::string& fileName, const std::string& tinyShapeName);
 			void CheckCorrectShape(const tinyobj::shape_t& tinyShape);
+			const Rendering::Shader::VertexShader* FindVS(Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType);
 
 		private:
-			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, bool isDynamicMesh = false);
+			Core::Object* LoadMesh(
+				const tinyobj::shape_t& tinyShape,
+				const tinyobj::material_t& tinyMtl,
+				const std::string& fileName, 
+				Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag,
+				Rendering::Material::Type materialType,
+				bool isDynamicMesh = false);
 
 		public:
-			Rendering::Material* LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder);
-			void LoadMaterials(Structure::BaseStructure<std::string, Rendering::Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder);
+			Rendering::Material* LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
+			void LoadMaterials(Structure::BaseStructure<std::string, Rendering::Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
 
-		public:
-			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::vector<CustomSemantic>& customSemanticData, Rendering::Material* material, bool isDynamicMesh = false);
-			Core::Object* Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder, bool isDynamicMesh = false);
+			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, 
+									const tinyobj::material_t& tinyMtl, 
+									const std::string& fileName, 
+									const std::vector<CustomSemantic>& customSemanticData, 
+									Rendering::Material::Type materialType,
+									bool isDynamicMesh = false);
+
+			Core::Object* Load(
+				const std::string& fileDir,
+				const std::string& fileName, 
+				const std::string& materialFileFolder, 
+				Rendering::Material::Type materialType, 
+				bool isDynamicMesh = false);
+
 			bool Load(std::vector<tinyobj::shape_t>& outShapes, std::vector<tinyobj::material_t>& outMaterials, const std::string& fileDir, const std::string& materialFileFolder);
 		};
 	}
