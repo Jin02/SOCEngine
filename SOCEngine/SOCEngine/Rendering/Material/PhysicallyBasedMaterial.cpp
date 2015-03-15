@@ -5,17 +5,9 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 
-PhysicallyBasedMaterial::PhysicallyBasedMaterial(const std::string& name) 
-	: Material(name)
+PhysicallyBasedMaterial::PhysicallyBasedMaterial(Material* material)
+	: _baseMaterial(material)
 {
-	// Texture Slot Setting
-	std::vector<unsigned int> psTextureIndices;
-	psTextureIndices.push_back( (uint)PSTextureSlot::Diffuse );
-	psTextureIndices.push_back( (uint)PSTextureSlot::Normal );
-	psTextureIndices.push_back( (uint)PSTextureSlot::Specular );
-	psTextureIndices.push_back( (uint)PSTextureSlot::Opacity );
-
-	Material::Init(psTextureIndices);
 }
 
 PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
@@ -24,32 +16,33 @@ PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
 
 void PhysicallyBasedMaterial::UpdateColor(const Color& color)
 {
-	_mainColor = color;
-	_hasAlpha = (_mainColor.a < 1.0f);
-	_changedAlpha = true;
+	_baseMaterial->SetVariable("mainColor", color);
+
+	_baseMaterial->_hasAlpha = (color.a < 1.0f);
+	_baseMaterial->_changedAlpha = true;
 }
 
 void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Diffuse, tex );
-	_hasAlpha = tex->GetHasAlpha();
-	_changedAlpha = true;
+	_baseMaterial->UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Diffuse, tex );
+	_baseMaterial->_hasAlpha = tex->GetHasAlpha();
+	_baseMaterial->_changedAlpha = true;
 }
 
 void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Normal, tex );
+	_baseMaterial->UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Normal, tex );
 }
 
 void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Specular, tex );
+	_baseMaterial->UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Specular, tex );
 }
 
 void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
 {
-	UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Opacity, tex );
+	_baseMaterial->UpdateTextureUseShaderSlotIndex( (uint)PSTextureSlot::Opacity, tex );
 
-	_hasAlpha = tex != nullptr;
-	_changedAlpha = true;
+	_baseMaterial->_hasAlpha = tex != nullptr;
+	_baseMaterial->_changedAlpha = true;
 }

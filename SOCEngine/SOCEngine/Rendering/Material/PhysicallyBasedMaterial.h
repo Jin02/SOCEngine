@@ -4,7 +4,7 @@
 
 namespace Rendering
 {
-	class PhysicallyBasedMaterial : public Material
+	class PhysicallyBasedMaterial
 	{
 	public:
 		enum class PSTextureSlot { Diffuse, Normal, Specular, Opacity };
@@ -19,12 +19,10 @@ namespace Rendering
 		};
 
 	private:
-		Color		_mainColor;
-		float		_roughness;
-		float		_fresnel0;
+		Material*		_baseMaterial;
 
 	public:
-		PhysicallyBasedMaterial(const std::string& name);
+		PhysicallyBasedMaterial(Material* material);
 		~PhysicallyBasedMaterial(void);
 
 	public:
