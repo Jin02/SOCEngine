@@ -14,7 +14,7 @@ namespace Importer
 		~MeshImporter();
 
 	public:
-		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, bool isDynamicMesh = false);
+		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType, bool isDynamicMesh = false);
 
 
 	};
