@@ -126,6 +126,8 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	if(recycleCode)
 		_shaderCodes.Add(fileName, &outCode, true);
 
+	file.close();
+
 	return true;
 }
 
