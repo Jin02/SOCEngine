@@ -322,6 +322,10 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			return obj;
 	}
 
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+		ASSERT_MSG("Error, BufferMgr already has buffer");
+
 	CheckCorrectShape(tinyShape);
 
 	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
@@ -397,31 +401,26 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-
 	Core::Object* object = new Core::Object;
 	object->SetName(tinyShape.name);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	
-	LPVoidType* bufferData = nullptr;
-	if(currentScene->GetBufferManager()->Find( bufferData, fileName, tinyShape.name ))
-		ASSERT_MSG("Error, BufferMgr already has buffer");
-
-	bufferData = new LPVoidType(bufferHead);
+	LPVoidType* bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
 	MaterialManager* materialMgr = currentScene->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
-	
+
+	const std::string bufferKey = fileName + ':' + tinyShape.name;
+
 	mesh->Create(
 		bufferData->GetBuffer(), vtxCount, stride, 
 		indices.data(), indices.size(), 
 		material, isDynamicMesh, bufferFlag);
 
-	const std::string objKey = fileName + ':' + tinyShape.name;
-	currentScene->GetOriginObjectManager()->Add(objKey, object);
+	currentScene->GetOriginObjectManager()->Add(bufferKey, object);
 
 	return object;
 }

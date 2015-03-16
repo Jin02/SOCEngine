@@ -34,7 +34,7 @@ namespace Rendering
 
 		public:
 			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag);
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag, const std::string& bufferKey = "");
 
 		public:
 			virtual void Initialize();

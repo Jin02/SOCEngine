@@ -21,11 +21,11 @@ namespace Rendering
 		}
 
 		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag)
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag, const std::string& bufferKey)
 		{
 			_filter = new MeshFilter;
 			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
-				indicesData, indicesCount, isDynamic, flag) == false)
+				indicesData, indicesCount, isDynamic, flag, bufferKey) == false)
 			{
 				ASSERT_MSG("Error, filter->cratebuffer");
 				SAFE_DELETE(_filter);

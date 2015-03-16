@@ -27,9 +27,9 @@ namespace Rendering
 			void Add(const std::string file, const std::string key, Buffer::IndexBuffer* bufferData, bool copy = false);
 			void Add(const std::string file, const std::string key, LPVoidType* bufferData, bool copy = false);
 
-			bool Find(Buffer::VertexBuffer*& outBuffer, const std::string file, const std::string key);
-			bool Find(Buffer::IndexBuffer*& outBuffer, const std::string file, const std::string key);
-			bool Find(LPVoidType*& outBuffer, const std::string file, const std::string key);
+			bool Find(Buffer::VertexBuffer** outBuffer, const std::string file, const std::string key);
+			bool Find(Buffer::IndexBuffer** outBuffer, const std::string file, const std::string key);
+			bool Find(LPVoidType** outBuffer, const std::string file, const std::string key);
 
 			void DeleteVertexBuffer(const std::string& file, const std::string& key, bool remove);
 			void DeleteIndexBuffer(const std::string& file, const std::string& key, bool remove);

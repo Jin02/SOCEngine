@@ -44,7 +44,7 @@ namespace Rendering
 
 		public:
 			bool CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag);
+				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag, const std::string& bufferKey);
 			void IASetBuffer(ID3D11DeviceContext* context);
 
 			GET_ACCESSOR(BufferElementFlag, unsigned int, _flag);

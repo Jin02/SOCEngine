@@ -1,4 +1,5 @@
 #include "MeshFilter.h"
+#include "Director.h"
 
 using namespace Rendering::Mesh;
 
@@ -18,9 +19,12 @@ MeshFilter::~MeshFilter()
 }
 
 bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag)
+							  const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag, const std::string& bufferKey)
 {
 	_numOfVertex = vertexBufferDataCount;
+
+	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	auto bufferMgr = scene->GetBufferManager();
 
 	_vertexBuffer = new Buffer::VertexBuffer;
 	if( _vertexBuffer->Create(vertexBufferDatas, vertexBufferSize, _numOfVertex, isDynamic) == false )
