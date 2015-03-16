@@ -45,6 +45,8 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
 			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
+			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
+
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 		};

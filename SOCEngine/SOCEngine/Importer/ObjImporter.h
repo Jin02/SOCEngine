@@ -34,7 +34,6 @@ namespace Importer
 		private:		
 			Core::Object* CloneOriginObject(const std::string& fileName, const std::string& tinyShapeName);
 			void CheckCorrectShape(const tinyobj::shape_t& tinyShape);
-			const Rendering::Shader::VertexShader* FindVS(Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType);
 
 		private:
 			Core::Object* LoadMesh(

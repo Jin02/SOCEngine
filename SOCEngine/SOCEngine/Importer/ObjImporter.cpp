@@ -5,6 +5,7 @@
 #include "ImporterUtility.h"
 
 #include "LPVoidType.h"
+#include "RenderManager.h"
 
 using namespace Importer;
 using namespace Importer::Obj;
@@ -20,34 +21,6 @@ ObjImporter::~ObjImporter()
 {
 }
 
-const Shader::VertexShader* ObjImporter::FindVS(Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType)
-{
-	const Shader::VertexShader* targetVS = nullptr;
-	{
-		std::string materialFileName = "GBuffer";
-		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
-		{
-			bool hasBinormalFlag	= (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal)	!= 0;
-			bool hasTangentFlag		= (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent)		!= 0;
-
-			materialFileName += (hasBinormalFlag && hasTangentFlag) ? "_TBN" : "_N";
-		}
-
-		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
-			materialFileName += "_UV";
-
-		if(materialType == Material::Type::PhysicallyBasedModel)
-			materialFileName.insert(0, "PhysicallyBased_");
-		else if(materialType == Material::Type::BasicModel)
-			materialFileName.insert(0, "Basic_");
-
-		const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
-		ShaderManager* shaderMgr = scene->GetShaderManager();
-		targetVS = shaderMgr->FindVertexShader(materialFileName, BASIC_VS_MAIN_FUNC_NAME);
-	}
-
-	return targetVS;
-}
 
 Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
@@ -266,7 +239,13 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			vertexDatas.push_back(CustomSemantic("TEXCOORD0", tiny_texcoords.data()));
 	}
 
-	const Shader::VertexShader* targetVS = FindVS(bufferFlag, materialType);
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+
+	const Shader::VertexShader* targetVS = nullptr;
+	{
+		auto renderMgr = currentScene->GetRenderManager();
+		renderMgr->FindGBufferShader(&targetVS, nullptr, bufferFlag, materialType);
+	}
 	ASSERT_COND_MSG(targetVS, "Error, can not found vertex shader");
 
 	auto& semanticInfos = targetVS->GetSemanticInfos();
@@ -306,8 +285,6 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 	
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-
 	Core::Object* object = new Core::Object;
 	object->SetName(tinyShape.name);
 

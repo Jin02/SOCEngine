@@ -15,6 +15,35 @@ RenderManager::~RenderManager()
 	_nonAlphaMeshes.DeleteAll(true);
 }
 
+void RenderManager::FindGBufferShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType)
+{
+	std::string materialFileName = "GBuffer";
+	if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
+	{
+		bool hasBinormalFlag	= (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal)	!= 0;
+		bool hasTangentFlag		= (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent)		!= 0;
+
+		materialFileName += (hasBinormalFlag && hasTangentFlag) ? "_TBN" : "_N";
+	}
+
+	if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
+		materialFileName += "_UV";
+
+	if(materialType == Material::Type::PhysicallyBasedModel)
+		materialFileName.insert(0, "PhysicallyBased_");
+	else if(materialType == Material::Type::BasicModel)
+		materialFileName.insert(0, "Basic_");
+
+	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	ShaderManager* shaderMgr = scene->GetShaderManager();
+
+	if(outVertexShader)
+		(*outVertexShader) = shaderMgr->FindVertexShader(materialFileName, BASIC_VS_MAIN_FUNC_NAME);
+
+	if(outPixelShader)
+		(*outPixelShader) = shaderMgr->FindPixelShader(materialFileName, BASIC_PS_MAIN_FUNC_NAME);
+}
+
 bool RenderManager::Init()
 {
 	const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
@@ -38,8 +67,8 @@ bool RenderManager::Init()
 
 			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
 			{
-				shaderMgr->RemoveShaderCode(fileName+":vs:VS");
-				shaderMgr->RemoveShaderCode(fileName+":vs:PS");
+				shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_VS_MAIN_FUNC_NAME);
+				shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_PS_MAIN_FUNC_NAME);
 			}
 		}
 	}
@@ -145,9 +174,23 @@ void RenderManager::Iterate(const std::function<void(Material* material, Mesh::M
 
 void RenderManager::Render(const Camera::Camera* camera)
 {
-	auto NonAlphaMeshRender = [](Material* material, Mesh::Mesh* mesh)
-	{
+	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 
+	auto NonAlphaMeshRender = [&](Material* material, Mesh::Mesh* mesh)
+	{
+		//Mesh::MeshFilter* filter = mesh->GetMeshFilter();
+		//Mesh::MeshFilter::BufferElementFlag bufferFlag = filter->GetBufferElementFlag();
+
+		//Material::Type materialType = material->GetType();
+
+		//Shader::VertexShader*	vertexShader = nullptr;
+		//Shader::PixelShader*	pixelShader = nullptr;
+		//FindGBufferShader(&vertexShader, &pixelShader, bufferFlag, materialType);
+
+
+		//filter->IASetBuffer(context);
+
+		//context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 	};
 	Iterate(NonAlphaMeshRender, MeshType::nonAlpha);
 }
