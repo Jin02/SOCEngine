@@ -9,8 +9,7 @@ namespace Rendering
 	{
 		Mesh::Mesh() : 
 			_filter(nullptr), _renderer(nullptr), 
-			_selectMaterialIndex(0), _indexCount(0), 
-			_transformConstBuffer(nullptr)
+			_selectMaterialIndex(0), _transformConstBuffer(nullptr)
 		{
 			_updateType = MaterialUpdateType::All;
 		}
@@ -20,21 +19,18 @@ namespace Rendering
 			Destroy();
 		}
 
-		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag, const std::string& bufferKey)
+		bool Mesh::Create(const CreateFuncArguments& args)
 		{
 			_filter = new MeshFilter;
-			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
-				indicesData, indicesCount, isDynamic, flag, bufferKey) == false)
+			if(_filter->CreateBuffer(args) == false)
 			{
 				ASSERT_MSG("Error, filter->cratebuffer");
 				SAFE_DELETE(_filter);
 				return false;
 			}
-			_indexCount = indicesCount;
 
 			_renderer = new MeshRenderer;
-			if(_renderer->AddMaterial(material, false) == false)
+			if(_renderer->AddMaterial(args.material, false) == false)
 			{
 				ASSERT_MSG("Error, renderer addmaterial");
 				return false;

@@ -35,19 +35,44 @@ namespace Rendering
 			BufferElementFlag		_flag;
 
 		private:
-			bool _alloc;
-			unsigned int _numOfVertex;
+			bool			_alloc;
+			unsigned int	_vertexCount;
+			unsigned int	_indexCount;
 
 		public:
 			MeshFilter();
 			~MeshFilter();
 
 		public:
-			bool CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic, BufferElementFlag flag, const std::string& bufferKey);
+			struct CreateFuncArguments
+			{
+				template <typename Type>
+				struct Buffer
+				{
+					const Type* data;
+					unsigned int count;
+					unsigned int byteWidth;
+				};
+				Buffer<void>					vertex;
+				Buffer<ENGINE_INDEX_TYPE>		index;
+				bool							isDynamic;
+				MeshFilter::BufferElementFlag	bufferFlag;
+
+				const std::string&				fileName;
+				const std::string&				key;
+
+				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
+					:fileName(_fileName), key(_key) {}
+				~CreateFuncArguments() {}
+			};
+			bool CreateBuffer(const CreateFuncArguments& args);
+
 			void IASetBuffer(ID3D11DeviceContext* context);
 
+		public:
 			GET_ACCESSOR(BufferElementFlag, unsigned int, _flag);
+			GET_ACCESSOR(VertexCount, unsigned int, _vertexCount);
+			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
 		};
 	}
 }

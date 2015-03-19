@@ -26,15 +26,20 @@ namespace Rendering
 
 			MaterialUpdateType		_updateType;
 			unsigned int			_selectMaterialIndex;
-
-			unsigned int			_indexCount;
 		public:
 			Mesh();
 			~Mesh();
 
 		public:
-			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, Material* material, bool isDynamic, MeshFilter::BufferElementFlag flag, const std::string& bufferKey = "");
+			struct CreateFuncArguments : public MeshFilter::CreateFuncArguments
+			{
+				Material* material;
+				CreateFuncArguments(const std::string& fileName, const std::string& key):
+					MeshFilter::CreateFuncArguments(fileName, key){}
+				~CreateFuncArguments() {}
+			};
+
+			bool Create(const CreateFuncArguments& args);
 
 		public:
 			virtual void Initialize();
@@ -45,7 +50,6 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
 			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
-			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
 
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);

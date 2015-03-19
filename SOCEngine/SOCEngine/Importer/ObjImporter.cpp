@@ -163,6 +163,10 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			return obj;
 	}
 
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+		ASSERT_MSG("Error, BufferMgr already has buffer");
+
 	CheckCorrectShape(tinyShape);
 
 	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
@@ -239,8 +243,6 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			vertexDatas.push_back(CustomSemantic("TEXCOORD0", tiny_texcoords.data()));
 	}
 
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-
 	const Shader::VertexShader* targetVS = nullptr;
 	{
 		auto renderMgr = currentScene->GetRenderManager();
@@ -297,10 +299,24 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
-	mesh->Create(
-		bufferData->GetBuffer(), vtxCount, stride, 
-		indices.data(), indices.size(), 
-		material, isDynamicMesh, bufferFlag);
+	//sizeof(ENGINE_INDEX_TYPE) * _indexCount
+
+	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	{
+		args.vertex.data		= bufferData->GetBuffer();
+		args.vertex.count		= vtxCount;
+		args.vertex.byteWidth	= stride;
+
+		args.index.data			= indices.data();
+		args.index.count		= indices.size();
+		args.index.byteWidth	= 0; // not use
+
+		args.material			= material;
+		args.isDynamic			= isDynamicMesh;
+		args.bufferFlag			= bufferFlag;
+	}
+	
+	mesh->Create(args);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
 	currentScene->GetOriginObjectManager()->Add(objKey, object);
@@ -415,11 +431,22 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	const std::string bufferKey = fileName + ':' + tinyShape.name;
 
-	mesh->Create(
-		bufferData->GetBuffer(), vtxCount, stride, 
-		indices.data(), indices.size(), 
-		material, isDynamicMesh, bufferFlag);
+	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	{
+		args.vertex.data		= bufferData->GetBuffer();
+		args.vertex.count		= vtxCount;
+		args.vertex.byteWidth	= stride;
 
+		args.index.data			= indices.data();
+		args.index.count		= indices.size();
+		args.index.byteWidth	= 0; // not use
+
+		args.material			= material;
+		args.isDynamic			= isDynamicMesh;
+		args.bufferFlag			= bufferFlag;
+	}
+	
+	mesh->Create(args);
 	currentScene->GetOriginObjectManager()->Add(bufferKey, object);
 
 	return object;
