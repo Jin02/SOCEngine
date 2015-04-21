@@ -49,7 +49,12 @@ namespace Rendering
 			void Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
 
 		public:
-			void RenderManager::FindGBufferShader(const Rendering::Shader::VertexShader** outVertexShader, const Rendering::Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType);
+			void RenderManager::FindShader(
+				const Rendering::Shader::VertexShader**			outVertexShader,
+				const Rendering::Shader::PixelShader**			outPixelShader,
+				Rendering::Mesh::MeshFilter::BufferElementFlag	bufferFlag,
+				Rendering::Material::Type materialType,
+				const std::string& frontShaderFileName = "");
 
 		public:
 			bool Init();

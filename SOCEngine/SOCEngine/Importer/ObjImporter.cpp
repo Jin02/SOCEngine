@@ -142,7 +142,7 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 	{
 		Core::Object* child = LoadMesh((*iter),
 			materials[iter->mesh.material_ids[0]], 
-			fileName, 0, materialType, isDynamicMesh);
+			fileName, materialType, isDynamicMesh);
 		parent->AddObject(child, false);
 	}
 
@@ -152,7 +152,7 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, 
 									const tinyobj::material_t& tinyMtl, 
 									const std::string& fileName, 
-									const std::vector<CustomSemantic>& customSemanticData, 
+									const std::vector<Rendering::Shader::VertexShader::SemanticInfo>& semanticInfos, 
 									Rendering::Material::Type materialType,
 									bool isDynamicMesh)
 {
@@ -162,6 +162,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		if(obj)
 			return obj;
 	}
+
+	if(semanticInfos.empty())
+		ASSERT_MSG("Error, ObjImporter : semanticInfos paramater is null");
 
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
@@ -198,23 +201,36 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		InputSemanticData(const CustomSemantic& data) : customData(data), offset(0){}
 	};
 
+	uint stride = sizeof(Math::Vector3); //pos
 	Mesh::MeshFilter::BufferElementFlag bufferFlag;
+
 	std::vector<InputSemanticData> vertexDatas;
 	{
-		for(auto iter = customSemanticData.begin(); iter != customSemanticData.end(); ++iter)
+		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
 		{
-			if(iter->semanticName == "NORMAL")
+			if(iter->name == "NORMAL")
+			{
+				stride += sizeof(Math::Vector3);
 				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Normal;
-			else if(iter->semanticName == "TEXCOORD0")
+			}
+			else if(iter->name == "TEXCOORD0")
+			{
+				stride += sizeof(Math::Vector2);
 				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::UV;
-			else if(iter->semanticName == "TANGENT")
+			}
+			else if(iter->name == "TANGENT")
+			{
+				stride += sizeof(Math::Vector3);
 				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Tangent;
-			else if(iter->semanticName == "BINORMAL")
+			}
+			else if(iter->name == "BINORMAL")
+			{
+				stride += sizeof(Math::Vector3);
 				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Binormal;
+			}
 		}
 
 		vertexDatas.push_back(CustomSemantic("POSITION", tiny_positions.data()));
-
 		if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal) )
 		{
 			CustomSemantic custom;
@@ -243,22 +259,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			vertexDatas.push_back(CustomSemantic("TEXCOORD0", tiny_texcoords.data()));
 	}
 
-	const Shader::VertexShader* targetVS = nullptr;
-	{
-		auto renderMgr = currentScene->GetRenderManager();
-		renderMgr->FindGBufferShader(&targetVS, nullptr, bufferFlag, materialType);
-	}
-	ASSERT_COND_MSG(targetVS, "Error, can not found vertex shader");
-
-	auto& semanticInfos = targetVS->GetSemanticInfos();
-
 	unsigned int vtxCount = tinyShape.mesh.positions.size() / 3;
-	unsigned int stride = 0;
-	{
-		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
-			stride += iter->size;
-	}
-
 	void* bufferHead = malloc(vtxCount * stride);
 	{
 		void* buffer = bufferHead;
@@ -327,7 +328,6 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 									const tinyobj::material_t& tinyMtl,
 									const std::string& fileName, 
-									Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag,
 									Rendering::Material::Type materialType,
 									bool isDynamicMesh)
 {
@@ -367,13 +367,31 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	unsigned int vtxCount = tinyShape.mesh.positions.size() / 3;
 	unsigned int stride = 0;
+	Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag = 0;
 	{
-		stride += sizeof(Math::Vector3);											//position
-		stride += (tiny_texcoords.empty() == false) ? sizeof(Math::Vector2) : 0;	//texcoord
-		stride += ( (reCalcNormals.empty() == false) || 
-					(tiny_normals.empty() == false) ) 
-					? sizeof(Math::Vector3) : 0;									//normals
-		stride += isNormalMapUse ? sizeof(Math::Vector3) * 2 : 0;					//tangent(vector3), binormal(vector3)
+		stride += sizeof(Math::Vector3);
+
+		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
+		{
+			bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::UV;
+			stride += sizeof(Math::Vector2);	//texcoord
+		}
+
+		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
+		{
+			bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Normal;
+			stride += sizeof(Math::Vector3);
+		}
+
+		if(isNormalMapUse)
+		{
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal) && 
+				(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent))
+			{
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Binormal | (uint)Mesh::MeshFilter::BufferElement::Tangent;
+				stride += sizeof(Math::Vector3) * 2;
+			}
+		}
 	}
 
 	void* bufferHead = malloc(vtxCount * stride);
@@ -390,26 +408,31 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			INSERT_BUFFER_DATA(float, buffer, tiny_positions[posIndex + 2]);
 
 			//texcoord
-			if(tiny_texcoords.empty() == false)
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
+				&& tiny_texcoords.empty() == false)
 			{
 				INSERT_BUFFER_DATA(float, buffer, tiny_texcoords[uvIndex + 0]);
 				INSERT_BUFFER_DATA(float, buffer, tiny_texcoords[uvIndex + 1]);
 			}
 
 			//normal
-			if(isNormalMapUse == false && tiny_normals.empty() == false)
+			if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
 			{
-				INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 0]);
-				INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 1]);
-				INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 2]);
+				if((isNormalMapUse == false && tiny_normals.empty() == false) )
+				{
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 0]);
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 1]);
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 2]);
+				}
+				else if((isNormalMapUse && reCalcNormals.empty() == false) )
+				{
+					INSERT_BUFFER_DATA(Math::Vector3, buffer, reCalcNormals[posIndex / 3]);
+				}
 			}
-			else if(isNormalMapUse && reCalcNormals.empty() == false)
-			{
-				INSERT_BUFFER_DATA(Math::Vector3, buffer, reCalcNormals[posIndex / 3]);
-			}
-
 			//tangent, binormal
-			if((tangents.empty() == false) && (binormals.empty() == false))
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal) && 
+				(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent) &&
+				( (tangents.empty() == false) && (binormals.empty() == false) ))
 			{
 				INSERT_BUFFER_DATA(Math::Vector3, buffer, tangents[posIndex / 3]);
 				INSERT_BUFFER_DATA(Math::Vector3, buffer, binormals[posIndex / 3]);

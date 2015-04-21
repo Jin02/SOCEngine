@@ -14,11 +14,11 @@ namespace Rendering
 	class Material
 	{
 	public:
-		enum class Type
+		enum class Type : unsigned int
 		{
 			UnknownModel,
 			PhysicallyBasedModel,
-			BasicModel
+			Users
 		};
 
 	protected:

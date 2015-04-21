@@ -15,9 +15,20 @@ RenderManager::~RenderManager()
 	_nonAlphaMeshes.DeleteAll(true);
 }
 
-void RenderManager::FindGBufferShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType)
+void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, const std::string& frontShaderFileName)
 {
-	std::string materialFileName = "GBuffer";
+	std::string materialFileName = "";
+
+	if(frontShaderFileName.empty() == false)
+		materialFileName = frontShaderFileName + "_";
+	else
+	{
+		ASSERT_COND_MSG(materialType == Material::Type::PhysicallyBasedModel, "RenderManager Error : currently, can not support this material type")
+		{
+			materialFileName = "PhysicallyBased_";
+		}
+	}
+
 	if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
 	{
 		bool hasBinormalFlag	= (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal)	!= 0;
@@ -29,10 +40,6 @@ void RenderManager::FindGBufferShader(const Shader::VertexShader** outVertexShad
 	if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
 		materialFileName += "_UV";
 
-	if(materialType == Material::Type::PhysicallyBasedModel)
-		materialFileName.insert(0, "PhysicallyBased_");
-	else if(materialType == Material::Type::BasicModel)
-		materialFileName.insert(0, "Basic_");
 
 	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
 	ShaderManager* shaderMgr = scene->GetShaderManager();

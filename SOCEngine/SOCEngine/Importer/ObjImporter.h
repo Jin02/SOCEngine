@@ -40,7 +40,6 @@ namespace Importer
 				const tinyobj::shape_t& tinyShape,
 				const tinyobj::material_t& tinyMtl,
 				const std::string& fileName, 
-				Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag,
 				Rendering::Material::Type materialType,
 				bool isDynamicMesh = false);
 
@@ -50,8 +49,8 @@ namespace Importer
 
 			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, 
 									const tinyobj::material_t& tinyMtl, 
-									const std::string& fileName, 
-									const std::vector<CustomSemantic>& customSemanticData, 
+									const std::string& fileName,
+									const std::vector<Rendering::Shader::VertexShader::SemanticInfo>& semanticInfos,
 									Rendering::Material::Type materialType,
 									bool isDynamicMesh = false);
 
