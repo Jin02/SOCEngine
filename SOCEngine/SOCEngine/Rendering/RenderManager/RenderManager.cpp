@@ -15,12 +15,12 @@ RenderManager::~RenderManager()
 	_nonAlphaMeshes.DeleteAll(true);
 }
 
-void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, const std::string& frontShaderFileName)
+void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, RenderType renderType, const std::string& frontShaderTypeName)
 {
 	std::string materialFileName = "";
 
-	if(frontShaderFileName.empty() == false)
-		materialFileName = frontShaderFileName + "_";
+	if(frontShaderTypeName.empty() == false)
+		materialFileName = frontShaderTypeName + "_";
 	else
 	{
 		ASSERT_COND_MSG(materialType == Material::Type::PhysicallyBasedModel, "RenderManager Error : currently, can not support this material type")
@@ -28,6 +28,13 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 			materialFileName = "PhysicallyBased_";
 		}
 	}
+
+	if(renderType == RenderType::TileBasedDeferred)
+		materialFileName += "GBuffer_";
+	else if(renderType == RenderType::ForwardPlus)
+		materialFileName += "ForwardPlus_";
+	else
+		ASSERT_MSG("Error, can not support this render type");
 
 	if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
 	{
@@ -58,7 +65,7 @@ bool RenderManager::Init()
 
 	Factory::EngineFactory shaderLoader(shaderMgr);
 
-	//Physically Based GBuffer
+	//Physically Based Shading
 	{
 		const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
 
@@ -78,23 +85,6 @@ bool RenderManager::Init()
 				shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_PS_MAIN_FUNC_NAME);
 			}
 		}
-	}
-
-	//Basic GBuffer
-	{
-		//const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
-
-		//const std::string frontFileName = "GBuffer_";
-		//const std::string includeFileName = "GBuffer_Common";
-
-		//for(int i = 0; i < ARRAYSIZE(keys); ++i)
-		//{
-		//	std::string fileName = frontFileName + keys[i];
-		//	
-		//	Shaders shaders;
-		//	bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
-		//	ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
-		//}
 	}
 
 	return true;

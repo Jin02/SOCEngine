@@ -9,6 +9,8 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 
+#include "GlobalSetting.h"
+
 namespace Rendering
 {
 	namespace Manager
@@ -20,6 +22,12 @@ namespace Rendering
 			{
 				hasAlpha,
 				nonAlpha
+			};
+
+			enum class RenderType
+			{
+				TileBasedDeferred,
+				ForwardPlus
 			};
 
 		private:
@@ -54,7 +62,8 @@ namespace Rendering
 				const Rendering::Shader::PixelShader**			outPixelShader,
 				Rendering::Mesh::MeshFilter::BufferElementFlag	bufferFlag,
 				Rendering::Material::Type materialType,
-				const std::string& frontShaderFileName = "");
+				RenderType renderType = DEFAULT_USER_RENDER_TYPE,
+				const std::string& frontShaderTypeName = "");
 
 		public:
 			bool Init();

@@ -498,6 +498,7 @@
     <ClInclude Include="Common\Container.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GlobalSetting.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
