@@ -14,7 +14,7 @@ using namespace Rendering::Manager;
 Camera::Camera() : Component(),
 	_frustum(nullptr), _renderTarget(nullptr), _depthBuffer(nullptr)
 {
-
+	_renderType = RenderType::ForwardPlus;
 }
 
 Camera::~Camera(void)

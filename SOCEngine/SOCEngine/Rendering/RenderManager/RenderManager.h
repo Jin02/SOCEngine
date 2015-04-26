@@ -24,37 +24,20 @@ namespace Rendering
 				nonAlpha
 			};
 
-			enum class RenderType
-			{
-				TileBasedDeferred,
-				ForwardPlus
-			};
 
 		private:
-			struct Shaders
-			{
-				Shader::VertexShader*	vs;
-				Shader::PixelShader*	ps;
+			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_alphaMeshes;
+			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_nonAlphaMeshes;			
 
-				Shaders() : vs(nullptr), ps(nullptr) {}
-				Shaders(Shader::VertexShader* _vs, Shader::PixelShader *_ps) : vs(_vs), ps(_ps) {}
-				~Shaders() {}
-			};
-
-
-		private:
-			Structure::MapInMap<unsigned int, std::pair<Material*, Mesh::Mesh*>>	_alphaMeshes;
-			Structure::MapInMap<unsigned int, std::pair<Material*, Mesh::Mesh*>>	_nonAlphaMeshes;			
-
-			Structure::Map<const std::string, Shaders> _physicallyBasedShaders;
-			Structure::Map<const std::string, Shaders> _basicShaders;
+			Structure::Map<const std::string, Shader::RenderShaders> _physicallyBasedShaders;
+			Structure::Map<const std::string, Shader::RenderShaders> _basicShaders;
 
 		public:
 			RenderManager();
 			~RenderManager();
 
 		private:
-			void Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
+			void Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
 
 		public:
 			void RenderManager::FindShader(
@@ -68,10 +51,14 @@ namespace Rendering
 		public:
 			bool Init();
 
-			bool Add(Material* material, Mesh::Mesh* mesh, MeshType type);
+			bool Add(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 			void Change(const Material* material, const Mesh::Mesh* mesh, MeshType type);
-			std::pair<Material*, Mesh::Mesh*>* Find(Material* material, Mesh::Mesh* mesh, MeshType type);
+			std::pair<const Material*, const Mesh::Mesh*>* Find(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 
+		private:
+			void ForwardPlusRender(ID3D11DeviceContext* context, const Camera::Camera* camera);
+
+		public:
 			void Render(const Camera::Camera* camera);
 		};
 	}

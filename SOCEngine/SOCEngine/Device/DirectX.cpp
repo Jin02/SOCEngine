@@ -215,7 +215,7 @@ bool DirectX::InitDevice(const Win32* win)
 			ASSERT_MSG("Error!, device does not create depth state equal and disable writing");
 	}
 
-	_depthBuffer = new Rendering::Texture::DepthBuffer(this);
+	_depthBuffer = new Rendering::Texture::DepthBuffer();
 	_depthBuffer->Create(win->GetSize());
 
 	return true;

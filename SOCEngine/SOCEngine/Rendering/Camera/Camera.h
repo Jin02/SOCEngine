@@ -10,6 +10,12 @@
 
 namespace Rendering
 {
+	enum class RenderType
+	{
+		TileBasedDeferred,
+		ForwardPlus
+	};
+
 	namespace Camera
 	{		
 		class Camera : public Core::Component
@@ -26,6 +32,7 @@ namespace Rendering
 			Texture::RenderTexture	*_depthBuffer;
 			Texture::RenderTexture	*_renderTarget;
 			Buffer::ConstBuffer		*_constBuffer;
+			RenderType				_renderType;
 
 		private:
 			float				_FOV;
@@ -58,6 +65,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
 			GET_SET_ACCESSOR(Far, float, _clippingFar);
 			GET_SET_ACCESSOR(FOV, float, _FOV);
+			GET_SET_ACCESSOR(RenderType, const RenderType&, _renderType);
 		};
 	}
 }

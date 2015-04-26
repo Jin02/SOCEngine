@@ -178,6 +178,24 @@
     <Filter Include="Rendering\Material\PhysicallyBased">
       <UniqueIdentifier>{ff42acfc-3419-4873-a9d5-dcfb38cf7f0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shader\Geometry">
+      <UniqueIdentifier>{1baa9c4c-076d-4a48-a71a-40d31c355507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Hull">
+      <UniqueIdentifier>{23f16d11-8de1-4701-b20e-6ebda20d0300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Base">
+      <UniqueIdentifier>{76c609d7-2300-44b4-83e6-d5e0dd6f981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\DepthBuffer">
+      <UniqueIdentifier>{c23368c8-5248-4b98-b28e-11cdd0464c96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\RenderTarget">
+      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Mgr">
+      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -273,9 +291,6 @@
     <ClInclude Include="Intersection\Sphere.h">
       <Filter>Intersection</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\RenderTexture.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h">
       <Filter>Rendering\Buffer\Vertex</Filter>
     </ClInclude>
@@ -300,14 +315,8 @@
     <ClInclude Include="Rendering\Texture\Texture.h">
       <Filter>Rendering\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\TextureManager.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sampler\Sampler.h">
       <Filter>Rendering\Sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shader\BaseShader.h">
-      <Filter>Rendering\Shader</Filter>
     </ClInclude>
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
@@ -447,9 +456,6 @@
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\RenderManager\RenderManager.h">
       <Filter>Rendering\Manager</Filter>
     </ClInclude>
@@ -499,6 +505,27 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GlobalSetting.h" />
+    <ClInclude Include="Rendering\Shader\GeometryShader.h">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\HullShader.h">
+      <Filter>Rendering\Shader\Hull</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\BaseShader.h">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\Shaders.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\RenderTexture.h">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureManager.h">
+      <Filter>Rendering\Texture\Mgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -561,9 +588,6 @@
     <ClCompile Include="Intersection\Sphere.cpp">
       <Filter>Intersection</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp">
       <Filter>Rendering\Buffer\Vertex</Filter>
     </ClCompile>
@@ -585,14 +609,8 @@
     <ClCompile Include="Rendering\Texture\Texture.cpp">
       <Filter>Rendering\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\TextureManager.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Sampler\Sampler.cpp">
       <Filter>Rendering\Sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
-      <Filter>Rendering\Shader</Filter>
     </ClCompile>
     <ClCompile Include="Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
@@ -645,9 +663,6 @@
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp">
       <Filter>Rendering\Manager</Filter>
     </ClCompile>
@@ -686,6 +701,24 @@
     </ClCompile>
     <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\GeometryShader.cpp">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\HullShader.cpp">
+      <Filter>Rendering\Shader\Hull</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureManager.cpp">
+      <Filter>Rendering\Texture\Mgr</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "VertexShader.h"
-#include "PixelShader.h"
+#include "Shaders.h"
 #include "Common.h"
 #include "Texture.h"
 #include "Vector2.h"
@@ -31,7 +30,8 @@ namespace Rendering
 		std::vector<Shader::BaseShader::TextureType>	_textures;
 		std::map<const std::string, Container>			_datas;
 
-		const Type		_type;
+		const Type					_type;
+		Shader::RenderShaders		_shaders; //maybe.. only used in forward rendering
 
 	public:
 		Material(const std::string& name, Type type);
@@ -85,6 +85,7 @@ namespace Rendering
 
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
+		GET_SET_ACCESSOR(ShaderTargets, const Shader::RenderShaders&, _shaders);
 
 		friend class PhysicallyBasedMaterial;
 	};

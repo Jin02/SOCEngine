@@ -4,6 +4,7 @@
 
 using namespace Rendering;
 using namespace Rendering::Manager;
+using namespace Rendering::Shader;
 
 RenderManager::RenderManager()
 {
@@ -75,8 +76,8 @@ bool RenderManager::Init()
 		for(int i = 0; i < ARRAYSIZE(keys); ++i)
 		{
 			std::string fileName = frontFileName + keys[i];
-			
-			Shaders shaders;
+
+			RenderShaders shaders;
 			bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
 
 			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
@@ -90,14 +91,14 @@ bool RenderManager::Init()
 	return true;
 }
 
-bool RenderManager::Add(Material* material, Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::Add(const Material* material, const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	std::pair<Material*, Mesh::Mesh*>* pair = Find(material, mesh, type);
+	std::pair<const Material*, const Mesh::Mesh*>* pair = Find(material, mesh, type);
 	if(pair == nullptr)
-		pair = new std::pair<Material*, Mesh::Mesh*>(material, mesh);
+		pair = new std::pair<const Material*, const Mesh::Mesh*>(material, mesh);
 
 	if(type == MeshType::hasAlpha)
 		_alphaMeshes.Add(materialAddress, meshAddress, pair);
@@ -133,11 +134,11 @@ void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, Mes
 	}
 }
 
-std::pair<Material*, Mesh::Mesh*>* RenderManager::Find(Material* material, Mesh::Mesh* mesh, MeshType type)
+std::pair<const Material*, const Mesh::Mesh*>* RenderManager::Find(const Material* material, const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
-	
+
 	if(type == MeshType::hasAlpha)
 		return _alphaMeshes.Find(materialAddress, meshAddress);
 	else if(type == MeshType::nonAlpha)
@@ -148,11 +149,11 @@ std::pair<Material*, Mesh::Mesh*>* RenderManager::Find(Material* material, Mesh:
 	return nullptr;
 }
 
-void RenderManager::Iterate(const std::function<void(Material* material, Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
+void RenderManager::Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
 {
-	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<Material*, Mesh::Mesh*>>* content)
+	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>* content)
 	{
-		auto MapIter = [&](std::pair<Material*, Mesh::Mesh*>* content)
+		auto MapIter = [&](std::pair<const Material*, const Mesh::Mesh*>* content)
 		{
 			recvFunc(content->first, content->second);
 		};
@@ -169,25 +170,52 @@ void RenderManager::Iterate(const std::function<void(Material* material, Mesh::M
 	}
 }
 
+void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera::Camera* camera)
+{
+	const Material* prevMtl = nullptr;
+	auto NonAlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
+	{
+		const RenderShaders& shaders = material->GetShaderTargets();
+
+		if(shaders.ableRender() == false)
+			return;
+
+		if(material != prevMtl)
+		{
+			VertexShader* vs = shaders.vs;
+			vs->UpdateShader(context);
+
+			PixelShader* ps = shaders.ps;
+			ps->UpdateShader(context);
+
+			GeometryShader* gs = shaders.gs;
+			ASSERT_COND_MSG(gs, "cant support this version");
+
+			HullShader* hs = shaders.hs;
+			ASSERT_MSG(hs, "cant support this version");
+
+			prevMtl = material;
+		}		
+
+		Mesh::MeshFilter* filter = mesh->GetMeshFilter();
+		filter->IASetBuffer(context);
+
+		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
+	};
+	auto AlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
+	{
+	};
+}
+
 void RenderManager::Render(const Camera::Camera* camera)
 {
 	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 
-	auto NonAlphaMeshRender = [&](Material* material, Mesh::Mesh* mesh)
+	if(camera->GetRenderType() == RenderType::ForwardPlus)
 	{
-		//Mesh::MeshFilter* filter = mesh->GetMeshFilter();
-		//Mesh::MeshFilter::BufferElementFlag bufferFlag = filter->GetBufferElementFlag();
-
-		//Material::Type materialType = material->GetType();
-
-		//Shader::VertexShader*	vertexShader = nullptr;
-		//Shader::PixelShader*	pixelShader = nullptr;
-		//FindGBufferShader(&vertexShader, &pixelShader, bufferFlag, materialType);
 
 
-		//filter->IASetBuffer(context);
+	}
 
-		//context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
-	};
-	Iterate(NonAlphaMeshRender, MeshType::nonAlpha);
+	//Iterate(NonAlphaMeshRender, MeshType::nonAlpha);
 }
