@@ -1,23 +1,19 @@
 #pragma once
 
-#include "RenderTexture.h"
+#include "Texture.h"
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class DepthBuffer : public RenderTexture
+		class DepthBuffer : public Texture
 		{
 		private:
 			ID3D11DepthStencilView		*_depthStencilView;
-			const Device::DirectX		*_dx;
 
 		public:
-			DepthBuffer(const Device::DirectX* dx);
+			DepthBuffer(void);
 			virtual ~DepthBuffer();
-
-		private:
-			void SetRenderTarget(const Device::DirectX* dx);
 
 		public:
 			bool Create(const Math::Size<unsigned int>& size, bool useShaderResource = false);

@@ -4,10 +4,8 @@
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-DepthBuffer::DepthBuffer(const Device::DirectX* dx) : _depthStencilView(nullptr), RenderTexture(),
-	_dx(dx)
+DepthBuffer::DepthBuffer() : _depthStencilView(nullptr), Texture()
 {
-
 }
 
 DepthBuffer::~DepthBuffer()
@@ -19,11 +17,8 @@ bool DepthBuffer::Create(const Math::Size<unsigned int>& size, bool useShaderRes
 {
 	unsigned int bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
 							(useShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);
-	if(_Create(size, DXGI_FORMAT_D32_FLOAT, bindFlag) == false)
-	{
-		ASSERT_MSG("Error");
-		return false;
-	}
+
+	Texture::Create(size, DXGI_FORMAT_D32_FLOAT, bindFlag);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -48,16 +43,10 @@ bool DepthBuffer::Create(const Math::Size<unsigned int>& size, bool useShaderRes
 
 void DepthBuffer::Destroy()
 {
-	RenderTexture::Destroy();
 	SAFE_RELEASE(_depthStencilView);
-}
-
-void DepthBuffer::SetRenderTarget(const Device::DirectX* dx)
-{
-	//null
 }
 
 void DepthBuffer::Clear(float depth, unsigned char stencil)
 {
-	_dx->GetContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
+	//_dx->GetContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
 }

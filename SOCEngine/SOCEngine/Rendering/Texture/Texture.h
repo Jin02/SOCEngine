@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include "Color.h"
+#include "Size.h"
 
 namespace Rendering
 {
@@ -10,12 +11,16 @@ namespace Rendering
 		class Texture
 		{
 		protected:
-			ID3D11ShaderResourceView *_srv;
-			bool _hasAlpha;
+			ID3D11Texture2D*			_texture;
+			ID3D11ShaderResourceView*	_srv;
+			bool						_hasAlpha;
 
 		public:
-			Texture(ID3D11ShaderResourceView* srv, bool hasAlpha);
+			Texture(ID3D11ShaderResourceView* srv = nullptr, bool hasAlpha = false);
 			virtual ~Texture();
+
+		protected:
+			void Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags);
 
 		public:
 			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);
