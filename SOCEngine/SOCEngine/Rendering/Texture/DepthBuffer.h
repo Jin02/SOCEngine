@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Texture.h"
+#include "DirectX.h"
 
 namespace Rendering
 {
@@ -19,7 +20,7 @@ namespace Rendering
 			bool Create(const Math::Size<unsigned int>& size, bool useShaderResource = false);
 			void Destroy();
 
-			void Clear(float depth, unsigned char stencil);
+			void Clear(const Device::DirectX* dx, float depth, unsigned char stencil);
 
 		public:
 			GET_ACCESSOR(DepthStencilView, ID3D11DepthStencilView*, _depthStencilView);

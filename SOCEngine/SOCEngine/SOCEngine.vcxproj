@@ -54,6 +54,7 @@
     <ClInclude Include="Rendering\Camera\Camera.h" />
     <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
+    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GlobalSetting.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\Camera.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
+    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp" />

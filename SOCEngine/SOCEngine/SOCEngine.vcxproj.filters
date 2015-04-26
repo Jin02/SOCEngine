@@ -196,6 +196,18 @@
     <Filter Include="Rendering\Texture\Mgr">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Camera\Mgr">
+      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Frustum">
+      <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\BasicCamera">
+      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\ForwardPlus">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -215,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="Structure\Structure.h">
       <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\Frustum.h">
-      <Filter>Rendering\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Math\EngineMath.h">
       <Filter>Math</Filter>
@@ -254,12 +263,6 @@
     </ClInclude>
     <ClInclude Include="Core\Time\Timer.h">
       <Filter>Core\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\Camera.h">
-      <Filter>Rendering\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <Filter>Rendering\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Structure\Singleton.h">
       <Filter>Structure</Filter>
@@ -526,6 +529,18 @@
     <ClInclude Include="Rendering\Texture\TextureManager.h">
       <Filter>Rendering\Texture\Mgr</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraManager.h">
+      <Filter>Rendering\Camera\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\Frustum.h">
+      <Filter>Rendering\Camera\Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\Camera.h">
+      <Filter>Rendering\Camera\BasicCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
+      <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -539,9 +554,6 @@
     </ClCompile>
     <ClCompile Include="Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\Frustum.cpp">
-      <Filter>Rendering\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Math\MathCommon.cpp">
       <Filter>Math\Common</Filter>
@@ -569,12 +581,6 @@
     </ClCompile>
     <ClCompile Include="Core\Time\Timer.cpp">
       <Filter>Core\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\Camera.cpp">
-      <Filter>Rendering\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Intersection\AABB.cpp">
       <Filter>Intersection</Filter>
@@ -719,6 +725,18 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureManager.cpp">
       <Filter>Rendering\Texture\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\Frustum.cpp">
+      <Filter>Rendering\Camera\Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\Camera.cpp">
+      <Filter>Rendering\Camera\BasicCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
+      <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

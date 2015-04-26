@@ -7,15 +7,13 @@ DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
 	_renderTargetView(nullptr), _disableCulling(nullptr),
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _depthLessEqual(nullptr),
-	_depthEqualAndDisableDepthWrite(nullptr), _depthBuffer(nullptr),
-	_defaultCulling(nullptr)
+	_depthEqualAndDisableDepthWrite(nullptr), _defaultCulling(nullptr)
 {
 
 }
 
 DirectX::~DirectX(void)
 {
-	SAFE_DELETE(_depthBuffer);
 }
 
 bool DirectX::CreateRenderTargetView()
@@ -214,9 +212,6 @@ bool DirectX::InitDevice(const Win32* win)
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
 			ASSERT_MSG("Error!, device does not create depth state equal and disable writing");
 	}
-
-	_depthBuffer = new Rendering::Texture::DepthBuffer();
-	_depthBuffer->Create(win->GetSize());
 
 	return true;
 }

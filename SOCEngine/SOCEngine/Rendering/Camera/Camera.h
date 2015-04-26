@@ -12,6 +12,7 @@ namespace Rendering
 {
 	enum class RenderType
 	{
+		Unknown,
 		TileBasedDeferred,
 		ForwardPlus
 	};
@@ -27,14 +28,13 @@ namespace Rendering
 			enum Type { Perspective, Orthographic };
 			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
 
-		private:
+		protected:
 			Frustum					*_frustum;
-			Texture::RenderTexture	*_depthBuffer;
 			Texture::RenderTexture	*_renderTarget;
 			Buffer::ConstBuffer		*_constBuffer;
-			RenderType				_renderType;
+			RenderType				 _renderType;
 
-		private:
+		protected:
 			float				_FOV;
 			float				_clippingNear;
 			float				_clippingFar;
@@ -45,9 +45,9 @@ namespace Rendering
 
 		public:
 			Camera();
-			~Camera(void);
+			virtual ~Camera(void);
 
-		private:
+		protected:
 			void CalcAspect();
 
 		public:
@@ -65,7 +65,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
 			GET_SET_ACCESSOR(Far, float, _clippingFar);
 			GET_SET_ACCESSOR(FOV, float, _FOV);
-			GET_SET_ACCESSOR(RenderType, const RenderType&, _renderType);
+			GET_ACCESSOR(RenderType, RenderType, _renderType);
 		};
 	}
 }

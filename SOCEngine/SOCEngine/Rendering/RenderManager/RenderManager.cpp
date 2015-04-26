@@ -170,8 +170,10 @@ void RenderManager::Iterate(const std::function<void(const Material* material, c
 	}
 }
 
-void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera::Camera* camera)
+void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera::ForwardPlusCamera* camera)
 {
+	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+
 	const Material* prevMtl = nullptr;
 	auto NonAlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
 	{
@@ -192,7 +194,7 @@ void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera
 			ASSERT_COND_MSG(gs, "cant support this version");
 
 			HullShader* hs = shaders.hs;
-			ASSERT_MSG(hs, "cant support this version");
+			ASSERT_COND_MSG(hs, "cant support this version");
 
 			prevMtl = material;
 		}		
@@ -213,7 +215,7 @@ void RenderManager::Render(const Camera::Camera* camera)
 
 	if(camera->GetRenderType() == RenderType::ForwardPlus)
 	{
-
+		
 
 	}
 

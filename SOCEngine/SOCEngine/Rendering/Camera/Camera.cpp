@@ -12,9 +12,8 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 Camera::Camera() : Component(),
-	_frustum(nullptr), _renderTarget(nullptr), _depthBuffer(nullptr)
+	_frustum(nullptr), _renderTarget(nullptr), _renderType(RenderType::Unknown)
 {
-	_renderType = RenderType::ForwardPlus;
 }
 
 Camera::~Camera(void)
@@ -39,9 +38,6 @@ void Camera::Initialize()
 	_renderTarget = new Texture::RenderTexture;
 	_renderTarget->Create(windowSize);
 
-	_depthBuffer =  new Texture::RenderTexture;
-	_depthBuffer->Create(windowSize);
-
 	_constBuffer = new Buffer::ConstBuffer;
 	if(_constBuffer->Create(sizeof(CameraConstBuffer)) == false)
 		ASSERT_MSG("Error, cam->constbuffer->Create");
@@ -53,7 +49,6 @@ void Camera::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
-	SAFE_DELETE(_depthBuffer);
 }
 
 void Camera::CalcAspect()

@@ -4,7 +4,8 @@
 #include "Mesh.h"
 #include "Utility.h"
 #include <functional>
-#include "Camera.h"
+
+#include "ForwardPlusCamera.h"
 
 #include "VertexShader.h"
 #include "PixelShader.h"
@@ -56,7 +57,7 @@ namespace Rendering
 			std::pair<const Material*, const Mesh::Mesh*>* Find(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 
 		private:
-			void ForwardPlusRender(ID3D11DeviceContext* context, const Camera::Camera* camera);
+			void ForwardPlusRender(ID3D11DeviceContext* context, const Camera::ForwardPlusCamera* camera);
 
 		public:
 			void Render(const Camera::Camera* camera);
