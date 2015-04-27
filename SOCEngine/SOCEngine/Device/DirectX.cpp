@@ -6,8 +6,10 @@ using namespace Device;
 DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
 	_renderTargetView(nullptr), _disableCulling(nullptr),
-	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _depthLessEqual(nullptr),
-	_depthEqualAndDisableDepthWrite(nullptr), _defaultCulling(nullptr)
+	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _defaultCulling(nullptr),
+	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
+	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
+	_depthGreaterAndDisableDepthWrite(nullptr)
 {
 
 }
@@ -197,20 +199,41 @@ bool DirectX::InitDevice(const Win32* win)
 	}
 
 	//Create Depth State
+	//using inverted 32bit float depth
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		desc.DepthEnable		= true; 
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL; 
-		desc.DepthFunc			= D3D11_COMPARISON_LESS_EQUAL;
+		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //invvvvvverrreeettted
 		desc.StencilEnable		= false; 
 		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
 		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
-		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLessEqual)) )
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreater)) )
 			ASSERT_MSG("Error!, device does not create lessEqual dpeth state");
+
+		//disable depth test write
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
-		desc.DepthFunc			= D3D11_COMPARISON_EQUAL; 
+		
+		//disable depth test
+		desc.DepthEnable = false;
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthDisableDepthTest)) )
+			ASSERT_MSG("Error!, device does not create _depthDisableDepthTest");
+
+		desc.DepthEnable = true;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.DepthFunc = D3D11_COMPARISON_GREATER; //inverted
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreaterAndDisableDepthWrite)) )
+			ASSERT_MSG("Error!, device does not create _depthGreaterAndDisableDepthWrite");
+
+		desc.DepthFunc = D3D11_COMPARISON_EQUAL;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
-			ASSERT_MSG("Error!, device does not create depth state equal and disable writing");
+			ASSERT_MSG("Error!, device does not create _depthEqualAndDisableDepthWrite");
+
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLess)) )
+			ASSERT_MSG("Error!, device does not create _depthEqualAndDisableDepthWrite");
+
 	}
 
 	return true;
@@ -241,4 +264,37 @@ unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
 
 	DEBUG_LOG("Not Support Format");
 	return 0;
+}
+
+void DirectX::ClearDeviceContext()
+{
+    ID3D11ShaderResourceView* pSRVs[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    ID3D11RenderTargetView* pRTVs[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    ID3D11DepthStencilView* pDSV = NULL;
+    ID3D11Buffer* pBuffers[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    ID3D11SamplerState* pSamplers[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+
+    // Constant buffers
+    _immediateContext->VSSetConstantBuffers( 0, 14, pBuffers );
+    _immediateContext->PSSetConstantBuffers( 0, 14, pBuffers );
+    _immediateContext->CSSetConstantBuffers( 0, 14, pBuffers );
+
+    // Resources
+    _immediateContext->VSSetShaderResources( 0, 16, pSRVs );
+    _immediateContext->PSSetShaderResources( 0, 16, pSRVs );
+    _immediateContext->CSSetShaderResources( 0, 16, pSRVs );
+
+    // Samplers
+    _immediateContext->VSSetSamplers( 0, 16, pSamplers );
+    _immediateContext->PSSetSamplers( 0, 16, pSamplers );
+    _immediateContext->CSSetSamplers( 0, 16, pSamplers );
+
+    // Render targets
+    _immediateContext->OMSetRenderTargets( 8, pRTVs, pDSV );
+
+    // States
+    FLOAT BlendFactor[4] = { 0,0,0,0 };
+    _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
+	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
+    _immediateContext->RSSetState( NULL );
 }

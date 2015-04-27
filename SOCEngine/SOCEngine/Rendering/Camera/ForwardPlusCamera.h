@@ -12,6 +12,8 @@ namespace Rendering
 			Texture::DepthBuffer*		_opaqueDepthBuffer;
 			Texture::DepthBuffer*		_transparentDepthBuffer;
 
+			bool						_useTransparentRender;
+
 		public:
 			ForwardPlusCamera();
 			virtual ~ForwardPlusCamera(void);
@@ -21,7 +23,10 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			
+			void Clear(const Device::DirectX* dx);
+
+		public:
+			GET_SET_ACCESSOR(UseTransparent, bool, _useTransparentRender);
 		};
 	}
 }

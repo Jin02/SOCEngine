@@ -4,6 +4,8 @@
 #include "Mesh.h"
 #include "LightCulling.h"
 
+#include "Director.h"
+
 using namespace Rendering;
 
 TestScene::TestScene(void)
@@ -16,8 +18,13 @@ TestScene::~TestScene(void)
 }
 
 void TestScene::OnInitialize()
-
 {
+	Texture::DepthBuffer* depthBuffer = new Texture::DepthBuffer;
+
+	Math::Size<uint> winSize = Device::Director::GetInstance()->GetWindowSize();
+	depthBuffer->Create(winSize, true);
+
+
 	//Object - Cube
 	Factory::ShaderFactory factory(_shaderMgr);
 	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/", Material::Type::PhysicallyBasedModel);

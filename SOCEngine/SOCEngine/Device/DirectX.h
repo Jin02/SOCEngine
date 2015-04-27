@@ -34,8 +34,14 @@ namespace Device
 		ID3D11BlendState			*_opaqueBlend;
 		ID3D11BlendState			*_alphaToCoverageBlend;
 
-		ID3D11DepthStencilState		*_depthLessEqual;
+
+		ID3D11DepthStencilState		*_depthDisableDepthTest;
+
+		ID3D11DepthStencilState		*_depthLess;
 		ID3D11DepthStencilState		*_depthEqualAndDisableDepthWrite;
+
+		ID3D11DepthStencilState		*_depthGreater;
+		ID3D11DepthStencilState		*_depthGreaterAndDisableDepthWrite;
 
 	public:
 		DirectX();
@@ -52,6 +58,7 @@ namespace Device
 	public:
 		bool InitDevice(const Win32* win);
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
+		void ClearDeviceContext();
 
 	public:
 		GET_ACCESSOR(Device, ID3D11Device*, _device);
@@ -66,7 +73,10 @@ namespace Device
 		GET_ACCESSOR(OpaqueBlendState, ID3D11BlendState*, _opaqueBlend);
 		GET_ACCESSOR(AlphaToCoverageBlendState, ID3D11BlendState*, _alphaToCoverageBlend);
 
-		GET_ACCESSOR(DepthLessEqualState, ID3D11DepthStencilState*, _depthLessEqual);
-		GET_ACCESSOR(DepthEuqalAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthEqualAndDisableDepthWrite);
+		GET_ACCESSOR(DepthDisableDepthTestState, ID3D11DepthStencilState*, _depthDisableDepthTest);
+		GET_ACCESSOR(DepthLessState, ID3D11DepthStencilState*, _depthLess);
+		GET_ACCESSOR(DepthEqualAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthEqualAndDisableDepthWrite);
+		GET_ACCESSOR(DepthGreaterState, ID3D11DepthStencilState*, _depthGreater);
+		GET_ACCESSOR(DepthGreaterAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthGreaterAndDisableDepthWrite);
 	};
 }
