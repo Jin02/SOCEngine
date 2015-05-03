@@ -9,7 +9,7 @@ DirectX::DirectX(void) :
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _defaultCulling(nullptr),
 	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
 	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
-	_depthGreaterAndDisableDepthWrite(nullptr)
+	_depthGreaterAndDisableDepthWrite(nullptr), _defaultSamplerState(nullptr), _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr), _useMSAA(false)
 {
 
 }
@@ -65,10 +65,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	}
 	else
 	{
-		HRESULT hr = _device->CheckMultisampleQualityLevels( sd.BufferDesc.Format, sd.SampleDesc.Count, &sd.SampleDesc.Quality);
-		if( FAILED(hr) || sd.SampleDesc.Quality <= 0)
-			ASSERT_MSG("Invalid multisampler count");
-		sd.SampleDesc.Quality -= 1;
+		sd.SampleDesc = (*multiSampler);
 	}
 
 	D3D_DRIVER_TYPE driverTypes[] =
@@ -103,6 +100,8 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 		if( SUCCEEDED( hr ) )
             break;
     }
+
+	_useMSAA = sd.SampleDesc.Count > 1;
 
     if( FAILED( hr ) )
         return false;
@@ -144,7 +143,72 @@ void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXG
 	}
 }
 
-bool DirectX::InitDevice(const Win32* win)
+void DirectX::CreateBlendStates(bool isDeferredRender)
+{
+	D3D11_BLEND_DESC desc;
+	memset(&desc, 0, sizeof(D3D11_BLEND_DESC));
+
+	desc.AlphaToCoverageEnable					= false;
+	desc.IndependentBlendEnable					= false;
+
+	D3D11_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc;
+
+	renderTargetBlendDesc.BlendEnable			= false;
+
+	renderTargetBlendDesc.BlendOp				= D3D11_BLEND_OP_ADD;
+	renderTargetBlendDesc.BlendOpAlpha			= D3D11_BLEND_OP_ADD;
+
+	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_ONE; 
+	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_ONE; 
+
+	renderTargetBlendDesc.DestBlend				= D3D11_BLEND_ZERO; 
+	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_ZERO; 
+
+	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	desc.RenderTarget[0] = renderTargetBlendDesc;
+
+	if(isDeferredRender)
+	{
+		desc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+		desc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
+	}
+
+	if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlend)) )
+		ASSERT_MSG("Error!, device cant create opaque blend state");
+
+
+	renderTargetBlendDesc.RenderTargetWriteMask	= 0;
+	if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlendDepthOnly)) )
+		ASSERT_MSG("Error!, device cant create _opaqueBlendDepthOnly state");
+
+	desc.AlphaToCoverageEnable = true;
+	if( FAILED(_device->CreateBlendState(&desc, &_alphaToCoverageBlend)) )
+		ASSERT_MSG("Error!, device cant create alphaToCoverage blend state");
+
+	renderTargetBlendDesc.BlendEnable			= true;
+
+	renderTargetBlendDesc.DestBlend				= D3D11_BLEND_INV_SRC_ALPHA;
+	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_INV_SRC_ALPHA;
+
+	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_SRC_ALPHA;
+	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
+
+	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	desc.RenderTarget[0] = renderTargetBlendDesc;
+
+	if(isDeferredRender)
+	{
+		desc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+		desc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
+	}
+
+	if( FAILED(_device->CreateBlendState(&desc, &_alphaBlend)) )
+		ASSERT_MSG("Error!, device cant create _alphaBlend blend state");
+}
+
+bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
 {
 	if( CreateDeviceAndSwapChain(win) == false )
 		return false;
@@ -171,32 +235,15 @@ bool DirectX::InitDevice(const Win32* win)
 		desc.AntialiasedLineEnable	= false;
 
 		if( FAILED(_device->CreateRasterizerState(&desc, &_defaultCulling)) )
-			ASSERT_MSG("Error!, device does not create rasterizer state");
+			ASSERT_MSG("Error!, device cant create rasterizer state");
 
 		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
 		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
-			ASSERT_MSG("Error!, device does not create rasterizer state");
+			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
 	//Create Blend State
-	{
-		D3D11_BLEND_DESC desc;
-		desc.AlphaToCoverageEnable					= false;
-		desc.IndependentBlendEnable					= false;
-		desc.RenderTarget[0].BlendEnable			= false;
-		desc.RenderTarget[0].BlendOp				= D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].SrcBlend				= D3D11_BLEND_ONE; 
-		desc.RenderTarget[0].DestBlend				= D3D11_BLEND_ZERO; 
-		desc.RenderTarget[0].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].SrcBlendAlpha			= D3D11_BLEND_ONE; 
-		desc.RenderTarget[0].DestBlendAlpha			= D3D11_BLEND_ZERO; 
-		desc.RenderTarget[0].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
-		if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlend)) )
-			ASSERT_MSG("Error!, device does not create opaque blend state");
-		desc.AlphaToCoverageEnable = true;
-		if( FAILED(_device->CreateBlendState(&desc, &_alphaToCoverageBlend)) )
-			ASSERT_MSG("Error!, device does not create alphaToCoverage blend state");
-	}
+	CreateBlendStates(isDeferredRender);
 
 	//Create Depth State
 	//using inverted 32bit float depth
@@ -209,7 +256,7 @@ bool DirectX::InitDevice(const Win32* win)
 		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
 		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreater)) )
-			ASSERT_MSG("Error!, device does not create lessEqual dpeth state");
+			ASSERT_MSG("Error!, device cant create lessEqual dpeth state");
 
 		//disable depth test write
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
@@ -217,23 +264,38 @@ bool DirectX::InitDevice(const Win32* win)
 		//disable depth test
 		desc.DepthEnable = false;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthDisableDepthTest)) )
-			ASSERT_MSG("Error!, device does not create _depthDisableDepthTest");
+			ASSERT_MSG("Error!, device cant create _depthDisableDepthTest");
 
 		desc.DepthEnable = true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		desc.DepthFunc = D3D11_COMPARISON_GREATER; //inverted
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreaterAndDisableDepthWrite)) )
-			ASSERT_MSG("Error!, device does not create _depthGreaterAndDisableDepthWrite");
+			ASSERT_MSG("Error!, device cant create _depthGreaterAndDisableDepthWrite");
 
 		desc.DepthFunc = D3D11_COMPARISON_EQUAL;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
-			ASSERT_MSG("Error!, device does not create _depthEqualAndDisableDepthWrite");
+			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
 
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc = D3D11_COMPARISON_LESS;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLess)) )
-			ASSERT_MSG("Error!, device does not create _depthEqualAndDisableDepthWrite");
+			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
+	}
 
+	//sampler
+	{
+		D3D11_SAMPLER_DESC sampDesc;
+		ZeroMemory( &sampDesc, sizeof(sampDesc) );
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		HRESULT hr = _device ->CreateSamplerState( &sampDesc, &_defaultSamplerState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 	}
 
 	return true;
