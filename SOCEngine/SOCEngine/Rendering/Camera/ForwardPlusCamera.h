@@ -23,7 +23,8 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void Clear(const Device::DirectX* dx);
+
+			void Render();
 
 		public:
 			GET_SET_ACCESSOR(UseTransparent, bool, _useTransparentRender);
