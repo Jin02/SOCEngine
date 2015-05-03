@@ -21,14 +21,14 @@ namespace Rendering
 		public:
 			enum class MeshType
 			{
-				hasAlpha,
-				nonAlpha
+				opaque,
+				transparent
 			};
 
 
 		private:
-			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_alphaMeshes;
-			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_nonAlphaMeshes;			
+			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_transparentMeshes;
+			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_opaqueMeshes;			
 
 			Structure::Map<const std::string, Shader::RenderShaders> _physicallyBasedShaders;
 			Structure::Map<const std::string, Shader::RenderShaders> _basicShaders;
@@ -36,9 +36,6 @@ namespace Rendering
 		public:
 			RenderManager();
 			~RenderManager();
-
-		private:
-			void Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
 
 		public:
 			void RenderManager::FindShader(
@@ -48,6 +45,8 @@ namespace Rendering
 				Rendering::Material::Type materialType,
 				RenderType renderType = DEFAULT_USER_RENDER_TYPE,
 				const std::string& frontShaderTypeName = "");
+
+			void Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
 
 		public:
 			bool Init();

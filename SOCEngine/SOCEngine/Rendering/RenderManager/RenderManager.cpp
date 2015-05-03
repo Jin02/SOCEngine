@@ -12,8 +12,8 @@ RenderManager::RenderManager()
 
 RenderManager::~RenderManager()
 {
-	_alphaMeshes.DeleteAll(true);
-	_nonAlphaMeshes.DeleteAll(true);
+	_transparentMeshes.DeleteAll(true);
+	_opaqueMeshes.DeleteAll(true);
 }
 
 void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, RenderType renderType, const std::string& frontShaderTypeName)
@@ -100,10 +100,10 @@ bool RenderManager::Add(const Material* material, const Mesh::Mesh* mesh, MeshTy
 	if(pair == nullptr)
 		pair = new std::pair<const Material*, const Mesh::Mesh*>(material, mesh);
 
-	if(type == MeshType::hasAlpha)
-		_alphaMeshes.Add(materialAddress, meshAddress, pair);
-	else if(type == MeshType::nonAlpha)
-		_nonAlphaMeshes.Add(materialAddress, meshAddress, pair);
+	if(type == MeshType::transparent)
+		_transparentMeshes.Add(materialAddress, meshAddress, pair);
+	else if(type == MeshType::opaque)
+		_opaqueMeshes.Add(materialAddress, meshAddress, pair);
 	else
 	{
 		DEBUG_LOG("undeclartion MeshType");
@@ -118,19 +118,19 @@ void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, Mes
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	if( type == MeshType::hasAlpha )
+	if( type == MeshType::transparent )
 	{
-		auto pair = _nonAlphaMeshes.Find(materialAddress, meshAddress);
-		_nonAlphaMeshes.Delete(materialAddress, meshAddress, false);
+		auto pair = _opaqueMeshes.Find(materialAddress, meshAddress);
+		_opaqueMeshes.Delete(materialAddress, meshAddress, false);
 
-		_alphaMeshes.Add(materialAddress, meshAddress, pair);
+		_transparentMeshes.Add(materialAddress, meshAddress, pair);
 	}
-	else if( type == MeshType::nonAlpha )
+	else if( type == MeshType::opaque )
 	{
-		auto pair = _alphaMeshes.Find(materialAddress, meshAddress);
-		_alphaMeshes.Delete(materialAddress, meshAddress, false);
+		auto pair = _transparentMeshes.Find(materialAddress, meshAddress);
+		_transparentMeshes.Delete(materialAddress, meshAddress, false);
 
-		_nonAlphaMeshes.Add(materialAddress, meshAddress, pair);
+		_opaqueMeshes.Add(materialAddress, meshAddress, pair);
 	}
 }
 
@@ -139,10 +139,10 @@ std::pair<const Material*, const Mesh::Mesh*>* RenderManager::Find(const Materia
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	if(type == MeshType::hasAlpha)
-		return _alphaMeshes.Find(materialAddress, meshAddress);
-	else if(type == MeshType::nonAlpha)
-		return _nonAlphaMeshes.Find(materialAddress, meshAddress);
+	if(type == MeshType::transparent)
+		return _transparentMeshes.Find(materialAddress, meshAddress);
+	else if(type == MeshType::opaque)
+		return _opaqueMeshes.Find(materialAddress, meshAddress);
 	else
 		ASSERT_MSG("Error!, undefined MeshType");
 
@@ -160,10 +160,10 @@ void RenderManager::Iterate(const std::function<void(const Material* material, c
 		content->IterateContent(MapIter);
 	};
 
-	if(type == MeshType::hasAlpha)
-		_alphaMeshes.GetMapInMap().IterateContent(MapInMapIter);
-	else if(type == MeshType::nonAlpha)
-		_nonAlphaMeshes.GetMapInMap().IterateContent(MapInMapIter);
+	if(type == MeshType::transparent)
+		_transparentMeshes.GetMapInMap().IterateContent(MapInMapIter);
+	else if(type == MeshType::opaque)
+		_opaqueMeshes.GetMapInMap().IterateContent(MapInMapIter);
 	else
 	{
 		ASSERT_MSG("Error!, undefined MeshType");
@@ -172,41 +172,6 @@ void RenderManager::Iterate(const std::function<void(const Material* material, c
 
 void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera::ForwardPlusCamera* camera)
 {
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-
-	const Material* prevMtl = nullptr;
-	auto NonAlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
-	{
-		const RenderShaders& shaders = material->GetShaderTargets();
-
-		if(shaders.ableRender() == false)
-			return;
-
-		if(material != prevMtl)
-		{
-			VertexShader* vs = shaders.vs;
-			vs->UpdateShader(context);
-
-			PixelShader* ps = shaders.ps;
-			ps->UpdateShader(context);
-
-			GeometryShader* gs = shaders.gs;
-			ASSERT_COND_MSG(gs, "cant support this version");
-
-			HullShader* hs = shaders.hs;
-			ASSERT_COND_MSG(hs, "cant support this version");
-
-			prevMtl = material;
-		}		
-
-		Mesh::MeshFilter* filter = mesh->GetMeshFilter();
-		filter->IASetBuffer(context);
-
-		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
-	};
-	auto AlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
-	{
-	};
 }
 
 void RenderManager::Render(const Camera::Camera* camera)
@@ -219,5 +184,5 @@ void RenderManager::Render(const Camera::Camera* camera)
 
 	}
 
-	//Iterate(NonAlphaMeshRender, MeshType::nonAlpha);
+	//Iterate(NonAlphaMeshRender, MeshType::opaque);
 }
