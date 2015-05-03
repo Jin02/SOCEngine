@@ -36,7 +36,7 @@ namespace Rendering
 		context->PSSetShader(_shader, nullptr, 0);
 	}
 
-	void PixelShader::UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures, const std::vector<SamplerType>& samplers)
+	void PixelShader::UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures)
 	{
 		if(constBuffers)
 		{
@@ -63,18 +63,6 @@ namespace Rendering
 					if(srv)
 						context->PSSetShaderResources( iter->first, 1, &srv );
 				}
-			}
-		}
-
-		for(auto iter = samplers.begin(); iter != samplers.end(); ++iter)
-		{
-			const Sampler* sampler = iter->second;
-
-			if(sampler)
-			{
-				ID3D11SamplerState* samplerState = sampler->GetSampler();
-				if(samplerState)
-					context->PSSetSamplers(iter->first, 1, &samplerState);
 			}
 		}
 	}
