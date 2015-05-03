@@ -6,7 +6,6 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "MaterialManager.h"
-#include "Sampler.h"
 #include "MeshImporter.h"
 #include "BufferManager.h"
 #include "RenderManager.h"
@@ -28,11 +27,10 @@ namespace Core
 		Rendering::Manager::ShaderManager*		_shaderMgr;
 		Rendering::Manager::TextureManager*		_textureMgr;
 		Rendering::Manager::MaterialManager*	_materialMgr;
-		Rendering::Sampler*						_sampler;
 		Importer::MeshImporter*					_meshImporter;
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Core::ObjectManager*					_originObjMgr;
-		Rendering::Manager::RenderManager*		_meshManager;	
+		Rendering::Manager::RenderManager*		_renderMgr;	
 
 
 	public:
@@ -64,9 +62,8 @@ namespace Core
 		GET_ACCESSOR(TextureManager, Rendering::Manager::TextureManager*, _textureMgr);
 		GET_ACCESSOR(ShaderManager, Rendering::Manager::ShaderManager*, _shaderMgr);
 		GET_ACCESSOR(MaterialManager, Rendering::Manager::MaterialManager*, _materialMgr);
-		GET_ACCESSOR(Sampler, Rendering::Sampler*, _sampler);
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
-		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _meshManager);
+		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
 	};
 }

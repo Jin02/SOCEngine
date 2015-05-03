@@ -10,7 +10,7 @@ using namespace Rendering;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
-	_materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), 
+	_materialMgr(nullptr), _meshImporter(nullptr), 
 	_bufferManager(nullptr), _originObjMgr(nullptr), _meshManager(nullptr)
 {
 	_state = State::Init;
@@ -31,9 +31,6 @@ void Scene::Initialize()
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
 	_meshManager	= new Manager::RenderManager;
-
-	_sampler = new Sampler;
-	_sampler->Create();
 
 	NextState();
 	OnInitialize();
@@ -74,7 +71,6 @@ void Scene::Destroy()
 	SAFE_DELETE(_meshImporter);
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
-	SAFE_DELETE(_sampler);
 	SAFE_DELETE(_meshManager);
  
 	OnDestroy();
