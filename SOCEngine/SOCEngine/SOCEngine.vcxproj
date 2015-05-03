@@ -74,7 +74,6 @@
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
-    <ClInclude Include="Rendering\Sampler\Sampler.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\HullShader.h" />
@@ -182,7 +181,6 @@
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
-    <ClCompile Include="Rendering\Sampler\Sampler.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />

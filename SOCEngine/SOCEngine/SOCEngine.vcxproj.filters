@@ -148,9 +148,6 @@
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sampler">
-      <UniqueIdentifier>{6731c20f-0e30-44a7-9ab4-ad96d062b317}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility\DirectoryManager">
       <UniqueIdentifier>{580b678e-d3aa-4d3d-9594-f3ac230ce303}</UniqueIdentifier>
     </Filter>
@@ -317,9 +314,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Texture\Texture.h">
       <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Sampler\Sampler.h">
-      <Filter>Rendering\Sampler</Filter>
     </ClInclude>
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
@@ -614,9 +608,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\Texture.cpp">
       <Filter>Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sampler\Sampler.cpp">
-      <Filter>Rendering\Sampler</Filter>
     </ClCompile>
     <ClCompile Include="Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
