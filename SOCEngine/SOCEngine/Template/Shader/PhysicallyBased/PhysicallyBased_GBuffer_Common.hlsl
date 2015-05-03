@@ -29,7 +29,6 @@ struct GBuffer
 	float4 albedo 				: SV_Target0;
 	float4 specular_fresnel0	: SV_Target1;
 	float4 normal_roughness 	: SV_Target2;
-	float  depth 				: SV_Target3;
 };
 
 #define ALPHA_TEST_COMP_VALUE 0.3f

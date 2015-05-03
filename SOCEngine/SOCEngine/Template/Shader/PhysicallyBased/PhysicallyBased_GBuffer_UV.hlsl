@@ -9,7 +9,6 @@ struct GEOMETRY_BUFFER_PS_INPUT
 	float4 position 	 	: SV_POSITION;
 	float3 positionView		: POSITION_VIEW; // View Space Position
 	float2 uv				: TEXCOORD0;
-	float  depth			: DEPTH;
 };
 
 Texture2D txDiffuse 		: register( t0 );
@@ -26,7 +25,6 @@ GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 	ps.position 	= mul( input.position, transform_worldViewProj );
 	ps.positionView = mul( input.position, transform_worldView );
 	ps.uv			= input.uv;
-	ps.depth 		= ps.positionView.z / camera_far;
 
     return ps;
 }
@@ -39,8 +37,6 @@ void PS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
 	outGBuffer.specular_fresnel0.a 	= material_fresnel0;
 
 	outGBuffer.normal_roughness 	= float4(0, material_roughness);
-
-	outGBuffer.depth.r = input.depth;
 }
 
 void AlphaTestPS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )

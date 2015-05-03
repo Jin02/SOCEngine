@@ -12,7 +12,6 @@ struct GEOMETRY_BUFFER_PS_INPUT
 	float4 position 	 	: SV_POSITION;
 	float3 positionView		: POSITION_VIEW; // View Space Position
 	float2 uv				: TEXCOORD0;
-	float  depth			: DEPTH;
 
 	float3 normal 			: NORMAL;
 	float3 tangent 			: TANGENT;
@@ -33,7 +32,6 @@ GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 	ps.position 	= mul( input.position, transform_worldViewProj );
 	ps.positionView = mul( input.position, transform_worldView );
 	ps.uv			= input.uv;
-	ps.depth 		= ps.positionView.z / camera_far;
 
 	ps.normal 		= normalize( mul( input.normal, transform_worldView ) );
 	ps.tangent 		= normalize( mul( input.tangent, transform_worldView ) );
@@ -60,8 +58,6 @@ void PS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
 
 	outGBuffer.normal_roughness.rgb = DecodeNormal(input.normal, input.tangent, input.binormal,  input.uv);
 	outGBuffer.normal_roughness.a 	= material_roughness;
-
-	outGBuffer.depth.r = input.depth;
 }
 
 void AlphaTestPS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
