@@ -1,6 +1,7 @@
 import sys
 import os, os.path
 import json
+import platform
 
 def tap(num):
 	return '\t'*num
@@ -35,7 +36,7 @@ def isInt(s):
   except ValueError:
     return False
 def readJson(filename):
-	f = open(filename, 'r')
+	f = open(filename, 'rU')
 	js = json.loads(f.read())
 	f.close()
 	return js
@@ -88,7 +89,12 @@ code = ""
 targetDir = os.path.normpath(scriptRunStartDir)
 for (path, dirs, files) in os.walk(targetDir):
     for fileNameWithExtension in files:
-    	fileFullPath = path + "\\" + fileNameWithExtension    	
+
+    	connectPath = '/' #default
+    	if platform.system() == "Windows":
+    	    connectPath = '\\'
+
+    	fileFullPath = path + connectPath + fileNameWithExtension    	
         extensionPos = fileNameWithExtension.rfind('.')
         
         fileExtension = fileNameWithExtension[extensionPos:]
@@ -97,7 +103,7 @@ for (path, dirs, files) in os.walk(targetDir):
         if fileExtension != ".metadata":
         	continue
 
-        path = path.replace("\\", "/")
+        path = path.replace(connectPath, "/")
         jsonData = readJson(fileFullPath)
 
         mainFuncs = dict()
