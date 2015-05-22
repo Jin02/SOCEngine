@@ -11,9 +11,10 @@ using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
-Camera::Camera() : Component(),
-	_frustum(nullptr), _renderTarget(nullptr), _renderType(RenderType::Unknown)
+Camera::Camera() 
+	: Component(),	_frustum(nullptr), _renderTarget(nullptr)
 {
+	_renderType = RenderType::Unknown;
 }
 
 Camera::~Camera(void)
@@ -30,7 +31,7 @@ void Camera::Initialize()
 	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 
-	_camType    = Type::Perspective;
+	_projectionType    = ProjectionType::Perspective;
 	_clearColor = Color(0.5f, 0.5f, 1.0f, 1.0f);
 
 	_frustum = new Frustum(0.0f);		
@@ -59,12 +60,12 @@ void Camera::CalcAspect()
 
 void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 {
-	if(_camType == Type::Perspective)
+	if(_projectionType == ProjectionType::Perspective)
 	{
 		float radian = _FOV * PI / 180.0f;
 		Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, _clippingNear, _clippingFar);
 	}
-	else if(_camType == Type::Orthographic)
+	else if(_projectionType == ProjectionType::Orthographic)
 	{
 		Size<unsigned int> windowSize = Device::Director::GetInstance()->GetWindowSize();
 		Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), _clippingNear, _clippingFar);

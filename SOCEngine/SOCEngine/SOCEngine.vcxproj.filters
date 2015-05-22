@@ -193,9 +193,6 @@
     <Filter Include="Rendering\Texture\Mgr">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\Mgr">
-      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
@@ -204,6 +201,15 @@
     </Filter>
     <Filter Include="Rendering\Camera\ForwardPlus">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\UICamera">
+      <UniqueIdentifier>{137a02c1-2da0-4f47-b721-667df5b567e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\UI">
+      <UniqueIdentifier>{f641d90e-a254-439b-b0fe-8664cfdc73c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Manager">
+      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -524,7 +530,7 @@
       <Filter>Rendering\Texture\Mgr</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <Filter>Rendering\Camera\Mgr</Filter>
+      <Filter>Rendering\Camera\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\Frustum.h">
       <Filter>Rendering\Camera\Frustum</Filter>
@@ -534,6 +540,18 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\UICamera.h">
+      <Filter>Rendering\Camera\UICamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIManager.h">
+      <Filter>Rendering\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIObject.h">
+      <Filter>Rendering\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\SimpleImage2D.h">
+      <Filter>Rendering\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -718,7 +736,7 @@
       <Filter>Rendering\Texture\Mgr</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera\Mgr</Filter>
+      <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\Frustum.cpp">
       <Filter>Rendering\Camera\Frustum</Filter>
@@ -728,6 +746,18 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\UICamera.cpp">
+      <Filter>Rendering\Camera\UICamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIManager.cpp">
+      <Filter>Rendering\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIObject.cpp">
+      <Filter>Rendering\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
+      <Filter>Rendering\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

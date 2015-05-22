@@ -10,7 +10,7 @@ using namespace Rendering;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
-	_materialMgr(nullptr), _meshImporter(nullptr), 
+	_materialMgr(nullptr), _meshImporter(nullptr), 	_uiManager(nullptr),
 	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr)
 {
 	_state = State::Init;
@@ -23,14 +23,20 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_cameraMgr		= new Manager::CameraManager;
 	_shaderMgr		= new Manager::ShaderManager;
 	_textureMgr		= new Manager::TextureManager;
 	_materialMgr	= new Manager::MaterialManager;
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
-	_renderMgr	= new Manager::RenderManager;
+
+	_cameraMgr		= new Manager::CameraManager;
+	_cameraMgr->InitLightCulling();
+
+	_renderMgr		= new Manager::RenderManager;
+	_renderMgr->Init();
+
+	_uiManager		= new UI::Manager::UIManager;
 
 	NextState();
 	OnInitialize();
@@ -72,6 +78,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
 	SAFE_DELETE(_renderMgr);
+	SAFE_DELETE(_uiManager);
  
 	OnDestroy();
 }

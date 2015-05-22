@@ -9,6 +9,7 @@
 #include "MeshImporter.h"
 #include "BufferManager.h"
 #include "RenderManager.h"
+#include "UIManager.h"
 
 namespace Core
 {
@@ -31,7 +32,7 @@ namespace Core
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Core::ObjectManager*					_originObjMgr;
 		Rendering::Manager::RenderManager*		_renderMgr;	
-
+		UI::Manager::UIManager*					_uiManager;
 
 	public:
 		Scene(void);
@@ -65,5 +66,6 @@ namespace Core
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
 		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
+		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
 	};
 }

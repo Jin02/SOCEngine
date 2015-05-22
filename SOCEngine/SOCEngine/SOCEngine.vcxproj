@@ -56,6 +56,7 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
+    <ClInclude Include="Rendering\Camera\UICamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GlobalSetting.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h" />
@@ -88,6 +89,9 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
+    <ClInclude Include="Rendering\UI\SimpleImage2D.h" />
+    <ClInclude Include="Rendering\UI\UIObject.h" />
+    <ClInclude Include="Rendering\UI\UIManager.h" />
     <ClInclude Include="Structure\BaseStructure.h" />
     <ClInclude Include="Structure\MapInMap.h" />
     <ClInclude Include="Structure\Vector.h" />
@@ -165,6 +169,7 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
+    <ClCompile Include="Rendering\Camera\UICamera.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
@@ -193,6 +198,9 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
+    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp" />
+    <ClCompile Include="Rendering\UI\UIObject.cpp" />
+    <ClCompile Include="Rendering\UI\UIManager.cpp" />
     <ClCompile Include="Utility\DirectoryManager.cpp" />
     <ClCompile Include="Device\Director.cpp" />
     <ClCompile Include="Device\DirectX.cpp" />
@@ -230,7 +238,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>

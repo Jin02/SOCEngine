@@ -30,7 +30,7 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 		}
 	}
 
-	if(renderType == RenderType::TileBasedDeferred)
+	if(renderType == RenderType::Deferred)
 		materialFileName += "GBuffer_";
 	else if(renderType == RenderType::ForwardPlus)
 		materialFileName += "ForwardPlus_";
@@ -61,32 +61,32 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 
 bool RenderManager::Init()
 {
-	const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
-	Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
+	//const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
+	//Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
 
-	Factory::EngineFactory shaderLoader(shaderMgr);
+	//Factory::EngineFactory shaderLoader(shaderMgr);
 
-	//Physically Based Shading
-	{
-		const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
+	////Physically Based Shading
+	//{
+	//	const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
 
-		const std::string frontFileName = "PhysicallyBased_GBuffer_";
-		const std::string includeFileName = "PhysicallyBased_GBuffer_Common";
+	//	const std::string frontFileName = "PhysicallyBased_GBuffer_";
+	//	const std::string includeFileName = "PhysicallyBased_GBuffer_Common";
 
-		for(int i = 0; i < ARRAYSIZE(keys); ++i)
-		{
-			std::string fileName = frontFileName + keys[i];
+	//	for(int i = 0; i < ARRAYSIZE(keys); ++i)
+	//	{
+	//		std::string fileName = frontFileName + keys[i];
 
-			RenderShaders shaders;
-			bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
+	//		RenderShaders shaders;
+	//		bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
 
-			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
-			{
-				shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_VS_MAIN_FUNC_NAME);
-				shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_PS_MAIN_FUNC_NAME);
-			}
-		}
-	}
+	//		ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
+	//		{
+	//			shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_VS_MAIN_FUNC_NAME);
+	//			shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_PS_MAIN_FUNC_NAME);
+	//		}
+	//	}
+	//}
 
 	return true;
 }
@@ -180,7 +180,10 @@ void RenderManager::Render(const Camera::Camera* camera)
 
 	if(camera->GetRenderType() == RenderType::ForwardPlus)
 	{
-		
+
+	}
+	else
+	{
 
 	}
 

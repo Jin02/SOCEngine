@@ -17,6 +17,7 @@ namespace Rendering
 		{
 			UnknownModel,
 			PhysicallyBasedModel,
+			UI,
 			Users
 		};
 
