@@ -21,8 +21,8 @@ namespace Rendering
 		public:
 			enum class MeshType
 			{
-				opaque,
-				transparent
+				Opaque,
+				Transparent
 			};
 
 

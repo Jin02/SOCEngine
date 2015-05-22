@@ -37,9 +37,9 @@ void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 		if(changd)
 		{
 			bool hasAlpha = material->GetHasAlpha();
-			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::transparent : RenderManager::MeshType::opaque;
+			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
 
-			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::transparent ? RenderManager::MeshType::opaque : RenderManager::MeshType::transparent))
+			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::Transparent ? RenderManager::MeshType::Opaque : RenderManager::MeshType::Transparent))
 				renderMgr->Change(material, parent, type);
 			else if(renderMgr->Find(material, parent, type) == nullptr)
 				renderMgr->Add(material, parent, type);

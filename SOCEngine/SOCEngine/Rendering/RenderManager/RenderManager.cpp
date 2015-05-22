@@ -100,9 +100,9 @@ bool RenderManager::Add(const Material* material, const Mesh::Mesh* mesh, MeshTy
 	if(pair == nullptr)
 		pair = new std::pair<const Material*, const Mesh::Mesh*>(material, mesh);
 
-	if(type == MeshType::transparent)
+	if(type == MeshType::Transparent)
 		_transparentMeshes.Add(materialAddress, meshAddress, pair);
-	else if(type == MeshType::opaque)
+	else if(type == MeshType::Opaque)
 		_opaqueMeshes.Add(materialAddress, meshAddress, pair);
 	else
 	{
@@ -118,14 +118,14 @@ void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, Mes
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	if( type == MeshType::transparent )
+	if( type == MeshType::Transparent )
 	{
 		auto pair = _opaqueMeshes.Find(materialAddress, meshAddress);
 		_opaqueMeshes.Delete(materialAddress, meshAddress, false);
 
 		_transparentMeshes.Add(materialAddress, meshAddress, pair);
 	}
-	else if( type == MeshType::opaque )
+	else if( type == MeshType::Opaque )
 	{
 		auto pair = _transparentMeshes.Find(materialAddress, meshAddress);
 		_transparentMeshes.Delete(materialAddress, meshAddress, false);
@@ -139,9 +139,9 @@ std::pair<const Material*, const Mesh::Mesh*>* RenderManager::Find(const Materia
 	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
-	if(type == MeshType::transparent)
+	if(type == MeshType::Transparent)
 		return _transparentMeshes.Find(materialAddress, meshAddress);
-	else if(type == MeshType::opaque)
+	else if(type == MeshType::Opaque)
 		return _opaqueMeshes.Find(materialAddress, meshAddress);
 	else
 		ASSERT_MSG("Error!, undefined MeshType");
@@ -160,9 +160,9 @@ void RenderManager::Iterate(const std::function<void(const Material* material, c
 		content->IterateContent(MapIter);
 	};
 
-	if(type == MeshType::transparent)
+	if(type == MeshType::Transparent)
 		_transparentMeshes.GetMapInMap().IterateContent(MapInMapIter);
-	else if(type == MeshType::opaque)
+	else if(type == MeshType::Opaque)
 		_opaqueMeshes.GetMapInMap().IterateContent(MapInMapIter);
 	else
 	{
@@ -184,5 +184,5 @@ void RenderManager::Render(const Camera::Camera* camera)
 
 	}
 
-	//Iterate(NonAlphaMeshRender, MeshType::opaque);
+	//Iterate(NonAlphaMeshRender, MeshType::Opaque);
 }
