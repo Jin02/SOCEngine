@@ -11,7 +11,8 @@ using namespace Rendering;
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
 	_materialMgr(nullptr), _meshImporter(nullptr), 	_uiManager(nullptr),
-	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr)
+	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr),
+	_uiCamera(nullptr)
 {
 	_state = State::Init;
 }
@@ -37,6 +38,10 @@ void Scene::Initialize()
 	_renderMgr->Init();
 
 	_uiManager		= new UI::Manager::UIManager;
+	_uiCamera		= new Camera::UICamera;
+	_uiCamera->Initialize();
+
+	_dx				= Device::Director::GetInstance()->GetDirectX();
 
 	NextState();
 	OnInitialize();
@@ -49,6 +54,8 @@ void Scene::Update(float dt)
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
 		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
+
+	_uiCamera->Update(dt);
 }
 
 void Scene::RenderPreview()
@@ -65,7 +72,21 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
+	auto CamIteration = [&](Camera::Camera* cam)
+	{
+		cam->Render();
+	};
+	_cameraMgr->IterateContent(CamIteration);
+
 	OnRenderPost();
+
+	//ui
+	{
+		_uiCamera->Render();
+	}
+
+	//swap
+	_dx->GetSwapChain()->Present(0, 0);
 }
 
 void Scene::Destroy()
@@ -78,8 +99,9 @@ void Scene::Destroy()
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
 	SAFE_DELETE(_renderMgr);
+	SAFE_DELETE(_uiCamera);
 	SAFE_DELETE(_uiManager);
- 
+
 	OnDestroy();
 }
 

@@ -34,6 +34,9 @@ namespace Core
 		Rendering::Manager::RenderManager*		_renderMgr;	
 		UI::Manager::UIManager*					_uiManager;
 
+		Rendering::Camera::UICamera*			_uiCamera;
+		const Device::DirectX*					_dx;
+
 	public:
 		Scene(void);
 		~Scene(void);

@@ -20,6 +20,7 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
+			void Update(float delta);
 			void Render();
 		};
 	}

@@ -202,9 +202,6 @@
     <Filter Include="Rendering\Camera\ForwardPlus">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\UICamera">
-      <UniqueIdentifier>{137a02c1-2da0-4f47-b721-667df5b567e2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\UI">
       <UniqueIdentifier>{f641d90e-a254-439b-b0fe-8664cfdc73c3}</UniqueIdentifier>
     </Filter>
@@ -541,9 +538,6 @@
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\UICamera.h">
-      <Filter>Rendering\Camera\UICamera</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\UI\UIManager.h">
       <Filter>Rendering\UI</Filter>
     </ClInclude>
@@ -551,6 +545,9 @@
       <Filter>Rendering\UI</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\UI\SimpleImage2D.h">
+      <Filter>Rendering\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UICamera.h">
       <Filter>Rendering\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -747,9 +744,6 @@
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\UICamera.cpp">
-      <Filter>Rendering\Camera\UICamera</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\UI\UIManager.cpp">
       <Filter>Rendering\UI</Filter>
     </ClCompile>
@@ -757,6 +751,9 @@
       <Filter>Rendering\UI</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
+      <Filter>Rendering\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UICamera.cpp">
       <Filter>Rendering\UI</Filter>
     </ClCompile>
   </ItemGroup>

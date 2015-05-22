@@ -7,7 +7,7 @@ using namespace Rendering;
 using namespace Device;
 
 SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
-	: UIObject(parent), _mesh(nullptr), _material(nullptr), _isOtherMaterial(false)
+	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
 {
 	_name = name;
 }
@@ -24,6 +24,15 @@ void SimpleImage2D::Create(Rendering::Material* material)
 	{
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
+
+		auto shaderMgr = Director::GetInstance()->GetCurrentScene()->GetShaderManager();
+		Factory::EngineFactory factory(shaderMgr);
+
+		Shader::VertexShader*	vs = nullptr;
+		Shader::PixelShader*	ps = nullptr;
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+
+		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
 	}
 
 	struct RectVertexInfo
@@ -65,7 +74,7 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		1, 3, 2
 	};
 
-	Mesh::Mesh::CreateFuncArguments meshCreateArgs("UI", "SimpleImage2D");
+	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI", "SimpleImage2D");
 	{
 		meshCreateArgs.vertex.data		= rectVertex;
 		meshCreateArgs.vertex.count		= 4;
@@ -75,14 +84,68 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		meshCreateArgs.index.count		= ARRAYSIZE(indices);
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
-		meshCreateArgs.material			= _material;
 		meshCreateArgs.isDynamic		= false;
 		meshCreateArgs.bufferFlag		= (uint)Mesh::MeshFilter::BufferElement::UV;
 	}
 
-	_mesh = new Mesh::Mesh;
-	_mesh->Create(meshCreateArgs);
+	_meshFilter = new Mesh::MeshFilter;
+	bool success = _meshFilter->CreateBuffer(meshCreateArgs);
+	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
-	uiMgr->Add(_name, this);
+	uiMgr->AddRenderQueue(_name, this);
+
+	if(_root == this)
+		uiMgr->AddUpdateQueue(this);
+}
+
+void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
+{
+	const Device::Director* director	= Device::Director::GetInstance();
+	const Device::DirectX* dx			= director->GetDirectX();
+	//Core::Scene* scene					= director->GetCurrentScene();
+	//UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
+
+	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
+	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
+
+	if(_material->GetShaderTargets().ableRender())
+	{
+		ID3D11DeviceContext* context	= dx->GetContext();
+		UpdateTransform(context, viewProjMat);
+
+		vs->UpdateShaderToContext(context);
+		vs->UpdateInputLayoutToContext(context);
+
+		ps->UpdateShader(context);
+
+		std::vector<Shader::BaseShader::BufferType> constBuffers;
+		{
+			Shader::BaseShader::BufferType type;
+			type.first = 0;
+			type.second = dynamic_cast<Buffer::BaseBuffer*>(_transformCB);
+
+			constBuffers.push_back(type);
+		}
+		std::vector<Shader::BaseShader::TextureType> textures;
+		{
+			Shader::BaseShader::TextureType type;
+			type.first = 0;
+
+			Texture::Texture* tex = nullptr;
+			_material->GetVariable<Texture::Texture*>(tex, "main");
+
+			type.second = tex;
+
+			textures.push_back(type);
+		}
+
+		ps->UpdateResources(context, &constBuffers, &textures);
+		context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
+	}
+}
+
+void SimpleImage2D::UpdateMainImage(Texture::Texture* tex)
+{
+	_material->SetVariable<Texture::Texture*>("main", tex);
 }

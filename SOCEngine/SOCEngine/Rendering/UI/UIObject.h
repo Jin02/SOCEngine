@@ -13,7 +13,7 @@ namespace UI
 {
 	class UIObject : protected Core::Object
 	{
-	private:
+	protected:
 		Rendering::Buffer::ConstBuffer*		_transformCB;
 
 	protected:
@@ -34,6 +34,9 @@ namespace UI
 
 		void Update(float delta);
 		void UpdateTransform(ID3D11DeviceContext* context, const Math::Matrix& viewProj);
+
+	public:
+		virtual void Render(const Math::Matrix& viewProjMat){};
 
 	public:
 		GET_ACCESSOR(Depth, int, _depth);

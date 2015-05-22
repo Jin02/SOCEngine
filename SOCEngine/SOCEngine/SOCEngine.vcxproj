@@ -56,7 +56,6 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
-    <ClInclude Include="Rendering\Camera\UICamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GlobalSetting.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h" />
@@ -90,6 +89,7 @@
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
     <ClInclude Include="Rendering\UI\SimpleImage2D.h" />
+    <ClInclude Include="Rendering\UI\UICamera.h" />
     <ClInclude Include="Rendering\UI\UIObject.h" />
     <ClInclude Include="Rendering\UI\UIManager.h" />
     <ClInclude Include="Structure\BaseStructure.h" />
@@ -169,7 +169,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
-    <ClCompile Include="Rendering\Camera\UICamera.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
@@ -199,6 +198,7 @@
     <ClCompile Include="Rendering\Texture\Texture.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
     <ClCompile Include="Rendering\UI\SimpleImage2D.cpp" />
+    <ClCompile Include="Rendering\UI\UICamera.cpp" />
     <ClCompile Include="Rendering\UI\UIObject.cpp" />
     <ClCompile Include="Rendering\UI\UIManager.cpp" />
     <ClCompile Include="Utility\DirectoryManager.cpp" />

@@ -319,9 +319,9 @@ namespace Math
 		out._m[0][0] = 2.0f / w;
 		out._m[1][1] = 2.0f / h;
 		out._m[2][2] = 1.0f / (zf - zn);
-		out._m[2][3] = 1.0f;
+		out._m[3][3] = 1.0f;
+
 		out._m[3][2] = zn / (zn - zf);
-		out._m[3][3] = 0.0f;
 	}
 
 	void Matrix::RotationAxis(Matrix& out, const Vector3& v, float angle)

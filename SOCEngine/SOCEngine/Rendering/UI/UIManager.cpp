@@ -3,6 +3,7 @@
 
 using namespace UI::Manager;
 using namespace Device;
+using namespace Rendering::Camera;
 
 #define ParentClass Structure::Vector<std::string, UIObject>
 
@@ -26,7 +27,7 @@ void UIManager::DepthSort()
 	std::sort(_vector.begin(), _vector.end(), depthSort);
 }
 
-UI::UIObject* UIManager::Add(std::string key, UI::UIObject* component, bool copy)
+UI::UIObject* UIManager::AddRenderQueue(std::string key, UI::UIObject* component, bool copy)
 {
 	ParentClass::Add(key, component, copy);
 
@@ -36,4 +37,9 @@ UI::UIObject* UIManager::Add(std::string key, UI::UIObject* component, bool copy
 		DepthSort();
 
 	return component;
+}
+
+void UIManager::AddUpdateQueue(UI::UIObject* uiObject)
+{
+	_rootUIObjects.push_back(uiObject);
 }
