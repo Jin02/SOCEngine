@@ -11,7 +11,7 @@
 
 namespace UI
 {
-	class UIObject : protected Core::Object
+	class UIObject : public Core::Object
 	{
 	protected:
 		Rendering::Buffer::ConstBuffer*		_transformCB;
@@ -23,9 +23,10 @@ namespace UI
 		UIObject(const Object* parent = NULL);
 		virtual ~UIObject();
 
-	public:
+	protected:
 		void InitConstBuffer();
 
+	public:
 		void Add(const std::string& key, UIObject* object, bool copy = false);
 		UIObject* Find(const std::string& key);
 		UIObject* Get(uint index);

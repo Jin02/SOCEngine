@@ -33,6 +33,7 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
 		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
+
 	}
 
 	struct RectVertexInfo
@@ -46,39 +47,47 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		rectVertex[0].position.x	= -1.0f;
 		rectVertex[0].position.y	= -1.0f;
 		rectVertex[0].position.z	=  0.0f;
+		rectVertex[0].position.w	=  0.0f;
+
 		rectVertex[0].uv.x			= -1.0f;
 		rectVertex[0].uv.x			= -1.0f;
 
 		rectVertex[1].position.x	=  1.0f;
 		rectVertex[1].position.y	= -1.0f;
 		rectVertex[1].position.z	=  0.0f;
+		rectVertex[1].position.w	=  0.0f;
+
 		rectVertex[1].uv.x			=  1.0f;
 		rectVertex[1].uv.x			= -1.0f;
 
 		rectVertex[2].position.x	= -1.0f;
 		rectVertex[2].position.y	=  1.0f;
 		rectVertex[2].position.z	=  0.0f;
+		rectVertex[2].position.w	=  0.0f;
+
 		rectVertex[2].uv.x			= -1.0f;
 		rectVertex[2].uv.x			=  1.0f;
 
 		rectVertex[3].position.x	=  1.0f;
 		rectVertex[3].position.y	=  1.0f;
 		rectVertex[3].position.z	=  0.0f;
+		rectVertex[3].position.w	=  0.0f;
+
 		rectVertex[3].uv.x			=  1.0f;
 		rectVertex[3].uv.x			=  1.0f;
 	};
 
 	uint indices[] =
 	{
-		0, 1, 2,
-		1, 3, 2
+		0, 2, 1,
+		1, 2, 3
 	};
 
 	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI", "SimpleImage2D");
 	{
 		meshCreateArgs.vertex.data		= rectVertex;
 		meshCreateArgs.vertex.count		= 4;
-		meshCreateArgs.vertex.byteWidth	= sizeof(RectVertexInfo) - 4;
+		meshCreateArgs.vertex.byteWidth	= sizeof(RectVertexInfo);
 
 		meshCreateArgs.index.data		= indices;
 		meshCreateArgs.index.count		= ARRAYSIZE(indices);
@@ -97,6 +106,8 @@ void SimpleImage2D::Create(Rendering::Material* material)
 
 	if(_root == this)
 		uiMgr->AddUpdateQueue(this);
+
+	UIObject::InitConstBuffer();
 }
 
 void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
@@ -112,7 +123,8 @@ void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 	if(_material->GetShaderTargets().ableRender())
 	{
 		ID3D11DeviceContext* context	= dx->GetContext();
-		UpdateTransform(context, viewProjMat);
+		
+		_meshFilter->IASetBuffer(context);
 
 		vs->UpdateShaderToContext(context);
 		vs->UpdateInputLayoutToContext(context);
@@ -140,7 +152,8 @@ void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 			textures.push_back(type);
 		}
 
-		ps->UpdateResources(context, &constBuffers, &textures);
+		vs->UpdateResources(context, &constBuffers, nullptr);
+		ps->UpdateResources(context, nullptr, &textures);
 		context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
 	}
 }

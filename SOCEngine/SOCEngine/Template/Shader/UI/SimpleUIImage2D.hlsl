@@ -16,20 +16,20 @@ struct PS_INPUT
 };
 
 Texture2D txDiffuse 		: register( t0 );
-SamplerState sampler 		: register( s0 );
+SamplerState defaultSampler	: register( s0 );
 
 PS_INPUT VS( VS_INPUT input )
 {
 	PS_INPUT ps;
 
 	ps.position 	= mul( input.position, transform_worldViewProj );
-	ps.uv			= input.tex;
+	ps.uv			= input.uv;
 
     return ps;
 }
 
 float4 PS( PS_INPUT input ) : SV_Target
 {
-	float4 texDiffuse = txDiffuse.Sample(sampler, input.uv);
-	return texDiffuse;
+	//float4 texDiffuse = txDiffuse.Sample(defaultSampler, input.uv);
+	return float4(1, 0, 0, 1);
 }

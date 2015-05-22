@@ -47,7 +47,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&indexBuffer, args.fileName, args.key) == false )
 		{
 			indexBuffer = new Buffer::IndexBuffer;
-			if( _indexBuffer->Create(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
+			if( indexBuffer->Create(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
 				ASSERT_MSG("Error, can not create index buffer");
 
 			bufferMgr->Add(args.fileName, args.key, indexBuffer);

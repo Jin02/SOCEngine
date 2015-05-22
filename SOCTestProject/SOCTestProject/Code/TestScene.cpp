@@ -19,6 +19,13 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	img = new UI::SimpleImage2D("Test");
+	img->Create();
+	img->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 2));
+	
+	Texture::Texture* texture = _textureMgr->LoadTextureFromFile("./Resource/test.png", false);
+
+	img->UpdateMainImage(texture);
 }
 
 void TestScene::OnRenderPreview()
@@ -27,6 +34,9 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnUpdate(float dt)
 {
+	//static float x = 0.0;
+	//x+= 0.001f;
+	//img->GetTransform()->UpdatePosition(Math::Vector3(0, 0, x));
 }
 
 void TestScene::OnRenderPost()

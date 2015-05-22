@@ -58,8 +58,8 @@ namespace Rendering
 				bool							isDynamic;
 				MeshFilter::BufferElementFlag	bufferFlag;
 
-				const std::string&				fileName;
-				const std::string&				key;
+				const std::string				fileName;
+				const std::string				key;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
 					:fileName(_fileName), key(_key) {}

@@ -7,7 +7,7 @@ using namespace Rendering::Shader;
 using namespace Device;
 using namespace Math;
 
-UICamera::UICamera() : Camera()
+UICamera::UICamera() : Camera(), _object(nullptr), _depthBuffer(nullptr)
 {
 	_renderType			= RenderType::Forward;
 	_projectionType		= ProjectionType::Orthographic;
@@ -20,10 +20,19 @@ UICamera::~UICamera(void)
 void UICamera::Initialize()
 {
 	Camera::Initialize();
+
+	_depthBuffer =  new DepthBuffer;
+
+	const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+	_depthBuffer->Create(windowSize);
+
+	_object = new Core::Object(nullptr);
+	SetOwner(_object);
 }
 
 void UICamera::Destroy()
 {
+	SAFE_DELETE(_depthBuffer);
 	Camera::Destroy();
 }
 
@@ -44,8 +53,16 @@ void UICamera::Render()
 	const Device::DirectX* dx			= director->GetDirectX();
 	Core::Scene* scene					= director->GetCurrentScene();
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
+	ID3D11DeviceContext* context		= dx->GetContext();
 
-	_renderTarget->Clear(_clearColor, dx);
+	ID3D11RenderTargetView* rtv = dx->GetBackBuffer();//_renderTarget->GetRenderTargetView();
+	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
+	
+	_depthBuffer->Clear(dx, 1.0f, 0);
+
+	float clearColor[] = {_clearColor.r, _clearColor.g, _clearColor.b, 1.0f};
+	context->ClearRenderTargetView(rtv, clearColor);
+	//_renderTarget->Clear(_clearColor, dx);
 
 	Math::Matrix viewProjMat;
 	{
@@ -58,9 +75,10 @@ void UICamera::Render()
 		viewProjMat = viewMat * projMat;
 	}
 
-	ID3D11DeviceContext* context		= dx->GetContext();
+	
 	auto RenderUIObj = [&](UI::UIObject* uiObj)
 	{
+		uiObj->UpdateTransform(context, viewProjMat);
 		uiObj->Render(viewProjMat);
 	};
 
