@@ -21,15 +21,15 @@ namespace Core
 	protected:
 		std::string _name;
 
-		Object *_parent;
-		Object *_root;
+		const Object *_parent;
+		const Object *_root;
 		Transform *_transform;
 
 	protected:
 		std::vector<Component*> _components;
 
 	public:
-		Object(Object* parent = NULL);
+		Object(const Object* parent = NULL);
 		virtual ~Object(void);
 
 	public:
@@ -110,7 +110,7 @@ namespace Core
 		GET_ACCESSOR(Culled, bool, _culled);
 		GET_ACCESSOR(HasMesh, bool, _hasMesh);
 		GET_SET_ACCESSOR(Name, const std::string&, _name);
-		GET_SET_ACCESSOR(Parent, Object*, _parent);
+		GET_SET_ACCESSOR(Parent, const Object*, _parent);
 
 	public:
 		static Object* Copy(const Object *obj);
