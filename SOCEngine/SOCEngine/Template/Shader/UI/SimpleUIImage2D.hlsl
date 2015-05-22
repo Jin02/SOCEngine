@@ -1,3 +1,8 @@
+cbuffer Transform : register( b0 )
+{
+	matrix transform_worldViewProj;
+};
+
 struct VS_INPUT
 {
 	float4 position 		: POSITION;
