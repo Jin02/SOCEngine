@@ -24,9 +24,9 @@ Camera::~Camera(void)
 
 void Camera::Initialize()
 {
-	_FOV = 60.0f;
-	_clippingNear = 0.01f;
-	_clippingFar = 50.0f;
+	_FOV			= 60.0f;
+	_clippingNear	= 0.1f;
+	_clippingFar	= 1000.0f;
 
 	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;

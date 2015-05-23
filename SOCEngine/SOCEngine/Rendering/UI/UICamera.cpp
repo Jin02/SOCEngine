@@ -10,7 +10,6 @@ using namespace Math;
 UICamera::UICamera() : Camera(), _object(nullptr), _depthBuffer(nullptr)
 {
 	_renderType			= RenderType::Forward;
-	_projectionType		= ProjectionType::Orthographic;
 }
 
 UICamera::~UICamera(void)
@@ -28,6 +27,9 @@ void UICamera::Initialize()
 
 	_object = new Core::Object(nullptr);
 	SetOwner(_object);
+
+	_projectionType		= ProjectionType::Orthographic;
+	_object->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
 }
 
 void UICamera::Destroy()
@@ -55,6 +57,12 @@ void UICamera::Render()
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 	ID3D11DeviceContext* context		= dx->GetContext();
 
+	ID3D11DepthStencilState* originDepthStencilState = nullptr;
+	context->OMGetDepthStencilState(&originDepthStencilState, 0);
+	
+	//turn off depth writing
+	context->OMSetDepthStencilState(dx->GetDepthDisableDepthTestState(), 0);
+
 	ID3D11RenderTargetView* rtv = dx->GetBackBuffer();//_renderTarget->GetRenderTargetView();
 	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
 	
@@ -75,7 +83,6 @@ void UICamera::Render()
 		viewProjMat = viewMat * projMat;
 	}
 
-	
 	auto RenderUIObj = [&](UI::UIObject* uiObj)
 	{
 		uiObj->UpdateTransform(context, viewProjMat);
@@ -83,4 +90,7 @@ void UICamera::Render()
 	};
 
 	uiMgr->IterateContent(RenderUIObj);
+
+	//restore depth stencil state
+	context->OMSetDepthStencilState(originDepthStencilState, 0);
 }

@@ -7,7 +7,7 @@ using namespace Rendering;
 using namespace Device;
 
 SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
-	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
+	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
 {
 	_name = name;
 }
@@ -18,7 +18,7 @@ SimpleImage2D::~SimpleImage2D()
 		SAFE_DELETE(_material);
 }
 
-void SimpleImage2D::Create(Rendering::Material* material)
+void SimpleImage2D::Create(const Math::Size<uint>& size, Rendering::Material* material)
 {
 	if(material == nullptr)
 	{
@@ -33,49 +33,10 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
 		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
-
 	}
 
-	struct RectVertexInfo
-	{
-		Math::Vector4	position;
-		Math::Vector2	uv;
-	};
-
 	RectVertexInfo rectVertex[4];
-	{
-		rectVertex[0].position.x	= -1.0f;
-		rectVertex[0].position.y	= -1.0f;
-		rectVertex[0].position.z	=  0.0f;
-		rectVertex[0].position.w	=  0.0f;
-
-		rectVertex[0].uv.x			= -1.0f;
-		rectVertex[0].uv.x			= -1.0f;
-
-		rectVertex[1].position.x	=  1.0f;
-		rectVertex[1].position.y	= -1.0f;
-		rectVertex[1].position.z	=  0.0f;
-		rectVertex[1].position.w	=  0.0f;
-
-		rectVertex[1].uv.x			=  1.0f;
-		rectVertex[1].uv.x			= -1.0f;
-
-		rectVertex[2].position.x	= -1.0f;
-		rectVertex[2].position.y	=  1.0f;
-		rectVertex[2].position.z	=  0.0f;
-		rectVertex[2].position.w	=  0.0f;
-
-		rectVertex[2].uv.x			= -1.0f;
-		rectVertex[2].uv.x			=  1.0f;
-
-		rectVertex[3].position.x	=  1.0f;
-		rectVertex[3].position.y	=  1.0f;
-		rectVertex[3].position.z	=  0.0f;
-		rectVertex[3].position.w	=  0.0f;
-
-		rectVertex[3].uv.x			=  1.0f;
-		rectVertex[3].uv.x			=  1.0f;
-	};
+	memset(rectVertex, 0, sizeof(RectVertexInfo) * 4);
 
 	uint indices[] =
 	{
@@ -93,7 +54,7 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		meshCreateArgs.index.count		= ARRAYSIZE(indices);
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
-		meshCreateArgs.isDynamic		= false;
+		meshCreateArgs.isDynamic		= true;
 		meshCreateArgs.bufferFlag		= (uint)Mesh::MeshFilter::BufferElement::UV;
 	}
 
@@ -108,22 +69,72 @@ void SimpleImage2D::Create(Rendering::Material* material)
 		uiMgr->AddUpdateQueue(this);
 
 	UIObject::InitConstBuffer();
+	SetSize(size);
 }
 
 void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 {
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
-	//Core::Scene* scene					= director->GetCurrentScene();
-	//UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
+	ID3D11DeviceContext* context		= dx->GetContext();
+
+	if(_changeSize)
+	{
+		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
+
+		//float left		= -(screenSize.w / 2.0f);
+		//float right		= left + _size.w;
+		//float top		= -(screenSize.h / 2.0f);
+		//float bottom	= top + _size.h;
+		float left		= -(_size.w / 2.0f);
+		float right		= -left;
+		float top		= -(_size.h / 2.0f);
+		float bottom	= -top;
+
+		RectVertexInfo vertices[4];
+		{
+			vertices[0].position.x	= left;
+			vertices[0].position.y	= top;
+			vertices[0].position.z	= 0.0f;
+			vertices[0].position.w	= 0.0f;
+
+			vertices[0].uv.x		= 0.0f;
+			vertices[0].uv.y		= 0.0f;
+
+			vertices[1].position.x	= right;
+			vertices[1].position.y	= top;
+			vertices[1].position.z	= 0.0f;
+			vertices[1].position.w	= 0.0f;
+
+			vertices[1].uv.x		= 1.0f;
+			vertices[1].uv.y		= 0.0f;
+
+			vertices[2].position.x	= left;
+			vertices[2].position.y	= bottom;
+			vertices[2].position.z	= 0.0f;
+			vertices[2].position.w	= 0.0f;
+
+			vertices[2].uv.x		= 0.0f;
+			vertices[2].uv.y		= 1.0f;
+
+			vertices[3].position.x	= right;
+			vertices[3].position.y	= bottom;
+			vertices[3].position.z	= 0.0f;
+			vertices[3].position.w	= 0.0f;
+
+			vertices[3].uv.x		=  1.0f;
+			vertices[3].uv.y		=  1.0f;
+		};
+
+		_meshFilter->UpdateVertexBufferData(context, vertices, sizeof(RectVertexInfo) * 4);
+		_changeSize = false;
+	}
 
 	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
 	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
 
 	if(_material->GetShaderTargets().ableRender())
-	{
-		ID3D11DeviceContext* context	= dx->GetContext();
-		
+	{		
 		_meshFilter->IASetBuffer(context);
 
 		vs->UpdateShaderToContext(context);
@@ -161,4 +172,10 @@ void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 void SimpleImage2D::UpdateMainImage(Texture::Texture* tex)
 {
 	_material->SetVariable<Texture::Texture*>("main", tex);
+}
+
+void SimpleImage2D::SetSize(const Math::Size<uint>& size)
+{
+	_size = size;
+	_changeSize = true;
 }
