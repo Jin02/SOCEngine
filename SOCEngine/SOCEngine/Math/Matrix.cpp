@@ -162,9 +162,23 @@ namespace Math
 
 	void Matrix::Transpose(Matrix& out, const Matrix& mat)
 	{
-		for(int i=0; i<4; ++i)
-			for(int j=0; j<4; ++j)
-				out._m[j][i] = mat._m[i][j];
+		Matrix origin = mat;
+
+		out._12 = origin._21;
+		out._13 = origin._31;
+		out._14 = origin._41;
+
+		out._21 = origin._12;
+		out._23 = origin._32;
+		out._24 = origin._42;
+
+		out._31 = origin._13;
+		out._32 = origin._23;
+		out._34 = origin._43;
+
+		out._41 = origin._14;
+		out._42 = origin._24;
+		out._43 = origin._34;
 	}
 
 	void Matrix::Set( float _11, float _12, float _13, float _14,

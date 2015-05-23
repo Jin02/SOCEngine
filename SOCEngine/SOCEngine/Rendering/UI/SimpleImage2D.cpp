@@ -82,14 +82,14 @@ void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 	{
 		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
 
-		float left		= -(screenSize.w / 2.0f);
-		float right		= left + _size.w;
-		float top		= -(screenSize.h / 2.0f);
-		float bottom	= top + _size.h;
-		//float left		= -(_size.w / 2.0f);
-		//float right		= -left;
-		//float top		= -(_size.h / 2.0f);
-		//float bottom	= -top;
+		//float left		= -(screenSize.w / 2.0f);
+		//float right		= left + _size.w;
+		//float top		= -(screenSize.h / 2.0f);
+		//float bottom	= top + _size.h;
+		float left		= -(_size.w / 2.0f);
+		float right		= -left;
+		float top		= -(_size.h / 2.0f);
+		float bottom	= -top;
 
 		RectVertexInfo vertices[4];
 		{
