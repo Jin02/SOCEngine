@@ -10,7 +10,7 @@ namespace UI
 	public:
 		struct RectVertexInfo
 		{
-			Math::Vector4	position;
+			Math::Vector3	position;
 			Math::Vector2	uv;
 		};
 

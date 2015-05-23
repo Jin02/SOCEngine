@@ -21,7 +21,7 @@ void TestScene::OnInitialize()
 {
 	img = new UI::SimpleImage2D("Test");
 	img->Create(Math::Size<uint>(100, 100));
-	img->GetTransform()->UpdatePosition(Math::Vector3(-350, 0, 0));
+	img->GetTransform()->UpdatePosition(Math::Vector3(350, 0, 0));
 	
 	Texture::Texture* texture = _textureMgr->LoadTextureFromFile("./Resource/test.png", false);
 
