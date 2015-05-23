@@ -65,3 +65,8 @@ void MeshFilter::IASetBuffer(ID3D11DeviceContext* context)
 	_vertexBuffer->IASetBuffer(context);
 	_indexBuffer->IASetBuffer(context);
 }
+
+void MeshFilter::UpdateVertexBufferData(ID3D11DeviceContext* context, const void* data, uint size)
+{
+	_vertexBuffer->UpdateVertexData(context, data, size);
+}
