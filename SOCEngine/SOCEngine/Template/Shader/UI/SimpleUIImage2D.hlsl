@@ -30,6 +30,6 @@ PS_INPUT VS( VS_INPUT input )
 
 float4 PS( PS_INPUT input ) : SV_Target
 {
-	//float4 texDiffuse = txDiffuse.Sample(defaultSampler, input.uv);
-	return float4(1, 0, 0, 1);
+	float4 texDiffuse = txDiffuse.Sample(defaultSampler, input.uv);
+	return texDiffuse;
 }

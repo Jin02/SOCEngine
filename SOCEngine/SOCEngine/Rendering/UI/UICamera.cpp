@@ -72,6 +72,9 @@ void UICamera::Render()
 	context->ClearRenderTargetView(rtv, clearColor);
 	//_renderTarget->Clear(_clearColor, dx);
 
+	ID3D11SamplerState* sampler = dx->GetDefaultSamplerState();
+	context->PSSetSamplers(0, 1, &sampler);
+
 	Math::Matrix viewProjMat;
 	{
 		Math::Matrix viewMat;
@@ -93,4 +96,7 @@ void UICamera::Render()
 
 	//restore depth stencil state
 	context->OMSetDepthStencilState(originDepthStencilState, 0);
+
+	ID3D11SamplerState* nullSampler = nullptr;
+	context->PSSetSamplers(0, 1, &nullSampler);
 }

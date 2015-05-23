@@ -208,6 +208,18 @@
     <Filter Include="UI">
       <UniqueIdentifier>{f641d90e-a254-439b-b0fe-8664cfdc73c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\SimpleImage2D">
+      <UniqueIdentifier>{00c0f520-6339-4726-a1cf-944acff16bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Camera">
+      <UniqueIdentifier>{e014fcf4-f641-4251-9ec3-34769bd8ea58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Manager">
+      <UniqueIdentifier>{622565aa-3fed-4d01-b2ed-f5689d85700c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Object">
+      <UniqueIdentifier>{1b752101-7811-49c0-8df2-2694c24813d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -538,17 +550,17 @@
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\UIManager.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\UI\UIObject.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="Rendering\UI\UICamera.h">
+      <Filter>UI\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\UI\SimpleImage2D.h">
-      <Filter>UI</Filter>
+      <Filter>UI\SimpleImage2D</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\UICamera.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="Rendering\UI\UIObject.h">
+      <Filter>UI\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIManager.h">
+      <Filter>UI\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -744,17 +756,17 @@
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\UIManager.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\UI\UIObject.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="Rendering\UI\UICamera.cpp">
+      <Filter>UI\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
-      <Filter>UI</Filter>
+      <Filter>UI\SimpleImage2D</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\UICamera.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="Rendering\UI\UIObject.cpp">
+      <Filter>UI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIManager.cpp">
+      <Filter>UI\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

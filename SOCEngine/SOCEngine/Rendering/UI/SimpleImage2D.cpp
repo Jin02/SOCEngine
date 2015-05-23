@@ -40,8 +40,8 @@ void SimpleImage2D::Create(const Math::Size<uint>& size, Rendering::Material* ma
 
 	uint indices[] =
 	{
-		0, 2, 1,
-		1, 2, 3
+		0, 1, 2,
+		1, 3, 2
 	};
 
 	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI", "SimpleImage2D");
@@ -88,8 +88,8 @@ void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
 		//float bottom	= top + _size.h;
 		float left		= -(_size.w / 2.0f);
 		float right		= -left;
-		float top		= -(_size.h / 2.0f);
-		float bottom	= -top;
+		float bottom	= -(_size.h / 2.0f);
+		float top		= -bottom;
 
 		RectVertexInfo vertices[4];
 		{
