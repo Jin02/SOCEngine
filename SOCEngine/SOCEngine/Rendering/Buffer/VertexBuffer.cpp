@@ -20,7 +20,7 @@ bool VertexBuffer::Create( const void* sysMem, unsigned int bufferSize, unsigned
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
 	bufferDesc.ByteWidth = bufferSize * count;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.CPUAccessFlags = isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
@@ -40,4 +40,15 @@ void VertexBuffer::IASetBuffer(ID3D11DeviceContext* context)
 {
 	unsigned int offset = 0;
 	context->IASetVertexBuffers(0, 1, &_buffer, &_stride, &offset); 
+}
+
+void VertexBuffer::UpdateVertexData(ID3D11DeviceContext* context, const void* data, uint size)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	ASSERT_COND_MSG( SUCCEEDED(hr), "Error, VertexBuffer cant execute dx Map func");
+
+	memcpy(mappedResource.pData, data, size);
+
+	context->Unmap(_buffer, 0);
 }
