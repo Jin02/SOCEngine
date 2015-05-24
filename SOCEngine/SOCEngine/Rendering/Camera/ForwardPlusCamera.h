@@ -26,7 +26,6 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-
 			void Render();
 
 		public:

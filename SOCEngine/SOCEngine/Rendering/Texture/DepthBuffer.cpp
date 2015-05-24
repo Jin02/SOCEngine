@@ -46,7 +46,7 @@ void DepthBuffer::Destroy()
 	SAFE_RELEASE(_depthStencilView);
 }
 
-void DepthBuffer::Clear(const Device::DirectX* dx, float depth, unsigned char stencil)
+void DepthBuffer::Clear(ID3D11DeviceContext* context, float depth, unsigned char stencil)
 {
-	dx->GetContext()->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
+	context->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, stencil);
 }

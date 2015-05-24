@@ -72,25 +72,33 @@ void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 	}
 }
 
-void Camera::ViewMatrix(Math::Matrix& outMatrix)
+void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
 {
-	Transform* ownerTransform = _owner->GetTransform();
-	ownerTransform->WorldMatrix(outMatrix);
+	outMatrix = worldMatrix;
 
 	Vector3 worldPos;
-	worldPos.x = outMatrix._41;
-	worldPos.y = outMatrix._42;
-	worldPos.z = outMatrix._43;
+	worldPos.x = worldMatrix._41;
+	worldPos.y = worldMatrix._42;
+	worldPos.z = worldMatrix._43;
+
+	Math::Vector3 right		= Math::Vector3(worldMatrix._11, worldMatrix._21, worldMatrix._31);
+	Math::Vector3 up		= Math::Vector3(worldMatrix._12, worldMatrix._22, worldMatrix._32);
+	Math::Vector3 forward	= Math::Vector3(worldMatrix._13, worldMatrix._23, worldMatrix._33);
 
 	Vector3 p;
-	p.x = -Vector3::Dot(ownerTransform->GetRight(), worldPos);
-	p.y = -Vector3::Dot(ownerTransform->GetUp(), worldPos);
-	p.z = -Vector3::Dot(ownerTransform->GetForward(), worldPos);
+	p.x = -Vector3::Dot(right,		worldPos);
+	p.y = -Vector3::Dot(up,			worldPos);
+	p.z = -Vector3::Dot(forward,	worldPos);
 
 	outMatrix._41 = p.x;
 	outMatrix._42 = p.y;
 	outMatrix._43 = p.z;
 	outMatrix._44 = 1.0f;
+}
+
+void Camera::ViewMatrix(Math::Matrix& outMatrix)
+{
+	ViewMatrix(outMatrix, outMatrix);
 }
 
 void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)

@@ -54,6 +54,8 @@ namespace Rendering
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);
+
+			static void  ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void ViewMatrix(Math::Matrix& outMatrix);
 
 		public:
@@ -70,6 +72,7 @@ namespace Rendering
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderType, RenderType, _renderType);
+			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
 		};
 	}
 }

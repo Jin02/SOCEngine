@@ -21,9 +21,7 @@ void UICamera::Initialize()
 	Camera::Initialize();
 
 	_depthBuffer =  new DepthBuffer;
-
-	const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
-	_depthBuffer->Create(windowSize);
+	_depthBuffer->Create(Director::GetInstance()->GetWindowSize());
 
 	_object = new Core::Object(nullptr);
 	SetOwner(_object);
@@ -57,22 +55,16 @@ void UICamera::Render()
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 	ID3D11DeviceContext* context		= dx->GetContext();
 
-	ID3D11DepthStencilState* originDepthStencilState = nullptr;
-	context->OMGetDepthStencilState(&originDepthStencilState, 0);
-	
-	//turn off depth writing
-	context->OMSetDepthStencilState(dx->GetDepthDisableDepthTestState(), 0);
-
-	ID3D11RenderTargetView* rtv = dx->GetBackBuffer();//_renderTarget->GetRenderTargetView();
+	ID3D11RenderTargetView* rtv = _renderTarget->GetRenderTargetView();
 	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
 	
-	_depthBuffer->Clear(dx, 1.0f, 0);
+	_depthBuffer->Clear(context, 1.0f, 0);
 
 	float clearColor[] = {_clearColor.r, _clearColor.g, _clearColor.b, 1.0f};
 	context->ClearRenderTargetView(rtv, clearColor);
 	//_renderTarget->Clear(_clearColor, dx);
 
-	ID3D11SamplerState* sampler = dx->GetDefaultSamplerState();
+	ID3D11SamplerState* sampler = dx->GetLinearSamplerState();
 	context->PSSetSamplers(0, 1, &sampler);
 
 	Math::Matrix viewProjMat;
@@ -93,9 +85,6 @@ void UICamera::Render()
 	};
 
 	uiMgr->IterateContent(RenderUIObj);
-
-	//restore depth stencil state
-	context->OMSetDepthStencilState(originDepthStencilState, 0);
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers(0, 1, &nullSampler);

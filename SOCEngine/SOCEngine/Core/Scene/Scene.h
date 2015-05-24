@@ -10,6 +10,7 @@
 #include "BufferManager.h"
 #include "RenderManager.h"
 #include "UIManager.h"
+#include "BackBufferMaker.h"
 
 namespace Core
 {
@@ -20,6 +21,7 @@ namespace Core
 
 	private:
 		State _state;
+		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 	protected:
 		Structure::Vector<std::string, Core::Object>	_rootObjects;	

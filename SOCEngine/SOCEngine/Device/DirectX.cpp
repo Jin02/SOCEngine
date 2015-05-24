@@ -9,7 +9,8 @@ DirectX::DirectX(void) :
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _defaultCulling(nullptr),
 	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
 	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
-	_depthGreaterAndDisableDepthWrite(nullptr), _defaultSamplerState(nullptr), _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr), _useMSAA(false)
+	_depthGreaterAndDisableDepthWrite(nullptr),  _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr), _useMSAA(false),
+	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr)
 {
 
 }
@@ -286,15 +287,24 @@ bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
 	{
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory( &sampDesc, sizeof(sampDesc) );
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.MaxAnisotropy = 16;
 		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		HRESULT hr = _device ->CreateSamplerState( &sampDesc, &_defaultSamplerState );
+		HRESULT hr = _device ->CreateSamplerState( &sampDesc, &_anisotropicSamplerState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		hr = _device ->CreateSamplerState( &sampDesc, &_linearSamplerState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		hr = _device ->CreateSamplerState( &sampDesc, &_pointSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 	}
 

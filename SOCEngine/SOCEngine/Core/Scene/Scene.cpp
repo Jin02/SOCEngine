@@ -12,7 +12,7 @@ Scene::Scene(void) :
 	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
 	_materialMgr(nullptr), _meshImporter(nullptr), 	_uiManager(nullptr),
 	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr),
-	_uiCamera(nullptr)
+	_uiCamera(nullptr), _backBufferMaker(nullptr)
 {
 	_state = State::Init;
 }
@@ -43,6 +43,9 @@ void Scene::Initialize()
 
 	_dx				= Device::Director::GetInstance()->GetDirectX();
 
+	_backBufferMaker = new PostProcessing::BackBufferMaker;
+	_backBufferMaker->Initialize();
+
 	NextState();
 	OnInitialize();
 }
@@ -72,6 +75,7 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
+#ifndef DEPRECATED_MESH_RENDERER
 	auto CamIteration = [&](Camera::Camera* cam)
 	{
 		cam->Render();
@@ -79,11 +83,16 @@ void Scene::Render()
 	_cameraMgr->IterateContent(CamIteration);
 
 	OnRenderPost();
+#endif
+	
+	ID3D11DeviceContext* context = _dx->GetContext();
+	//Turn off depth writing
+	context->OMSetDepthStencilState(_dx->GetDepthDisableDepthTestState(), 0);
+	
+	_uiCamera->Render();
 
-	//ui
-	{
-		_uiCamera->Render();
-	}
+	Camera::Camera* mainCam = _cameraMgr->GetMainCamera();
+	_backBufferMaker->Render(mainCam, _uiCamera);
 
 	//swap
 	_dx->GetSwapChain()->Present(0, 0);
@@ -101,6 +110,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_renderMgr);
 	SAFE_DELETE(_uiCamera);
 	SAFE_DELETE(_uiManager);
+	SAFE_DELETE(_backBufferMaker);
 
 	OnDestroy();
 }

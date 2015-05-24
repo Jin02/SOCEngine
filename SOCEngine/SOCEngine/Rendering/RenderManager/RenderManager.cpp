@@ -170,22 +170,7 @@ void RenderManager::Iterate(const std::function<void(const Material* material, c
 	}
 }
 
-void RenderManager::ForwardPlusRender(ID3D11DeviceContext* context, const Camera::ForwardPlusCamera* camera)
+void RenderManager::ScreenMerge()
 {
-}
 
-void RenderManager::Render(const Camera::Camera* camera)
-{
-	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-
-	if(camera->GetRenderType() == RenderType::ForwardPlus)
-	{
-
-	}
-	else
-	{
-
-	}
-
-	//Iterate(NonAlphaMeshRender, MeshType::Opaque);
 }

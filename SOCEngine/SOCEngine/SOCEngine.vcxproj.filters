@@ -220,6 +220,9 @@
     <Filter Include="UI\Object">
       <UniqueIdentifier>{1b752101-7811-49c0-8df2-2694c24813d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Manager\BackBufferMaker">
+      <UniqueIdentifier>{67b98918-361e-481d-bc71-4d2c811c0492}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -562,6 +565,9 @@
     <ClInclude Include="Rendering\UI\UIManager.h">
       <Filter>UI\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -767,6 +773,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\UI\UIManager.cpp">
       <Filter>UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

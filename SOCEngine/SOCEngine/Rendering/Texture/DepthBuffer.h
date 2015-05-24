@@ -20,7 +20,7 @@ namespace Rendering
 			bool Create(const Math::Size<unsigned int>& size, bool useShaderResource = false);
 			void Destroy();
 
-			void Clear(const Device::DirectX* dx, float depth, unsigned char stencil);
+			void Clear(ID3D11DeviceContext* context, float depth, unsigned char stencil);
 
 		public:
 			GET_ACCESSOR(DepthStencilView, ID3D11DepthStencilView*, _depthStencilView);
