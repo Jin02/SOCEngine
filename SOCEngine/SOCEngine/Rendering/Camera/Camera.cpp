@@ -98,7 +98,10 @@ void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix
 
 void Camera::ViewMatrix(Math::Matrix& outMatrix)
 {
-	ViewMatrix(outMatrix, outMatrix);
+	Matrix worldMat;
+	_owner->GetTransform()->WorldMatrix(worldMat);
+
+	ViewMatrix(outMatrix, worldMat);
 }
 
 void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
