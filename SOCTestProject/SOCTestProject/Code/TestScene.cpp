@@ -32,6 +32,21 @@ void TestScene::OnRenderPreview()
 {
 }
 
+void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
+{
+	if(mouse.GetLeft() == MOUSE::Action::Up)
+	{
+		int a = 5;
+		a=3;
+	}
+
+	if(keyboard.states['A'] == KEYBOARD::Type::Up)
+	{
+		int a = 5;
+		a=3;
+	}
+}
+
 void TestScene::OnUpdate(float dt)
 {
 	//static float x = 0.0;

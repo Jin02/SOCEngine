@@ -50,10 +50,13 @@ namespace Core
 		void Render();
 		void Destroy();
 
+		virtual void OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard) = 0;
+
 	protected:
 		virtual void OnInitialize() = 0;
 		virtual void OnRenderPreview() = 0;
 		virtual void OnUpdate(float dt) = 0;
+		
 		virtual void OnRenderPost() = 0;
 		virtual void OnDestroy() = 0;
 

@@ -14,13 +14,13 @@ namespace Device
 		friend class Singleton<Director>;
 
 	private:
-		float		_elapse;
-		float		_fps;
-		Win32*		_win;
+		float				_elapse;
+		float				_fps;
+		Win32*				_win;
 		DirectX*			_directX;
 
-		Core::Scene*	_scene;
-		Core::Scene*	_nextScene;
+		Core::Scene*		_scene;
+		Core::Scene*		_nextScene;
 
 	protected:
 		Director(void);
@@ -31,7 +31,7 @@ namespace Device
 		void CalculateFPS();
 
 	public:
-		bool Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
+		void Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		void Run();
 
 	public:
