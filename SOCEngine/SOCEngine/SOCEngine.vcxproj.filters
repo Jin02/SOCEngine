@@ -223,6 +223,9 @@
     <Filter Include="Rendering\Manager\BackBufferMaker">
       <UniqueIdentifier>{67b98918-361e-481d-bc71-4d2c811c0492}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{7c4fca20-1657-4c59-9f92-78800621e876}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -568,6 +571,9 @@
     <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
       <Filter>Rendering\Manager\BackBufferMaker</Filter>
     </ClInclude>
+    <ClInclude Include="Sound\SimpleSoundPlayer.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -776,6 +782,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
       <Filter>Rendering\Manager\BackBufferMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound\SimpleSoundPlayer.cpp">
+      <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

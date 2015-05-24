@@ -93,6 +93,7 @@
     <ClInclude Include="Rendering\UI\UICamera.h" />
     <ClInclude Include="Rendering\UI\UIObject.h" />
     <ClInclude Include="Rendering\UI\UIManager.h" />
+    <ClInclude Include="Sound\SimpleSoundPlayer.h" />
     <ClInclude Include="Structure\BaseStructure.h" />
     <ClInclude Include="Structure\MapInMap.h" />
     <ClInclude Include="Structure\Vector.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Rendering\UI\UICamera.cpp" />
     <ClCompile Include="Rendering\UI\UIObject.cpp" />
     <ClCompile Include="Rendering\UI\UIManager.cpp" />
+    <ClCompile Include="Sound\SimpleSoundPlayer.cpp" />
     <ClCompile Include="Utility\DirectoryManager.cpp" />
     <ClCompile Include="Device\Director.cpp" />
     <ClCompile Include="Device\DirectX.cpp" />
@@ -240,7 +242,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Sound;Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>
