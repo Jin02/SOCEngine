@@ -28,6 +28,9 @@ void UICamera::Initialize()
 
 	_projectionType		= ProjectionType::Orthographic;
 	_object->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
+
+	_clearColor = Color::blue();
+	_clearColor.a = 0.0f;
 }
 
 void UICamera::Destroy()
@@ -59,10 +62,7 @@ void UICamera::Render()
 	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
 	
 	_depthBuffer->Clear(context, 1.0f, 0);
-
-	float clearColor[] = {_clearColor.r, _clearColor.g, _clearColor.b, 1.0f};
-	context->ClearRenderTargetView(rtv, clearColor);
-	//_renderTarget->Clear(_clearColor, dx);
+	_renderTarget->Clear(_clearColor, dx);
 
 	ID3D11SamplerState* sampler = dx->GetLinearSamplerState();
 	context->PSSetSamplers(0, 1, &sampler);

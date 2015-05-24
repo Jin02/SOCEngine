@@ -33,6 +33,11 @@ SamplerState pointSamplerState	: register( s0 );
 
 float4 PS( PS_INPUT input ) : SV_Target
 {
-	float4 uiTex = uiScene.Sample(pointSamplerState, input.uv);
-	return uiTex;
+	float4 mainColor	= mainScene.Sample(pointSamplerState, input.uv);
+	float4 uiColor		= uiScene.Sample(pointSamplerState, input.uv);
+
+	float4 finalColor 	= (mainColor * (1.0f - uiColor.a)) + (uiColor * uiColor.a);
+	finalColor.a 		= 1.0f;
+
+	return finalColor;
 }
