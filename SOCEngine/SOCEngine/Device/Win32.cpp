@@ -1,12 +1,68 @@
 #ifdef WIN32
 
 #include "Win32.h"
+#include "Director.h"
 
 namespace Device
 {
 	LRESULT Win32::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		if(msg == WM_DESTROY || msg == WM_CLOSE)
+		Director* director = Director::GetInstance();
+		Win32* win = const_cast<Win32*>(director->GetWin());
+		Core::Scene* scene = director->GetCurrentScene();
+
+		if(WM_MOUSEMOVE <= msg && msg <= WM_MBUTTONDBLCLK)
+		{
+			Mouse::Type type = Mouse::Type::Unknown;
+			switch(msg)
+			{
+			case WM_LBUTTONDOWN:
+				win->_mouse.states[(uint)(type = Mouse::Type::Left)] = Mouse::Action::Down;
+				break;
+			case WM_LBUTTONUP:
+				win->_mouse.states[(uint)(type = Mouse::Type::Left)] = Mouse::Action::Up;
+				break;
+			case WM_LBUTTONDBLCLK:
+				win->_mouse.states[(uint)(type = Mouse::Type::Left)] = Mouse::Action::DoubleClick;
+				break;
+
+			case WM_RBUTTONDOWN:
+				win->_mouse.states[(uint)(type = Mouse::Type::Right)] = Mouse::Action::Down;
+				break;
+			case WM_RBUTTONUP:
+				win->_mouse.states[(uint)(type = Mouse::Type::Right)] = Mouse::Action::Up;
+				break;
+			case WM_RBUTTONDBLCLK:
+				win->_mouse.states[(uint)(type = Mouse::Type::Right)] = Mouse::Action::DoubleClick;
+				break;
+
+			case WM_MBUTTONDOWN:
+				win->_mouse.states[(uint)(type = Mouse::Type::Middle)] = Mouse::Action::Down;
+				break;
+			case WM_MBUTTONUP:
+				win->_mouse.states[(uint)(type = Mouse::Type::Middle)] = Mouse::Action::Up;
+				break;
+			case WM_MBUTTONDBLCLK:
+				win->_mouse.states[(uint)(type = Mouse::Type::Middle)] = Mouse::Action::DoubleClick;
+				break;
+			}
+
+			scene->OnInput(win->_mouse, win->_keyboard);
+			if(win->_mouse.states[(uint)type] != Mouse::Action::Down)
+				win->_mouse.states[(uint)type] = Mouse::Action::None;
+		}
+		else if(WM_KEYDOWN == msg)
+		{
+			win->_keyboard.states[wParam] = Keyboard::Type::Down;
+			scene->OnInput(win->_mouse, win->_keyboard);
+		}
+		else if(msg == WM_KEYUP)
+		{
+			win->_keyboard.states[wParam] = Keyboard::Type::Up;
+			scene->OnInput(win->_mouse, win->_keyboard);
+			win->_keyboard.states[wParam] = Keyboard::Type::None;
+		}
+		else if(msg == WM_DESTROY || msg == WM_CLOSE)
 		{
 			PostQuitMessage(0);
 			return 0;
@@ -39,6 +95,8 @@ namespace Device
 		_parentHandle = parentHandle;
 		_windowsMode = windowMode;
 
+		memset(&_mouse, 0, sizeof(Mouse));
+		memset(&_keyboard, 0, sizeof(Keyboard));
 	}
 
 	Win32::~Win32(void)

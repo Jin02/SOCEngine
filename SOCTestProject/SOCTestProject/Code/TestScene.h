@@ -14,7 +14,7 @@ public:
 public:
 	virtual void OnInitialize();
 	virtual void OnRenderPreview();
-	virtual void OnInput(const Math::Vector2& mousePosition, const std::array<unsigned char, 256>& keyboardState );
+	virtual void OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard);
 	virtual void OnUpdate(float dt);
 	virtual void OnRenderPost();
 	virtual void OnDestroy();

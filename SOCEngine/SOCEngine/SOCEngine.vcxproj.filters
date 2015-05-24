@@ -223,9 +223,6 @@
     <Filter Include="Rendering\Manager\BackBufferMaker">
       <UniqueIdentifier>{67b98918-361e-481d-bc71-4d2c811c0492}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{56966dd2-a57d-4fe0-94c3-7fd6002546f3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -571,9 +568,6 @@
     <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
       <Filter>Rendering\Manager\BackBufferMaker</Filter>
     </ClInclude>
-    <ClInclude Include="Input\DirectInput.h">
-      <Filter>Input</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -782,9 +776,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
       <Filter>Rendering\Manager\BackBufferMaker</Filter>
-    </ClCompile>
-    <ClCompile Include="Input\DirectInput.cpp">
-      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

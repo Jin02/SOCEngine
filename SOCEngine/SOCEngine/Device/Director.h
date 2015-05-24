@@ -5,7 +5,6 @@
 #include "Singleton.h"
 #include "Timer.h"
 #include "Scene.h"
-#include "DirectInput.h"
 
 namespace Device
 {
@@ -19,7 +18,6 @@ namespace Device
 		float				_fps;
 		Win32*				_win;
 		DirectX*			_directX;
-		DirectInput*		_input;
 
 		Core::Scene*		_scene;
 		Core::Scene*		_nextScene;

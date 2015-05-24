@@ -32,12 +32,18 @@ void TestScene::OnRenderPreview()
 {
 }
 
-void TestScene::OnInput(const Math::Vector2& mousePosition, const std::array<unsigned char, 256>& keyboardState )
+void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	if(keyboardState[VK_ESCAPE] != 0)
+	if(mouse.GetLeft() == MOUSE::Action::Up)
 	{
 		int a = 5;
-		a = 3;
+		a=3;
+	}
+
+	if(keyboard.states['A'] == KEYBOARD::Type::Up)
+	{
+		int a = 5;
+		a=3;
 	}
 }
 
