@@ -2,11 +2,14 @@
 
 #include "Scene.h"
 #include "ShaderFactory.hpp"
+#include "SimpleSoundPlayer.h"
 
 class TestScene : public Core::Scene
 {
 private:
 	UI::SimpleImage2D* img;
+	std::auto_ptr<Sound::SimpleSoundPlayer> sound;
+
 public:
 	TestScene(void);
 	~TestScene(void);
