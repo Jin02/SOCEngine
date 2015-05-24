@@ -17,6 +17,7 @@ namespace Rendering
 		{
 			UnknownModel,
 			PhysicallyBasedModel,
+			UI,
 			Users
 		};
 
@@ -73,7 +74,7 @@ namespace Rendering
 			if( findIter == _datas.end() )
 				return false;
 
-			outContainer = findIter->second.GetData();
+			outContainer = findIter->second.GetData<Type>();
 			return true;
 		}
 

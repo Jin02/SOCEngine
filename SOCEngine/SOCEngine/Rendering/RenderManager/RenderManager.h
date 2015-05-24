@@ -6,9 +6,7 @@
 #include <functional>
 
 #include "ForwardPlusCamera.h"
-
-#include "VertexShader.h"
-#include "PixelShader.h"
+#include "BackBufferMaker.h"
 
 #include "GlobalSetting.h"
 
@@ -55,11 +53,8 @@ namespace Rendering
 			void Change(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 			std::pair<const Material*, const Mesh::Mesh*>* Find(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 
-		private:
-			void ForwardPlusRender(ID3D11DeviceContext* context, const Camera::ForwardPlusCamera* camera);
-
 		public:
-			void Render(const Camera::Camera* camera);
+			void ScreenMerge();
 		};
 	}
 }

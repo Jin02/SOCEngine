@@ -12,7 +12,7 @@ namespace Core
 
 	using namespace Rendering::Light;
 
-	Object::Object(Object* parent /* = NULL */) :
+	Object::Object(const Object* parent /* = NULL */) :
 		_culled(false), _parent(parent), _use(true), _hasMesh(false)
 	{
 		_transform = new Transform( this );		

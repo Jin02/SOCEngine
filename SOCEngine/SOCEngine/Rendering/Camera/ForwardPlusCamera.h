@@ -8,6 +8,9 @@ namespace Rendering
 	{		
 		class ForwardPlusCamera : public Camera
 		{
+		public:
+			static const Usage GetUsage() {	return Usage::MeshRender; }
+
 		private:
 			Texture::DepthBuffer*		_opaqueDepthBuffer;
 			Texture::DepthBuffer*		_transparentDepthBuffer;
@@ -23,7 +26,6 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-
 			void Render();
 
 		public:

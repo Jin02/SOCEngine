@@ -47,10 +47,10 @@ void ForwardPlusCamera::Render()
 
 
 	_renderTarget->Clear(_clearColor, dx);
-	_opaqueDepthBuffer->Clear(dx, 0.0f, 0); //inverted depth를 사용함. 그러므로 0으로 초기화
+	_opaqueDepthBuffer->Clear(context, 0.0f, 0); //inverted depth를 사용함. 그러므로 0으로 초기화
 
 	if(_useTransparentRender)
-		_transparentDepthBuffer->Clear(dx, 0.0f, 0); //inverted depth
+		_transparentDepthBuffer->Clear(context, 0.0f, 0); //inverted depth
 
 	ID3D11RenderTargetView*		nullRenderTargetView	= nullptr;
 	ID3D11DepthStencilView*		nullDepthStencilView	= nullptr;
@@ -110,7 +110,7 @@ void ForwardPlusCamera::Render()
 			{
 
 			};
-			ID3D11SamplerState* sampler = dx->GetDefaultSamplerState();
+			ID3D11SamplerState* sampler = dx->GetAnisotropicSamplerState();
 			context->PSSetSamplers(0, 1, &sampler);
 
 			// Render transparent mesh

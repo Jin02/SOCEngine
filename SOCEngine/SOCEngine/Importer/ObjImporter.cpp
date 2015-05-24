@@ -202,7 +202,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	};
 
 	uint stride = sizeof(Math::Vector3); //pos
-	Mesh::MeshFilter::BufferElementFlag bufferFlag;
+	Mesh::MeshFilter::BufferElementFlag bufferFlag = 0;
 
 	std::vector<InputSemanticData> vertexDatas;
 	{

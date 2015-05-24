@@ -193,9 +193,6 @@
     <Filter Include="Rendering\Texture\Mgr">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\Mgr">
-      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
@@ -204,6 +201,27 @@
     </Filter>
     <Filter Include="Rendering\Camera\ForwardPlus">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Manager">
+      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{f641d90e-a254-439b-b0fe-8664cfdc73c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\SimpleImage2D">
+      <UniqueIdentifier>{00c0f520-6339-4726-a1cf-944acff16bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Camera">
+      <UniqueIdentifier>{e014fcf4-f641-4251-9ec3-34769bd8ea58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Manager">
+      <UniqueIdentifier>{622565aa-3fed-4d01-b2ed-f5689d85700c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Object">
+      <UniqueIdentifier>{1b752101-7811-49c0-8df2-2694c24813d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Manager\BackBufferMaker">
+      <UniqueIdentifier>{67b98918-361e-481d-bc71-4d2c811c0492}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -524,7 +542,7 @@
       <Filter>Rendering\Texture\Mgr</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <Filter>Rendering\Camera\Mgr</Filter>
+      <Filter>Rendering\Camera\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\Frustum.h">
       <Filter>Rendering\Camera\Frustum</Filter>
@@ -534,6 +552,21 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UICamera.h">
+      <Filter>UI\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\SimpleImage2D.h">
+      <Filter>UI\SimpleImage2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIObject.h">
+      <Filter>UI\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIManager.h">
+      <Filter>UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -718,7 +751,7 @@
       <Filter>Rendering\Texture\Mgr</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera\Mgr</Filter>
+      <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\Frustum.cpp">
       <Filter>Rendering\Camera\Frustum</Filter>
@@ -728,6 +761,21 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UICamera.cpp">
+      <Filter>UI\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
+      <Filter>UI\SimpleImage2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIObject.cpp">
+      <Filter>UI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIManager.cpp">
+      <Filter>UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

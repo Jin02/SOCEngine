@@ -58,8 +58,8 @@ namespace Rendering
 				bool							isDynamic;
 				MeshFilter::BufferElementFlag	bufferFlag;
 
-				const std::string&				fileName;
-				const std::string&				key;
+				const std::string				fileName;
+				const std::string				key;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
 					:fileName(_fileName), key(_key) {}
@@ -68,6 +68,7 @@ namespace Rendering
 			bool CreateBuffer(const CreateFuncArguments& args);
 
 			void IASetBuffer(ID3D11DeviceContext* context);
+			void UpdateVertexBufferData(ID3D11DeviceContext* context, const void* data, uint size);
 
 		public:
 			GET_ACCESSOR(BufferElementFlag, unsigned int, _flag);

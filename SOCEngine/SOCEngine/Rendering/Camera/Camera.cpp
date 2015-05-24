@@ -11,9 +11,10 @@ using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
-Camera::Camera() : Component(),
-	_frustum(nullptr), _renderTarget(nullptr), _renderType(RenderType::Unknown)
+Camera::Camera() 
+	: Component(),	_frustum(nullptr), _renderTarget(nullptr)
 {
+	_renderType = RenderType::Unknown;
 }
 
 Camera::~Camera(void)
@@ -23,14 +24,14 @@ Camera::~Camera(void)
 
 void Camera::Initialize()
 {
-	_FOV = 60.0f;
-	_clippingNear = 0.01f;
-	_clippingFar = 50.0f;
+	_FOV			= 60.0f;
+	_clippingNear	= 0.1f;
+	_clippingFar	= 1000.0f;
 
 	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 
-	_camType    = Type::Perspective;
+	_projectionType    = ProjectionType::Perspective;
 	_clearColor = Color(0.5f, 0.5f, 1.0f, 1.0f);
 
 	_frustum = new Frustum(0.0f);		
@@ -59,37 +60,48 @@ void Camera::CalcAspect()
 
 void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 {
-	if(_camType == Type::Perspective)
+	if(_projectionType == ProjectionType::Perspective)
 	{
 		float radian = _FOV * PI / 180.0f;
 		Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, _clippingNear, _clippingFar);
 	}
-	else if(_camType == Type::Orthographic)
+	else if(_projectionType == ProjectionType::Orthographic)
 	{
 		Size<unsigned int> windowSize = Device::Director::GetInstance()->GetWindowSize();
 		Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), _clippingNear, _clippingFar);
 	}
 }
 
-void Camera::ViewMatrix(Math::Matrix& outMatrix)
+void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
 {
-	Transform* ownerTransform = _owner->GetTransform();
-	ownerTransform->WorldMatrix(outMatrix);
+	outMatrix = worldMatrix;
 
 	Vector3 worldPos;
-	worldPos.x = outMatrix._41;
-	worldPos.y = outMatrix._42;
-	worldPos.z = outMatrix._43;
+	worldPos.x = worldMatrix._41;
+	worldPos.y = worldMatrix._42;
+	worldPos.z = worldMatrix._43;
+
+	Math::Vector3 right		= Math::Vector3(worldMatrix._11, worldMatrix._21, worldMatrix._31);
+	Math::Vector3 up		= Math::Vector3(worldMatrix._12, worldMatrix._22, worldMatrix._32);
+	Math::Vector3 forward	= Math::Vector3(worldMatrix._13, worldMatrix._23, worldMatrix._33);
 
 	Vector3 p;
-	p.x = -Vector3::Dot(ownerTransform->GetRight(), worldPos);
-	p.y = -Vector3::Dot(ownerTransform->GetUp(), worldPos);
-	p.z = -Vector3::Dot(ownerTransform->GetForward(), worldPos);
+	p.x = -Vector3::Dot(right,		worldPos);
+	p.y = -Vector3::Dot(up,			worldPos);
+	p.z = -Vector3::Dot(forward,	worldPos);
 
 	outMatrix._41 = p.x;
 	outMatrix._42 = p.y;
 	outMatrix._43 = p.z;
 	outMatrix._44 = 1.0f;
+}
+
+void Camera::ViewMatrix(Math::Matrix& outMatrix)
+{
+	Matrix worldMat;
+	_owner->GetTransform()->WorldMatrix(worldMat);
+
+	ViewMatrix(outMatrix, worldMat);
 }
 
 void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)

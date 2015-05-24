@@ -9,6 +9,8 @@
 #include "MeshImporter.h"
 #include "BufferManager.h"
 #include "RenderManager.h"
+#include "UIManager.h"
+#include "BackBufferMaker.h"
 
 namespace Core
 {
@@ -19,6 +21,7 @@ namespace Core
 
 	private:
 		State _state;
+		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 	protected:
 		Structure::Vector<std::string, Core::Object>	_rootObjects;	
@@ -31,7 +34,10 @@ namespace Core
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Core::ObjectManager*					_originObjMgr;
 		Rendering::Manager::RenderManager*		_renderMgr;	
+		UI::Manager::UIManager*					_uiManager;
 
+		Rendering::Camera::UICamera*			_uiCamera;
+		const Device::DirectX*					_dx;
 
 	public:
 		Scene(void);
@@ -65,5 +71,6 @@ namespace Core
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
 		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
+		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
 	};
 }

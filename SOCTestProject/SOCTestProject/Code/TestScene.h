@@ -6,8 +6,7 @@
 class TestScene : public Core::Scene
 {
 private:
-	Core::Transform*				_test;
-
+	UI::SimpleImage2D* img;
 public:
 	TestScene(void);
 	~TestScene(void);

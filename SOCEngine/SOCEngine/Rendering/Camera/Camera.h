@@ -13,19 +13,21 @@ namespace Rendering
 	enum class RenderType
 	{
 		Unknown,
-		TileBasedDeferred,
-		ForwardPlus
+		Forward,
+		Deferred,
+		ForwardPlus,
 	};
 
 	namespace Camera
-	{		
+	{
 		class Camera : public Core::Component
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
 
 		public:
-			enum Type { Perspective, Orthographic };
+			enum class ProjectionType	{ Perspective, Orthographic };
+			enum class Usage			{ MeshRender, UI };
 			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
 
 		protected:
@@ -39,7 +41,7 @@ namespace Rendering
 			float				_clippingNear;
 			float				_clippingFar;
 			//ClearFlag			_clearFlag;
-			Type				_camType;
+			ProjectionType		_projectionType;
 			float				_aspect;
 			Color				_clearColor;
 
@@ -52,6 +54,8 @@ namespace Rendering
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);
+
+			static void  ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void ViewMatrix(Math::Matrix& outMatrix);
 
 		public:
@@ -65,7 +69,10 @@ namespace Rendering
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
 			GET_SET_ACCESSOR(Far, float, _clippingFar);
 			GET_SET_ACCESSOR(FOV, float, _FOV);
+
+			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderType, RenderType, _renderType);
+			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
 		};
 	}
 }

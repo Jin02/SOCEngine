@@ -45,7 +45,10 @@ namespace Device
 		ID3D11DepthStencilState		*_depthGreater;
 		ID3D11DepthStencilState		*_depthGreaterAndDisableDepthWrite;
 
-		ID3D11SamplerState			*_defaultSamplerState;
+		ID3D11SamplerState			*_anisotropicSamplerState;
+		ID3D11SamplerState			*_linearSamplerState;
+		ID3D11SamplerState			*_pointSamplerState;
+
 		bool						_useMSAA;
 
 	public:
@@ -86,8 +89,10 @@ namespace Device
 		GET_ACCESSOR(DepthEqualAndDisableDepthWriteState,	ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
 		GET_ACCESSOR(DepthGreaterState,						ID3D11DepthStencilState*,	_depthGreater);
 		GET_ACCESSOR(DepthGreaterAndDisableDepthWriteState, ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
-		GET_ACCESSOR(DefaultSamplerState,					ID3D11SamplerState*,		_defaultSamplerState);
 
+		GET_ACCESSOR(AnisotropicSamplerState,				ID3D11SamplerState*,		_anisotropicSamplerState);
+		GET_ACCESSOR(LinearSamplerState,					ID3D11SamplerState*,		_linearSamplerState);
+		GET_ACCESSOR(PointSamplerState,						ID3D11SamplerState*,		_pointSamplerState);
 
 
 		GET_ACCESSOR(UseMSAA,								bool,						_useMSAA);

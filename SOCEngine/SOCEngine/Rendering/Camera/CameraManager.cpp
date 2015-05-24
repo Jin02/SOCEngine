@@ -17,8 +17,6 @@ CameraManager::~CameraManager()
 
 void CameraManager::InitLightCulling()
 {
-	_lightCullingCS = new LightCulling;
-	_lightCullingCS->Init("", "", nullptr);
 }
 
 void CameraManager::SetMainCamera(Camera::Camera *cam)
