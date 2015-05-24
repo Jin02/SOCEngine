@@ -4,12 +4,13 @@ using namespace Device;
 
 Director::Director(void) :
 	_elapse(0.0f), _fps(0), _win(nullptr), _directX(nullptr),
-	_scene(nullptr), _nextScene(nullptr)
+	_scene(nullptr), _nextScene(nullptr), _input(nullptr)
 {
 }
 
 Director::~Director(void)
 {
+	SAFE_DELETE(_input);
 	SAFE_DELETE(_win);
 	SAFE_DELETE(_directX);
 }
@@ -43,17 +44,17 @@ void Director::CalculateFPS()
 	}
 }
 
-bool Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
+void Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
 {
 	_win = new Win32(rect, instance, name, windowMode, isChild, parentHandle);
-	if( _win->Initialize() == false )
-		return false;
+	ASSERT_COND_MSG(_win->Initialize(), "Error, can not create windows");
 
 	_directX = new DirectX();
-	if( _directX->InitDevice(_win) == false )
-		return false;
+	ASSERT_COND_MSG(_directX->InitDevice(_win), "Error, can not create directX device");
 
-	return true;
+	_input = new DirectInput;
+	bool success = _input->Initialize(instance, _win->GetHandle(), _win->GetSize());
+	ASSERT_COND_MSG(success, "Error, can not create input device");
 }
 
 void Director::Run()
@@ -79,6 +80,9 @@ void Director::Run()
 
 				if(state == Core::Scene::State::Loop)
 				{
+					_input->Update();
+					_scene->OnInput(_input->GetMousePosition(), _input->GetKeyboardState());
+
 					_scene->Update(_elapse);
 					_scene->RenderPreview();
 					_scene->Render();

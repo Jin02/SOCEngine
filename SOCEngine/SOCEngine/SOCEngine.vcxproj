@@ -30,6 +30,7 @@
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Importer\ObjImporter.h" />
     <ClInclude Include="Importer\tiny_obj_loader.h" />
+    <ClInclude Include="Input\DirectInput.h" />
     <ClInclude Include="Intersection\AABB.h" />
     <ClInclude Include="Intersection\Cone.h" />
     <ClInclude Include="Intersection\Intersection.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Importer\ObjImporter.cpp" />
     <ClCompile Include="Importer\tiny_obj_loader.cc" />
+    <ClCompile Include="Input\DirectInput.cpp" />
     <ClCompile Include="Intersection\AABB.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
@@ -240,7 +242,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Input;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>

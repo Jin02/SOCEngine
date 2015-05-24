@@ -32,6 +32,15 @@ void TestScene::OnRenderPreview()
 {
 }
 
+void TestScene::OnInput(const Math::Vector2& mousePosition, const std::array<unsigned char, 256>& keyboardState )
+{
+	if(keyboardState[VK_ESCAPE] != 0)
+	{
+		int a = 5;
+		a = 3;
+	}
+}
+
 void TestScene::OnUpdate(float dt)
 {
 	//static float x = 0.0;

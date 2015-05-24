@@ -50,10 +50,13 @@ namespace Core
 		void Render();
 		void Destroy();
 
+		virtual void OnInput(const Math::Vector2& mousePosition, const std::array<unsigned char, 256>& keyboardState ) = 0;
+
 	protected:
 		virtual void OnInitialize() = 0;
 		virtual void OnRenderPreview() = 0;
 		virtual void OnUpdate(float dt) = 0;
+		
 		virtual void OnRenderPost() = 0;
 		virtual void OnDestroy() = 0;
 
