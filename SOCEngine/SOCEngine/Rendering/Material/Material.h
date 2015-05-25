@@ -1,79 +1,93 @@
 #pragma once
 
-#include "VertexShader.h"
-#include "PixelShader.h"
+#include "Shaders.h"
 #include "Common.h"
 #include "Texture.h"
+#include "Vector2.h"
+
+#include "Container.h"
+#include <map>
 
 namespace Rendering
 {
 	class Material
 	{
 	public:
-		enum class UpdateCBMethod
+		enum class Type : unsigned int
 		{
-			Default,
-			Custom
-		};
-
-		enum class TextureType : unsigned int
-		{
-			Ambient = 0,
-			Diffuse,
-			Normal,
-			Specular,
-			Opacity,
-			User
+			UnknownModel,
+			PhysicallyBasedModel,
+			UI,
+			Users
 		};
 
 	protected:
-		struct ConstBuffers
-		{
-			std::vector<Shader::BaseShader::BufferType> usageVS;
-			std::vector<Shader::BaseShader::BufferType> usagePS;
-		};
-		struct Textures
-		{
-			std::vector<Shader::BaseShader::TextureType> usageVS;
-			std::vector<Shader::BaseShader::TextureType> usagePS;
-		};
+		std::string		_name;
+		Math::Vector2	_tiling;
 
-	protected:
-		Shader::VertexShader*	_vertexShader;
-		Shader::PixelShader*	_pixelShader;
-		std::string				_name;
-		ConstBuffers			_constbuffers;
-		Textures				_textures;
-		UpdateCBMethod			_updateConstBufferMethod;
+		bool			_hasAlpha;
+		bool			_changedAlpha;
 
-		bool	_hasAlpha;
-		bool	_changedAlpha;
+		std::vector<Shader::BaseShader::TextureType>	_textures;
+		std::map<const std::string, Container>			_datas;
+
+		const Type					_type;
+		Shader::RenderShaders		_shaders; //maybe.. only used in forward rendering
 
 	public:
-		Material(const std::string& name);
+		Material(const std::string& name, Type type);
 		~Material(void);
 
-	protected:
-		void Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
-				  const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int>& psTextureUsageIndices);
-
-		void InitConstBufferSlot(const std::vector<unsigned int>& vsConstBufferUsageIndices,
-								 const std::vector<unsigned int >& psConstBufferUsageIndices);
-
-		void InitTextureSlot(const std::vector<unsigned int>& vsTextureUsageIndices,
-							 const std::vector<unsigned int>& psTextureUsageIndices);
-
 	public:
-		void ClearResource(ID3D11DeviceContext* context);
-		void UpdateShader(ID3D11DeviceContext* context);
-		void UpdateResources(ID3D11DeviceContext* context);
+		const Rendering::Texture::Texture* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+
+		bool UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture);
+		bool UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture);
+
+		template<typename Type>
+		void SetVariable(const std::string& name, const Type& value)
+		{
+			auto findIter = _datas.find(name);
+			if( findIter == _datas.end() )
+			{
+				{
+					Container container;
+					container.Init<Type>(value);
+					container.SetEnableDealloc(false);
+
+					_datas.insert(std::make_pair(name, container));
+				}
+
+				auto reFindIter = _datas.find(name);
+				reFindIter->second.SetEnableDealloc(true);
+			}
+			else
+			{
+				findIter->second.SetData(value);
+			}
+		}
+
+		template<typename Type>
+		bool GetVariable(Type& outContainer, const std::string& name)
+		{
+			auto findIter = _datas.find(name);
+			if( findIter == _datas.end() )
+				return false;
+
+			outContainer = findIter->second.GetData<Type>();
+			return true;
+		}
 
 	public:
 		GET_ACCESSOR(Name, const std::string&, _name);
-		GET_SET_ACCESSOR(VertexShader, Shader::VertexShader*, _vertexShader);
-		GET_SET_ACCESSOR(PixelShader, Shader::PixelShader*, _pixelShader);
-		GET_SET_ACCESSOR(UpdateConstBufferMethod, const UpdateCBMethod&, _updateConstBufferMethod);
+
 		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
+		GET_ACCESSOR(Type, Type, _type);
+
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
+		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
+		GET_SET_ACCESSOR(ShaderTargets, const Shader::RenderShaders&, _shaders);
+
+		friend class PhysicallyBasedMaterial;
 	};
 }

@@ -12,13 +12,6 @@
 #define BASIC_VS_MAIN_FUNC_NAME "VS"
 #define BASIC_PS_MAIN_FUNC_NAME "PS"
 
-#define DEPTH_WRITE_VS_MAIN_FUNC_NAME "DepthWriteVS"
-#define DEPTH_WRITE_PS_MAIN_FUNC_NAME "DepthWritePS"
-
-#define ALPHA_TEST_VS_MAIN_FUNC_NAME "AlphaTestVS"
-#define ALPHA_TEST_PS_MAIN_FUNC_NAME "AlphaTestPS"
-
-
 namespace Rendering
 {
 	namespace Shader
@@ -44,7 +37,10 @@ namespace Rendering
 			virtual ~BaseShader(void);
 
 		public:
+			//first value is shader slot index
 			typedef std::pair<unsigned int, const Rendering::Buffer::BaseBuffer*> BufferType;
+
+			//first value is shader slot index
 			typedef std::pair<unsigned int, const Texture::Texture*> TextureType;
 
 		public:

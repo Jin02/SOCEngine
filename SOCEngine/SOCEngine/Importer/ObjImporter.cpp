@@ -5,6 +5,7 @@
 #include "ImporterUtility.h"
 
 #include "LPVoidType.h"
+#include "RenderManager.h"
 
 using namespace Importer;
 using namespace Importer::Obj;
@@ -20,7 +21,8 @@ ObjImporter::~ObjImporter()
 {
 }
 
-BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder)
+
+Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 
@@ -28,22 +30,27 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 	TextureManager* textureMgr = currentScene->GetTextureManager();
 
 	const std::string materialName = tinyMaterial.name;
-	ASSERT_COND_MSG(materialName.empty() == false, "BasicMaterial has not key");
+	ASSERT_COND_MSG(materialName.empty() == false, "Material has not key");
 
-	BasicMaterial* material = materialMgr->Find(fileName, materialName);
+	Material* material = materialMgr->Find(fileName, materialName);
 
 	if(material == nullptr)
 	{
-		BasicMaterial::Color color;
-		color.main.SetColor(tinyMaterial.diffuse);
-		color.specular.SetColor(tinyMaterial.specular);
-		color.specular.a = tinyMaterial.shininess;
-		color.main.a = tinyMaterial.dissolve;
+		material = new Material(materialName, materialType);
 
-		material = new BasicMaterial(materialName, color);
-		auto context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		// main color = diffuse color
+		{
+			Color diffuseColor;
+			diffuseColor.r = tinyMaterial.diffuse[0];
+			diffuseColor.g = tinyMaterial.diffuse[1];
+			diffuseColor.b = tinyMaterial.diffuse[2];
+			diffuseColor.a = tinyMaterial.dissolve;
 
-		material->Init(context);
+			material->SetVariable("mainColor", diffuseColor);
+		}
+
+		if( tinyMaterial.shininess > 0.0f )
+			material->SetVariable("shininess", tinyMaterial.shininess);
 
 		// Using Utility::String::ParseDirectory
 		std::string textureFileName, textureExtension;
@@ -51,26 +58,38 @@ BasicMaterial* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial
 		if(tinyMaterial.diffuse_texname.empty() == false)
 		{
 			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
-			material->UpdateDiffuseMap(texture);
+
+			const unsigned int shaderSlotIndex = 0; // Default Diffuse Texture Shader Slot Index
+			material->UpdateTextureUseShaderSlotIndex(shaderSlotIndex, texture);
 		}
 
 		if(tinyMaterial.normal_texname.empty() == false)
 		{
 			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
-			material->UpdateNormalMap(texture);
+
+			const unsigned int shaderSlotIndex = 1; // Default Diffuse Texture Shader Slot Index
+			material->UpdateTextureUseShaderSlotIndex(shaderSlotIndex, texture);
+		}
+
+		if(tinyMaterial.specular_texname.empty() == false)
+		{
+			Texture::Texture* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
+
+			const unsigned int shaderSlotIndex = 2; // Default Diffuse Texture Shader Slot Index
+			material->UpdateTextureUseShaderSlotIndex(shaderSlotIndex, texture);
 		}
 
 		materialMgr->Add(fileName, materialName, material, false);
 	}
 	else
 	{
-		DEBUG_LOG("BasicMaterial Manager already has new mateiral. Please check key from new material");
+		DEBUG_LOG("Material Manager already has new mateiral. Please check key from new material");
 	}
 
 	return material;
 }
 
-void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, BasicMaterial>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder)
+void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
 	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
 
@@ -78,20 +97,9 @@ void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, BasicMater
 	TextureManager* textureMgr = currentScene->GetTextureManager();
 	for(auto iter = tinyMaterials.begin(); iter != tinyMaterials.end(); ++iter)
 	{
-		BasicMaterial* material = LoadMaterial((*iter), fileName, materialFileFolder);
+		Material* material = LoadMaterial((*iter), fileName, materialFileFolder, materialType);
 		if(material && outMaterials)
 			(*outMaterials)->Add(iter->name, material);
-	}
-
-	//DepthWrite BasicMaterial
-	{
-		BasicMaterial* depthWrite = new BasicMaterial("DepthWrite");
-		materialMgr->Add(fileName, "DepthWrite", depthWrite, false);
-	}
-	//AlphaTest BasicMaterial
-	{
-		BasicMaterial* alphaTest = new BasicMaterial("AlphaTest");
-		materialMgr->Add(fileName, "AlphaTest", alphaTest, false);
 	}
 }
 
@@ -108,7 +116,11 @@ bool ObjImporter::Load(std::vector<tinyobj::shape_t>& outShapes, std::vector<tin
 	return true;
 }
 
-Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& fileName, const std::string& materialFileFolder, bool isDynamicMesh)
+Core::Object* ObjImporter::Load(const std::string& fileDir,
+								const std::string& fileName, 
+								const std::string& materialFileFolder,
+								Rendering::Material::Type materialType,
+								bool isDynamicMesh)
 {
 	std::vector<tinyobj::shape_t>		shapes;
 	std::vector<tinyobj::material_t>	materials;
@@ -121,14 +133,16 @@ Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& f
 		return nullptr;
 	}
 
-	LoadMaterials(nullptr, materials, fileName, materialFileFolder);
+	LoadMaterials(nullptr, materials, fileName, materialFileFolder, materialType);
 
 	Core::Object* parent = new Core::Object;
 	parent->SetName(fileName);
 
 	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
 	{
-		Core::Object* child = LoadMesh((*iter), materials, fileName, isDynamicMesh);
+		Core::Object* child = LoadMesh((*iter),
+			materials[iter->mesh.material_ids[0]], 
+			fileName, materialType, isDynamicMesh);
 		parent->AddObject(child, false);
 	}
 
@@ -136,12 +150,10 @@ Core::Object* ObjImporter::Load(const std::string& fileDir, const std::string& f
 }
 
 Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, 
-									const std::vector<tinyobj::material_t>& tinyMaterials, 
+									const tinyobj::material_t& tinyMtl, 
 									const std::string& fileName, 
-									const std::vector<CustomSemantic>& customSemanticData, 
-									BasicMaterial* material,
-									BasicMaterial* depthWriteMaterial,
-									Rendering::BasicMaterial* alphaTestMaterial, 
+									const std::vector<Rendering::Shader::VertexShader::SemanticInfo>& semanticInfos, 
+									Rendering::Material::Type materialType,
 									bool isDynamicMesh)
 {
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
@@ -151,32 +163,35 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			return obj;
 	}
 
+	if(semanticInfos.empty())
+		ASSERT_MSG("Error, ObjImporter : semanticInfos paramater is null");
+
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+		ASSERT_MSG("Error, BufferMgr already has buffer");
+
 	CheckCorrectShape(tinyShape);
 
-	Core::Object* object = new Core::Object;
-	object->SetName(tinyShape.name);
+	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
+	const std::vector<float>& tiny_texcoords		 = tinyShape.mesh.texcoords;
+	const std::vector<float>& tiny_normals			 = tinyShape.mesh.normals;
+	const std::vector<unsigned int>& indices		 = tinyShape.mesh.indices;
 
-	const std::vector<float>& positions		 = tinyShape.mesh.positions;
-	const std::vector<float>& texcoords		 = tinyShape.mesh.texcoords;
-	const std::vector<float>& normals		 = tinyShape.mesh.normals;
-	const std::vector<unsigned int>& indices = tinyShape.mesh.indices;
+	bool isNormalMapUse = (tinyMtl.normal_texname.empty() == false);
 
-	const tinyobj::material_t& objMtl = tinyMaterials[ tinyShape.mesh.material_ids[0] ];
-	bool isNormalMapUse = (objMtl.normal_texname.empty() == false);
-
-	std::vector<Math::Vector3> tangents;
-	std::vector<Math::Vector3> binormals;
+	std::vector<Math::Vector3>		tangents;
+	std::vector<Math::Vector3>		binormals;
+	std::vector<Math::Vector3>		reCalcNormals;
 
 	if(isNormalMapUse)
 	{
-		const Math::Vector3* vertices	= reinterpret_cast<const Math::Vector3*>(positions.data());
-		const Math::Vector3* normals	= reinterpret_cast<const Math::Vector3*>(positions.data());
-		const Math::Vector2* texcoords	= reinterpret_cast<const Math::Vector2*>(positions.data());
+		const Math::Vector3* vertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
+		const Math::Vector3* originNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
+		const Math::Vector2* texcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
 
-		ImporterUtility::CalculateTangentBinormal(tangents, binormals, vertices, positions.size() / 3, normals, texcoords, indices.data(), indices.size());
+		ImporterUtility::ReCalculateTBN(tangents, binormals, reCalcNormals,
+			vertices, tiny_positions.size() / 3, originNormals, texcoords, indices.data(), indices.size());
 	}
-
-	auto& semanticInfos = material->GetVertexShader()->GetSemanticInfos();
 
 	struct InputSemanticData
 	{
@@ -186,55 +201,65 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		InputSemanticData(const CustomSemantic& data) : customData(data), offset(0){}
 	};
 
+	uint stride = sizeof(Math::Vector3); //pos
+	Mesh::MeshFilter::BufferElementFlag bufferFlag = 0;
+
 	std::vector<InputSemanticData> vertexDatas;
 	{
-		bool isCustomPos		= false;
-		bool isCustomNormal		= false;
-		bool isCustomTexcoord	= false;
-		bool isCustomTangent	= false;
-		bool isCustomBinormal	= false;
-
-		// CustomSemantic convert to InputSemanticData
-		// And, check custom data
-		for(auto iter = customSemanticData.begin(); iter != customSemanticData.end(); ++iter)
+		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
 		{
-			if(iter->semanticName == "POSITION")
-				isCustomPos = true;
-			else if(iter->semanticName == "NORMAL")
-				isCustomNormal = true;
-			else if(iter->semanticName == "TEXCOORD0")
-				isCustomTexcoord = true;
-			else if(iter->semanticName == "TANGENT")
-				isCustomTangent = true;
-			else if(iter->semanticName == "BINORMAL")
-				isCustomBinormal = true;
-
-			vertexDatas.push_back((*iter));
+			if(iter->name == "NORMAL")
+			{
+				stride += sizeof(Math::Vector3);
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Normal;
+			}
+			else if(iter->name == "TEXCOORD0")
+			{
+				stride += sizeof(Math::Vector2);
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::UV;
+			}
+			else if(iter->name == "TANGENT")
+			{
+				stride += sizeof(Math::Vector3);
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Tangent;
+			}
+			else if(iter->name == "BINORMAL")
+			{
+				stride += sizeof(Math::Vector3);
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Binormal;
+			}
 		}
 
-		if(isCustomPos == false)
-			vertexDatas.push_back(CustomSemantic("POSITION", positions.data()));
+		vertexDatas.push_back(CustomSemantic("POSITION", tiny_positions.data()));
+		if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal) )
+		{
+			CustomSemantic custom;
+			custom.semanticName = "NORMAL";
 
-		if(isCustomNormal == false && normals.empty() == false)
-			vertexDatas.push_back(CustomSemantic("NORMAL", normals.data()));
+			if(isNormalMapUse && (reCalcNormals.empty() == false))
+				custom.data = reCalcNormals.data();
+			else if(tiny_normals.empty() == false)
+				custom.data = tiny_normals.data();
+			else
+				ASSERT_MSG("Error, strange normal");
 
-		if(tangents.empty() == false && isCustomTangent == false)
+			vertexDatas.push_back(custom);
+		}
+
+		if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent) &&
+			tangents.empty() == false)
 			vertexDatas.push_back(CustomSemantic("TANGENT",	tangents.data()));
 
-		if(binormals.empty() == false && isCustomBinormal == false)
+		if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal) &&
+			binormals.empty() == false)
 			vertexDatas.push_back(CustomSemantic("BINORMAL", binormals.data()));
 
-		if(texcoords.empty() == false && isCustomTexcoord == false)
-			vertexDatas.push_back(CustomSemantic("TEXCOORD0", texcoords.data()));
+		if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV) &&
+			tiny_texcoords.empty() == false)
+			vertexDatas.push_back(CustomSemantic("TEXCOORD0", tiny_texcoords.data()));
 	}
 
 	unsigned int vtxCount = tinyShape.mesh.positions.size() / 3;
-	unsigned int stride = 0;
-	{
-		for(auto iter = semanticInfos.begin(); iter != semanticInfos.end(); ++iter)
-			stride += iter->size;
-	}
-
 	void* bufferHead = malloc(vtxCount * stride);
 	{
 		void* buffer = bufferHead;
@@ -263,18 +288,36 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 	
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	Core::Object* object = new Core::Object;
+	object->SetName(tinyShape.name);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 
 	LPVoidType* bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
-	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, 
-		indices.data(), indices.size(), 
-		material, depthWriteMaterial, alphaTestMaterial,
-		isDynamicMesh);
+	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	Material* material = materialMgr->Find(fileName, tinyMtl.name);
+	ASSERT_COND_MSG(material, "can not found material");
+
+	//sizeof(ENGINE_INDEX_TYPE) * _indexCount
+
+	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	{
+		args.vertex.data		= bufferData->GetBuffer();
+		args.vertex.count		= vtxCount;
+		args.vertex.byteWidth	= stride;
+
+		args.index.data			= indices.data();
+		args.index.count		= indices.size();
+		args.index.byteWidth	= 0; // not use
+
+		args.material			= material;
+		args.isDynamic			= isDynamicMesh;
+		args.bufferFlag			= bufferFlag;
+	}
+	
+	mesh->Create(args);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
 	currentScene->GetOriginObjectManager()->Add(objKey, object);
@@ -282,7 +325,11 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	return object;
 }
 
-Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, bool isDynamicMesh)
+Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
+									const tinyobj::material_t& tinyMtl,
+									const std::string& fileName, 
+									Rendering::Material::Type materialType,
+									bool isDynamicMesh)
 {
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
 	{
@@ -291,71 +338,101 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 			return obj;
 	}
 
+	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+		ASSERT_MSG("Error, BufferMgr already has buffer");
+
 	CheckCorrectShape(tinyShape);
 
-	Core::Object* object = new Core::Object;
-	object->SetName(tinyShape.name);
+	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
+	const std::vector<float>& tiny_texcoords		 = tinyShape.mesh.texcoords;
+	const std::vector<float>& tiny_normals			 = tinyShape.mesh.normals;
+	const std::vector<unsigned int>& indices		 = tinyShape.mesh.indices;
 
-	const std::vector<float>& positions		 = tinyShape.mesh.positions;
-	const std::vector<float>& texcoords		 = tinyShape.mesh.texcoords;
-	const std::vector<float>& normals		 = tinyShape.mesh.normals;
-	const std::vector<unsigned int>& indices = tinyShape.mesh.indices;
+	bool isNormalMapUse = (tinyMtl.normal_texname.empty() == false);
 
-	
-	const tinyobj::material_t* objMtl = (tinyMaterials.empty() == false) ? &tinyMaterials[ tinyShape.mesh.material_ids[0] ] : nullptr;
-	bool isNormalMapUse = objMtl ? (objMtl->normal_texname.empty() == false) : false;
-
-	std::vector<Math::Vector3> tangents;
-	std::vector<Math::Vector3> binormals;
+	std::vector<Math::Vector3>		tangents;
+	std::vector<Math::Vector3>		binormals;
+	std::vector<Math::Vector3>		reCalcNormals;
 
 	if(isNormalMapUse)
 	{
-		const Math::Vector3* vertices	= reinterpret_cast<const Math::Vector3*>(positions.data());
-		const Math::Vector3* normals	= reinterpret_cast<const Math::Vector3*>(positions.data());
-		const Math::Vector2* texcoords	= reinterpret_cast<const Math::Vector2*>(positions.data());
+		const Math::Vector3* vertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
+		const Math::Vector3* originNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
+		const Math::Vector2* texcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
 
-		ImporterUtility::CalculateTangentBinormal(tangents, binormals, vertices, positions.size() / 3, normals, texcoords, indices.data(), indices.size());
+		ImporterUtility::ReCalculateTBN(tangents, binormals, reCalcNormals,
+			vertices, tiny_positions.size() / 3, originNormals, texcoords, indices.data(), indices.size());
 	}
 
 	unsigned int vtxCount = tinyShape.mesh.positions.size() / 3;
 	unsigned int stride = 0;
+	Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag = 0;
 	{
-		stride += sizeof(Math::Vector3);									//position
-		stride += (texcoords.empty() == false) ? sizeof(Math::Vector2) : 0;	//texcoord
-		stride += (normals.empty() == false) ? sizeof(Math::Vector3) : 0;	//normals
-		stride += isNormalMapUse ? sizeof(Math::Vector3) * 2 : 0;			//tangent(vector3), binormal(vector3)
+		stride += sizeof(Math::Vector3);
+
+		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
+		{
+			bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::UV;
+			stride += sizeof(Math::Vector2);	//texcoord
+		}
+
+		if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
+		{
+			bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Normal;
+			stride += sizeof(Math::Vector3);
+		}
+
+		if(isNormalMapUse)
+		{
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal) && 
+				(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent))
+			{
+				bufferFlag |= (uint)Mesh::MeshFilter::BufferElement::Binormal | (uint)Mesh::MeshFilter::BufferElement::Tangent;
+				stride += sizeof(Math::Vector3) * 2;
+			}
+		}
 	}
 
 	void* bufferHead = malloc(vtxCount * stride);
 	{
 		void* buffer = bufferHead;
 		unsigned int uvIndex = 0;
-		for(unsigned int posIndex = 0; posIndex < positions.size(); posIndex+=3, uvIndex+=2)
+		for(unsigned int posIndex = 0; posIndex < tiny_positions.size(); posIndex+=3, uvIndex+=2)
 		{
 			#define INSERT_BUFFER_DATA(type, buf, value) *((type*)buf) = value, buf = (type*)buf + 1
 
 			//position
-			INSERT_BUFFER_DATA(float, buffer, positions[posIndex + 0]);
-			INSERT_BUFFER_DATA(float, buffer, positions[posIndex + 1]);
-			INSERT_BUFFER_DATA(float, buffer, positions[posIndex + 2]);
+			INSERT_BUFFER_DATA(float, buffer, tiny_positions[posIndex + 0]);
+			INSERT_BUFFER_DATA(float, buffer, tiny_positions[posIndex + 1]);
+			INSERT_BUFFER_DATA(float, buffer, tiny_positions[posIndex + 2]);
 
 			//texcoord
-			if(texcoords.empty() == false)
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::UV)
+				&& tiny_texcoords.empty() == false)
 			{
-				INSERT_BUFFER_DATA(float, buffer, texcoords[uvIndex + 0]);
-				INSERT_BUFFER_DATA(float, buffer, texcoords[uvIndex + 1]);
+				INSERT_BUFFER_DATA(float, buffer, tiny_texcoords[uvIndex + 0]);
+				INSERT_BUFFER_DATA(float, buffer, tiny_texcoords[uvIndex + 1]);
 			}
 
 			//normal
-			if(normals.empty() == false)
+			if(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Normal)
 			{
-				INSERT_BUFFER_DATA(float, buffer, normals[posIndex + 0]);
-				INSERT_BUFFER_DATA(float, buffer, normals[posIndex + 1]);
-				INSERT_BUFFER_DATA(float, buffer, normals[posIndex + 2]);
+				if((isNormalMapUse == false && tiny_normals.empty() == false) )
+				{
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 0]);
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 1]);
+					INSERT_BUFFER_DATA(float, buffer, tiny_normals[posIndex + 2]);
+				}
+				else if((isNormalMapUse && reCalcNormals.empty() == false) )
+				{
+					INSERT_BUFFER_DATA(Math::Vector3, buffer, reCalcNormals[posIndex / 3]);
+				}
 			}
-
 			//tangent, binormal
-			if((tangents.empty() == false) && (binormals.empty() == false))
+			if( (bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Binormal) && 
+				(bufferFlag & (uint)Mesh::MeshFilter::BufferElement::Tangent) &&
+				( (tangents.empty() == false) && (binormals.empty() == false) ))
 			{
 				INSERT_BUFFER_DATA(Math::Vector3, buffer, tangents[posIndex / 3]);
 				INSERT_BUFFER_DATA(Math::Vector3, buffer, binormals[posIndex / 3]);
@@ -363,76 +440,37 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape, const std
 		}
 	}
 
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
-
-	auto GetBasicShaderName = [&]()
-	{
-		std::string shaderName;
-		if(isNormalMapUse == false)
-		{
-			shaderName = BASIC_SHADER_NAME;
-
-			if(normals.empty() == false)
-				shaderName += "N_";
-
-			if(texcoords.empty() == false)
-				shaderName += "T0";
-
-			return shaderName;
-		}
-
-		shaderName = BASIC_NORMAL_MAPPING_SHADER_NAME;
-		return shaderName;
-	};
-
-	auto InsertShaderIntoMaterial = [&](const std::string& shaderName, const std::string& materialName, const std::string& vsMainFuncName, const std::string& psMainFuncName)
-	{
-		BasicMaterial* material = materialMgr->Find(fileName, materialName);
-		ASSERT_COND_MSG(material != nullptr, "not found material");
-
-		if(material->GetVertexShader() == nullptr || material->GetPixelShader() == nullptr)
-		{
-			Shader::VertexShader*	vs = nullptr;			
-			Shader::PixelShader*	ps = nullptr;
-
-			Manager::ShaderManager* shaderMgr = currentScene->GetShaderManager();
-
-			vs = shaderMgr->FindVertexShader(shaderName, vsMainFuncName);
-			ps = shaderMgr->FindPixelShader(shaderName, psMainFuncName);
-
-			material->SetVertexShader(vs);
-			material->SetPixelShader(ps);
-		}
-
-		return material;
-	};
+	Core::Object* object = new Core::Object;
+	object->SetName(tinyShape.name);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	
-	LPVoidType* bufferData = nullptr;
-	if(currentScene->GetBufferManager()->Find( bufferData, fileName, tinyShape.name ))
-		ASSERT_MSG("Error, BufferMgr already has buffer");
-
-	bufferData = new LPVoidType(bufferHead);
+	LPVoidType* bufferData = new LPVoidType(bufferHead);
 	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
-	std::string materialName = objMtl ? objMtl->name : GetBasicShaderName();
-	BasicMaterial* material	 = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
+	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	Material* material = materialMgr->Find(fileName, tinyMtl.name);
+	ASSERT_COND_MSG(material, "can not found material");
 
-	materialName = "DepthWrite";
-	BasicMaterial* depthWrite = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
+	const std::string bufferKey = fileName + ':' + tinyShape.name;
 
-	materialName = "AlphaTest";
-	BasicMaterial* alphaTest = InsertShaderIntoMaterial(GetBasicShaderName(), materialName, ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
+	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	{
+		args.vertex.data		= bufferData->GetBuffer();
+		args.vertex.count		= vtxCount;
+		args.vertex.byteWidth	= stride;
 
-	mesh->Create(bufferData->GetBuffer(), vtxCount, stride, 
-		indices.data(), indices.size(), 
-		material, depthWrite, alphaTest,
-		isDynamicMesh);
+		args.index.data			= indices.data();
+		args.index.count		= indices.size();
+		args.index.byteWidth	= 0; // not use
 
-	const std::string objKey = fileName + ':' + tinyShape.name;
-	currentScene->GetOriginObjectManager()->Add(objKey, object);
+		args.material			= material;
+		args.isDynamic			= isDynamicMesh;
+		args.bufferFlag			= bufferFlag;
+	}
+	
+	mesh->Create(args);
+	currentScene->GetOriginObjectManager()->Add(bufferKey, object);
 
 	return object;
 }

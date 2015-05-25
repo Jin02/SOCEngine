@@ -1,11 +1,12 @@
 #include "MeshFilter.h"
+#include "Director.h"
 
 using namespace Rendering::Mesh;
 
-MeshFilter::MeshFilter() : _vertexBuffer(nullptr), _indexBuffer(nullptr)
+MeshFilter::MeshFilter() 
+	:	_vertexBuffer(nullptr), _indexBuffer(nullptr), _flag(0),
+		_alloc(false), _vertexCount(0), _indexCount(0)
 {
-	_alloc = false;
-	_numOfVertex = 0;
 }
 
 MeshFilter::~MeshFilter()
@@ -17,19 +18,45 @@ MeshFilter::~MeshFilter()
 	SAFE_DELETE(_indexBuffer);
 }
 
-bool MeshFilter::CreateBuffer(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, bool isDynamic)
+bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 {
-	_numOfVertex = vertexBufferDataCount;
+	_vertexCount	= args.vertex.count;
+	_indexCount		= args.index.count;
 
-	_vertexBuffer = new Buffer::VertexBuffer;
-	if( _vertexBuffer->Create(vertexBufferDatas, vertexBufferSize, _numOfVertex, isDynamic) == false )
-		return false;
+	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	auto bufferMgr = scene->GetBufferManager();
 
-	_indexBuffer = new Buffer::IndexBuffer;
-	if( _indexBuffer->Create(indicesData, sizeof(ENGINE_INDEX_TYPE) * indicesCount) == false )
-		return false;
+	// Vertex Buffer Setting
+	{
+		Buffer::VertexBuffer* vertexBuffer	= nullptr;
+		if( bufferMgr->Find(&vertexBuffer, args.fileName, args.key) == false )
+		{
+			vertexBuffer = new Buffer::VertexBuffer;
+			if( vertexBuffer->Create(args.vertex.data, args.vertex.byteWidth, _vertexCount, args.isDynamic) == false )
+				ASSERT_MSG("Error, can not create vertex buffer");
 
+			bufferMgr->Add(args.fileName, args.key, vertexBuffer);
+		}
+
+		_vertexBuffer = vertexBuffer;
+	}
+
+	// Index Buffer Setting
+	{
+		Buffer::IndexBuffer* indexBuffer	= nullptr;
+		if( bufferMgr->Find(&indexBuffer, args.fileName, args.key) == false )
+		{
+			indexBuffer = new Buffer::IndexBuffer;
+			if( indexBuffer->Create(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
+				ASSERT_MSG("Error, can not create index buffer");
+
+			bufferMgr->Add(args.fileName, args.key, indexBuffer);
+		}
+
+		_indexBuffer = indexBuffer;
+	}
+
+	_flag = args.bufferFlag;
 	return true;
 }
 
@@ -37,4 +64,9 @@ void MeshFilter::IASetBuffer(ID3D11DeviceContext* context)
 {
 	_vertexBuffer->IASetBuffer(context);
 	_indexBuffer->IASetBuffer(context);
+}
+
+void MeshFilter::UpdateVertexBufferData(ID3D11DeviceContext* context, const void* data, uint size)
+{
+	_vertexBuffer->UpdateVertexData(context, data, size);
 }

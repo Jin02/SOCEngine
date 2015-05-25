@@ -26,15 +26,20 @@ namespace Rendering
 
 			MaterialUpdateType		_updateType;
 			unsigned int			_selectMaterialIndex;
-
-			unsigned int			_indexCount;
 		public:
 			Mesh();
 			~Mesh();
 
 		public:
-			bool Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, BasicMaterial* material, BasicMaterial* depthWriteMaterial, BasicMaterial* alphaTest, bool isDynamic);
+			struct CreateFuncArguments : public MeshFilter::CreateFuncArguments
+			{
+				Material* material;
+				CreateFuncArguments(const std::string& fileName, const std::string& key):
+					MeshFilter::CreateFuncArguments(fileName, key){}
+				~CreateFuncArguments() {}
+			};
+
+			bool Create(const CreateFuncArguments& args);
 
 		public:
 			virtual void Initialize();
@@ -43,11 +48,9 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			void Render(BasicMaterial* custom, const Buffer::ConstBuffer* cameraConstBuffer);
-
-		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
 			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
+
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 		};

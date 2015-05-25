@@ -2,6 +2,7 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
+#include "FontLoader.h"
 
 using namespace Core;
 using namespace std;
@@ -10,8 +11,9 @@ using namespace Rendering;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
-	_materialMgr(nullptr), _sampler(nullptr), _meshImporter(nullptr), 
-	_bufferManager(nullptr), _originObjMgr(nullptr), _meshManager(nullptr)
+	_materialMgr(nullptr), _meshImporter(nullptr), 	_uiManager(nullptr),
+	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr),
+	_uiCamera(nullptr), _backBufferMaker(nullptr)
 {
 	_state = State::Init;
 }
@@ -23,71 +25,27 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_cameraMgr		= new Manager::CameraManager;
 	_shaderMgr		= new Manager::ShaderManager;
 	_textureMgr		= new Manager::TextureManager;
 	_materialMgr	= new Manager::MaterialManager;
 	_meshImporter	= new Importer::MeshImporter;
 	_bufferManager	= new Manager::BufferManager;
 	_originObjMgr	= new Core::ObjectManager;
-	_meshManager	= new Manager::RenderManager;
 
-	_sampler = new Sampler;
-	_sampler->Create();
+	_cameraMgr		= new Manager::CameraManager;
+	_cameraMgr->InitLightCulling();
 
-	// Load Basic Shader
-	{
-		Factory::EngineFactory factory(_shaderMgr);
+	_renderMgr		= new Manager::RenderManager;
+	_renderMgr->Init();
 
-		auto LoadBasicMaterial = [&](const std::string& shaderName, const std::string& MaterialName,
-			const std::string& vsMainFuncName, const std::string& psMainFuncName)
-		{
-			Rendering::Shader::VertexShader* vs = nullptr;			
-			Rendering::Shader::PixelShader*	 ps = nullptr;
+	_uiManager		= new UI::Manager::UIManager;
+	_uiCamera		= new Camera::UICamera;
+	_uiCamera->Initialize();
 
-			const std::string includeFileName = "Common.hlsl";
-			if(factory.LoadShader(shaderName, vsMainFuncName, psMainFuncName, &includeFileName, &vs, &ps) == false)
-			{
-				std::string error = "Not Found";
-				error += shaderName + ".hlsl";
-				ASSERT_COND_MSG(error.empty() == false, error.c_str());
-			}
+	_dx				= Device::Director::GetInstance()->GetDirectX();
 
-			BasicMaterial* material = new BasicMaterial(MaterialName);
-			material->SetVertexShader(vs);
-			material->SetPixelShader(ps);
-			_materialMgr->Add("Basic", MaterialName, material);
-		};
-
-		//Basic
-		{
-			const std::string tags[] = {"T0", "N_", "N_T0"};
-			for(unsigned int i = 0; i <= ARRAYSIZE(tags); ++i)
-			{
-				std::string shaderName = BASIC_SHADER_NAME;
-				if( i >= 1 )
-					shaderName += tags[i-1];
-
-				LoadBasicMaterial(shaderName, shaderName, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME);
-				LoadBasicMaterial(shaderName, shaderName + "_DepthWrite", DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME);
-				LoadBasicMaterial(shaderName, shaderName + "_AlphaTest", ALPHA_TEST_VS_MAIN_FUNC_NAME, ALPHA_TEST_PS_MAIN_FUNC_NAME);
-			}
-		}
-
-		//Normal Mapping
-		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, BASIC_VS_MAIN_FUNC_NAME, BASIC_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT_MSG("Not Found BasicNormalMapping.hlsl");
-
-		//if(factory.LoadShader(BASIC_NORMAL_MAPPING_SHADER_NAME, DEPTH_WRITE_VS_MAIN_FUNC_NAME, DEPTH_WRITE_PS_MAIN_FUNC_NAME, nullptr, nullptr) == false)
-		//	ASSERT_MSG("Not Found BasicNormalMapping_DepthWrite.hlsl");
-
-
-		//Null Shader
-		{
-			_shaderMgr->Add("null:vs:NullVS", new Shader::VertexShader(nullptr));
-			_shaderMgr->Add("null:vs:NullPS", new Shader::PixelShader(nullptr));
-		}
-	}
+	_backBufferMaker = new PostProcessing::BackBufferMaker;
+	_backBufferMaker->Initialize();
 
 	NextState();
 	OnInitialize();
@@ -100,6 +58,8 @@ void Scene::Update(float dt)
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
 		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
+
+	_uiCamera->Update(dt);
 }
 
 void Scene::RenderPreview()
@@ -116,20 +76,33 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-
+#ifndef DEPRECATED_MESH_RENDERER
 	auto CamIteration = [&](Camera::Camera* cam)
 	{
-		cam->RenderObjects(dx, _meshManager);
+		cam->Render();
 	};
-
 	_cameraMgr->IterateContent(CamIteration);
 
 	OnRenderPost();
+#endif
+	
+	ID3D11DeviceContext* context = _dx->GetContext();
+	//Turn off depth writing
+	context->OMSetDepthStencilState(_dx->GetDepthDisableDepthTestState(), 0);
+	
+	_uiCamera->Render();
+
+	Camera::Camera* mainCam = _cameraMgr->GetMainCamera();
+	_backBufferMaker->Render(mainCam, _uiCamera);
+
+	//swap
+	_dx->GetSwapChain()->Present(0, 0);
 }
 
 void Scene::Destroy()
 {
+	UI::FontLoader::GetInstance()->Destroy();
+
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_shaderMgr);
 	SAFE_DELETE(_textureMgr);
@@ -137,9 +110,11 @@ void Scene::Destroy()
 	SAFE_DELETE(_meshImporter);
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_originObjMgr);
-	SAFE_DELETE(_sampler);
-	SAFE_DELETE(_meshManager);
- 
+	SAFE_DELETE(_renderMgr);
+	SAFE_DELETE(_uiCamera);
+	SAFE_DELETE(_uiManager);
+	SAFE_DELETE(_backBufferMaker);
+
 	OnDestroy();
 }
 

@@ -30,22 +30,37 @@ void BufferManager::Add(const std::string file, const std::string key, LPVoidTyp
 	_originVertexBufferDatas.Add(file, key, bufferData, copy);
 }
 
-bool BufferManager::Find(VertexBuffer*& outBuffer, const std::string file, const std::string key)
+bool BufferManager::Find(VertexBuffer** outBuffer, const std::string file, const std::string key)
 {
-	outBuffer = _vertexBuffers.Find(file, key);
-	return (outBuffer != nullptr);
+	VertexBuffer* buffer = _vertexBuffers.Find(file, key);
+	bool success = ( buffer != nullptr );
+
+	if(outBuffer)
+		(*outBuffer) = buffer;
+
+	return success;
 }
 
-bool BufferManager::Find(IndexBuffer*& outBuffer, const std::string file, const std::string key)
+bool BufferManager::Find(IndexBuffer** outBuffer, const std::string file, const std::string key)
 {
-	outBuffer = _indexBuffers.Find(file, key);
-	return (outBuffer != nullptr);
+	IndexBuffer* buffer = _indexBuffers.Find(file, key);
+	bool success = ( buffer != nullptr );
+
+	if(outBuffer)
+		(*outBuffer) = buffer;
+
+	return success;
 }
 
-bool BufferManager::Find(LPVoidType*& outBuffer, const std::string file, const std::string key)
+bool BufferManager::Find(LPVoidType** outBuffer, const std::string file, const std::string key)
 {
-	outBuffer = _originVertexBufferDatas.Find(file, key);
-	return (outBuffer != nullptr);
+	LPVoidType* buffer = _originVertexBufferDatas.Find(file, key);
+	bool success = ( buffer != nullptr );
+
+	if(outBuffer)
+		(*outBuffer) = buffer;
+
+	return success;
 }
 
 void BufferManager::DeleteVertexBuffer(const std::string& file, const std::string& key, bool remove)

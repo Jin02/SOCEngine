@@ -176,8 +176,8 @@ namespace Core
 	{
 		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
 		Quaternion q;
-
-		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
 			Transform* tf = obj->GetTransform();
 
@@ -205,7 +205,7 @@ namespace Core
 	{
 		Vector3 p(0, 0, 0);
 
-		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
 			Transform* tf = obj->GetTransform();
 			p += tf->_position;
@@ -230,7 +230,7 @@ namespace Core
 	{
 		Vector3 p(0, 0, 0);
 
-		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
 			Transform* tf = obj->GetTransform();
 			p += tf->_eulerAngle;
@@ -243,7 +243,7 @@ namespace Core
 	{
 		Vector3 p(1, 1, 1);
 
-		for(Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
 			Transform* tf = obj->GetTransform();
 

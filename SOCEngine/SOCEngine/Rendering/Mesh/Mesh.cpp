@@ -9,8 +9,7 @@ namespace Rendering
 	{
 		Mesh::Mesh() : 
 			_filter(nullptr), _renderer(nullptr), 
-			_selectMaterialIndex(0), _indexCount(0), 
-			_transformConstBuffer(nullptr)
+			_selectMaterialIndex(0), _transformConstBuffer(nullptr)
 		{
 			_updateType = MaterialUpdateType::All;
 		}
@@ -20,21 +19,18 @@ namespace Rendering
 			Destroy();
 		}
 
-		bool Mesh::Create(const void* vertexBufferDatas, unsigned int vertexBufferDataCount, unsigned int vertexBufferSize,
-				const ENGINE_INDEX_TYPE* indicesData, unsigned int indicesCount, BasicMaterial* material, BasicMaterial* depthWriteMaterial, BasicMaterial* alphaTest, bool isDynamic)
+		bool Mesh::Create(const CreateFuncArguments& args)
 		{
 			_filter = new MeshFilter;
-			if(_filter->CreateBuffer(vertexBufferDatas, vertexBufferDataCount, vertexBufferSize,
-				indicesData, indicesCount, isDynamic) == false)
+			if(_filter->CreateBuffer(args) == false)
 			{
 				ASSERT_MSG("Error, filter->cratebuffer");
 				SAFE_DELETE(_filter);
 				return false;
 			}
-			_indexCount = indicesCount;
 
-			_renderer = new MeshRenderer(depthWriteMaterial, alphaTest);
-			if(_renderer->AddMaterial(material, false) == false)
+			_renderer = new MeshRenderer;
+			if(_renderer->AddMaterial(args.material, false) == false)
 			{
 				ASSERT_MSG("Error, renderer addmaterial");
 				return false;
@@ -66,33 +62,6 @@ namespace Rendering
 
 			//귀찮으니 여기서 겸사겸사 체크 하자
 			_renderer->ClassifyMaterialWithMesh(this);
-		}
-
-		void Mesh::Render(BasicMaterial* custom, const Buffer::ConstBuffer* cameraConstBuffer)
-		{
-			if(_renderer == nullptr || _filter == nullptr)
-				return;
-
-			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-			_filter->IASetBuffer(context);
-
-			if(custom == nullptr)
-			{
-				if(_updateType == MaterialUpdateType::All)
-					_renderer->UpdateAllMaterial(context, _transformConstBuffer, cameraConstBuffer);
-				else if(_updateType == MaterialUpdateType::One)
-					_renderer->UpdateMaterial(context, _selectMaterialIndex, _transformConstBuffer, cameraConstBuffer);
-			}
-			else
-			{
-				//직접 입력하는 BasicMaterial의 경우,
-				//Renderer에서 처리하지 않고 그냥 여기서 바로 처리
-				custom->UpdateBasicConstBuffer(context, _transformConstBuffer, cameraConstBuffer);
-				custom->UpdateResources(context);
-			}
-
-			context->DrawIndexed(_indexCount, 0, 0);
-			_renderer->ClearResource(context);
 		}
 
 		void Mesh::Destroy()

@@ -59,7 +59,7 @@ namespace Structure
 			if(index > _vector.size())
 				return nullptr;
 
-			return _vector[index];
+			return _vector[index].second.second;
 		}
 
 		virtual void Delete(const Key& key, bool contentRemove = false)

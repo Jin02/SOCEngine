@@ -43,17 +43,13 @@ void Director::CalculateFPS()
 	}
 }
 
-bool Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
+void Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
 {
 	_win = new Win32(rect, instance, name, windowMode, isChild, parentHandle);
-	if( _win->Initialize() == false )
-		return false;
+	ASSERT_COND_MSG(_win->Initialize(), "Error, can not create windows");
 
 	_directX = new DirectX();
-	if( _directX->InitDevice(_win) == false )
-		return false;
-
-	return true;
+	ASSERT_COND_MSG(_directX->InitDevice(_win), "Error, can not create directX device");
 }
 
 void Director::Run()

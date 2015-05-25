@@ -4,6 +4,8 @@
 #include "Mesh.h"
 #include "LightCulling.h"
 
+#include "Director.h"
+
 using namespace Rendering;
 
 TestScene::TestScene(void)
@@ -17,36 +19,45 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	//Object - Cube
-	Factory::ShaderFactory factory(_shaderMgr);
-	Core::Object* cube = _meshImporter->Load("./Resource/sphere.obj", "./Resource/");
-	cube->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 3));
-	_test = cube->GetTransform();
-	cube->GetTransform()->UpdateScale(Math::Vector3(1.5, 1.5, 1.5));
-	AddObject(cube);
+	img = new UI::SimpleImage2D("Test");
+	img->Initialize(Math::Size<uint>(640, 480));
+	img->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 0));
+	
+	Texture::Texture* texture = _textureMgr->LoadTextureFromFile("./Resource/test.png", false);
 
-	//Camera
-	{
-		Core::Object* camObj = new Core::Object(nullptr);
-		camObj->SetName("MainCam");
-		Camera::Camera* cam = camObj->AddComponent<Camera::Camera>();
-		Core::Transform* camObjTf = camObj->GetTransform();
-		camObjTf->UpdatePosition(Math::Vector3(0,0,0));
-		camObjTf->UpdateDirection(Math::Vector3(0,0,1));
-		_cameraMgr->Add("mainCamera", cam, false);
-	}
+	img->UpdateMainImage(texture);
 
+	text = new UI::SimpleText2D("text test");
+	text->Initialize(16);
+	text->GetTransform()->UpdatePosition(Math::Vector3(100, 0, 0));
+	text->UpdateText("Hello");
+	text->GetTransform()->UpdateScale(Math::Vector3(2,2,2));
 }
 
 void TestScene::OnRenderPreview()
 {
 }
 
+void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
+{
+	if(mouse.GetLeft() == MOUSE::Action::Up)
+	{
+		int a = 5;
+		a=3;
+	}
+
+	if(keyboard.states['A'] == KEYBOARD::Type::Up)
+	{
+		int a = 5;
+		a=3;
+	}
+}
+
 void TestScene::OnUpdate(float dt)
 {
-	static float t = 3.0f;
-	t+=0.001f;
-	_test->UpdatePosition(Math::Vector3(0,0,t));
+	//static float x = 0.0;
+	//x+= 0.001f;
+	//img->GetTransform()->UpdatePosition(Math::Vector3(0, 0, x));
 }
 
 void TestScene::OnRenderPost()

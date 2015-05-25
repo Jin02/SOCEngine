@@ -39,7 +39,7 @@ bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &sha
 			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
 		if( pErrorBlob ) pErrorBlob->Release();
 
-		ASSERT_MSG("Shader Compile Error!");
+		ASSERT_MSG((char*)pErrorBlob->GetBufferPointer() );
 
 		return false;
 	}
@@ -125,6 +125,8 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 
 	if(recycleCode)
 		_shaderCodes.Add(fileName, &outCode, true);
+
+	file.close();
 
 	return true;
 }

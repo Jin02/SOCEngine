@@ -23,9 +23,9 @@ namespace Structure
 		virtual void DeleteAll(bool contentRemove = false) = 0;
 
 	public:
-		#define GET_CONTENT_FROM_ITERATOR(iter)	iter->second.second
-		#define GET_IS_COPY_FROM_ITERATOR(iter)	iter->second.first
-		#define GET_KEY_FROM_ITERATOR(iter)		iter->first
+		#define GET_CONTENT_FROM_ITERATOR(iter)	(iter)->second.second
+		#define GET_IS_COPY_FROM_ITERATOR(iter)	(iter)->second.first
+		#define GET_KEY_FROM_ITERATOR(iter)		(iter)->first
 	};
 
 }

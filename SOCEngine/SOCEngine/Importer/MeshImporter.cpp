@@ -14,7 +14,7 @@ MeshImporter::~MeshImporter()
 	SAFE_DELETE(_objImporter);
 }
 
-Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, bool isDynamicMesh)
+Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType, bool isDynamicMesh)
 {
 	std::string fileName, fileExtension, folderDir;
 	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
@@ -22,7 +22,7 @@ Object* MeshImporter::Load(const std::string& fileDir, const std::string& materi
 
 	Object* meshObject = nullptr;
 	if(fileExtension == "obj")
-		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, isDynamicMesh);
+		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, materialType, isDynamicMesh);
 
 	return meshObject;
 }

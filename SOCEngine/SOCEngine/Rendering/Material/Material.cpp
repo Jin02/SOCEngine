@@ -5,10 +5,9 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 
-Material::Material(const std::string& name)	
-	: _vertexShader(nullptr), _pixelShader(nullptr), _name(name),
-	_updateConstBufferMethod(UpdateCBMethod::Default),
-	_hasAlpha(false), _changedAlpha(true)
+Material::Material(const std::string& name, Type type)	
+	: _name(name), _hasAlpha(false), _changedAlpha(true),
+	_tiling(1.0f, 1.0f), _type(type)
 {
 }
 
@@ -17,53 +16,44 @@ Material::~Material(void)
 
 }
 
-void Material::Init(const std::vector<unsigned int>& vsConstBufferUsageIndices, const std::vector<unsigned int >& psConstBufferUsageIndices,
-					const std::vector<unsigned int>& vsTextureUsageIndices,		const std::vector<unsigned int>& psTextureUsageIndices)
-{
-	InitConstBufferSlot(vsConstBufferUsageIndices, psConstBufferUsageIndices);
-	InitTextureSlot(vsTextureUsageIndices, psTextureUsageIndices);
+const Rendering::Texture::Texture* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+{	
+	for(unsigned int i=0; i<_textures.size(); ++i)
+	{		
+		if(_textures[i].first == shaderSlotIndex)
+		{
+			outArrayIndex = i;
+			return _textures[i].second;
+		}
+	}
+
+	DEBUG_LOG("Material FindTexture Warning : Undefined UsageTextureType");
+	outArrayIndex = 0;
+	return nullptr;
 }
 
-void Material::InitConstBufferSlot(const std::vector<unsigned int>& vsTextureUsageIndices, const std::vector<unsigned int >& psTextureUsageIndices)
+bool Material::UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture)
 {
-	for(auto& idx : vsTextureUsageIndices)
-		_constbuffers.usageVS.push_back( std::make_pair(idx, nullptr) );
+	unsigned int arrayIdx = 0;
+	auto hasTexture = FindTexture(arrayIdx, shaderSlotIndex);
 
-	for(auto& idx : psTextureUsageIndices)
-		_constbuffers.usagePS.push_back( std::make_pair(idx, nullptr) );
+	if(hasTexture)
+	{
+		_textures[arrayIdx].second = texture;
+	}
+	else
+	{
+		_textures.push_back(std::make_pair(shaderSlotIndex, texture));
+	}
+
+	return hasTexture != nullptr;
 }
 
-void Material::InitTextureSlot(const std::vector<unsigned int>& vsShaderSlotIndex, const std::vector<unsigned int>& psShaderSlotIndex)
+bool Material::UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture)
 {
-	for(auto& idx : vsShaderSlotIndex)
-		_textures.usageVS.push_back(  std::make_pair(idx, nullptr) );
+	if(arrayIndex >= _textures.size())
+		return false;
 
-	for(auto& idx : psShaderSlotIndex)
-		_textures.usagePS.push_back(  std::make_pair(idx, nullptr) );
-}
-
-void Material::ClearResource(ID3D11DeviceContext* context)
-{
-	_vertexShader->ClearResource(context, &_textures.usageVS);
-	_pixelShader->ClearResource(context, &_textures.usagePS);
-}
-
-void Material::UpdateShader(ID3D11DeviceContext* context)
-{
-	_vertexShader->UpdateShader(context);
-	_pixelShader->UpdateShader(context);
-}
-
-void Material::UpdateResources(ID3D11DeviceContext* context)
-{
-	_vertexShader->UpdateResources(context, &_constbuffers.usageVS, &_textures.usageVS);
-
-	Sampler* sampler = Device::Director::GetInstance()->GetCurrentScene()->GetSampler();
-	std::vector<Shader::PixelShader::SamplerType> samplers;
-
-	//임시로, 0번에 linear만 넣음.
-	samplers.push_back(std::make_pair(0, sampler));
-
-
-	_pixelShader->UpdateResources(context, &_constbuffers.usagePS, &_textures.usagePS, samplers);
+	_textures[arrayIndex].second = texture;
+	return true;
 }

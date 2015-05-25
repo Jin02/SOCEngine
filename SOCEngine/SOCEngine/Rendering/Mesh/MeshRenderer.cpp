@@ -8,8 +8,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-MeshRenderer::MeshRenderer(BasicMaterial* depthWriteMaterial, BasicMaterial*	alphaTestMaterial) 
-	: _depthWriteMaterial(depthWriteMaterial), _alphaTestMaterial(alphaTestMaterial)
+MeshRenderer::MeshRenderer()
 {
 
 }
@@ -18,7 +17,7 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-bool MeshRenderer::AddMaterial(BasicMaterial* material, bool copy)
+bool MeshRenderer::AddMaterial(Material* material, bool copy)
 {
 	if(_materials.Find(material->GetName()) )
 		return false;
@@ -27,52 +26,20 @@ bool MeshRenderer::AddMaterial(BasicMaterial* material, bool copy)
 	return true;
 }
 
-void MeshRenderer::UpdateAllMaterial(ID3D11DeviceContext* context, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
-{
-	auto& materials = _materials.GetVector();
-	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-	{
-		BasicMaterial* material = GET_CONTENT_FROM_ITERATOR(iter);
-		material->UpdateBasicConstBuffer(context, transformBuffer, camera);
-		material->UpdateResources(context);
-	}
-}
-
-bool MeshRenderer::UpdateMaterial(ID3D11DeviceContext* context, unsigned int index, const Buffer::ConstBuffer* transformBuffer, const Buffer::ConstBuffer* camera)
-{
-	if( index >= _materials.GetSize() )
-		return false;
-
-	BasicMaterial* material = GET_CONTENT_FROM_ITERATOR( (_materials.GetVector().begin() + index) );
-	if(material == nullptr)
-		return false;
-
-	material->UpdateBasicConstBuffer(context, transformBuffer, camera);
-	material->UpdateResources(context);
-	return true;
-}
-
-void MeshRenderer::ClearResource(ID3D11DeviceContext* context)
-{
-	auto& materials = _materials.GetVector();
-	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-		GET_CONTENT_FROM_ITERATOR(iter)->ClearResource(context);
-}
-
 void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
 {
 	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	Rendering::Mesh::Mesh* parent = static_cast<Rendering::Mesh::Mesh*>(mesh);
 
-	auto IterMaterials = [&](BasicMaterial* material)
+	auto IterMaterials = [&](Material* material)
 	{
 		bool changd = material->GetChangedAlpha();
 		if(changd)
 		{
 			bool hasAlpha = material->GetHasAlpha();
-			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::hasAlpha : RenderManager::MeshType::nonAlpha;
+			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
 
-			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::hasAlpha ? RenderManager::MeshType::nonAlpha : RenderManager::MeshType::hasAlpha))
+			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::Transparent ? RenderManager::MeshType::Opaque : RenderManager::MeshType::Transparent))
 				renderMgr->Change(material, parent, type);
 			else if(renderMgr->Find(material, parent, type) == nullptr)
 				renderMgr->Add(material, parent, type);

@@ -148,9 +148,6 @@
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sampler">
-      <UniqueIdentifier>{6731c20f-0e30-44a7-9ab4-ad96d062b317}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility\DirectoryManager">
       <UniqueIdentifier>{580b678e-d3aa-4d3d-9594-f3ac230ce303}</UniqueIdentifier>
     </Filter>
@@ -172,11 +169,65 @@
     <Filter Include="Rendering\Light\Other">
       <UniqueIdentifier>{23fe0e64-3f4f-439d-bbb3-52423acd04f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Material\Basic">
-      <UniqueIdentifier>{ff42acfc-3419-4873-a9d5-dcfb38cf7f0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Material\Manager">
       <UniqueIdentifier>{e950756f-4523-4bfc-a83a-af927368490a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material\PhysicallyBased">
+      <UniqueIdentifier>{ff42acfc-3419-4873-a9d5-dcfb38cf7f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Geometry">
+      <UniqueIdentifier>{1baa9c4c-076d-4a48-a71a-40d31c355507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Hull">
+      <UniqueIdentifier>{23f16d11-8de1-4701-b20e-6ebda20d0300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Base">
+      <UniqueIdentifier>{76c609d7-2300-44b4-83e6-d5e0dd6f981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\DepthBuffer">
+      <UniqueIdentifier>{c23368c8-5248-4b98-b28e-11cdd0464c96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\RenderTarget">
+      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Mgr">
+      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Frustum">
+      <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\BasicCamera">
+      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\ForwardPlus">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Manager">
+      <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{f641d90e-a254-439b-b0fe-8664cfdc73c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\SimpleImage2D">
+      <UniqueIdentifier>{00c0f520-6339-4726-a1cf-944acff16bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Camera">
+      <UniqueIdentifier>{e014fcf4-f641-4251-9ec3-34769bd8ea58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Manager">
+      <UniqueIdentifier>{622565aa-3fed-4d01-b2ed-f5689d85700c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Object">
+      <UniqueIdentifier>{1b752101-7811-49c0-8df2-2694c24813d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Manager\BackBufferMaker">
+      <UniqueIdentifier>{67b98918-361e-481d-bc71-4d2c811c0492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{7c4fca20-1657-4c59-9f92-78800621e876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Text">
+      <UniqueIdentifier>{e3ad2669-43d4-46f8-9026-f168354a386a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -197,9 +248,6 @@
     </ClInclude>
     <ClInclude Include="Structure\Structure.h">
       <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\Frustum.h">
-      <Filter>Rendering\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Math\EngineMath.h">
       <Filter>Math</Filter>
@@ -237,12 +285,6 @@
     <ClInclude Include="Core\Time\Timer.h">
       <Filter>Core\Time</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\Camera.h">
-      <Filter>Rendering\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <Filter>Rendering\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Structure\Singleton.h">
       <Filter>Structure</Filter>
     </ClInclude>
@@ -273,9 +315,6 @@
     <ClInclude Include="Intersection\Sphere.h">
       <Filter>Intersection</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\RenderTexture.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h">
       <Filter>Rendering\Buffer\Vertex</Filter>
     </ClInclude>
@@ -299,15 +338,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Texture\Texture.h">
       <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Texture\TextureManager.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Sampler\Sampler.h">
-      <Filter>Rendering\Sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shader\BaseShader.h">
-      <Filter>Rendering\Shader</Filter>
     </ClInclude>
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
@@ -447,9 +477,6 @@
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\RenderManager\RenderManager.h">
       <Filter>Rendering\Manager</Filter>
     </ClInclude>
@@ -489,11 +516,72 @@
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\BasicMaterial.h">
-      <Filter>Rendering\Material\Basic</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Container.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GlobalSetting.h" />
+    <ClInclude Include="Rendering\Shader\GeometryShader.h">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\HullShader.h">
+      <Filter>Rendering\Shader\Hull</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\BaseShader.h">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\Shaders.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\RenderTexture.h">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureManager.h">
+      <Filter>Rendering\Texture\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraManager.h">
+      <Filter>Rendering\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\Frustum.h">
+      <Filter>Rendering\Camera\Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\Camera.h">
+      <Filter>Rendering\Camera\BasicCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
+      <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UICamera.h">
+      <Filter>UI\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\SimpleImage2D.h">
+      <Filter>UI\SimpleImage2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIObject.h">
+      <Filter>UI\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\UIManager.h">
+      <Filter>UI\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\SimpleSoundPlayer.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\SimpleText2D.h">
+      <Filter>UI\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\FontLoader.h">
+      <Filter>UI\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -508,9 +596,6 @@
     </ClCompile>
     <ClCompile Include="Core\Transform\Transform.cpp">
       <Filter>Core\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\Frustum.cpp">
-      <Filter>Rendering\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Math\MathCommon.cpp">
       <Filter>Math\Common</Filter>
@@ -539,12 +624,6 @@
     <ClCompile Include="Core\Time\Timer.cpp">
       <Filter>Core\Time</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\Camera.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Intersection\AABB.cpp">
       <Filter>Intersection</Filter>
     </ClCompile>
@@ -556,9 +635,6 @@
     </ClCompile>
     <ClCompile Include="Intersection\Sphere.cpp">
       <Filter>Intersection</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
-      <Filter>Rendering\Texture</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp">
       <Filter>Rendering\Buffer\Vertex</Filter>
@@ -580,15 +656,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\Texture.cpp">
       <Filter>Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture\TextureManager.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sampler\Sampler.cpp">
-      <Filter>Rendering\Sampler</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
-      <Filter>Rendering\Shader</Filter>
     </ClCompile>
     <ClCompile Include="Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
@@ -641,9 +708,6 @@
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp">
       <Filter>Rendering\Mesh\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp">
       <Filter>Rendering\Manager</Filter>
     </ClCompile>
@@ -677,11 +741,65 @@
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp">
       <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Material\BasicMaterial.cpp">
-      <Filter>Rendering\Material\Basic</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\GeometryShader.cpp">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\HullShader.cpp">
+      <Filter>Rendering\Shader\Hull</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureManager.cpp">
+      <Filter>Rendering\Texture\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\Frustum.cpp">
+      <Filter>Rendering\Camera\Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\Camera.cpp">
+      <Filter>Rendering\Camera\BasicCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
+      <Filter>Rendering\Camera\ForwardPlus</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UICamera.cpp">
+      <Filter>UI\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
+      <Filter>UI\SimpleImage2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIObject.cpp">
+      <Filter>UI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\UIManager.cpp">
+      <Filter>UI\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
+      <Filter>Rendering\Manager\BackBufferMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound\SimpleSoundPlayer.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\SimpleText2D.cpp">
+      <Filter>UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\FontLoader.cpp">
+      <Filter>UI\Text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

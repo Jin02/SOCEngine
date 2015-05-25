@@ -13,7 +13,6 @@
 #include "Win32.h"
 
 #include "Color.h"
-#include "DepthBuffer.h"
 
 namespace Device
 {
@@ -29,14 +28,28 @@ namespace Device
 		D3D_FEATURE_LEVEL			_featureLevel;
 		D3D_DRIVER_TYPE				_driverType;
 
+		ID3D11RasterizerState		*_defaultCulling;
 		ID3D11RasterizerState		*_disableCulling;
-		ID3D11BlendState			*_opaqueBlend;
-		ID3D11BlendState			*_alphaToCoverageBlend;
 
-		ID3D11DepthStencilState		*_depthLessEqual;
+		ID3D11BlendState			*_opaqueBlend;
+		ID3D11BlendState			*_opaqueBlendDepthOnly;
+
+		ID3D11BlendState			*_alphaToCoverageBlend;
+		ID3D11BlendState			*_alphaBlend;
+
+		ID3D11DepthStencilState		*_depthDisableDepthTest;
+
+		ID3D11DepthStencilState		*_depthLess;
 		ID3D11DepthStencilState		*_depthEqualAndDisableDepthWrite;
 
-		Rendering::Texture::DepthBuffer *_depthBuffer;
+		ID3D11DepthStencilState		*_depthGreater;
+		ID3D11DepthStencilState		*_depthGreaterAndDisableDepthWrite;
+
+		ID3D11SamplerState			*_anisotropicSamplerState;
+		ID3D11SamplerState			*_linearSamplerState;
+		ID3D11SamplerState			*_pointSamplerState;
+
+		bool						_useMSAA;
 
 	public:
 		DirectX();
@@ -49,25 +62,39 @@ namespace Device
 		bool CreateSwapChain(const Win32* win);
 	
 		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);		
+		void CreateBlendStates(bool isDeferredRender);
 
 	public:
-		bool InitDevice(const Win32* win);
+		bool InitDevice(const Win32* win, bool isDeferredRender = false);
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
+		void ClearDeviceContext();
 
 	public:
-		GET_ACCESSOR(Device, ID3D11Device*, _device);
-		GET_ACCESSOR(SwapChain, IDXGISwapChain*, _swapChain);
-		GET_ACCESSOR(Context, ID3D11DeviceContext*, _immediateContext);
+		GET_ACCESSOR(Device,								ID3D11Device*,				_device);
+		GET_ACCESSOR(SwapChain,								IDXGISwapChain*,			_swapChain);
+		GET_ACCESSOR(Context,								ID3D11DeviceContext*,		_immediateContext);
 
-		GET_ACCESSOR(BackBuffer,	ID3D11RenderTargetView*,			_renderTargetView);
-		GET_ACCESSOR(DepthBuffer,	Rendering::Texture::DepthBuffer*,	_depthBuffer);
+		GET_ACCESSOR(BackBuffer,							ID3D11RenderTargetView*,	_renderTargetView);
 
-		GET_ACCESSOR(DisableCullingRasterizerState, ID3D11RasterizerState*, _disableCulling);
-		GET_ACCESSOR(OpaqueBlendState, ID3D11BlendState*, _opaqueBlend);
-		GET_ACCESSOR(AlphaToCoverageBlendState, ID3D11BlendState*, _alphaToCoverageBlend);
+		GET_ACCESSOR(DefaultCullingRasterizerState,			ID3D11RasterizerState*,		_defaultCulling);
+		GET_ACCESSOR(DisableCullingRasterizerState,			ID3D11RasterizerState*,		_disableCulling);
 
-		GET_ACCESSOR(DepthLessEqualState, ID3D11DepthStencilState*, _depthLessEqual);
-		GET_ACCESSOR(DepthEuqalAndDisableDepthWriteState, ID3D11DepthStencilState*, _depthEqualAndDisableDepthWrite);
+		GET_ACCESSOR(OpaqueBlendState,						ID3D11BlendState*,			_opaqueBlend);
+		GET_ACCESSOR(AlphaToCoverageBlendState,				ID3D11BlendState*,			_alphaToCoverageBlend);
+		GET_ACCESSOR(OpaqueDepthOnlyBlendState,				ID3D11BlendState*,			_opaqueBlendDepthOnly);
+		GET_ACCESSOR(AlphaBlendState,						ID3D11BlendState*,			_alphaBlend);
 
+		GET_ACCESSOR(DepthDisableDepthTestState,			ID3D11DepthStencilState*,	_depthDisableDepthTest);
+		GET_ACCESSOR(DepthLessState,						ID3D11DepthStencilState*,	_depthLess);
+		GET_ACCESSOR(DepthEqualAndDisableDepthWriteState,	ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
+		GET_ACCESSOR(DepthGreaterState,						ID3D11DepthStencilState*,	_depthGreater);
+		GET_ACCESSOR(DepthGreaterAndDisableDepthWriteState, ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
+
+		GET_ACCESSOR(AnisotropicSamplerState,				ID3D11SamplerState*,		_anisotropicSamplerState);
+		GET_ACCESSOR(LinearSamplerState,					ID3D11SamplerState*,		_linearSamplerState);
+		GET_ACCESSOR(PointSamplerState,						ID3D11SamplerState*,		_pointSamplerState);
+
+
+		GET_ACCESSOR(UseMSAA,								bool,						_useMSAA);
 	};
 }

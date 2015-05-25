@@ -35,7 +35,9 @@ namespace Rendering
 			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
 
 		public:
-			void UpdateShader(ID3D11DeviceContext* context);
+			void UpdateShaderToContext(ID3D11DeviceContext* context);
+			void UpdateInputLayoutToContext(ID3D11DeviceContext* context);
+
 			void UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures);
 		};
 	}
