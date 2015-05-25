@@ -89,7 +89,9 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
+    <ClInclude Include="Rendering\UI\FontLoader.h" />
     <ClInclude Include="Rendering\UI\SimpleImage2D.h" />
+    <ClInclude Include="Rendering\UI\SimpleText2D.h" />
     <ClInclude Include="Rendering\UI\UICamera.h" />
     <ClInclude Include="Rendering\UI\UIObject.h" />
     <ClInclude Include="Rendering\UI\UIManager.h" />
@@ -200,7 +202,9 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
+    <ClCompile Include="Rendering\UI\FontLoader.cpp" />
     <ClCompile Include="Rendering\UI\SimpleImage2D.cpp" />
+    <ClCompile Include="Rendering\UI\SimpleText2D.cpp" />
     <ClCompile Include="Rendering\UI\UICamera.cpp" />
     <ClCompile Include="Rendering\UI\UIObject.cpp" />
     <ClCompile Include="Rendering\UI\UIManager.cpp" />
