@@ -23,6 +23,9 @@ namespace Rendering
 			void Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags);
 
 		public:
+			Math::Size<uint> FetchSize() const;
+
+		public:
 			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);
 			GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 		};

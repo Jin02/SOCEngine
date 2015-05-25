@@ -82,3 +82,32 @@ void Texture::Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, u
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
 	}
 }
+
+Math::Size<uint> Texture::FetchSize() const
+{
+	D3D11_TEXTURE2D_DESC desc;
+	if(_texture)
+	{
+		_texture->GetDesc(&desc);
+		return Math::Size<uint>(desc.Width, desc.Height);
+	}
+
+	ID3D11Resource* res = nullptr;
+	_srv->GetResource(&res);
+
+    ID3D11Texture2D* texture2d = nullptr;
+    HRESULT hr = res->QueryInterface(&texture2d);
+
+	Math::Size<uint> size;
+    if( SUCCEEDED(hr) )
+    {
+		texture2d->GetDesc(&desc);
+		size.w = desc.Width;
+		size.h = desc.Height;
+	}
+
+	SAFE_RELEASE(texture2d);
+    SAFE_RELEASE(res);
+
+	return size;
+}
