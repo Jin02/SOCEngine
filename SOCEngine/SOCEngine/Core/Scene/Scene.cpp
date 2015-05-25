@@ -2,6 +2,7 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
+#include "FontLoader.h"
 
 using namespace Core;
 using namespace std;
@@ -100,6 +101,8 @@ void Scene::Render()
 
 void Scene::Destroy()
 {
+	UI::FontLoader::GetInstance()->Destroy();
+
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_shaderMgr);
 	SAFE_DELETE(_textureMgr);

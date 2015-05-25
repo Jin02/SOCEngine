@@ -226,6 +226,9 @@
     <Filter Include="Sound">
       <UniqueIdentifier>{7c4fca20-1657-4c59-9f92-78800621e876}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Text">
+      <UniqueIdentifier>{e3ad2669-43d4-46f8-9026-f168354a386a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -574,6 +577,12 @@
     <ClInclude Include="Sound\SimpleSoundPlayer.h">
       <Filter>Sound</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\UI\SimpleText2D.h">
+      <Filter>UI\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\UI\FontLoader.h">
+      <Filter>UI\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -785,6 +794,12 @@
     </ClCompile>
     <ClCompile Include="Sound\SimpleSoundPlayer.cpp">
       <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\SimpleText2D.cpp">
+      <Filter>UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\UI\FontLoader.cpp">
+      <Filter>UI\Text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

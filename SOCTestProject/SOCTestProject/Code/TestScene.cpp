@@ -20,12 +20,18 @@ TestScene::~TestScene(void)
 void TestScene::OnInitialize()
 {
 	img = new UI::SimpleImage2D("Test");
-	img->Create(Math::Size<uint>(538, 405));
+	img->Initialize(Math::Size<uint>(640, 480));
 	img->GetTransform()->UpdatePosition(Math::Vector3(0, 0, 0));
 	
 	Texture::Texture* texture = _textureMgr->LoadTextureFromFile("./Resource/test.png", false);
 
 	img->UpdateMainImage(texture);
+
+	text = new UI::SimpleText2D("text test");
+	text->Initialize(16);
+	text->GetTransform()->UpdatePosition(Math::Vector3(100, 0, 0));
+	text->UpdateText("Hello");
+	text->GetTransform()->UpdateScale(Math::Vector3(2,2,2));
 }
 
 void TestScene::OnRenderPreview()

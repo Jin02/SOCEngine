@@ -16,9 +16,11 @@ SimpleImage2D::~SimpleImage2D()
 {
 	if(_isOtherMaterial == false)
 		SAFE_DELETE(_material);
+
+	SAFE_DELETE(_meshFilter);
 }
 
-void SimpleImage2D::Create(const Math::Size<uint>& size, Rendering::Material* material)
+void SimpleImage2D::Initialize(const Math::Size<uint>& size, Rendering::Material* material)
 {
 	if(material == nullptr)
 	{
@@ -72,12 +74,8 @@ void SimpleImage2D::Create(const Math::Size<uint>& size, Rendering::Material* ma
 	SetSize(size);
 }
 
-void SimpleImage2D::Render(const Math::Matrix& viewProjMat)
+void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat)
 {
-	const Device::Director* director	= Device::Director::GetInstance();
-	const Device::DirectX* dx			= director->GetDirectX();
-	ID3D11DeviceContext* context		= dx->GetContext();
-
 	if(_changeSize)
 	{
 		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
