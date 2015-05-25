@@ -27,11 +27,11 @@ namespace UI
 		virtual ~SimpleImage2D();
 
 	public:
-		void Create(const Math::Size<uint>& size, Rendering::Material* material = nullptr);
+		void Initialize(const Math::Size<uint>& size, Rendering::Material* material = nullptr);
 		void UpdateMainImage(Rendering::Texture::Texture* tex);
 
 	public:
-		virtual void Render(const Math::Matrix& viewProjMat);
+		virtual void Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat);
 
 	public:
 		GET_ACCESSOR(Material, Rendering::Material*, _material);

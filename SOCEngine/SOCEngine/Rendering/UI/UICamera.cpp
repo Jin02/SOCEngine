@@ -81,7 +81,7 @@ void UICamera::Render()
 	auto RenderUIObj = [&](UI::UIObject* uiObj)
 	{
 		uiObj->UpdateTransform(context, viewProjMat);
-		uiObj->Render(viewProjMat);
+		uiObj->Render(context, viewProjMat);
 	};
 
 	uiMgr->IterateContent(RenderUIObj);
