@@ -21,7 +21,7 @@ SimpleText2D::~SimpleText2D()
 	SAFE_DELETE(_meshFilter);
 }
 
-void SimpleText2D::Initialize(uint maxLength, Rendering::Material* material)
+void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesKey, Rendering::Material* material)
 {
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
@@ -70,7 +70,7 @@ void SimpleText2D::Initialize(uint maxLength, Rendering::Material* material)
 //			std::copy(boxIndices.begin(), boxIndices.end(), indices.begin() + (i * boxIndices.size()));
 	}
 
-	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI", "Font");
+	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:Font", sharedVerticesKey);
 	{
 		meshCreateArgs.vertex.data		= emptyVertices.data();
 		meshCreateArgs.vertex.count		= emptyVertices.size();
@@ -100,6 +100,8 @@ void SimpleText2D::Initialize(uint maxLength, Rendering::Material* material)
 void SimpleText2D::UpdateText(const std::string& text)
 {
 	ASSERT_COND_MSG(text.length() < _maxLength, "Error, text's length is longer than maximum length");
+	if(text.empty())
+		return;
 
 	const FontLoader* fontLoader = FontLoader::GetInstance();
 	const auto& fontTypes = fontLoader->GetFonts();
@@ -146,13 +148,13 @@ void SimpleText2D::UpdateText(const std::string& text)
 			vertex.uv = Math::Vector2(fontTypes[letter].right, 1);
 			vertices.push_back(vertex);
 
-			offsetX += (fontTypes[letter].size + 1.0f);
+			offsetX += (fontTypes[letter].size + 1.5f);
 		}
 	}
 
 	//중점으로 맞춤
 	{
-		for(auto iter : vertices)
+		for(auto& iter : vertices)
 			iter.position.x -= (offsetX / 2.0f);
 	}
 

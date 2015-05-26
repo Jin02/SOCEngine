@@ -27,7 +27,7 @@ namespace UI
 		virtual ~SimpleImage2D();
 
 	public:
-		void Initialize(const Math::Size<uint>& size, Rendering::Material* material = nullptr);
+		void Initialize(const Math::Size<uint>& size, const std::string& sharedVerticesKey, Rendering::Material* material = nullptr);
 		void UpdateMainImage(Rendering::Texture::Texture* tex);
 
 	public:

@@ -17,7 +17,7 @@ namespace Core
 	class Scene
 	{
 	public:
-		enum State{ Init = 0, Loop, End, Num };
+		enum class State{ Init = 0, Loop, End, Num };
 
 	private:
 		State _state;
@@ -49,14 +49,13 @@ namespace Core
 		void RenderPreview();
 		void Render();
 		void Destroy();
-
-		virtual void OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard) = 0;
+		void Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard);
 
 	protected:
 		virtual void OnInitialize() = 0;
 		virtual void OnRenderPreview() = 0;
 		virtual void OnUpdate(float dt) = 0;
-		
+		virtual void OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard) = 0;		
 		virtual void OnRenderPost() = 0;
 		virtual void OnDestroy() = 0;
 

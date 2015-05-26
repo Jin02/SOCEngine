@@ -33,6 +33,7 @@ namespace Device
 	public:
 		void Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		void Run();
+		void Exit();
 
 	public:
 		GET_ACCESSOR(Win, const Win32*, _win);

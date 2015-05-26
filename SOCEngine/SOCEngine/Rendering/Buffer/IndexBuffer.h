@@ -13,7 +13,7 @@ namespace Rendering
 			~IndexBuffer();
 
 		public:
-			bool Create(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth, bool isDynamic = false);
+			bool Create(const unsigned int* sysMem, unsigned int byteWidth, bool isDynamic = false);
 			void IASetBuffer(ID3D11DeviceContext* context);
 		};
 	}

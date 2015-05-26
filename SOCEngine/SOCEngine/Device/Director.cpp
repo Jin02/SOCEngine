@@ -91,3 +91,8 @@ void Director::Run()
 		}
 	}
 }
+
+void Director::Exit()
+{
+	PostQuitMessage(0);
+}
