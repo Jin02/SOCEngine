@@ -79,12 +79,6 @@
     <Filter Include="Importer\Obj">
       <UniqueIdentifier>{c820752c-d594-4730-bdaf-28e035ebdcad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Importer\Obj\tiny">
-      <UniqueIdentifier>{8ba5f2b3-3967-4271-b59e-db8496225c9b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utility\RapidJson">
-      <UniqueIdentifier>{cd7838c5-e36b-41a1-a5fc-631d42964fca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Template">
       <UniqueIdentifier>{e86b05aa-b1a7-4f38-a51c-a90ee7c640cf}</UniqueIdentifier>
     </Filter>
@@ -229,6 +223,15 @@
     <Filter Include="UI\Text">
       <UniqueIdentifier>{e3ad2669-43d4-46f8-9026-f168354a386a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{af4f435f-c3aa-4022-8fbf-935ca4c43953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\rapidJson">
+      <UniqueIdentifier>{9ebbd374-d17d-4bdd-9bc4-bd52ca114e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\tiny_obj_loader">
+      <UniqueIdentifier>{7ab4b83a-dff2-4d3f-87a4-72db5da6a344}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -342,83 +345,8 @@
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\rapidjson\allocators.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\document.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\encodedstream.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\encodings.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\error\en.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\error\error.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\filereadstream.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\filestream.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\filewritestream.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\dtoa.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\itoa.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\meta.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\pow10.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\stack.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\internal\strfunc.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\memorybuffer.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\memorystream.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\msinttypes\inttypes.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\msinttypes\stdint.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\prettywriter.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\rapidjson.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\reader.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\stringbuffer.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility\rapidjson\writer.h">
-      <Filter>Utility\RapidJson</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\ObjImporter.h">
       <Filter>Importer\Obj</Filter>
-    </ClInclude>
-    <ClInclude Include="Importer\tiny_obj_loader.h">
-      <Filter>Importer\Obj\tiny</Filter>
     </ClInclude>
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
       <Filter>Template</Filter>
@@ -559,16 +487,16 @@
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\UICamera.h">
+    <ClInclude Include="UI\UICamera.h">
       <Filter>UI\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\SimpleImage2D.h">
+    <ClInclude Include="UI\SimpleImage2D.h">
       <Filter>UI\SimpleImage2D</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\UIObject.h">
+    <ClInclude Include="UI\UIObject.h">
       <Filter>UI\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\UIManager.h">
+    <ClInclude Include="UI\UIManager.h">
       <Filter>UI\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h">
@@ -577,11 +505,86 @@
     <ClInclude Include="Sound\SimpleSoundPlayer.h">
       <Filter>Sound</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\SimpleText2D.h">
+    <ClInclude Include="UI\SimpleText2D.h">
       <Filter>UI\Text</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\UI\FontLoader.h">
+    <ClInclude Include="UI\FontLoader.h">
       <Filter>UI\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="External\tiny_obj_loader.h">
+      <Filter>External\tiny_obj_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\allocators.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\document.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\dtoa.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\error\en.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\encodedstream.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\encodings.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\error\error.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\filereadstream.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\filestream.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\filewritestream.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\msinttypes\inttypes.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\itoa.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\memorybuffer.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\memorystream.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\meta.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\pow10.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\prettywriter.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\rapidjson.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\reader.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\stack.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\msinttypes\stdint.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\internal\strfunc.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\stringbuffer.h">
+      <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="External\rapidjson\writer.h">
+      <Filter>External\rapidJson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -659,9 +662,6 @@
     </ClCompile>
     <ClCompile Include="Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
-    </ClCompile>
-    <ClCompile Include="Importer\tiny_obj_loader.cc">
-      <Filter>Importer\Obj\tiny</Filter>
     </ClCompile>
     <ClCompile Include="Importer\ImporterUtility.cpp">
       <Filter>Importer\Utility</Filter>
@@ -777,16 +777,16 @@
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\UICamera.cpp">
+    <ClCompile Include="UI\UICamera.cpp">
       <Filter>UI\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp">
+    <ClCompile Include="UI\SimpleImage2D.cpp">
       <Filter>UI\SimpleImage2D</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\UIObject.cpp">
+    <ClCompile Include="UI\UIObject.cpp">
       <Filter>UI\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\UIManager.cpp">
+    <ClCompile Include="UI\UIManager.cpp">
       <Filter>UI\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp">
@@ -795,11 +795,14 @@
     <ClCompile Include="Sound\SimpleSoundPlayer.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\SimpleText2D.cpp">
+    <ClCompile Include="UI\SimpleText2D.cpp">
       <Filter>UI\Text</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\UI\FontLoader.cpp">
+    <ClCompile Include="UI\FontLoader.cpp">
       <Filter>UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="External\tiny_obj_loader.cc">
+      <Filter>External\tiny_obj_loader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
