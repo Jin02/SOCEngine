@@ -14,7 +14,7 @@ CSInputBuffer::~CSInputBuffer()
 	SAFE_RELEASE(_srv);
 }
 
-bool CSInputBuffer::Create(unsigned int stride, unsigned int num, const void* sysMem)
+bool CSInputBuffer::Initialize(unsigned int stride, unsigned int num, const void* sysMem)
 {
 	D3D11_BUFFER_DESC desc;
 	desc.Usage = D3D11_USAGE_DEFAULT;

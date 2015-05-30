@@ -20,7 +20,7 @@ namespace Rendering
 			virtual ~Texture();
 
 		protected:
-			void Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags);
+			void Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags);
 
 		public:
 			Math::Size<uint> FetchSize() const;

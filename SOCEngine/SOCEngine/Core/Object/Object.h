@@ -63,7 +63,7 @@ namespace Core
 				_hasMesh = true;
 
 			//오직 유저 컴포넌트만 중복 가능
-			compo->Initialize();
+			compo->OnInitialize();
 			_components.push_back(compo);
 
 			return compo;

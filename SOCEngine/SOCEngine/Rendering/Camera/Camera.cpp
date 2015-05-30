@@ -22,7 +22,7 @@ Camera::~Camera(void)
 
 }
 
-void Camera::Initialize()
+void Camera::OnInitialize()
 {
 	_FOV			= 60.0f;
 	_clippingNear	= 0.1f;
@@ -37,16 +37,16 @@ void Camera::Initialize()
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Create(windowSize);
+	_renderTarget->Initialize(windowSize);
 
 	_constBuffer = new Buffer::ConstBuffer;
-	if(_constBuffer->Create(sizeof(CameraConstBuffer)) == false)
-		ASSERT_MSG("Error, cam->constbuffer->Create");
+	if(_constBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+		ASSERT_MSG("Error, cam->constbuffer->Initialize");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
-void Camera::Destroy()
+void Camera::OnDestroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
@@ -99,7 +99,7 @@ void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix
 void Camera::ViewMatrix(Math::Matrix& outMatrix)
 {
 	Matrix worldMat;
-	_owner->GetTransform()->WorldMatrix(worldMat);
+	_owner->GetTransform()->FetchWorldMatrix(worldMat);
 
 	ViewMatrix(outMatrix, worldMat);
 }

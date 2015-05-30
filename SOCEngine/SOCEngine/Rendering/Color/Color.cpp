@@ -84,57 +84,57 @@ namespace Rendering
 		Work(color->a);
 	}
 
-	Color Color::black()
+	Color Color::Black()
 	{
 		return Color(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	Color Color::blue()
+	Color Color::Blue()
 	{
 		return Color(0.0f, 0.0f, 1.0f, 1.0f);
 	}
 
-	Color Color::clear()
+	Color Color::Clear()
 	{
 		return Color(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	Color Color::cyan()
+	Color Color::Cyan()
 	{
 		return Color(0, 100.0f/255.0f, 100.0f/255.0f, 1.0f);
 	}
 
-	Color Color::gray()
+	Color Color::Gray()
 	{
 		return Color(0.5f, 0.5f, 0.5f, 1.0f);
 	}
 
-	float Color::grayscale()
+	float Color::Grayscale()
 	{
 		return (this->r * 0.3f) + (this->g * 0.59f) + (this->b * 0.11f);
 	}
 
-	Color Color::green()
+	Color Color::Green()
 	{
 		return Color(0.0f, 1.0f, 0.0f, 1.0f);
 	}
 
-	Color Color::magenta()
+	Color Color::Magenta()
 	{
 		return Color(1.0f, 0.0f, 1.0f, 1.0f);
 	}
 
-	Color Color::red()
+	Color Color::Red()
 	{
 		return Color(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	Color Color::white()
+	Color Color::White()
 	{
 		return Color(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	Color Color::yellow()
+	Color Color::Yellow()
 	{
 		return Color(1.0f, 1.0f, 0.0f, 1.0f);
 	}

@@ -13,7 +13,7 @@ ConstBuffer_CPURead::~ConstBuffer_CPURead()
 {
 }
 
-bool ConstBuffer_CPURead::Create(unsigned int stride, unsigned int num)
+bool ConstBuffer_CPURead::Initialize(unsigned int stride, unsigned int num)
 {
 	D3D11_BUFFER_DESC desc;
 	desc.ByteWidth = stride * num;

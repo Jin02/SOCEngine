@@ -25,7 +25,7 @@ namespace Rendering
 
 		public:
 			VertexShader(ID3DBlob* blob);
-			~VertexShader(void);
+			virtual ~VertexShader(void);
 
 		public:
 			GET_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
@@ -35,8 +35,8 @@ namespace Rendering
 			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
 
 		public:
-			void UpdateShaderToContext(ID3D11DeviceContext* context);
-			void UpdateInputLayoutToContext(ID3D11DeviceContext* context);
+			void UpdateShader(ID3D11DeviceContext* context);
+			void UpdateInputLayout(ID3D11DeviceContext* context);
 
 			void UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures);
 		};

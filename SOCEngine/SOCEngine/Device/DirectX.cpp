@@ -221,7 +221,7 @@ bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
 
 	CreateViewport(win->GetSize());
 
-	//Create rasterizer State
+	//Initialize rasterizer State
 	{
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
@@ -243,10 +243,10 @@ bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
-	//Create Blend State
+	//Initialize Blend State
 	CreateBlendStates(isDeferredRender);
 
-	//Create Depth State
+	//Initialize Depth State
 	//using inverted 32bit float depth
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;

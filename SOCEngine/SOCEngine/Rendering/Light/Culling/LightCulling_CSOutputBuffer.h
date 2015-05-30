@@ -16,7 +16,7 @@ namespace Rendering
 			virtual ~LightCulling_CSOutputBuffer();
 
 		public:
-			void Create(const Math::Size<unsigned int>& threadSize, unsigned int maxLightNumInTile);
+			void Initialize(const Math::Size<unsigned int>& threadSize, unsigned int maxLightNumInTile);
 
 		public:
 			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);

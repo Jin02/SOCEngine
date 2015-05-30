@@ -21,7 +21,7 @@ UIObject::~UIObject()
 void UIObject::InitConstBuffer()
 {
 	_transformCB = new ConstBuffer;
-	_transformCB->Create(sizeof(Math::Matrix));
+	_transformCB->Initialize(sizeof(Math::Matrix));
 }
 
 void UIObject::Add(const std::string& key, UIObject* object, bool copy)
@@ -64,7 +64,7 @@ void UIObject::UpdateTransform(ID3D11DeviceContext* context, const Matrix& viewP
 		return;
 
 	Matrix world;
-	_transform->WorldMatrix(world);
+	_transform->FetchWorldMatrix(world);
 
 	Matrix worldViewProj = world * viewProj;
 	Matrix::Transpose(worldViewProj, worldViewProj);

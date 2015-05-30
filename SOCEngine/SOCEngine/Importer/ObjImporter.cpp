@@ -317,7 +317,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		args.bufferFlag			= bufferFlag;
 	}
 	
-	mesh->Create(args);
+	mesh->Initialize(args);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
 	currentScene->GetOriginObjectManager()->Add(objKey, object);
@@ -469,7 +469,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		args.bufferFlag			= bufferFlag;
 	}
 	
-	mesh->Create(args);
+	mesh->Initialize(args);
 	currentScene->GetOriginObjectManager()->Add(bufferKey, object);
 
 	return object;

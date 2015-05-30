@@ -18,10 +18,10 @@ UICamera::~UICamera(void)
 
 void UICamera::Initialize()
 {
-	Camera::Initialize();
+	Camera::OnInitialize();
 
 	_depthBuffer =  new DepthBuffer;
-	_depthBuffer->Create(Director::GetInstance()->GetWindowSize());
+	_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
 
 	_object = new Core::Object(nullptr);
 	SetOwner(_object);
@@ -29,14 +29,14 @@ void UICamera::Initialize()
 	_projectionType		= ProjectionType::Orthographic;
 	_object->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
 
-	_clearColor = Color::blue();
+	_clearColor = Color::Blue();
 	_clearColor.a = 0.0f;
 }
 
 void UICamera::Destroy()
 {
 	SAFE_DELETE(_depthBuffer);
-	Camera::Destroy();
+	Camera::OnDestroy();
 }
 
 void UICamera::Update(float delta)
@@ -61,8 +61,8 @@ void UICamera::Render()
 	ID3D11RenderTargetView* rtv = _renderTarget->GetRenderTargetView();
 	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
 	
-	_depthBuffer->Clear(context, 1.0f, 0);
-	_renderTarget->Clear(_clearColor, dx);
+	_depthBuffer->clear(context, 1.0f, 0);
+	_renderTarget->clear(_clearColor, dx);
 
 	ID3D11SamplerState* sampler = dx->GetLinearSamplerState();
 	context->PSSetSamplers(0, 1, &sampler);

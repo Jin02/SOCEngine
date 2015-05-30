@@ -15,7 +15,7 @@ LightCulling_CSOutputBuffer::~LightCulling_CSOutputBuffer()
 	SAFE_RELEASE(_srv);
 }
 
-void LightCulling_CSOutputBuffer::Create(const Math::Size<unsigned int>& threadSize, unsigned int maxLightNumInTile)
+void LightCulling_CSOutputBuffer::Initialize(const Math::Size<unsigned int>& threadSize, unsigned int maxLightNumInTile)
 {
 	unsigned threadTotalSize = threadSize.w * threadSize.h;
 	auto device = Device::Director::GetInstance()->GetDirectX()->GetDevice();

@@ -35,11 +35,11 @@ namespace Core
 		virtual ~Component(void);
 
 	public:
-		virtual void Initialize() = 0;
-		virtual void Update(float deltaTime);
-		virtual void UpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform);
-		virtual void Render();
-		virtual void Destroy() = 0;
+		virtual void OnInitialize() = 0;
+		virtual void OnUpdate(float deltaTime);
+		virtual void OnUpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform);
+		virtual void OnRender();
+		virtual void OnDestroy() = 0;
 
 	public:
 		GET_SET_ACCESSOR(Owner, Object*, _owner);

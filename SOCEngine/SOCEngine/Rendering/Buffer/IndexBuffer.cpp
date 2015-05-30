@@ -12,7 +12,7 @@ IndexBuffer::~IndexBuffer()
 {
 }
 
-bool IndexBuffer::Create(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth, bool isDynamic)
+bool IndexBuffer::Initialize(const ENGINE_INDEX_TYPE* sysMem, unsigned int byteWidth, bool isDynamic)
 {
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;

@@ -42,7 +42,7 @@ namespace Core
 	bool Object::Culling(Camera::Frustum *frustum)
 	{
 		Vector3 wp;
-		_transform->WorldPosition(wp);
+		_transform->FetchWorldPosition(wp);
 		_culled = frustum->In(wp, _transform->GetRadius());
 
 		if(_culled == false)
@@ -60,7 +60,7 @@ namespace Core
 			return;
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
-			(*iter)->Update(delta);
+			(*iter)->OnUpdate(delta);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
@@ -71,7 +71,7 @@ namespace Core
 		if(_use == false || _culled)
 			return;
 
-		_transform->WorldMatrix(transformParam.worldMat);
+		_transform->FetchWorldMatrix(transformParam.worldMat);
 
 		TransformPipelineShaderInput transposeTransform;
 		{
@@ -85,7 +85,7 @@ namespace Core
 		}
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
-			(*iter)->UpdateTransformCB(transposeTransform);
+			(*iter)->OnUpdateTransformCB(transposeTransform);
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 			GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(transformParam);
@@ -94,7 +94,7 @@ namespace Core
 	bool Object::Intersects(Intersection::Sphere &sphere)
 	{
 		Vector3 wp;
-		_transform->WorldPosition(wp);
+		_transform->FetchWorldPosition(wp);
 		return sphere.Intersects(wp, _transform->GetRadius());
 	}
 
@@ -104,7 +104,7 @@ namespace Core
 		{
 			if((*iter) == component)
 			{
-				(*iter)->Destroy();
+				(*iter)->OnDestroy();
 				_components.erase(iter);
 				delete (*iter);
 				return;

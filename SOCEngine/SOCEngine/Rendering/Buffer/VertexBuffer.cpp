@@ -12,7 +12,7 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-bool VertexBuffer::Create( const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic)
+bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic)
 {	
 	_stride = bufferSize;
 

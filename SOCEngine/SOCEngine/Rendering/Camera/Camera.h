@@ -59,8 +59,8 @@ namespace Rendering
 			void ViewMatrix(Math::Matrix& outMatrix);
 
 		public:
-			virtual void Initialize();
-			virtual void Destroy();
+			virtual void OnInitialize();
+			virtual void OnDestroy();
 
 		public:
 			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);

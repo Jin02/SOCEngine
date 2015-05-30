@@ -38,20 +38,20 @@ namespace Rendering
 		bool operator ==(Color c);
 
 	public:
-		static Color black();
-		static Color blue();
-		static Color clear();
-		static Color cyan();
+		static Color Black();
+		static Color Blue();
+		static Color Clear();
+		static Color Cyan();
 
-		static Color gray();
+		static Color Gray();
 
-		float grayscale();
+		float Grayscale();
 
-		static Color green();		
-		static Color magenta();		
-		static Color red();		
-		static Color white();		
-		static Color yellow();
+		static Color Green();		
+		static Color Magenta();		
+		static Color Red();		
+		static Color White();		
+		static Color Yellow();
 
 		static Color Lerp(Color a, Color b, float t);
 		void SetColor(const float* color);

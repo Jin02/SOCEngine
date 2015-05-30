@@ -39,13 +39,13 @@ namespace Rendering
 				~CreateFuncArguments() {}
 			};
 
-			bool Create(const CreateFuncArguments& args);
+			bool Initialize(const CreateFuncArguments& args);
 
 		public:
-			virtual void Initialize();
-			virtual void Update(float deltaTime);
-			virtual void UpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
-			virtual void Destroy();
+			virtual void OnInitialize();
+			virtual void OnUpdate(float deltaTime);
+			virtual void OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
+			virtual void OnDestroy();
 
 		public:
 			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);

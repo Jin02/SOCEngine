@@ -43,5 +43,8 @@ namespace Device
 		GET_SET_ACCESSOR(CurrentScene, Core::Scene*, _scene);
 		GET_SET_ACCESSOR(NextScene, Core::Scene*, _nextScene);
 	};
-
 }
+
+#define GlobalDirectX Device::Director::GetInstance()->GetDirectX()
+#define GlobalDeviceDirector Device::Director::GetInstance()
+#define GlobalDeviceDirectorGetCurrentScene Device::Director::GetInstance()->GetCurrentScene()

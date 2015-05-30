@@ -172,8 +172,8 @@ void SimpleText2D::Render(ID3D11DeviceContext* context, const Math::Matrix& view
 	{		
 		_meshFilter->IASetBuffer(context);
 
-		vs->UpdateShaderToContext(context);
-		vs->UpdateInputLayoutToContext(context);
+		vs->UpdateShader(context);
+		vs->UpdateInputLayout(context);
 
 		ps->UpdateShader(context);
 

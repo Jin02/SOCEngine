@@ -48,7 +48,7 @@ struct GenericMemoryBuffer {
     void Put(Ch c) { *stack_.template Push<Ch>() = c; }
     void Flush() {}
 
-    void Clear() { stack_.Clear(); }
+    void clear() { stack_.clear(); }
     void ShrinkToFit() { stack_.ShrinkToFit(); }
     Ch* Push(size_t count) { return stack_.template Push<Ch>(count); }
     void Pop(size_t count) { stack_.template Pop<Ch>(count); }

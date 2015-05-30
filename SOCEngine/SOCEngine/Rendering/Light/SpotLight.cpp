@@ -26,7 +26,7 @@ namespace Rendering
 			//else if(angle > 179)		angle = 179;
 
 			//Math::Vector3 wp;
-			//_owner->GetTransform()->WorldPosition(wp);
+			//_owner->GetTransform()->FetchWorldPosition(wp);
 			//
 			//Cone cone(angle, range, _owner->GetTransform()->GetForward(), wp);
 

@@ -36,7 +36,7 @@ void BackBufferMaker::Initialize()
 	const Size<uint>& winSize = director->GetWindowSize();
 
 	ConstBuffer* transformConstBuffer = new ConstBuffer;
-	transformConstBuffer->Create(sizeof(Matrix));
+	transformConstBuffer->Initialize(sizeof(Matrix));
 	{
 		Matrix world, view, proj;
 
@@ -68,9 +68,9 @@ void BackBufferMaker::Initialize()
 	}
 
 	_depthBuffer = new DepthBuffer;	
-	_depthBuffer->Create(winSize);
+	_depthBuffer->Initialize(winSize);
 
-	//Create Mesh
+	//Initialize Mesh
 	{
 		Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("BackBufferMaker", "BackBufferMaker");
 
@@ -159,7 +159,7 @@ void BackBufferMaker::Render(const Rendering::Camera::Camera* mainCamera, const 
 
 	ID3D11RenderTargetView* deviceBackBuffer = dx->GetBackBuffer();
 	context->OMSetRenderTargets(1, &deviceBackBuffer, _depthBuffer->GetDepthStencilView());
-	_depthBuffer->Clear(context, 1.0f, 0);
+	_depthBuffer->clear(context, 1.0f, 0);
 
 	float color[] = {0, 0, 0, 1};
 	context->ClearRenderTargetView(deviceBackBuffer, color);
@@ -169,8 +169,8 @@ void BackBufferMaker::Render(const Rendering::Camera::Camera* mainCamera, const 
 	{
 		_meshFilter->IASetBuffer(context);
 
-		_vertexShader->UpdateShaderToContext(context);
-		_vertexShader->UpdateInputLayoutToContext(context);
+		_vertexShader->UpdateShader(context);
+		_vertexShader->UpdateInputLayout(context);
 		_vertexShader->UpdateResources(context, &_constBuffers, nullptr);
 
 		_pixelShader->UpdateShader(context);

@@ -124,7 +124,7 @@ struct ParseResult {
     friend bool operator==(ParseErrorCode code, const ParseResult & err) { return code == err.code_; }
 
     //! Reset error code.
-    void Clear() { Set(kParseErrorNone); }
+    void clear() { Set(kParseErrorNone); }
     //! Update error code and offset.
     void Set(ParseErrorCode code, size_t offset = 0) { code_ = code; offset_ = offset; }
 

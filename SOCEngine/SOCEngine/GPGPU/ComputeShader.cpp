@@ -16,7 +16,7 @@ ComputeShader::~ComputeShader(void)
 	SAFE_RELEASE(_shader);
 }
 
-bool ComputeShader::Create()
+bool ComputeShader::Initialize()
 {
 	if(_blob == nullptr)
 		return false;

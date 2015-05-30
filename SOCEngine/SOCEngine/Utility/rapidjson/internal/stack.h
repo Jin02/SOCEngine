@@ -46,7 +46,7 @@ public:
         delete ownAllocator; // Only delete if it is owned by the stack
     }
 
-    void Clear() { stackTop_ = stack_; }
+    void clear() { stackTop_ = stack_; }
 
     void ShrinkToFit() { 
         if (Empty()) {
