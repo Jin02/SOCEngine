@@ -25,6 +25,7 @@ namespace Rendering
 			bool LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
 				const std::string* includeFileName,
+				const std::vector<std::string>* includeMacros,
 				Shader::VertexShader** outVertexShader,
 				Shader::PixelShader** outPixelShader)
 			{
@@ -55,8 +56,13 @@ namespace Rendering
 				
 				const std::string baseCommand = shaderName+':';
 
-				Shader::VertexShader* vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName);
-				Shader::PixelShader* ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName);
+				Shader::VertexShader* vs = nullptr;
+				if(mainVSFuncName.empty() == false)
+					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName);
+
+				Shader::PixelShader* ps = nullptr;
+				if(mainPSFuncName.empty() == false)
+					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;
