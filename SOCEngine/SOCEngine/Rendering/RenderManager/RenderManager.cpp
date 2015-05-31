@@ -61,32 +61,50 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 
 bool RenderManager::Init()
 {
-	//const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
-	//Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
+	const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
+	Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
 
-	//Factory::EngineFactory shaderLoader(shaderMgr);
+	Factory::EngineFactory shaderLoader(shaderMgr);
 
-	////Physically Based Shading
-	//{
-	//	const std::string keys[] = {"N", "N_T0", "T0", "TBN_T0"};
+	//Physically Based Shading
+	{
+		const std::string keys[] = {"N_UV", "UV", "TBN_UV"};
 
-	//	const std::string frontFileName = "PhysicallyBased_GBuffer_";
-	//	const std::string includeFileName = "PhysicallyBased_GBuffer_Common";
+		const std::string frontFileName = "PhysicallyBased_ForwardPlus_";
+		const std::string includeFileName = "PhysicallyBased_ForwardPlus_Common";
 
-	//	for(int i = 0; i < ARRAYSIZE(keys); ++i)
-	//	{
-	//		std::string fileName = frontFileName + keys[i];
+		std::vector<std::string> macros;
+		{
+			bool enableMSAA = Device::Director::GetInstance()->GetDirectX()->GetUseMSAA();
+			if(enableMSAA)
+			{
+				macros.push_back("#define MSAA_ENABLE");
+			}
+		}
 
-	//		RenderShaders shaders;
-	//		bool loadSuccess = shaderLoader.LoadShader(fileName, "VS", "PS", &includeFileName, &shaders.vs, &shaders.ps);
+		auto LoadShader = [&](const std::string& fileName, const std::string& vsFuncName, const std::string& psFuncName)
+		{
+			ShaderGroup shaders;
+			bool loadSuccess = shaderLoader.LoadShader(fileName, vsFuncName, psFuncName, &includeFileName, &macros, &shaders.vs, &shaders.ps);
 
-	//		ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based geometry buffer shader");
-	//		{
-	//			shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_VS_MAIN_FUNC_NAME);
-	//			shaderMgr->RemoveShaderCode(fileName + ":vs:" + BASIC_PS_MAIN_FUNC_NAME);
-	//		}
-	//	}
-	//}
+			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based material shader");
+			{
+				shaderMgr->RemoveShaderCode(fileName + ":vs:" + vsFuncName);
+				shaderMgr->RemoveShaderCode(fileName + ":vs:" + psFuncName);
+			}
+
+			return shaders;
+		};
+
+		Shaders shaders;
+		for(int i = 0; i < ARRAYSIZE(keys); ++i)
+		{
+			std::string fileName = frontFileName + keys[i];
+			shaders.renderScene = LoadShader(fileName, "VS", "PS");
+			shaders.depthWrite = LoadShader(fileName, "PositionOnlyVS", "");
+			shaders.alphaTestWithDiffuse = LoadShader(fileName, "AlphaTestWithDiffuseVS", "AlphaTestWithDiffusePS");
+		}
+	}
 
 	return true;
 }

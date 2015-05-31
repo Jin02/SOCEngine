@@ -142,9 +142,6 @@
     <Filter Include="Rendering\Shader\Vertex">
       <UniqueIdentifier>{e0c47a67-31e3-4c81-b6ac-50ad293c1ef9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Shader\Mgr">
-      <UniqueIdentifier>{3487cdc5-5d70-428c-8d14-ef81a680dde5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
     </Filter>
@@ -228,6 +225,9 @@
     </Filter>
     <Filter Include="UI\Text">
       <UniqueIdentifier>{e3ad2669-43d4-46f8-9026-f168354a386a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Manager">
+      <UniqueIdentifier>{3487cdc5-5d70-428c-8d14-ef81a680dde5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -448,7 +448,7 @@
       <Filter>Rendering\Shader\Vertex</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
-      <Filter>Rendering\Shader\Mgr</Filter>
+      <Filter>Rendering\Shader\Manager</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\ComputeShader.h">
       <Filter>GPGPU\DirectCompute</Filter>
@@ -679,7 +679,7 @@
       <Filter>Rendering\Shader\Vertex</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
-      <Filter>Rendering\Shader\Mgr</Filter>
+      <Filter>Rendering\Shader\Manager</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\ComputeShader.cpp">
       <Filter>GPGPU\DirectCompute</Filter>

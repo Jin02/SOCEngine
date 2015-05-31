@@ -28,8 +28,8 @@ namespace Rendering
 			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_transparentMeshes;
 			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_opaqueMeshes;			
 
-			Structure::Map<const std::string, Shader::RenderShaders> _physicallyBasedShaders;
-			Structure::Map<const std::string, Shader::RenderShaders> _basicShaders;
+			Structure::Map<const std::string, Shader::ShaderGroup> _physicallyBasedShaders;
+			Structure::Map<const std::string, Shader::ShaderGroup> _basicShaders;
 
 		public:
 			RenderManager();
