@@ -32,9 +32,9 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, Rendering::Material
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetCustomRenderSceneShader( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomRenderSceneShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 	}
 
 	RectVertexInfo rectVertex[4];

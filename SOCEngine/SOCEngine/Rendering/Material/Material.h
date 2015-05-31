@@ -33,7 +33,7 @@ namespace Rendering
 
 		const Type										_type;
 
-		std::array<Shader::RenderShaders, (uint)Shader::RenderShaderType::Num>	_customShaders;
+		Shader::Shaders									_customShaders;
 
 	public:
 		Material(const std::string& name, Type type);
@@ -88,12 +88,10 @@ namespace Rendering
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
 
-		GET_SET_ACCESSOR(CustomRenderSceneShader, const Shader::RenderShaders&, _customShaders[(uint)Shader::RenderShaderType::RenderScene]);
-		GET_SET_ACCESSOR(CustomDepthWriteShader, const Shader::RenderShaders&, _customShaders[(uint)Shader::RenderShaderType::DepthWrite]);
-		GET_SET_ACCESSOR(CustomAlphaTestWithDiffuseShader, const Shader::RenderShaders&, _customShaders[(uint)Shader::RenderShaderType::AlphaTestWithDiffuse]);
-
-		inline const std::array<Shader::RenderShaders, (uint)Shader::RenderShaderType::Num>& GetCustomShader() const { return _customShaders; }
-		inline void SetCustomShader(const std::array<Shader::RenderShaders, (uint)Shader::RenderShaderType::Num>& shaders) { _customShaders = shaders; }
+		GET_SET_ACCESSOR(CustomRenderSceneShader, const Shader::ShaderGroup&, _customShaders.renderScene);
+		GET_SET_ACCESSOR(CustomDepthWriteShader, const Shader::ShaderGroup&, _customShaders.depthWrite);
+		GET_SET_ACCESSOR(CustomAlphaTestWithDiffuseShader, const Shader::ShaderGroup&, _customShaders.alphaTestWithDiffuse);
+		GET_SET_ACCESSOR(CustomShaders, const Shader::Shaders&, _customShaders);
 
 		friend class PhysicallyBasedMaterial;
 	};

@@ -43,9 +43,9 @@ void SimpleText2D::Initialize(uint maxLength, Rendering::Material* material)
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetCustomRenderSceneShader( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomRenderSceneShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 
 		const Texture::Texture* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture*>("font", texture);
