@@ -33,9 +33,10 @@ namespace Rendering
 
 		public:
 			bool LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode);
-			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName = nullptr);
-			
-			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName = nullptr);
+
+			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);			
+			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);
+
 			bool Add(const std::string& fullCommand, Shader::BaseShader* shader);
 			bool LoadShader(const std::string filePath);
 

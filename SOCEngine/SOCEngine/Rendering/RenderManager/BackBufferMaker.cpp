@@ -30,7 +30,7 @@ void BackBufferMaker::Initialize()
 	Manager::ShaderManager* shaderMgr = scene->GetShaderManager();
 
 	Factory::EngineFactory shaderLoader(shaderMgr);
-	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, &_vertexShader, &_pixelShader);
+	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, nullptr, &_vertexShader, &_pixelShader);
 	ASSERT_COND_MSG(_vertexShader && _pixelShader, "Error, Cant load BackBufferMaker shader files");
 
 	const Size<uint>& winSize = director->GetWindowSize();
