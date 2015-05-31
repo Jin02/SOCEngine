@@ -80,7 +80,7 @@ PS_POSITION_ONLY_INPUT PositionOnlyVS(VS_INPUT input)
 
 /******************** AlphaTest With DrawDiffuse ********************/
 
-PS_ALPHA_TEST_WITH_UV_INPUT AlphaTestWithDiffuseVS( VS_INPUT_SCENE input )
+PS_ALPHA_TEST_WITH_UV_INPUT AlphaTestWithDiffuseVS( VS_INPUT input )
 {
     PS_ALPHA_TEST_WITH_UV_INPUT ps;
 
