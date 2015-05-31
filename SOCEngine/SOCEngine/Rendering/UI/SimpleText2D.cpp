@@ -45,7 +45,7 @@ void SimpleText2D::Initialize(uint maxLength, Rendering::Material* material)
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
-		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomRenderSceneShader( Shader::RenderShaders(vs, ps) );
 
 		const Texture::Texture* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture*>("font", texture);
@@ -163,10 +163,10 @@ void SimpleText2D::UpdateText(const std::string& text)
 
 void SimpleText2D::Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat)
 {
-	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
-	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
+	Shader::VertexShader* vs = _material->GetCustomRenderSceneShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomRenderSceneShader().ps;
 
-	if(_material->GetShaderTargets().ableRender())
+	if(_material->GetCustomRenderSceneShader().ableRender())
 	{		
 		_meshFilter->IASetBuffer(context);
 

@@ -34,7 +34,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, Rendering::Material
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
-		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomRenderSceneShader( Shader::RenderShaders(vs, ps) );
 	}
 
 	RectVertexInfo rectVertex[4];
@@ -120,10 +120,10 @@ void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& vie
 		_changeSize = false;
 	}
 
-	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
-	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
+	Shader::VertexShader* vs = _material->GetCustomRenderSceneShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomRenderSceneShader().ps;
 
-	if(_material->GetShaderTargets().ableRender())
+	if(_material->GetCustomRenderSceneShader().ableRender())
 	{		
 		_meshFilter->IASetBuffer(context);
 
