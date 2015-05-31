@@ -14,7 +14,7 @@ Texture::~Texture()
 	SAFE_RELEASE(_texture);
 }
 
-void Texture::Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
+void Texture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
 {
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
@@ -55,7 +55,7 @@ void Texture::Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format, u
 		textureDesc.SampleDesc.Quality	= swapChainDesc.SampleDesc.Quality;
 	}
 
-	//Create texture
+	//Initialize texture
 	{
 		HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &_texture);
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create texture");

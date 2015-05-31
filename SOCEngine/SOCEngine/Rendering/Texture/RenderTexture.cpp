@@ -14,11 +14,11 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format)
+bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format)
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	
-	Texture::Create(size, format, bindFlags);
+	Texture::Initialize(size, format, bindFlags);
 
 	if(bindFlags & D3D11_BIND_RENDER_TARGET)
 	{
@@ -54,14 +54,14 @@ void RenderTexture::SetRenderTarget(const DepthBuffer* depthBuffer, const Direct
 	dx->GetContext()->OMSetRenderTargets(1, &_renderTargetView, depthBuffer->GetDepthStencilView());
 }
 
-void RenderTexture::Clear(const Rendering::Color& color, const DirectX* dx)
+void RenderTexture::clear(const Rendering::Color& color, const DirectX* dx)
 {
 	if(dx == nullptr)
 		dx = Director::GetInstance()->GetDirectX();
 
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	// Clear the back buffer.
+	// clear the back buffer.
 	const float colorValue[] = {color.r, color.g, color.b, color.a};
 	context->ClearRenderTargetView(_renderTargetView, colorValue);
 }

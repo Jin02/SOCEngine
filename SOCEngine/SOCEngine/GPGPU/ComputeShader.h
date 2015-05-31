@@ -55,7 +55,7 @@ namespace GPGPU
 			~ComputeShader(void);
 
 		public:
-			bool Create();
+			bool Initialize();
 			void Dispatch(ID3D11DeviceContext* context);
 
 		public:

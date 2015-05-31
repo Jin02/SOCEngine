@@ -134,12 +134,12 @@ public:
     /*! This deallocates all memory chunks, excluding the user-supplied buffer.
     */
     ~MemoryPoolAllocator() {
-        Clear();
+        clear();
         delete ownBaseAllocator_;
     }
 
     //! Deallocates all memory chunks, excluding the user-supplied buffer.
-    void Clear() {
+    void clear() {
         while(chunkHead_ != 0 && chunkHead_ != userBuffer_) {
             ChunkHeader* next = chunkHead_->next;
             baseAllocator_->Free(chunkHead_);

@@ -28,7 +28,7 @@ namespace UI
 		virtual ~SimpleText2D();
 
 	public:
-		void Initialize(uint maxLength, Rendering::Material* material = nullptr);
+		void Initialize(uint maxLength, const std::string& sharedVerticesKey, Rendering::Material* material = nullptr);
 		void UpdateText(const std::string& text);
 
 	public:

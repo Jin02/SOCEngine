@@ -21,7 +21,7 @@ SimpleSoundPlayer::~SimpleSoundPlayer(void)
 	CoUninitialize();
 }
 
-std::auto_ptr<SimpleSoundPlayer> SimpleSoundPlayer::Create(const std::string& filePath)
+std::auto_ptr<SimpleSoundPlayer> SimpleSoundPlayer::Initialize(const std::string& filePath)
 {
 	std::auto_ptr<SimpleSoundPlayer> soundPlayer(new SimpleSoundPlayer);
 	soundPlayer->Init(filePath);

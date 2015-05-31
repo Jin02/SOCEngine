@@ -20,7 +20,7 @@ namespace Rendering
 		{
 			//Core::Transform* tf = _owner->GetTransform();
 			//Math::Vector3 wp;
-			//tf->WorldPosition(wp);
+			//tf->FetchWorldPosition(wp);
 
 			//return Sphere::Intersects(sphere, Sphere(wp, range));
 			return false;

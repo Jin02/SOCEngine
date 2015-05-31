@@ -13,7 +13,7 @@ ConstBuffer::~ConstBuffer()
 {
 }
 
-bool ConstBuffer::Create(unsigned int size)
+bool ConstBuffer::Initialize(unsigned int size)
 {
 	D3D11_BUFFER_DESC desc;
 	desc.Usage = D3D11_USAGE_DEFAULT;

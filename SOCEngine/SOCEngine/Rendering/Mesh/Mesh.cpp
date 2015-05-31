@@ -16,10 +16,10 @@ namespace Rendering
 
 		Mesh::~Mesh()
 		{
-			Destroy();
+			OnDestroy();
 		}
 
-		bool Mesh::Create(const CreateFuncArguments& args)
+		bool Mesh::Initialize(const CreateFuncArguments& args)
 		{
 			_filter = new MeshFilter;
 			if(_filter->CreateBuffer(args) == false)
@@ -37,9 +37,9 @@ namespace Rendering
 			}
 
 			_transformConstBuffer = new Buffer::ConstBuffer;
-			if(_transformConstBuffer->Create(sizeof(Core::TransformPipelineShaderInput)) == false)
+			if(_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput)) == false)
 			{
-				ASSERT_MSG("Error, transformBuffer->Create");
+				ASSERT_MSG("Error, transformBuffer->Initialize");
 				return false;
 			}
 
@@ -47,15 +47,15 @@ namespace Rendering
 			return true;
 		}
 
-		void Mesh::Initialize()
+		void Mesh::OnInitialize()
 		{
 		}
 
-		void Mesh::Update(float deltaTime)
+		void Mesh::OnUpdate(float deltaTime)
 		{
 		}
 
-		void Mesh::UpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
+		void Mesh::OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);
@@ -64,7 +64,7 @@ namespace Rendering
 			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
-		void Mesh::Destroy()
+		void Mesh::OnDestroy()
 		{
 			SAFE_DELETE(_filter);
 			SAFE_DELETE(_renderer);

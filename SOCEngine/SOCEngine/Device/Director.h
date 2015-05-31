@@ -33,6 +33,7 @@ namespace Device
 	public:
 		void Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		void Run();
+		void Exit();
 
 	public:
 		GET_ACCESSOR(Win, const Win32*, _win);
@@ -42,5 +43,8 @@ namespace Device
 		GET_SET_ACCESSOR(CurrentScene, Core::Scene*, _scene);
 		GET_SET_ACCESSOR(NextScene, Core::Scene*, _nextScene);
 	};
-
 }
+
+#define GlobalDirectX Device::Director::GetInstance()->GetDirectX()
+#define GlobalDeviceDirector Device::Director::GetInstance()
+#define GlobalDeviceDirectorGetCurrentScene Device::Director::GetInstance()->GetCurrentScene()

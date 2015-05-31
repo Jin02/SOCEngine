@@ -60,12 +60,12 @@ namespace Rendering
 		return true;
 	}
 
-	void VertexShader::UpdateShaderToContext(ID3D11DeviceContext* context)
+	void VertexShader::UpdateShader(ID3D11DeviceContext* context)
 	{
 		context->VSSetShader(_shader, nullptr, 0);
 	}
 
-	void VertexShader::UpdateInputLayoutToContext(ID3D11DeviceContext* context)
+	void VertexShader::UpdateInputLayout(ID3D11DeviceContext* context)
 	{
 		context->IASetInputLayout(_layout);
 	}

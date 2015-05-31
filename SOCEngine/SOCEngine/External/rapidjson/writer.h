@@ -89,7 +89,7 @@ public:
     void Reset(OutputStream& os) {
         os_ = &os;
         hasRoot_ = false;
-        level_stack_.Clear();
+        level_stack_.clear();
     }
 
     //! Checks whether the output is a complete JSON.

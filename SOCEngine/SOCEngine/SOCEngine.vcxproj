@@ -22,6 +22,31 @@
     <ClInclude Include="Core\Time\Timer.h" />
     <ClInclude Include="Core\Transform\Transform.h" />
     <ClInclude Include="Core\Transform\TransformPipelineParam.h" />
+    <ClInclude Include="External\rapidjson\allocators.h" />
+    <ClInclude Include="External\rapidjson\document.h" />
+    <ClInclude Include="External\rapidjson\encodedstream.h" />
+    <ClInclude Include="External\rapidjson\encodings.h" />
+    <ClInclude Include="External\rapidjson\error\en.h" />
+    <ClInclude Include="External\rapidjson\error\error.h" />
+    <ClInclude Include="External\rapidjson\filereadstream.h" />
+    <ClInclude Include="External\rapidjson\filestream.h" />
+    <ClInclude Include="External\rapidjson\filewritestream.h" />
+    <ClInclude Include="External\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="External\rapidjson\internal\itoa.h" />
+    <ClInclude Include="External\rapidjson\internal\meta.h" />
+    <ClInclude Include="External\rapidjson\internal\pow10.h" />
+    <ClInclude Include="External\rapidjson\internal\stack.h" />
+    <ClInclude Include="External\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="External\rapidjson\memorybuffer.h" />
+    <ClInclude Include="External\rapidjson\memorystream.h" />
+    <ClInclude Include="External\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="External\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="External\rapidjson\prettywriter.h" />
+    <ClInclude Include="External\rapidjson\rapidjson.h" />
+    <ClInclude Include="External\rapidjson\reader.h" />
+    <ClInclude Include="External\rapidjson\stringbuffer.h" />
+    <ClInclude Include="External\rapidjson\writer.h" />
+    <ClInclude Include="External\tiny_obj_loader.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="GPGPU\CSInputBuffer.h" />
     <ClInclude Include="GPGPU\CSOutputBuffer.h" />
@@ -29,7 +54,6 @@
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Importer\ObjImporter.h" />
-    <ClInclude Include="Importer\tiny_obj_loader.h" />
     <ClInclude Include="Intersection\AABB.h" />
     <ClInclude Include="Intersection\Cone.h" />
     <ClInclude Include="Intersection\Intersection.h" />
@@ -89,12 +113,12 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
-    <ClInclude Include="Rendering\UI\FontLoader.h" />
-    <ClInclude Include="Rendering\UI\SimpleImage2D.h" />
-    <ClInclude Include="Rendering\UI\SimpleText2D.h" />
-    <ClInclude Include="Rendering\UI\UICamera.h" />
-    <ClInclude Include="Rendering\UI\UIObject.h" />
-    <ClInclude Include="Rendering\UI\UIManager.h" />
+    <ClInclude Include="UI\FontLoader.h" />
+    <ClInclude Include="UI\SimpleImage2D.h" />
+    <ClInclude Include="UI\SimpleText2D.h" />
+    <ClInclude Include="UI\UICamera.h" />
+    <ClInclude Include="UI\UIObject.h" />
+    <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Sound\SimpleSoundPlayer.h" />
     <ClInclude Include="Structure\BaseStructure.h" />
     <ClInclude Include="Structure\MapInMap.h" />
@@ -107,30 +131,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Utility\DirectoryManager.h" />
-    <ClInclude Include="Utility\rapidjson\allocators.h" />
-    <ClInclude Include="Utility\rapidjson\document.h" />
-    <ClInclude Include="Utility\rapidjson\encodedstream.h" />
-    <ClInclude Include="Utility\rapidjson\encodings.h" />
-    <ClInclude Include="Utility\rapidjson\error\en.h" />
-    <ClInclude Include="Utility\rapidjson\error\error.h" />
-    <ClInclude Include="Utility\rapidjson\filereadstream.h" />
-    <ClInclude Include="Utility\rapidjson\filestream.h" />
-    <ClInclude Include="Utility\rapidjson\filewritestream.h" />
-    <ClInclude Include="Utility\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="Utility\rapidjson\internal\itoa.h" />
-    <ClInclude Include="Utility\rapidjson\internal\meta.h" />
-    <ClInclude Include="Utility\rapidjson\internal\pow10.h" />
-    <ClInclude Include="Utility\rapidjson\internal\stack.h" />
-    <ClInclude Include="Utility\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="Utility\rapidjson\memorybuffer.h" />
-    <ClInclude Include="Utility\rapidjson\memorystream.h" />
-    <ClInclude Include="Utility\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="Utility\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="Utility\rapidjson\prettywriter.h" />
-    <ClInclude Include="Utility\rapidjson\rapidjson.h" />
-    <ClInclude Include="Utility\rapidjson\reader.h" />
-    <ClInclude Include="Utility\rapidjson\stringbuffer.h" />
-    <ClInclude Include="Utility\rapidjson\writer.h" />
     <ClInclude Include="Utility\Utility.h" />
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
@@ -144,6 +144,7 @@
     </ClCompile>
     <ClCompile Include="Core\Time\Timer.cpp" />
     <ClCompile Include="Core\Transform\Transform.cpp" />
+    <ClCompile Include="External\tiny_obj_loader.cc" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
     <ClCompile Include="GPGPU\CSInputBuffer.cpp" />
     <ClCompile Include="GPGPU\CSOutputBuffer.cpp" />
@@ -151,7 +152,6 @@
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Importer\ObjImporter.cpp" />
-    <ClCompile Include="Importer\tiny_obj_loader.cc" />
     <ClCompile Include="Intersection\AABB.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
@@ -202,12 +202,12 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
-    <ClCompile Include="Rendering\UI\FontLoader.cpp" />
-    <ClCompile Include="Rendering\UI\SimpleImage2D.cpp" />
-    <ClCompile Include="Rendering\UI\SimpleText2D.cpp" />
-    <ClCompile Include="Rendering\UI\UICamera.cpp" />
-    <ClCompile Include="Rendering\UI\UIObject.cpp" />
-    <ClCompile Include="Rendering\UI\UIManager.cpp" />
+    <ClCompile Include="UI\FontLoader.cpp" />
+    <ClCompile Include="UI\SimpleImage2D.cpp" />
+    <ClCompile Include="UI\SimpleText2D.cpp" />
+    <ClCompile Include="UI\UICamera.cpp" />
+    <ClCompile Include="UI\UIObject.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="Sound\SimpleSoundPlayer.cpp" />
     <ClCompile Include="Utility\DirectoryManager.cpp" />
     <ClCompile Include="Device\Director.cpp" />
@@ -246,7 +246,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;Rendering/UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Sound;UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>

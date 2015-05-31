@@ -253,7 +253,7 @@ template<typename CharType>
 struct GenericStringRef {
     typedef CharType Ch; //!< character type of the string
 
-    //! Create string reference from \c const character array
+    //! Initialize string reference from \c const character array
     /*!
         This constructor implicitly creates a constant string reference from
         a \c const character array.  It has better performance than
@@ -302,7 +302,7 @@ struct GenericStringRef {
     explicit GenericStringRef(const CharType* str)
         : s(str), length(internal::StrLen(str)){}
 
-    //! Create constant string reference from pointer and length
+    //! Initialize constant string reference from pointer and length
     /*! \param str constant string, lifetime assumed to be longer than the use of the string in e.g. a GenericValue
         \param len length of the string, excluding the trailing NULL terminator
 
@@ -1057,7 +1057,7 @@ public:
     /*! This function do not deallocate memory in the array, i.e. the capacity is unchanged.
         \note Linear time complexity.
     */
-    void Clear() {
+    void clear() {
         RAPIDJSON_ASSERT(IsArray()); 
         for (SizeType i = 0; i < data_.a.size; ++i)
             data_.a.elements[i].~GenericValue();
@@ -1707,7 +1707,7 @@ private:
             while (stack_.GetSize() > 0)    // Here assumes all elements in stack array are GenericValue (Member is actually 2 GenericValue objects)
                 (stack_.template Pop<ValueType>(1))->~ValueType();
         else
-            stack_.Clear();
+            stack_.clear();
         stack_.ShrinkToFit();
     }
 

@@ -13,7 +13,7 @@ namespace Rendering
 
 		public:
 			PixelShader(ID3DBlob* blob);
-			~PixelShader(void);
+			virtual ~PixelShader(void);
 
 		public:
 			bool CreateShader();

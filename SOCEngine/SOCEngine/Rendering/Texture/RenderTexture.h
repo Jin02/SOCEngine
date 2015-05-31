@@ -25,10 +25,10 @@ namespace Rendering
 			virtual ~RenderTexture();
 
 		public:
-			bool Create(const Math::Size<unsigned int>& size, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT);
+			bool Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT);
 			void Destroy();
 			void SetRenderTarget(const DepthBuffer* depthBuffer, const Device::DirectX* dx = nullptr);
-			void Clear(const Color& color, const Device::DirectX* dx = nullptr);
+			void clear(const Color& color, const Device::DirectX* dx = nullptr);
 
 		public:
 			GET_ACCESSOR(RenderTargetView, ID3D11RenderTargetView*, _renderTargetView);

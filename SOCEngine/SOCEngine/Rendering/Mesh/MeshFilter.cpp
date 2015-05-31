@@ -32,7 +32,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&vertexBuffer, args.fileName, args.key) == false )
 		{
 			vertexBuffer = new Buffer::VertexBuffer;
-			if( vertexBuffer->Create(args.vertex.data, args.vertex.byteWidth, _vertexCount, args.isDynamic) == false )
+			if( vertexBuffer->Initialize(args.vertex.data, args.vertex.byteWidth, _vertexCount, args.isDynamic) == false )
 				ASSERT_MSG("Error, can not create vertex buffer");
 
 			bufferMgr->Add(args.fileName, args.key, vertexBuffer);
@@ -47,7 +47,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&indexBuffer, args.fileName, args.key) == false )
 		{
 			indexBuffer = new Buffer::IndexBuffer;
-			if( indexBuffer->Create(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
+			if( indexBuffer->Initialize(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
 				ASSERT_MSG("Error, can not create index buffer");
 
 			bufferMgr->Add(args.fileName, args.key, indexBuffer);

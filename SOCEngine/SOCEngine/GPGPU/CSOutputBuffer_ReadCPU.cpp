@@ -14,7 +14,7 @@ CSOutputBuffer_ReadCPU::~CSOutputBuffer_ReadCPU()
 
 }
 
-bool CSOutputBuffer_ReadCPU::Create(unsigned int stride, unsigned int num, bool useShader)
+bool CSOutputBuffer_ReadCPU::Initialize(unsigned int stride, unsigned int num, bool useShader)
 {
 	D3D11_BUFFER_DESC desc;
     desc.ByteWidth = stride * num;

@@ -381,7 +381,7 @@ public:
         if (parseFlags & kParseIterativeFlag)
             return IterativeParse<parseFlags>(is, handler);
 
-        parseResult_.Clear();
+        parseResult_.clear();
 
         ClearStackOnExit scope(*this);
 
@@ -437,7 +437,7 @@ private:
     GenericReader(const GenericReader&);
     GenericReader& operator=(const GenericReader&);
 
-    void ClearStack() { stack_.Clear(); }
+    void ClearStack() { stack_.clear(); }
 
     // clear stack on any exit from ParseStream, e.g. due to exception
     struct ClearStackOnExit {
@@ -1316,7 +1316,7 @@ private:
 
     template <unsigned parseFlags, typename InputStream, typename Handler>
     ParseResult IterativeParse(InputStream& is, Handler& handler) {
-        parseResult_.Clear();
+        parseResult_.clear();
         ClearStackOnExit scope(*this);
         IterativeParsingState state = IterativeParsingStartState;
 

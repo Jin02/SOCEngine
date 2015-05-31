@@ -17,10 +17,10 @@ namespace Rendering
 			virtual ~DepthBuffer();
 
 		public:
-			bool Create(const Math::Size<unsigned int>& size, bool useShaderResource = false);
+			bool Initialize(const Math::Size<unsigned int>& size, bool useShaderResource = false);
 			void Destroy();
 
-			void Clear(ID3D11DeviceContext* context, float depth, unsigned char stencil);
+			void clear(ID3D11DeviceContext* context, float depth, unsigned char stencil);
 
 		public:
 			GET_ACCESSOR(DepthStencilView, ID3D11DepthStencilView*, _depthStencilView);

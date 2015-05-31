@@ -54,7 +54,7 @@ namespace Rendering
 					unsigned int byteWidth;
 				};
 				Buffer<void>					vertex;
-				Buffer<ENGINE_INDEX_TYPE>		index;
+				Buffer<unsigned int>			index;
 				bool							isDynamic;
 				MeshFilter::BufferElementFlag	bufferFlag;
 

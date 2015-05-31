@@ -14,17 +14,17 @@ namespace Core
 	{
 	}
 
-	void Component::Update(float deltaTime)
+	void Component::OnUpdate(float deltaTime)
 	{
 		//null
 	}
 
-	void Component::UpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform)
+	void Component::OnUpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform)
 	{
 		//null
 	}
 
-	void Component::Render()
+	void Component::OnRender()
 	{
 		//null
 	}

@@ -47,19 +47,26 @@ namespace Device
 				break;
 			}
 
-			scene->OnInput(win->_mouse, win->_keyboard);
+			if(scene)
+				scene->Input(win->_mouse, win->_keyboard);
+
 			if(win->_mouse.states[(uint)type] != Mouse::Action::Down)
 				win->_mouse.states[(uint)type] = Mouse::Action::None;
 		}
 		else if(WM_KEYDOWN == msg)
 		{
 			win->_keyboard.states[wParam] = Keyboard::Type::Down;
-			scene->OnInput(win->_mouse, win->_keyboard);
+			
+			if(scene)
+				scene->Input(win->_mouse, win->_keyboard);
 		}
 		else if(msg == WM_KEYUP)
 		{
 			win->_keyboard.states[wParam] = Keyboard::Type::Up;
-			scene->OnInput(win->_mouse, win->_keyboard);
+
+			if(scene)
+				scene->Input(win->_mouse, win->_keyboard);
+
 			win->_keyboard.states[wParam] = Keyboard::Type::None;
 		}
 		else if(msg == WM_DESTROY || msg == WM_CLOSE)

@@ -38,7 +38,7 @@ namespace Core
 	void Transform::LookAt(const Vector3& targetPosition)
 	{
 		Vector3 worldPos;
-		WorldPosition(worldPos);
+		FetchWorldPosition(worldPos);
 
 		Vector3 dir = targetPosition - worldPos;
 		dir.Normalize();
@@ -64,7 +64,7 @@ namespace Core
 	void Transform::LookAt(Transform *target)
 	{
 		Vector3 targetPos;
-		target->WorldPosition(targetPos);
+		target->FetchWorldPosition(targetPos);
 
 		LookAt(targetPos);
 	}
@@ -99,10 +99,10 @@ namespace Core
 		_position += _right * units;
 	}
 
-	void Transform::WorldMatrix(Math::Matrix& outMatrix)
+	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix)
 	{
 		Transform tf(nullptr);
-		WorldTransform(tf);
+		FetchWorldTransform(tf);
 
 		Matrix::RotationQuaternion(outMatrix, tf._rotation);
 		outMatrix._41 = tf._position.x;
@@ -166,13 +166,13 @@ namespace Core
 	void Transform::UpdateDirection(const Math::Vector3& dir)
 	{
 		Vector3 worldPos;
-		WorldPosition(worldPos);
+		FetchWorldPosition(worldPos);
 
 		Vector3 p = worldPos + dir;
 		LookAt(p);
 	}
 
-	void Transform::WorldTransform(Transform& out)
+	void Transform::FetchWorldTransform(Transform& out)
 	{
 		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
 		Quaternion q;
@@ -201,7 +201,7 @@ namespace Core
 		Quaternion::RotationYawPitchRoll(out._rotation, yaw, pitch, roll);
 	}
 
-	void Transform::WorldPosition(Math::Vector3& outPosition)
+	void Transform::FetchWorldPosition(Math::Vector3& outPosition)
 	{
 		Vector3 p(0, 0, 0);
 
@@ -226,7 +226,7 @@ namespace Core
 		Matrix::Inverse(outMatrix, mat);
 	}
 
-	void Transform::WorldEulerAngle(Math::Vector3& outEuler)
+	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler)
 	{
 		Vector3 p(0, 0, 0);
 
@@ -239,7 +239,7 @@ namespace Core
 		outEuler = p;
 	}
 
-	void Transform::WorldScale(Math::Vector3& outScale)
+	void Transform::FetchWorldScale(Math::Vector3& outScale)
 	{
 		Vector3 p(1, 1, 1);
 

@@ -83,7 +83,6 @@ void Scene::Render()
 	};
 	_cameraMgr->IterateContent(CamIteration);
 
-	OnRenderPost();
 #endif
 	
 	ID3D11DeviceContext* context = _dx->GetContext();
@@ -97,6 +96,8 @@ void Scene::Render()
 
 	//swap
 	_dx->GetSwapChain()->Present(0, 0);
+
+	OnRenderPost();
 }
 
 void Scene::Destroy()
@@ -126,4 +127,10 @@ void Scene::NextState()
 Core::Object* Scene::AddObject(Core::Object* object, bool clone)
 {
 	return _rootObjects.Add(object->GetName(), object, clone);
+}
+
+void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
+{
+	if(_state == State::Loop)
+		OnInput(mouse, keyboard);
 }

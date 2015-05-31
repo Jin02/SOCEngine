@@ -8,9 +8,6 @@
 class TestScene : public Core::Scene
 {
 private:
-	UI::SimpleImage2D* img;
-	std::auto_ptr<Sound::SimpleSoundPlayer> sound;
-	UI::SimpleText2D* text;
 
 public:
 	TestScene(void);

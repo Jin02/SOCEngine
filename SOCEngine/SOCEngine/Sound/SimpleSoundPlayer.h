@@ -26,7 +26,7 @@ namespace Sound
 		~SimpleSoundPlayer(void);
 
 	public:
-		static std::auto_ptr<SimpleSoundPlayer> Create(const std::string& filePath);
+		static std::auto_ptr<SimpleSoundPlayer> Initialize(const std::string& filePath);
 		bool Init(const std::string& filePath);
 		void Destroy();
 

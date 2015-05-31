@@ -53,10 +53,10 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	UpdateThreadGroup(&threadGroup, false);
 	_computeShader = new ComputeShader(threadGroup, blob);
 
-	ASSERT_COND_MSG(_computeShader->Create(), "can not create compute shader");
+	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
 
 	_globalDataBuffer = new ConstBuffer;
-	ASSERT_COND_MSG(_globalDataBuffer->Create(sizeof(CullingConstBuffer)), "can not create const buffer");
+	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(CullingConstBuffer)), "can not create const buffer");
 
 	ComputeShader::InputBuffer inputBufferElement;
 
@@ -65,7 +65,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		// Point Light
 		{
 			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
-			ASSERT_COND_MSG(pointLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
+			ASSERT_COND_MSG(pointLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
 			inputBufferElement.idx = InputBuffer::PointLightRadiusWithCenter;
 			inputBufferElement.buffer = pointLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);
@@ -74,7 +74,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		// Spot Light
 		{
 			CSInputBuffer* spotLightCenterWithRadius = new CSInputBuffer;
-			ASSERT_COND_MSG(spotLightCenterWithRadius->Create(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
+			ASSERT_COND_MSG(spotLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
 			inputBufferElement.idx = InputBuffer::SpotLightRadiusWithCenter;
 			inputBufferElement.buffer = spotLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);
@@ -96,7 +96,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	{
 		LightCulling_CSOutputBuffer* lightIndexBuffer = new LightCulling_CSOutputBuffer;
 		Math::Size<unsigned int> size = CalcThreadSize();
-		lightIndexBuffer->Create(size, CalcMaxNumLightsInTile());
+		lightIndexBuffer->Initialize(size, CalcMaxNumLightsInTile());
 
 		ComputeShader::OutputBuffer outputBuffer;
 		{

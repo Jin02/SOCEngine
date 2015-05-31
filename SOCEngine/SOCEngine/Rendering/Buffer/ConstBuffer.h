@@ -13,7 +13,7 @@ namespace Rendering
 			~ConstBuffer();
 
 		public:
-			bool Create(unsigned int size);
+			bool Initialize(unsigned int size);
 		};
 
 	}

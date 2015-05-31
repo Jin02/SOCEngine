@@ -16,7 +16,7 @@ namespace Rendering
 			~ConstBuffer_CPURead();
 
 		public:
-			bool Create(unsigned int stride, unsigned int num);
+			bool Initialize(unsigned int stride, unsigned int num);
 			void Read(ID3D11DeviceContext* context, BaseBuffer* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
 
 		private:
