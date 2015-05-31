@@ -5,32 +5,42 @@
 #include "GeometryShader.h"
 #include "HullShader.h"
 
+#include <assert.h>
+
 namespace Rendering
 {
 	namespace Shader
 	{
-		enum class RenderShaderType : unsigned int
+		enum class ShaderUsage : unsigned int
 		{
 			RenderScene,
 			DepthWrite,
 			AlphaTestWithDiffuse,
 			Num
 		};
-		struct RenderShaders
+
+		struct ShaderGroup
 		{
 			VertexShader*		vs;
 			PixelShader*		ps;
 			GeometryShader*		gs;
 			HullShader*			hs;
 
-			RenderShaders(VertexShader* _vs = nullptr, PixelShader* _ps = nullptr, GeometryShader* _gs = nullptr, HullShader* _hs = nullptr)
-				: vs(_vs), ps(_ps), gs(_gs), hs(_hs) {}
-			~RenderShaders() {}
+			ShaderGroup() : vs(nullptr), ps(nullptr), gs(nullptr), hs(nullptr) {}
+			ShaderGroup(VertexShader* _vs, PixelShader* _ps, GeometryShader* _gs, HullShader* _hs) : vs(_vs), ps(_ps), gs(_gs), hs(_hs) {}
+			~ShaderGroup() {}
 
 			const bool ableRender() const
 			{
 				return (vs != nullptr) && (ps != nullptr);
 			}
+		};
+
+		struct Shaders
+		{
+			ShaderGroup renderScene;
+			ShaderGroup depthWrite;
+			ShaderGroup alphaTestWithDiffuse;
 		};
 	}
 }
