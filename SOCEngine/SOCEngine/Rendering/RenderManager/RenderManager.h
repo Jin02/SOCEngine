@@ -28,8 +28,7 @@ namespace Rendering
 			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_transparentMeshes;
 			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_opaqueMeshes;			
 
-			Structure::Map<const std::string, Shader::ShaderGroup> _physicallyBasedShaders;
-			Structure::Map<const std::string, Shader::ShaderGroup> _basicShaders;
+			std::map<std::string, Shader::Shaders>												_physicallyBasedShaders;
 
 		public:
 			RenderManager();
@@ -52,6 +51,8 @@ namespace Rendering
 			bool Add(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 			void Change(const Material* material, const Mesh::Mesh* mesh, MeshType type);
 			std::pair<const Material*, const Mesh::Mesh*>* Find(const Material* material, const Mesh::Mesh* mesh, MeshType type);
+
+
 
 		public:
 			void ScreenMerge();

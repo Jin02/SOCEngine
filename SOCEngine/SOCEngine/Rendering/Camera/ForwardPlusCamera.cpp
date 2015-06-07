@@ -64,65 +64,14 @@ void ForwardPlusCamera::Render()
 	{
 		// opaque
 		{
-			context->OMSetRenderTargets(1, &nullRenderTargetView, _opaqueDepthBuffer->GetDepthStencilView() );
-			context->OMSetDepthStencilState( dx->GetDepthGreaterState(), 0 ); //inverted 32bit depth 버퍼를 씀. inverted로 하는게 더 정밀도가 높음
-
-			context->PSSetShader(nullptr, nullptr, 0);
-			context->PSSetSamplers(0, 1, &nullSamplerState);
-
-			const Material* prevMtl = nullptr;
-			auto OpaqueMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
-			{
-				const RenderShaders& shaders = material->GetShaderTargets();
-				if(material != prevMtl)
-				{
-					VertexShader* vs = shaders.onlyWriteDepthVS;
-					ASSERT_COND_MSG(vs, "not found only write depth vs");
-					{
-						vs->UpdateInputLayout(context);
-						vs->UpdateShader(context);
-					}
-
-					prevMtl = material;
-				}
-
-				Mesh::MeshFilter* filter = mesh->GetMeshFilter();
-				context->DrawIndexed(filter->GetIndexCount(), 0, 0);
-			};
-
-			// Render opaque mesh
-			{
-				renderMgr->Iterate(OpaqueMeshRender, Manager::RenderManager::MeshType::Opaque);
-			}
 		}
 	
 		// alpha test
 		{
-			bool useMSAA = dx->GetUseMSAA();
-			ID3D11BlendState* blendStateAlphaTest = useMSAA ? dx->GetAlphaToCoverageBlendState() : dx->GetOpaqueDepthOnlyBlendState();
-			context->RSSetState(nullptr);
-
-			
-			context->OMSetBlendState(blendStateAlphaTest, blendFactor, 0xffffffff);
-			context->OMSetRenderTargets(1, nullptr, _opaqueDepthBuffer->GetDepthStencilView() );
-
-			auto AlphaMeshRender = [&](const Material* material, const Mesh::Mesh* mesh)
-			{
-
-			};
-			ID3D11SamplerState* sampler = dx->GetAnisotropicSamplerState();
-			context->PSSetSamplers(0, 1, &sampler);
-
-			// Render transparent mesh
-			{
-				renderMgr->Iterate(AlphaMeshRender, Manager::RenderManager::MeshType::Transparent);
-			}
 		}
 
 		// restore
 		{
-			context->RSSetState(nullptr);
-			context->OMSetBlendState(dx->GetOpaqueBlendState(), blendFactor, 0xffffffff);
 		}
 	}
 }

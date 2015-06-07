@@ -24,7 +24,7 @@ cbuffer Material : register( b2 )
 	float2 	material_uvTiling;
 };
 
-#ifdef(MSAA_ENABLE)
+#ifdef MSAA_ENABLE
 #define ALPHA_TEST_BIAS 0.003f
 #else
 #define ALPHA_TEST_BIAS 0.5f

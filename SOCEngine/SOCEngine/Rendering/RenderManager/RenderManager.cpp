@@ -85,14 +85,9 @@ bool RenderManager::Init()
 		auto LoadShader = [&](const std::string& fileName, const std::string& vsFuncName, const std::string& psFuncName)
 		{
 			ShaderGroup shaders;
-			bool loadSuccess = shaderLoader.LoadShader(fileName, vsFuncName, psFuncName, &includeFileName, &macros, &shaders.vs, &shaders.ps);
+			shaderLoader.LoadShader(fileName, vsFuncName, psFuncName, &includeFileName, &macros, &shaders.vs, &shaders.ps);
 
-			ASSERT_COND_MSG(loadSuccess, "RenderManager Error : can not load physically based material shader");
-			{
-				shaderMgr->RemoveShaderCode(fileName + ":vs:" + vsFuncName);
-				shaderMgr->RemoveShaderCode(fileName + ":vs:" + psFuncName);
-			}
-
+			ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
 			return shaders;
 		};
 
@@ -103,7 +98,11 @@ bool RenderManager::Init()
 			shaders.renderScene = LoadShader(fileName, "VS", "PS");
 			shaders.depthWrite = LoadShader(fileName, "PositionOnlyVS", "");
 			shaders.alphaTestWithDiffuse = LoadShader(fileName, "AlphaTestWithDiffuseVS", "AlphaTestWithDiffusePS");
+
+			_physicallyBasedShaders.insert(std::make_pair(fileName, shaders));
 		}
+
+		shaderMgr->RemoveAllShaderCode();
 	}
 
 	return true;
