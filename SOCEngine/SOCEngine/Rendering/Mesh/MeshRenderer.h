@@ -19,7 +19,6 @@ namespace Rendering
 
 		public:
 			bool AddMaterial(Material* material, bool copy = false);
-			void ClassifyMaterialWithMesh(void* mesh);
 
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());

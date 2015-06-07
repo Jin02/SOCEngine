@@ -43,7 +43,6 @@ namespace Rendering
 				return false;
 			}
 
-			_renderer->ClassifyMaterialWithMesh(this);
 			return true;
 		}
 
@@ -59,9 +58,6 @@ namespace Rendering
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);
-
-			//±ÍÂúÀ¸´Ï ¿©±â¼­ °â»ç°â»ç Ã¼Å© ÇÏÀÚ
-			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
 		void Mesh::OnDestroy()
