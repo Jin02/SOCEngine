@@ -63,7 +63,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
+			void RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects);
 
 		public:
 			GET_SET_ACCESSOR(Near, float, _clippingNear);

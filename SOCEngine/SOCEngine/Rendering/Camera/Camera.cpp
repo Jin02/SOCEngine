@@ -104,7 +104,7 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	ViewMatrix(outMatrix, worldMat);
 }
 
-void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects)
+void Camera::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -129,8 +129,8 @@ void Camera::UpdateTransformCBAndCheckRender(const Structure::Vector<std::string
 
 	auto& dataInobjects = objects.GetVector();
 	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
-	{				
+	{
 		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-		GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(tfParam);
+		GET_CONTENT_FROM_ITERATOR(iter)->RenderPreviewWithUpdateTransformCB(tfParam);
 	}
 }
