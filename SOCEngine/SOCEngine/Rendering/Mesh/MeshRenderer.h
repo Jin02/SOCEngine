@@ -19,8 +19,8 @@ namespace Rendering
 
 		public:
 			bool AddMaterial(Material* material, bool copy = false);
-			void ClassifyMaterialWithMesh(void* mesh);
-
+			bool IsTransparent();
+		
 		public:
 			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
 		};
