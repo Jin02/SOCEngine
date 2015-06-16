@@ -41,10 +41,14 @@ namespace Rendering
 
 			bool Initialize(const CreateFuncArguments& args);
 
+		private:
+			void ClassifyRenderMeshType();
+
 		public:
 			virtual void OnInitialize();
 			virtual void OnUpdate(float deltaTime);
 			virtual void OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
+			virtual void OnRenderPreview();
 			virtual void OnDestroy();
 
 		public:
