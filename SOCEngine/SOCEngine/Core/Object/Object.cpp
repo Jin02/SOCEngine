@@ -39,7 +39,7 @@ namespace Core
 		return (parent == _parent); 
 	}
 
-	bool Object::Culling(Camera::Frustum *frustum)
+	bool Object::Culling(const Camera::Frustum *frustum)
 	{
 		Vector3 wp;
 		_transform->FetchWorldPosition(wp);
@@ -66,9 +66,9 @@ namespace Core
 			GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
 	}
 
-	void Object::UpdateTransformCBAndCheckRender(TransformPipelineParam& transformParam)
+	void Object::RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transformParam)
 	{
-		if(_use == false || _culled)
+		if(_use == false)
 			return;
 
 		_transform->FetchWorldMatrix(transformParam.worldMat);
@@ -85,10 +85,13 @@ namespace Core
 		}
 
 		for(auto iter = _components.begin(); iter != _components.end(); ++iter)
+		{
 			(*iter)->OnUpdateTransformCB(transposeTransform);
+			(*iter)->OnRenderPreview();
+		}
 
 		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			GET_CONTENT_FROM_ITERATOR(iter)->UpdateTransformCBAndCheckRender(transformParam);
+			GET_CONTENT_FROM_ITERATOR(iter)->RenderPreviewWithUpdateTransformCB(transformParam);
 	}
 
 	bool Object::Intersects(Intersection::Sphere &sphere)

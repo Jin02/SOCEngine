@@ -42,7 +42,7 @@ namespace Rendering
 		_isMake = true;
 	}
 
-	bool Frustum::In(const Math::Vector3 &v, float radius)
+	bool Frustum::In(const Math::Vector3 &v, float radius) const
 	{
 		if( _isMake == false ) return false;
 

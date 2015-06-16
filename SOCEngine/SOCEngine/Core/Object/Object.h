@@ -34,7 +34,10 @@ namespace Core
 
 	public:
 		void Update(float delta);
-		void UpdateTransformCBAndCheckRender(TransformPipelineParam& transformParam);
+
+		bool Culling(const Rendering::Camera::Frustum *frustum);
+		void RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transformParam);
+
 
 		bool Intersects(Intersection::Sphere &sphere);
 
@@ -103,7 +106,6 @@ namespace Core
 		void DeleteComponent(Component *component);
 		void DeleteAllComponent();
 
-		bool Culling(Rendering::Camera::Frustum *frustum);
 		bool CompareIsChildOfParent(Object *parent);
 
 		GET_SET_ACCESSOR(Use, bool, _use);
