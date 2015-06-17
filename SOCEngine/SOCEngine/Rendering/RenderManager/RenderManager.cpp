@@ -12,6 +12,8 @@ RenderManager::RenderManager()
 
 RenderManager::~RenderManager()
 {
+	_transparentMeshes.DeleteAll(true);
+	_opaqueMeshes.DeleteAll(true);
 }
 
 void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, RenderType renderType, const std::string& frontShaderTypeName)
@@ -106,7 +108,86 @@ bool RenderManager::Init()
 	return true;
 }
 
-void RenderManager::Iterate(const std::function<void(const Mesh::Mesh* mesh)>& recvFunc, MeshType type, Camera::Camera* camera)
+bool RenderManager::Add(const Material* material, const Mesh::Mesh* mesh, MeshType type)
+{
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+
+	std::pair<const Material*, const Mesh::Mesh*>* pair = Find(material, mesh, type);
+	if(pair == nullptr)
+		pair = new std::pair<const Material*, const Mesh::Mesh*>(material, mesh);
+
+	if(type == MeshType::Transparent)
+		_transparentMeshes.Add(materialAddress, meshAddress, pair);
+	else if(type == MeshType::Opaque)
+		_opaqueMeshes.Add(materialAddress, meshAddress, pair);
+	else
+	{
+		DEBUG_LOG("undeclartion MeshType");
+		return false;
+	}
+
+	return true;
+}
+
+void RenderManager::Change(const Material* material, const Mesh::Mesh* mesh, MeshType type)
+{
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+
+	if( type == MeshType::Transparent )
+	{
+		auto pair = _opaqueMeshes.Find(materialAddress, meshAddress);
+		_opaqueMeshes.Delete(materialAddress, meshAddress, false);
+
+		_transparentMeshes.Add(materialAddress, meshAddress, pair);
+	}
+	else if( type == MeshType::Opaque )
+	{
+		auto pair = _transparentMeshes.Find(materialAddress, meshAddress);
+		_transparentMeshes.Delete(materialAddress, meshAddress, false);
+
+		_opaqueMeshes.Add(materialAddress, meshAddress, pair);
+	}
+}
+
+std::pair<const Material*, const Mesh::Mesh*>* RenderManager::Find(const Material* material, const Mesh::Mesh* mesh, MeshType type)
+{
+	unsigned int materialAddress = reinterpret_cast<unsigned int>(material);
+	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+
+	if(type == MeshType::Transparent)
+		return _transparentMeshes.Find(materialAddress, meshAddress);
+	else if(type == MeshType::Opaque)
+		return _opaqueMeshes.Find(materialAddress, meshAddress);
+	else
+		ASSERT_MSG("Error!, undefined MeshType");
+
+	return nullptr;
+}
+
+void RenderManager::Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
+{
+	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>* content)
+	{
+		auto MapIter = [&](std::pair<const Material*, const Mesh::Mesh*>* content)
+		{
+			recvFunc(content->first, content->second);
+		};
+		content->IterateContent(MapIter);
+	};
+
+	if(type == MeshType::Transparent)
+		_transparentMeshes.GetMapInMap().IterateContent(MapInMapIter);
+	else if(type == MeshType::Opaque)
+		_opaqueMeshes.GetMapInMap().IterateContent(MapInMapIter);
+	else
+	{
+		ASSERT_MSG("Error!, undefined MeshType");
+	}
+}
+
+void RenderManager::ScreenMerge()
 {
 
 }

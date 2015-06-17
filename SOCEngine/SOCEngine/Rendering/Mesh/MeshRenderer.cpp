@@ -25,3 +25,28 @@ bool MeshRenderer::AddMaterial(Material* material, bool copy)
 	_materials.Add(material->GetName(), material, copy);
 	return true;
 }
+
+void MeshRenderer::ClassifyMaterialWithMesh(void* mesh)
+{
+	RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
+	Rendering::Mesh::Mesh* parent = static_cast<Rendering::Mesh::Mesh*>(mesh);
+
+	auto IterMaterials = [&](Material* material)
+	{
+		bool changd = material->GetChangedAlpha();
+		if(changd)
+		{
+			bool hasAlpha = material->GetHasAlpha();
+			RenderManager::MeshType type = hasAlpha ? RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
+
+			if(renderMgr->Find(material, parent, type == RenderManager::MeshType::Transparent ? RenderManager::MeshType::Opaque : RenderManager::MeshType::Transparent))
+				renderMgr->Change(material, parent, type);
+			else if(renderMgr->Find(material, parent, type) == nullptr)
+				renderMgr->Add(material, parent, type);
+
+			material->SetChangedAlpha(false);
+		}
+	};
+
+	_materials.IterateContent(IterMaterials);
+}
