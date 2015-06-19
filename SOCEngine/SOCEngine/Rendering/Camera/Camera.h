@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DirectX.h"
-#include "Component.h"
+#include "Mesh.h"
 #include "Frustum.h"
 #include "Structure.h"
 #include "RenderTexture.h"
@@ -29,21 +29,31 @@ namespace Rendering
 			enum class ProjectionType	{ Perspective, Orthographic };
 			enum class Usage			{ MeshRender, UI };
 			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
+			struct RenderQueue
+			{
+				uint								updateCounter;
+				std::vector<const Mesh::Mesh*>		meshes;
+
+				RenderQueue() : updateCounter(0){}
+				~RenderQueue(){}
+			};
 
 		protected:
-			Frustum					*_frustum;
-			Texture::RenderTexture	*_renderTarget;
-			Buffer::ConstBuffer		*_constBuffer;
-			RenderType				 _renderType;
+			Frustum*						_frustum;
+			Texture::RenderTexture*			_renderTarget;
+			Buffer::ConstBuffer*			_constBuffer;
+			RenderType						_renderType;
+
+			RenderQueue						_transparentMeshQueue;
 
 		protected:
-			float				_FOV;
-			float				_clippingNear;
-			float				_clippingFar;
-			//ClearFlag			_clearFlag;
-			ProjectionType		_projectionType;
-			float				_aspect;
-			Color				_clearColor;
+			float							_FOV;
+			float							_clippingNear;
+			float							_clippingFar;
+			//ClearFlag						_clearFlag;
+			ProjectionType					_projectionType;
+			float							_aspect;
+			Color							_clearColor;
 
 		public:
 			Camera();
@@ -51,6 +61,7 @@ namespace Rendering
 
 		protected:
 			void CalcAspect();
+			void SortTransparentMeshRenderQueue();
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);

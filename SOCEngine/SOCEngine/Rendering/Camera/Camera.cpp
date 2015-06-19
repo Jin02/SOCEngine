@@ -134,3 +134,46 @@ void Camera::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::str
 		GET_CONTENT_FROM_ITERATOR(iter)->RenderPreviewWithUpdateTransformCB(tfParam);
 	}
 }
+
+void Camera::SortTransparentMeshRenderQueue()
+{
+	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
+	
+	const RenderManager::MeshList transparentList = renderMgr->GetTransparentMeshList();
+	if( transparentList.updateCounter > _transparentMeshQueue.updateCounter )
+	{
+		const auto& map = transparentList.meshes.GetMap();
+
+		_transparentMeshQueue.meshes.clear();
+		for(auto iter = map.begin(); iter != map.end(); ++iter)
+			_transparentMeshQueue.meshes.push_back(GET_CONTENT_FROM_ITERATOR(iter));
+
+		_transparentMeshQueue.updateCounter = transparentList.updateCounter;
+	}
+
+	const Transform* transform = _owner->GetTransform();
+
+	Math::Vector3 camPos;
+	transform->FetchWorldPosition(camPos);
+
+	auto SortingByDistance = [&](const Mesh::Mesh*& left, const Mesh::Mesh*& right) -> bool
+	{
+		float leftDistance = D3D11_FLOAT32_MAX;
+		{
+			Math::Vector3 leftPos;
+			left->GetOwner()->GetTransform()->FetchWorldPosition(leftPos);
+			leftDistance = Math::Vector3::Distance(leftPos, camPos);
+		}
+
+		float rightDistance = D3D11_FLOAT32_MAX;
+		{
+			Math::Vector3 rightPos;
+			right->GetOwner()->GetTransform()->FetchWorldPosition(rightPos);
+			rightDistance = Math::Vector3::Distance(rightPos, camPos);
+		}
+
+		return leftDistance < rightDistance;
+	};
+
+	std::sort(_transparentMeshQueue.meshes.begin(), _transparentMeshQueue.meshes.end(), SortingByDistance);
+}
