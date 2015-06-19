@@ -77,7 +77,7 @@ namespace Rendering
 				RenderManager::MeshType type = isTransparentMesh ? 
 					RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
 
-				renderMgr->UpdateRenderQueue(this, type);
+				renderMgr->UpdateRenderList(this, type);
 			}
 		}
 
