@@ -24,22 +24,27 @@
 #if defined(WIN32)
 class BaseTimer
 {
-	__int64					m_start;
-	__int64					m_freq;
-	__int64					m_end;
-	
+protected:
+	_LARGE_INTEGER			m_start;
+	_LARGE_INTEGER			m_freq;
+	_LARGE_INTEGER			m_end;
 	
 public:
 	BaseTimer()
 	{
-		QueryPerformanceFrequency ((_LARGE_INTEGER*)&m_freq);
-		QueryPerformanceCounter((_LARGE_INTEGER*)&m_start);
+		QueryPerformanceFrequency(&m_freq);
+		QueryPerformanceCounter(&m_start);
 	}
 	
 	void CheckElapsed(float& a)
 	{
-		QueryPerformanceCounter((_LARGE_INTEGER*)&m_end);
-		a = (float)((float) (m_end - m_start)/m_freq);
+		QueryPerformanceCounter(&m_end);
+
+		__int64 endValue =		*((__int64*)(&m_end));
+		__int64 startValue =	*((__int64*)(&m_start));
+		__int64 freqValue =		*((__int64*)(&m_freq));
+
+		a = (float)((float) (endValue - startValue) / freqValue);
 	}
 };
 #elif defined(__APPLE__)
@@ -95,6 +100,20 @@ public:
 #endif
 };
 #endif
+
+class IntegerTimer : private BaseTimer
+{
+public:
+	IntegerTimer() : BaseTimer(){}
+	~IntegerTimer() {}
+
+public:
+	__int64 FetchTime() // ms
+	{
+		QueryPerformanceCounter(&m_end);
+		return (m_end.QuadPart - m_start.QuadPart) / (m_freq.QuadPart / 1000);
+	}
+};
 
 class Timer : public BaseTimer
 {
