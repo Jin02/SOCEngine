@@ -99,7 +99,7 @@ namespace Core
 		_position += _right * units;
 	}
 
-	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix)
+	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
 	{
 		Transform tf(nullptr);
 		FetchWorldTransform(tf);
@@ -172,7 +172,7 @@ namespace Core
 		LookAt(p);
 	}
 
-	void Transform::FetchWorldTransform(Transform& out)
+	void Transform::FetchWorldTransform(Transform& out) const
 	{
 		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
 		Quaternion q;
@@ -201,7 +201,7 @@ namespace Core
 		Quaternion::RotationYawPitchRoll(out._rotation, yaw, pitch, roll);
 	}
 
-	void Transform::FetchWorldPosition(Math::Vector3& outPosition)
+	void Transform::FetchWorldPosition(Math::Vector3& outPosition) const
 	{
 		Vector3 p(0, 0, 0);
 
@@ -226,7 +226,7 @@ namespace Core
 		Matrix::Inverse(outMatrix, mat);
 	}
 
-	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler)
+	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler) const
 	{
 		Vector3 p(0, 0, 0);
 
@@ -239,7 +239,7 @@ namespace Core
 		outEuler = p;
 	}
 
-	void Transform::FetchWorldScale(Math::Vector3& outScale)
+	void Transform::FetchWorldScale(Math::Vector3& outScale) const
 	{
 		Vector3 p(1, 1, 1);
 

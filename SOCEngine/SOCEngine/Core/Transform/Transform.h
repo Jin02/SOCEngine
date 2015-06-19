@@ -65,10 +65,10 @@ namespace Core
 		GET_ACCESSOR(Up, const Math::Vector3&, _up);
 		GET_ACCESSOR(Right, const Math::Vector3&, _right);
 
-		void FetchWorldMatrix(Math::Matrix& outMatrix);
-		void FetchWorldPosition(Math::Vector3& outPosition);
-		void FetchWorldEulerAngle(Math::Vector3& outEuler);
-		void FetchWorldScale(Math::Vector3& outScale);
-		void FetchWorldTransform(Transform& out);
+		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
+		void FetchWorldPosition(Math::Vector3& outPosition) const;
+		void FetchWorldEulerAngle(Math::Vector3& outEuler) const;
+		void FetchWorldScale(Math::Vector3& outScale) const;
+		void FetchWorldTransform(Transform& out) const;
 	};
 }
