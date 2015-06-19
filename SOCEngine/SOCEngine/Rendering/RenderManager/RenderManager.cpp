@@ -8,12 +8,11 @@ using namespace Rendering::Shader;
 
 RenderManager::RenderManager()
 {
+
 }
 
 RenderManager::~RenderManager()
 {
-	_transparentMeshes.DeleteAll(true);
-	_opaqueMeshes.DeleteAll(true);
 }
 
 void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, const Shader::PixelShader** outPixelShader, Rendering::Mesh::MeshFilter::BufferElementFlag bufferFlag, Rendering::Material::Type materialType, RenderType renderType, const std::string& frontShaderTypeName)
@@ -108,62 +107,40 @@ bool RenderManager::Init()
 	return true;
 }
 
-void RenderManager::UpdateRenderQueue(const Mesh::Mesh* mesh, MeshType type)
+void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
 	if( type == MeshType::Transparent )
 	{
-		_opaqueMeshes.Delete(meshAddress, false);
+		_opaqueMeshes.meshes.Delete(meshAddress, false);
 
-		if(_transparentMeshes.Find(meshAddress) == nullptr)
-			_transparentMeshes.Add(meshAddress, mesh);
+		if(_transparentMeshes.meshes.Find(meshAddress) == nullptr)
+			_transparentMeshes.meshes.Add(meshAddress, mesh);
+
+		++_transparentMeshes.updateCounter;
 	}
 	else if( type == MeshType::Opaque )
 	{
-		_transparentMeshes.Delete(meshAddress, false);
+		_transparentMeshes.meshes.Delete(meshAddress, false);
 
-		if(_opaqueMeshes.Find(meshAddress) == nullptr)
-			_opaqueMeshes.Add(meshAddress, mesh);
+		if(_opaqueMeshes.meshes.Find(meshAddress) == nullptr)
+			_opaqueMeshes.meshes.Add(meshAddress, mesh);
+
+		++_opaqueMeshes.updateCounter;
 	}
 }
 
-const Mesh::Mesh* RenderManager::FindMeshFromRenderQueue(const Mesh::Mesh* mesh, MeshType type)
+const Mesh::Mesh* RenderManager::FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 
 	if(type == MeshType::Transparent)
-		return _transparentMeshes.Find(meshAddress);
+		return _transparentMeshes.meshes.Find(meshAddress);
 	else if(type == MeshType::Opaque)
-		return _opaqueMeshes.Find(meshAddress);
+		return _opaqueMeshes.meshes.Find(meshAddress);
 	else
 		ASSERT_MSG("Error!, undefined MeshType");
 
 	return nullptr;
-}
-
-//void RenderManager::Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const
-//{
-//	auto MapInMapIter = [&](Structure::Map<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>* content)
-//	{
-//		auto MapIter = [&](std::pair<const Material*, const Mesh::Mesh*>* content)
-//		{
-//			recvFunc(content->first, content->second);
-//		};
-//		content->IterateContent(MapIter);
-//	};
-//
-//	if(type == MeshType::Transparent)
-//		_transparentMeshes.GetMapInMap().IterateContent(MapInMapIter);
-//	else if(type == MeshType::Opaque)
-//		_opaqueMeshes.GetMapInMap().IterateContent(MapInMapIter);
-//	else
-//	{
-//		ASSERT_MSG("Error!, undefined MeshType");
-//	}
-//}
-
-void RenderManager::Iterate(const std::function<void(const Mesh::Mesh* mesh)>& recvFunc, Camera::Camera* criterionCamera, MeshType type)
-{
-
 }

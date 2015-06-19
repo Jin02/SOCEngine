@@ -10,6 +10,9 @@
 
 #include "GlobalSetting.h"
 
+#include <sys/timeb.h>
+#include <time.h>
+
 namespace Rendering
 {
 	namespace Manager
@@ -23,10 +26,18 @@ namespace Rendering
 				Transparent
 			};
 
+			struct MeshList
+			{
+				uint updateCounter;
+				Structure::Map<unsigned int, const Mesh::Mesh> meshes;
+
+				MeshList(){}
+				~MeshList(){meshes.DeleteAll(true);}
+			};
 
 		private:
-			Structure::Map<unsigned int, const Mesh::Mesh>			_transparentMeshes;
-			Structure::Map<unsigned int, const Mesh::Mesh>			_opaqueMeshes;
+			MeshList	_transparentMeshes;
+			MeshList	_opaqueMeshes;
 
 			std::map<std::string, Shader::Shaders>					_physicallyBasedShaders;
 
@@ -46,10 +57,12 @@ namespace Rendering
 		public:
 			bool Init();
 
-			void UpdateRenderQueue(const Mesh::Mesh* mesh, MeshType type);
-			const Mesh::Mesh* FindMeshFromRenderQueue(const Mesh::Mesh* mesh, MeshType type);
+			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
+			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
 
-			void Iterate(const std::function<void(const Mesh::Mesh* mesh)>& recvFunc, Camera::Camera* criterionCamera, MeshType type);
+		public:
+			GET_ACCESSOR(TransparentMeshList, const MeshList&, _transparentMeshes);
+			GET_ACCESSOR(OpaqueMeshList, const MeshList&, _opaqueMeshes);
 		};
 	}
 }
