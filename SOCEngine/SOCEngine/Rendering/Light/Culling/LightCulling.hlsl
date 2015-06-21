@@ -1,14 +1,29 @@
 //NOT_CREATE_META_DATA
 
 #define TILE_RES 						16
+#define TILE_RES_HALF					(TILE_RES / 2)
+#define THREAD_COUNT					(TILE_RES_HALF * TILE_RES_HALF)
+
 #define MAX_LIGHT_PER_TILE_NUM 			544
 #define MAX_LIGHT_NUM					2048
 #define FLOAT_MAX						3.402823466e+38F
 
 Buffer<float4> 		g_bPointLightCenterWithRadius 	: register(t0);
 Buffer<float4> 		g_bSpotLightCenterWithRadius 	: register(t1);
+
+#ifdef MSAA_ENABLE
+Texture2DMS<float>	g_tDepthTexture					: register(t2);
+#else
 Texture2D<float> 	g_tDepthTexture 				: register(t2);
+#endif
+
 RWBuffer<uint> 		g_orwbTileLightIndex 			: register(u0);
+
+groupshared float s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
+groupshared float s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
+
+groupshared uint s_lightIndexCounter;
+groupshared uint s_lightIdx[MAX_LIGHT_PER_TILE_NUM];
 
 cbuffer LightCullingGlobalData : register( b0 )
 {
@@ -31,7 +46,7 @@ uint GetNumTilesY()
 	return (uint)((g_screenSize.y + TILE_RES - 1) / (float)TILE_RES);
 }
 
-float4 ConvertProjToView( float4 p )
+float4 ProjToView( float4 p )
 {
     p = mul( p, g_invProjMat );
     p /= p.w;
@@ -55,16 +70,78 @@ float InFrustum( float4 p, float4 frusutmNormal )
 	return dot( frusutmNormal.xyz, p.xyz );
 }
 
-groupshared uint s_zMax;
-groupshared uint s_zMin;
-
-groupshared uint s_lightIndexCounter;
-groupshared uint s_lightIdx[MAX_LIGHT_PER_TILE_NUM];
-
-[numthreads(TILE_RES, TILE_RES, 1)]
-void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_GroupThreadID, uint3 groupIdx : SV_GroupID)
+float InvertProjDepthToWorldViewDepth(float depth)
 {
-	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES;
+	/*
+	1.0f = (depth * g_invProjMat._33 + g_invProjMat._43)
+	but, g_invProjMat._33 is always zero and _43 is always 1
+		
+	if you dont understand, calculate inverse projection matrix.
+	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
+	*/
+
+	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
+}
+
+void CalcMinMax(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
+{
+	uint2 idx = globalIdx.xy * 2;
+	
+	float depth_tl = g_tDepthTexture.Load( uint3(idx.x,		idx.y,		depthBufferSamplerIdx) ).x;
+	float depth_tr = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y,		depthBufferSamplerIdx) ).x;
+	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	depthBufferSamplerIdx) ).x;
+	float depth_bl = g_tDepthTexture.Load( uint3(idx.x,		idx.y+1,	depthBufferSamplerIdx) ).x;
+
+	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
+	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
+	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
+	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
+
+	float minDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : FLOAT_MAX;
+	float minDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : FLOAT_MAX;
+	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
+	float minDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : FLOAT_MAX;
+
+	float maxDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : 0.0f;
+	float maxDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : 0.0f;
+	float maxDepth_br = (depth_br != 0.0f) ? viewDepth_br : 0.0f;
+	float maxDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : 0.0f;
+
+	s_zMins[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
+	s_depthMaxDatas[idxInTile] = max( minDepth_tl, max(minDepth_tr, max(minDepth_bl, minDepth_br)) );
+
+	GroupMemoryBarrierWithGroupSync();
+
+	//반만 하면 됨
+	if( idxInTile < 32 )
+	{
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 32] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 16] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 8] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 4] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 2] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 1] );
+
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 32] );
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 16] );
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 8] );
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 4] );
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 2] );
+		s_depthMaxDatas[idxInTile] = max( s_depthMaxDatas[idxInTile], s_depthMaxDatas[idxInTile + 1] );
+	}
+
+	GroupMemoryBarrierWithGroupSync();
+
+	outMin = s_depthMinDatas[0];
+	outMax = s_depthMaxDatas[0];
+}
+
+[numthreads(TILE_RES_HALF, TILE_RES_HALF, 1)]
+void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, 
+					uint3 localIdx	: SV_GroupThreadID,
+					uint3 groupIdx	: SV_GroupID)
+{
+	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES_HALF;
 	uint idxOfGroup	= groupIdx.x + groupIdx.y * GetNumTilesX();
 
 	//한번만 초기화
@@ -77,64 +154,59 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 
 	float4 frustumPlaneNormal[4];
 	{
-		uint2 tl = uint2(	TILE_RES * groupIdx.x,
-							TILE_RES * groupIdx.y);
-		uint2 br = uint2(	TILE_RES * (groupIdx.x + 1), 
-							TILE_RES * (groupIdx.y + 1));
-		uint2 totalThreadLength = uint2(TILE_RES*GetNumTilesX(),
-										TILE_RES*GetNumTilesY());
+		uint2 tl =					uint2(	TILE_RES * groupIdx.x,
+											TILE_RES * groupIdx.y);
+		uint2 br =					uint2(	TILE_RES * (groupIdx.x + 1), 
+											TILE_RES * (groupIdx.y + 1));
+		float2 totalThreadLength =	float2(	(float)(TILE_RES*GetNumTilesX()),
+											(float)(TILE_RES*GetNumTilesY()) );
 										//스크린 픽셀 사이즈라 생각해도 좋고,
 										//현재 돌아가는 전체 가로x세로 스레드 수?
 		float4 frustum[4];
-		frustum[0] = ConvertProjToView( float4( tl.x/(float)totalThreadLength.x * 2.f - 1.f, 
-											   (totalThreadLength.y-tl.y)/(float)totalThreadLength.y * 2.f - 1.f,
-											   1.f, 1.f) ); //TL
-		frustum[1] = ConvertProjToView( float4( br.x/(float)totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y-tl.y)/(float)totalThreadLength.y * 2.f - 1.f,
-											   1.f,1.f) ); //TR
-		frustum[2] = ConvertProjToView( float4( br.x/(float)totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y-br.y)/(float)totalThreadLength.y * 2.f - 1.f,
-												1.f,1.f) ); //BR
-		frustum[3] = ConvertProjToView( float4( tl.x/(float)totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y-br.y)/(float)totalThreadLength.y * 2.f - 1.f,
-												1.f,1.f) ); //BL
+		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
+											   (totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
+												1.f, 1.f) ); //TL
+		frustum[1] = ProjToView( float4( br.x / totalThreadLength.x * 2.f - 1.f, 
+												(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
+												1.f, 1.f) ); //TR
+		frustum[2] = ProjToView( float4( br.x / totalThreadLength.x * 2.f - 1.f, 
+												(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
+												1.f, 1.f) ); //BR
+		frustum[3] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
+												(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
+												1.f, 1.f) ); //BL
 
 		for(uint i=0; i<4; ++i)
 			frustumPlaneNormal[i] = CreatePlaneNormal(frustum[i], frustum[(i+1) % 4]);
 	}
 
-	//스레드 싱크 맞추기
 	GroupMemoryBarrierWithGroupSync();
 
 	float minZ = FLOAT_MAX;
 	float maxZ = 0.0f;
 
-	//shared min, max 계산
+#ifdef MSAA_ENABLE
+	uint2 depthBufferSize;
+	uint depthBufferSampleCount;
+
+	g_tDepthTexture.GetDimensions(depthBufferSize.x, depthBufferSize.y, depthBufferSampleCount);
+
+	float tmpMin = FLOAT_MAX;
+	float tmpMax = 0.0f;
+	for(uint i=0; i<depthBufferSampleCount; ++i)
 	{
-		float depth = g_tDepthTexture.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+		CalcMinMax(globalIdx, idxInTile, i, tmpMin, tmpMax);
 
-		//non linear depth to viewPos
-		uint z = asuint( depth * g_clippingFar );
-
-		if( depth != 0.f )
-		{
-			//Shared memory에 있는 값과 입력된 값을 비교하여, 결과를 dest에 저장한다.
-			//InterlockedMax(__in R dest, __in T value, __out original_value)
-			//음수로 가지 않는 한, float를 bit로 변환한다고 하여도 크기의 순위는 변하지 않음.
-			InterlockedMax( s_zMax, z );
-			InterlockedMin( s_zMin, z );
-		}
+		minZ = min(tmpMin, minZ);
+		maxZ = max(tmpMax, maxZ);
 	}
-
-	GroupMemoryBarrierWithGroupSync();
-
-    maxZ = asfloat( s_zMax );	//uint to float
-    minZ = asfloat( s_zMin );
+#else
+	CalcMinMax(globalIdx, idxInTile, 0, minZ, maxZ);
+#endif
 
     uint pointLightCount = g_lightNum & 0x0000FFFF;
-    for(uint i=0; i<pointLightCount; i+=(TILE_RES * TILE_RES))
+    for(uint i=0; i<pointLightCount; i+=THREAD_COUNT)
     {
-    	//idxInTile은, 0~tile_res^2 의 값을 가짐.
         uint lightIdx = idxInTile + i;
         if( lightIdx < pointLightCount )
         {
@@ -142,23 +214,26 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
             float r = center.w;
             center.xyz = mul( float4(center.xyz, 1), g_worldViewMat ).xyz;
 
-            if( -center.z + minZ < r && center.z - maxZ < r )
+            if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
             {
-				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) && ( InFrustum( center, frustumPlaneNormal[1] ) < r ) && ( InFrustum( center, frustumPlaneNormal[2] ) < r ) && ( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
+				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) && 
+					( InFrustum( center, frustumPlaneNormal[1] ) < r ) && 
+					( InFrustum( center, frustumPlaneNormal[2] ) < r ) && 
+					( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
                 {
-					uint outIdx = 0;
-					InterlockedAdd( s_lightIndexCounter, 1, outIdx );
-					s_lightIdx[outIdx] = lightIdx;
+					uint target = 0;
+					InterlockedAdd( s_lightIndexCounter, 1, target );
+					s_lightIdx[target] = lightIdx;
 				}
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
-	uint pointLightNumInTiles = s_lightIndexCounter; //싱크 후, 결과 저장
+	uint pointLightNumInTiles = s_lightIndexCounter;
 
 	uint spotLightCount = (g_lightNum & 0xFFFF0000) >> 16;
-	for(uint j=0; j<spotLightCount; j+=(TILE_RES * TILE_RES))
+	for(uint j=0; j<spotLightCount; j+=THREAD_COUNT)
 	{
 		uint lightIdx = idxInTile + j;
 		if( lightIdx < spotLightCount )
@@ -167,13 +242,16 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 			float r = center.w;
 			center.xyz = mul( float4(center.xyz, 1), g_worldViewMat ).xyz;
 
-			if( -center.z + minZ < r && center.z - maxZ < r )
+			if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 			{
-				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) && ( InFrustum( center, frustumPlaneNormal[1] ) < r ) && ( InFrustum( center, frustumPlaneNormal[2] ) < r ) && ( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
+				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) &&
+					( InFrustum( center, frustumPlaneNormal[1] ) < r ) && 
+					( InFrustum( center, frustumPlaneNormal[2] ) < r ) && 
+					( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
 				{
-					uint outIdx = 0;
-					InterlockedAdd( s_lightIndexCounter, 1, outIdx );
-					s_lightIdx[outIdx] = lightIdx;
+					uint target = 0;
+					InterlockedAdd( s_lightIndexCounter, 1, target );
+					s_lightIdx[target] = lightIdx;
 				}
 			}
 		}
@@ -181,20 +259,17 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, uint3 localIdx : SV_G
 
 	GroupMemoryBarrierWithGroupSync();
 
+	uint startOffset = g_maxLightNumInTile * idxOfGroup;
+
+	for(uint i=idxInTile; i<pointLightNumInTiles; i+=THREAD_COUNT)
+		g_orwbTileLightIndex[startOffset + i] = s_lightIdx[i];
+
+	for(uint j=(idxInTile+pointLightNumInTiles); j<s_lightIndexCounter; j+=THREAD_COUNT)
+		g_orwbTileLightIndex[startOffset + j + 1] = s_lightIdx[j];
+
+	if( idxInTile == 0 )
 	{
-		uint startOffset = g_maxLightNumInTile * idxOfGroup;
-
-		for(uint i=idxInTile; i<pointLightNumInTiles; i+=(TILE_RES * TILE_RES))
-			g_orwbTileLightIndex[startOffset + i] = s_lightIdx[i];
-
-		for(uint j=(idxInTile+pointLightNumInTiles); j<s_lightIndexCounter; j+=(TILE_RES * TILE_RES))
-			g_orwbTileLightIndex[startOffset + j + 1] = s_lightIdx[j];
-
-		if( idxInTile == 0 )
-		{
-			g_orwbTileLightIndex[startOffset + pointLightNumInTiles] = 0;
-			g_orwbTileLightIndex[startOffset + s_lightIndexCounter + 1] = 0;
-		}
+		g_orwbTileLightIndex[startOffset + pointLightNumInTiles] = 0;
+		g_orwbTileLightIndex[startOffset + s_lightIndexCounter + 1] = 0;
 	}
-
 }
