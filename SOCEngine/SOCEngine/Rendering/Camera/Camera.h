@@ -47,6 +47,7 @@ namespace Rendering
 			RenderQueue						_transparentMeshQueue;
 
 		protected:
+			bool							_isInvertedDepthWriting;
 			float							_FOV;
 			float							_clippingNear;
 			float							_clippingFar;
@@ -80,10 +81,12 @@ namespace Rendering
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
 			GET_SET_ACCESSOR(Far, float, _clippingFar);
 			GET_SET_ACCESSOR(FOV, float, _FOV);
+			GET_SET_ACCESSOR(IsInvertedDepthWriting, bool, _isInvertedDepthWriting);
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderType, RenderType, _renderType);
 			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
+			
 		};
 	}
 }

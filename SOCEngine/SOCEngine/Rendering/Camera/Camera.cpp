@@ -12,7 +12,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 Camera::Camera() 
-	: Component(),	_frustum(nullptr), _renderTarget(nullptr)
+	: Component(),	_frustum(nullptr), _renderTarget(nullptr), _isInvertedDepthWriting(false)
 {
 	_renderType = RenderType::Unknown;
 }
@@ -63,7 +63,14 @@ void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 	if(_projectionType == ProjectionType::Perspective)
 	{
 		float radian = _FOV * PI / 180.0f;
-		Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, _clippingNear, _clippingFar);
+
+		float clippingNear = _clippingNear;
+		float clippingFar = _clippingFar;
+
+		if(_isInvertedDepthWriting)
+			std::swap(clippingNear, clippingFar);
+
+		Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, clippingNear, clippingFar);
 	}
 	else if(_projectionType == ProjectionType::Orthographic)
 	{
