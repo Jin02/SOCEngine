@@ -17,6 +17,16 @@ Texture2DMS<float>	g_tDepthTexture					: register(t2);
 Texture2D<float> 	g_tDepthTexture 				: register(t2);
 #endif
 
+#ifdef BLEND_ENABLE
+
+#ifdef MSAA_ENABLE
+Texture2DMS<float>	g_tBlendedDepthTexture			: register(t3);
+#else
+Texture2D<float> 	g_tBlendedDepthTexture 			: register(t3);
+#endif
+
+#endif
+
 RWBuffer<uint> 		g_orwbTileLightIndex 			: register(u0);
 
 groupshared float s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
@@ -83,7 +93,7 @@ float InvertProjDepthToWorldViewDepth(float depth)
 	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
 }
 
-void CalcMinMax(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
+void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
 {
 	uint2 idx = globalIdx.xy * 2;
 	
@@ -135,6 +145,49 @@ void CalcMinMax(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out
 	outMin = s_depthMinDatas[0];
 	outMax = s_depthMaxDatas[0];
 }
+
+#ifdef BLEND_ENABLE
+
+void CalcMinMaxBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin)
+{
+	uint2 idx = globalIdx.xy * 2;
+	
+	float depth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y,		depthBufferSamplerIdx) ).x;
+	float depth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		depthBufferSamplerIdx) ).x;
+	float depth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	depthBufferSamplerIdx) ).x;
+	float depth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y+1,	depthBufferSamplerIdx) ).x;
+
+	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
+	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
+	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
+	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
+
+	float minDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : FLOAT_MAX;
+	float minDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : FLOAT_MAX;
+	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
+	float minDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : FLOAT_MAX;
+
+	s_zMins[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
+
+	GroupMemoryBarrierWithGroupSync();
+
+	//반만 하면 됨
+	if( idxInTile < 32 )
+	{
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 32] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 16] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 8] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 4] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 2] );
+		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 1] );
+	}
+
+	GroupMemoryBarrierWithGroupSync();
+
+	outMin = s_depthMinDatas[0];
+}
+
+#endif
 
 [numthreads(TILE_RES_HALF, TILE_RES_HALF, 1)]
 void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID, 
@@ -193,15 +246,41 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float tmpMin = FLOAT_MAX;
 	float tmpMax = 0.0f;
+
+#ifdef BLEND_ENABLE
+	float blendMin = FLOAT_MAX;
 	for(uint i=0; i<depthBufferSampleCount; ++i)
 	{
-		CalcMinMax(globalIdx, idxInTile, i, tmpMin, tmpMax);
+		CalcMinBlend(globalIdx, idxInTile, 0, blendMin);		
+		CalcMinMaxOpaque(globalIdx, idxInTile, i, tmpMin, tmpMax);
+
+		minZ = min(minZ, min(tmpMin, blendMin));
+		maxZ = max(maxZ, tmpMax);
+	}
+
+#else
+	for(uint i=0; i<depthBufferSampleCount; ++i)
+	{
+		CalcMinMaxOpaque(globalIdx, idxInTile, i, tmpMin, tmpMax);
 
 		minZ = min(tmpMin, minZ);
 		maxZ = max(tmpMax, maxZ);
 	}
+#endif
+
+#else // NOT DEFINED MSAA_ENABLE
+
+#ifdef BLEND_ENABLE
+	float blendMin = FLOAT_MAX;
+
+	CalcMinBlend(globalIdx, idxInTile, 0, blendMin);
+	CalcMinMaxOpaque(globalIdx, idxInTile, 0, minZ, maxZ);
+
+	minZ = min(minZ, blendMin);
 #else
-	CalcMinMax(globalIdx, idxInTile, 0, minZ, maxZ);
+	CalcMinMaxOpaque(globalIdx, idxInTile, 0, minZ, maxZ);
+#endif
+
 #endif
 
     uint pointLightCount = g_lightNum & 0x0000FFFF;
