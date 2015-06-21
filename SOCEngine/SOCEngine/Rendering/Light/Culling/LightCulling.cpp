@@ -47,7 +47,7 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	Scene* scene = Director::GetInstance()->GetCurrentScene();
 	auto shaderMgr = scene->GetShaderManager();
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCulling", false);
+	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCullingCS", false);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);

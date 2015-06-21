@@ -97,10 +97,10 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 {
 	uint2 idx = globalIdx.xy * 2;
 	
-	float depth_tl = g_tDepthTexture.Load( uint3(idx.x,		idx.y,		depthBufferSamplerIdx) ).x;
-	float depth_tr = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y,		depthBufferSamplerIdx) ).x;
-	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	depthBufferSamplerIdx) ).x;
-	float depth_bl = g_tDepthTexture.Load( uint3(idx.x,		idx.y+1,	depthBufferSamplerIdx) ).x;
+	float depth_tl = g_tDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
+	float depth_tr = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_br = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_bl = g_tDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
 
 	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
 	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
@@ -117,7 +117,7 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 	float maxDepth_br = (depth_br != 0.0f) ? viewDepth_br : 0.0f;
 	float maxDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : 0.0f;
 
-	s_zMins[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
+	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
 	s_depthMaxDatas[idxInTile] = max( minDepth_tl, max(minDepth_tr, max(minDepth_bl, minDepth_br)) );
 
 	GroupMemoryBarrierWithGroupSync();
@@ -148,14 +148,14 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 
 #ifdef BLEND_ENABLE
 
-void CalcMinMaxBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin)
+void CalcMinBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin)
 {
 	uint2 idx = globalIdx.xy * 2;
 	
-	float depth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y,		depthBufferSamplerIdx) ).x;
-	float depth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		depthBufferSamplerIdx) ).x;
-	float depth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	depthBufferSamplerIdx) ).x;
-	float depth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y+1,	depthBufferSamplerIdx) ).x;
+	float depth_tl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
+	float depth_tr = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_br = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_bl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
 
 	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
 	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
@@ -167,7 +167,7 @@ void CalcMinMaxBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx
 	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
 	float minDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : FLOAT_MAX;
 
-	s_zMins[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
+	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
 
 	GroupMemoryBarrierWithGroupSync();
 
@@ -199,11 +199,7 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	//한번만 초기화
 	if(idxInTile == 0)
-	{
-		s_zMin				= 0xffffffff;
-		s_zMax 				= 0;
 		s_lightIndexCounter	= 0;
-	}
 
 	float4 frustumPlaneNormal[4];
 	{
