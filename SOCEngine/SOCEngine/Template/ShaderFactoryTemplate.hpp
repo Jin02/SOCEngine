@@ -58,11 +58,11 @@ namespace Rendering
 
 				Shader::VertexShader* vs = nullptr;
 				if(mainVSFuncName.empty() == false)
-					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName);
+					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName, includeMacros);
 
 				Shader::PixelShader* ps = nullptr;
 				if(mainPSFuncName.empty() == false)
-					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName);
+					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName, includeMacros);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;
