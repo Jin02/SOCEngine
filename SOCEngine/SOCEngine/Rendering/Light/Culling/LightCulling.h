@@ -58,14 +58,15 @@ namespace Rendering
 				const Texture::DepthBuffer* invertedOpaqueDepthBuffer, 
 				const Texture::DepthBuffer* invertedBlendedDepthBuffer);
 
-			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
+			void Destroy();
 
+		public:
+			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
 			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer);
 
+		public:
 			const Math::Size<unsigned int> CalcThreadSize();
 			unsigned int CalcMaxNumLightsInTile();
-
-			void Destroy();
 		};
 	}
 }
