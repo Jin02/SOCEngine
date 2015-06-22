@@ -3,6 +3,8 @@
 
 #include "ResourceManager.h"
 
+#include "Utility.h"
+
 using namespace Device;
 using namespace Core;
 using namespace Rendering;
@@ -16,13 +18,14 @@ using namespace GPGPU::DirectCompute;
 
 enum InputBuffer : unsigned int
 {
-	PointLightRadiusWithCenter	= 0,
-	SpotLightRadiusWithCenter	= 1
+	PointLightRadiusWithCenter		= 0,
+	SpotLightRadiusWithCenter		= 1
 };
 
 enum InputTexture : unsigned int
 {
-	LinearDepthBuffer = 2
+	InvetedOpaqueDepthBuffer		= 2,
+	InvetedBlendedDepthBuffer		= 3
 };
 
 enum OutputBuffer : unsigned int
@@ -40,7 +43,9 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth)
+void LightCulling::Initialize(const std::string& filePath, 
+						const Texture::DepthBuffer* invertedOpaqueDepthBuffer, 
+						const Texture::DepthBuffer* invertedBlendedDepthBuffer)
 {
 	//혹시 모르니, 한번 초기화
 	Destroy();
@@ -48,7 +53,17 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCullingCS", false);
+	std::string fileName, fileExtension, folderDir;
+	bool valid = Utility::String::ParseDirectory(filePath, folderDir, fileName, fileExtension);
+	ASSERT_COND_MSG(valid, "Where is your file extension?");
+
+	std::string macroCode = "#define BLEND_ENABLE\n";
+	bool enableMSAA = Device::Director::GetInstance()->GetDirectX()->GetUseMSAA();
+	if(enableMSAA)
+		macroCode += "#define MSAA_ENABLE\n";
+
+	ID3DBlob* blob = shaderMgr->CreateBlob(folderDir, fileName, 
+		"cs", "LightCullingCS", false, &macroCode);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
@@ -83,10 +98,21 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 
 		// depth buffer
 		{
-			ComputeShader::InputTexture inputTex;
-			inputTex.idx		= InputTexture::LinearDepthBuffer;
-			inputTex.texture	= linearDepth;
-			_inputTextures.push_back(inputTex);
+			// Opaque
+			{
+				ComputeShader::InputTexture inputTex;
+				inputTex.idx		= InputTexture::InvetedOpaqueDepthBuffer;
+				inputTex.texture	= invertedOpaqueDepthBuffer;
+				_inputTextures.push_back(inputTex);
+			}
+
+			// Blended, Transparent
+			{
+				ComputeShader::InputTexture inputTex;
+				inputTex.idx		= InputTexture::InvetedBlendedDepthBuffer;
+				inputTex.texture	= invertedBlendedDepthBuffer;
+				_inputTextures.push_back(inputTex);
+			}
 		}
 
 		_computeShader->SetInputBuffers(_inputBuffers);
@@ -137,12 +163,12 @@ void LightCulling::UpdateInputBuffer(const Device::DirectX* dx, const CullingCon
 	}
 }
 
-void LightCulling::Dispatch(const Device::DirectX* dx, const Texture::RenderTexture* linearDepth)
+void LightCulling::Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 	
 	// 0번이 depth buffer 넣음
-	_inputTextures[0].texture = linearDepth;
+	_inputTextures[0].texture = invertedDepthBuffer;
 
 	_computeShader->Dispatch(context);
 	

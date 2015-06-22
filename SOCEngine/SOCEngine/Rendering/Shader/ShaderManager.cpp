@@ -245,8 +245,10 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 	PixelShader* shader = dynamic_cast<PixelShader*>(_shaders.Find(fullCommand));
 
 	std::string optionalCode;
+
 	if(includeFileName)
 		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
+
 	if(macros)
 	{
 		for(const auto& iter : (*macros))

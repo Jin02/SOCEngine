@@ -54,10 +54,13 @@ namespace Rendering
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
 
 		public:
-			void Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth);
+			void Initialize(const std::string& filePath,
+				const Texture::DepthBuffer* invertedOpaqueDepthBuffer, 
+				const Texture::DepthBuffer* invertedBlendedDepthBuffer);
+
 			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
 
-			void Dispatch(const Device::DirectX* dx, const Texture::RenderTexture* linearDepth);
+			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer);
 
 			const Math::Size<unsigned int> CalcThreadSize();
 			unsigned int CalcMaxNumLightsInTile();
