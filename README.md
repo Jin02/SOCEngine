@@ -1,4 +1,4 @@
 SOCEngine
 =========
 
-Re
+Simple 3D real-time rendering engine
