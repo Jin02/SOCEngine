@@ -1,5 +1,6 @@
 #include "MeshFilter.h"
 #include "Director.h"
+#include "ResourceManager.h"
 
 using namespace Rendering::Mesh;
 
@@ -23,8 +24,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 	_vertexCount	= args.vertex.count;
 	_indexCount		= args.index.count;
 
-	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
-	auto bufferMgr = scene->GetBufferManager();
+	Manager::BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
 
 	// Vertex Buffer Setting
 	{
@@ -60,13 +60,16 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 	return true;
 }
 
-void MeshFilter::IASetBuffer(ID3D11DeviceContext* context)
+void MeshFilter::IASetBuffer(const Device::DirectX* dx)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+
 	_vertexBuffer->IASetBuffer(context);
 	_indexBuffer->IASetBuffer(context);
 }
 
-void MeshFilter::UpdateVertexBufferData(ID3D11DeviceContext* context, const void* data, uint size)
+void MeshFilter::UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
 	_vertexBuffer->UpdateVertexData(context, data, size);
 }

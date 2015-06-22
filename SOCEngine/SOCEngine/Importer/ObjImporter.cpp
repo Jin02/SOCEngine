@@ -7,6 +7,8 @@
 #include "LPVoidType.h"
 #include "RenderManager.h"
 
+#include "ResourceManager.h"
+
 using namespace Importer;
 using namespace Importer::Obj;
 using namespace Rendering;
@@ -24,10 +26,10 @@ ObjImporter::~ObjImporter()
 
 Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
 
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
-	TextureManager* textureMgr = currentScene->GetTextureManager();
+	MaterialManager* materialMgr = resourceMgr->GetMaterialManager();
+	TextureManager* textureMgr = resourceMgr->GetTextureManager();
 
 	const std::string materialName = tinyMaterial.name;
 	ASSERT_COND_MSG(materialName.empty() == false, "Material has not key");
@@ -91,10 +93,11 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 void ObjImporter::LoadMaterials(Structure::BaseStructure<std::string, Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
+	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
 
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
-	TextureManager* textureMgr = currentScene->GetTextureManager();
+	MaterialManager* materialMgr = resourceMgr->GetMaterialManager();
+	TextureManager* textureMgr = resourceMgr->GetTextureManager();
+
 	for(auto iter = tinyMaterials.begin(); iter != tinyMaterials.end(); ++iter)
 	{
 		Material* material = LoadMaterial((*iter), fileName, materialFileFolder, materialType);
@@ -166,8 +169,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	if(semanticInfos.empty())
 		ASSERT_MSG("Error, ObjImporter : semanticInfos paramater is null");
 
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+
+	if(resourceManager->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
 		ASSERT_MSG("Error, BufferMgr already has buffer");
 
 	CheckCorrectShape(tinyShape);
@@ -294,9 +298,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 
 	LPVoidType* bufferData = new LPVoidType(bufferHead);
-	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
+	resourceManager->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
@@ -320,7 +324,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	mesh->Initialize(args);
 
 	const std::string objKey = fileName + ':' + tinyShape.name;
-	currentScene->GetOriginObjectManager()->Add(objKey, object);
+	resourceManager->GetOriginObjectManager()->Add(objKey, object);
 
 	return object;
 }
@@ -338,8 +342,8 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 			return obj;
 	}
 
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();
-	if(currentScene->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
+	ResourceManager* resourceManager = ResourceManager::GetInstance();
+	if(resourceManager->GetBufferManager()->Find( (LPVoidType**)nullptr, fileName, tinyShape.name ))
 		ASSERT_MSG("Error, BufferMgr already has buffer");
 
 	CheckCorrectShape(tinyShape);
@@ -446,9 +450,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	
 	LPVoidType* bufferData = new LPVoidType(bufferHead);
-	currentScene->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
+	resourceManager->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
 
-	MaterialManager* materialMgr = currentScene->GetMaterialManager();
+	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
@@ -470,7 +474,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	}
 	
 	mesh->Initialize(args);
-	currentScene->GetOriginObjectManager()->Add(bufferKey, object);
+	resourceManager->GetOriginObjectManager()->Add(bufferKey, object);
 
 	return object;
 }
@@ -486,8 +490,9 @@ void ObjImporter::CheckCorrectShape(const tinyobj::shape_t& tinyShape)
 
 Core::Object* ObjImporter::CloneOriginObject(const std::string& fileName, const std::string& tinyShapeName)
 {
-	Core::Scene* currentScene = Device::Director::GetInstance()->GetCurrentScene();	
-	const Core::Object* object = currentScene->GetOriginObjectManager()->Find(fileName + ':' + tinyShapeName);
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	const Core::Object* object = resourceManager->GetOriginObjectManager()->Find(fileName + ':' + tinyShapeName);
+
 	if(object)
 	{
 		Core::Object* copyObj = Core::Object::Copy(object);

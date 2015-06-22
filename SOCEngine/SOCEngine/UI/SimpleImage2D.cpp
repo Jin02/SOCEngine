@@ -2,6 +2,8 @@
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 
+#include "ResourceManager.h"
+
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
@@ -26,8 +28,9 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	{
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
-
-		auto shaderMgr = Director::GetInstance()->GetCurrentScene()->GetShaderManager();
+		
+		const ResourceManager* resourceManager = ResourceManager::GetInstance();
+		auto shaderMgr = resourceManager->GetShaderManager();
 		Factory::EngineFactory factory(shaderMgr);
 
 		Shader::VertexShader*	vs = nullptr;
@@ -74,8 +77,10 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	SetSize(size);
 }
 
-void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat)
+void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+
 	if(_changeSize)
 	{
 		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
@@ -116,7 +121,7 @@ void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& vie
 			vertices[3].uv.y		=  1.0f;
 		};
 
-		_meshFilter->UpdateVertexBufferData(context, vertices, sizeof(RectVertexInfo) * 4);
+		_meshFilter->UpdateVertexBufferData(dx, vertices, sizeof(RectVertexInfo) * 4);
 		_changeSize = false;
 	}
 
@@ -125,7 +130,7 @@ void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& vie
 
 	if(_material->GetCustomRenderSceneShader().ableRender())
 	{		
-		_meshFilter->IASetBuffer(context);
+		_meshFilter->IASetBuffer(dx);
 
 		vs->UpdateShader(context);
 		vs->UpdateInputLayout(context);

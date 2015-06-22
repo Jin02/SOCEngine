@@ -61,8 +61,8 @@ void UICamera::Render()
 	ID3D11RenderTargetView* rtv = _renderTarget->GetRenderTargetView();
 	context->OMSetRenderTargets(1, &rtv, _depthBuffer->GetDepthStencilView()); 
 	
-	_depthBuffer->clear(context, 1.0f, 0);
-	_renderTarget->clear(_clearColor, dx);
+	_depthBuffer->Clear(context, 1.0f, 0);
+	_renderTarget->Clear(context, _clearColor);
 
 	ID3D11SamplerState* sampler = dx->GetLinearSamplerState();
 	context->PSSetSamplers(0, 1, &sampler);

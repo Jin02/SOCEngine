@@ -1,6 +1,8 @@
 #include "LightCulling.h"
 #include "Director.h"
 
+#include "ResourceManager.h"
+
 using namespace Device;
 using namespace Core;
 using namespace Rendering;
@@ -43,9 +45,8 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	//혹시 모르니, 한번 초기화
 	Destroy();
 
-	Director* director = Director::GetInstance();
-	Scene* scene = Director::GetInstance()->GetCurrentScene();
-	auto shaderMgr = scene->GetShaderManager();
+	ResourceManager* resourceManager = ResourceManager::GetInstance();
+	auto shaderMgr = resourceManager->GetShaderManager();
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCullingCS", false);
 
@@ -116,10 +117,9 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 	return ( LIGHT_MAX_NUM_IN_TILE - ( key * ( winSize.h / 120 ) ) );
 }
 
-void LightCulling::UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius)
+void LightCulling::UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius)
 {
-	const Director* director = Device::Director::GetInstance();
-	ID3D11DeviceContext* context = director->GetDirectX()->GetContext();
+	ID3D11DeviceContext* context = dx->GetContext();
 
 	_globalDataBuffer->Update(context, &cbData);
 
@@ -137,8 +137,10 @@ void LightCulling::UpdateInputBuffer(const CullingConstBuffer& cbData, const std
 	}
 }
 
-void LightCulling::Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth)
+void LightCulling::Dispatch(const Device::DirectX* dx, const Texture::RenderTexture* linearDepth)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+	
 	// 0번이 depth buffer 넣음
 	_inputTextures[0].texture = linearDepth;
 

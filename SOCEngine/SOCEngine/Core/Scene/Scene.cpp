@@ -10,10 +10,9 @@ using namespace Structure;
 using namespace Rendering;
 
 Scene::Scene(void) : 
-	_cameraMgr(nullptr), _shaderMgr(nullptr), _textureMgr(nullptr), 
-	_materialMgr(nullptr), _meshImporter(nullptr), 	_uiManager(nullptr),
-	_bufferManager(nullptr), _originObjMgr(nullptr), _renderMgr(nullptr),
-	_uiCamera(nullptr), _backBufferMaker(nullptr)
+	_cameraMgr(nullptr), _uiManager(nullptr),
+	_renderMgr(nullptr), _uiCamera(nullptr),
+	_backBufferMaker(nullptr)
 {
 	_state = State::Init;
 }
@@ -25,13 +24,6 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_shaderMgr		= new Manager::ShaderManager;
-	_textureMgr		= new Manager::TextureManager;
-	_materialMgr	= new Manager::MaterialManager;
-	_meshImporter	= new Importer::MeshImporter;
-	_bufferManager	= new Manager::BufferManager;
-	_originObjMgr	= new Core::ObjectManager;
-
 	_cameraMgr		= new Manager::CameraManager;
 	_cameraMgr->InitLightCulling();
 
@@ -92,7 +84,7 @@ void Scene::Render()
 	_uiCamera->Render();
 
 	Camera::Camera* mainCam = _cameraMgr->GetMainCamera();
-	_backBufferMaker->Render(mainCam, _uiCamera);
+	_backBufferMaker->Render(_dx, mainCam, _uiCamera);
 
 	//swap
 	_dx->GetSwapChain()->Present(0, 0);
@@ -105,12 +97,6 @@ void Scene::Destroy()
 	UI::FontLoader::GetInstance()->Destroy();
 
 	SAFE_DELETE(_cameraMgr);
-	SAFE_DELETE(_shaderMgr);
-	SAFE_DELETE(_textureMgr);
-	SAFE_DELETE(_materialMgr);
-	SAFE_DELETE(_meshImporter);
-	SAFE_DELETE(_bufferManager);
-	SAFE_DELETE(_originObjMgr);
 	SAFE_DELETE(_renderMgr);
 	SAFE_DELETE(_uiCamera);
 	SAFE_DELETE(_uiManager);

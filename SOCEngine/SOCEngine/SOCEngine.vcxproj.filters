@@ -88,6 +88,12 @@
     <Filter Include="GPGPU">
       <UniqueIdentifier>{b6e6156d-311d-457d-b9b4-af5c1ef6429c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GPGPU\DirectCompute">
+      <UniqueIdentifier>{45c4a43f-0f7a-4e74-9ce3-c3f797bc8d3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPGPU\DirectCompute\Buffer">
+      <UniqueIdentifier>{f5a362be-e937-4fb1-9da9-2a1d0a4bfaf0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{4cdce50f-2d2c-4998-ba7b-7efb7d319831}</UniqueIdentifier>
     </Filter>
@@ -226,11 +232,8 @@
     <Filter Include="External\tiny_obj_loader">
       <UniqueIdentifier>{7ab4b83a-dff2-4d3f-87a4-72db5da6a344}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GPGPU\CS">
-      <UniqueIdentifier>{45c4a43f-0f7a-4e74-9ce3-c3f797bc8d3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\CS\Buffer">
-      <UniqueIdentifier>{f5a362be-e937-4fb1-9da9-2a1d0a4bfaf0}</UniqueIdentifier>
+    <Filter Include="ResourceManager">
+      <UniqueIdentifier>{17e22084-e070-4576-bfe4-0ee1f8859e32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -379,7 +382,7 @@
       <Filter>Rendering\Shader\Mgr</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\ComputeShader.h">
-      <Filter>GPGPU\CS</Filter>
+      <Filter>GPGPU\DirectCompute</Filter>
     </ClInclude>
     <ClInclude Include="Device\Director.h">
       <Filter>Device\Director</Filter>
@@ -394,7 +397,7 @@
       <Filter>Utility\DirectoryManager</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\CSInputBuffer.h">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h">
       <Filter>Rendering\Mesh\data</Filter>
@@ -433,10 +436,10 @@
       <Filter>Rendering\Light\Other</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\CSOutputBuffer.h">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
       <Filter>Rendering\Buffer\Const</Filter>
@@ -586,6 +589,9 @@
     <ClInclude Include="External\rapidjson\writer.h">
       <Filter>External\rapidJson</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager\ResourceManager.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -682,7 +688,7 @@
       <Filter>Rendering\Shader\Mgr</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\ComputeShader.cpp">
-      <Filter>GPGPU\CS</Filter>
+      <Filter>GPGPU\DirectCompute</Filter>
     </ClCompile>
     <ClCompile Include="Device\Director.cpp">
       <Filter>Device\Director</Filter>
@@ -697,7 +703,7 @@
       <Filter>Utility\DirectoryManager</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\CSInputBuffer.cpp">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp">
       <Filter>Rendering\Mesh\data</Filter>
@@ -730,10 +736,10 @@
       <Filter>Rendering\Light\Other</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
-      <Filter>GPGPU\CS\Buffer</Filter>
+      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
@@ -803,6 +809,9 @@
     </ClCompile>
     <ClCompile Include="External\tiny_obj_loader.cc">
       <Filter>External\tiny_obj_loader</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\ResourceManager.cpp">
+      <Filter>ResourceManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -55,9 +55,9 @@ namespace Rendering
 
 		public:
 			void Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth);
-			void UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
+			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
 
-			void Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth);
+			void Dispatch(const Device::DirectX* dx, const Texture::RenderTexture* linearDepth);
 
 			const Math::Size<unsigned int> CalcThreadSize();
 			unsigned int CalcMaxNumLightsInTile();

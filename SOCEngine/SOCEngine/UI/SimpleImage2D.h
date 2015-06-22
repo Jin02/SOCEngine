@@ -31,7 +31,7 @@ namespace UI
 		void UpdateMainImage(Rendering::Texture::Texture* tex);
 
 	public:
-		virtual void Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat);
+		virtual void Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat);
 
 	public:
 		GET_ACCESSOR(Material, Rendering::Material*, _material);

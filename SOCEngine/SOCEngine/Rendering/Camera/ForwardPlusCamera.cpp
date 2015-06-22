@@ -45,12 +45,11 @@ void ForwardPlusCamera::Render()
 
 	const Manager::RenderManager* renderMgr = director->GetCurrentScene()->GetRenderManager();
 
-
-	_renderTarget->clear(_clearColor, dx);
-	_opaqueDepthBuffer->clear(context, 0.0f, 0); //inverted depth를 사용함. 그러므로 0으로 초기화
+	_renderTarget->Clear(context, _clearColor);
+	_opaqueDepthBuffer->Clear(context, 0.0f, 0); //inverted depth를 사용함. 그러므로 0으로 초기화
 
 	if(_useTransparentRender)
-		_transparentDepthBuffer->clear(context, 0.0f, 0); //inverted depth
+		_transparentDepthBuffer->Clear(context, 0.0f, 0); //inverted depth
 
 	ID3D11RenderTargetView*		nullRenderTargetView	= nullptr;
 	ID3D11DepthStencilView*		nullDepthStencilView	= nullptr;

@@ -23,16 +23,10 @@ namespace Core
 		State _state;
 		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
-	protected:
+	private:
 		Structure::Vector<std::string, Core::Object>	_rootObjects;	
 
 		Rendering::Manager::CameraManager*		_cameraMgr;
-		Rendering::Manager::ShaderManager*		_shaderMgr;
-		Rendering::Manager::TextureManager*		_textureMgr;
-		Rendering::Manager::MaterialManager*	_materialMgr;
-		Importer::MeshImporter*					_meshImporter;
-		Rendering::Manager::BufferManager*		_bufferManager;
-		Core::ObjectManager*					_originObjMgr;
 		Rendering::Manager::RenderManager*		_renderMgr;	
 		UI::Manager::UIManager*					_uiManager;
 
@@ -67,11 +61,6 @@ namespace Core
 		GET_ACCESSOR(State, const State, _state);
 
 		GET_ACCESSOR(CameraManager, Rendering::Manager::CameraManager*, _cameraMgr);
-		GET_ACCESSOR(TextureManager, Rendering::Manager::TextureManager*, _textureMgr);
-		GET_ACCESSOR(ShaderManager, Rendering::Manager::ShaderManager*, _shaderMgr);
-		GET_ACCESSOR(MaterialManager, Rendering::Manager::MaterialManager*, _materialMgr);
-		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
-		GET_ACCESSOR(OriginObjectManager, Core::ObjectManager*, _originObjMgr);
 		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
 		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
 	};

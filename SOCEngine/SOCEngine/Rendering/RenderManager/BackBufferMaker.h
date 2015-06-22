@@ -32,7 +32,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void Render(const Camera::Camera* mainCamera, const Camera::UICamera* uiCamera);
+			void Render(const Device::DirectX* dx, const Camera::Camera* mainCamera, const Camera::UICamera* uiCamera);
 		};
 	}
 }

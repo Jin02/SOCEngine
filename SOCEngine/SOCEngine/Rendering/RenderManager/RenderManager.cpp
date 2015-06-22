@@ -1,6 +1,7 @@
 #include "RenderManager.h"
 #include "EngineShaderFactory.hpp"
 #include "Director.h"
+#include "ResourceManager.h"
 
 using namespace Rendering;
 using namespace Rendering::Manager;
@@ -48,8 +49,8 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 		materialFileName += "_UV";
 
 
-	const Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
-	ShaderManager* shaderMgr = scene->GetShaderManager();
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	ShaderManager* shaderMgr = resourceManager->GetShaderManager();
 
 	if(outVertexShader)
 		(*outVertexShader) = shaderMgr->FindVertexShader(materialFileName, BASIC_VS_MAIN_FUNC_NAME);
@@ -60,8 +61,8 @@ void RenderManager::FindShader(const Shader::VertexShader** outVertexShader, con
 
 bool RenderManager::Init()
 {
-	const Core::Scene*		currentScene	= Device::Director::GetInstance()->GetCurrentScene();
-	Manager::ShaderManager* shaderMgr		= currentScene->GetShaderManager();
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	ShaderManager* shaderMgr = resourceManager->GetShaderManager();
 
 	Factory::EngineFactory shaderLoader(shaderMgr);
 
