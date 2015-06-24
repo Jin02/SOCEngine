@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.h"
+#include "LightCulling.h"
 
 namespace Rendering
 {
@@ -13,9 +14,9 @@ namespace Rendering
 
 		private:
 			Texture::DepthBuffer*		_opaqueDepthBuffer;
-			Texture::DepthBuffer*		_transparentDepthBuffer;
+			Texture::DepthBuffer*		_blendedDepthBuffer;
 
-			bool						_useTransparentRender;
+			Light::LightCulling*		_lightCulling;
 
 		public:
 			ForwardPlusCamera();
@@ -29,7 +30,10 @@ namespace Rendering
 			void Render();
 
 		public:
-			GET_SET_ACCESSOR(UseTransparent, bool, _useTransparentRender);
+			void EnableRenderBlendedMesh(bool enable);
+
+		public:
+			GET_ACCESSOR(IsRenderBlendedMesh, bool, (_blendedDepthBuffer != nullptr));
 		};
 	}
 }

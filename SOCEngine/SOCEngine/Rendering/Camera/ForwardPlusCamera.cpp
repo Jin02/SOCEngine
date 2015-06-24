@@ -6,9 +6,10 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Device;
 using namespace Math;
+using namespace Rendering::Light;
 
-ForwardPlusCamera::ForwardPlusCamera()
-	: Camera(), _opaqueDepthBuffer(nullptr), _transparentDepthBuffer(nullptr), _useTransparentRender(false)
+ForwardPlusCamera::ForwardPlusCamera() : Camera(),
+	_opaqueDepthBuffer(nullptr), _blendedDepthBuffer(nullptr), _lightCulling(nullptr)
 {
 	_renderType = RenderType::ForwardPlus;
 }
@@ -25,14 +26,14 @@ void ForwardPlusCamera::OnInitialize()
 	_opaqueDepthBuffer =  new DepthBuffer;
 	_opaqueDepthBuffer->Initialize(windowSize);
 
-	_transparentDepthBuffer =  new DepthBuffer;
-	_transparentDepthBuffer->Initialize(windowSize);
+	EnableRenderBlendedMesh(true);
 }
 
 void ForwardPlusCamera::OnDestroy()
 {
 	SAFE_DELETE(_opaqueDepthBuffer);
-	SAFE_DELETE(_transparentDepthBuffer);
+	SAFE_DELETE(_blendedDepthBuffer);
+	SAFE_DELETE(_lightCulling);
 
 	Camera::OnDestroy();
 }
@@ -47,9 +48,7 @@ void ForwardPlusCamera::Render()
 
 	_renderTarget->Clear(context, _clearColor);
 	_opaqueDepthBuffer->Clear(context, 0.0f, 0); //inverted depth를 사용함. 그러므로 0으로 초기화
-
-	if(_useTransparentRender)
-		_transparentDepthBuffer->Clear(context, 0.0f, 0); //inverted depth
+	_blendedDepthBuffer->Clear(context, 0.0f, 0); //inverted depth
 
 	ID3D11RenderTargetView*		nullRenderTargetView	= nullptr;
 	ID3D11DepthStencilView*		nullDepthStencilView	= nullptr;
@@ -73,4 +72,20 @@ void ForwardPlusCamera::Render()
 		{
 		}
 	}
+}
+
+void ForwardPlusCamera::EnableRenderBlendedMesh(bool enable)
+{
+	const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+	
+	SAFE_DELETE(_blendedDepthBuffer);
+	if(enable)
+	{
+		_blendedDepthBuffer =  new DepthBuffer;
+		_blendedDepthBuffer->Initialize(windowSize);
+	}
+
+	SAFE_DELETE(_lightCulling);
+	_lightCulling = new LightCulling;
+	_lightCulling->Initialize(TEMP_LIGHT_CULLING_HLSL_PATH, enable);
 }
