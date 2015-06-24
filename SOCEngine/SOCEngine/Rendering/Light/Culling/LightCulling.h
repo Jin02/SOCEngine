@@ -15,19 +15,34 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
+			static const uint TileSize					= 16;
+			static const uint LightMaxNumInTile			= 544;
+
+			enum class InputBuffer : unsigned int
+			{
+				PointLightRadiusWithCenter		= 0,
+				SpotLightRadiusWithCenter		= 1
+			};
+
+			enum class InputTexture : unsigned int
+			{
+				InvetedOpaqueDepthBuffer		= 2,
+				InvetedBlendedDepthBuffer		= 3
+			};
+
+			enum class OutputBuffer : unsigned int
+			{
+				LightIndexBuffer = 0
+			};
+
+		public:
 			struct CullingConstBuffer
 			{	
 				Math::Matrix	worldViewMat;
 				Math::Matrix 	invProjMat;
 				Math::Vector2	screenSize;
-				float 			clippingFar;
-				unsigned int 	maxLightNumInTile;	// 한 타일당 최대 빛 갯수. 
-													// 이 값은 이 클래스 내부에서
-													// 알아서 계산됨
 				unsigned int 	lightNum;
-				unsigned int 	dummy1;
-				unsigned int 	dummy2;
-				unsigned int 	dummy3;
+				unsigned int 	lightStrideNumInLightIdxBuffer;
 			};
 
 			static const int POINT_LIGHT_LIMIT_NUM			= 2048;
@@ -39,12 +54,12 @@ namespace Rendering
 			Rendering::Buffer::ConstBuffer*			_globalDataBuffer;
 			LightCulling_CSOutputBuffer*			_lightIndexBuffer;
 
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>	_inputBuffers;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>			_inputBuffers;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>			_inputTextures;
 
-			//현재 하나만 사용. 추후 Blended용 버퍼 혹은 다양한 것들이 추가 예정
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>	_inputTextures;
+			std::vector<GPGPU::DirectCompute::ComputeShader::OutputBuffer>			_outputBuffers;
 
-			std::vector<GPGPU::DirectCompute::ComputeShader::OutputBuffer>	_outputBuffers;
+			bool	_useBlendedMeshCulling;
 
 		public:
 			LightCulling();
@@ -54,15 +69,12 @@ namespace Rendering
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
 
 		public:
-			void Initialize(const std::string& filePath,
-				const Texture::DepthBuffer* invertedOpaqueDepthBuffer, 
-				const Texture::DepthBuffer* invertedBlendedDepthBuffer);
-
+			void Initialize(const std::string& filePath, bool useRenderBlendedMesh);
 			void Destroy();
 
 		public:
 			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
-			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer);
+			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer, const Texture::DepthBuffer* invertedBlendedDepthBuffer);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadSize();
