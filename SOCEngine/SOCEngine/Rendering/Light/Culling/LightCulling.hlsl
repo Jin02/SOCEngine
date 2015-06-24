@@ -4,7 +4,7 @@
 #define TILE_RES_HALF							(TILE_RES / 2)
 #define THREAD_COUNT							(TILE_RES_HALF * TILE_RES_HALF)
 
-#define MAX_LIGHT_PER_TILE_NUM 					544
+#define LIGHT_MAX_COUNT_IN_TILE 				544
 #define FLOAT_MAX								3.402823466e+38F
 
 #define END_OF_LIGHT_BUFFER						0xffffffff
@@ -39,7 +39,7 @@ groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
 groupshared uint	s_lightIndexCounter;
-groupshared uint	s_lightIdx[MAX_LIGHT_PER_TILE_NUM];
+groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
 cbuffer LightCullingGlobalData : register( b0 )
 {
@@ -101,10 +101,17 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 {
 	uint2 idx = globalIdx.xy * 2;
 	
+#ifdef MSAA_ENABLE
 	float depth_tl = g_tDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
 	float depth_tr = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
 	float depth_br = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 	float depth_bl = g_tDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
+#else
+	float depth_tl = g_tDepthTexture.Load( uint3(idx.x,		idx.y,		0)).x;
+	float depth_tr = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
+	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
+	float depth_bl = g_tDepthTexture.Load( uint3(idx.x,		idx.y+1,	0)).x;
+#endif
 
 	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
 	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
@@ -155,11 +162,18 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 void CalcMinBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin)
 {
 	uint2 idx = globalIdx.xy * 2;
-	
+
+#ifdef MSAA_ENABLE
 	float depth_tl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
 	float depth_tr = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
 	float depth_br = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 	float depth_bl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
+#else
+	float depth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y,		0)).x;
+	float depth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
+	float depth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
+	float depth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y+1,	0)).x;
+#endif
 
 	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
 	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
@@ -349,12 +363,12 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 	for(uint i=idxInTile; i<pointLightCountInTile; i+=THREAD_COUNT)
 		g_outLightIndexBuffer[startOffset + i] = s_lightIdx[i];
 
-	for(uint i=(idxInTile+pointLightCountInTile); i<s_lightIndexCounter; ji+=THREAD_COUNT)
+	for(uint i=(idxInTile+pointLightCountInTile); i<s_lightIndexCounter; i+=THREAD_COUNT)
 		g_outLightIndexBuffer[startOffset + i + 1] = s_lightIdx[i];
 
 	if( idxInTile == 0 )
 	{
-		g_outLightIndexBuffer[startOffset + pointLightNumInTiles] = END_OF_LIGHT_BUFFER;
+		g_outLightIndexBuffer[startOffset + pointLightCountInTile] = END_OF_LIGHT_BUFFER;
 		g_outLightIndexBuffer[startOffset + s_lightIndexCounter + 1] = END_OF_LIGHT_BUFFER;
 	}
 }
