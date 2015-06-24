@@ -1,15 +1,18 @@
 //NOT_CREATE_META_DATA
 
-#define TILE_RES 						16
-#define TILE_RES_HALF					(TILE_RES / 2)
-#define THREAD_COUNT					(TILE_RES_HALF * TILE_RES_HALF)
+#define TILE_RES 								16
+#define TILE_RES_HALF							(TILE_RES / 2)
+#define THREAD_COUNT							(TILE_RES_HALF * TILE_RES_HALF)
 
-#define MAX_LIGHT_PER_TILE_NUM 			544
-#define MAX_LIGHT_NUM					2048
-#define FLOAT_MAX						3.402823466e+38F
+#define MAX_LIGHT_PER_TILE_NUM 					544
+#define FLOAT_MAX								3.402823466e+38F
 
-Buffer<float4> 		g_bPointLightCenterWithRadius 	: register(t0);
-Buffer<float4> 		g_bSpotLightCenterWithRadius 	: register(t1);
+#define END_OF_LIGHT_BUFFER						0xffffffff
+
+//Input Buffer
+Buffer<float4> 		g_inputPointLightIndexBuffer 	: register(t0);
+Buffer<float4> 		g_inputSpotLightIndexBuffer 	: register(t1);
+
 
 #ifdef MSAA_ENABLE
 Texture2DMS<float>	g_tDepthTexture					: register(t2);
@@ -27,23 +30,24 @@ Texture2D<float> 	g_tBlendedDepthTexture 			: register(t3);
 
 #endif
 
-RWBuffer<uint> 		g_orwbTileLightIndex 			: register(u0);
 
-groupshared float s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
-groupshared float s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
+//Output Buffer
+RWBuffer<uint> 		g_outLightIndexBuffer 			: register(u0);
 
-groupshared uint s_lightIndexCounter;
-groupshared uint s_lightIdx[MAX_LIGHT_PER_TILE_NUM];
+
+groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
+groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
+
+groupshared uint	s_lightIndexCounter;
+groupshared uint	s_lightIdx[MAX_LIGHT_PER_TILE_NUM];
 
 cbuffer LightCullingGlobalData : register( b0 )
 {
 	matrix	g_worldViewMat;
 	matrix 	g_invProjMat;
 	float2	g_screenSize;
-	float 	g_clippingFar;
-	uint 	g_maxLightNumInTile; //한 타일당 최대 빛 갯수.
 	uint 	g_lightNum;
-	uint3	dummy;	
+	uint 	g_lightStrideInLightIdxBuffer;
 };
 
 uint GetNumTilesX()
@@ -74,10 +78,10 @@ float4 CreatePlaneNormal( float4 b, float4 c )
     return n;
 }
 
-float InFrustum( float4 p, float4 frusutmNormal )
+bool InFrustum( float4 p, float4 frusutmNormal, float r )
 {
 	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
-	return dot( frusutmNormal.xyz, p.xyz );
+	return dot( frusutmNormal.xyz, p.xyz ) < r;
 }
 
 float InvertProjDepthToWorldViewDepth(float depth)
@@ -285,27 +289,31 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
         uint lightIdx = idxInTile + i;
         if( lightIdx < pointLightCount )
         {
-            float4 center = g_bPointLightCenterWithRadius[lightIdx];
-            float r = center.w;
-            center.xyz = mul( float4(center.xyz, 1), g_worldViewMat ).xyz;
+			float4 center = g_inputPointLightIndexBuffer[lightIdx];
+			float r = center.w;
+		
+			center.xyz = mul( float4(center.xyz, 1), g_worldViewMat ).xyz;
 
-            if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
-            {
-				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) && 
-					( InFrustum( center, frustumPlaneNormal[1] ) < r ) && 
-					( InFrustum( center, frustumPlaneNormal[2] ) < r ) && 
-					( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
-                {
+			if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+			{
+				if( InFrustum(center, frustumPlaneNormal[0], r) &&
+					InFrustum(center, frustumPlaneNormal[1], r) &&
+					InFrustum(center, frustumPlaneNormal[2], r) &&
+					InFrustum(center, frustumPlaneNormal[3], r) )
+				{
 					uint target = 0;
-					InterlockedAdd( s_lightIndexCounter, 1, target );
-					s_lightIdx[target] = lightIdx;
+					InterlockedAdd(s_lightIndexCounter, 1, target);
+
+					if(target < LIGHT_MAX_COUNT_IN_TILE)
+						s_lightIdx[target] = lightIdx;
 				}
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
-	uint pointLightNumInTiles = s_lightIndexCounter;
+	uint pointLightCountInTile = s_lightIndexCounter;
+
 
 	uint spotLightCount = (g_lightNum & 0xFFFF0000) >> 16;
 	for(uint j=0; j<spotLightCount; j+=THREAD_COUNT)
@@ -313,38 +321,40 @@ void LightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 		uint lightIdx = idxInTile + j;
 		if( lightIdx < spotLightCount )
 		{
-			float4 center = g_bSpotLightCenterWithRadius[lightIdx];
+			float4 center = g_inputSpotLightIndexBuffer[lightIdx];
 			float r = center.w;
+			
 			center.xyz = mul( float4(center.xyz, 1), g_worldViewMat ).xyz;
 
 			if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 			{
-				if( ( InFrustum( center, frustumPlaneNormal[0] ) < r ) &&
-					( InFrustum( center, frustumPlaneNormal[1] ) < r ) && 
-					( InFrustum( center, frustumPlaneNormal[2] ) < r ) && 
-					( InFrustum( center, frustumPlaneNormal[3] ) < r ) )
+				if( InFrustum(center, frustumPlaneNormal[0], r) &&
+					InFrustum(center, frustumPlaneNormal[1], r) &&
+					InFrustum(center, frustumPlaneNormal[2], r) &&
+					InFrustum(center, frustumPlaneNormal[3], r) )
 				{
 					uint target = 0;
-					InterlockedAdd( s_lightIndexCounter, 1, target );
-					s_lightIdx[target] = lightIdx;
+					InterlockedAdd(s_lightIndexCounter, 1, target);
+
+					if(target < LIGHT_MAX_COUNT_IN_TILE)
+						s_lightIdx[target] = lightIdx;
 				}
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
+	uint startOffset = g_lightStrideInLightIdxBuffer * idxOfGroup;
 
-	uint startOffset = g_maxLightNumInTile * idxOfGroup;
+	for(uint i=idxInTile; i<pointLightCountInTile; i+=THREAD_COUNT)
+		g_outLightIndexBuffer[startOffset + i] = s_lightIdx[i];
 
-	for(uint i=idxInTile; i<pointLightNumInTiles; i+=THREAD_COUNT)
-		g_orwbTileLightIndex[startOffset + i] = s_lightIdx[i];
-
-	for(uint j=(idxInTile+pointLightNumInTiles); j<s_lightIndexCounter; j+=THREAD_COUNT)
-		g_orwbTileLightIndex[startOffset + j + 1] = s_lightIdx[j];
+	for(uint i=(idxInTile+pointLightCountInTile); i<s_lightIndexCounter; ji+=THREAD_COUNT)
+		g_outLightIndexBuffer[startOffset + i + 1] = s_lightIdx[i];
 
 	if( idxInTile == 0 )
 	{
-		g_orwbTileLightIndex[startOffset + pointLightNumInTiles] = 0;
-		g_orwbTileLightIndex[startOffset + s_lightIndexCounter + 1] = 0;
+		g_outLightIndexBuffer[startOffset + pointLightNumInTiles] = END_OF_LIGHT_BUFFER;
+		g_outLightIndexBuffer[startOffset + s_lightIndexCounter + 1] = END_OF_LIGHT_BUFFER;
 	}
 }
