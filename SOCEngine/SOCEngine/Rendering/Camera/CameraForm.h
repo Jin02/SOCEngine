@@ -20,7 +20,7 @@ namespace Rendering
 
 	namespace Camera
 	{
-		class Camera : public Core::Component
+		class CameraForm : public Core::Component
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
@@ -57,8 +57,8 @@ namespace Rendering
 			Color							_clearColor;
 
 		public:
-			Camera();
-			virtual ~Camera(void);
+			CameraForm();
+			virtual ~CameraForm(void);
 
 		protected:
 			void CalcAspect();

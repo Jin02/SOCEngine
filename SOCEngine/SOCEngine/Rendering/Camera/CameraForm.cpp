@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "CameraForm.h"
 #include "Object.h"
 #include "Director.h"
 #include "TransformPipelineParam.h"
@@ -11,18 +11,18 @@ using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
-Camera::Camera() 
+CameraForm::CameraForm() 
 	: Component(),	_frustum(nullptr), _renderTarget(nullptr), _isInvertedDepthWriting(false)
 {
 	_renderType = RenderType::Unknown;
 }
 
-Camera::~Camera(void)
+CameraForm::~CameraForm(void)
 {
 
 }
 
-void Camera::OnInitialize()
+void CameraForm::OnInitialize()
 {
 	_FOV			= 60.0f;
 	_clippingNear	= 0.1f;
@@ -44,21 +44,25 @@ void Camera::OnInitialize()
 		ASSERT_MSG("Error, cam->constbuffer->Initialize");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
+
+	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
+	const std::string key = _owner->GetName();
+	camMgr->Add(key, this);
 }
 
-void Camera::OnDestroy()
+void CameraForm::OnDestroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
 }
 
-void Camera::CalcAspect()
+void CameraForm::CalcAspect()
 {
 	Size<unsigned int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 }
 
-void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
+void CameraForm::ProjectionMatrix(Math::Matrix& outMatrix)
 {
 	if(_projectionType == ProjectionType::Perspective)
 	{
@@ -79,7 +83,7 @@ void Camera::ProjectionMatrix(Math::Matrix& outMatrix)
 	}
 }
 
-void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
+void CameraForm::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
 {
 	outMatrix = worldMatrix;
 
@@ -103,7 +107,7 @@ void Camera::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix
 	outMatrix._44 = 1.0f;
 }
 
-void Camera::ViewMatrix(Math::Matrix& outMatrix)
+void CameraForm::ViewMatrix(Math::Matrix& outMatrix)
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
@@ -111,7 +115,7 @@ void Camera::ViewMatrix(Math::Matrix& outMatrix)
 	ViewMatrix(outMatrix, worldMat);
 }
 
-void Camera::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects)
+void CameraForm::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -142,7 +146,7 @@ void Camera::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::str
 	}
 }
 
-void Camera::SortTransparentMeshRenderQueue()
+void CameraForm::SortTransparentMeshRenderQueue()
 {
 	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	
