@@ -25,7 +25,6 @@ Scene::~Scene(void)
 void Scene::Initialize()
 {
 	_cameraMgr		= new Manager::CameraManager;
-	_cameraMgr->InitLightCulling();
 
 	_renderMgr		= new Manager::RenderManager;
 	_renderMgr->Init();
@@ -38,6 +37,8 @@ void Scene::Initialize()
 
 	_backBufferMaker = new PostProcessing::BackBufferMaker;
 	_backBufferMaker->Initialize();
+
+	_lightManager	= new Manager::LightManager;
 
 	NextState();
 	OnInitialize();
@@ -58,7 +59,7 @@ void Scene::RenderPreview()
 {
 	OnRenderPreview();
 
-	auto CamIteration = [&](Camera::Camera* cam)
+	auto CamIteration = [&](Camera::CameraForm* cam)
 	{
 		cam->RenderPreviewWithUpdateTransformCB(_rootObjects);
 	};
@@ -69,7 +70,7 @@ void Scene::RenderPreview()
 void Scene::Render()
 {
 #ifndef DEPRECATED_MESH_RENDERER
-	auto CamIteration = [&](Camera::Camera* cam)
+	auto CamIteration = [&](Camera::CameraForm* cam)
 	{
 		cam->Render();
 	};
@@ -83,7 +84,7 @@ void Scene::Render()
 	
 	_uiCamera->Render();
 
-	Camera::Camera* mainCam = _cameraMgr->GetMainCamera();
+	Camera::CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	_backBufferMaker->Render(_dx, mainCam, _uiCamera);
 
 	//swap
@@ -101,6 +102,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_uiCamera);
 	SAFE_DELETE(_uiManager);
 	SAFE_DELETE(_backBufferMaker);
+	SAFE_DELETE(_lightManager);
 
 	OnDestroy();
 }

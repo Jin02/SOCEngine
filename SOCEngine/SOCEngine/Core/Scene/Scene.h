@@ -11,6 +11,7 @@
 #include "RenderManager.h"
 #include "UIManager.h"
 #include "BackBufferMaker.h"
+#include "LightManager.h"
 
 namespace Core
 {
@@ -29,6 +30,7 @@ namespace Core
 		Rendering::Manager::CameraManager*		_cameraMgr;
 		Rendering::Manager::RenderManager*		_renderMgr;	
 		UI::Manager::UIManager*					_uiManager;
+		Rendering::Manager::LightManager*		_lightManager;
 
 		Rendering::Camera::UICamera*			_uiCamera;
 		const Device::DirectX*					_dx;
@@ -63,5 +65,6 @@ namespace Core
 		GET_ACCESSOR(CameraManager, Rendering::Manager::CameraManager*, _cameraMgr);
 		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
 		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
+		GET_ACCESSOR(LightManager, Rendering::Manager::LightManager*, _lightManager);
 	};
 }
