@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Structure.h"
-#include "Camera.h"
+#include "CameraForm.h"
 
 #include "LightCulling.h"
 
@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class CameraManager : public Structure::Vector<std::string, Camera::Camera>
+		class CameraManager : public Structure::Vector<std::string, Camera::CameraForm>
 		{
 		private:
 			Light::LightCulling*	_lightCullingCS;
@@ -19,9 +19,8 @@ namespace Rendering
 			~CameraManager(void);
 
 		public:
-			void InitLightCulling();
-			void SetMainCamera(Camera::Camera* cam);
-			Camera::Camera* GetMainCamera();
+			void SetMainCamera(Camera::CameraForm* cam);
+			Camera::CameraForm* GetMainCamera();
 
 		public:
 			GET_ACCESSOR(LightCullingCS, Light::LightCulling*, _lightCullingCS);
