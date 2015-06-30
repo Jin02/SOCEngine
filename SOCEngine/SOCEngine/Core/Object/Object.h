@@ -4,7 +4,6 @@
 #include "Structure.h"
 #include "Transform.h"
 #include "Component.h"
-#include "Light.h"
 #include "Frustum.h"
 #include "TransformPipelineParam.h"
 #include "Mesh.h"

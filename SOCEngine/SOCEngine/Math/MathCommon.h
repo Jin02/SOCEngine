@@ -15,6 +15,7 @@ namespace Math
 	public:
 		static float Rad2Deg(float a);
 		static float Deg2Rad(float a);
+		static unsigned short FloatToHalf(float f);
 
 	public:
 		static void EulerNormalize(Vector3& out, const Vector3& eulerAngles);
