@@ -43,7 +43,7 @@ void BackBufferMaker::Initialize()
 		Matrix::Identity(world);
 		world._43 = -10;
 
-		Camera::Camera::ViewMatrix(view, world);
+		Camera::CameraForm::ViewMatrix(view, world);
 		Matrix::OrthoLH(proj, (float)winSize.w, (float)winSize.h, 0.01f, 1000.0f);
 
 		Matrix viewProj = view * proj;
@@ -149,7 +149,7 @@ void BackBufferMaker::Destroy()
 	SAFE_DELETE(_meshFilter);
 }
 
-void BackBufferMaker::Render(const Device::DirectX* dx, const Rendering::Camera::Camera* mainCamera, const Rendering::Camera::UICamera* uiCamera)
+void BackBufferMaker::Render(const Device::DirectX* dx, const Rendering::Camera::CameraForm* mainCamera, const Rendering::Camera::UICamera* uiCamera)
 {
 	ID3D11DeviceContext* context		= dx->GetContext();
 
