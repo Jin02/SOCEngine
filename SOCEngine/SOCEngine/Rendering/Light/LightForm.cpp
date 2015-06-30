@@ -1,10 +1,10 @@
 #include "LightForm.h"
 #include "Object.h"
-#include "LightManager.h"
+
+#include "Director.h"
 
 using namespace Rendering;
 using namespace Rendering::Light;
-using namespace Rendering::Manager;
 
 LightForm::LightForm()
 {
@@ -17,11 +17,10 @@ LightForm::~LightForm()
 
 void LightForm::Initialize()
 {
-	//null
+	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	scene->GetLightManager()->Add(this, _owner->GetName().c_str());
 }
 
 void LightForm::Destroy()
 {
-	//null
 }
-
