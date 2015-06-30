@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Camera.h"
+#include "CameraForm.h"
 
 namespace Rendering
 {
 	namespace Camera
 	{		
-		class UICamera : public Camera
+		class UICamera : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::UI; }

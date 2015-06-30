@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Camera.h"
+#include "CameraForm.h"
 #include "LightCulling.h"
 
 namespace Rendering
 {
 	namespace Camera
 	{		
-		class ForwardPlusCamera : public Camera
+		class ForwardPlusCamera : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
@@ -35,5 +35,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(IsRenderBlendedMesh, bool, (_blendedDepthBuffer != nullptr));
 		};
+
+		typedef ForwardPlusCamera Camera;
 	}
 }

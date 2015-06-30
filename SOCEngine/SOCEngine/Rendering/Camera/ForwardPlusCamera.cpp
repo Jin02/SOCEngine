@@ -8,7 +8,7 @@ using namespace Device;
 using namespace Math;
 using namespace Rendering::Light;
 
-ForwardPlusCamera::ForwardPlusCamera() : Camera(),
+ForwardPlusCamera::ForwardPlusCamera() : CameraForm(),
 	_opaqueDepthBuffer(nullptr), _blendedDepthBuffer(nullptr), _lightCulling(nullptr)
 {
 	_renderType = RenderType::ForwardPlus;
@@ -20,7 +20,7 @@ ForwardPlusCamera::~ForwardPlusCamera()
 
 void ForwardPlusCamera::OnInitialize()
 {
-	Camera::OnInitialize();
+	CameraForm::OnInitialize();
 	const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 
 	_opaqueDepthBuffer =  new DepthBuffer;
@@ -35,7 +35,7 @@ void ForwardPlusCamera::OnDestroy()
 	SAFE_DELETE(_blendedDepthBuffer);
 	SAFE_DELETE(_lightCulling);
 
-	Camera::OnDestroy();
+	CameraForm::OnDestroy();
 }
 
 void ForwardPlusCamera::Render()

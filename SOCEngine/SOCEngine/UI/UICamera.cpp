@@ -7,7 +7,7 @@ using namespace Rendering::Shader;
 using namespace Device;
 using namespace Math;
 
-UICamera::UICamera() : Camera(), _object(nullptr), _depthBuffer(nullptr)
+UICamera::UICamera() : CameraForm(), _object(nullptr), _depthBuffer(nullptr)
 {
 	_renderType			= RenderType::Forward;
 }
@@ -18,7 +18,7 @@ UICamera::~UICamera(void)
 
 void UICamera::Initialize()
 {
-	Camera::OnInitialize();
+	CameraForm::OnInitialize();
 
 	_depthBuffer =  new DepthBuffer;
 	_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
@@ -36,7 +36,7 @@ void UICamera::Initialize()
 void UICamera::Destroy()
 {
 	SAFE_DELETE(_depthBuffer);
-	Camera::OnDestroy();
+	CameraForm::OnDestroy();
 }
 
 void UICamera::Update(float delta)
