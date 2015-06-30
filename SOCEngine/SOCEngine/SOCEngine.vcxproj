@@ -75,7 +75,7 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
-    <ClInclude Include="Rendering\Camera\Camera.h" />
+    <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h" />
@@ -171,7 +171,7 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
-    <ClCompile Include="Rendering\Camera\Camera.cpp" />
+    <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />

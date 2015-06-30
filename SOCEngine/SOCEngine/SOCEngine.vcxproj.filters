@@ -187,9 +187,6 @@
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\BasicCamera">
-      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\ForwardPlus">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
@@ -249,6 +246,9 @@
     </Filter>
     <Filter Include="Rendering\Light\Lights\Spot">
       <UniqueIdentifier>{217364df-5f7c-4465-b62d-274758ea8bb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\CameraForm">
+      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -481,9 +481,6 @@
     <ClInclude Include="Rendering\Camera\Frustum.h">
       <Filter>Rendering\Camera\Frustum</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\Camera.h">
-      <Filter>Rendering\Camera\BasicCamera</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClInclude>
@@ -609,6 +606,9 @@
     </ClInclude>
     <ClInclude Include="Structure\VectorMap.h">
       <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraForm.h">
+      <Filter>Rendering\Camera\CameraForm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -780,9 +780,6 @@
     <ClCompile Include="Rendering\Camera\Frustum.cpp">
       <Filter>Rendering\Camera\Frustum</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\Camera.cpp">
-      <Filter>Rendering\Camera\BasicCamera</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
       <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClCompile>
@@ -830,6 +827,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Light\LightManager.cpp">
       <Filter>Rendering\Light\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraForm.cpp">
+      <Filter>Rendering\Camera\CameraForm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
