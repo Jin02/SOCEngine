@@ -2,8 +2,6 @@
 
 #include "Lights.h"
 #include "Frustum.h"
-#include "Common.h"
-#include <vector>
 #include "VectorMap.h"
 
 namespace Rendering
@@ -30,6 +28,8 @@ namespace Rendering
 
 		public:
 			void Add(const Light::LightForm* light, const char* key = nullptr);
+			bool HasKey(const std::string& key);
+
 			void Delete(const std::string& key, Light::LightForm::LightType type);
 			void DeleteAll();
 		};

@@ -20,6 +20,9 @@ LightManager::~LightManager(void)
 void LightManager::Add(const LightForm* light, const char* key)
 {
 	std::string searchKey = key ? key : light->GetOwner()->GetName();
+
+	ASSERT_COND_MSG(HasKey(searchKey), "Already has Key");
+
 	LightForm::LightType lightType = light->GetType();
 	uint uintColor = light->GetColor().Get32BitUintColor();
 
@@ -94,4 +97,13 @@ void LightManager::DeleteAll()
 	_directionalLightColorBuffer.DeleteAll();
 	_directionalLightParammBuffer.DeleteAll();
 	_directionalLightTransformBuffer.DeleteAll();
+}
+
+bool LightManager::HasKey(const std::string& key)
+{
+	if(_directionalLightTransformBuffer.Find(key))		return true;
+	if(_pointLightTransformBuffer.Find(key))			return true;
+	if(_spotLightTransformBuffer.Find(key))				return true;
+
+	return false;
 }
