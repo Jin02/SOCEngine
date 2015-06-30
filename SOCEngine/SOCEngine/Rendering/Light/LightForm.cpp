@@ -1,32 +1,27 @@
 #include "LightForm.h"
 #include "Object.h"
+#include "LightManager.h"
 
-namespace Rendering
+using namespace Rendering;
+using namespace Rendering::Light;
+using namespace Rendering::Manager;
+
+LightForm::LightForm()
 {
-	namespace Light
-	{
-		LightForm::LightForm( )
-		{
-			//range = 10.0f;
-			//specularPower = 20.0f;
-
-			//ambient = Color(0.1f, 0.1f, 0.1f);
-			//diffuse = Color::white();
-			//specular = Color::white();
-		}
-
-		LightForm::~LightForm()
-		{
-		}
-
-		void LightForm::Initialize()
-		{
-			//null
-		}
-
-		void LightForm::Destroy()
-		{
-			//null
-		}
-	}
+	_color = Color::White();
 }
+
+LightForm::~LightForm()
+{
+}
+
+void LightForm::Initialize()
+{
+	//null
+}
+
+void LightForm::Destroy()
+{
+	//null
+}
+

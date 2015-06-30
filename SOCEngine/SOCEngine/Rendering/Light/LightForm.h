@@ -13,12 +13,19 @@ namespace Rendering
 		{
 		public:
 			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
-
-		public:
-			enum LightType{ Directional = 0, Point, Spot };
+			enum class LightType : uint { Directional = 0, Point, Spot };
+			struct LightTransformBuffer
+			{
+				Math::Vector3	worldPosition;
+				float			radius;
+				LightTransformBuffer() : radius(0) {}
+				~LightTransformBuffer() {}
+			};
 
 		protected:
-			LightType _type;
+			LightType	_type;
+			float		_radius;
+			Color		_color;
 
 		protected:
 			LightForm();
@@ -32,7 +39,12 @@ namespace Rendering
 
 		public:
 			virtual bool Intersects(const Intersection::Sphere &sphere) = 0;
-			GET_ACCESSOR(LightType, const LightType, _type);
+
+		public:
+			GET_ACCESSOR(Type, const LightType, _type);		
+
+			GET_SET_ACCESSOR(Radius, float, _radius);
+			GET_SET_ACCESSOR(Color, const Color&, _color);
 		};
 	}
 }

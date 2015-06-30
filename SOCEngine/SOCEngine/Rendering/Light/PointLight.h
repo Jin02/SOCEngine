@@ -14,6 +14,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersects(const Intersection::Sphere &sphere);
+			void MakeLightBufferElement(LightTransformBuffer& out) const;
 		};
 
 	}
