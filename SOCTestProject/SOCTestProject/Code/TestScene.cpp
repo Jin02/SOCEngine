@@ -19,6 +19,9 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	Core::Object* camObj = new Core::Object;
+	Camera::Camera* cam = camObj->AddComponent<Camera::ForwardPlusCamera>();
+	Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager()->Add("mainCam", cam);
 }
 
 void TestScene::OnRenderPreview()
