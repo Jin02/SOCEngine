@@ -85,7 +85,7 @@
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\DirectionalLight.h" />
-    <ClInclude Include="Rendering\Light\Light.h" />
+    <ClInclude Include="Rendering\Light\Lights.h" />
     <ClInclude Include="Rendering\Light\LightForm.h" />
     <ClInclude Include="Rendering\Light\LightManager.h" />
     <ClInclude Include="Rendering\Light\PointLight.h" />
@@ -114,6 +114,7 @@
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\FontLoader.h" />
     <ClInclude Include="UI\SimpleImage2D.h" />
     <ClInclude Include="UI\SimpleText2D.h" />
