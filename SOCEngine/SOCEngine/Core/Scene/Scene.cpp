@@ -52,6 +52,8 @@ void Scene::Update(float dt)
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
 		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
 
+	_lightManager->UpdateBuffer();
+
 	_uiCamera->Update(dt);
 }
 
