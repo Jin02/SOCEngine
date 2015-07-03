@@ -125,10 +125,12 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 	return ( LightMaxNumInTile - ( key * ( winSize.h / 120 ) ) );
 }
 
-void LightCulling::UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius)
+void LightCulling::UpdateInputBuffer(const Device::DirectX* dx,
+									 const CullingConstBuffer& cbData,
+									 const Light::LightForm::LightTransformBuffer* pointLightTransformBuffer,
+									 const Light::LightForm::LightTransformBuffer* spotLightTransformBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-
 	_globalDataBuffer->Update(context, &cbData);
 
 	ComputeShader::InputBuffer inputBuffer;
@@ -136,10 +138,10 @@ void LightCulling::UpdateInputBuffer(const Device::DirectX* dx, const CullingCon
 	// Input Buffer Setting
 	{
 		//0, pointLight 
-		_inputBuffers[0].buffer->Update(context, pointLightCenterWithRadius.data());
+		_inputBuffers[0].buffer->Update(context, pointLightTransformBuffer);
 
 		//1, spot light
-		_inputBuffers[1].buffer->Update(context, spotLightCenterWithRadius.data());
+		_inputBuffers[1].buffer->Update(context, spotLightTransformBuffer);
 	}
 }
 

@@ -7,6 +7,7 @@
 #include <array>
 
 #include "LightCulling_CSOutputBuffer.h"
+#include "Lightform.h"
 
 namespace Rendering
 {
@@ -73,7 +74,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
+			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const Light::LightForm::LightTransformBuffer* pointLightTransformBuffer, const Light::LightForm::LightTransformBuffer* spotLightTransformBuffer);
 			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer, const Texture::DepthBuffer* invertedBlendedDepthBuffer);
 
 		public:
