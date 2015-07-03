@@ -10,9 +10,8 @@ using namespace Rendering;
 using namespace Device;
 
 SimpleText2D::SimpleText2D(const std::string& name, const Core::Object* parent)
-	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
+	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
 {
-	_name = name;
 }
 
 SimpleText2D::~SimpleText2D()
