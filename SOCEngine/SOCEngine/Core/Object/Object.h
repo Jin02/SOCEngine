@@ -28,7 +28,7 @@ namespace Core
 		std::vector<Component*> _components;
 
 	public:
-		Object(const Object* parent = NULL);
+		Object(const std::string& name, const Object* parent = NULL);
 		virtual ~Object(void);
 
 	public:
@@ -110,11 +110,10 @@ namespace Core
 		GET_SET_ACCESSOR(Use, bool, _use);
 		GET_ACCESSOR(Culled, bool, _culled);
 		GET_ACCESSOR(HasMesh, bool, _hasMesh);
-		GET_SET_ACCESSOR(Name, const std::string&, _name);
+		GET_ACCESSOR(Name, const std::string&, _name);
 		GET_SET_ACCESSOR(Parent, const Object*, _parent);
 
 	public:
-		static Object* Copy(const Object *obj);
 		GET_ACCESSOR(Transform, Transform*, _transform);
 	};
 

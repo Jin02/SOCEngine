@@ -12,8 +12,8 @@ namespace Core
 
 	using namespace Rendering::Light;
 
-	Object::Object(const Object* parent /* = NULL */) :
-		_culled(false), _parent(parent), _use(true), _hasMesh(false)
+	Object::Object(const std::string& name, const Object* parent /* = NULL */) :
+		_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name)
 	{
 		_transform = new Transform( this );		
 		_root = parent ? parent->_root : this;
@@ -114,11 +114,6 @@ namespace Core
 			}
 		}
 
-	}
-
-	Object* Object::Copy(const Object *obj)
-	{
-		return new Object(*obj);
 	}
 
 	void Object::DeleteAllComponent()
