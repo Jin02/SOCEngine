@@ -22,50 +22,93 @@ void LightManager::Add(const LightForm* light, const char* key)
 	std::string searchKey = key ? key : light->GetOwner()->GetName();
 
 	ASSERT_COND_MSG(HasKey(searchKey), "Already has Key");
+	_lights.Add(searchKey, light);
+}
 
-	LightForm::LightType lightType = light->GetType();
-	uint uintColor = light->GetColor().Get32BitUintColor();
+void LightManager::UpdateBuffer()
+{
+	const auto& lights = _lights.GetVector();
 
-	if(lightType == LightForm::LightType::Directional)
+	for(auto iter = lights.begin(); iter != lights.end(); ++iter)
 	{
-		const DirectionalLight* l = dynamic_cast<const DirectionalLight*>(light);
+		const Light::LightForm* light = (*iter);
+		std::string key = light->GetOwner()->GetName();
 
-		LightForm::LightTransformBuffer transformElem;
-		DirectionalLight::Params param;
+		LightForm::LightType lightType = light->GetType();
+		uint uintColor = light->GetColor().Get32BitUintColor();
 
-		l->MakeLightBufferElement(transformElem, param);
+		if(lightType == LightForm::LightType::Directional)
+		{
+			const DirectionalLight* l = dynamic_cast<const DirectionalLight*>(light);
 
-		_directionalLightTransformBuffer.Add(searchKey, transformElem);
-		_directionalLightParammBuffer.Add(searchKey, param);
-		_directionalLightColorBuffer.Add(searchKey, uintColor);
-	}
-	else if(lightType == LightForm::LightType::Point)
-	{
-		const PointLight* l = dynamic_cast<const PointLight*>(light);
+			LightForm::LightTransformBuffer transformElem;
+			DirectionalLight::Params param;
 
-		LightForm::LightTransformBuffer transformElem;
-		l->MakeLightBufferElement(transformElem);
+			l->MakeLightBufferElement(transformElem, param);
 
-		_pointLightTransformBuffer.Add(searchKey, transformElem);
-		_pointLightColorBuffer.Add(searchKey, uintColor);
-	}
-	else if(lightType == LightForm::LightType::Spot)
-	{
-		const SpotLight* l = dynamic_cast<const SpotLight*>(light);
+			if( _directionalLightTransformBuffer.Find(key) == nullptr ) //하나만 검색해도 됨
+			{
+				_directionalLightTransformBuffer.Add(key, transformElem);
+				_directionalLightParammBuffer.Add(key, param);
+				_directionalLightColorBuffer.Add(key, uintColor);
+			}
+			else
+			{
+				(*_directionalLightTransformBuffer.Find(key)) = transformElem;
+				(*_directionalLightParammBuffer.Find(key)) = param;
+				(*_directionalLightColorBuffer.Find(key)) = uintColor;
+			}
+		}
 
-		LightForm::LightTransformBuffer transformElem;
-		SpotLight::Params param;
+		if(lightType == LightForm::LightType::Point)
+		{
+			const PointLight* l = dynamic_cast<const PointLight*>(light);
 
-		l->MakeLightBufferElement(transformElem, param);
+			LightForm::LightTransformBuffer transformElem;
+			l->MakeLightBufferElement(transformElem);
+			
+			if(_pointLightTransformBuffer.Find(key) == nullptr)
+			{
+				_pointLightTransformBuffer.Add(key, transformElem);
+				_pointLightColorBuffer.Add(key, uintColor);
+			}
+			else
+			{
+				(*_pointLightTransformBuffer.Find(key)) = transformElem;
+				(*_pointLightColorBuffer.Find(key)) = uintColor;
+			}
+		}
 
-		_spotLightTransformBuffer.Add(searchKey, transformElem);
-		_spotLightParamBuffer.Add(searchKey, param);
-		_spotLightColorBuffer.Add(searchKey, uintColor);
+		if(lightType == LightForm::LightType::Spot)
+		{
+			const SpotLight* l = dynamic_cast<const SpotLight*>(light);
+
+			LightForm::LightTransformBuffer transformElem;
+			SpotLight::Params param;
+
+			l->MakeLightBufferElement(transformElem, param);
+
+			if(_spotLightTransformBuffer.Find(key) == nullptr)
+			{
+				_spotLightTransformBuffer.Add(key, transformElem);
+				_spotLightParamBuffer.Add(key, param);
+				_spotLightColorBuffer.Add(key, uintColor);
+			}
+			else
+			{
+				(*_spotLightTransformBuffer.Find(key)) = transformElem;
+				(*_spotLightParamBuffer.Find(key)) = param;
+				(*_spotLightColorBuffer.Find(key)) = uintColor;
+			}
+		}
 	}
 }
 
-void LightManager::Delete(const std::string& key, LightForm::LightType type)
+void LightManager::Delete(const std::string& key)
 {
+	const Light::LightForm** light = _lights.Find(key);
+	Light::LightForm::LightType type = (*light)->GetType();
+
 	if(type == LightForm::LightType::Directional)
 	{
 		_directionalLightColorBuffer.Delete(key);
@@ -83,6 +126,8 @@ void LightManager::Delete(const std::string& key, LightForm::LightType type)
 		_spotLightColorBuffer.Delete(key);
 		_spotLightParamBuffer.Delete(key);
 	}
+
+	_lights.Delete(key);
 }
 
 void LightManager::DeleteAll()
@@ -97,13 +142,11 @@ void LightManager::DeleteAll()
 	_directionalLightColorBuffer.DeleteAll();
 	_directionalLightParammBuffer.DeleteAll();
 	_directionalLightTransformBuffer.DeleteAll();
+
+	_lights.DeleteAll();
 }
 
 bool LightManager::HasKey(const std::string& key)
 {
-	if(_directionalLightTransformBuffer.Find(key))		return true;
-	if(_pointLightTransformBuffer.Find(key))			return true;
-	if(_spotLightTransformBuffer.Find(key))				return true;
-
-	return false;
+	return _lights.Find(key) != nullptr;
 }
