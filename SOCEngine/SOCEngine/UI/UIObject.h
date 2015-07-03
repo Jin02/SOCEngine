@@ -20,7 +20,7 @@ namespace UI
 		int _depth;
 
 	public:
-		UIObject(const Object* parent = NULL);
+		UIObject(const std::string& name, const Object* parent = NULL);
 		virtual ~UIObject();
 
 	protected:
