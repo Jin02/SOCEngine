@@ -138,8 +138,7 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 
 	LoadMaterials(nullptr, materials, fileName, materialFileFolder, materialType);
 
-	Core::Object* parent = new Core::Object;
-	parent->SetName(fileName);
+	Core::Object* parent = new Core::Object(fileName);
 
 	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
 	{
@@ -292,8 +291,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 	
-	Core::Object* object = new Core::Object;
-	object->SetName(tinyShape.name);
+	Core::Object* object = new Core::Object(tinyShape.name);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 
@@ -444,8 +442,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 
-	Core::Object* object = new Core::Object;
-	object->SetName(tinyShape.name);
+	Core::Object* object = new Core::Object(tinyShape.name);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	
@@ -493,13 +490,5 @@ Core::Object* ObjImporter::CloneOriginObject(const std::string& fileName, const 
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 	const Core::Object* object = resourceManager->GetOriginObjectManager()->Find(fileName + ':' + tinyShapeName);
 
-	if(object)
-	{
-		Core::Object* copyObj = Core::Object::Copy(object);
-		copyObj->SetName( object->GetName() + "-Clone");
-		
-		return copyObj;
-	}
-
-	return nullptr;
+	return object ? new Core::Object(object->GetName() + "-Clone") : nullptr;
 }
