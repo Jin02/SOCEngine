@@ -8,6 +8,14 @@ namespace Rendering
 	{
 		class [ClassName]
 		{
+		public:
+			struct LoadShaderResult
+			{
+				bool loadVS;
+				bool loadPS;
+				bool isOnlyHasPath;
+			};
+
 		private:
 			Rendering::Manager::ShaderManager	*_shaderMgr;
 
@@ -22,7 +30,7 @@ namespace Rendering
 			}
 
 		public:
-			bool LoadShader(const std::string& shaderName,
+			LoadShaderResult LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
 				const std::string* includeFileName,
 				const std::vector<std::string>* includeMacros,
@@ -31,6 +39,7 @@ namespace Rendering
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
+				bool isOnlyHasPath = false;
 
 				typedef unsigned int uint;
 				auto AddInputElementDesc = [&](const char* semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
@@ -70,7 +79,18 @@ namespace Rendering
 				if(outPixelShader)
 					(*outPixelShader) = ps;
 
-				return (vs && ps);
+				LoadShaderResult result;
+				result.loadVS = vs != nullptr;
+				result.loadPS = ps != nullptr;
+				result.isOnlyHasPath = isOnlyHasPath;
+
+				return result;
+			}
+			
+			void FetchShaderFullPath(std::string& out, const std::string& fileName)
+			{
+				/** FullPath Script Begin **/
+				/** FullPath Script End **/
 			}
 		};
 	}

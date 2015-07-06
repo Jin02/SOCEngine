@@ -305,7 +305,7 @@ class ParseCode:
 
 def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
-	print "Shader File Modify Time : " + time.ctime(shaderFileModifyTime)
+	print "\nShader File Modify Time : " + time.ctime(shaderFileModifyTime)
 
 	isCreateMetadata = True
 
@@ -315,8 +315,9 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	 	js = json.loads(metadataFile.read())
 	 	metadataFile.close()	 	
 
-	 	#check Date
-	 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
+	 	if len(js) != 0:
+		 	#check Date
+		 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
 
  	#check Shader File
  	shaderFile 	= open(shaderFilePath, 'rU')
@@ -329,7 +330,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	if isCreateMetadata:
 		print "Create Metadata\n"
 	else:
-		return #assert
+		return False
 
 	shaderFile 	= open(shaderFilePath, 'rU')
 	parser 		= ParseCode()
@@ -433,7 +434,7 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	metaDataFile.write(nextLine + '}')
 	metaDataFile.close()
 	del parser
-	return
+	return True
 
 NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
 CONSOLE_LINE = "***********************************************"
@@ -491,6 +492,12 @@ if result == False:
 	print CONSOLE_LINE
 	exit()
 
+def SimpleWriteFile(path, content):
+	f = open(path, 'w')
+	f.write(content)
+	f.close()
+	return
+
 targetDir = os.path.normpath(scriptRunStartDir)
 for (path, dirs, files) in os.walk(targetDir):
     for fileNameWithExtension in files:
@@ -507,7 +514,9 @@ for (path, dirs, files) in os.walk(targetDir):
         		metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
         	else:
         		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
-        	Work(shaderFilePath, metaDataFilePath, useEasyView)
+        	success = Work(shaderFilePath, metaDataFilePath, useEasyView)
+        	if success == False: #NOT_CREATE_META
+        		SimpleWriteFile(metaDataFilePath, "{}")
 
 print "Success!\n"
 print CONSOLE_LINE
