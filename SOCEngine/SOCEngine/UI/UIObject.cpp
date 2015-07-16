@@ -15,7 +15,7 @@ UIObject::UIObject(const std::string& name, const Object* parent)
 
 UIObject::~UIObject()
 {
-
+	SAFE_DELETE(_transformCB);
 }
 
 void UIObject::InitConstBuffer()
@@ -42,11 +42,24 @@ UIObject* UIObject::Get(uint index)
 
 void UIObject::Delete(const std::string& key, bool dealloc)
 {
+	if(dealloc)
+	{
+		Object* obj = Find(key);
+		SAFE_DELETE(obj);
+	}
+
 	Object::Delete(key);
 }
 
 void UIObject::DeleteAll(bool dealloc)
 {
+	if(dealloc)
+	{
+		auto childs = GetVector();
+		for(auto iter = childs.begin(); iter != childs.end(); ++iter)
+			SAFE_DELETE(*iter);
+	}
+
 	Object::DeleteAll();
 }
 
