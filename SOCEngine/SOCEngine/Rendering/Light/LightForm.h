@@ -34,8 +34,8 @@ namespace Rendering
 			virtual ~LightForm();
 
 		public:
-			virtual void Initialize();
-			virtual void Destroy();
+			virtual void OnInitialize();
+			virtual void OnDestroy();
 
 		public:
 			virtual bool Intersects(const Intersection::Sphere &sphere) = 0;

@@ -17,21 +17,31 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-bool MeshRenderer::AddMaterial(Material* material, bool copy)
+bool MeshRenderer::HasMaterial(Material* material)
 {
-	if(_materials.Find(material->GetName()) )
+	for(auto iter = _materials.begin(); iter != _materials.end(); ++iter)
+	{
+		if((*iter) == material)
+			return true;
+	}
+
+	return false;
+}
+
+bool MeshRenderer::AddMaterial(Material* material)
+{
+	if( HasMaterial(material) )
 		return false;
 
-	_materials.Add(material->GetName(), material, copy);
+	_materials.push_back(material);
 	return true;
 }
 
 bool MeshRenderer::IsTransparent()
 {
-	const auto& vectors = _materials.GetVector();
-	for(auto iter = vectors.begin(); iter != vectors.end(); ++iter)
+	for(auto iter = _materials.begin(); iter != _materials.end(); ++iter)
 	{
-		if( GET_CONTENT_FROM_ITERATOR(iter)->GetHasAlpha() == false )
+		if( (*iter)->GetHasAlpha() == false )
 			return false;
 	}
 

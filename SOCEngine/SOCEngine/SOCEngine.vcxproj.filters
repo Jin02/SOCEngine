@@ -187,9 +187,6 @@
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\ForwardPlus">
-      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
@@ -250,6 +247,12 @@
     <Filter Include="Rendering\Camera\CameraForm">
       <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Deferred">
+      <UniqueIdentifier>{acb5a2eb-7b61-4524-909a-ef16771da35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\DeferredCamera">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -307,18 +310,6 @@
       <Filter>Core\Time</Filter>
     </ClInclude>
     <ClInclude Include="Structure\Singleton.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\BaseStructure.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\Vector.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\Map.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\HashMap.h">
       <Filter>Structure</Filter>
     </ClInclude>
     <ClInclude Include="Intersection\AABB.h">
@@ -481,9 +472,6 @@
     <ClInclude Include="Rendering\Camera\Frustum.h">
       <Filter>Rendering\Camera\Frustum</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
-      <Filter>Rendering\Camera\ForwardPlus</Filter>
-    </ClInclude>
     <ClInclude Include="UI\UICamera.h">
       <Filter>UI\Camera</Filter>
     </ClInclude>
@@ -601,14 +589,21 @@
     <ClInclude Include="Rendering\Light\LightManager.h">
       <Filter>Rendering\Light\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\Lights.h">
-      <Filter>Rendering\Light\Lights\Point</Filter>
-    </ClInclude>
     <ClInclude Include="Structure\VectorMap.h">
       <Filter>Structure</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraForm.h">
       <Filter>Rendering\Camera\CameraForm</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\DeferredCamera.h">
+      <Filter>Rendering\Camera\DeferredCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Deferred\DeferredShadingWithLightCulling.h">
+      <Filter>Rendering\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\OriginObjectManager.h" />
+    <ClInclude Include="Rendering\Light\Lights.h">
+      <Filter>Rendering\Light\Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -780,9 +775,6 @@
     <ClCompile Include="Rendering\Camera\Frustum.cpp">
       <Filter>Rendering\Camera\Frustum</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
-      <Filter>Rendering\Camera\ForwardPlus</Filter>
-    </ClCompile>
     <ClCompile Include="UI\UICamera.cpp">
       <Filter>UI\Camera</Filter>
     </ClCompile>
@@ -831,5 +823,12 @@
     <ClCompile Include="Rendering\Camera\CameraForm.cpp">
       <Filter>Rendering\Camera\CameraForm</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Camera\DeferredCamera.cpp">
+      <Filter>Rendering\Camera\DeferredCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Deferred\DeferredShadingWithLightCulling.cpp">
+      <Filter>Rendering\Deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\OriginObjectManager.cpp" />
   </ItemGroup>
 </Project>

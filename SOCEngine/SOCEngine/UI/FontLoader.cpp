@@ -6,6 +6,7 @@
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 FontLoader::FontLoader()
 	: _texture(nullptr)

@@ -11,18 +11,19 @@ namespace Rendering
 		class MeshRenderer
 		{
 		private:
-			Structure::Vector<std::string, Material>	_materials;
+			std::vector<Material*>		_materials;
 
 		public:
 			MeshRenderer();
 			~MeshRenderer();
 
 		public:
-			bool AddMaterial(Material* material, bool copy = false);
+			bool HasMaterial(Material* material);
+			bool AddMaterial(Material* material);
 			bool IsTransparent();
 		
 		public:
-			GET_ACCESSOR(MaterialCount, unsigned int, _materials.GetSize());
+			GET_ACCESSOR(Materials, const std::vector<Material*>&, _materials);
 		};
 	}
 }

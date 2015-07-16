@@ -28,3 +28,8 @@ void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform
 	outParam.dirX = Math::Common::FloatToHalf(transform->GetForward().x);
 	outParam.dirY = Math::Common::FloatToHalf(transform->GetForward().y);
 }
+
+Core::Component* DirectionalLight::Clone() const
+{
+	return new DirectionalLight(*this);
+}

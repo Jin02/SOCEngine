@@ -9,57 +9,52 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
-	DeleteAll(true);
 }
 
-Material* MaterialManager::Add(const std::string& file, const std::string& name, Material* material, bool copy)
+void MaterialManager::Add(const std::string& file, const std::string& name, Material* material)
 {
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
-	if(inMap == nullptr)
-		inMap = _map.Add(file, new Structure::Map<std::string, Material>, false);					
-
-	return inMap->Add(name, material, copy);
+	std::string key = file + ":" + name;
+	Add(key, material);
 }
 
 Material* MaterialManager::Find(const std::string& file, const std::string& name)
 {
-	Material* material = nullptr;
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
-	if( inMap )
-		material = inMap->Find(name);
-
-	return material;
+	std::string key = file + ":" + name;
+	return Find(key);
 }
 
-void MaterialManager::Delete(const std::string& file, const std::string& name, bool contentRemove)
+void MaterialManager::Delete(const std::string& file, const std::string& name)
 {
-	Structure::Map<std::string, Material>* inMap = _map.Find(file);
-	if(inMap)
-		_map.Delete(name, contentRemove);
+	std::string key = file  + ":" + name;
+	Delete(key);
 }
 
-void MaterialManager::DeleteFile(const std::string& file, bool remove)
+void MaterialManager::DeleteAll()
 {
-	_map.Delete(file, remove);
+	for(auto iter = _hash.begin(); iter != _hash.end(); ++iter)
+		SAFE_DELETE(iter->second);
+
+	_hash.clear();
 }
 
-void MaterialManager::DeleteAll(bool remove)
+void MaterialManager::Add(const std::string& key, Material* material)
 {
-	_map.DeleteAll(remove);
-	_hash.DeleteAll(remove);
-}
-
-Material* MaterialManager::Add(const std::string& key, Material* material, bool copy)
-{
-	return _hash.Add(key, material, copy);
+	ASSERT_COND_MSG(Find(key) == nullptr, "Error, Duplicated key");
+	_hash.insert(std::make_pair(key, material));
 }
 
 Material* MaterialManager::Find(const std::string& key)
 {
-	return _hash.Find(key);
+	auto findIter = _hash.find(key);
+	return findIter != _hash.end() ? findIter->second : nullptr;;
 }
 
-void MaterialManager::Delete(const std::string& key, bool contentRemove)
+void MaterialManager::Delete(const std::string& key)
 {
-	_hash.Delete(key,  contentRemove);
+	auto findIter = _hash.find(key);
+	if(findIter != _hash.end())
+	{
+		SAFE_DELETE(findIter->second);
+		_hash.erase(findIter);
+	}
 }

@@ -49,7 +49,7 @@ namespace Device
 		ID3D11SamplerState			*_linearSamplerState;
 		ID3D11SamplerState			*_pointSamplerState;
 
-		bool						_useMSAA;
+		DXGI_SAMPLE_DESC			_msaaDesc;
 
 	public:
 		DirectX();
@@ -94,7 +94,6 @@ namespace Device
 		GET_ACCESSOR(LinearSamplerState,					ID3D11SamplerState*,		_linearSamplerState);
 		GET_ACCESSOR(PointSamplerState,						ID3D11SamplerState*,		_pointSamplerState);
 
-
-		GET_ACCESSOR(UseMSAA,								bool,						_useMSAA);
+		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 	};
 }

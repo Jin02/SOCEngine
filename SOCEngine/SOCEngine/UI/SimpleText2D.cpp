@@ -8,6 +8,7 @@
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 SimpleText2D::SimpleText2D(const std::string& name, const Core::Object* parent)
 	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
@@ -48,7 +49,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetCustomRenderSceneShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
+		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 
 		const Texture::Texture* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture*>("font", texture);
@@ -170,10 +171,10 @@ void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPro
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	Shader::VertexShader* vs = _material->GetCustomRenderSceneShader().vs;
-	Shader::PixelShader* ps = _material->GetCustomRenderSceneShader().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().ps;
 
-	if(_material->GetCustomRenderSceneShader().ableRender())
+	if(_material->GetCustomShader().ableRender())
 	{		
 		_meshFilter->IASetBuffer(dx);
 

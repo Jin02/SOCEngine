@@ -25,14 +25,13 @@ namespace Core
 		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 	private:
-		Structure::Vector<std::string, Core::Object>	_rootObjects;	
+		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	
 
 		Rendering::Manager::CameraManager*		_cameraMgr;
 		Rendering::Manager::RenderManager*		_renderMgr;	
 		UI::Manager::UIManager*					_uiManager;
 		Rendering::Manager::LightManager*		_lightManager;
 
-		Rendering::Camera::UICamera*			_uiCamera;
 		const Device::DirectX*					_dx;
 
 	public:
@@ -56,7 +55,7 @@ namespace Core
 		virtual void OnDestroy() = 0;
 
 	protected:
-		Core::Object* AddObject(Core::Object* object, bool clone = true);
+		void AddObject(Core::Object* object);
 
 	public:
 		void NextState();

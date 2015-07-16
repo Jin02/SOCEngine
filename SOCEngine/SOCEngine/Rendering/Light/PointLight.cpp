@@ -30,3 +30,8 @@ void PointLight::MakeLightBufferElement(LightTransformBuffer& out) const
 	_owner->GetTransform()->FetchWorldPosition(out.worldPosition);
 	out.radius = _radius;
 }
+
+Core::Component* PointLight::Clone() const
+{
+	return new PointLight(*this);
+}

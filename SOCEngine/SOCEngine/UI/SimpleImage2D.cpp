@@ -7,6 +7,7 @@
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
 	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
@@ -36,7 +37,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetCustomRenderSceneShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
+		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 	}
 
 	RectVertexInfo rectVertex[4];
@@ -124,10 +125,10 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 		_changeSize = false;
 	}
 
-	Shader::VertexShader* vs = _material->GetCustomRenderSceneShader().vs;
-	Shader::PixelShader* ps = _material->GetCustomRenderSceneShader().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().ps;
 
-	if(_material->GetCustomRenderSceneShader().ableRender())
+	if(_material->GetCustomShader().ableRender())
 	{		
 		_meshFilter->IASetBuffer(dx);
 

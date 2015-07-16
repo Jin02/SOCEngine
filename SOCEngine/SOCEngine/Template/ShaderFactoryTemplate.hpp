@@ -20,7 +20,7 @@ namespace Rendering
 			Rendering::Manager::ShaderManager	*_shaderMgr;
 
 		public:
-			[ClassName](Rendering::Manager::ShaderManager*& shaderManager)
+			[ClassName](Rendering::Manager::ShaderManager* shaderManager)
 			{
 				_shaderMgr = shaderManager;
 			}

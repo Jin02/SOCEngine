@@ -19,11 +19,11 @@ CameraManager::~CameraManager()
 void CameraManager::SetMainCamera(Camera::CameraForm *cam)
 {
 	auto mainCamIter = _vector.begin();
-	auto findIter = _vector.begin(); //임시용, auto 쉽게 쓰려고 begin씀.
+	auto findIter = _vector.begin();
 
 	for(findIter; findIter != _vector.end(); ++findIter)
 	{
-		if( GET_CONTENT_FROM_ITERATOR(findIter) == cam )
+		if( (*findIter) == cam )
 			break;
 	}
 
@@ -33,5 +33,5 @@ void CameraManager::SetMainCamera(Camera::CameraForm *cam)
 
 Camera::CameraForm* CameraManager::GetMainCamera()
 {
-	return _vector.size() != 0 ? (*_vector.begin()).second.second : nullptr;
+	return _vector.empty() ? nullptr : _vector.front();
 }

@@ -121,7 +121,7 @@ for (path, dirs, files) in os.walk(targetDir):
 
         path = path.replace("\\", "/")
 
-        component = {"fileName" : fileName, "fullPath" : path + fileName + ".hlsl"}
+        component = {"fileName" : fileName, "fullPath" : path + "/" + fileName + ".hlsl"}
         fullPaths.append(component)
         jsonData = readJson(fileFullPath)
         if len(jsonData) == 0:

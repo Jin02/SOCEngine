@@ -53,6 +53,7 @@ namespace Core
 		void UpdateEulerAngles(const Math::Vector3& euler, bool updateAxis = true);
 		void UpdateScale(const Math::Vector3& scale);
 		void UpdateDirection(const Math::Vector3& dir);
+		void UpdateTransform(const Transform& transform);
 
 	public:
 		GET_SET_ACCESSOR(Radius, float, _radius);

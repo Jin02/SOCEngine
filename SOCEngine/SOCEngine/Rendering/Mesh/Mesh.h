@@ -57,6 +57,9 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
+
+		public:
+			virtual Core::Component* Clone() const;
 		};
 	}
 }

@@ -5,8 +5,6 @@ using namespace UI::Manager;
 using namespace Device;
 using namespace Rendering::Camera;
 
-#define ParentClass Structure::Vector<std::string, UIObject>
-
 UIManager::UIManager()
 {
 }
@@ -17,22 +15,23 @@ UIManager::~UIManager()
 
 void UIManager::DepthSort()
 {
-	auto depthSort = [](const Type& left, const Type& right)
+	auto depthSort = [](const UI::UIObject* left, const UI::UIObject* right)
 	{
-		int leftDepth  = left.second.second->GetDepth();
-		int rightDepth= right.second.second->GetDepth();
+		int leftDepth  = left->GetDepth();
+		int rightDepth= right->GetDepth();
 
 		return leftDepth < rightDepth;
 	};
-	std::sort(_vector.begin(), _vector.end(), depthSort);
+
+	std::sort(_renderQueue.begin(), _renderQueue.end(), depthSort);
 }
 
-UI::UIObject* UIManager::AddRenderQueue(std::string key, UI::UIObject* component, bool copy)
+UI::UIObject* UIManager::AddRenderQueue(std::string key, UI::UIObject* component)
 {
-	ParentClass::Add(key, component, copy);
+	_renderQueue.push_back(component);
 
-	auto iter = _vector.back();
-	UI::UIObject* backComponent = iter.second.second;
+	auto iter = _renderQueue.back();
+	UI::UIObject* backComponent = iter;
 	if(component->GetDepth() < backComponent->GetDepth())
 		DepthSort();
 
@@ -41,5 +40,5 @@ UI::UIObject* UIManager::AddRenderQueue(std::string key, UI::UIObject* component
 
 void UIManager::AddUpdateQueue(UI::UIObject* uiObject)
 {
-	_rootUIObjects.push_back(uiObject);
+	_rootObjects.push_back(uiObject);
 }

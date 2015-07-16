@@ -2,6 +2,7 @@
 
 #include "Material.h"
 #include "Structure.h"
+#include <hash_map>
 
 namespace Rendering
 {
@@ -10,24 +11,22 @@ namespace Rendering
 		class MaterialManager
 		{
 		private:
-			Structure::Map<std::string, Structure::Map<std::string, Material> >	_map;
-			Structure::HashMap<std::string, Material>							_hash;
+			std::hash_map<std::string, Material*>				_hash;
 
 		public:
 			MaterialManager();
 			~MaterialManager();
 
 		public:
-			Material* Add(const std::string& file, const std::string& name, Material* material, bool copy = false);
+			void Add(const std::string& file, const std::string& name, Material* material);
 			Material* Find(const std::string& file, const std::string& name);
-			void Delete(const std::string& file, const std::string& name, bool contentRemove = false);
-			void DeleteFile(const std::string& file, bool remove = false);
-			void DeleteAll(bool remove = false);
+			void Delete(const std::string& file, const std::string& name);
+			void DeleteAll();
 
 		public:
-			Material* Add(const std::string& key, Material* material, bool copy = false);
+			void Add(const std::string& key, Material* material);
 			Material* Find(const std::string& key);
-			void Delete(const std::string& key, bool contentRemove = false);
+			void Delete(const std::string& key);
 		};
 	}
 }

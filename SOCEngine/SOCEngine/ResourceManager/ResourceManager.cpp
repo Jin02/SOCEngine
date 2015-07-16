@@ -5,6 +5,7 @@ using namespace Core;
 using namespace std;
 using namespace Structure;
 using namespace Rendering;
+using namespace Resource;
 
 ResourceManager::ResourceManager()
 {
@@ -21,7 +22,7 @@ void ResourceManager::Initialize()
 	_textureMgr		= new Manager::TextureManager;
 	_materialMgr	= new Manager::MaterialManager;
 	_bufferManager	= new Manager::BufferManager;
-	_originObjMgr	= new Core::ObjectManager;
+	_originObjMgr	= new OriginObjectManager;
 }
 
 void ResourceManager::Destroy()

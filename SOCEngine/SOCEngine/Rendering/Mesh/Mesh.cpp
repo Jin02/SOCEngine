@@ -30,7 +30,7 @@ namespace Rendering
 			}
 
 			_renderer = new MeshRenderer;
-			if(_renderer->AddMaterial(args.material, false) == false)
+			if(_renderer->AddMaterial(args.material) == false)
 			{
 				ASSERT_MSG("Error, renderer addmaterial");
 				return false;
@@ -84,6 +84,22 @@ namespace Rendering
 		void Mesh::OnRenderPreview()
 		{
 			ClassifyRenderMeshType();
+		}
+
+		Core::Component* Mesh::Clone() const
+		{
+			Mesh* newMesh = new Mesh;
+			{
+				newMesh->_filter = new MeshFilter(*_filter);
+				newMesh->_renderer = new MeshRenderer(*_renderer);
+				newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
+				newMesh->_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput));
+				newMesh->ClassifyRenderMeshType();
+
+				newMesh->_owner = _owner;
+			}
+
+			return newMesh;
 		}
 	}
 }

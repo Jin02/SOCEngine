@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 
 using namespace Device;
+using namespace Resource;
 
 Director::Director(void) :
 	_elapse(0.0f), _fps(0), _win(nullptr), _directX(nullptr),

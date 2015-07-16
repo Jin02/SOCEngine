@@ -12,6 +12,7 @@ using namespace Rendering::Mesh;
 using namespace Device;
 using namespace Math;
 using namespace Core;
+using namespace Resource;
 
 BackBufferMaker::BackBufferMaker()
 	:	_vertexShader(nullptr), _pixelShader(nullptr), _depthBuffer(nullptr),

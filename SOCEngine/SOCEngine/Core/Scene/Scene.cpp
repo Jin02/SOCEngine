@@ -11,8 +11,7 @@ using namespace Rendering;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _uiCamera(nullptr),
-	_backBufferMaker(nullptr)
+	_renderMgr(nullptr), _backBufferMaker(nullptr)
 {
 	_state = State::Init;
 }
@@ -30,8 +29,6 @@ void Scene::Initialize()
 	_renderMgr->Init();
 
 	_uiManager		= new UI::Manager::UIManager;
-	_uiCamera		= new Camera::UICamera;
-	_uiCamera->Initialize();
 
 	_dx				= Device::Director::GetInstance()->GetDirectX();
 
@@ -50,23 +47,18 @@ void Scene::Update(float dt)
 
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
-		GET_CONTENT_FROM_ITERATOR(iter)->Update(dt);
+		(*iter)->Update(dt);
 
 	_lightManager->UpdateBuffer();
-
-	_uiCamera->Update(dt);
 }
 
 void Scene::RenderPreview()
 {
 	OnRenderPreview();
 
-	auto CamIteration = [&](Camera::CameraForm* cam)
-	{
-		cam->RenderPreviewWithUpdateTransformCB(_rootObjects);
-	};
-
-	_cameraMgr->IterateContent(CamIteration);
+	const std::vector<Camera::CameraForm*>& cameras = _cameraMgr->GetVector();
+	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
+		(*iter)->RenderPreviewWithUpdateTransformCB(_rootObjects.GetVector());
 }
 
 void Scene::Render()
@@ -83,11 +75,9 @@ void Scene::Render()
 	ID3D11DeviceContext* context = _dx->GetContext();
 	//Turn off depth writing
 	context->OMSetDepthStencilState(_dx->GetDepthDisableDepthTestState(), 0);
-	
-	_uiCamera->Render();
 
 	Camera::CameraForm* mainCam = _cameraMgr->GetMainCamera();
-	_backBufferMaker->Render(_dx, mainCam, _uiCamera);
+	_backBufferMaker->Render(_dx, mainCam, nullptr);
 
 	//swap
 	_dx->GetSwapChain()->Present(0, 0);
@@ -101,7 +91,6 @@ void Scene::Destroy()
 
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_renderMgr);
-	SAFE_DELETE(_uiCamera);
 	SAFE_DELETE(_uiManager);
 	SAFE_DELETE(_backBufferMaker);
 	SAFE_DELETE(_lightManager);
@@ -114,9 +103,9 @@ void Scene::NextState()
 	_state = (State)(((int)_state + 1) % (int)State::Num);
 }
 
-Core::Object* Scene::AddObject(Core::Object* object, bool clone)
+void Scene::AddObject(Core::Object* object)
 {
-	return _rootObjects.Add(object->GetName(), object, clone);
+	_rootObjects.Add(object->GetName(), object);
 }
 
 void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)

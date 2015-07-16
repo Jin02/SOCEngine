@@ -41,7 +41,10 @@ namespace Rendering
 		protected:
 			Frustum*						_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			Buffer::ConstBuffer*			_constBuffer;
+
+			// CameraConstBuffer
+			Buffer::ConstBuffer*			_camConstBuffer;
+
 			RenderType						_renderType;
 
 			RenderQueue						_transparentMeshQueue;
@@ -75,7 +78,10 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			void RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects);
+			void RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects);
+
+		protected:
+			void _Clone(CameraForm* newCam) const;
 
 		public:
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
@@ -86,7 +92,6 @@ namespace Rendering
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderType, RenderType, _renderType);
 			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
-			
 		};
 	}
 }

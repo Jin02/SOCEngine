@@ -1,17 +1,18 @@
 #pragma once
 
 #include <vector>
-#include "BaseStructure.h"
 #include <functional>
 #include <map>
 #include "Utility.h"
+
+#include "Common.h"
 
 namespace Structure
 {
 	template <typename Key, class Object>
 	class VectorMap
 	{
-	private:
+	protected:
 		std::vector<Object>								_vector;
 
 		//pair second value is vector index
@@ -78,7 +79,7 @@ namespace Structure
 				recvFunc( (*iter) );
 		}
 
-		GET_ACCESSOR(Vector, const std::vector<Object>&,		_vector);
+		GET_ACCESSOR(Vector, const std::vector<Object>&, _vector);
 		inline const std::map<Key, Object*>& GetMap() const { return _map; }
 
 		GET_ACCESSOR(Size, unsigned int, _vector.size());

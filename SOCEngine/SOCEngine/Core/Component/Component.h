@@ -42,6 +42,9 @@ namespace Core
 		virtual void OnDestroy() = 0;
 
 	public:
+		virtual Component* Clone() const = 0;
+
+	public:
 		GET_SET_ACCESSOR(Owner, Object*, _owner);
 	};
 }

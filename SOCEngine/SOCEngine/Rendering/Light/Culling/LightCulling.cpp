@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 
 #include "Utility.h"
+#include "EngineShaderFactory.hpp"
 
 using namespace Device;
 using namespace Core;
@@ -11,6 +12,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace GPGPU::DirectCompute;
+using namespace Resource;
 
 LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr), _lightIndexBuffer(nullptr)
 {
@@ -22,7 +24,7 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::Initialize(const std::string& filePath, bool useRenderBlendedMesh)
+void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
 {
 	//혹시 모르니, 한번 초기화
 	Destroy();
@@ -34,16 +36,33 @@ void LightCulling::Initialize(const std::string& filePath, bool useRenderBlended
 	bool valid = Utility::String::ParseDirectory(filePath, folderDir, fileName, fileExtension);
 	ASSERT_COND_MSG(valid, "Where is your file extension?");
 
-	std::string macroCode = useRenderBlendedMesh ? "#define BLEND_ENABLE\n" : "";
-
-	bool enableMSAA = Device::Director::GetInstance()->GetDirectX()->GetUseMSAA();
+	std::string includeCode;
 	{
-		if(enableMSAA)
-			macroCode += "#define MSAA_ENABLE\n";
+		std::string macroCode = useRenderBlendedMesh ? "#define ENABLE_BLEND\n" : "";
+
+		const DXGI_SAMPLE_DESC& desc = Device::Director::GetInstance()->GetDirectX()->GetMSAADesc();
+		{
+			macroCode += "#define MSAA_SAMPLES_COUNT ";
+			macroCode += (desc.Count > 0) ? std::to_string(desc.Count) : "0";
+			macroCode += "\n";
+		}
+
+		includeCode += macroCode;
+		
+		Factory::EngineFactory factory(nullptr); //FetchShaderFullPath만 사용
+
+		std::string includeFilePath;
+		factory.FetchShaderFullPath(includeFilePath, "LightCulling");
+		ASSERT_COND_MSG(includeFilePath.empty() == false, "Error, includeFilePath is empty");
+
+		bool success = shaderMgr->LoadShaderCode(includeCode, includeFilePath, false);
+		ASSERT_COND_MSG( (includeCode.empty() == false) || (success == false), "Error, LightCulling Core Code does not exist");
+
+		includeCode.insert(0, macroCode);
 	}
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(folderDir, fileName, 
-		"cs", "LightCullingCS", false, &macroCode);
+		"cs", mainFunc, false, &includeCode);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
@@ -54,10 +73,10 @@ void LightCulling::Initialize(const std::string& filePath, bool useRenderBlended
 	_globalDataBuffer = new ConstBuffer;
 	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(CullingConstBuffer)), "can not create const buffer");
 
-	ComputeShader::InputBuffer inputBufferElement;
-
 	// Input Buffer Setting
 	{
+		ComputeShader::InputBuffer inputBufferElement;
+
 		// Point Light
 		{
 			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
@@ -98,6 +117,13 @@ void LightCulling::Initialize(const std::string& filePath, bool useRenderBlended
 		_computeShader->SetInputTextures(_inputTextures);
 	}
 
+	_useBlendedMeshCulling = useRenderBlendedMesh;
+}
+
+void LightCulling::InitializeOnlyLightCulling(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
+{
+	Initialize(filePath, mainFunc, useRenderBlendedMesh);
+
 	// Ouput Buffer Setting
 	{
 		LightCulling_CSOutputBuffer* lightIndexBuffer = new LightCulling_CSOutputBuffer;
@@ -113,8 +139,6 @@ void LightCulling::Initialize(const std::string& filePath, bool useRenderBlended
 		_outputBuffers.push_back(outputBuffer);
 		_computeShader->SetOutputBuffers(_outputBuffers);
 	}
-
-	_useBlendedMeshCulling = useRenderBlendedMesh;
 }
 
 unsigned int LightCulling::CalcMaxNumLightsInTile()

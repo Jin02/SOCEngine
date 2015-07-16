@@ -39,15 +39,11 @@ void CameraForm::OnInitialize()
 	_renderTarget = new Texture::RenderTexture;
 	_renderTarget->Initialize(windowSize);
 
-	_constBuffer = new Buffer::ConstBuffer;
-	if(_constBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+	_camConstBuffer = new Buffer::ConstBuffer;
+	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
 		ASSERT_MSG("Error, cam->constbuffer->Initialize");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
-
-	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
-	const std::string key = _owner->GetName();
-	camMgr->Add(key, this);
 }
 
 void CameraForm::OnDestroy()
@@ -115,7 +111,7 @@ void CameraForm::ViewMatrix(Math::Matrix& outMatrix)
 	ViewMatrix(outMatrix, worldMat);
 }
 
-void CameraForm::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std::string, Core::Object>& objects)
+void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects)
 {
 	TransformPipelineParam tfParam;
 	ProjectionMatrix(tfParam.projMat);
@@ -126,8 +122,10 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std:
 
 	CameraConstBuffer camCB;
 	{
-		const Math::Matrix& viewMat = tfParam.viewMat;
-		camCB.viewPos = Vector4(viewMat._41, viewMat._42, viewMat._43, 1.0f);
+		Matrix worldMat;
+		_owner->GetTransform()->FetchWorldMatrix(worldMat);
+
+		camCB.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
 		camCB.clippingNear = _clippingNear;
 		camCB.clippingFar = _clippingFar;
 		const auto& size = Device::Director::GetInstance()->GetWindowSize();
@@ -136,13 +134,12 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const Structure::Vector<std:
 	}
 
 	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-	_constBuffer->Update(context, &camCB);
+	_camConstBuffer->Update(context, &camCB);
 
-	auto& dataInobjects = objects.GetVector();
-	for(auto iter = dataInobjects.begin(); iter != dataInobjects.end(); ++iter)
+	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
-		GET_CONTENT_FROM_ITERATOR(iter)->Culling(_frustum);
-		GET_CONTENT_FROM_ITERATOR(iter)->RenderPreviewWithUpdateTransformCB(tfParam);
+		(*iter)->Culling(_frustum);
+		(*iter)->RenderPreviewWithUpdateTransformCB(tfParam);
 	}
 }
 
@@ -150,14 +147,14 @@ void CameraForm::SortTransparentMeshRenderQueue()
 {
 	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	
-	const RenderManager::MeshList transparentList = renderMgr->GetTransparentMeshList();
+	const RenderManager::MeshList transparentList = renderMgr->GetTransparentMeshes();
 	if( transparentList.updateCounter > _transparentMeshQueue.updateCounter )
 	{
-		const auto& map = transparentList.meshes.GetMap();
+		const auto& meshes = transparentList.meshes.GetVector();
 
 		_transparentMeshQueue.meshes.clear();
-		for(auto iter = map.begin(); iter != map.end(); ++iter)
-			_transparentMeshQueue.meshes.push_back(GET_CONTENT_FROM_ITERATOR(iter));
+		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
+			_transparentMeshQueue.meshes.push_back((*iter));
 
 		_transparentMeshQueue.updateCounter = transparentList.updateCounter;
 	}
@@ -187,4 +184,19 @@ void CameraForm::SortTransparentMeshRenderQueue()
 	};
 
 	std::sort(_transparentMeshQueue.meshes.begin(), _transparentMeshQueue.meshes.end(), SortingByDistance);
+}
+
+void CameraForm::_Clone(CameraForm* newCam) const
+{
+	(*newCam) = (*this);
+	newCam->_frustum		= new Frustum(0.0f);
+	newCam->_renderTarget	= new Texture::RenderTexture;
+	{
+		Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+		newCam->_renderTarget->Initialize(windowSize);
+	}
+
+	newCam->_camConstBuffer	= new Buffer::ConstBuffer;
+	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+		ASSERT_MSG("Error, cant create const buffer in _Clone");
 }

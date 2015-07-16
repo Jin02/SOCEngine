@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class CameraManager : public Structure::Vector<std::string, Camera::CameraForm>
+		class CameraManager : public Structure::VectorMap<std::string, Camera::CameraForm*>
 		{
 		private:
 			Light::LightCulling*	_lightCullingCS;

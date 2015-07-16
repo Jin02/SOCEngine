@@ -26,6 +26,9 @@ namespace Rendering
 		public:
 			virtual bool Intersects(const Intersection::Sphere &sphere);
 			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
+
+		public:
+			virtual Core::Component* Clone() const;
 		};
 	}
 }

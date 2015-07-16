@@ -7,7 +7,7 @@ using namespace Rendering::Shader;
 using namespace Device;
 using namespace Math;
 
-UICamera::UICamera() : CameraForm(), _object(nullptr), _depthBuffer(nullptr)
+UICamera::UICamera() : CameraForm(), _depthBuffer(nullptr)
 {
 	_renderType			= RenderType::Forward;
 }
@@ -23,11 +23,8 @@ void UICamera::Initialize()
 	_depthBuffer =  new DepthBuffer;
 	_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
 
-	_object = new Core::Object(nullptr);
-	SetOwner(_object);
-
 	_projectionType		= ProjectionType::Orthographic;
-	_object->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
+	_owner->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
 
 	_clearColor = Color::Blue();
 	_clearColor.a = 0.0f;
@@ -46,7 +43,7 @@ void UICamera::Update(float delta)
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 
 	auto& roots = uiMgr->GetRootUIObjects();
-	for(auto iter : roots)
+	for(const auto& iter : roots)
 		iter->Update(delta);
 }
 
@@ -78,17 +75,27 @@ void UICamera::Render()
 		viewProjMat = viewMat * projMat;
 	}
 
-	auto RenderUIObj = [&](UI::UIObject* uiObj)
+	const std::vector<UI::UIObject*>& uiRenderQ = uiMgr->GetRenderQueue();
+	for(auto iter = uiRenderQ.begin(); iter != uiRenderQ.end(); ++iter)
 	{
-		if(uiObj->GetUse())
+		if( (*iter)->GetUse() )
 		{
-			uiObj->UpdateTransform(context, viewProjMat);
-			uiObj->Render(context, viewProjMat);
+			(*iter)->UpdateTransform(context, viewProjMat);
+			(*iter)->Render(context, viewProjMat);
 		}
-	};
-
-	uiMgr->IterateContent(RenderUIObj);
+	}
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers(0, 1, &nullSampler);
+}
+
+Core::Component* UICamera::Clone() const 
+{
+	UICamera* uiCam = new UICamera;
+	_Clone(uiCam);
+
+	uiCam->_depthBuffer = new DepthBuffer;
+	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
+
+	return uiCam;
 }

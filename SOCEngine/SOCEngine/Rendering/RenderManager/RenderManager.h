@@ -5,13 +5,15 @@
 #include "Utility.h"
 #include <functional>
 
-#include "ForwardPlusCamera.h"
+#include "DeferredCamera.h"
 #include "BackBufferMaker.h"
 
 #include "GlobalSetting.h"
 
 #include <sys/timeb.h>
 #include <time.h>
+#include "VectorMap.h"
+#include <hash_map>
 
 namespace Rendering
 {
@@ -23,46 +25,43 @@ namespace Rendering
 			enum class MeshType
 			{
 				Opaque,
-				Transparent
+				Transparent,
+				AlphaTest
 			};
-
 			struct MeshList
 			{
 				uint updateCounter;
-				Structure::Map<unsigned int, const Mesh::Mesh> meshes;
+
+				//first value is just key.
+				Structure::VectorMap<unsigned int, const Mesh::Mesh*> meshes;
 
 				MeshList(){}
-				~MeshList(){meshes.DeleteAll(true);}
+				~MeshList(){}
 			};
 
 		private:
 			MeshList	_transparentMeshes;
 			MeshList	_opaqueMeshes;
+			MeshList	_alphaTestMeshes;
 
-			std::map<std::string, Shader::Shaders>					_physicallyBasedShaders;
+			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders;
+			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
 
 		public:
 			RenderManager();
 			~RenderManager();
 
 		public:
-			void RenderManager::FindShader(
-				const Rendering::Shader::VertexShader**			outVertexShader,
-				const Rendering::Shader::PixelShader**			outPixelShader,
-				Rendering::Mesh::MeshFilter::BufferElementFlag	bufferFlag,
-				Rendering::Material::Type materialType,
-				RenderType renderType = DEFAULT_USER_RENDER_TYPE,
-				const std::string& frontShaderTypeName = "");
-
-		public:
 			bool Init();
 
 			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
 			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
+			bool FindGBufferShader(Shader::ShaderGroup& out, Mesh::MeshFilter::BufferElementFlag bufferFlag, bool isAlphaTest);
 
 		public:
-			GET_ACCESSOR(TransparentMeshList, const MeshList&, _transparentMeshes);
-			GET_ACCESSOR(OpaqueMeshList, const MeshList&, _opaqueMeshes);
+			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
+			GET_ACCESSOR(OpaqueMeshes, const MeshList&, _opaqueMeshes);
+			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaTestMeshes);
 		};
 	}
 }

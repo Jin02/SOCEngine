@@ -284,4 +284,16 @@ namespace Core
 		outUp 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
 		outForward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
 	}
+
+	void Transform::UpdateTransform(const Transform& transform)
+	{
+		_forward	= transform._forward;
+		_right		= transform._right;
+		_up			= transform._up;
+		_position	= transform._position;
+		_rotation	= transform._rotation;
+		_scale		= transform._scale;
+		_eulerAngle	= transform._eulerAngle;
+		_radius		= transform._radius;
+	}
 }

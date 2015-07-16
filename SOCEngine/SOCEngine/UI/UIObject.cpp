@@ -24,14 +24,15 @@ void UIObject::InitConstBuffer()
 	_transformCB->Initialize(sizeof(Math::Matrix));
 }
 
-void UIObject::Add(const std::string& key, UIObject* object, bool copy)
+void UIObject::Add(const std::string& key, UIObject* object)
 {
-	Object::Add(key, object,copy);
+	Core::Object* obj = dynamic_cast<Object*>(object);
+	Object::Add(key, obj);
 }
 
 UIObject* UIObject::Find(const std::string& key)
 {
-	return dynamic_cast<UIObject*>( Object::Find(key) );
+	return dynamic_cast<UIObject*>( *Object::Find(key) );
 }
 
 UIObject* UIObject::Get(uint index)
@@ -39,14 +40,14 @@ UIObject* UIObject::Get(uint index)
 	return dynamic_cast<UIObject*>( Object::Get(index) );
 }
 
-void UIObject::Delete(const std::string& key, bool contentRemove)
+void UIObject::Delete(const std::string& key, bool dealloc)
 {
-	Object::Delete(key, contentRemove);
+	Object::Delete(key);
 }
 
-void UIObject::DeleteAll(bool contentRemove)
+void UIObject::DeleteAll(bool dealloc)
 {
-	Object::DeleteAll(contentRemove);
+	Object::DeleteAll();
 }
 
 void UIObject::Update(float delta)
@@ -55,7 +56,7 @@ void UIObject::Update(float delta)
 		return;
 	
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		GET_CONTENT_FROM_ITERATOR(iter)->Update(delta);
+		(*iter)->Update(delta);
 }
 
 void UIObject::UpdateTransform(ID3D11DeviceContext* context, const Matrix& viewProj)
@@ -73,7 +74,7 @@ void UIObject::UpdateTransform(ID3D11DeviceContext* context, const Matrix& viewP
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 	{
-		UIObject* uiObj = dynamic_cast<UIObject*>(GET_CONTENT_FROM_ITERATOR(iter));
+		UIObject* uiObj = dynamic_cast<UIObject*>((*iter));
 		uiObj->UpdateTransform(context, viewProj);
 	}
 }

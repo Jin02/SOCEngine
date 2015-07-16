@@ -50,7 +50,7 @@ namespace Rendering
 			static const int SPOT_LIGHT_LIMIT_NUM			= 2048;
 			static const int DIRECTIONAL_LIGHT_LIMIT_NUM	= 1024;
 
-		private:
+		protected:
 			GPGPU::DirectCompute::ComputeShader*	_computeShader;
 			Rendering::Buffer::ConstBuffer*			_globalDataBuffer;
 			LightCulling_CSOutputBuffer*			_lightIndexBuffer;
@@ -66,11 +66,12 @@ namespace Rendering
 			LightCulling();
 			~LightCulling();
 
-		private:
+		protected:
+			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh);
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
 
 		public:
-			void Initialize(const std::string& filePath, bool useRenderBlendedMesh);
+			void InitializeOnlyLightCulling(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh);
 			void Destroy();
 
 		public:

@@ -15,12 +15,12 @@ LightForm::~LightForm()
 {
 }
 
-void LightForm::Initialize()
+void LightForm::OnInitialize()
 {
 	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
 	scene->GetLightManager()->Add(this, _owner->GetName().c_str());
 }
 
-void LightForm::Destroy()
+void LightForm::OnDestroy()
 {
 }

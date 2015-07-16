@@ -13,7 +13,6 @@ namespace Rendering
 
 		private:
 			Texture::DepthBuffer*		_depthBuffer;
-			Core::Object*				_object;
 
 		public:
 			UICamera();
@@ -28,7 +27,7 @@ namespace Rendering
 			void Render();
 
 		public:
-			GET_ACCESSOR(Object, Core::Object*, _object);
+			virtual Core::Component* Clone() const;
 		};
 	}
 }

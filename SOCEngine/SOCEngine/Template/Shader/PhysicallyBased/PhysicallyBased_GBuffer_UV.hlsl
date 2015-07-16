@@ -16,14 +16,13 @@ Texture2D txNormal	 		: register( t1 );
 Texture2D txSpecular 		: register( t2 );
 Texture2D txOpacity 		: register( t3 );
 
-SamplerState sampler 		: register( s0 );
+SamplerState samplerState 		: register( s0 );
 
 GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 {
 	GEOMETRY_BUFFER_PS_INPUT ps;
 
 	ps.position 	= mul( input.position, transform_worldViewProj );
-	ps.positionView = mul( input.position, transform_worldView );
 	ps.uv			= input.uv;
 
     return ps;
@@ -31,22 +30,21 @@ GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 
 void PS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
 {
-	outGBuffer.albedo 	= txDiffuse.Sample(sampler, input.uv) * material_mainColor;
+	float4 diffuseTex = txDiffuse.Sample(samplerState, input.uv);
+#ifdef ENABLE_ALPHA_TEST
+	if(diffuseTex.a < ALPHA_TEST_BIAS)
+		discard;
+#endif
 
-	outGBuffer.specular_fresnel0	= txSpecular.Sample(sampler, input.uv);
+#ifdef ENABLE_ALPHA_TEST
+	outGBuffer.albedo 	= diffuseTex * material_mainColor;
+	outGBuffer.albedo.a = 1;
+#else
+	outGBuffer.albedo 	= diffuseTex * material_mainColor;
+#endif
+
+	outGBuffer.specular_fresnel0	= txSpecular.Sample(samplerState, input.uv);
 	outGBuffer.specular_fresnel0.a 	= material_fresnel0;
 
-	outGBuffer.normal_roughness 	= float4(0, material_roughness);
-}
-
-void AlphaTestPS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
-{
-	PS(input, outGBuffer);
-	
-	outGBuffer.albedo.a = (1.0f - txOpacity.Sample(sampler, input.uv)) * material_opacity;
-	
-	// Alpha Test
-	clip(outGBuffer.albedo.a - ALPHA_TEST_COMP_VALUE);
-
-	outGBuffer.normal_roughness.rgb = normalize( ComputeFaceNormal(input.positionView) );
+	outGBuffer.normal_roughness 	= float4(0, 0, 0, material_roughness);
 }

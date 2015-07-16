@@ -302,7 +302,7 @@ class ParseCode:
 		return
 
 ####### Run ################################################################################################
-
+WorkReturnValues = Enum('EmptyFile', 'Success', 'NotCreateMeta')
 def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
 	print "\nShader File Modify Time : " + time.ctime(shaderFileModifyTime)
@@ -327,10 +327,13 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
  	#check create file
 	isCreateMetadata = ((NOT_CREATE_META_DATA in firstLine) == False)
 
-	if isCreateMetadata:
+	if isCreateMetadata:		
+		if ONLY_PATH_FINDING in firstLine:
+			return WorkReturnValues.EmptyFile
+
 		print "Create Metadata\n"
 	else:
-		return False
+		return WorkReturnValues.NotCreateMeta
 
 	shaderFile 	= open(shaderFilePath, 'rU')
 	parser 		= ParseCode()
@@ -434,9 +437,10 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	metaDataFile.write(nextLine + '}')
 	metaDataFile.close()
 	del parser
-	return True
+	return WorkReturnValues.Success
 
 NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
+ONLY_PATH_FINDING = "EMPTY_META_DATA"  #Empty Meta Data
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
@@ -514,8 +518,8 @@ for (path, dirs, files) in os.walk(targetDir):
         		metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
         	else:
         		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
-        	success = Work(shaderFilePath, metaDataFilePath, useEasyView)
-        	if success == False: #NOT_CREATE_META
+        	result = Work(shaderFilePath, metaDataFilePath, useEasyView)
+        	if result == WorkReturnValues.EmptyFile: #ONLY_PATH_FINDING, empty file
         		SimpleWriteFile(metaDataFilePath, "{}")
 
 print "Success!\n"

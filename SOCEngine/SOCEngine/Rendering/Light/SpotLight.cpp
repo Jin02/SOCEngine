@@ -17,7 +17,7 @@ SpotLight::~SpotLight()
 
 }
 
-bool SpotLight::Intersects(Intersection::Sphere &sphere)
+bool SpotLight::Intersects(const Intersection::Sphere &sphere)
 {
 	Math::Vector3 wp;
 	_owner->GetTransform()->FetchWorldPosition(wp);
@@ -40,4 +40,9 @@ void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param
 
 	outParam.coneAngle = Math::Common::FloatToHalf(radian);
 	outParam.falloff = Math::Common::FloatToHalf(_falloff);
+}
+
+Core::Component* SpotLight::Clone() const
+{
+	return new SpotLight(*this);
 }

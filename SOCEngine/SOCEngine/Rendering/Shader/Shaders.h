@@ -34,13 +34,10 @@ namespace Rendering
 			{
 				return (vs != nullptr) && (ps != nullptr);
 			}
-		};
-
-		struct Shaders
-		{
-			ShaderGroup renderScene;
-			ShaderGroup depthWrite;
-			ShaderGroup alphaTestWithDiffuse;
+			const bool IsAllEmpty() const
+			{
+				return (!vs && !ps && !gs && !hs);
+			}
 		};
 	}
 }
