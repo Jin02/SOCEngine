@@ -31,22 +31,21 @@ namespace Rendering
 			Users
 		};
 
-	protected:
+	private:
 		std::string										_name;
 		Math::Vector2									_tiling;
-
-		bool											_hasAlpha;
-		bool											_changedAlpha;
 
 		std::vector<Shader::BaseShader::BufferType>		_constBuffers;
 		std::vector<Shader::BaseShader::TextureType>	_textures;
 		std::map<const std::string, Container>			_datas;
 
 		const Type										_type;
-
-		Shader::ShaderGroup								_customShaders; //in forward rendering
-
 		uint											_variableUpdateCounter;
+
+	protected:
+		Shader::ShaderGroup								_customShaders; //in forward rendering
+		bool											_hasAlpha;
+		bool											_changedAlpha;
 
 	public:
 		Material(const std::string& name, Type type);
@@ -111,6 +110,8 @@ namespace Rendering
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
 
 		GET_SET_ACCESSOR(CustomShader, const Shader::ShaderGroup&, _customShaders);
+
+		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
 
 	public:
 		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);

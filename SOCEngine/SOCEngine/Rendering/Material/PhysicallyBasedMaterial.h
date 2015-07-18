@@ -7,7 +7,16 @@ namespace Rendering
 	class PhysicallyBasedMaterial : private Material
 	{
 	public:
-		enum class PSTextureSlot { Diffuse, Normal, Specular, Opacity };
+		enum class PSTextureSlot : uint
+		{ 
+			Diffuse		= 0,
+			Normal		= 1,
+			Specular	= 2,
+			Opacity		= 3
+		};
+
+		static const uint GBufferShaderSlotIndex = 2; //Material
+
 
 	public:
 		struct GBufferParam
