@@ -13,6 +13,7 @@ PhysicallyBasedMaterial::PhysicallyBasedMaterial(const std::string& name)
 
 PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
 {
+	SAFE_DELETE(_gbufferCB);
 }
 
 void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
