@@ -16,7 +16,7 @@ namespace Rendering
 
 		public:
 			void Initialize();
-
+			void EnableAlphaBlend(bool enable);
 		};
 	}
 }

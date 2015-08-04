@@ -13,9 +13,8 @@ DeferredShadingWithLightCulling::~DeferredShadingWithLightCulling()
 
 void DeferredShadingWithLightCulling::Initialize()
 {
-	EnableAlphaBlend(true);
 
-
+	EnableAlphaBlend(true); //Default
 }
 
 void DeferredShadingWithLightCulling::EnableAlphaBlend(bool enable)
