@@ -1,18 +1,18 @@
 //EMPTY_META_DATA
 
-#define EDGE_DETECTION_VALUE					10.0f
-#define TILE_RES 								16
-#define TILE_RES_HALF							(TILE_RES / 2)
-#define THREAD_COUNT							(TILE_RES_HALF * TILE_RES_HALF)
+#define THREAD_COUNT 				(TILE_RES_HALF * TILE_RES_HALF)
+#define EDGE_DETECTION_VALUE		10.0f
+#define TILE_RES 					16
+#define TILE_RES_HALF				(TILE_RES / 2)
 
-#define LIGHT_MAX_COUNT_IN_TILE 				544
-#define FLOAT_MAX								3.402823466e+38F
+#define LIGHT_MAX_COUNT_IN_TILE 	544
+#define FLOAT_MAX					3.402823466e+38F
 
-#define END_OF_LIGHT_BUFFER						0xffffffff
+#define END_OF_LIGHT_BUFFER			0xffffffff
 
 //Input Buffer
-Buffer<float4> 		g_inputPointLightIndexBuffer 	: register(t0);
-Buffer<float4> 		g_inputSpotLightIndexBuffer 	: register(t1);
+Buffer<float4> 		g_inputPointLightTransformBuffer 	: register(t0);
+Buffer<float4> 		g_inputSpotLightTransformBuffer 	: register(t1);
 
 
 #if (MSAA_SAMPLES_COUNT > 1)
@@ -36,6 +36,8 @@ groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
 groupshared uint	s_lightIndexCounter;
 groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
+
+groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
 
 cbuffer LightCullingGlobalData : register( b0 )
 {
@@ -93,39 +95,93 @@ float InvertProjDepthToWorldViewDepth(float depth)
 	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
 }
 
-void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
+#if (MSAA_SAMPLES_COUNT > 1)
+struct CornerMinMax
 {
-	uint2 idx = globalIdx.xy * 2;
+	float min_tl, max_tl;
+	float min_tr, max_tr;
+	float min_bl, max_bl;
+	float min_br, max_br;
+};
+void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax, out CornerMinMax ioCornerMinMax)
+#else
+void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
+#endif
+{
+	uint2 idx = halfGlobalIdx * 2;
 	
 #if (MSAA_SAMPLES_COUNT > 1)
 	float depth_tl = g_tDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
 	float depth_tr = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_br = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 	float depth_bl = g_tDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_br = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+
+#if ENABLE_BLEND
+	float blendedDepth_tl = g_tBlendedDepthTexture.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_tr = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_br = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_bl = g_tBlendedDepthTexture.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
+#endif
+
 #else
 	float depth_tl = g_tDepthTexture.Load( uint3(idx.x,		idx.y,		0)).x;
 	float depth_tr = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
-	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
 	float depth_bl = g_tDepthTexture.Load( uint3(idx.x,		idx.y+1,	0)).x;
+	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
+
+#if ENABLE_BLEND
+	float blendedDepth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,	idx.y,		0)).x;
+	float blendedDepth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
+	float blendedDepth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
+	float blendedDepth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,	idx.y+1,	0)).x;
+#endif
+
 #endif
 
 	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
 	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
-	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
 	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
+	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
 
+#if ENABLE_BLEND
+	float viewBlendedDepth_tl = InvertProjDepthToWorldViewDepth(blendedDepth_tl);
+	float viewBlendedDepth_tr = InvertProjDepthToWorldViewDepth(blendedDepth_tr);
+	float viewBlendedDepth_br = InvertProjDepthToWorldViewDepth(blendedDepth_br);
+	float viewBlendedDepth_bl = InvertProjDepthToWorldViewDepth(blendedDepth_bl);
+
+	float minDepth_tl = (blendedDepth_tl != 0.0f) ? viewBlendedDepth_tl : FLOAT_MAX;
+	float minDepth_tr = (blendedDepth_tr != 0.0f) ? viewBlendedDepth_tr : FLOAT_MAX;
+	float minDepth_br = (blendedDepth_br != 0.0f) ? viewBlendedDepth_br : FLOAT_MAX;
+	float minDepth_bl = (blendedDepth_bl != 0.0f) ? viewBlendedDepth_bl : FLOAT_MAX;
+#else
 	float minDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : FLOAT_MAX;
 	float minDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : FLOAT_MAX;
-	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
 	float minDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : FLOAT_MAX;
+	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
+#endif
 
 	float maxDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : 0.0f;
 	float maxDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : 0.0f;
-	float maxDepth_br = (depth_br != 0.0f) ? viewDepth_br : 0.0f;
 	float maxDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : 0.0f;
+	float maxDepth_br = (depth_br != 0.0f) ? viewDepth_br : 0.0f;
 
-	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
-	s_depthMaxDatas[idxInTile] = max( minDepth_tl, max(minDepth_tr, max(minDepth_bl, minDepth_br)) );
+#if (MSAA_SAMPLES_COUNT > 1)
+	ioCornerMinMax.min_tl = min(minDepth_tl, ioCornerMinMax.min_tl); 	ioCornerMinMax.max_tl = max(maxDepth_tl, ioCornerMinMax.max_tl);
+	ioCornerMinMax.min_tr = min(minDepth_tr, ioCornerMinMax.min_tr); 	ioCornerMinMax.max_tr = max(maxDepth_tr, ioCornerMinMax.max_tr);
+	ioCornerMinMax.min_bl = min(minDepth_bl, ioCornerMinMax.min_bl); 	ioCornerMinMax.max_bl = max(maxDepth_bl, ioCornerMinMax.max_bl);
+	ioCornerMinMax.min_br = min(minDepth_br, ioCornerMinMax.min_br); 	ioCornerMinMax.max_br = max(maxDepth_br, ioCornerMinMax.max_br);
+#else //Non-MSAA, MSAA처리 시, 여기서하는 edge 검사는 밖에서 함.
+	uint2 localIdx = halfLocalIdx * 2;
+	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
+
+	s_isDetectedEdge[idxInOriginTile]					= (maxDepth_tl - minDepth_tl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + 1]				= (maxDepth_tr - minDepth_tr) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (maxDepth_bl - minDepth_bl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (maxDepth_br - minDepth_br) > EDGE_DETECTION_VALUE;
+#endif
+
+	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );	
+	s_depthMaxDatas[idxInTile] = max( maxDepth_tl, max(maxDepth_tr, max(maxDepth_bl, maxDepth_br)) );
 
 	GroupMemoryBarrierWithGroupSync();
 
@@ -153,55 +209,7 @@ void CalcMinMaxOpaque(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerId
 	outMax = s_depthMaxDatas[0];
 }
 
-#ifdef ENABLE_BLEND
-void CalcMinBlend(uint3 globalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin)
-{
-	uint2 idx = globalIdx.xy * 2;
-
-#if (MSAA_SAMPLES_COUNT > 1)
-	float depth_tl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
-	float depth_tr = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_br = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
-	float depth_bl = g_tBlendedDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
-#else
-	float depth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y,		0)).x;
-	float depth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
-	float depth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
-	float depth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,		idx.y+1,	0)).x;
-#endif
-
-	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
-	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
-	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
-	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
-
-	float minDepth_tl = (depth_tl != 0.0f) ? viewDepth_tl : FLOAT_MAX;
-	float minDepth_tr = (depth_tr != 0.0f) ? viewDepth_tr : FLOAT_MAX;
-	float minDepth_br = (depth_br != 0.0f) ? viewDepth_br : FLOAT_MAX;
-	float minDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : FLOAT_MAX;
-
-	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );
-
-	GroupMemoryBarrierWithGroupSync();
-
-	//반만 하면 됨
-	if( idxInTile < 32 )
-	{
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 32] );
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 16] );
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 8] );
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 4] );
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 2] );
-		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 1] );
-	}
-
-	GroupMemoryBarrierWithGroupSync();
-
-	outMin = s_depthMinDatas[0];
-}
-#endif
-
-bool ClacMinMaxAndCheckEdgeDetection(uint3 globalIdx, uint idxInTile, out float outMin, out float outMax)
+bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, out float outMin, out float outMax)
 {
 	float minZ = FLOAT_MAX;
 	float maxZ = 0.0f;
@@ -215,57 +223,43 @@ bool ClacMinMaxAndCheckEdgeDetection(uint3 globalIdx, uint idxInTile, out float 
 	float tmpMin = FLOAT_MAX;
 	float tmpMax = 0.0f;
 
-#ifdef ENABLE_BLEND
-	float blendMin = FLOAT_MAX;
-	for(uint sampleIdx=1; sampleIdx<depthBufferSampleCount; ++sampleIdx)
+	CornerMinMax cornerMinMax;
 	{
-		CalcMinBlend(globalIdx, idxInTile, 0, blendMin);		
-		CalcMinMaxOpaque(globalIdx, idxInTile, sampleIdx, tmpMin, tmpMax);
-
-		minZ = min(minZ, min(tmpMin, blendMin));
-		maxZ = max(maxZ, tmpMax);
+		cornerMinMax.min_tl = FLOAT_MAX;	cornerMinMax.min_tr = FLOAT_MAX;	cornerMinMax.min_bl = FLOAT_MAX;	cornerMinMax.min_br = FLOAT_MAX;
+		cornerMinMax.max_tl = 0;			cornerMinMax.max_tr = 0;			cornerMinMax.max_bl = 0;			cornerMinMax.max_br = 0;
 	}
 
-#else
-	for(uint sampleIdx=1; sampleIdx<depthBufferSampleCount; ++sampleIdx)
+	for(uint sampleIdx=0; sampleIdx<depthBufferSampleCount; ++sampleIdx)
 	{
-		CalcMinMaxOpaque(globalIdx, idxInTile, sampleIdx, tmpMin, tmpMax);;
+		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax, minMax, cornerMinMax);
 
 		minZ = min(tmpMin, minZ);
 		maxZ = max(tmpMax, maxZ);
 	}
-#endif
 
-#else // NOT DEFINED ENABLE_MSAA
+	uint2 localIdx = halfLocalIdx * 2;
+	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
 
-#ifdef ENABLE_BLEND
-	float blendMin = FLOAT_MAX;
+	s_isDetectedEdge[idxInOriginTile]					= (cornerMinMax.max_tl - cornerMinMax.min_tl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + 1]				= (cornerMinMax.max_tr - cornerMinMax.min_tr) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (cornerMinMax.max_bl - cornerMinMax.min_bl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (cornerMinMax.max_br - cornerMinMax.min_br) > EDGE_DETECTION_VALUE;
 
-	CalcMinBlend(globalIdx, idxInTile, 0, blendMin);
-	CalcMinMaxOpaque(globalIdx, idxInTile, 0, minZ, maxZ);
-
-	minZ = min(minZ, blendMin);
-#else
-	CalcMinMaxOpaque(globalIdx, idxInTile, 0, minZ, maxZ);
-#endif
-
+#else // Non-MSAA
+	CalcMinMax(halfGlobalIdx, idxInTile, 0, minZ, maxZ);
 #endif
 
 	GroupMemoryBarrierWithGroupSync();
 
 	outMin = minZ;
 	outMax = maxZ;
-
-	return ((maxZ - minZ) < EDGE_DETECTION_VALUE);
 }
 
-//리턴 값은 edge인지, 아닌지 체크하는데 쓰임
-bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile)
+void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupIdx, out uint outPointLightCountInTile, out float minZ, out float maxZ)
 {
-	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES_HALF;
+	uint idxInTile	= halfLocalIdx.x + halfLocalIdx.y * TILE_RES_HALF;
 	uint idxOfGroup	= groupIdx.x + groupIdx.y * GetNumTilesX();
-	bool isEdge = false;
-
+	
 	//한번만 초기화
 	if(idxInTile == 0)
 		s_lightIndexCounter	= 0;
@@ -300,10 +294,11 @@ bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 
 	GroupMemoryBarrierWithGroupSync();
 
-	float minZ = FLOAT_MAX;
-	float maxZ = 0.0f;
+	minZ = FLOAT_MAX;
+	maxZ = 0.0f;
 
-	isEdge = ClacMinMaxAndCheckEdgeDetection(globalIdx, idxInTile, minZ, maxZ);
+	ClacMinMaxAndCheckEdgeDetection(halfGlobalIdx.xy, halfLocalIdx.xy, idxInTile, minZ, maxZ);
+	//GroupMemoryBarrierWithGroupSync
 
     uint pointLightCount = g_lightNum & 0x0000FFFF;
     for(uint i=0; i<pointLightCount; i+=THREAD_COUNT)
@@ -311,7 +306,7 @@ bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
         uint lightIdx = idxInTile + i;
         if( lightIdx < pointLightCount )
         {
-			float4 center = g_inputPointLightIndexBuffer[lightIdx];
+			float4 center = g_inputPointLightTransformBuffer[lightIdx];
 			float r = center.w;
 		
 			center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
@@ -343,7 +338,7 @@ bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 		uint lightIdx = idxInTile + j;
 		if( lightIdx < spotLightCount )
 		{
-			float4 center = g_inputSpotLightIndexBuffer[lightIdx];
+			float4 center = g_inputSpotLightTransformBuffer[lightIdx];
 			float r = center.w;
 			
 			center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
@@ -366,36 +361,4 @@ bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	}
 
 	GroupMemoryBarrierWithGroupSync();
-
-	return isEdge;
-}
-
-//Output Buffer
-//값이 음수라면, EdgeTile
-RWBuffer<int> 		g_outLightIndexBuffer 			: register(u0);
-
-[numthreads(TILE_RES_HALF, TILE_RES_HALF, 1)]
-void OnlyLightCulling(	uint3 globalIdx : SV_DispatchThreadID, 
-						uint3 localIdx	: SV_GroupThreadID,
-						uint3 groupIdx	: SV_GroupID)
-{
-	uint pointLightCountInTile = 0;
-	
-	bool isEdgeTile = LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInTile);
-	int sign = (1 - 2 * ((int)isEdgeTile));
-
-	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES_HALF;
-	uint startOffset = g_blockSizeInLightBuffer * idxOfGroup;
-
-	for(uint i=idxInTile; i<pointLightCountInTile; i+=THREAD_COUNT)
-		g_outLightIndexBuffer[startOffset + i] = sign * s_lightIdx[i];
-
-	for(uint i=(idxInTile+pointLightCountInTile); i<s_lightIndexCounter; i+=THREAD_COUNT)
-		g_outLightIndexBuffer[startOffset + i + 1] = sign * s_lightIdx[i];
-
-	if( idxInTile == 0 )
-	{
-		g_outLightIndexBuffer[startOffset + pointLightCountInTile] = END_OF_LIGHT_BUFFER;
-		g_outLightIndexBuffer[startOffset + s_lightIndexCounter + 1] = END_OF_LIGHT_BUFFER;
-	}
 }
