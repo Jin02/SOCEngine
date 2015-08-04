@@ -13,11 +13,13 @@ namespace Rendering
 		public:
 			struct Params
 			{
-				Math::Vector3			dir;
-				unsigned short			coneAngle;
-				unsigned short			falloff;
+				unsigned short			dirX;
+				unsigned short			dirY;
 
-				Params() : coneAngle(0), falloff(0) {}
+				unsigned short			coneCosAngle;
+				unsigned short			falloffWithDirZSignBit;
+
+				Params() : coneCosAngle(0), falloffWithDirZSignBit(0), dirX(0), dirY(0) {}
 				~Params() {}
 			};
 
