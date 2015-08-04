@@ -18,7 +18,7 @@ namespace Rendering
 			bool _useTransparent;
 
 		private:
-			Texture::RenderTexture*		_albedo_opacity;
+			Texture::RenderTexture*		_albedo_metallic;
 			Texture::RenderTexture*		_normal_roughness;
 			Texture::RenderTexture*		_specular_fresnel0;
 

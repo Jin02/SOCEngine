@@ -13,7 +13,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Manager;
 
 DeferredCamera::DeferredCamera() : CameraForm(),
-	_transparentDepthBuffer(nullptr), _albedo_opacity(nullptr),
+	_transparentDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr)
 {
@@ -30,8 +30,8 @@ void DeferredCamera::OnInitialize()
 
 	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
 
-	_albedo_opacity = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _albedo_opacity->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create albedo_opacity render texture" );
+	_albedo_metallic = new Texture::RenderTexture;
+	ASSERT_COND_MSG( _albedo_metallic->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create albedo_opacity render texture" );
 
 	_specular_fresnel0 = new Texture::RenderTexture;
 	ASSERT_COND_MSG( _specular_fresnel0->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _specular_fresnel0 render texture" );
@@ -48,7 +48,7 @@ void DeferredCamera::OnInitialize()
 
 void DeferredCamera::OnDestroy()
 {
-	SAFE_DELETE(_albedo_opacity);
+	SAFE_DELETE(_albedo_metallic);
 	SAFE_DELETE(_specular_fresnel0);
 	SAFE_DELETE(_normal_roughness);
 	SAFE_DELETE(_transparentDepthBuffer);
@@ -64,7 +64,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 	{
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
-		_albedo_opacity->Clear(context, allZeroColor);
+		_albedo_metallic->Clear(context, allZeroColor);
 		_specular_fresnel0->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
 	}
@@ -112,7 +112,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 	//GBuffer
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
-			_albedo_opacity->GetRenderTargetView(),
+			_albedo_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
 			_specular_fresnel0->GetRenderTargetView(),
 		};
