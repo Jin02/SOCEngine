@@ -601,9 +601,11 @@
     <ClInclude Include="Rendering\Deferred\DeferredShadingWithLightCulling.h">
       <Filter>Rendering\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager\OriginObjectManager.h" />
     <ClInclude Include="Rendering\Light\Lights.h">
       <Filter>Rendering\Light\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\OriginObjectManager.h">
+      <Filter>Core\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -829,6 +831,8 @@
     <ClCompile Include="Rendering\Deferred\DeferredShadingWithLightCulling.cpp">
       <Filter>Rendering\Deferred</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager\OriginObjectManager.cpp" />
+    <ClCompile Include="ResourceManager\OriginObjectManager.cpp">
+      <Filter>Core\Object</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
