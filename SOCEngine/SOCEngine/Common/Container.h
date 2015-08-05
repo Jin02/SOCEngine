@@ -34,7 +34,7 @@ public:
 	}
 
 	template<typename Type>
-	const Type& GetData()
+	const Type& GetData() const
 	{
 		return *((Type*)_data);
 	}

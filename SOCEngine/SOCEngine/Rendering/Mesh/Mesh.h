@@ -41,10 +41,14 @@ namespace Rendering
 
 			bool Initialize(const CreateFuncArguments& args);
 
+		private:
+			void ClassifyRenderMeshType();
+
 		public:
 			virtual void OnInitialize();
 			virtual void OnUpdate(float deltaTime);
 			virtual void OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
+			virtual void OnRenderPreview();
 			virtual void OnDestroy();
 
 		public:
@@ -53,6 +57,9 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
+
+		public:
+			virtual Core::Component* Clone() const;
 		};
 	}
 }

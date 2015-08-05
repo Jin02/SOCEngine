@@ -11,7 +11,7 @@
 
 namespace UI
 {
-	class UIObject : public Core::Object
+	class UIObject : protected Core::Object
 	{
 	protected:
 		Rendering::Buffer::ConstBuffer*		_transformCB;
@@ -20,18 +20,20 @@ namespace UI
 		int _depth;
 
 	public:
-		UIObject(const Object* parent = NULL);
+		UIObject(const std::string& name, const Object* parent = NULL);
 		virtual ~UIObject();
 
 	protected:
 		void InitConstBuffer();
 
 	public:
-		void Add(const std::string& key, UIObject* object, bool copy = false);
+		void Add(const std::string& key, UIObject* object);
+
 		UIObject* Find(const std::string& key);
 		UIObject* Get(uint index);
-		void Delete(const std::string& key, bool contentRemove = false);
-		void DeleteAll(bool contentRemove = false);
+
+		void Delete(const std::string& key, bool dealloc = false);
+		void DeleteAll(bool dealloc = false);
 
 		void Update(float delta);
 		void UpdateTransform(ID3D11DeviceContext* context, const Math::Matrix& viewProj);
@@ -42,5 +44,6 @@ namespace UI
 	public:
 		GET_ACCESSOR(Depth, int, _depth);
 		GET_ACCESSOR(Name, const std::string&, _name);
+		GET_ACCESSOR(Use, bool, _use);
 	};
 }

@@ -45,7 +45,7 @@ namespace Importer
 
 		public:
 			Rendering::Material* LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
-			void LoadMaterials(Structure::BaseStructure<std::string, Rendering::Material>** outMaterials, const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
+			void LoadMaterials(const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
 
 			Core::Object* LoadMesh(const tinyobj::shape_t& tinyShape, 
 									const tinyobj::material_t& tinyMtl, 

@@ -5,10 +5,15 @@
 #include "Utility.h"
 #include <functional>
 
-#include "ForwardPlusCamera.h"
+#include "DeferredCamera.h"
 #include "BackBufferMaker.h"
 
 #include "GlobalSetting.h"
+
+#include <sys/timeb.h>
+#include <time.h>
+#include "VectorMap.h"
+#include <hash_map>
 
 namespace Rendering
 {
@@ -20,41 +25,43 @@ namespace Rendering
 			enum class MeshType
 			{
 				Opaque,
-				Transparent
+				Transparent,
+				AlphaTest
+			};
+			struct MeshList
+			{
+				uint updateCounter;
+
+				//first value is just key.
+				Structure::VectorMap<unsigned int, const Mesh::Mesh*> meshes;
+
+				MeshList(){}
+				~MeshList(){}
 			};
 
-
 		private:
-			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_transparentMeshes;
-			Structure::MapInMap<unsigned int, std::pair<const Material*, const Mesh::Mesh*>>	_opaqueMeshes;			
+			MeshList	_transparentMeshes;
+			MeshList	_opaqueMeshes;
+			MeshList	_alphaTestMeshes;
 
-			Structure::Map<const std::string, Shader::RenderShaders> _physicallyBasedShaders;
-			Structure::Map<const std::string, Shader::RenderShaders> _basicShaders;
+			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders;
+			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
 
 		public:
 			RenderManager();
 			~RenderManager();
 
 		public:
-			void RenderManager::FindShader(
-				const Rendering::Shader::VertexShader**			outVertexShader,
-				const Rendering::Shader::PixelShader**			outPixelShader,
-				Rendering::Mesh::MeshFilter::BufferElementFlag	bufferFlag,
-				Rendering::Material::Type materialType,
-				RenderType renderType = DEFAULT_USER_RENDER_TYPE,
-				const std::string& frontShaderTypeName = "");
-
-			void Iterate(const std::function<void(const Material* material, const Mesh::Mesh* mesh)>& recvFunc, MeshType type) const;
-
-		public:
 			bool Init();
 
-			bool Add(const Material* material, const Mesh::Mesh* mesh, MeshType type);
-			void Change(const Material* material, const Mesh::Mesh* mesh, MeshType type);
-			std::pair<const Material*, const Mesh::Mesh*>* Find(const Material* material, const Mesh::Mesh* mesh, MeshType type);
+			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
+			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
+			bool FindGBufferShader(Shader::ShaderGroup& out, Mesh::MeshFilter::BufferElementFlag bufferFlag, bool isAlphaTest);
 
 		public:
-			void ScreenMerge();
+			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
+			GET_ACCESSOR(OpaqueMeshes, const MeshList&, _opaqueMeshes);
+			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaTestMeshes);
 		};
 	}
 }

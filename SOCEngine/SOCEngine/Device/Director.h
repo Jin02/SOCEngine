@@ -48,3 +48,4 @@ namespace Device
 #define GlobalDirectX Device::Director::GetInstance()->GetDirectX()
 #define GlobalDeviceDirector Device::Director::GetInstance()
 #define GlobalDeviceDirectorGetCurrentScene Device::Director::GetInstance()->GetCurrentScene()
+#define GlobalDeviceDirectorGetScreenSize Device::Director::GetInstance()->GetWindowSize()

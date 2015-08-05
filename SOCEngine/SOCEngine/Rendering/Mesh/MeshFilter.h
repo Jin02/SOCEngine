@@ -19,20 +19,21 @@ namespace Rendering
 		class MeshFilter
 		{
 		public:
-			enum class BufferElement : unsigned char
+			enum class BufferElement : unsigned int
 			{
 				Normal		= 1,
 				UV			= 2,
 				Tangent		= 4,
-				Binormal	= 8
+				Binormal	= 8,
+				Custom		= 16
 			};
-			typedef unsigned char BufferElementFlag;
+			typedef unsigned int BufferElementFlag;
 
 		private:
 			Buffer::VertexBuffer*	_vertexBuffer;
 			Buffer::IndexBuffer*	_indexBuffer;
 
-			BufferElementFlag		_flag;
+			BufferElementFlag		_bufferFlag;
 
 		private:
 			bool			_alloc;
@@ -67,11 +68,11 @@ namespace Rendering
 			};
 			bool CreateBuffer(const CreateFuncArguments& args);
 
-			void IASetBuffer(ID3D11DeviceContext* context);
-			void UpdateVertexBufferData(ID3D11DeviceContext* context, const void* data, uint size);
+			void IASetBuffer(const Device::DirectX* dx);
+			void UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size);
 
 		public:
-			GET_ACCESSOR(BufferElementFlag, unsigned int, _flag);
+			GET_ACCESSOR(BufferElementFlag, BufferElementFlag, _bufferFlag);
 			GET_ACCESSOR(VertexCount, unsigned int, _vertexCount);
 			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
 		};

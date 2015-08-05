@@ -11,6 +11,7 @@ ConstBuffer::ConstBuffer() : BaseBuffer()
 
 ConstBuffer::~ConstBuffer()
 {
+	SAFE_RELEASE(_buffer);
 }
 
 bool ConstBuffer::Initialize(unsigned int size)

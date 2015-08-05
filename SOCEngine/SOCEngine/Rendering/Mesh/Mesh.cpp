@@ -30,7 +30,7 @@ namespace Rendering
 			}
 
 			_renderer = new MeshRenderer;
-			if(_renderer->AddMaterial(args.material, false) == false)
+			if(_renderer->AddMaterial(args.material) == false)
 			{
 				ASSERT_MSG("Error, renderer addmaterial");
 				return false;
@@ -43,7 +43,7 @@ namespace Rendering
 				return false;
 			}
 
-			_renderer->ClassifyMaterialWithMesh(this);
+			ClassifyRenderMeshType();
 			return true;
 		}
 
@@ -59,9 +59,6 @@ namespace Rendering
 		{
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 			_transformConstBuffer->Update(context, &transpose_Transform);
-
-			//±ÍÂúÀ¸´Ï ¿©±â¼­ °â»ç°â»ç Ã¼Å© ÇÏÀÚ
-			_renderer->ClassifyMaterialWithMesh(this);
 		}
 
 		void Mesh::OnDestroy()
@@ -69,6 +66,40 @@ namespace Rendering
 			SAFE_DELETE(_filter);
 			SAFE_DELETE(_renderer);
 			SAFE_DELETE(_transformConstBuffer);
+		}
+
+		void Mesh::ClassifyRenderMeshType()
+		{
+			Manager::RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
+			if(_renderer)
+			{
+				bool isTransparentMesh = _renderer->IsTransparent();
+				RenderManager::MeshType type = isTransparentMesh ? 
+					RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
+
+				renderMgr->UpdateRenderList(this, type);
+			}
+		}
+
+		void Mesh::OnRenderPreview()
+		{
+			ClassifyRenderMeshType();
+		}
+
+		Core::Component* Mesh::Clone() const
+		{
+			Mesh* newMesh = new Mesh;
+			{
+				newMesh->_filter = new MeshFilter(*_filter);
+				newMesh->_renderer = new MeshRenderer(*_renderer);
+				newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
+				newMesh->_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput));
+				newMesh->ClassifyRenderMeshType();
+
+				newMesh->_owner = _owner;
+			}
+
+			return newMesh;
 		}
 	}
 }

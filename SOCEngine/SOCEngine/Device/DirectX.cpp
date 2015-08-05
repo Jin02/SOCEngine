@@ -9,10 +9,10 @@ DirectX::DirectX(void) :
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _defaultCulling(nullptr),
 	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
 	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
-	_depthGreaterAndDisableDepthWrite(nullptr),  _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr), _useMSAA(false),
+	_depthGreaterAndDisableDepthWrite(nullptr),  _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr)
 {
-
+	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
 
 DirectX::~DirectX(void)
@@ -102,7 +102,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
             break;
     }
 
-	_useMSAA = sd.SampleDesc.Count > 1;
+	_msaaDesc = sd.SampleDesc;
 
     if( FAILED( hr ) )
         return false;

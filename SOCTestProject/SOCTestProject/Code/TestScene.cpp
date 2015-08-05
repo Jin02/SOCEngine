@@ -19,6 +19,8 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	Core::Object* camObj = new Core::Object("Default");
+	Camera::Camera* cam = camObj->AddComponent<Camera::Camera>();
 }
 
 void TestScene::OnRenderPreview()

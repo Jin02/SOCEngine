@@ -1,19 +1,18 @@
 #pragma once
 
-#include "Camera.h"
+#include "CameraForm.h"
 
 namespace Rendering
 {
 	namespace Camera
 	{		
-		class UICamera : public Camera
+		class UICamera : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::UI; }
 
 		private:
 			Texture::DepthBuffer*		_depthBuffer;
-			Core::Object*				_object;
 
 		public:
 			UICamera();
@@ -28,7 +27,7 @@ namespace Rendering
 			void Render();
 
 		public:
-			GET_ACCESSOR(Object, Core::Object*, _object);
+			virtual Core::Component* Clone() const;
 		};
 	}
 }

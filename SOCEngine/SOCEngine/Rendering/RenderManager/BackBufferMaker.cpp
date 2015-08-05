@@ -2,6 +2,7 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
+#include "ResourceManager.h"
 
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Shader;
@@ -11,6 +12,7 @@ using namespace Rendering::Mesh;
 using namespace Device;
 using namespace Math;
 using namespace Core;
+using namespace Resource;
 
 BackBufferMaker::BackBufferMaker()
 	:	_vertexShader(nullptr), _pixelShader(nullptr), _depthBuffer(nullptr),
@@ -25,15 +27,14 @@ BackBufferMaker::~BackBufferMaker()
 
 void BackBufferMaker::Initialize()
 {
-	Director* director = Director::GetInstance();
-	Core::Scene* scene = director->GetCurrentScene();
-	Manager::ShaderManager* shaderMgr = scene->GetShaderManager();
+	ResourceManager* resourceManager = ResourceManager::GetInstance();
+	Manager::ShaderManager* shaderMgr = resourceManager->GetShaderManager();
 
 	Factory::EngineFactory shaderLoader(shaderMgr);
-	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, &_vertexShader, &_pixelShader);
+	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, nullptr, &_vertexShader, &_pixelShader);
 	ASSERT_COND_MSG(_vertexShader && _pixelShader, "Error, Cant load BackBufferMaker shader files");
 
-	const Size<uint>& winSize = director->GetWindowSize();
+	const Size<uint>& winSize = GlobalDeviceDirectorGetScreenSize;
 
 	ConstBuffer* transformConstBuffer = new ConstBuffer;
 	transformConstBuffer->Initialize(sizeof(Matrix));
@@ -43,13 +44,14 @@ void BackBufferMaker::Initialize()
 		Matrix::Identity(world);
 		world._43 = -10;
 
-		Camera::Camera::ViewMatrix(view, world);
+		Camera::CameraForm::ViewMatrix(view, world);
 		Matrix::OrthoLH(proj, (float)winSize.w, (float)winSize.h, 0.01f, 1000.0f);
 
 		Matrix viewProj = view * proj;
 		Matrix::Transpose(viewProj, viewProj);
-
-		transformConstBuffer->Update(director->GetDirectX()->GetContext(), &viewProj); 
+		
+		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		transformConstBuffer->Update(context, &viewProj); 
 
 		BaseShader::BufferType bufferType;
 		bufferType.first	= 0;
@@ -148,10 +150,8 @@ void BackBufferMaker::Destroy()
 	SAFE_DELETE(_meshFilter);
 }
 
-void BackBufferMaker::Render(const Rendering::Camera::Camera* mainCamera, const Rendering::Camera::UICamera* uiCamera)
+void BackBufferMaker::Render(const Device::DirectX* dx, const Rendering::Camera::CameraForm* mainCamera, const Rendering::Camera::UICamera* uiCamera)
 {
-	const Device::Director* director	= Device::Director::GetInstance();
-	const Device::DirectX* dx			= director->GetDirectX();
 	ID3D11DeviceContext* context		= dx->GetContext();
 
 	const RenderTexture* mainCamRT	= mainCamera ? mainCamera->GetRenderTarget() : nullptr;
@@ -159,7 +159,7 @@ void BackBufferMaker::Render(const Rendering::Camera::Camera* mainCamera, const 
 
 	ID3D11RenderTargetView* deviceBackBuffer = dx->GetBackBuffer();
 	context->OMSetRenderTargets(1, &deviceBackBuffer, _depthBuffer->GetDepthStencilView());
-	_depthBuffer->clear(context, 1.0f, 0);
+	_depthBuffer->Clear(context, 1.0f, 0);
 
 	float color[] = {0, 0, 0, 1};
 	context->ClearRenderTargetView(deviceBackBuffer, color);
@@ -167,7 +167,7 @@ void BackBufferMaker::Render(const Rendering::Camera::Camera* mainCamera, const 
 	ID3D11SamplerState* sampler = dx->GetPointSamplerState();
 	context->PSSetSamplers(0, 1, &sampler);
 	{
-		_meshFilter->IASetBuffer(context);
+		_meshFilter->IASetBuffer(dx);
 
 		_vertexShader->UpdateShader(context);
 		_vertexShader->UpdateInputLayout(context);

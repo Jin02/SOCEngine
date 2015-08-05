@@ -5,6 +5,8 @@
 #include "Structure.h"
 #include "Texture.h"
 
+#include <hash_map>
+
 namespace Rendering
 {
 	namespace Manager
@@ -12,7 +14,7 @@ namespace Rendering
 		class TextureManager
 		{
 		private:
-			Structure::HashMap<std::string, Texture::Texture> _hash;
+			std::hash_map<std::string, Texture::Texture*> _hash;
 
 		public:
 			TextureManager();

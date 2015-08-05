@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DirectX.h"
-#include "Component.h"
+#include "Mesh.h"
 #include "Frustum.h"
 #include "Structure.h"
 #include "RenderTexture.h"
@@ -20,7 +20,7 @@ namespace Rendering
 
 	namespace Camera
 	{
-		class Camera : public Core::Component
+		class CameraForm : public Core::Component
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
@@ -29,28 +29,43 @@ namespace Rendering
 			enum class ProjectionType	{ Perspective, Orthographic };
 			enum class Usage			{ MeshRender, UI };
 			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
+			struct RenderQueue
+			{
+				uint								updateCounter;
+				std::vector<const Mesh::Mesh*>		meshes;
+
+				RenderQueue() : updateCounter(0){}
+				~RenderQueue(){}
+			};
 
 		protected:
-			Frustum					*_frustum;
-			Texture::RenderTexture	*_renderTarget;
-			Buffer::ConstBuffer		*_constBuffer;
-			RenderType				 _renderType;
+			Frustum*						_frustum;
+			Texture::RenderTexture*			_renderTarget;
+
+			// CameraConstBuffer
+			Buffer::ConstBuffer*			_camConstBuffer;
+
+			RenderType						_renderType;
+
+			RenderQueue						_transparentMeshQueue;
 
 		protected:
-			float				_FOV;
-			float				_clippingNear;
-			float				_clippingFar;
-			//ClearFlag			_clearFlag;
-			ProjectionType		_projectionType;
-			float				_aspect;
-			Color				_clearColor;
+			bool							_isInvertedDepthWriting;
+			float							_FOV;
+			float							_clippingNear;
+			float							_clippingFar;
+			//ClearFlag						_clearFlag;
+			ProjectionType					_projectionType;
+			float							_aspect;
+			Color							_clearColor;
 
 		public:
-			Camera();
-			virtual ~Camera(void);
+			CameraForm();
+			virtual ~CameraForm(void);
 
 		protected:
 			void CalcAspect();
+			void SortTransparentMeshRenderQueue();
 
 		public:
 			void ProjectionMatrix(Math::Matrix &outMatrix);
@@ -63,12 +78,16 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			void UpdateTransformCBAndCheckRender(const Structure::Vector<std::string, Core::Object>& objects);
+			void RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects);
+
+		protected:
+			void _Clone(CameraForm* newCam) const;
 
 		public:
 			GET_SET_ACCESSOR(Near, float, _clippingNear);
 			GET_SET_ACCESSOR(Far, float, _clippingFar);
 			GET_SET_ACCESSOR(FOV, float, _FOV);
+			GET_SET_ACCESSOR(IsInvertedDepthWriting, bool, _isInvertedDepthWriting);
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderType, RenderType, _renderType);

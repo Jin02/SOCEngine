@@ -38,8 +38,11 @@ namespace Core
 		virtual void OnInitialize() = 0;
 		virtual void OnUpdate(float deltaTime);
 		virtual void OnUpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform);
-		virtual void OnRender();
+		virtual void OnRenderPreview();
 		virtual void OnDestroy() = 0;
+
+	public:
+		virtual Component* Clone() const = 0;
 
 	public:
 		GET_SET_ACCESSOR(Owner, Object*, _owner);

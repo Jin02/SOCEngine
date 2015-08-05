@@ -33,6 +33,7 @@ bool ConstBuffer_CPURead::Initialize(unsigned int stride, unsigned int num)
 
 void ConstBuffer_CPURead::Read(ID3D11DeviceContext* context, BaseBuffer* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc)
 {
+
 	context->CopyResource(_buffer, target->GetBuffer());
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;

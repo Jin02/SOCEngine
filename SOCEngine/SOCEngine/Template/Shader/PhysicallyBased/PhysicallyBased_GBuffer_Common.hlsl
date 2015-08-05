@@ -1,13 +1,13 @@
 //NOT_CREATE_META_DATA
 
-cbuffer Transform : register( b0 )
+cbuffer Transform : register( b0 )		//Mesh
 {
 	matrix transform_world;
 	matrix transform_worldView;
 	matrix transform_worldViewProj;
 };
 
-cbuffer Camera : register( b1 )
+cbuffer Camera : register( b1 )			//CameraForm
 {
 	float4 	camera_pos;
 	float 	camera_near;
@@ -15,10 +15,9 @@ cbuffer Camera : register( b1 )
 	float2 	camera_screenSize;
 };
 
-cbuffer Material : register( b2 )
+cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 {
-	float3	material_mainColor;
-	float	material_opacity;
+	float4	material_mainColor;
 	float 	material_roughness;
 	float 	material_fresnel0;
 	float2 	material_uvTiling;
@@ -31,7 +30,11 @@ struct GBuffer
 	float4 normal_roughness 	: SV_Target2;
 };
 
-#define ALPHA_TEST_COMP_VALUE 0.3f
+#ifdef ENABLE_MSAA
+#define ALPHA_TEST_BIAS 0.003f
+#else
+#define ALPHA_TEST_BIAS 0.5f
+#endif
 
 float3 ComputeFaceNormal(float3 position)
 {

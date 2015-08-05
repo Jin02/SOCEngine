@@ -160,9 +160,6 @@
     <Filter Include="Rendering\Light\Culling">
       <UniqueIdentifier>{5b2b7db7-a318-4ee5-9c16-72a2f5d389c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Light\Other">
-      <UniqueIdentifier>{23fe0e64-3f4f-439d-bbb3-52423acd04f3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Material\Manager">
       <UniqueIdentifier>{e950756f-4523-4bfc-a83a-af927368490a}</UniqueIdentifier>
     </Filter>
@@ -189,12 +186,6 @@
     </Filter>
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Camera\BasicCamera">
-      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Camera\ForwardPlus">
-      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
@@ -231,6 +222,36 @@
     </Filter>
     <Filter Include="External\tiny_obj_loader">
       <UniqueIdentifier>{7ab4b83a-dff2-4d3f-87a4-72db5da6a344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ResourceManager">
+      <UniqueIdentifier>{17e22084-e070-4576-bfe4-0ee1f8859e32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Lights">
+      <UniqueIdentifier>{23fe0e64-3f4f-439d-bbb3-52423acd04f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Lights\Form">
+      <UniqueIdentifier>{998b8141-2ab9-4494-80ba-348a67ce642f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Manager">
+      <UniqueIdentifier>{a9f4309a-bb67-4a5b-9eaa-156283bafa29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Lights\Directional">
+      <UniqueIdentifier>{c5badaf2-4dbd-412f-a2de-f4e175d49387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Lights\Point">
+      <UniqueIdentifier>{ad4cf11d-cb3d-4d26-9852-a25a393152ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Lights\Spot">
+      <UniqueIdentifier>{217364df-5f7c-4465-b62d-274758ea8bb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\CameraForm">
+      <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Deferred">
+      <UniqueIdentifier>{acb5a2eb-7b61-4524-909a-ef16771da35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\DeferredCamera">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -289,18 +310,6 @@
       <Filter>Core\Time</Filter>
     </ClInclude>
     <ClInclude Include="Structure\Singleton.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\BaseStructure.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\Vector.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\Map.h">
-      <Filter>Structure</Filter>
-    </ClInclude>
-    <ClInclude Include="Structure\HashMap.h">
       <Filter>Structure</Filter>
     </ClInclude>
     <ClInclude Include="Intersection\AABB.h">
@@ -414,24 +423,6 @@
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\DirectionalLight.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\Light.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\LightForm.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\LightManager.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\PointLight.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\SpotLight.h">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
@@ -480,12 +471,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\Frustum.h">
       <Filter>Rendering\Camera\Frustum</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\Camera.h">
-      <Filter>Rendering\Camera\BasicCamera</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h">
-      <Filter>Rendering\Camera\ForwardPlus</Filter>
     </ClInclude>
     <ClInclude Include="UI\UICamera.h">
       <Filter>UI\Camera</Filter>
@@ -585,6 +570,42 @@
     </ClInclude>
     <ClInclude Include="External\rapidjson\writer.h">
       <Filter>External\rapidJson</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\ResourceManager.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\PointLight.h">
+      <Filter>Rendering\Light\Lights\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\SpotLight.h">
+      <Filter>Rendering\Light\Lights\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\DirectionalLight.h">
+      <Filter>Rendering\Light\Lights\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightForm.h">
+      <Filter>Rendering\Light\Lights\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightManager.h">
+      <Filter>Rendering\Light\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Structure\VectorMap.h">
+      <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraForm.h">
+      <Filter>Rendering\Camera\CameraForm</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\DeferredCamera.h">
+      <Filter>Rendering\Camera\DeferredCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Deferred\DeferredShadingWithLightCulling.h">
+      <Filter>Rendering\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\Lights.h">
+      <Filter>Rendering\Light\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\OriginObjectManager.h">
+      <Filter>Core\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -714,21 +735,6 @@
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\LightForm.cpp">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\LightManager.cpp">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\PointLight.cpp">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\SpotLight.cpp">
-      <Filter>Rendering\Light\Other</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp">
       <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClCompile>
@@ -771,12 +777,6 @@
     <ClCompile Include="Rendering\Camera\Frustum.cpp">
       <Filter>Rendering\Camera\Frustum</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\Camera.cpp">
-      <Filter>Rendering\Camera\BasicCamera</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp">
-      <Filter>Rendering\Camera\ForwardPlus</Filter>
-    </ClCompile>
     <ClCompile Include="UI\UICamera.cpp">
       <Filter>UI\Camera</Filter>
     </ClCompile>
@@ -803,6 +803,36 @@
     </ClCompile>
     <ClCompile Include="External\tiny_obj_loader.cc">
       <Filter>External\tiny_obj_loader</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\ResourceManager.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\PointLight.cpp">
+      <Filter>Rendering\Light\Lights\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\SpotLight.cpp">
+      <Filter>Rendering\Light\Lights\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
+      <Filter>Rendering\Light\Lights\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\LightForm.cpp">
+      <Filter>Rendering\Light\Lights\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\LightManager.cpp">
+      <Filter>Rendering\Light\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraForm.cpp">
+      <Filter>Rendering\Camera\CameraForm</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\DeferredCamera.cpp">
+      <Filter>Rendering\Camera\DeferredCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Deferred\DeferredShadingWithLightCulling.cpp">
+      <Filter>Rendering\Deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\OriginObjectManager.cpp">
+      <Filter>Core\Object</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

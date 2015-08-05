@@ -56,8 +56,8 @@ namespace Rendering
 		static Color Lerp(Color a, Color b, float t);
 		void SetColor(const float* color);
 
-		unsigned long Get32BitUintColor();
-		void Get16BitFloat4Color(std::array<unsigned short, 4>& outArray);
+		unsigned long Get32BitUintColor() const;
+		void Get16BitFloat4Color(std::array<unsigned short, 4>& outArray) const;
 
 	private:
 		void CalculateColor(Color *color);
