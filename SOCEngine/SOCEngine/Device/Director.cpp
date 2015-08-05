@@ -1,6 +1,8 @@
 #include "Director.h"
+#include "ResourceManager.h"
 
 using namespace Device;
+using namespace Resource;
 
 Director::Director(void) :
 	_elapse(0.0f), _fps(0), _win(nullptr), _directX(nullptr),
@@ -12,6 +14,8 @@ Director::~Director(void)
 {
 	SAFE_DELETE(_win);
 	SAFE_DELETE(_directX);
+
+	ResourceManager::GetInstance()->Destroy();
 }
 
 void Director::CalculateElapse()
@@ -50,6 +54,8 @@ void Director::Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, co
 
 	_directX = new DirectX();
 	ASSERT_COND_MSG(_directX->InitDevice(_win), "Error, can not create directX device");
+
+	ResourceManager::GetInstance()->Initialize();
 }
 
 void Director::Run()

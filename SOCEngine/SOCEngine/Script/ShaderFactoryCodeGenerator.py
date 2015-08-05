@@ -11,11 +11,13 @@ class ShaderFactory:
 	saveDir = None
 	addCodeBeginCommand = "/** Script Begin **/"
 	addCodeEndCommand = "/** Script End **/"
+	addCodeFullPathBeginCommand = "/** FullPath Script Begin **/"
+	addCodeFullPathEndCommand = "/** FullPath Script End **/"
 	def __init__(self, originFileDir, saveDir):
 		self.originFileDir 	= originFileDir
 		self.saveDir 		= saveDir
 		return
-	def Run(self, code, className):
+	def Run(self, code, className, fullPaths):
 		factoryFile = open(self.originFileDir, 'rU')
 		source 		= factoryFile.read()
 		factoryFile.close()
@@ -25,6 +27,25 @@ class ShaderFactory:
 		begin 		= source.find(self.addCodeBeginCommand) + len(self.addCodeBeginCommand)
 		end 		= source.find(self.addCodeEndCommand)
 		source 		= source[:begin] + code + source[end:]
+
+		begin 		= source.find(self.addCodeFullPathBeginCommand) + len(self.addCodeFullPathBeginCommand)
+		end 		= source.find(self.addCodeFullPathEndCommand)
+
+		pathCode = "\n"
+		isFirst = True
+		for component in fullPaths:
+			pathCode += tap(4)
+
+			if isFirst:
+				isFirst = False
+			else:
+				pathCode += "else "
+
+			pathCode += "if(fileName == \"" + component["fileName"] + "\")" + nextLine(1)
+			pathCode += tap(5) + "out = \"" + component["fullPath"] + "\";" + nextLine(1)
+
+		source		= source[:begin] + pathCode + tap(4) + source[end:]
+
 		factoryFile = open(self.saveDir, 'w')
 		factoryFile.write(source)
 		factoryFile.close()
@@ -86,6 +107,7 @@ if result == False:
 
 code = ""
 targetDir = os.path.normpath(scriptRunStartDir)
+fullPaths = []
 for (path, dirs, files) in os.walk(targetDir):
     for fileNameWithExtension in files:
     	fileFullPath = path + "\\" + fileNameWithExtension    	
@@ -98,7 +120,17 @@ for (path, dirs, files) in os.walk(targetDir):
         	continue
 
         path = path.replace("\\", "/")
+
+        component = {"fileName" : fileName, "fullPath" : path + "/" + fileName + ".hlsl"}
+        fullPaths.append(component)
         jsonData = readJson(fileFullPath)
+        if len(jsonData) == 0:
+        	code += nextLine(2) + tap(4) + "if(shaderName == \"" + fileName + "\")" + nextLine(1)
+        	code += tap(4) + "{" + nextLine(1)
+        	code += tap(5) + "folderPath = \""+ path +"/\";" + nextLine(1)
+        	code += tap(5) + "isOnlyHasPath = true;" + nextLine(1)
+        	code += tap(4) + "}" + nextLine(1)
+        	continue
 
         mainFuncs = dict()
         for structName in jsonData["SemanticStructure"]:
@@ -179,7 +211,7 @@ for (path, dirs, files) in os.walk(targetDir):
         del mainFuncs
 
 shaderFactory = ShaderFactory(originalShaderFactoryFileDir, saveShaderFactoryFileDir)
-shaderFactory.Run(code, className)
+shaderFactory.Run(code, className, fullPaths)
 
 print "Success!\n"
 print CONSOLE_LINE

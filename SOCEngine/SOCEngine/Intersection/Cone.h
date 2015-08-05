@@ -9,14 +9,14 @@ namespace Intersection
 	class Cone
 	{
 	public:
-		float angle;
+		float degree;
 		float range;
 		Math::Vector3 axis;
 		Math::Vector3 vertex; //vertex
 
 	public:
 		Cone(void);
-		Cone(float angle, float range, const Math::Vector3 &axis, const Math::Vector3 &vertex);
+		Cone(float degree, float range, const Math::Vector3 &axis, const Math::Vector3 &vertex);
 
 	public:
 		static bool Intersects(const Sphere &sphere, const Cone &cone);

@@ -75,17 +75,18 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
-    <ClInclude Include="Rendering\Camera\Camera.h" />
+    <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
-    <ClInclude Include="Rendering\Camera\ForwardPlusCamera.h" />
+    <ClInclude Include="Rendering\Camera\DeferredCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
+    <ClInclude Include="Rendering\Deferred\DeferredShadingWithLightCulling.h" />
     <ClInclude Include="Rendering\GlobalSetting.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\DirectionalLight.h" />
-    <ClInclude Include="Rendering\Light\Light.h" />
+    <ClInclude Include="Rendering\Light\Lights.h" />
     <ClInclude Include="Rendering\Light\LightForm.h" />
     <ClInclude Include="Rendering\Light\LightManager.h" />
     <ClInclude Include="Rendering\Light\PointLight.h" />
@@ -113,6 +114,9 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
+    <ClInclude Include="ResourceManager\OriginObjectManager.h" />
+    <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\FontLoader.h" />
     <ClInclude Include="UI\SimpleImage2D.h" />
     <ClInclude Include="UI\SimpleText2D.h" />
@@ -120,11 +124,7 @@
     <ClInclude Include="UI\UIObject.h" />
     <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Sound\SimpleSoundPlayer.h" />
-    <ClInclude Include="Structure\BaseStructure.h" />
     <ClInclude Include="Structure\MapInMap.h" />
-    <ClInclude Include="Structure\Vector.h" />
-    <ClInclude Include="Structure\HashMap.h" />
-    <ClInclude Include="Structure\Map.h" />
     <ClInclude Include="Structure\Singleton.h" />
     <ClInclude Include="Structure\Structure.h" />
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
@@ -169,11 +169,12 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
-    <ClCompile Include="Rendering\Camera\Camera.cpp" />
+    <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
-    <ClCompile Include="Rendering\Camera\ForwardPlusCamera.cpp" />
+    <ClCompile Include="Rendering\Camera\DeferredCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
+    <ClCompile Include="Rendering\Deferred\DeferredShadingWithLightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp" />
@@ -202,6 +203,8 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
+    <ClCompile Include="ResourceManager\OriginObjectManager.cpp" />
+    <ClCompile Include="ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="UI\FontLoader.cpp" />
     <ClCompile Include="UI\SimpleImage2D.cpp" />
     <ClCompile Include="UI\SimpleText2D.cpp" />
@@ -246,7 +249,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;UI;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Sound;ResourceManager;UI;Rendering/Deferred;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output</OutDir>
   </PropertyGroup>

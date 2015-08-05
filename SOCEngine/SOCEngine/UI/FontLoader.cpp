@@ -1,10 +1,12 @@
 #include "FontLoader.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
+#include "ResourceManager.h"
 
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 FontLoader::FontLoader()
 	: _texture(nullptr)
@@ -56,8 +58,11 @@ bool FontLoader::LoadFontData(const std::string& filePath)
 
 bool FontLoader::LoadTexture(const std::string& texturePath)
 {
-	Rendering::Manager::TextureManager* textureMgr = Director::GetInstance()->GetCurrentScene()->GetTextureManager();
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+
+	auto textureMgr = resourceManager->GetTextureManager();
 	_texture = textureMgr->LoadTextureFromFile(texturePath, false);
+
 	ASSERT_COND_MSG(_texture, "Error! can not create texture");
 
 	_fontTextureSize = _texture->FetchSize();

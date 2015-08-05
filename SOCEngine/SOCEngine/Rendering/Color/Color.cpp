@@ -5,6 +5,8 @@
 
 #include "Utility.h"
 
+#include "MathCommon.h"
+
 namespace Rendering
 {
 	Color::Color() : r(1.0f), g(1.0f), b(1.0f), a(1.0f)
@@ -160,7 +162,7 @@ namespace Rendering
 		a = color[3];
 	}
 
-	unsigned long Color::Get32BitUintColor()
+	unsigned long Color::Get32BitUintColor() const
 	{
 		unsigned long _r = static_cast<unsigned long>(r * 255.0f + 0.5);
 		unsigned long _g = static_cast<unsigned long>(g * 255.0f + 0.5);
@@ -170,11 +172,11 @@ namespace Rendering
 		return (_a << 24) | (_b << 16) | (_a << 8) | _r;
 	}
 
-	void Color::Get16BitFloat4Color(std::array<unsigned short, 4>& outArray)
+	void Color::Get16BitFloat4Color(std::array<unsigned short, 4>& outArray) const
 	{
-		outArray[0] = Utility::Common::ConvertF32ToF16(r);
-		outArray[1] = Utility::Common::ConvertF32ToF16(g);
-		outArray[2] = Utility::Common::ConvertF32ToF16(b);
-		outArray[3] = Utility::Common::ConvertF32ToF16(a);
+		outArray[0] = Math::Common::FloatToHalf(r);
+		outArray[1] = Math::Common::FloatToHalf(g);
+		outArray[2] = Math::Common::FloatToHalf(b);
+		outArray[3] = Math::Common::FloatToHalf(a);
 	}
 }

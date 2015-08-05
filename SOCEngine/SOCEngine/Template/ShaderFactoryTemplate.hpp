@@ -8,11 +8,19 @@ namespace Rendering
 	{
 		class [ClassName]
 		{
+		public:
+			struct LoadShaderResult
+			{
+				bool loadVS;
+				bool loadPS;
+				bool isOnlyHasPath;
+			};
+
 		private:
 			Rendering::Manager::ShaderManager	*_shaderMgr;
 
 		public:
-			[ClassName](Rendering::Manager::ShaderManager*& shaderManager)
+			[ClassName](Rendering::Manager::ShaderManager* shaderManager)
 			{
 				_shaderMgr = shaderManager;
 			}
@@ -22,14 +30,16 @@ namespace Rendering
 			}
 
 		public:
-			bool LoadShader(const std::string& shaderName,
+			LoadShaderResult LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
 				const std::string* includeFileName,
+				const std::vector<std::string>* includeMacros,
 				Shader::VertexShader** outVertexShader,
 				Shader::PixelShader** outPixelShader)
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
+				bool isOnlyHasPath = false;
 
 				typedef unsigned int uint;
 				auto AddInputElementDesc = [&](const char* semanticName, uint semanticIndex, DXGI_FORMAT format, uint alignedByteOffset, D3D11_INPUT_CLASSIFICATION inputSlotClass, uint inputSlot, uint instanceDataStepRate)
@@ -55,8 +65,13 @@ namespace Rendering
 				
 				const std::string baseCommand = shaderName+':';
 
-				Shader::VertexShader* vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName);
-				Shader::PixelShader* ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName);
+				Shader::VertexShader* vs = nullptr;
+				if(mainVSFuncName.empty() == false)
+					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName, includeMacros);
+
+				Shader::PixelShader* ps = nullptr;
+				if(mainPSFuncName.empty() == false)
+					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName, includeMacros);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;
@@ -64,7 +79,18 @@ namespace Rendering
 				if(outPixelShader)
 					(*outPixelShader) = ps;
 
-				return (vs && ps);
+				LoadShaderResult result;
+				result.loadVS = vs != nullptr;
+				result.loadPS = ps != nullptr;
+				result.isOnlyHasPath = isOnlyHasPath;
+
+				return result;
+			}
+			
+			void FetchShaderFullPath(std::string& out, const std::string& fileName)
+			{
+				/** FullPath Script Begin **/
+				/** FullPath Script End **/
 			}
 		};
 	}

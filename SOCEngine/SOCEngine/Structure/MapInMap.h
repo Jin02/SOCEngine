@@ -1,7 +1,8 @@
 #pragma once
 
+#include <string>
 #include <map>
-#include "Map.h"
+#include <vector>
 
 namespace Structure
 {
@@ -9,56 +10,77 @@ namespace Structure
 	class MapInMap 
 	{
 	private:
-		Map<Key, Map<Key, Object>>	_mim;
+		std::map<Key, std::map<Key, Object>> _mim;
 
 	public:
 		MapInMap(void){}
-		virtual ~MapInMap(void)
+		virtual ~MapInMap(void){}
+
+	public:
+		bool Add(const Key& key1, const Key& key2, const Object& object)
 		{
-			DeleteAll(true);
+			if(Find(key1, key2))
+				return false;
+
+			std::map<Key, Object> inMap;
+			inMap.insert(std::make_pair(key2, object));
+
+			_mim.insert(std::make_pair(key1, inMap));
+			return true;
+		}
+
+		Object* Find(const Key& key1, const Key& key2)
+		{
+			auto findIter = _mim.find(key1);
+
+			if(findIter != _mim.end())
+			{
+				std::map<Key, Object>& inMap = findIter->second;
+				auto inFindIter = inMap.find(key2);
+				if(inFindIter != inMap.end())
+					return &inFindIter->second;
+			}
+
+			return nullptr;
+		}
+
+		bool Find(std::map<Key, Object>& out, const Key& key1)
+		{
+			auto findIter = _mim.find(key1);
+
+			if(findIter != _mim.end())
+				out = findIter->second;
+
+			return findIter != _mim.end();
+		}
+
+		void Delete(const Key& key1, const Key& key2)
+		{
+			auto findIter = _mim.find(key1);
+
+			if(findIter != _mim.end())
+			{
+				std::map<Key, Object>& inMap = findIter->second;
+				auto inFindIter = inMap.find(key2);
+				if(inFindIter != inMap.end())
+					inMap.erase(inFindIter);
+			}
+		}
+
+		void Delete(const Key& key1)
+		{
+			auto findIter = _mim.find(key1);
+			
+			if(findIter != _mim.end())
+				_mim.erase(findIter);
+		}
+
+		void DeleteAll()
+		{
+			_mim.clear();
 		}
 
 	public:
-		virtual Object* Add(const Key& key1, const Key& key2, Object* object, bool copy = false)
-		{
-			Map<Key, Object>* inMap = _mim.Find(key1);
-
-			if(inMap == nullptr)
-				inMap = _mim.Add(key1, new Map<Key, Object>, false);
-
-			return inMap->Add(key2, object, copy);
-		}
-
-		virtual Object* Find(const Key& key1, const Key& key2)
-		{
-			Object* object = nullptr;
-			Map<Key, Object>* inMap = _mim.Find(key1);
-
-			if( inMap )
-				object = inMap->Find(key2);
-
-			return object;
-		}
-
-		virtual void Delete(const Key& key1, const Key& key2, bool contentRemove = false)
-		{
-			Map<Key, Object>* inMap = _mim.Find(key1);
-
-			if(inMap)
-				_mim.Delete(key2, contentRemove);
-		}
-
-		virtual void Delete(const Key& key1, bool contentRemove = false)
-		{
-			_mim.Delete(key1, contentRemove);
-		}
-
-		virtual void DeleteAll(bool contentRemove = false)
-		{
-			_mim.DeleteAll(contentRemove);
-		}
-
-		inline const Map<Key, Map<Key, Object>>& GetMapInMap() const { return _mim; }
-		GET_ACCESSOR(Size, unsigned int, _mim.GetSize());
+		inline const std::map<Key, std::map<Key, Object>>& GetMapInMap() const { return _mim; }
 	};
 }

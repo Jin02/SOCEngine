@@ -4,13 +4,13 @@
 namespace Intersection
 {
 	Cone::Cone(void) :
-		angle(0), range(0), axis(0, 0, 0), vertex(0, 0, 0)
+		degree(0), range(0), axis(0, 0, 0), vertex(0, 0, 0)
 	{
 
 	}
 
-	Cone::Cone(float _angle, float _range, const Math::Vector3& _axis, const Math::Vector3& _vertex)
-		: angle(_angle), range(_range), axis(_axis), vertex(_vertex)
+	Cone::Cone(float _degree, float _range, const Math::Vector3& _axis, const Math::Vector3& _vertex)
+		: degree(_degree), range(_range), axis(_axis), vertex(_vertex)
 	{
 	}
 
@@ -21,8 +21,8 @@ namespace Intersection
 
 	bool Cone::Intersects(const Sphere& sphere, const Cone& cone)
 	{
-		float sinAngle = sin(cone.angle);
-		float cosAngle = cos(cone.angle);
+		float sinAngle = sin(cone.degree);
+		float cosAngle = cos(cone.degree);
 
 		float invSin = 1.0f / sinAngle;
 		float cosSqr = cosAngle * cosAngle;

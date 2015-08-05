@@ -24,7 +24,7 @@ namespace Core
 		//null
 	}
 
-	void Component::OnRender()
+	void Component::OnRenderPreview()
 	{
 		//null
 	}

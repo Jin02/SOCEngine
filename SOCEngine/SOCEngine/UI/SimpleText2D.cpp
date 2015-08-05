@@ -3,14 +3,16 @@
 #include "EngineShaderFactory.hpp"
 #include "FontLoader.h"
 
+#include "ResourceManager.h"
+
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 SimpleText2D::SimpleText2D(const std::string& name, const Core::Object* parent)
-	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
+	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
 {
-	_name = name;
 }
 
 SimpleText2D::~SimpleText2D()
@@ -38,14 +40,16 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
 
-		auto shaderMgr = Director::GetInstance()->GetCurrentScene()->GetShaderManager();
+		const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+
+		auto shaderMgr = ResourceManager::GetInstance()->GetShaderManager();
 		Factory::EngineFactory factory(shaderMgr);
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 
 		const Texture::Texture* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture*>("font", texture);
@@ -160,17 +164,19 @@ void SimpleText2D::UpdateText(const std::string& text)
 
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
-	_meshFilter->UpdateVertexBufferData(dx->GetContext(), vertices.data(), sizeof(RectVertexInfo) * vertices.size());
+	_meshFilter->UpdateVertexBufferData(dx, vertices.data(), sizeof(RectVertexInfo) * vertices.size());
 }
 
-void SimpleText2D::Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat)
+void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat)
 {
-	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
-	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
+	ID3D11DeviceContext* context = dx->GetContext();
 
-	if(_material->GetShaderTargets().ableRender())
+	Shader::VertexShader* vs = _material->GetCustomShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().ps;
+
+	if(_material->GetCustomShader().ableRender())
 	{		
-		_meshFilter->IASetBuffer(context);
+		_meshFilter->IASetBuffer(dx);
 
 		vs->UpdateShader(context);
 		vs->UpdateInputLayout(context);

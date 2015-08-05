@@ -30,7 +30,7 @@ Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool ha
 	std::string folderPath, name, extension;
 	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &extension);
 
-	Texture::Texture* tex = _hash.Find(name);
+	Texture::Texture* tex = Find(name);
 	if(tex)
 		return tex;
 
@@ -39,20 +39,32 @@ Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool ha
 	ASSERT_COND_MSG(LoadTextureFromFile(&srv, fileDir), "Fail, Not Load Texture!");
 	tex = new Texture::Texture(srv, hasAlpha);
 
-	return _hash.Add(name+extension, tex);
+	_hash.insert(std::make_pair(name + extension, tex));
+
+	return tex;
 }
 
 Texture* TextureManager::Find(const std::string& name)
 {
-	return _hash.Find(name);
+	auto findIter = _hash.find(name);
+	return findIter == _hash.end() ? nullptr : findIter->second;
 }
 
 void TextureManager::Remoave(const std::string& name)
 {
-	_hash.Delete(name, true);
+	auto findIter = _hash.find(name);
+
+	if(findIter != _hash.end())
+	{
+		SAFE_DELETE(findIter->second);
+		_hash.erase(findIter);
+	}
 }
 
 void TextureManager::RemoveAll()
 {
-	_hash.DeleteAll(true);
+	for(auto iter = _hash.begin(); iter != _hash.end(); ++iter)
+		SAFE_DELETE(iter->second);
+
+	_hash.clear();
 }

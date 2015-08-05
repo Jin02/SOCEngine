@@ -2,14 +2,16 @@
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 
+#include "ResourceManager.h"
+
 using namespace UI;
 using namespace Rendering;
 using namespace Device;
+using namespace Resource;
 
 SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
-	: UIObject(parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
+	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
 {
-	_name = name;
 }
 
 SimpleImage2D::~SimpleImage2D()
@@ -26,15 +28,16 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	{
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
-
-		auto shaderMgr = Director::GetInstance()->GetCurrentScene()->GetShaderManager();
+		
+		const ResourceManager* resourceManager = ResourceManager::GetInstance();
+		auto shaderMgr = resourceManager->GetShaderManager();
 		Factory::EngineFactory factory(shaderMgr);
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
 
-		_material->SetShaderTargets( Shader::RenderShaders(vs, ps) );
+		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 	}
 
 	RectVertexInfo rectVertex[4];
@@ -74,8 +77,10 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	SetSize(size);
 }
 
-void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat)
+void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+
 	if(_changeSize)
 	{
 		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
@@ -116,16 +121,16 @@ void SimpleImage2D::Render(ID3D11DeviceContext* context, const Math::Matrix& vie
 			vertices[3].uv.y		=  1.0f;
 		};
 
-		_meshFilter->UpdateVertexBufferData(context, vertices, sizeof(RectVertexInfo) * 4);
+		_meshFilter->UpdateVertexBufferData(dx, vertices, sizeof(RectVertexInfo) * 4);
 		_changeSize = false;
 	}
 
-	Shader::VertexShader* vs = _material->GetShaderTargets().vs;
-	Shader::PixelShader* ps = _material->GetShaderTargets().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().ps;
 
-	if(_material->GetShaderTargets().ableRender())
+	if(_material->GetCustomShader().ableRender())
 	{		
-		_meshFilter->IASetBuffer(context);
+		_meshFilter->IASetBuffer(dx);
 
 		vs->UpdateShader(context);
 		vs->UpdateInputLayout(context);

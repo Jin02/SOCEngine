@@ -17,10 +17,11 @@ CSInputBuffer::~CSInputBuffer()
 bool CSInputBuffer::Initialize(unsigned int stride, unsigned int num, const void* sysMem)
 {
 	D3D11_BUFFER_DESC desc;
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
+
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
 	desc.ByteWidth = stride * num;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
 	desc.StructureByteStride = stride;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 

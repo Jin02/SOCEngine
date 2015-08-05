@@ -4,42 +4,46 @@
 #include "Structure.h"
 #include "Transform.h"
 #include "Component.h"
-#include "Light.h"
 #include "Frustum.h"
 #include "TransformPipelineParam.h"
 #include "Mesh.h"
 
 namespace Core
 {
-	class Object : public Structure::Vector<std::string, Object>
+	class Object : protected Structure::VectorMap<std::string, Object*>
 	{
 	protected:
-		bool _use;
-		bool _culled;
-		bool _hasMesh;
+		bool					_use;
+		bool					_culled;
+		bool					_hasMesh;
 
-	protected:
-		std::string _name;
+		std::string				_name;
 
-		const Object *_parent;
-		const Object *_root;
-		Transform *_transform;
+		const Object*			_parent;
+		const Object*			_root;
+		Transform*				_transform;
 
-	protected:
 		std::vector<Component*> _components;
 
 	public:
-		Object(const Object* parent = NULL);
+		Object(const std::string& name, const Object* parent = NULL);
 		virtual ~Object(void);
+
+	protected:
+		void DeleteAllChild();
 
 	public:
 		void Update(float delta);
-		void UpdateTransformCBAndCheckRender(TransformPipelineParam& transformParam);
+
+		bool Culling(const Rendering::Camera::Frustum *frustum);
+		void RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 
 	public:
-		Object* AddObject(Object *child, bool copy = false);
+		void AddChild(Object *child);
+		inline Object* FindChild(const std::string& key)	{ return *Find(key); }
+		inline Object* GetChild(uint index)					{ return Get(index); }
 
 		template<typename ComponentType>
 		ComponentType* AddComponent()
@@ -103,19 +107,15 @@ namespace Core
 		void DeleteComponent(Component *component);
 		void DeleteAllComponent();
 
-		bool Culling(Rendering::Camera::Frustum *frustum);
 		bool CompareIsChildOfParent(Object *parent);
-
-		GET_SET_ACCESSOR(Use, bool, _use);
-		GET_ACCESSOR(Culled, bool, _culled);
-		GET_ACCESSOR(HasMesh, bool, _hasMesh);
-		GET_SET_ACCESSOR(Name, const std::string&, _name);
-		GET_SET_ACCESSOR(Parent, const Object*, _parent);
+		Object* Clone() const;
 
 	public:
-		static Object* Copy(const Object *obj);
-		GET_ACCESSOR(Transform, Transform*, _transform);
+		GET_SET_ACCESSOR(Use,		bool,				_use);
+		GET_SET_ACCESSOR(Parent,	const Object*,		_parent);
+		GET_ACCESSOR(Culled,		bool,				_culled);
+		GET_ACCESSOR(HasMesh,		bool,				_hasMesh);
+		GET_ACCESSOR(Name,			const std::string&,	_name);
+		GET_ACCESSOR(Transform,		Transform*,			_transform);
 	};
-
-	class ObjectManager : public Structure::HashMap<std::string, const Object>{};
 }

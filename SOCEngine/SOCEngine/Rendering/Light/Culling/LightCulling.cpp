@@ -1,32 +1,18 @@
 #include "LightCulling.h"
 #include "Director.h"
 
+#include "ResourceManager.h"
+
+#include "Utility.h"
+#include "EngineShaderFactory.hpp"
+
 using namespace Device;
 using namespace Core;
 using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace GPGPU::DirectCompute;
-
-#define TILE_SIZE				16
-#define LIGHT_MAX_NUM_IN_TILE	544
-
-
-enum InputBuffer : unsigned int
-{
-	PointLightRadiusWithCenter	= 0,
-	SpotLightRadiusWithCenter	= 1
-};
-
-enum InputTexture : unsigned int
-{
-	LinearDepthBuffer = 2
-};
-
-enum OutputBuffer : unsigned int
-{
-	LightIndexBuffer = 0
-};
+using namespace Resource;
 
 LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr), _lightIndexBuffer(nullptr)
 {
@@ -38,16 +24,45 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth)
+void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
 {
 	//혹시 모르니, 한번 초기화
 	Destroy();
 
-	Director* director = Director::GetInstance();
-	Scene* scene = Director::GetInstance()->GetCurrentScene();
-	auto shaderMgr = scene->GetShaderManager();
+	ResourceManager* resourceManager = ResourceManager::GetInstance();
+	auto shaderMgr = resourceManager->GetShaderManager();
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(folderPath, fileName, "cs", "LightCulling", false);
+	std::string fileName, fileExtension, folderDir;
+	bool valid = Utility::String::ParseDirectory(filePath, folderDir, fileName, fileExtension);
+	ASSERT_COND_MSG(valid, "Where is your file extension?");
+
+	std::string includeCode;
+	{
+		std::string macroCode = useRenderBlendedMesh ? "#define ENABLE_BLEND\n" : "";
+
+		const DXGI_SAMPLE_DESC& desc = Device::Director::GetInstance()->GetDirectX()->GetMSAADesc();
+		{
+			macroCode += "#define MSAA_SAMPLES_COUNT ";
+			macroCode += (desc.Count > 0) ? std::to_string(desc.Count) : "0";
+			macroCode += "\n";
+		}
+
+		includeCode += macroCode;
+		
+		Factory::EngineFactory factory(nullptr); //FetchShaderFullPath만 사용
+
+		std::string includeFilePath;
+		factory.FetchShaderFullPath(includeFilePath, "LightCulling");
+		ASSERT_COND_MSG(includeFilePath.empty() == false, "Error, includeFilePath is empty");
+
+		bool success = shaderMgr->LoadShaderCode(includeCode, includeFilePath, false);
+		ASSERT_COND_MSG( (includeCode.empty() == false) || (success == false), "Error, LightCulling Core Code does not exist");
+
+		includeCode.insert(0, macroCode);
+	}
+
+	ID3DBlob* blob = shaderMgr->CreateBlob(folderDir, fileName, 
+		"cs", mainFunc, false, &includeCode);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
@@ -58,15 +73,15 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 	_globalDataBuffer = new ConstBuffer;
 	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(CullingConstBuffer)), "can not create const buffer");
 
-	ComputeShader::InputBuffer inputBufferElement;
-
 	// Input Buffer Setting
 	{
+		ComputeShader::InputBuffer inputBufferElement;
+
 		// Point Light
 		{
 			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
 			ASSERT_COND_MSG(pointLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
-			inputBufferElement.idx = InputBuffer::PointLightRadiusWithCenter;
+			inputBufferElement.idx = (uint)InputBuffer::PointLightRadiusWithCenter;
 			inputBufferElement.buffer = pointLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);
 		}
@@ -75,22 +90,39 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 		{
 			CSInputBuffer* spotLightCenterWithRadius = new CSInputBuffer;
 			ASSERT_COND_MSG(spotLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
-			inputBufferElement.idx = InputBuffer::SpotLightRadiusWithCenter;
+			inputBufferElement.idx = (uint)InputBuffer::SpotLightRadiusWithCenter;
 			inputBufferElement.buffer = spotLightCenterWithRadius;
 			_inputBuffers.push_back(inputBufferElement);
 		}
 
 		// depth buffer
 		{
-			ComputeShader::InputTexture inputTex;
-			inputTex.idx		= InputTexture::LinearDepthBuffer;
-			inputTex.texture	= linearDepth;
-			_inputTextures.push_back(inputTex);
+			// Opaque
+			{
+				ComputeShader::InputTexture inputTex;
+				inputTex.idx		= (uint)InputTexture::InvetedOpaqueDepthBuffer;
+				_inputTextures.push_back(inputTex);
+			}
+
+			// Blended, Transparent
+			if(useRenderBlendedMesh)
+			{
+				ComputeShader::InputTexture inputTex;
+				inputTex.idx		= (uint)InputTexture::InvetedBlendedDepthBuffer;
+				_inputTextures.push_back(inputTex);
+			}
 		}
 
 		_computeShader->SetInputBuffers(_inputBuffers);
 		_computeShader->SetInputTextures(_inputTextures);
 	}
+
+	_useBlendedMeshCulling = useRenderBlendedMesh;
+}
+
+void LightCulling::InitializeOnlyLightCulling(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
+{
+	Initialize(filePath, mainFunc, useRenderBlendedMesh);
 
 	// Ouput Buffer Setting
 	{
@@ -100,9 +132,10 @@ void LightCulling::Init(const std::string& folderPath, const std::string& fileNa
 
 		ComputeShader::OutputBuffer outputBuffer;
 		{
-			outputBuffer.idx = OutputBuffer::LightIndexBuffer;
+			outputBuffer.idx = (uint)OutputBuffer::LightIndexBuffer;
 			outputBuffer.buffer = lightIndexBuffer;
 		}
+
 		_outputBuffers.push_back(outputBuffer);
 		_computeShader->SetOutputBuffers(_outputBuffers);
 	}
@@ -113,39 +146,42 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
 	const unsigned key = 16;
 
-	return ( LIGHT_MAX_NUM_IN_TILE - ( key * ( winSize.h / 120 ) ) );
+	return ( LightMaxNumInTile - ( key * ( winSize.h / 120 ) ) );
 }
 
-void LightCulling::UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius)
+void LightCulling::UpdateInputBuffer(const Device::DirectX* dx,
+									 const CullingConstBuffer& cbData,
+									 const Light::LightForm::LightTransformBuffer* pointLightTransformBuffer,
+									 const Light::LightForm::LightTransformBuffer* spotLightTransformBuffer)
 {
-	const Director* director = Device::Director::GetInstance();
-	ID3D11DeviceContext* context = director->GetDirectX()->GetContext();
-
+	ID3D11DeviceContext* context = dx->GetContext();
 	_globalDataBuffer->Update(context, &cbData);
 
 	ComputeShader::InputBuffer inputBuffer;
 
 	// Input Buffer Setting
 	{
-		_globalDataBuffer->Update(context, &cbData);
+		//0, pointLight 
+		_inputBuffers[0].buffer->Update(context, pointLightTransformBuffer);
 
-		//0번이 pointLight 들고있음
-		_inputBuffers[0].buffer->Update(context, pointLightCenterWithRadius.data());
-
-		//1번이 spot light
-		_inputBuffers[1].buffer->Update(context, spotLightCenterWithRadius.data());
+		//1, spot light
+		_inputBuffers[1].buffer->Update(context, spotLightTransformBuffer);
 	}
 }
 
-void LightCulling::Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth)
+void LightCulling::Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer, const Texture::DepthBuffer* invertedBlendedDepthBuffer)
 {
-	// 0번이 depth buffer 넣음
-	_inputTextures[0].texture = linearDepth;
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	_inputTextures[0].texture = invertedDepthBuffer;
+
+	if(_useBlendedMeshCulling)
+		_inputTextures[1].texture = invertedBlendedDepthBuffer;
 
 	_computeShader->Dispatch(context);
 	
-	//혹시 모르니 초기화
 	_inputTextures[0].texture = nullptr;
+	_inputTextures[1].texture = nullptr;
 }
 
 void LightCulling::UpdateThreadGroup(ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader)
@@ -164,7 +200,7 @@ const Math::Size<unsigned int> LightCulling::CalcThreadSize()
 {
 	auto CalcThreadLength = [](unsigned int size)
 	{
-		return (unsigned int)((size+TILE_SIZE-1) / (float)TILE_SIZE);
+		return (unsigned int)((size+TileSize-1) / (float)TileSize);
 	};
 
 	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();

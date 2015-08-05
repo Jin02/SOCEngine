@@ -22,7 +22,7 @@ namespace Rendering
 
 		public:
 			void Make(const Math::Matrix &viewProjection);
-			bool In(const Math::Vector3 &v, float radius = 0.0f);
+			bool In(const Math::Vector3 &v, float radius = 0.0f) const;
 
 		public:
 			GET_ACCESSOR(Position, const Math::Vector3, _position);

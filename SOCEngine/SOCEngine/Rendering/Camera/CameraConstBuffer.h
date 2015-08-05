@@ -8,7 +8,7 @@ namespace Rendering
 	{
 		struct CameraConstBuffer
 		{
-			Math::Vector4 viewPos;
+			Math::Vector4 worldPos;
 			float clippingNear, clippingFar;
 			Math::Size<float> screenSize;
 		};

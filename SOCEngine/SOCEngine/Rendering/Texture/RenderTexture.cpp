@@ -46,21 +46,13 @@ void RenderTexture::Destroy()
 	SAFE_RELEASE(_renderTargetView);
 }
 
-void RenderTexture::SetRenderTarget(const DepthBuffer* depthBuffer, const DirectX* dx)
+void RenderTexture::SetRenderTarget(ID3D11DeviceContext* context, const DepthBuffer* depthBuffer)
 {
-	if(dx == nullptr)
-		dx = Director::GetInstance()->GetDirectX();
-
-	dx->GetContext()->OMSetRenderTargets(1, &_renderTargetView, depthBuffer->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &_renderTargetView, depthBuffer->GetDepthStencilView());
 }
 
-void RenderTexture::clear(const Rendering::Color& color, const DirectX* dx)
+void RenderTexture::Clear(ID3D11DeviceContext* context, const Rendering::Color& color)
 {
-	if(dx == nullptr)
-		dx = Director::GetInstance()->GetDirectX();
-
-	ID3D11DeviceContext* context = dx->GetContext();
-
 	// clear the back buffer.
 	const float colorValue[] = {color.r, color.g, color.b, color.a};
 	context->ClearRenderTargetView(_renderTargetView, colorValue);

@@ -1,32 +1,26 @@
 #include "LightForm.h"
 #include "Object.h"
 
-namespace Rendering
+#include "Director.h"
+
+using namespace Rendering;
+using namespace Rendering::Light;
+
+LightForm::LightForm()
 {
-	namespace Light
-	{
-		LightForm::LightForm( )
-		{
-			//range = 10.0f;
-			//specularPower = 20.0f;
+	_color = Color::White();
+}
 
-			//ambient = Color(0.1f, 0.1f, 0.1f);
-			//diffuse = Color::white();
-			//specular = Color::white();
-		}
+LightForm::~LightForm()
+{
+}
 
-		LightForm::~LightForm()
-		{
-		}
+void LightForm::OnInitialize()
+{
+	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	scene->GetLightManager()->Add(this, _owner->GetName().c_str());
+}
 
-		void LightForm::Initialize()
-		{
-			//null
-		}
-
-		void LightForm::Destroy()
-		{
-			//null
-		}
-	}
+void LightForm::OnDestroy()
+{
 }

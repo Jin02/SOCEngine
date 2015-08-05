@@ -7,6 +7,7 @@
 #include <array>
 
 #include "LightCulling_CSOutputBuffer.h"
+#include "Lightform.h"
 
 namespace Rendering
 {
@@ -15,54 +16,71 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
+			static const uint TileSize					= 16;
+			static const uint LightMaxNumInTile			= 544;
+
+			enum class InputBuffer : unsigned int
+			{
+				PointLightRadiusWithCenter		= 0,
+				SpotLightRadiusWithCenter		= 1
+			};
+
+			enum class InputTexture : unsigned int
+			{
+				InvetedOpaqueDepthBuffer		= 2,
+				InvetedBlendedDepthBuffer		= 3
+			};
+
+			enum class OutputBuffer : unsigned int
+			{
+				LightIndexBuffer = 0
+			};
+
+		public:
 			struct CullingConstBuffer
 			{	
 				Math::Matrix	worldViewMat;
 				Math::Matrix 	invProjMat;
 				Math::Vector2	screenSize;
-				float 			clippingFar;
-				unsigned int 	maxLightNumInTile;	// 한 타일당 최대 빛 갯수. 
-													// 이 값은 이 클래스 내부에서
-													// 알아서 계산됨
 				unsigned int 	lightNum;
-				unsigned int 	dummy1;
-				unsigned int 	dummy2;
-				unsigned int 	dummy3;
+				unsigned int 	lightStrideNumInLightIdxBuffer;
 			};
 
 			static const int POINT_LIGHT_LIMIT_NUM			= 2048;
 			static const int SPOT_LIGHT_LIMIT_NUM			= 2048;
 			static const int DIRECTIONAL_LIGHT_LIMIT_NUM	= 1024;
 
-		private:
+		protected:
 			GPGPU::DirectCompute::ComputeShader*	_computeShader;
 			Rendering::Buffer::ConstBuffer*			_globalDataBuffer;
 			LightCulling_CSOutputBuffer*			_lightIndexBuffer;
 
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>	_inputBuffers;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>			_inputBuffers;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>			_inputTextures;
 
-			//현재 하나만 사용. 추후 Blended용 버퍼 혹은 다양한 것들이 추가 예정
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>	_inputTextures;
+			std::vector<GPGPU::DirectCompute::ComputeShader::OutputBuffer>			_outputBuffers;
 
-			std::vector<GPGPU::DirectCompute::ComputeShader::OutputBuffer>	_outputBuffers;
+			bool	_useBlendedMeshCulling;
 
 		public:
 			LightCulling();
 			~LightCulling();
 
-		private:
+		protected:
+			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh);
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
 
 		public:
-			void Init(const std::string& folderPath, const std::string& fileName, const Texture::RenderTexture* linearDepth);
-			void UpdateInputBuffer(const CullingConstBuffer& cbData, const std::array<Math::Vector4, POINT_LIGHT_LIMIT_NUM>& pointLightCenterWithRadius, const std::array<Math::Vector4, SPOT_LIGHT_LIMIT_NUM>& spotLightCenterWithRadius);
+			void InitializeOnlyLightCulling(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh);
+			void Destroy();
 
-			void Dispatch(ID3D11DeviceContext* context, const Texture::RenderTexture* linearDepth);
+		public:
+			void UpdateInputBuffer(const Device::DirectX* dx, const CullingConstBuffer& cbData, const Light::LightForm::LightTransformBuffer* pointLightTransformBuffer, const Light::LightForm::LightTransformBuffer* spotLightTransformBuffer);
+			void Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer, const Texture::DepthBuffer* invertedBlendedDepthBuffer);
 
+		public:
 			const Math::Size<unsigned int> CalcThreadSize();
 			unsigned int CalcMaxNumLightsInTile();
-
-			void Destroy();
 		};
 	}
 }

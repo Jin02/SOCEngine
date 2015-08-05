@@ -1,5 +1,6 @@
 #include "MathCommon.h"
 #include "Vector3.h"
+#include "Utility.h"
 
 namespace Math
 {
@@ -24,4 +25,27 @@ namespace Math
 		out.z = eulerAngles.z - z * 360.0f + (int)(eulerAngles.z < 0) * 360.0f;
 	}
 
+	unsigned short Common::FloatToHalf(float f)
+	{
+		// s = sign, e = exponent, m = mantissa
+		// 32bit float
+		// 1    8               23
+		// s eeeeeeee mmmmmmmmmmmmmmmmmmmmmmm
+		// 16bit float (half)
+		// 1   5       10
+		// s eeeee mmmmmmmmmm
+
+		unsigned int floatBit = *((unsigned int*)&f);
+
+		int exponent = (int)((floatBit &0x7F800000) >> 23) - 127 + 15;
+		ASSERT_COND_MSG(exponent < 31, "Strange Exp");
+		if(exponent <= 0)
+			return 0;
+
+		unsigned int outSign		= (floatBit & 0x80000000) >> 16;
+		unsigned int outExp			= ((unsigned int)exponent) << 10;
+		unsigned int outMantissa	= (floatBit & 0x007FFFFF) >> 13;
+
+		return (unsigned short)(outSign | outExp | outMantissa);
+	}
 }

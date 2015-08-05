@@ -2,10 +2,11 @@
 
 #include <string>
 #include <fstream>
-#include "Map.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "Utility.h"
+
+#include <map>
 
 namespace Rendering
 {
@@ -14,8 +15,8 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			Structure::Map<std::string, Shader::BaseShader>		_shaders;
-			Structure::Map<std::string, Shader::ShaderCode>		_shaderCodes;
+			std::map<std::string, Shader::BaseShader*>		_shaders;
+			std::map<std::string, Shader::ShaderCode>		_shaderCodes;
 
 		public:
 			ShaderManager();
@@ -32,11 +33,13 @@ namespace Rendering
 			bool CommandValidator(const std::string& partlyCommand, const std::string& shaderType, std::string* outFileName, std::string* outMainFunc);
 
 		public:
+			bool LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool recycleCode);
 			bool LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode);
-			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName = nullptr);
-			
-			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName = nullptr);
-			bool Add(const std::string& fullCommand, Shader::BaseShader* shader);
+
+			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);			
+			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);
+
+			void Add(const std::string& fullCommand, Shader::BaseShader* shader);
 			bool LoadShader(const std::string filePath);
 
 		public:
@@ -45,7 +48,7 @@ namespace Rendering
 			Shader::VertexShader*	FindVertexShader(const std::string& fileName, const std::string& mainFunc);
 
 			Shader::PixelShader*	FindPixelShader(const std::string& fileName, const std::string& mainFunc);
-			const std::string*		FindShaderCode(const std::string& fileName);
+			const std::string&		FindShaderCode(const std::string& fileName);
 
 		public:
 			void RemoveAllShaderCode();

@@ -8,6 +8,16 @@
 #include "Container.h"
 #include <map>
 
+//dont use const reference
+#define SET_ACCESSOR_MATERIAL(name, type) inline void Set##name(const type& data)			{ SetVariable(#name, data);}
+
+//dont use const reference
+#define GET_ACCESSOR_MATERIAL(name, type) inline bool Get##name(type& out) const			{ return GetVariable(out, #name); }
+
+//dont use const reference
+#define GET_SET_ACCESSOR_MATERIAL(name, type)\
+	SET_ACCESSOR_MATERIAL(name, type) GET_ACCESSOR_MATERIAL(name, type)
+
 namespace Rendering
 {
 	class Material
@@ -21,29 +31,39 @@ namespace Rendering
 			Users
 		};
 
-	protected:
-		std::string		_name;
-		Math::Vector2	_tiling;
+	private:
+		std::string										_name;
+		Math::Vector2									_tiling;
 
-		bool			_hasAlpha;
-		bool			_changedAlpha;
-
+		std::vector<Shader::BaseShader::BufferType>		_constBuffers;
 		std::vector<Shader::BaseShader::TextureType>	_textures;
 		std::map<const std::string, Container>			_datas;
 
-		const Type					_type;
-		Shader::RenderShaders		_shaders; //maybe.. only used in forward rendering
+		const Type										_type;
+		uint											_variableUpdateCounter;
+
+	protected:
+		Shader::ShaderGroup								_customShaders; //in forward rendering
+		bool											_hasAlpha;
+		bool											_changedAlpha;
 
 	public:
 		Material(const std::string& name, Type type);
 		~Material(void);
 
 	public:
+		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+
+		bool UpdateConstBuffer_ShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb);
+		bool UpdateConstBuffer_ArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb);
+
+	public:
 		const Rendering::Texture::Texture* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool UpdateTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture);
-		bool UpdateTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture);
+		bool UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture);
+		bool UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture);
 
+	public:
 		template<typename Type>
 		void SetVariable(const std::string& name, const Type& value)
 		{
@@ -65,10 +85,12 @@ namespace Rendering
 			{
 				findIter->second.SetData(value);
 			}
+
+			++_variableUpdateCounter;
 		}
 
 		template<typename Type>
-		bool GetVariable(Type& outContainer, const std::string& name)
+		bool GetVariable(Type& outContainer, const std::string& name) const
 		{
 			auto findIter = _datas.find(name);
 			if( findIter == _datas.end() )
@@ -86,8 +108,13 @@ namespace Rendering
 
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
-		GET_SET_ACCESSOR(ShaderTargets, const Shader::RenderShaders&, _shaders);
 
-		friend class PhysicallyBasedMaterial;
+		GET_SET_ACCESSOR(CustomShader, const Shader::ShaderGroup&, _customShaders);
+
+		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
+
+	public:
+		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);
+		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::BufferType>&, _constBuffers);
 	};
 }

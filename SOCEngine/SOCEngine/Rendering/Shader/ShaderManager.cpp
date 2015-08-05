@@ -1,4 +1,5 @@
 #include "ShaderManager.h"
+#include "Utility.h"
 
 using namespace Rendering::Manager;
 using namespace Rendering::Shader;
@@ -82,11 +83,13 @@ bool ShaderManager::CompileFromFile(ID3DBlob** outBlob, const std::string &fileN
 
 bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode)
 {
+	// Check preview shader codes.
 	{
-		std::string* alreadyCode = _shaderCodes.Find(fileName);
-		if(alreadyCode)
+		const std::string& alreadyCode = FindShaderCode(fileName);
+
+		if(alreadyCode.empty() == false)
 		{
-			outCode = (*alreadyCode);
+			outCode = alreadyCode;
 			return true;
 		}
 	}
@@ -124,11 +127,20 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 	}
 
 	if(recycleCode)
-		_shaderCodes.Add(fileName, &outCode, true);
+		_shaderCodes.insert(std::make_pair(fileName, outCode));
 
 	file.close();
 
 	return true;
+}
+
+bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool recycleCode)
+{
+	std::string folder, fileName, extension;
+	if( Utility::String::ParseDirectory(fileFullPath, folder, fileName, extension) == false)
+		return false;
+
+	return LoadShaderCode(outCode, folder, fileName, recycleCode);
 }
 
 ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::string* includeCode)
@@ -195,7 +207,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName, const std::vector<std::string>* macros)
 {
 	std::string fileName, mainFunc;
 
@@ -208,10 +220,14 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	std::string optionalCode;
 	if(includeFileName)
 		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
+	if(macros)
+	{
+		for(const auto& iter : (*macros))
+			optionalCode.insert(0, iter + "\n");
+	}
 
-	std::string fullCommand = VS_FULL_COMMAND(fileName, mainFunc);
-	VertexShader* shader = dynamic_cast<VertexShader*>(_shaders.Find(fullCommand));
-
+	VertexShader* shader = FindVertexShader(fileName, mainFunc);
+	
 	if(shader == nullptr)
 	{
 		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode, &optionalCode);
@@ -223,25 +239,31 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		bool success = shader->CreateShader(vertexDeclations.data(), vertexDeclations.size());		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
-		_shaders.Add(fullCommand, shader, false);
+		_shaders.insert(std::make_pair(VS_FULL_COMMAND(fileName, mainFunc), shader));
 	}
 
 	return shader;
 }
 
-PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName, const std::vector<std::string>* macros)
 {
 	std::string fileName, mainFunc;
 
 	if(CommandValidator(partlyCommand, "ps", &fileName, &mainFunc) == false)
 		return nullptr;
 
-	std::string fullCommand = PS_FULL_COMMAND(fileName, mainFunc);
-	PixelShader* shader = dynamic_cast<PixelShader*>(_shaders.Find(fullCommand));
+	PixelShader* shader = FindPixelShader(fileName, mainFunc);
 
 	std::string optionalCode;
+
 	if(includeFileName)
 		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
+
+	if(macros)
+	{
+		for(const auto& iter : (*macros))
+			optionalCode.insert(0, iter + "\n");
+	}
 
 	if(shader == nullptr)
 	{
@@ -251,9 +273,8 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 		shader = new PixelShader(blob);
 		ASSERT_COND_MSG(shader->CreateShader(), "Error, Not Created PS");
-		{
-			_shaders.Add(fullCommand, shader, false);
-		}
+
+		_shaders.insert(std::make_pair(PS_FULL_COMMAND(fileName, mainFunc), shader));
 	}
 
 	return shader;
@@ -261,22 +282,33 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 void ShaderManager::RemoveAllShaderCode()
 {
-	_shaderCodes.DeleteAll(true);
+	_shaderCodes.clear();
 }
 
 void ShaderManager::RemoveAllShader()
 {
-	_shaders.DeleteAll(true);
+	for(auto iter=_shaders.begin(); iter != _shaders.end(); ++iter)
+		SAFE_DELETE(iter->second);
+
+	_shaders.clear();
 }
 
 void ShaderManager::RemoveShaderCode(const std::string& command)
 {
-	_shaderCodes.Delete(command, true);
+	auto findIter = _shaderCodes.find(command);
+
+	if(findIter != _shaderCodes.end())
+		_shaderCodes.erase(findIter);
 }
 
 void ShaderManager::RemoveShader(const std::string& command)
 {
-	_shaders.Delete(command, true);
+	auto findIter = _shaders.find(command);
+	if(findIter != _shaders.end())
+	{
+		SAFE_DELETE(findIter->second);
+		_shaders.erase(findIter);
+	}
 }
 
 BaseShader* ShaderManager::FindShader(const std::string& fileName, const std::string& mainFunc, BaseShader::Type type)
@@ -291,23 +323,26 @@ BaseShader* ShaderManager::FindShader(const std::string& fileName, const std::st
 
 VertexShader* ShaderManager::FindVertexShader(const std::string& fileName, const std::string& mainFunc)
 {
-	return dynamic_cast<VertexShader*>(_shaders.Find(VS_FULL_COMMAND(fileName, mainFunc)));
+	auto findIter = _shaders.find(VS_FULL_COMMAND(fileName, mainFunc));
+	return findIter == _shaders.end() ? nullptr : dynamic_cast<VertexShader*>(findIter->second);
 }
 
 PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const std::string& mainFunc)
 {
-	return dynamic_cast<PixelShader*>(_shaders.Find(PS_FULL_COMMAND(fileName, mainFunc)));
+	auto findIter = _shaders.find(PS_FULL_COMMAND(fileName, mainFunc));
+	return findIter == _shaders.end() ? nullptr : dynamic_cast<PixelShader*>(findIter->second);
 }
 
-bool ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseShader* shader)
+void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseShader* shader)
 {
 	if(CommandValidator(fullCommand, nullptr, nullptr, nullptr) == false)
 		ASSERT_MSG("Error, invalied command");
 
-	return _shaders.Add(fullCommand, shader, false) ? true : false;
+	_shaders.insert(std::make_pair(fullCommand, shader));
 }
 
-const std::string* ShaderManager::FindShaderCode(const std::string& fileName)
+const std::string& ShaderManager::FindShaderCode(const std::string& fileName)
 {
-	return _shaderCodes.Find(fileName);
+	auto findIter = _shaderCodes.find(fileName);
+	return (findIter == _shaderCodes.end()) ? std::string() : findIter->second;
 }
