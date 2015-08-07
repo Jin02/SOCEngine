@@ -1,75 +1,13 @@
 //EMPTY_META_DATA
-//This file include BRDF.hlsl
 
-#define TILE_RES 				16
-#define TILE_RES_HALF			(TILE_RES / 2)
-#define SHADING_THREAD_COUNT	(TILE_RES * TILE_RES)
-#define FLOAT_MAX				3.402823466e+38F
-#define END_OF_LIGHT_BUFFER		0xffffffff
-
-
-Buffer<float4> g_inputPointLightTransformBuffer						: register( t0 );
-Buffer<float4> g_inputPointLightColorBuffer							: register( t1 );
-
-Buffer<float4> g_inputSpotLightTransformBuffer						: register( t2 );
-Buffer<float4> g_inputSpotLightColorBuffer							: register( t3 );
-Buffer<float4> g_inputSpotLightParamBuffer							: register( t4 );
-
-Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 );
-Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 );
-Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 );
-
-#if (MSAA_SAMPLES_COUNT > 1)
-
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_metallic	: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferSpecular_fresnel0	: register( t9 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferNormal_roughness	: register( t10 );
-Texture2DMS<float,	MSAA_SAMPLES_COUNT> g_tDepth					: register( t11 );
-
-#else //Turn off MSAA
-
-Texture2D<float4>	g_tGBufferAlbedo_metallic						: register( t8 );
-Texture2D<float4>	g_tGBufferSpecular_fresnel0						: register( t9 );
-Texture2D<float4>	g_tGBufferNormal_roughness						: register( t10 );
-Texture2D<float>	g_tDepth										: register( t11 );
-
-#endif
+#include "LightCulling.h"
+#include "BRDF.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
-groupshared uint s_edgePixelIdx[TILE_RES * TILE_RES];
 
 #endif
-
-Buffer<int> g_lightIndexBuffer										: register( t12 );
-
-// Output
-RWTexture2D<float4> g_tOutScreen									: register( u0 );
-
-cbuffer TileBasedDeferredShadingParams : register( b1 )
-{
-	matrix	g_invViewProjViewport;
-	float3	g_cameraWorldPosition;
-	uint	g_directionalLightCount;
-};
-
-struct LightingParams
-{
-	uint	lightIndex;
-	float3	viewDir;
-	float3	normal;
-	float	fresnel0;
-	float	roughness;
-	float3	diffuseColor;
-};
-
-struct LightingCommonParams
-{
-	float3	lightColor;
-	float	lightIntensity;
-	float3	lightDir;
-};
 
 
 void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
@@ -77,7 +15,7 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 {
 	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
 
-		float NdotL			= saturate(dot(lightingParams.normal,	commonParamas.lightDir));
+	float NdotL			= saturate(dot(lightingParams.normal,	commonParamas.lightDir));
 	float NdotH			= saturate(dot(lightingParams.normal,	halfVector));
 	float NdotV			= saturate(dot(lightingParams.normal,	lightingParams.viewDir));
 	float VdotH			= saturate(dot(lightingParams.viewDir,	halfVector));
@@ -99,15 +37,15 @@ void RenderDirectionalLight(out float3 resultDiffuseColor, out float3 resultSpec
 							in LightingParams lightingParams)
 {
 	float4	lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightingParams.lightIndex];
-		float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
+	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
 
-		LightingCommonParams commonParams;
+	LightingCommonParams commonParams;
 	{
 		commonParams.lightColor		= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].xyz;
 		commonParams.lightIntensity	= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].w;
 
 		float4	lightParam = g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
-			commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, commonParams, lightingParams);
 	}
@@ -117,10 +55,10 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 					  in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 	float3 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
-		float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
+	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
 
-		float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
-		float distanceOfLightAndVertex	= length(lightDir);
+	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
+	float distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
 	float lightRadius				= lightCenterWithRadius.w;
@@ -147,7 +85,7 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 					 in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 	float4 spotLightParam	= g_inputSpotLightParamBuffer[lightingParams.lightIndex];
-		float3 spotLightDir;
+	float3 spotLightDir;
 	{
 		spotLightDir.xy		= spotLightParam.xy;
 		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
@@ -157,12 +95,12 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 	}
 
 	float3	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
-		float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
-		float	lightRadius					= lightCenterWithRadius.w;
+	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
+	float	lightRadius					= lightCenterWithRadius.w;
 
 	float3	lightRealWorldPosition		= lightCenterWorldPosition - (spotLightDir * lightRadius);
-		float3	lightDir					= lightRealWorldPosition - vertexWorldPosition;
-		float	distanceOfLightAndVertex	= length(lightDir);
+	float3	lightDir					= lightRealWorldPosition - vertexWorldPosition;
+	float	distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
 	float	lightCosineConeAngle		= spotLightParam.z;
@@ -234,7 +172,7 @@ void MSAALighting(uint2 globalIdx, uint sampleIdx)
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint i=pointLightCountInThisTile+1; s_lightIdx[i] != END_OF_LIGHT_BUFFER; ++i)
+	for(uint i=pointLightCountInThisTile; i<s_lightIndexCounter; ++i)
 	{
 		lightParams.lightIndex = s_lightIdx[i];
 
@@ -264,6 +202,9 @@ void MSAALighting(uint2 globalIdx, uint sampleIdx)
 	return float4(result, 1.0f);
 }
 #endif
+
+// Output
+RWTexture2D<float4> g_tOutScreen : register( u0 );
 
 [numthreads(TILE_RES, TILE_RES, 1)]
 void CS(uint3 globalIdx : SV_DispatchThreadID, 
@@ -332,7 +273,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint i=pointLightCountInThisTile+1; s_lightIdx[i] != END_OF_LIGHT_BUFFER; ++i)
+	for(uint i=pointLightCountInThisTile; i<s_lightIndexCounter; ++i)
 	{
 		lightParams.lightIndex = s_lightIdx[i];
 
@@ -359,9 +300,9 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 
 	//float3 result = (accumulativeDiffuse * diffuseColor) + (specularColor * specularColor);
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
-	bool	isDetectedEdge = s_isDetectedEdge[localIdx.x + localIdx.y * TILE_RES];
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
+	bool	isDetectedEdge = s_isDetectedEdge[localIdx.x + localIdx.y * TILE_RES];
 
 	uint2 scale_2_idx = globalIdx.xy * uint(2, 2);
 	g_tOutScreen[scale_2_idx] = float4(result, 1.0f);

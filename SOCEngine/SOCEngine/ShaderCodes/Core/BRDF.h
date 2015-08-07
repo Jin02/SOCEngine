@@ -1,12 +1,11 @@
-//NOT_CREATE_META_DATA
+ï»¿//EMPTY_META_DATA
 
-#define PI	3.141592654f
+#define PI 3.141592654f
 
 float ClampedPow(float x, float y)
 {
 	return pow( max(abs(x), 0.0000001f), y );
 }
-
 
 // The scattering of electromagnetic waves from rough surfaces
 float DistributionBeckmann(float m2, float NdotH)
@@ -179,7 +178,7 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 
 float Fresnel(float f0, float LdotH)
 {
-	//³ª¸ÓÁö´Â ±¸ÇöÇÏ±â ±ÍÂúÀ¸´Ï ³ªÁß¿¡ »ı°¢³¯¶§ ÇÏ¸é µÉ °Í °°´Ù
+	//ë‚˜ë¨¸ì§€ëŠ” êµ¬í˜„í•˜ê¸° ê·€ì°®ìœ¼ë‹ˆ ë‚˜ì¤‘ì— ìƒê°ë‚ ë•Œ í•˜ë©´ ë  ê²ƒ ê°™ë‹¤
 	return FresnelSchlick(f0, LdotH); //Default
 }
 

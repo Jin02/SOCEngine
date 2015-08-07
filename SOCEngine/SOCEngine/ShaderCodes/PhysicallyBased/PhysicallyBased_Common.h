@@ -1,0 +1,50 @@
+﻿//NOT_CREATE_META_DATA
+
+#ifdef ENABLE_MSAA
+#define ALPHA_TEST_BIAS		0.003f
+#else
+#define ALPHA_TEST_BIAS		0.5f
+#endif
+
+cbuffer Transform : register( b0 )		//Mesh
+{
+	matrix transform_world;
+	matrix transform_worldView;
+	matrix transform_worldViewProj;
+};
+
+cbuffer Camera : register( b1 )			//CameraForm
+{
+	float4 	camera_pos;
+	float 	camera_near;
+	float 	camera_far;
+	float2 	camera_screenSize;
+};
+
+cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
+{
+	float3	material_mainColor;
+	float	material_metallic;
+	float 	material_roughness;
+	float 	material_fresnel0;
+	float2 	material_uvTiling;
+};
+
+Texture2D diffuseTexture			: register( t0 );
+Texture2D normalTexture				: register( t1 );
+Texture2D specularTexture			: register( t2 );
+Texture2D opacityTexture			: register( t3 ); //inverse, 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
+
+float3 ComputeFaceNormal(float3 position)
+{
+    return cross(ddx_coarse(position), ddy_coarse(position));
+}
+
+float3 DecodeNormalTexture(in Texture2D tex, in float2 uv, in SamplerState samplerState)
+{
+	float3 norm = tex.Sample(samplerState, uv).xyz;
+	norm *= 2.0f; norm -= float3(1.0f, 1.0f, 1.0f);
+
+	return norm;
+}
+

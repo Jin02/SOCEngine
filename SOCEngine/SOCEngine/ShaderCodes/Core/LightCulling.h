@@ -1,35 +1,8 @@
-//EMPTY_META_DATA
+﻿//NOT_CREATE_META
 
-#define THREAD_COUNT 				(TILE_RES_HALF * TILE_RES_HALF)
-#define EDGE_DETECTION_VALUE		10.0f
-#define TILE_RES 					16
-#define TILE_RES_HALF				(TILE_RES / 2)
+#include "ShaderCommon.h"
 
-#define LIGHT_MAX_COUNT_IN_TILE 	544
-#define FLOAT_MAX					3.402823466e+38F
-
-#define END_OF_LIGHT_BUFFER			0xffffffff
-
-//Input Buffer
-Buffer<float4> 		g_inputPointLightTransformBuffer 	: register(t0);
-Buffer<float4> 		g_inputSpotLightTransformBuffer 	: register(t1);
-
-
-#if (MSAA_SAMPLES_COUNT > 1)
-Texture2DMS<float, MSAA_SAMPLES_COUNT>	g_tDepthTexture		: register(t2);
-#else
-Texture2D<float> 	g_tDepthTexture 						: register(t2);
-#endif
-
-#ifdef ENABLE_BLEND
-
-#if (MSAA_SAMPLES_COUNT > 1)
-Texture2DMS<float, MSAA_SAMPLES_COUNT>	g_tBlendedDepthTexture		: register(t3);
-#else
-Texture2D<float> 	g_tBlendedDepthTexture 							: register(t3);
-#endif
-
-#endif
+#if USE_COMPUTE_SHADER
 
 groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
@@ -39,13 +12,23 @@ groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
 groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
 
-cbuffer LightCullingGlobalData : register( b0 )
+#endif
+
+cbuffer LightCullingGlobalData : register( b1 )
 {
 	matrix	g_viewMat;
 	matrix 	g_invProjMat;
 	float2	g_screenSize;
 	uint 	g_lightNum;
-	uint 	g_blockSizeInLightBuffer;
+	uint	g_maxNumOfperLightInTile;
+};
+
+struct CornerMinMax
+{
+	float min_tl, max_tl;
+	float min_tr, max_tr;
+	float min_bl, max_bl;
+	float min_br, max_br;
 };
 
 uint GetNumTilesX()
@@ -95,15 +78,19 @@ float InvertProjDepthToWorldViewDepth(float depth)
 	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
 }
 
-#if (MSAA_SAMPLES_COUNT > 1)
-struct CornerMinMax
+uint GetTileIndex(float2 screenPos)
 {
-	float min_tl, max_tl;
-	float min_tr, max_tr;
-	float min_bl, max_bl;
-	float min_br, max_br;
-};
-void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax, out CornerMinMax ioCornerMinMax)
+	float tileRes = (float)TILE_RES;
+	uint tileIndex = (uint)(screenPos.x / tileRes) + ((uint)(screenPos.y / tileRes) * GetNumTilesX());
+
+	return tileIndex;
+}
+
+
+#if USE_COMPUTE_SHADER
+
+#if (MSAA_SAMPLES_COUNT > 1)
+void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax, inout CornerMinMax ioCornerMinMax)
 #else
 void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
 #endif
@@ -111,29 +98,29 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 	uint2 idx = halfGlobalIdx * 2;
 	
 #if (MSAA_SAMPLES_COUNT > 1)
-	float depth_tl = g_tDepthTexture.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
-	float depth_tr = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_bl = g_tDepthTexture.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
-	float depth_br = g_tDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_tl = g_tDepth.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_tr = g_tDepth.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_bl = g_tDepth.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_br = g_tDepth.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 
 #if ENABLE_BLEND
-	float blendedDepth_tl = g_tBlendedDepthTexture.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_tr = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_br = g_tBlendedDepthTexture.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
-	float blendedDepth_bl = g_tBlendedDepthTexture.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_tl = g_tBlendedDepth.Load( uint2(idx.x,	 idx.y),	depthBufferSamplerIdx ).x;
+	float blendedDepth_tr = g_tBlendedDepth.Load( uint2(idx.x+1, idx.y),	depthBufferSamplerIdx ).x;
+	float blendedDepth_br = g_tBlendedDepth.Load( uint2(idx.x+1, idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_bl = g_tBlendedDepth.Load( uint2(idx.x,	 idx.y+1),	depthBufferSamplerIdx ).x;
 #endif
 
 #else
-	float depth_tl = g_tDepthTexture.Load( uint3(idx.x,		idx.y,		0)).x;
-	float depth_tr = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
-	float depth_bl = g_tDepthTexture.Load( uint3(idx.x,		idx.y+1,	0)).x;
-	float depth_br = g_tDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
+	float depth_tl = g_tDepth.Load( uint3(idx.x,	idx.y,		0) ).x;
+	float depth_tr = g_tDepth.Load( uint3(idx.x+1,	idx.y,		0) ).x;
+	float depth_bl = g_tDepth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
+	float depth_br = g_tDepth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
 
 #if ENABLE_BLEND
-	float blendedDepth_tl = g_tBlendedDepthTexture.Load( uint3(idx.x,	idx.y,		0)).x;
-	float blendedDepth_tr = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y,		0)).x;
-	float blendedDepth_br = g_tBlendedDepthTexture.Load( uint3(idx.x+1,	idx.y+1,	0)).x;
-	float blendedDepth_bl = g_tBlendedDepthTexture.Load( uint3(idx.x,	idx.y+1,	0)).x;
+	float blendedDepth_tl = g_tBlendedDepth.Load( uint3(idx.x,	 idx.y,		0) ).x;
+	float blendedDepth_tr = g_tBlendedDepth.Load( uint3(idx.x+1, idx.y,		0) ).x;
+	float blendedDepth_br = g_tBlendedDepth.Load( uint3(idx.x+1, idx.y+1,	0) ).x;
+	float blendedDepth_bl = g_tBlendedDepth.Load( uint3(idx.x,	 idx.y+1,	0) ).x;
 #endif
 
 #endif
@@ -218,7 +205,7 @@ bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, ui
 	uint2 depthBufferSize;
 	uint depthBufferSampleCount;
 
-	g_tDepthTexture.GetDimensions(depthBufferSize.x, depthBufferSize.y, depthBufferSampleCount);
+	g_tDepth.GetDimensions(depthBufferSize.x, depthBufferSize.y, depthBufferSampleCount);
 
 	float tmpMin = FLOAT_MAX;
 	float tmpMax = 0.0f;
@@ -231,7 +218,7 @@ bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, ui
 
 	for(uint sampleIdx=0; sampleIdx<depthBufferSampleCount; ++sampleIdx)
 	{
-		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax, minMax, cornerMinMax);
+		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax, cornerMinMax);
 
 		minZ = min(tmpMin, minZ);
 		maxZ = max(tmpMax, maxZ);
@@ -270,8 +257,8 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 											TILE_RES * groupIdx.y);
 		uint2 br =					uint2(	TILE_RES * (groupIdx.x + 1), 
 											TILE_RES * (groupIdx.y + 1));
-		float2 totalThreadLength =	float2(	(float)(TILE_RES*GetNumTilesX()),
-											(float)(TILE_RES*GetNumTilesY()) );
+		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
+											(float)(TILE_RES * GetNumTilesY()) );
 										//스크린 픽셀 사이즈라 생각해도 좋고,
 										//현재 돌아가는 전체 가로x세로 스레드 수?
 		float4 frustum[4];
@@ -301,29 +288,25 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	//GroupMemoryBarrierWithGroupSync
 
     uint pointLightCount = g_lightNum & 0x0000FFFF;
-    for(uint i=0; i<pointLightCount; i+=THREAD_COUNT)
+    for(uint lightIdx=idxInTile; lightIdx<pointLightCount; lightIdx+=THREAD_COUNT)
     {
-        uint lightIdx = idxInTile + i;
-        if( lightIdx < pointLightCount )
-        {
-			float4 center = g_inputPointLightTransformBuffer[lightIdx];
-			float r = center.w;
-		
-			center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
+		float4 center = g_inputPointLightTransformBuffer[lightIdx];
+		float r = center.w;
 
-			if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
+
+		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+		{
+			if( InFrustum(center, frustumPlaneNormal[0], r) &&
+				InFrustum(center, frustumPlaneNormal[1], r) &&
+				InFrustum(center, frustumPlaneNormal[2], r) &&
+				InFrustum(center, frustumPlaneNormal[3], r) )
 			{
-				if( InFrustum(center, frustumPlaneNormal[0], r) &&
-					InFrustum(center, frustumPlaneNormal[1], r) &&
-					InFrustum(center, frustumPlaneNormal[2], r) &&
-					InFrustum(center, frustumPlaneNormal[3], r) )
-				{
-					uint target = 0;
-					InterlockedAdd(s_lightIndexCounter, 1, target);
+				uint target = 0;
+				InterlockedAdd(s_lightIndexCounter, 1, target);
 
-					if(target < LIGHT_MAX_COUNT_IN_TILE)
-						s_lightIdx[target] = lightIdx;
-				}
+				if(target < LIGHT_MAX_COUNT_IN_TILE)
+					s_lightIdx[target] = lightIdx;
 			}
 		}
 	}
@@ -333,32 +316,30 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	outPointLightCountInTile = pointLightCountInTile;
 
 	uint spotLightCount = (g_lightNum & 0xFFFF0000) >> 16;
-	for(uint j=0; j<spotLightCount; j+=THREAD_COUNT)
+	for(uint lightIdx=idxInTile; lightIdx<spotLightCount; lightIdx+=THREAD_COUNT)
 	{
-		uint lightIdx = idxInTile + j;
-		if( lightIdx < spotLightCount )
+		float4 center = g_inputSpotLightTransformBuffer[lightIdx];
+		float r = center.w;
+
+		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
+
+		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
-			float4 center = g_inputSpotLightTransformBuffer[lightIdx];
-			float r = center.w;
-			
-			center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
-
-			if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+			if( InFrustum(center, frustumPlaneNormal[0], r) &&
+				InFrustum(center, frustumPlaneNormal[1], r) &&
+				InFrustum(center, frustumPlaneNormal[2], r) &&
+				InFrustum(center, frustumPlaneNormal[3], r) )
 			{
-				if( InFrustum(center, frustumPlaneNormal[0], r) &&
-					InFrustum(center, frustumPlaneNormal[1], r) &&
-					InFrustum(center, frustumPlaneNormal[2], r) &&
-					InFrustum(center, frustumPlaneNormal[3], r) )
-				{
-					uint target = 0;
-					InterlockedAdd(s_lightIndexCounter, 1, target);
+				uint target = 0;
+				InterlockedAdd(s_lightIndexCounter, 1, target);
 
-					if(target < LIGHT_MAX_COUNT_IN_TILE)
-						s_lightIdx[target] = lightIdx;
-				}
+				if(target < LIGHT_MAX_COUNT_IN_TILE)
+					s_lightIdx[target] = lightIdx;
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
 }
+
+#endif
