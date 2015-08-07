@@ -30,6 +30,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
 		GetMainColor(param.mainColor);
 		GetRoughness(param.roughness);
 		GetFresnel_0(param.fresnel0);
+		GetMetallic(param.metallic);
 		GetUVTiling(param.uvTiling);
 
 		_gbufferCB->Update(dx->GetContext(), &param);

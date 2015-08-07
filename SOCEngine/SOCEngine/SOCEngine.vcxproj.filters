@@ -357,9 +357,6 @@
     <ClInclude Include="Importer\ObjImporter.h">
       <Filter>Importer\Obj</Filter>
     </ClInclude>
-    <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
-      <Filter>Template</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\ImporterUtility.h">
       <Filter>Importer\Utility</Filter>
     </ClInclude>
@@ -606,6 +603,9 @@
     </ClInclude>
     <ClInclude Include="ResourceManager\OriginObjectManager.h">
       <Filter>Core\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
+      <Filter>Template</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -22,6 +22,7 @@ namespace Rendering
 		struct GBufferParam
 		{
 			Color			mainColor;
+			float			metallic;
 			float			roughness;
 			float			fresnel0;
 			Math::Vector2	uvTiling;
@@ -50,6 +51,7 @@ namespace Rendering
 
 	public:
 		GET_ACCESSOR_MATERIAL(MainColor,		Color);
+		GET_SET_ACCESSOR_MATERIAL(Metallic,		float);
 		GET_SET_ACCESSOR_MATERIAL(Roughness,	float);
 		GET_SET_ACCESSOR_MATERIAL(Fresnel_0,	float);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling,		Math::Vector2);
