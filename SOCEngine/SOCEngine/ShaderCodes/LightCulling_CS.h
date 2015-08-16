@@ -1,8 +1,13 @@
-ï»¿//NOT_CREATE_META
+//NOT_CREATE_META
+
+#ifndef __SOC_LIGHT_CULLING_COMMON_H__
+#define __SOC_LIGHT_CULLING_COMMON_H__
+
+#define EDGE_DETECTION_VALUE	10.0f
 
 #include "ShaderCommon.h"
 
-#if USE_COMPUTE_SHADER
+#if defined(USE_COMPUTE_SHADER)
 
 groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
@@ -51,8 +56,8 @@ float4 ProjToView( float4 p )
 float4 CreatePlaneNormal( float4 b, float4 c )
 {
     float4 n;
-    //b.xyz - a.xyz, c.xyz - a.xyzì´ë‹¤.
-    //ì—¬ê¸°ì„œ, aëŠ” ì›ì ì´ë‹¤. ì¦‰, abëŠ” ì›ì ì—ì„œ í•´ë‹¹ íƒ€ì¼ì˜ ê¼­ì§“ì ê¹Œì§€ ë–¨ì–´ì§„ ë°©í–¥ì„ ëœ»í•œë‹¤.
+    //b.xyz - a.xyz, c.xyz - a.xyzÀÌ´Ù.
+    //¿©±â¼­, a´Â ¿øÁ¡ÀÌ´Ù. Áï, ab´Â ¿øÁ¡¿¡¼­ ÇØ´ç Å¸ÀÏÀÇ ²ÀÁşÁ¡±îÁö ¶³¾îÁø ¹æÇâÀ» ¶æÇÑ´Ù.
     n.xyz = normalize(cross( b.xyz, c.xyz ));
     n.w = 0;
 
@@ -61,7 +66,7 @@ float4 CreatePlaneNormal( float4 b, float4 c )
 
 bool InFrustum( float4 p, float4 frusutmNormal, float r )
 {
-	//ì—¬ê¸°ì„œ ë’¤ì— + frusutmNormal.w í•´ì•¼í•˜ì§€ë§Œ, ì´ ê°’ì€ 0ì´ë¼ ë”í•  í•„ìš” ì—†ìŒ
+	//¿©±â¼­ µÚ¿¡ + frusutmNormal.w ÇØ¾ßÇÏÁö¸¸, ÀÌ °ªÀº 0ÀÌ¶ó ´õÇÒ ÇÊ¿ä ¾øÀ½
 	return dot( frusutmNormal.xyz, p.xyz ) < r;
 }
 
@@ -87,12 +92,12 @@ uint GetTileIndex(float2 screenPos)
 }
 
 
-#if USE_COMPUTE_SHADER
+#if defined(USE_COMPUTE_SHADER)
 
 #if (MSAA_SAMPLES_COUNT > 1)
 void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax, inout CornerMinMax ioCornerMinMax)
 #else
-void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
+void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
 #endif
 {
 	uint2 idx = halfGlobalIdx * 2;
@@ -103,7 +108,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 	float depth_bl = g_tDepth.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
 	float depth_br = g_tDepth.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 
-#if ENABLE_BLEND
+#if defined(ENABLE_BLEND)
 	float blendedDepth_tl = g_tBlendedDepth.Load( uint2(idx.x,	 idx.y),	depthBufferSamplerIdx ).x;
 	float blendedDepth_tr = g_tBlendedDepth.Load( uint2(idx.x+1, idx.y),	depthBufferSamplerIdx ).x;
 	float blendedDepth_br = g_tBlendedDepth.Load( uint2(idx.x+1, idx.y+1),	depthBufferSamplerIdx ).x;
@@ -116,7 +121,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 	float depth_bl = g_tDepth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
 	float depth_br = g_tDepth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
 
-#if ENABLE_BLEND
+#if defined(ENABLE_BLEND)
 	float blendedDepth_tl = g_tBlendedDepth.Load( uint3(idx.x,	 idx.y,		0) ).x;
 	float blendedDepth_tr = g_tBlendedDepth.Load( uint3(idx.x+1, idx.y,		0) ).x;
 	float blendedDepth_br = g_tBlendedDepth.Load( uint3(idx.x+1, idx.y+1,	0) ).x;
@@ -130,7 +135,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
 	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
 
-#if ENABLE_BLEND
+#if defined(ENABLE_BLEND)
 	float viewBlendedDepth_tl = InvertProjDepthToWorldViewDepth(blendedDepth_tl);
 	float viewBlendedDepth_tr = InvertProjDepthToWorldViewDepth(blendedDepth_tr);
 	float viewBlendedDepth_br = InvertProjDepthToWorldViewDepth(blendedDepth_br);
@@ -157,7 +162,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 	ioCornerMinMax.min_tr = min(minDepth_tr, ioCornerMinMax.min_tr); 	ioCornerMinMax.max_tr = max(maxDepth_tr, ioCornerMinMax.max_tr);
 	ioCornerMinMax.min_bl = min(minDepth_bl, ioCornerMinMax.min_bl); 	ioCornerMinMax.max_bl = max(maxDepth_bl, ioCornerMinMax.max_bl);
 	ioCornerMinMax.min_br = min(minDepth_br, ioCornerMinMax.min_br); 	ioCornerMinMax.max_br = max(maxDepth_br, ioCornerMinMax.max_br);
-#else //Non-MSAA, MSAAì²˜ë¦¬ ì‹œ, ì—¬ê¸°ì„œí•˜ëŠ” edge ê²€ì‚¬ëŠ” ë°–ì—ì„œ í•¨.
+#else //Non-MSAA, MSAAÃ³¸® ½Ã, ¿©±â¼­ÇÏ´Â edge °Ë»ç´Â ¹Û¿¡¼­ ÇÔ.
 	uint2 localIdx = halfLocalIdx * 2;
 	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
 
@@ -172,7 +177,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint idxInTile, uint depthBufferSamplerIdx,
 
 	GroupMemoryBarrierWithGroupSync();
 
-	//ë°˜ë§Œ í•˜ë©´ ë¨
+	//¹İ¸¸ ÇÏ¸é µÊ
 	if( idxInTile < 32 )
 	{
 		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 32] );
@@ -233,7 +238,7 @@ bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, ui
 	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (cornerMinMax.max_br - cornerMinMax.min_br) > EDGE_DETECTION_VALUE;
 
 #else // Non-MSAA
-	CalcMinMax(halfGlobalIdx, idxInTile, 0, minZ, maxZ);
+	CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, 0, minZ, maxZ);
 #endif
 
 	GroupMemoryBarrierWithGroupSync();
@@ -247,7 +252,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	uint idxInTile	= halfLocalIdx.x + halfLocalIdx.y * TILE_RES_HALF;
 	uint idxOfGroup	= groupIdx.x + groupIdx.y * GetNumTilesX();
 	
-	//í•œë²ˆë§Œ ì´ˆê¸°í™”
+	//ÇÑ¹ø¸¸ ÃÊ±âÈ­
 	if(idxInTile == 0)
 		s_lightIndexCounter	= 0;
 
@@ -259,8 +264,8 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 											TILE_RES * (groupIdx.y + 1));
 		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
 											(float)(TILE_RES * GetNumTilesY()) );
-										//ìŠ¤í¬ë¦° í”½ì…€ ì‚¬ì´ì¦ˆë¼ ìƒê°í•´ë„ ì¢‹ê³ ,
-										//í˜„ì¬ ëŒì•„ê°€ëŠ” ì „ì²´ ê°€ë¡œxì„¸ë¡œ ìŠ¤ë ˆë“œ ìˆ˜?
+										//½ºÅ©¸° ÇÈ¼¿ »çÀÌÁî¶ó »ı°¢ÇØµµ ÁÁ°í,
+										//ÇöÀç µ¹¾Æ°¡´Â ÀüÃ¼ °¡·Îx¼¼·Î ½º·¹µå ¼ö?
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
 											   (totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
@@ -288,9 +293,9 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	//GroupMemoryBarrierWithGroupSync
 
     uint pointLightCount = g_lightNum & 0x0000FFFF;
-    for(uint lightIdx=idxInTile; lightIdx<pointLightCount; lightIdx+=THREAD_COUNT)
+    for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=LIGHT_CULLING_THREAD_COUNT)
     {
-		float4 center = g_inputPointLightTransformBuffer[lightIdx];
+		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
 		float r = center.w;
 
 		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
@@ -306,7 +311,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 				InterlockedAdd(s_lightIndexCounter, 1, target);
 
 				if(target < LIGHT_MAX_COUNT_IN_TILE)
-					s_lightIdx[target] = lightIdx;
+					s_lightIdx[target] = pointLightIdx;
 			}
 		}
 	}
@@ -316,9 +321,9 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	outPointLightCountInTile = pointLightCountInTile;
 
 	uint spotLightCount = (g_lightNum & 0xFFFF0000) >> 16;
-	for(uint lightIdx=idxInTile; lightIdx<spotLightCount; lightIdx+=THREAD_COUNT)
+	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=LIGHT_CULLING_THREAD_COUNT)
 	{
-		float4 center = g_inputSpotLightTransformBuffer[lightIdx];
+		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];
 		float r = center.w;
 
 		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
@@ -334,12 +339,14 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 				InterlockedAdd(s_lightIndexCounter, 1, target);
 
 				if(target < LIGHT_MAX_COUNT_IN_TILE)
-					s_lightIdx[target] = lightIdx;
+					s_lightIdx[target] = spotLightIdx;
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
 }
+
+#endif
 
 #endif

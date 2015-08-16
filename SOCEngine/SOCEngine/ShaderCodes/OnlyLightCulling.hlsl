@@ -1,6 +1,6 @@
 //EMPTY_META_DATA
 
-#include "LightCulling.h"
+#include "LightCulling_CS.h"
 
 RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
 
@@ -25,6 +25,6 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 	for(uint i=idxInTile; i<pointLightCountInThisTile; i+=LIGHT_CULLING_THREAD_COUNT)
 		g_outPerLightIndicesInTile[startOffset + i] = s_lightIdx[i];
 
-	for(uint i = (idxInTile + pointLightCountInThisTile); i<s_lightIndexCounter; i+=LIGHT_CULLING_THREAD_COUNT)
-		g_outPerLightIndicesInTile[startOffset + i] = s_lightIdx[i];
+	for(uint j=(idxInTile + pointLightCountInThisTile); j<s_lightIndexCounter; j+=LIGHT_CULLING_THREAD_COUNT)
+		g_outPerLightIndicesInTile[startOffset + j] = s_lightIdx[j];
 }
