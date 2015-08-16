@@ -3,7 +3,7 @@
 #include <string>
 #include "DirectX.h"
 #include "ConstBuffer.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include <vector>
 
 #define BASIC_SHADER_NAME "Basic"
@@ -41,7 +41,7 @@ namespace Rendering
 			typedef std::pair<unsigned int, const Rendering::Buffer::BaseBuffer*> BufferType;
 
 			//first value is shader slot index
-			typedef std::pair<unsigned int, const Texture::Texture*> TextureType;
+			typedef std::pair<unsigned int, const Texture::Texture2D*> TextureType;
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);

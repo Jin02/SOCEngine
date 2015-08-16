@@ -16,7 +16,7 @@ Material::~Material(void)
 
 }
 
-const Rendering::Texture::Texture* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+const Rendering::Texture::Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
 {	
 	for(unsigned int i=0; i<_textures.size(); ++i)
 	{		
@@ -32,7 +32,7 @@ const Rendering::Texture::Texture* Material::FindTexture(unsigned int& outArrayI
 	return nullptr;
 }
 
-bool Material::UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture)
+bool Material::UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture)
 {
 	unsigned int arrayIdx = 0;
 	auto hasTexture = FindTexture(arrayIdx, shaderSlotIndex);
@@ -49,7 +49,7 @@ bool Material::UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const
 	return hasTexture != nullptr;
 }
 
-bool Material::UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture)
+bool Material::UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture)
 {
 	if(arrayIndex >= _textures.size())
 		return false;

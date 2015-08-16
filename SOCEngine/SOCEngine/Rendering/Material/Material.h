@@ -2,7 +2,7 @@
 
 #include "Shaders.h"
 #include "Common.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Vector2.h"
 
 #include "Container.h"
@@ -58,10 +58,10 @@ namespace Rendering
 		bool UpdateConstBuffer_ArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb);
 
 	public:
-		const Rendering::Texture::Texture* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+		const Rendering::Texture::Texture2D* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture* texture);
-		bool UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture* texture);
+		bool UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture);
+		bool UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture);
 
 	public:
 		template<typename Type>

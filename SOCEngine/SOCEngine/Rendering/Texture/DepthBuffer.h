@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Texture.h"
+#include "Texture2D.h"
 #include "DirectX.h"
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class DepthBuffer : public Texture
+		class DepthBuffer : public Texture2D
 		{
 		private:
 			ID3D11DepthStencilView		*_depthStencilView;

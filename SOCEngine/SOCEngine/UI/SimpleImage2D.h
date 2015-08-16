@@ -28,7 +28,7 @@ namespace UI
 
 	public:
 		void Initialize(const Math::Size<uint>& size, const std::string& sharedVerticesKey, Rendering::Material* material = nullptr);
-		void UpdateMainImage(Rendering::Texture::Texture* tex);
+		void UpdateMainImage(Rendering::Texture::Texture2D* tex);
 
 	public:
 		virtual void Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat);

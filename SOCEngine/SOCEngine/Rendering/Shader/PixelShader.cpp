@@ -56,7 +56,7 @@ namespace Rendering
 		{
 			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 			{
-				const Texture::Texture* tex = iter->second;
+				const Texture::Texture2D* tex = iter->second;
 				if(tex)
 				{
 					ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
