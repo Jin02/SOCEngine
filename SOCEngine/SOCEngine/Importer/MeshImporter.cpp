@@ -5,18 +5,18 @@ using namespace Importer;
 using namespace Core;
 using namespace Utility;
 
-MeshImporter::MeshImporter() : _objImporter(nullptr)
+MeshImporter::MeshImporter()// : _objImporter(nullptr)
 {
 }
 
 MeshImporter::~MeshImporter()
 {
-	SAFE_DELETE(_objImporter);
+	//SAFE_DELETE(_objImporter);
 }
 
 Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType, bool isDynamicMesh)
 {
-	std::string fileName, fileExtension, folderDir;
+	/*std::string fileName, fileExtension, folderDir;
 	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
 		return nullptr;
 
@@ -24,5 +24,6 @@ Object* MeshImporter::Load(const std::string& fileDir, const std::string& materi
 	if(fileExtension == "obj")
 		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, materialType, isDynamicMesh);
 
-	return meshObject;
+	return meshObject;*/
+	return nullptr;
 }
