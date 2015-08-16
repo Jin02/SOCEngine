@@ -1,6 +1,9 @@
-﻿//NOT_CREATE_META_DATA
+//NOT_CREATE_META_DATA
 
-#ifdef ENABLE_MSAA
+#ifndef __SOC_PHYSICALLY_BASED_COMMON_H__
+#define __SOC_PHYSICALLY_BASED_COMMON_H__
+
+#if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
 #else
 #define ALPHA_TEST_BIAS		0.5f
@@ -30,10 +33,10 @@ cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 	float2 	material_uvTiling;
 };
 
-Texture2D diffuseTexture			: register( t0 );
-Texture2D normalTexture				: register( t1 );
-Texture2D specularTexture			: register( t2 );
-Texture2D opacityTexture			: register( t3 ); //inverse, 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
+Texture2D diffuseTexture			: register( t8 );
+Texture2D normalTexture				: register( t9 );
+Texture2D specularTexture			: register( t10 );
+Texture2D opacityTexture			: register( t11 ); //inverse, 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
 float3 ComputeFaceNormal(float3 position)
 {
@@ -48,3 +51,4 @@ float3 DecodeNormalTexture(in Texture2D tex, in float2 uv, in SamplerState sampl
 	return norm;
 }
 
+#endif

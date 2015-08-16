@@ -36,7 +36,7 @@ GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
 {
 	float3 texNormal = DecodeNormalTexture(normalTexture, uv, GBufferDefaultSampler);
-	float3x3  = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
+	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
 
 	return normalize( mul(texNormal, TBN) );
 }

@@ -1,8 +1,11 @@
-﻿//EMPTY_META_DATA
+//EMPTY_META_DATA
+
+#ifndef __SOC_PHYSICALLY_BASED_TRANSPARENCY_COMMON_H__
+#define __SOC_PHYSICALLY_BASED_TRANSPARENCY_COMMON_H__
 
 #include "PhysicallyBased_Common.h"
-#include "../Core/BRDF.h"
-#include "../Core/LightCulling.h"
+#include "BRDF.h"
+#include "LightCulling_CS.h"
 
 #define TRANSPARENCY_BACK_FACE_WEIGHT 0.5f
 
@@ -12,7 +15,7 @@ SamplerState transparencyDefaultSampler	: register( s0 );
 void RenderDirectionalLightTwoSided(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
-					in LightingParams lightingParam)
+					in LightingParams lightingParams)
 {
 	float4	lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
@@ -22,22 +25,22 @@ void RenderDirectionalLightTwoSided(
 		commonParams.lightColor		= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].xyz;
 		commonParams.lightIntensity	= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].w;
 
-		float4	lightParam			= g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
+		float2	lightParam			= g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
 		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, commonParams, lightingParams);
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 
-		lightingParam.normal = -lightingParam.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, commonParams, lightingParams);
+		lightingParams.normal = -lightingParams.normal;
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);
 	}	
 }
 
 void RenderPointLightTwoSided(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
-					in LightingParams lightingParam, float3 vertexWorldPosition)
+					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
-	float3 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
+	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
 
 	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
@@ -53,7 +56,7 @@ void RenderPointLightTwoSided(
 		commonParams.lightIntensity	= g_inputPointLightColorBuffer[lightingParams.lightIndex].w;
 		commonParams.lightDir		= lightDir;
 
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, commonParams, lightingParams);
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 
 		float x = distanceOfLightAndVertex / lightRadius;
 		float k = 100.0f - commonParams.lightIntensity; //testing
@@ -62,8 +65,8 @@ void RenderPointLightTwoSided(
 		resultFrontFaceDiffuseColor		*= falloff;
 		resultFrontFaceSpecularColor	*= falloff;
 
-		lightingParam.normal = -lightingParam.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, commonParams, lightingParams);		
+		lightingParams.normal = -lightingParams.normal;
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
 
 		resultBackFaceDiffuseColor		*= falloff;
 		resultBackFaceSpecularColor		*= falloff;
@@ -73,7 +76,7 @@ void RenderPointLightTwoSided(
 void RenderSpotLightTwoSided(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
-					in LightingParams lightingParam, float3 vertexWorldPosition)
+					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 	float4 spotLightParam	= g_inputSpotLightParamBuffer[lightingParams.lightIndex];
 	float3 spotLightDir;
@@ -85,7 +88,7 @@ void RenderSpotLightTwoSided(
 		spotLightDir.z		= spotLightDir.z * (1 - (2 * (uint)isDirZMinus));
 	}
 
-	float3	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
+	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
 	float	lightRadius					= lightCenterWithRadius.w;
 
@@ -106,7 +109,7 @@ void RenderSpotLightTwoSided(
 		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightingParams.lightIndex].w;
 		commonParams.lightDir		= lightDir;
 
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, commonParams, lightingParams);
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 
 		float falloffCoef = abs(spotLightParam.w);
 		float x = distanceOfLightAndVertex / lightRadius;
@@ -115,10 +118,12 @@ void RenderSpotLightTwoSided(
 		resultFrontFaceDiffuseColor		*= falloff;
 		resultFrontFaceSpecularColor	*= falloff;
 
-		lightingParam.normal = -lightingParam.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, commonParams, lightingParams);		
+		lightingParams.normal = -lightingParams.normal;
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
 
 		resultBackFaceDiffuseColor		*= falloff;
 		resultBackFaceSpecularColor		*= falloff;
 	}
 }
+
+#endif

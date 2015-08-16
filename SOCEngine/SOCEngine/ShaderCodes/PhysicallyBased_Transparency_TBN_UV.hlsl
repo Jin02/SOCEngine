@@ -5,6 +5,8 @@ struct VS_INPUT
 	float4 position					: POSITION;
 	float2 uv						: TEXCOORD0;
 	float3 normal					: NORMAL;
+	float3 tangent					: TANGENT;
+	float3 binormal					: BINORMAL;
 };
 
 struct PS_SCENE_INPUT
@@ -13,7 +15,10 @@ struct PS_SCENE_INPUT
 	float3 positionWorld			: POSITION_WORLD;
 
 	float2 uv						: TEXCOORD0;
+
 	float3 normal 					: NORMAL;
+	float3 tangent 					: TANGENT;
+	float3 binormal 				: BINORMAL;
 };
 
 struct PS_POSITION_ONLY_INPUT //used in writing depth buffer
@@ -30,8 +35,18 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 	ps.position			= mul(input.position, transform_worldViewProj);
 	ps.uv				= input.uv;
 	ps.normal			= mul(float4(input.normal, 0), transform_world).xyz;
+	ps.tangent			= mul(float4(input.tangent, 0), transform_world).xyz;
+	ps.binormal			= mul(float4(input.binormal, 0), transform_world).xyz;
 
 	return ps;
+}
+
+float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
+{
+	float3 texNormal = DecodeNormalTexture(normalTexture, uv, transparencyDefaultSampler);
+	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
+
+	return normalize( mul(texNormal, TBN) );
 }
 
 float4 PS(PS_SCENE_INPUT input) : SV_Target
@@ -39,7 +54,7 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 	float4	diffuseTex		= diffuseTexture.Sample(transparencyDefaultSampler, input.uv);
 	float3	diffuseColor	= diffuseTex.rgb;
 
-	float3 normal	= normalize(input.normal + DecodeNormalTexture(normalTexture, input.uv, transparencyDefaultSampler));
+	float3 normal	= DecodeNormal(input.normal, input.tangent, input.binormal, input.uv);
 	float3 viewDir	= normalize( g_cameraWorldPosition - input.positionWorld );
 
 	LightingParams lightParams;
@@ -49,13 +64,14 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 	lightParams.fresnel0		= material_fresnel0;
 	lightParams.roughness		= material_roughness;
 	lightParams.diffuseColor	= diffuseColor;
+	lightParams.specularColor	= specularTexture.Sample(transparencyDefaultSampler, input.uv).rgb;
 
 	uint tileIdx				= GetTileIndex(input.position.xy);
 	uint startIdx				= tileIdx * g_maxNumOfperLightInTile + 1;
 
 	uint packedLightCountValue	= g_perLightIndicesInTile[startIdx - 1];
 	uint pointLightCount		= packedLightCountValue & 0x0000ffff;
-	uint spotLightCount			= (packedLightCountValue & 0xffff0000) >> 16;
+	uint spotLightCount			= packedLightCountValue >> 16;
 
 	float3 accumulativeFrontFaceDiffuse		= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeFrontFaceSpecular	= float3(0.0f, 0.0f, 0.0f);
@@ -63,9 +79,9 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 	float3 accumulativeBackFaceSpecular		= float3(0.0f, 0.0f, 0.0f);
 
 	uint endIdx = startIdx + pointLightCount;
-	for(uint i=startIdx; i<endIdx; ++i)
+	for(uint pointLightIdx=startIdx; pointLightIdx<endIdx; ++pointLightIdx)
 	{
-		lightParams.lightIndex = g_perLightIndicesInTile[i];
+		lightParams.lightIndex = g_perLightIndicesInTile[pointLightIdx];
 
 		float3 frontFaceDiffuseColor, frontFaceSpecularColor;
 		float3 backFaceDiffuseColor, backFaceSpecularColor;
@@ -83,9 +99,9 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 
 	startIdx += pointLightCount;
 	endIdx += spotLightCount;
-	for(uint i=startIdx; i<endIdx; ++i)
+	for(uint spotLightIdx=startIdx; spotLightIdx<endIdx; ++spotLightIdx)
 	{
-		lightParams.lightIndex = g_perLightIndicesInTile[i];
+		lightParams.lightIndex = g_perLightIndicesInTile[spotLightIdx];
 
 		float3 frontFaceDiffuseColor, frontFaceSpecularColor;
 		float3 backFaceDiffuseColor, backFaceSpecularColor;
@@ -101,9 +117,9 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 	}
 
-	for(uint i=0; i<g_directionalLightCount; ++i)
+	for(uint directionalLightIdx=0; directionalLightIdx<g_directionalLightCount; ++directionalLightIdx)
 	{
-		lightParams.lightIndex = i;
+		lightParams.lightIndex = directionalLightIdx;
 
 		float3 frontFaceDiffuseColor, frontFaceSpecularColor;
 		float3 backFaceDiffuseColor, backFaceSpecularColor;
@@ -120,7 +136,7 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 	}
 
 	float3	result = accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular + ( TRANSPARENCY_BACK_FACE_WEIGHT * (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) );
-	float	alpha = diffuseTex.a * opacityTexture.Sample(transparencyDefaultSampler, input.uv);
+	float	alpha = diffuseTex.a * opacityTexture.Sample(transparencyDefaultSampler, input.uv).x;
 
 	return float4(result, alpha);
 }
