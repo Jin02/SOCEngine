@@ -17,10 +17,12 @@ namespace Rendering
 		SAFE_RELEASE(_shader);
 	}
 
-	bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count)
+	bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 	{
 		if(_blob == nullptr)
 			return false;
+
+		uint count = vertexDeclations.size();
 
 		const DirectX* dx = Director::GetInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
@@ -30,7 +32,7 @@ namespace Rendering
 		if( FAILED( hr ) )
 			return false;
 
-		hr = device->CreateInputLayout(vertexDeclations, count,
+		hr = device->CreateInputLayout(vertexDeclations.data(), count,
 			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
 		_blob->Release();
