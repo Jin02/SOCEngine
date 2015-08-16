@@ -7,7 +7,7 @@ namespace Importer
 	class MeshImporter
 	{
 	private:
-		Obj::ObjImporter*	_objImporter;
+		//Obj::ObjImporter*	_objImporter;
 
 	public:
 		MeshImporter();

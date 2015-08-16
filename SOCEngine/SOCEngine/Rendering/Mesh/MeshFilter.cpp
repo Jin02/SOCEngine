@@ -6,7 +6,7 @@ using namespace Rendering::Mesh;
 using namespace Resource;
 
 MeshFilter::MeshFilter() 
-	:	_vertexBuffer(nullptr), _indexBuffer(nullptr), _bufferFlag(0),
+	:	_vertexBuffer(nullptr), _indexBuffer(nullptr),
 		_alloc(false), _vertexCount(0), _indexCount(0)
 {
 }
@@ -57,7 +57,6 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		_indexBuffer = indexBuffer;
 	}
 
-	_bufferFlag = args.bufferFlag;
 	return true;
 }
 
