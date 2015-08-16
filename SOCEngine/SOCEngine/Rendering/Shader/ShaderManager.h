@@ -5,6 +5,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "Utility.h"
+#include "ShaderMacro.h"
 
 #include <map>
 
@@ -23,10 +24,13 @@ namespace Rendering
 			~ShaderManager(void);
 
 		public:
-			static bool CompileFromMemory(ID3DBlob** outBlob, const std::string &shaderCode, const std::string& shaderModel, const std::string& funcName);
-			static bool CompileFromFile(ID3DBlob** outBlob, const std::string &fileName, const std::string& shaderModel, const std::string& funcName);
-			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::string* includeCode = nullptr);
-			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::string* includeCode = nullptr);
+			static bool Compile(ID3DBlob** outBlob, const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel, const std::string& funcName, const std::vector<Shader::ShaderMacro>* macros);
+			static bool MakeShaderFileFullPath(std::string& outFullPath, const std::string& folderPath, const std::string& fileName);
+
+			ID3DBlob* CreateBlob(const std::string& fileFullPath, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<Shader::ShaderMacro>* macros);
+			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<Shader::ShaderMacro>* macros);
+
+			ID3DBlob* CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::vector<Shader::ShaderMacro>* macros);
 
 		private:
 			bool CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc);
@@ -36,8 +40,8 @@ namespace Rendering
 			bool LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool recycleCode);
 			bool LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode);
 
-			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);			
-			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName = nullptr, const std::vector<std::string>* macros = nullptr);
+			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<Shader::ShaderMacro>* macros);
+			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<Shader::ShaderMacro>* macros);
 
 			void Add(const std::string& fullCommand, Shader::BaseShader* shader);
 			bool LoadShader(const std::string filePath);
@@ -48,7 +52,7 @@ namespace Rendering
 			Shader::VertexShader*	FindVertexShader(const std::string& fileName, const std::string& mainFunc);
 
 			Shader::PixelShader*	FindPixelShader(const std::string& fileName, const std::string& mainFunc);
-			const std::string&		FindShaderCode(const std::string& fileName);
+			const char*				FindShaderCode(const std::string& fileName);
 
 		public:
 			void RemoveAllShaderCode();
