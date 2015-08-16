@@ -15,6 +15,8 @@
 #include "VectorMap.h"
 #include <hash_map>
 
+#include "ShaderMacro.h"
+
 namespace Rendering
 {
 	namespace Manager
@@ -38,25 +40,37 @@ namespace Rendering
 				MeshList(){}
 				~MeshList(){}
 			};
+			enum class DefaultVertexInputType : uint
+			{
+				UV, //Only UV
+				N_UV, //Normal, UV
+				TBN_UV //Tangent, Binormal, Normal, UV
+			};
 
 		private:
 			MeshList	_transparentMeshes;
 			MeshList	_opaqueMeshes;
 			MeshList	_alphaTestMeshes;
 
-			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders;
-			std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
+			std::hash_map<DefaultVertexInputType, const Shader::ShaderGroup>	_gbufferShaders;
+			std::hash_map<DefaultVertexInputType, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
+
+			std::hash_map<DefaultVertexInputType, const Shader::ShaderGroup>	_transparentShaders;
 
 		public:
 			RenderManager();
 			~RenderManager();
 
 		public:
-			bool Init();
+			bool TestInit();
+			Shader::ShaderGroup LoadDefaultSahder(MeshType meshType, DefaultVertexInputType defaultVertexInputType,
+				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
 			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
 			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
-			bool FindGBufferShader(Shader::ShaderGroup& out, Mesh::MeshFilter::BufferElementFlag bufferFlag, bool isAlphaTest);
+
+			bool FindGBufferShader(Shader::ShaderGroup& out, DefaultVertexInputType type, bool isAlphaTest);
+			bool FindTransparencyShader(Shader::ShaderGroup& out, DefaultVertexInputType type);
 
 		public:
 			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
