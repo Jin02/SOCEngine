@@ -17,7 +17,7 @@ namespace GPGPU
 			virtual ~CSInputBuffer();
 
 		public:
-			bool Initialize(unsigned int stride, unsigned int num, const void* sysMem = nullptr);
+			void Initialize(uint stride, uint num, DXGI_FORMAT format, const void* sysMem);
 
 		public:
 			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);
