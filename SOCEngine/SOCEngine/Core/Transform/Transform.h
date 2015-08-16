@@ -23,7 +23,8 @@ namespace Core
 		Math::Vector3		_scale;
 		Math::Vector3		_eulerAngle;
 
-		float _radius;
+		float				_radius;
+		uint				_updateCounter;
 
 	public:
 		Transform(Object* owner);
@@ -45,7 +46,7 @@ namespace Core
 		void TranslateWithForwardVec(float units);
 		void TranslateWithRightVec(float units);
 
-		void Billboard(Math::Matrix& outMatrix, const Math::Matrix& camWorldMat);
+		void Billboard(const Transform& camTransform);
 
 	public:
 		void UpdatePosition(const Math::Vector3& position);		
@@ -56,20 +57,23 @@ namespace Core
 		void UpdateTransform(const Transform& transform);
 
 	public:
-		GET_SET_ACCESSOR(Radius, float, _radius);
-		GET_ACCESSOR(LocalPosition, const Math::Vector3&, _position);
-		GET_ACCESSOR(LocalEulerAngle, const Math::Vector3&, _eulerAngle);
-		GET_ACCESSOR(LocalScale, const Math::Vector3&, _scale);
-		GET_ACCESSOR(LocalRotation, const Math::Quaternion&, _rotation);
+		GET_SET_ACCESSOR(Radius,		float,						_radius);
+		GET_ACCESSOR(LocalPosition,		const Math::Vector3&,		_position);
+		GET_ACCESSOR(LocalEulerAngle,	const Math::Vector3&,		_eulerAngle);
+		GET_ACCESSOR(LocalScale,		const Math::Vector3&,		_scale);
+		GET_ACCESSOR(LocalRotation,		const Math::Quaternion&,	_rotation);
 
-		GET_ACCESSOR(Forward, const Math::Vector3&, _forward);
-		GET_ACCESSOR(Up, const Math::Vector3&, _up);
-		GET_ACCESSOR(Right, const Math::Vector3&, _right);
+		GET_ACCESSOR(Forward,			const Math::Vector3&,		_forward);
+		GET_ACCESSOR(Up,				const Math::Vector3&,		_up);
+		GET_ACCESSOR(Right,				const Math::Vector3&,		_right);
 
 		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldPosition(Math::Vector3& outPosition) const;
 		void FetchWorldEulerAngle(Math::Vector3& outEuler) const;
 		void FetchWorldScale(Math::Vector3& outScale) const;
 		void FetchWorldTransform(Transform& out) const;
+
+		GET_ACCESSOR(UpdateCounter, uint, _updateCounter);
+		inline bool IsUpdated(uint counter) const { return _updateCounter != counter; }
 	};
 }
