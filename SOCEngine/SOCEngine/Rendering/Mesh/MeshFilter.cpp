@@ -24,6 +24,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 {
 	_vertexCount	= args.vertex.count;
 	_indexCount		= args.index.count;
+	_bufferFlag		= args.bufferFlag;
 
 	Manager::BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
 

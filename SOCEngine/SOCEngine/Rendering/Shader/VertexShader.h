@@ -13,6 +13,7 @@ namespace Rendering
 			struct SemanticInfo
 			{
 				std::string name;
+				unsigned int semanticIndex;
 				unsigned int size;
 			};
 
