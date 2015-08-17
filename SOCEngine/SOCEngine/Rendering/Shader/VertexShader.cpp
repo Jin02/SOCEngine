@@ -43,16 +43,15 @@ namespace Rendering
 		for(unsigned int i=0; i<count; ++i)
 		{
 			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
-			std::string semanticName = desc.SemanticName;
-
-			if(semanticName == "TEXCOORD")
-				semanticName += ('0' + desc.SemanticIndex);
 
 			SemanticInfo info;
-			info.name = semanticName;
+			{
+				info.name = desc.SemanticName;
+				info.semanticIndex = desc.SemanticIndex;
 
-			if( (i+1) != count )
-				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+				if( (i+1) != count )
+					info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+			}
 
 			_semanticInfo.push_back(info);
 		}

@@ -26,6 +26,7 @@ namespace Rendering
 			bool			_alloc;
 			unsigned int	_vertexCount;
 			unsigned int	_indexCount;
+			uint			_bufferFlag;
 
 		public:
 			MeshFilter();
@@ -47,9 +48,10 @@ namespace Rendering
 
 				const std::string				fileName;
 				const std::string				key;
+				uint							bufferFlag;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
-					:fileName(_fileName), key(_key) {}
+					:fileName(_fileName), key(_key), bufferFlag(0) {}
 				~CreateFuncArguments() {}
 			};
 			bool CreateBuffer(const CreateFuncArguments& args);
@@ -60,6 +62,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(VertexCount, unsigned int, _vertexCount);
 			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
+			GET_ACCESSOR(BufferFlag, uint, _bufferFlag);
 		};
 	}
 }

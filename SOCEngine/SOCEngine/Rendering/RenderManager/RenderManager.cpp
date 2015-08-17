@@ -17,7 +17,7 @@ RenderManager::~RenderManager()
 {
 }
 
-Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, DefaultVertexInputType defaultVertexInputType,
+Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
 													 const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName = "";
@@ -25,13 +25,16 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, DefaultV
 	{
 		std::string defaultVertexInputTypeStr = "";
 
-		if(defaultVertexInputType == DefaultVertexInputType::UV)			defaultVertexInputTypeStr = "UV";
-		else if(defaultVertexInputType == DefaultVertexInputType::N_UV)		defaultVertexInputTypeStr = "N_UV";
-		else if(defaultVertexInputType == DefaultVertexInputType::TBN_UV)	defaultVertexInputTypeStr = "TBN_UV";
-		else
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::N)
 		{
-			ASSERT_MSG("Error, unsupported vertex input type");
+			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TB)
+				defaultVertexInputTypeStr += "TB";
+
+			defaultVertexInputTypeStr += "N_";
 		}
+
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV)
+			defaultVertexInputTypeStr += "UV";
 
 		std::string frontFileName = "";
 
@@ -51,7 +54,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, DefaultV
 		fileName = (*customShaderFileName);
 	}
 
-	std::hash_map<DefaultVertexInputType, const Shader::ShaderGroup>* repo = nullptr;
+	std::hash_map<uint, const Shader::ShaderGroup>* repo = nullptr;
 	std::vector<ShaderMacro>	targetShaderMacros;
 
 	if(macros)
@@ -79,7 +82,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, DefaultV
 		ASSERT_MSG("Error, not supported mesh type");
 	}
 
-	auto iter = repo->find(defaultVertexInputType);
+	auto iter = repo->find(defaultVertexInputTypeFlag);
 	if(iter != repo->end())
 		return iter->second;
 
@@ -99,7 +102,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, DefaultV
 	ShaderGroup shader;
 	{
 		shader = LoadShader(fileName, &targetShaderMacros, resourceManager->GetShaderManager());
-		repo->insert(std::make_pair(defaultVertexInputType, shader));
+		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 	}
 
 	return shader;
@@ -115,10 +118,9 @@ bool RenderManager::TestInit()
 
 	for(uint i=0; i< ((uint)MeshType::AlphaTest + 1); ++i)
 	{
-		for(uint j=0; j<((uint)DefaultVertexInputType::TBN_UV + 1); ++j)
-		{
-			LoadDefaultSahder((MeshType)i, (DefaultVertexInputType)j, nullptr, &macros);
-		}
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
 	}
 
 	return true;
@@ -164,9 +166,9 @@ const Mesh::Mesh* RenderManager::FindMeshFromRenderList(const Mesh::Mesh* mesh, 
 	return nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, DefaultVertexInputType type, bool isAlphaTest)
+bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest)
 {
-	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<DefaultVertexInputType, const Shader::ShaderGroup>& hashMap, DefaultVertexInputType key)
+	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key)
 	{
 		auto iter = hashMap.find(key);
 		if(iter == hashMap.end())
@@ -176,12 +178,12 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, DefaultVertexInp
 		return true;
 	};
 
-	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, type);
+	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, DefaultVertexInputType type)
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag)
 {
-	auto iter = _transparentShaders.find(type);
+	auto iter = _transparentShaders.find(bufferFlag);
 	if(iter == _transparentShaders.end())
 		return false;
 
