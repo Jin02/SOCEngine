@@ -2,8 +2,8 @@
 
 #include "BaseShader.h"
 #include "CSInputBuffer.h"
-#include "CSOutputBuffer_ReadCPU.h"
-#include "Texture.h"
+#include "Texture2D.h"
+#include "CSRWBuffer.h"
 
 namespace GPGPU
 {
@@ -22,16 +22,16 @@ namespace GPGPU
 			struct InputTexture
 			{
 				unsigned int idx;
-				const Rendering::Texture::Texture* texture;
+				const Rendering::Texture::Texture2D* texture;
 				InputTexture() : idx(0), texture(nullptr){}
 				~InputTexture(){}
 			};
-			struct OutputBuffer
+			struct Output
 			{
 				unsigned int idx;
-				CSOutputBuffer* buffer;
-				OutputBuffer() : idx(0), buffer(nullptr){}
-				~OutputBuffer(){}
+				CSOutput* output;
+				Output() : idx(0), output(nullptr){}
+				~Output(){}
 			};
 			struct ThreadGroup
 			{
@@ -45,7 +45,7 @@ namespace GPGPU
 			std::vector<InputBuffer>	_inputBuffers;
 			std::vector<InputTexture>	_inputTextures;
 
-			std::vector<OutputBuffer>	_outputBuffers;
+			std::vector<Output>			_outputs;
 
 			ID3D11ComputeShader*		_shader;
 			ThreadGroup					_threadGroup;
@@ -59,11 +59,16 @@ namespace GPGPU
 			void Dispatch(ID3D11DeviceContext* context);
 
 		public:
+			inline void ClearOutputSlot()		{ _outputs.clear();			}
+			inline void ClearInputBufferSlot()	{ _inputBuffers.clear();	}
+			inline void ClearInputTextureSlot()	{ _inputTextures.clear();	}
+
+		public:
 			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
 			GET_SET_ACCESSOR(InputBuffers, const std::vector<InputBuffer>&, _inputBuffers);
 			GET_SET_ACCESSOR(InputTextures, const std::vector<InputTexture>&, _inputTextures);
 
-			GET_SET_ACCESSOR(OutputBuffers, const std::vector<OutputBuffer>&, _outputBuffers);
+			GET_SET_ACCESSOR(Outputs, const std::vector<Output>&, _outputs);
 		};
 	}
 }

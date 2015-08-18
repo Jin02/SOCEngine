@@ -80,7 +80,7 @@ namespace Structure
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Object>&, _vector);
-		inline const std::map<Key, Object*>& GetMap() const { return _map; }
+		inline std::map<Key, Object*>& GetMap() const { return _map; }
 
 		GET_ACCESSOR(Size, unsigned int, _vector.size());
 	};

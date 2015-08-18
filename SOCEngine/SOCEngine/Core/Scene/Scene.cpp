@@ -26,7 +26,7 @@ void Scene::Initialize()
 	_cameraMgr		= new Manager::CameraManager;
 
 	_renderMgr		= new Manager::RenderManager;
-	_renderMgr->Init();
+	_renderMgr->TestInit();
 
 	_uiManager		= new UI::Manager::UIManager;
 

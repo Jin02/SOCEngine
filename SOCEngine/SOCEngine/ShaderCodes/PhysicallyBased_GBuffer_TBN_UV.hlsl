@@ -1,3 +1,5 @@
+#include "PhysicallyBased_GBuffer_Common.h"
+
 struct VS_INPUT
 {
 	float4 position 		: POSITION;
@@ -17,13 +19,6 @@ struct GEOMETRY_BUFFER_PS_INPUT
 	float3 binormal 		: BINORMAL;
 };
 
-Texture2D txDiffuse 		: register( t0 );
-Texture2D txNormal	 		: register( t1 );
-Texture2D txSpecular 		: register( t2 );
-Texture2D txOpacity 		: register( t3 );
-
-SamplerState samplerState 		: register( s0 );
-
 GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 {
 	GEOMETRY_BUFFER_PS_INPUT ps;
@@ -40,31 +35,31 @@ GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
 
 float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
 {
-	float3 tangentNormal = txNormal.Sample(samplerState, uv).xyz;
-	tangentNormal = normalize( tangentNormal * 2 - 1 );
+	float3 texNormal = DecodeNormalTexture(normalTexture, uv, GBufferDefaultSampler);
+	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
 
-	float3x3 TBN = float3x3(normalize(tangent), normalize(binormal), normalize(normal));
-	return mul(TBN, tangentNormal);
+	return normalize( mul(texNormal, TBN) );
 }
 
-void PS( GEOMETRY_BUFFER_PS_INPUT input, out GBuffer outGBuffer )
+GBuffer PS( GEOMETRY_BUFFER_PS_INPUT input )
 {
-	float4 diffuseTex = txDiffuse.Sample(samplerState, input.uv);
+	GBuffer outGBuffer;
+	float4 diffuseTex = diffuseTexture.Sample(GBufferDefaultSampler, input.uv);
+
 #ifdef ENABLE_ALPHA_TEST
-	if(diffuseTex.a < ALPHA_TEST_BIAS)
+	float alpha = diffuseTex.a * opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
+	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
 
-#ifdef ENABLE_ALPHA_TEST
-	outGBuffer.albedo 	= diffuseTex * material_mainColor;
-	outGBuffer.albedo.a = 1;
-#else
-	outGBuffer.albedo 	= diffuseTex * material_mainColor;
-#endif
+	outGBuffer.albedo_metallic.rgb	= diffuseTex.rgb * material_mainColor;
+	outGBuffer.albedo_metallic.a	= material_metallic;
 
-	outGBuffer.specular_fresnel0	= txSpecular.Sample(samplerState, input.uv);
+	outGBuffer.specular_fresnel0	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 	outGBuffer.specular_fresnel0.a 	= material_fresnel0;
 
-	outGBuffer.normal_roughness.rgb = DecodeNormal(input.normal, input.tangent, input.binormal,  input.uv);
+	outGBuffer.normal_roughness.rgb = DecodeNormal(input.normal, input.tangent, input.binormal, input.uv) * 0.5f + 0.5f;
 	outGBuffer.normal_roughness.a 	= material_roughness;
+
+	return outGBuffer;
 }

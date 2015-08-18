@@ -21,7 +21,7 @@ namespace Rendering
 				float r,g,b,a;
 			};
 
-			float color[3];
+			float color[4];
 		};
 
 	public:

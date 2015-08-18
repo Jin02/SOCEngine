@@ -4,7 +4,7 @@
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-DepthBuffer::DepthBuffer() : _depthStencilView(nullptr), Texture()
+DepthBuffer::DepthBuffer() : _depthStencilView(nullptr), Texture2D()
 {
 }
 
@@ -18,7 +18,7 @@ bool DepthBuffer::Initialize(const Math::Size<unsigned int>& size, bool useShade
 	unsigned int bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
 							(useShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);
 
-	Texture::Initialize(size, DXGI_FORMAT_D32_FLOAT, bindFlag);
+	Texture2D::Initialize(size, DXGI_FORMAT_D32_FLOAT, bindFlag);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));

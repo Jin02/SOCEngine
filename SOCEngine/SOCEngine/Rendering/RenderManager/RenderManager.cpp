@@ -17,57 +17,110 @@ RenderManager::~RenderManager()
 {
 }
 
-bool RenderManager::Init()
+Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
+													 const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
-	const ResourceManager* resourceManager = ResourceManager::GetInstance();
-	ShaderManager* shaderMgr = resourceManager->GetShaderManager();
-
-	Factory::EngineFactory shaderLoader(shaderMgr);
-
-	//Physically Based Shading
+	std::string fileName = "";
+	if(customShaderFileName ? customShaderFileName->empty() : true)
 	{
-		auto LoadGBuffer = [&](const std::vector<std::string>& macros, std::hash_map<Mesh::MeshFilter::BufferElementFlag, const ShaderGroup>& out)
+		std::string defaultVertexInputTypeStr = "";
+
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::N)
 		{
-			const std::string shaderFileNameTypes[] = {"UV", "N_UV", "TBN_UV"};
-			const Mesh::MeshFilter::BufferElementFlag bufferElems[] = {
-				(uint)Mesh::MeshFilter::BufferElement::UV,
+			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TB)
+				defaultVertexInputTypeStr += "TB";
 
-				(uint)Mesh::MeshFilter::BufferElement::UV | 
-				(uint)Mesh::MeshFilter::BufferElement::Normal,
+			defaultVertexInputTypeStr += "N_";
+		}
 
-				(uint)Mesh::MeshFilter::BufferElement::Normal | 
-				(uint)Mesh::MeshFilter::BufferElement::Tangent | 
-				(uint)Mesh::MeshFilter::BufferElement::Binormal | 
-				(uint)Mesh::MeshFilter::BufferElement::UV
-			};
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV)
+			defaultVertexInputTypeStr += "UV";
 
-			const std::string frontFileName = "PhysicallyBased_GBuffer_";
-			const std::string includeFileName = "PhysicallyBased_GBuffer_Common";
+		std::string frontFileName = "";
 
-			auto LoadShader = [&](const std::string& fileName, const std::string& vsFuncName, const std::string& psFuncName, const std::vector<std::string>& macros)
-			{
-				ShaderGroup shaders;
-				shaderLoader.LoadShader(fileName, vsFuncName, psFuncName, &includeFileName, &macros, &shaders.vs, &shaders.ps);
+		if(meshType == MeshType::Opaque || meshType == MeshType::AlphaTest)
+			frontFileName = "PhysicallyBased_GBuffer_";
+		else if(meshType == MeshType::Transparent)
+			frontFileName = "PhysicallyBased_Transparency_";
+		else
+		{
+			ASSERT_MSG("Error, unsupported mesh type");
+		}
 
-				ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
-				return shaders;
-			};
+		fileName = frontFileName + defaultVertexInputTypeStr;
+	}
+	else
+	{
+		fileName = (*customShaderFileName);
+	}
 
-			ShaderGroup shader;
-			for(int i = 0; i < ARRAYSIZE(shaderFileNameTypes); ++i)
-			{
-				std::string fileName = frontFileName + shaderFileNameTypes[i];
+	std::hash_map<uint, const Shader::ShaderGroup>* repo = nullptr;
+	std::vector<ShaderMacro>	targetShaderMacros;
 
-				shader = LoadShader(fileName, "VS", "PS", macros);
-				out.insert(std::make_pair(bufferElems[i], shader));
-			}
-		};
+	if(macros)
+		targetShaderMacros.assign(macros->begin(), macros->end());
 
-		std::vector<std::string> macros;
-		LoadGBuffer(macros, _gbufferShaders);
+	if(meshType == MeshType::Opaque)
+		repo = &_gbufferShaders;
+	else if(meshType == MeshType::AlphaTest)
+	{
+		repo = &_gbufferShaders_alphaTest;
 
-		macros.push_back("#define ENABLE_ALPHA_TEST");
-		LoadGBuffer(macros, _gbufferShaders_alphaTest);
+		if(macros)
+		{
+			ShaderMacro alphaTestMacro;
+			alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
+
+			targetShaderMacros.push_back(alphaTestMacro);
+		}
+
+	}
+	else if(meshType == MeshType::Transparent)
+		repo = &_transparentShaders;
+	else
+	{
+		ASSERT_MSG("Error, not supported mesh type");
+	}
+
+	auto iter = repo->find(defaultVertexInputTypeFlag);
+	if(iter != repo->end())
+		return iter->second;
+
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+
+	auto LoadShader = [](const std::string& fileName, const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr)
+	{
+		Factory::EngineFactory shaderLoader(shaderMgr);
+
+		ShaderGroup shaders;
+		shaderLoader.LoadShader(fileName, "VS", "PS", macros, &shaders.vs, &shaders.ps);
+
+		ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
+		return shaders;
+	};
+
+	ShaderGroup shader;
+	{
+		shader = LoadShader(fileName, &targetShaderMacros, resourceManager->GetShaderManager());
+		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+	}
+
+	return shader;
+}
+
+bool RenderManager::TestInit()
+{
+	std::vector<ShaderMacro> macros;
+	{
+		ShaderMacro msaaMacro = Device::Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
+		macros.push_back(msaaMacro);	
+	}
+
+	for(uint i=0; i< ((uint)MeshType::AlphaTest + 1); ++i)
+	{
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
+		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
 	}
 
 	return true;
@@ -113,9 +166,9 @@ const Mesh::Mesh* RenderManager::FindMeshFromRenderList(const Mesh::Mesh* mesh, 
 	return nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, Mesh::MeshFilter::BufferElementFlag bufferFlag, bool isAlphaTest)
+bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest)
 {
-	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<Mesh::MeshFilter::BufferElementFlag, const Shader::ShaderGroup>& hashMap, Mesh::MeshFilter::BufferElementFlag key)
+	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key)
 	{
 		auto iter = hashMap.find(key);
 		if(iter == hashMap.end())
@@ -125,5 +178,15 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, Mesh::MeshFilter
 		return true;
 	};
 
-	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders ,bufferFlag);
+	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
+}
+
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag)
+{
+	auto iter = _transparentShaders.find(bufferFlag);
+	if(iter == _transparentShaders.end())
+		return false;
+
+	out = iter->second;
+	return true;
 }

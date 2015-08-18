@@ -13,6 +13,7 @@ namespace Rendering
 			struct SemanticInfo
 			{
 				std::string name;
+				unsigned int semanticIndex;
 				unsigned int size;
 			};
 
@@ -31,7 +32,7 @@ namespace Rendering
 			GET_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
 
 		public:
-			bool CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count);
+			bool CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
 			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
 
 		public:

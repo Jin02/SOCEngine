@@ -14,6 +14,12 @@ MeshImporter::~MeshImporter()
 	SAFE_DELETE(_objImporter);
 }
 
+void MeshImporter::Initialize()
+{
+	SAFE_DELETE(_objImporter);
+	_objImporter = new Obj::ObjImporter;
+}
+
 Object* MeshImporter::Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType, bool isDynamicMesh)
 {
 	std::string fileName, fileExtension, folderDir;

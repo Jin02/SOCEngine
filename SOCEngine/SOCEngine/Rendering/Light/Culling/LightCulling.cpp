@@ -11,10 +11,15 @@ using namespace Core;
 using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
+using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
-LightCulling::LightCulling() : _computeShader(nullptr), _globalDataBuffer(nullptr), _lightIndexBuffer(nullptr)
+LightCulling::LightCulling() : 
+	_computeShader(nullptr), _globalDataBuffer(nullptr), 
+	_inputPointLightTransformBuffer(nullptr), _inputSpotLightTransformBuffer(nullptr), 
+	_inputSpotLightParamBuffer(nullptr), _pointLightUpdateCounter(0),
+	_spotLightUpdateCounter(0)
 {
 
 }
@@ -24,45 +29,78 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
+void LightCulling::_Init_InputBuffer_And_Append_To_InputBufferList(GPGPU::DirectCompute::ComputeShader::InputBuffer*& outBuffer, uint idx, uint bufferStride, uint bufferElementNum, DXGI_FORMAT format)
 {
-	//혹시 모르니, 한번 초기화
-	Destroy();
+	ComputeShader::InputBuffer inputBufferElement;
+	const void* nullData[] = {nullptr, };
+
+	ComputeShader::InputBuffer inputBuffer;
+	{
+		inputBuffer.idx			= idx;
+		inputBuffer.buffer		= new CSInputBuffer;
+
+		auto& buffer = inputBuffer.buffer;
+		buffer->Initialize(bufferStride, bufferElementNum, format, nullData);
+	}
+
+	_inputBuffers.push_back(inputBuffer);
+	outBuffer = &_inputBuffers.back();
+}
+
+void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture, uint idx, const Texture::Texture2D* texture)
+{
+	ComputeShader::InputTexture inputTex;
+	{
+		inputTex.idx		= idx;
+		inputTex.texture	= texture;
+	}
+
+	_inputTextures.push_back(inputTex);
+
+	if(outTexture)
+		(*outTexture) = &_inputTextures.back();
+}
+
+void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
+							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer)
+{
+	//Check duplicated input datas
+	{
+		for(const auto& iter : _inputBuffers)
+		{
+			if( iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
+				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
+				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter )
+			{
+				ASSERT_MSG("Error, duplicated input data");
+			}
+		}
+
+		for(const auto& iter : _inputTextures)
+		{
+			if( iter.idx == (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer ||
+				iter.idx == (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer )
+			{
+				ASSERT_MSG("Error, duplicated input data");
+			}
+		}
+	}
 
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
-	std::string fileName, fileExtension, folderDir;
-	bool valid = Utility::String::ParseDirectory(filePath, folderDir, fileName, fileExtension);
-	ASSERT_COND_MSG(valid, "Where is your file extension?");
-
-	std::string includeCode;
+	std::vector<Shader::ShaderMacro> macros;
 	{
-		std::string macroCode = useRenderBlendedMesh ? "#define ENABLE_BLEND\n" : "";
+		ShaderMacro msaaMacro = Device::Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
+		macros.push_back(msaaMacro);
 
-		const DXGI_SAMPLE_DESC& desc = Device::Director::GetInstance()->GetDirectX()->GetMSAADesc();
-		{
-			macroCode += "#define MSAA_SAMPLES_COUNT ";
-			macroCode += (desc.Count > 0) ? std::to_string(desc.Count) : "0";
-			macroCode += "\n";
-		}
+		macros.push_back(ShaderMacro("USE_COMPUTE_SHADER", ""));
 
-		includeCode += macroCode;
-		
-		Factory::EngineFactory factory(nullptr); //FetchShaderFullPath만 사용
-
-		std::string includeFilePath;
-		factory.FetchShaderFullPath(includeFilePath, "LightCulling");
-		ASSERT_COND_MSG(includeFilePath.empty() == false, "Error, includeFilePath is empty");
-
-		bool success = shaderMgr->LoadShaderCode(includeCode, includeFilePath, false);
-		ASSERT_COND_MSG( (includeCode.empty() == false) || (success == false), "Error, LightCulling Core Code does not exist");
-
-		includeCode.insert(0, macroCode);
+		if(useRenderBlendedMesh)
+			macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
 	}
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(folderDir, fileName, 
-		"cs", mainFunc, false, &includeCode);
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
@@ -71,45 +109,35 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
 
 	_globalDataBuffer = new ConstBuffer;
-	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(CullingConstBuffer)), "can not create const buffer");
+	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(GlobalData)), "can not create const buffer");
 
 	// Input Buffer Setting
 	{
 		ComputeShader::InputBuffer inputBufferElement;
+		const void* nullData[] = {nullptr, };
 
-		// Point Light
-		{
-			CSInputBuffer* pointLightCenterWithRadius = new CSInputBuffer;
-			ASSERT_COND_MSG(pointLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
-			inputBufferElement.idx = (uint)InputBuffer::PointLightRadiusWithCenter;
-			inputBufferElement.buffer = pointLightCenterWithRadius;
-			_inputBuffers.push_back(inputBufferElement);
-		}
+		// Point Light Transform
+		uint idx = (uint)InputBufferShaderIndex::PointLightRadiusWithCenter;
+		_Init_InputBuffer_And_Append_To_InputBufferList(_inputPointLightTransformBuffer, idx, sizeof(Math::Vector4), POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
-		// Spot Light
-		{
-			CSInputBuffer* spotLightCenterWithRadius = new CSInputBuffer;
-			ASSERT_COND_MSG(spotLightCenterWithRadius->Initialize(sizeof(Math::Vector4), POINT_LIGHT_LIMIT_NUM), "cant create cs input buffer");
-			inputBufferElement.idx = (uint)InputBuffer::SpotLightRadiusWithCenter;
-			inputBufferElement.buffer = spotLightCenterWithRadius;
-			_inputBuffers.push_back(inputBufferElement);
-		}
+		// Spot Light Transform
+		idx = (uint)InputBufferShaderIndex::SpotLightRadiusWithCenter;
+		_Init_InputBuffer_And_Append_To_InputBufferList(_inputSpotLightTransformBuffer, idx, sizeof(Math::Vector4), SPOT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
+
+		idx = (uint)InputBufferShaderIndex::SpotLightParam;
+		_Init_InputBuffer_And_Append_To_InputBufferList(_inputSpotLightParamBuffer, idx, sizeof(Math::Vector4) / 2, SPOT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 		// depth buffer
 		{
-			// Opaque
-			{
-				ComputeShader::InputTexture inputTex;
-				inputTex.idx		= (uint)InputTexture::InvetedOpaqueDepthBuffer;
-				_inputTextures.push_back(inputTex);
-			}
+			// Opaque Depth Buffer
+			idx = (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer;
+			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
 
-			// Blended, Transparent
+			// Blended DepthBuffer (used in Transparency Rendering)
 			if(useRenderBlendedMesh)
 			{
-				ComputeShader::InputTexture inputTex;
-				inputTex.idx		= (uint)InputTexture::InvetedBlendedDepthBuffer;
-				_inputTextures.push_back(inputTex);
+				idx = (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer;
+				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
 			}
 		}
 
@@ -120,27 +148,6 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	_useBlendedMeshCulling = useRenderBlendedMesh;
 }
 
-void LightCulling::InitializeOnlyLightCulling(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh)
-{
-	Initialize(filePath, mainFunc, useRenderBlendedMesh);
-
-	// Ouput Buffer Setting
-	{
-		LightCulling_CSOutputBuffer* lightIndexBuffer = new LightCulling_CSOutputBuffer;
-		Math::Size<unsigned int> size = CalcThreadSize();
-		lightIndexBuffer->Initialize(size, CalcMaxNumLightsInTile());
-
-		ComputeShader::OutputBuffer outputBuffer;
-		{
-			outputBuffer.idx = (uint)OutputBuffer::LightIndexBuffer;
-			outputBuffer.buffer = lightIndexBuffer;
-		}
-
-		_outputBuffers.push_back(outputBuffer);
-		_computeShader->SetOutputBuffers(_outputBuffers);
-	}
-}
-
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
 	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
@@ -149,45 +156,51 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 	return ( LightMaxNumInTile - ( key * ( winSize.h / 120 ) ) );
 }
 
-void LightCulling::UpdateInputBuffer(const Device::DirectX* dx,
-									 const CullingConstBuffer& cbData,
-									 const Light::LightForm::LightTransformBuffer* pointLightTransformBuffer,
-									 const Light::LightForm::LightTransformBuffer* spotLightTransformBuffer)
+void LightCulling::UpdateInputBuffers(const Device::DirectX* dx, const GlobalData* globalData, const Rendering::Manager::LightManager* lightManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-	_globalDataBuffer->Update(context, &cbData);
+	
+	if(globalData)
+		_globalDataBuffer->Update(context, globalData);
 
-	ComputeShader::InputBuffer inputBuffer;
-
-	// Input Buffer Setting
+	// Point Light
 	{
-		//0, pointLight 
-		_inputBuffers[0].buffer->Update(context, pointLightTransformBuffer);
+		uint updateCounter = lightManager->GetPointLightUpdateCounter();
+		if(updateCounter != _pointLightUpdateCounter)
+		{
+			const void* buffer = lightManager->GetPointLightTransformBuffer();
+			_inputPointLightTransformBuffer->buffer->Update(context, buffer);
+			
+			_pointLightUpdateCounter = updateCounter;
+		}
+	}
 
-		//1, spot light
-		_inputBuffers[1].buffer->Update(context, spotLightTransformBuffer);
+	// Spot Light
+	{
+		uint updateCounter = lightManager->GetSpotLightUpdateCounter();
+		if(updateCounter != _spotLightUpdateCounter)
+		{
+			const void* buffer = lightManager->GetSpotLightTransformBuffer();
+			_inputSpotLightTransformBuffer->buffer->Update(context, buffer);
+
+			buffer = lightManager->GetSpotLightParamBuffer();
+			_inputSpotLightParamBuffer->buffer->Update(context, buffer);
+
+			_spotLightUpdateCounter = updateCounter;
+		}
 	}
 }
 
-void LightCulling::Dispatch(const Device::DirectX* dx, const Texture::DepthBuffer* invertedDepthBuffer, const Texture::DepthBuffer* invertedBlendedDepthBuffer)
+void LightCulling::Dispatch(const Device::DirectX* dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-
-	_inputTextures[0].texture = invertedDepthBuffer;
-
-	if(_useBlendedMeshCulling)
-		_inputTextures[1].texture = invertedBlendedDepthBuffer;
-
 	_computeShader->Dispatch(context);
-	
-	_inputTextures[0].texture = nullptr;
-	_inputTextures[1].texture = nullptr;
 }
 
 void LightCulling::UpdateThreadGroup(ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader)
 {
-	Math::Size<unsigned int> threadSize = CalcThreadSize();
-	ComputeShader::ThreadGroup threadGroup = ComputeShader::ThreadGroup(threadSize.w, threadSize.h, 1);
+	Math::Size<unsigned int> groupSize = CalcThreadGroupSize();
+	ComputeShader::ThreadGroup threadGroup = ComputeShader::ThreadGroup(groupSize.w, groupSize.h, 1);
 
 	if(outThreadGroup)
 		(*outThreadGroup) = threadGroup;
@@ -196,7 +209,7 @@ void LightCulling::UpdateThreadGroup(ComputeShader::ThreadGroup* outThreadGroup,
 		_computeShader->SetThreadGroupInfo(threadGroup);
 }
 
-const Math::Size<unsigned int> LightCulling::CalcThreadSize()
+const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 {
 	auto CalcThreadLength = [](unsigned int size)
 	{
@@ -213,6 +226,18 @@ const Math::Size<unsigned int> LightCulling::CalcThreadSize()
 
 void LightCulling::Destroy()
 {
+	for(auto& iter : _inputBuffers)
+		SAFE_DELETE(iter.buffer);
+
+	_inputBuffers.clear();
+	_inputTextures.clear();
+
+	_inputPointLightTransformBuffer	= nullptr;
+	_inputSpotLightTransformBuffer	= nullptr;
+	_inputSpotLightParamBuffer		= nullptr;
+
 	SAFE_DELETE(_computeShader);
 	SAFE_DELETE(_globalDataBuffer);
+
+	_useBlendedMeshCulling = false;
 }

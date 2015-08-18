@@ -12,9 +12,10 @@ CSInputBuffer::CSInputBuffer() : BaseBuffer(), _srv(nullptr)
 CSInputBuffer::~CSInputBuffer()
 {
 	SAFE_RELEASE(_srv);
+	SAFE_RELEASE(_buffer);
 }
 
-bool CSInputBuffer::Initialize(unsigned int stride, unsigned int num, const void* sysMem)
+void CSInputBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format, const void* sysMem)
 {
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
@@ -22,8 +23,6 @@ bool CSInputBuffer::Initialize(unsigned int stride, unsigned int num, const void
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
 	desc.ByteWidth = stride * num;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.StructureByteStride = stride;
-	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = sysMem;
@@ -34,14 +33,11 @@ bool CSInputBuffer::Initialize(unsigned int stride, unsigned int num, const void
 	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. does not create constant buffer");
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-	srvDesc.BufferEx.FirstElement = 0;
-	srvDesc.BufferEx.Flags = 0;
-	srvDesc.BufferEx.NumElements = num;
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.ElementOffset = 0;
+	srvDesc.Buffer.ElementWidth = num;
 
 	hr = device->CreateShaderResourceView(_buffer, &srvDesc, &_srv);
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create shader resource view");
-
-	return true;
 }

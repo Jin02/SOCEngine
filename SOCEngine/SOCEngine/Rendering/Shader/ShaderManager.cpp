@@ -1,5 +1,8 @@
 #include "ShaderManager.h"
 #include "Utility.h"
+#include <Shlwapi.h>
+
+#pragma comment(lib, "Shlwapi.lib")
 
 using namespace Rendering::Manager;
 using namespace Rendering::Shader;
@@ -18,7 +21,7 @@ ShaderManager::~ShaderManager(void)
 	RemoveAllShader();
 }
 
-bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &shaderCode, const std::string& shaderModel, const std::string& funcName)
+bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel, const std::string& funcName, const std::vector<ShaderMacro>* macros)
 {
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
@@ -26,11 +29,32 @@ bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &sha
 	dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
 
+	std::vector<D3D_SHADER_MACRO> d3dMacros;
+	{
+		if(macros)
+		{
+			for(const auto& iter : (*macros))
+			{
+				D3D_SHADER_MACRO macro;
+				macro.Name			= iter.GetName().c_str();
+				macro.Definition	= iter.GetDefinition().c_str();
+
+				d3dMacros.push_back(macro);
+			}
+		}
+
+		D3D_SHADER_MACRO nullMacro;
+		nullMacro.Name = nullptr;
+		nullMacro.Definition = nullptr;
+
+		d3dMacros.push_back(nullMacro);
+	}
+
 	ID3DBlob* pErrorBlob = nullptr;
 
 	HRESULT hr = D3DX11CompileFromMemory(
 		shaderCode.data(), shaderCode.size(),
-		nullptr, nullptr, nullptr, funcName.data(),
+		fileFullPath.c_str(), d3dMacros.data(), nullptr, funcName.data(),
 		shaderModel.data(), dwShaderFlags, 0, nullptr,
 		outBlob, &pErrorBlob, nullptr);
 
@@ -50,34 +74,31 @@ bool ShaderManager::CompileFromMemory(ID3DBlob** outBlob, const std::string &sha
 	return true;
 }
 
-bool ShaderManager::CompileFromFile(ID3DBlob** outBlob, const std::string &fileName, const std::string& shaderModel, const std::string& funcName)
+bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::string& folderPath, const std::string& fileName)
 {
-	HRESULT hr = S_OK;
+	bool found = false;
+	std::string fullPath = "";
 
-	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-	// Setting this flag improves the shader debugging experience, but still allows 
-	// the shaders to be optimized and to run exactly the way they will run in 
-	// the release configuration of this program.
-	dwShaderFlags |= D3DCOMPILE_DEBUG;
-#endif
-
-	ID3DBlob* pErrorBlob;
-	hr = D3DX11CompileFromFile( fileName.data(), NULL, NULL, funcName.data(), shaderModel.data(), 
-		dwShaderFlags, 0, NULL, outBlob, &pErrorBlob, NULL );
-	if( FAILED(hr) )
+	if( fileName.find(".") == -1)
 	{
-		if( pErrorBlob != NULL )
-			OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
-		if( pErrorBlob ) pErrorBlob->Release();
-		
-		ASSERT_MSG("Shader Compile Error!");
-		
-		return false;
+		const char* extension[2] = {".fx", ".hlsl"};
+		for(int i=0; i<2; ++i)
+		{
+			fullPath = folderPath+fileName+extension[i];
+			found = (bool)PathFileExists(fullPath.c_str());
+			if(found)	break;
+		}
 	}
-	if( pErrorBlob ) pErrorBlob->Release();
+	else //fileName has extension
+	{
+		fullPath = folderPath+fileName;
+		found = (bool)PathFileExists(fullPath.c_str());
+	}
 
+	if(found == false)
+		return false;
+
+	outFullPath = fullPath;
 	return true;
 }
 
@@ -85,7 +106,7 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 {
 	// Check preview shader codes.
 	{
-		const std::string& alreadyCode = FindShaderCode(fileName);
+		const std::string alreadyCode = FindShaderCode(fileName);
 
 		if(alreadyCode.empty() == false)
 		{
@@ -94,42 +115,28 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 		}
 	}
 
-	std::ifstream file;
-	if( fileName.find(".") == -1)
-	{
-		const char* extension[2] = {".fx", ".hlsl"};
-		for(int i=0; i<2; ++i)
-		{
-			file.open(folderPath+fileName+extension[i]);
+	std::string filePath = "";
+	bool success = MakeShaderFileFullPath(filePath, folderPath, fileName);
+	ASSERT_COND_MSG(success, "Error, Invalid path");
 
-			if(file.is_open())
-				break;
-		}
-	}
-	else //fileName has extension
-	{
-		file.open(folderPath+fileName);
-	}
+	std::ifstream file(filePath, std::ios::in | std::ios::ate | std::ios::binary);
+	ASSERT_COND_MSG(file.is_open() && file.good(), "Error, strange file");
 
-	if(file.good() == false)
-	{
-		file.close();
-		ASSERT_MSG("InValid File");
-		return false;
-	}
+	std::streamoff length = file.tellg();
+	file.seekg(0, file.beg);
 
-	std::string buff;
-
-	while(std::getline(file, buff))
+	char* buffer = new char[(uint)length + 1];
 	{
-		outCode += buff;
-		outCode += "\n";
+		file.read(buffer, length);
+		buffer[length] = '\0';
+		outCode = buffer;
 	}
+	delete buffer;
+
+	file.close();
 
 	if(recycleCode)
 		_shaderCodes.insert(std::make_pair(fileName, outCode));
-
-	file.close();
 
 	return true;
 }
@@ -143,26 +150,33 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& file
 	return LoadShaderCode(outCode, folder, fileName, recycleCode);
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::string* includeCode)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& fileFullPath, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<ShaderMacro>* macros)
 {
-	std::string code;
-	if(LoadShaderCode(code, folderPath, fileName, recycleCode) == false)
-		return nullptr;
-
-	if(includeCode)
-		code = (*includeCode) + code;
+	std::string code = "";
+	bool loadSuccess = LoadShaderCode(code, fileFullPath, recycleCode);
+	ASSERT_COND_MSG(loadSuccess, "Error, cant load shader code");
 
 	ID3DBlob* blob = nullptr;
-	if( CompileFromMemory(&blob, code, shaderType+"_5_0", mainFunc) == false )
+	if( Compile(&blob, fileFullPath, code, shaderType+"_5_0", mainFunc, macros) == false )
 	{
 		ASSERT_MSG("Shader Compile Error!");
 		return nullptr;
 
 	}
+
 	return blob;
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::string* includeCode)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<ShaderMacro>* macros)
+{
+	std::string fullPath = "";
+	bool success = MakeShaderFileFullPath(fullPath, folderPath, fileName);
+	ASSERT_COND_MSG(success, "Error, invalid path");
+
+	return CreateBlob(fullPath, shaderType, mainFunc, recycleCode, macros);
+}
+
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc, shaderType;
 
@@ -172,7 +186,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 		return nullptr;
 	}
 
-	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode, includeCode);
+	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode, macros);
 }
 
 bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc)
@@ -207,7 +221,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::string* includeFileName, const std::vector<std::string>* macros)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc;
 
@@ -217,26 +231,17 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		return nullptr;
 	}
 
-	std::string optionalCode;
-	if(includeFileName)
-		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
-	if(macros)
-	{
-		for(const auto& iter : (*macros))
-			optionalCode.insert(0, iter + "\n");
-	}
-
 	VertexShader* shader = FindVertexShader(fileName, mainFunc);
 	
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode, &optionalCode);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode, macros);
 		if(blob == nullptr)
 			return nullptr;
 
 		shader = new VertexShader(blob);
 
-		bool success = shader->CreateShader(vertexDeclations.data(), vertexDeclations.size());		
+		bool success = shader->CreateShader(vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
 		_shaders.insert(std::make_pair(VS_FULL_COMMAND(fileName, mainFunc), shader));
@@ -245,7 +250,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	return shader;
 }
 
-PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::string* includeFileName, const std::vector<std::string>* macros)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc;
 
@@ -254,20 +259,9 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 	PixelShader* shader = FindPixelShader(fileName, mainFunc);
 
-	std::string optionalCode;
-
-	if(includeFileName)
-		LoadShaderCode(optionalCode, folderPath, (*includeFileName), true);
-
-	if(macros)
-	{
-		for(const auto& iter : (*macros))
-			optionalCode.insert(0, iter + "\n");
-	}
-
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, recyleCode, &optionalCode);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, recyleCode, macros);
 		if(blob == nullptr)
 			return nullptr;
 
@@ -341,8 +335,8 @@ void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseS
 	_shaders.insert(std::make_pair(fullCommand, shader));
 }
 
-const std::string& ShaderManager::FindShaderCode(const std::string& fileName)
+const char*	ShaderManager::FindShaderCode(const std::string& fileName)
 {
 	auto findIter = _shaderCodes.find(fileName);
-	return (findIter == _shaderCodes.end()) ? std::string() : findIter->second;
+	return (findIter == _shaderCodes.end()) ? "" : findIter->second.c_str();
 }

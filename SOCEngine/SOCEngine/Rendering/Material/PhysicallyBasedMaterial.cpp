@@ -30,6 +30,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
 		GetMainColor(param.mainColor);
 		GetRoughness(param.roughness);
 		GetFresnel_0(param.fresnel0);
+		GetMetallic(param.metallic);
 		GetUVTiling(param.uvTiling);
 
 		_gbufferCB->Update(dx->GetContext(), &param);
@@ -41,30 +42,36 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
 
 void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
 {
-	SetVariable("MainColor", color);
+	GBufferParam::MainColor mainColor;
+	{
+		mainColor.r = color.r;
+		mainColor.g = color.g;
+		mainColor.b = color.b;
+	}
+	SetVariable("MainColor", mainColor);
 
 	_hasAlpha = (color.a < 1.0f);
 	_changedAlpha = true;
 }
 
-void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture* tex)
+void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex)
 {
 	UpdateTexture_ShaderSlotIndex( (uint)PSTextureSlot::Diffuse, tex );
 	_hasAlpha = tex->GetHasAlpha();
 	_changedAlpha = true;
 }
 
-void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture* tex)
+void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture2D* tex)
 {
 	UpdateTexture_ShaderSlotIndex( (uint)PSTextureSlot::Normal, tex );
 }
 
-void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture* tex)
+void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture2D* tex)
 {
 	UpdateTexture_ShaderSlotIndex( (uint)PSTextureSlot::Specular, tex );
 }
 
-void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture* tex)
+void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture2D* tex)
 {
 	UpdateTexture_ShaderSlotIndex( (uint)PSTextureSlot::Opacity, tex );
 

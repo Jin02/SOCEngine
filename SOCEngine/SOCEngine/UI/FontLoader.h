@@ -2,7 +2,7 @@
 
 #include <array>
 #include <fstream>
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Singleton.h"
 
 #define BASIC_FONT_COUNT 96
@@ -21,7 +21,7 @@ namespace UI
 
 	private:
 		std::array<FontType, BASIC_FONT_COUNT>	_font;
-		Rendering::Texture::Texture*			_texture;
+		Rendering::Texture::Texture2D*			_texture;
 		Math::Size<uint>						_fontTextureSize;
 
 	private:
@@ -36,7 +36,7 @@ namespace UI
 		const FontLoader* Initialize(const std::string& fontDataFilePath, const std::string& fontTexturePath);
 
 	public:
-		GET_ACCESSOR(Texture, const Rendering::Texture::Texture*, _texture);
+		GET_ACCESSOR(Texture, const Rendering::Texture::Texture2D*, _texture);
 		GET_ACCESSOR(FontTextureSize, const Math::Size<uint>&, _fontTextureSize);
 		inline const std::array<FontType, BASIC_FONT_COUNT>& GetFonts() const { return _font; }
 	};

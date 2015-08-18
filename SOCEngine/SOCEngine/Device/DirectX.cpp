@@ -61,7 +61,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	//msaa
 	if(multiSampler == nullptr)
 	{
-		sd.SampleDesc.Count = 1;
+		sd.SampleDesc.Count = 4;
 		sd.SampleDesc.Quality = 0;
 	}
 	else
@@ -369,4 +369,14 @@ void DirectX::ClearDeviceContext()
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
 	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
     _immediateContext->RSSetState( NULL );
+}
+
+Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
+{
+	Rendering::Shader::ShaderMacro shaderMacro;
+
+	shaderMacro.SetName("MSAA_SAMPLES_COUNT");
+	shaderMacro.SetDefinition( std::to_string(_msaaDesc.Count) );
+
+	return shaderMacro;
 }

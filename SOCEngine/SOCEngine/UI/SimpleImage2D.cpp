@@ -35,7 +35,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
 		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 	}
@@ -60,7 +60,6 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
 		meshCreateArgs.isDynamic		= true;
-		meshCreateArgs.bufferFlag		= (uint)Mesh::MeshFilter::BufferElement::UV;
 	}
 
 	_meshFilter = new Mesh::MeshFilter;
@@ -150,8 +149,8 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 			Shader::BaseShader::TextureType type;
 			type.first = 0;
 
-			Texture::Texture* tex = nullptr;
-			_material->GetVariable<Texture::Texture*>(tex, "main");
+			Texture::Texture2D* tex = nullptr;
+			_material->GetVariable<Texture::Texture2D*>(tex, "main");
 			Math::Size<uint> size = tex->FetchSize();
 
 			type.second = tex;
@@ -165,9 +164,9 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 	}
 }
 
-void SimpleImage2D::UpdateMainImage(Texture::Texture* tex)
+void SimpleImage2D::UpdateMainImage(Texture::Texture2D* tex)
 {
-	_material->SetVariable<Texture::Texture*>("main", tex);
+	_material->SetVariable<Texture::Texture2D*>("main", tex);
 }
 
 void SimpleImage2D::SetSize(const Math::Size<uint>& size)

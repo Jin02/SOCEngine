@@ -1,20 +1,20 @@
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Director.h"
 
 using namespace Rendering::Texture;
 
-Texture::Texture(ID3D11ShaderResourceView* srv, bool hasAlpha) 
+Texture2D::Texture2D(ID3D11ShaderResourceView* srv, bool hasAlpha) 
 	: _srv(srv), _hasAlpha(false), _texture(nullptr)
 {
 }
 
-Texture::~Texture()
+Texture2D::~Texture2D()
 {
 	SAFE_RELEASE(_srv);
 	SAFE_RELEASE(_texture);
 }
 
-void Texture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
+void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
 {
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
@@ -41,7 +41,7 @@ void Texture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT forma
 
 		return DXGI_FORMAT_UNKNOWN;
 	};
-	textureDesc.Format = bindFlags & D3D11_BIND_DEPTH_STENCIL ?  GetDepthBufferTexDesc(format) : format;
+	textureDesc.Format = (bindFlags & D3D11_BIND_DEPTH_STENCIL) ?  GetDepthBufferTexDesc(format) : format;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = bindFlags;
 	textureDesc.CPUAccessFlags = 0;
@@ -74,7 +74,7 @@ void Texture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT forma
 		else
 			srdesc.Format = format;
 
-		srdesc.ViewDimension = textureDesc.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		srdesc.ViewDimension = (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
 		srdesc.Texture2D.MostDetailedMip = 0;
 		srdesc.Texture2D.MipLevels = 1;
 
@@ -83,7 +83,7 @@ void Texture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT forma
 	}
 }
 
-Math::Size<uint> Texture::FetchSize() const
+Math::Size<uint> Texture2D::FetchSize() const
 {
 	D3D11_TEXTURE2D_DESC desc;
 	if(_texture)
