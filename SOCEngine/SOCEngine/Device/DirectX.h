@@ -13,6 +13,7 @@
 #include "Win32.h"
 
 #include "Color.h"
+#include "ShaderMacro.h"
 
 namespace Device
 {
@@ -95,5 +96,6 @@ namespace Device
 		GET_ACCESSOR(PointSamplerState,						ID3D11SamplerState*,		_pointSamplerState);
 
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
+		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 	};
 }

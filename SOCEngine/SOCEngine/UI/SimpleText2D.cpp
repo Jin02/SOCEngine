@@ -47,12 +47,12 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
 		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
 
-		const Texture::Texture* texture = fontLoader->GetTexture();
-		_material->SetVariable<const Texture::Texture*>("font", texture);
+		const Texture::Texture2D* texture = fontLoader->GetTexture();
+		_material->SetVariable<const Texture::Texture2D*>("font", texture);
 	}
 
 	std::vector<RectVertexInfo> emptyVertices(maxLength * 4);
@@ -85,7 +85,6 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
 		meshCreateArgs.isDynamic		= true;
-		meshCreateArgs.bufferFlag		= (uint)Mesh::MeshFilter::BufferElement::UV;
 	}
 
 	_meshFilter = new Mesh::MeshFilter;
@@ -196,8 +195,8 @@ void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPro
 			Shader::BaseShader::TextureType type;
 			type.first = 0;
 
-			const Texture::Texture* tex = nullptr;
-			_material->GetVariable<const Texture::Texture*>(tex, "font");
+			const Texture::Texture2D* tex = nullptr;
+			_material->GetVariable<const Texture::Texture2D*>(tex, "font");
 
 			type.second = tex;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ShaderManager.h>
+#include "ShaderManager.h"
 
 namespace Rendering
 {
@@ -32,8 +32,7 @@ namespace Rendering
 		public:
 			LoadShaderResult LoadShader(const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
-				const std::string* includeFileName,
-				const std::vector<std::string>* includeMacros,
+				const std::vector<Shader::ShaderMacro>* macros,
 				Shader::VertexShader** outVertexShader,
 				Shader::PixelShader** outPixelShader)
 			{
@@ -67,11 +66,11 @@ namespace Rendering
 
 				Shader::VertexShader* vs = nullptr;
 				if(mainVSFuncName.empty() == false)
-					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, includeFileName, includeMacros);
+					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, macros);
 
 				Shader::PixelShader* ps = nullptr;
 				if(mainPSFuncName.empty() == false)
-					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, includeFileName, includeMacros);
+					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, macros);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;

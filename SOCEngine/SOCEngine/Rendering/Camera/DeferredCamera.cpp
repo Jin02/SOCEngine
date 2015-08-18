@@ -13,7 +13,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Manager;
 
 DeferredCamera::DeferredCamera() : CameraForm(),
-	_transparentDepthBuffer(nullptr), _albedo_metallic(nullptr),
+	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr)
 {
@@ -39,11 +39,17 @@ void DeferredCamera::OnInitialize()
 	_normal_roughness = new Texture::RenderTexture;
 	ASSERT_COND_MSG( _normal_roughness->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _normal_roughness render texture" );
 
-	EnableRenderBlendedMesh(true);
+	_opaqueDepthBuffer = new Texture::DepthBuffer;
+	_opaqueDepthBuffer->Initialize(windowSize);
 
-	//auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
-	//const std::string key = _owner->GetName();
-	//camMgr->Add(key, this);
+	_deferredShadingWithLightCulling = new DeferredShadingWithLightCulling;
+	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, windowSize);
+
+	EnableRenderTransparentMesh(true);
+
+	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
+	CameraForm* thisCam = this;
+	camMgr->Add(_owner->GetName(), thisCam);
 }
 
 void DeferredCamera::OnDestroy()
@@ -51,7 +57,7 @@ void DeferredCamera::OnDestroy()
 	SAFE_DELETE(_albedo_metallic);
 	SAFE_DELETE(_specular_fresnel0);
 	SAFE_DELETE(_normal_roughness);
-	SAFE_DELETE(_transparentDepthBuffer);
+	SAFE_DELETE(_blendedDepthBuffer);
 
 	CameraForm::OnDestroy();
 }
@@ -73,7 +79,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 
 	if(_useTransparent)
 	{
-		_transparentDepthBuffer->Clear(context, 0.0f, 0);
+		_blendedDepthBuffer->Clear(context, 0.0f, 0);
 		SortTransparentMeshRenderQueue();
 	}
 
@@ -91,8 +97,10 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 		const Material*		material;
 	};
 	
-	std::vector<MeshInForwardRendering> meshesInForwardRendering;
-	auto AddMeshInForwardQueue = [&](const Material* material, const Mesh::Mesh* mesh)
+	// TBFR = Tile Based Forward Rendering.
+	// Used to render transparent meshes
+	std::vector<MeshInForwardRendering> tbfrQueue;
+	auto AddMeshToTBFRQueue = [&](const Material* material, const Mesh::Mesh* mesh)
 	{
 		if( material->GetCustomShader().IsAllEmpty() == false )
 		{
@@ -102,7 +110,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 				mfr.mesh = mesh;
 			}
 
-			meshesInForwardRendering.push_back(mfr);
+			tbfrQueue.push_back(mfr);
 			return true;
 		}
 
@@ -172,27 +180,38 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 	}
 }
 
-void DeferredCamera::EnableRenderBlendedMesh(bool enable)
-{
-	const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
-	
-	SAFE_DELETE(_transparentDepthBuffer);
+void DeferredCamera::EnableRenderTransparentMesh(bool enable)
+{	
 	if(enable)
 	{
-		_transparentDepthBuffer =  new DepthBuffer;
-		_transparentDepthBuffer->Initialize(windowSize);
+		const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+
+		ASSERT_COND_MSG(_blendedDepthBuffer, "Error, Already allocated depth");
+		{
+			_blendedDepthBuffer =  new DepthBuffer;
+			_blendedDepthBuffer->Initialize(windowSize);
+		}
+
+
+		ASSERT_COND_MSG(_blendedMeshLightCulling, "Error, Already allocated depth");
+		{
+			_blendedMeshLightCulling = new OnlyLightCulling;
+			{
+				EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
+
+				std::string path = "";
+				shaderFactory.FetchShaderFullPath(path, "TileBasedDeferredShading");
+
+				ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
+				_blendedMeshLightCulling->Initialize(path, "CS", true, _opaqueDepthBuffer, _blendedDepthBuffer);
+			}
+		}
 	}
-
-	//SAFE_DELETE(_lightCulling);
-	//_lightCulling = new LightCulling;
-
-	//EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
-
-	//std::string path = "";
-	//shaderFactory.FetchShaderFullPath(path, "TileBasedDeferredShading");
-
-	//ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
-	//_lightCulling->InitializeOnlyLightCulling(path, "CS", enable);
+	else // enable == false
+	{
+		SAFE_DELETE(_blendedDepthBuffer);
+		SAFE_DELETE(_blendedMeshLightCulling);
+	}
 }
 
 Core::Component* DeferredCamera::Clone() const

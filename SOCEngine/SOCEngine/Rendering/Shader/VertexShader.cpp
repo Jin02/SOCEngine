@@ -17,10 +17,12 @@ namespace Rendering
 		SAFE_RELEASE(_shader);
 	}
 
-	bool VertexShader::CreateShader(const D3D11_INPUT_ELEMENT_DESC* vertexDeclations, unsigned int count)
+	bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 	{
 		if(_blob == nullptr)
 			return false;
+
+		uint count = vertexDeclations.size();
 
 		const DirectX* dx = Director::GetInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
@@ -30,7 +32,7 @@ namespace Rendering
 		if( FAILED( hr ) )
 			return false;
 
-		hr = device->CreateInputLayout(vertexDeclations, count,
+		hr = device->CreateInputLayout(vertexDeclations.data(), count,
 			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
 		_blob->Release();
@@ -41,16 +43,15 @@ namespace Rendering
 		for(unsigned int i=0; i<count; ++i)
 		{
 			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
-			std::string semanticName = desc.SemanticName;
-
-			if(semanticName == "TEXCOORD")
-				semanticName += ('0' + desc.SemanticIndex);
 
 			SemanticInfo info;
-			info.name = semanticName;
+			{
+				info.name = desc.SemanticName;
+				info.semanticIndex = desc.SemanticIndex;
 
-			if( (i+1) != count )
-				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+				if( (i+1) != count )
+					info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+			}
 
 			_semanticInfo.push_back(info);
 		}

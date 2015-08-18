@@ -5,7 +5,7 @@ using namespace Math;
 
 namespace Core
 {
-	Transform::Transform(Object* owner) : _owner(owner)
+	Transform::Transform(Object* owner) : _owner(owner), _updateCounter(0)
 	{
 		_rotation	= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 		_scale		= Vector3::One();
@@ -59,6 +59,8 @@ namespace Core
 		_eulerAngle.z = Math::Common::Rad2Deg( _eulerAngle.z );
 
 		Math::Common::EulerNormalize(_eulerAngle, _eulerAngle);
+
+		++_updateCounter;
 	}
 
 	void Transform::LookAt(Transform *target)
@@ -72,31 +74,37 @@ namespace Core
 	void Transform::Rotate(const Vector3& eulerAngles)
 	{
 		_eulerAngle += eulerAngles;
+		++_updateCounter;
 	}
 
 	void Transform::Rotate(float x, float y, float z)
 	{
 		_eulerAngle += Vector3(x, y, z);
+		++_updateCounter;
 	}
 
 	void Transform::Translate(const Vector3& translation)
 	{
 		_position += translation;
+		++_updateCounter;
 	}
 
 	void Transform::TranslateWithUpVec(float units)
 	{
 		_position += _up * units;
+		++_updateCounter;
 	}
 
 	void Transform::TranslateWithForwardVec(float units)
 	{
 		_position += _forward * units;
+		++_updateCounter;
 	}
 
 	void Transform::TranslateWithRightVec(float units)
 	{
 		_position += _right * units;
+		++_updateCounter;
 	}
 
 	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
@@ -118,6 +126,7 @@ namespace Core
 	void Transform::UpdatePosition(const Math::Vector3& position)
 	{
 		_position = position;
+		++_updateCounter;
 	}
 
 	void Transform::UpdateRotation(const Math::Quaternion& quaternion, bool updateAxis)
@@ -137,6 +146,8 @@ namespace Core
 			Matrix::RotationQuaternion(rotationMatrix, _rotation);
 			UpdateRotationMatrixToAxis(rotationMatrix, _right, _up, _forward);
 		}
+
+		++_updateCounter;
 	}
 
 	void Transform::UpdateEulerAngles(const Vector3& euler, bool updateAxis)
@@ -156,11 +167,14 @@ namespace Core
 			Matrix::RotationQuaternion(rotationMatrix, _rotation);
 			UpdateRotationMatrixToAxis(rotationMatrix, _right, _up, _forward);
 		}
+
+		++_updateCounter;
 	}
 
 	void Transform::UpdateScale(const Vector3& scale)
 	{
 		_scale = scale;
+		++_updateCounter;
 	}
 
 	void Transform::UpdateDirection(const Math::Vector3& dir)
@@ -213,17 +227,34 @@ namespace Core
 
 		outPosition = p;
 	}
-
-	void Transform::Billboard(Math::Matrix& outMatrix, const Math::Matrix& camWorldMat)
+	
+	void Transform::Billboard(const Transform& camTransform)
 	{
-		Matrix mat = camWorldMat;
+		Matrix camRotMat;
+		UpdateAxisToRotationMatrix(camRotMat, camTransform._right, camTransform._up, camTransform._forward);
 
-		mat._11 = camWorldMat._11;
-		mat._13 = camWorldMat._13;
-		mat._31 = camWorldMat._31;
-		mat._33 = camWorldMat._33;
+		Matrix billboardMat;
+		Matrix::Inverse(billboardMat, camRotMat);
 
-		Matrix::Inverse(outMatrix, mat);
+		Vector3 right, up, forward;
+		UpdateRotationMatrixToAxis(billboardMat, right, up, forward);
+
+		Vector3 normRight	= Vector3::Normalize(right);
+		Vector3 normUp		= Vector3::Normalize(up);
+		Vector3 normForward	= Vector3::Normalize(forward);
+
+		Vector3 scale(right.x / normRight.x, up.y / normUp.y, forward.z / normForward.z);
+		_scale = scale;
+
+		_right		= normRight;
+		_up			= normUp;
+		_forward	= normForward;
+
+		Quaternion::RotationMatrix(_rotation, billboardMat);
+		_eulerAngle = _rotation.ToEuler();
+		//_position은 그대로
+
+		++_updateCounter;
 	}
 
 	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler) const
@@ -295,5 +326,7 @@ namespace Core
 		_scale		= transform._scale;
 		_eulerAngle	= transform._eulerAngle;
 		_radius		= transform._radius;
+
+		++_updateCounter;
 	}
 }

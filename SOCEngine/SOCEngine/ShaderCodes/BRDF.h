@@ -1,12 +1,40 @@
-//NOT_CREATE_META_DATA
+//EMPTY_META_DATA
 
-#define PI	3.141592654f
+#ifndef __SOC_BRDF_H__
+#define __SOC_BRDF_H__
+
+#include "ShaderCommon.h"
+
+/*
+DIFFUSE_LAMBERT
+DIFFUSE_BURLEY
+DIFFUSE_OREN_NAYAR
+
+DISTRIBUTION_BECKMANN
+DISTRIBUTION_BLINN_PHONG
+DISTRIBUTION_GGX
+
+GEOMETRY_IMPLICIT
+GEOMETRY_NEUMANN
+GEOMETRY_COOK_TORRANCE
+GEOMETRY_KELEMEN
+GEOMETRY_SCHLICK
+GEOMETRY_GGX_SMITH
+
+DIFFUSE_ENERGY_CONSERVATION_NONE
+DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
+DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0
+*/
+
+#define DIFFUSE_BURLEY
+#define DISTRIBUTION_GGX
+#define GEOMETRY_COOK_TORRANCE
+#define DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
 
 float ClampedPow(float x, float y)
 {
 	return pow( max(abs(x), 0.0000001f), y );
 }
-
 
 // The scattering of electromagnetic waves from rough surfaces
 float DistributionBeckmann(float m2, float NdotH)
@@ -53,8 +81,8 @@ float GeometryNeumann(float NdotL, float NdotV)
 // Cook and Torrance 1982, "A Reflectance Model for Computer Graphics"
 float GeometryCookTorrance(float NdotH, float NdotV, float VdotH, float NdotL)
 {
-	float first_term	= 2.0f * NdotH * NdotV / VDotH;
-	float second_term	= 2.0f * NdotH * NdotL / VDotH;
+	float first_term	= 2.0f * NdotH * NdotV / VdotH;
+	float second_term	= 2.0f * NdotH * NdotL / VdotH;
 
 	return min(1.0f, min(first_term, second_term));
 }
@@ -110,7 +138,7 @@ float3 DiffuseBurley(float3 diffuseColor, float roughness, float NdotV, float Nd
 	float fd90		= (0.5f + 2.0f * VdotH * VdotH) * roughness;
 	
 	float invNdotV	= 1.0f - NdotL;
-	float NdotVPow5	= pow(InvNdotV, 5.0f);
+	float NdotVPow5	= pow(invNdotV, 5.0f);
 
 	float invNdotL	= 1.0f - NdotL;
 	float NdotLPow5	= pow(invNdotL, 5.0f);
@@ -137,11 +165,11 @@ float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float
 
 float3 Diffuse(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotH, float VdotL)
 {
-#if		DIFFUSE == DIFFUSE_LAMBERT
+#if defined(DIFFUSE_LAMBERT)
 	return DiffuseLambert(diffuseColor);
-#elif	DIFFUSE == DIFFUSE_BURLEY
+#elif defined(DIFFUSE_BURLEY)
 	return DiffuseBurley(diffuseColor, roughness, NdotV, NdotL, VdotH);
-#elif	DIFFUSE == OREN_NAYAR
+#elif defined(DIFFUSE_OREN_NAYAR)
 	return DiffuseOrenNayer(diffuseColor, roughness, NdotV, NdotL, VdotL);
 #endif
 }
@@ -151,28 +179,28 @@ float Distribution(float roughness, float NdotH)
 	float m = roughness * roughness;
 	float m2 = m * m;
 
-#if		DISTRIBUTION == DISTRIBUTION_BECKMANN
+#if defined(DISTRIBUTION_BECKMANN)
 	return DistributionBeckmann(m2, NdotH);
-#elif	DISTRIBUTION == DISTRIBUTION_BLINN_PHONG
+#elif defined(DISTRIBUTION_BLINN_PHONG)
 	return DistributionBlinnPhong(m2, NdotH);
-#elif	DISTRIBUTION == DISTRIBUTION_GGX
+#elif defined(DISTRIBUTION_GGX)
 	return DistributionGGX(m2, NdotH);
 #endif
 }
 
 float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float VdotH)
 {	
-#if		GEOMETRY == GEOMETRY_IMPLICIT
+#if defined(GEOMETRY_IMPLICIT)
 	return GeometryImplicit(NdotL, NdotV);
-#elif	GEOMETRY == GEOMETRY_NEUMANN
+#elif defined(GEOMETRY_NEUMANN)
 	return GeometryNeumann(NdotL, NdotV);
-#elif	GEOMETRY == GEOMETRY_COOK_TORRANCE
+#elif defined(GEOMETRY_COOK_TORRANCE)
 	return GeometryCookTorrance(NdotH, NdotV, VdotH, NdotL);
-#elif	GEOMETRY == GEOMETRY_KELEMEN
+#elif defined(GEOMETRY_KELEMEN)
 	return GeometryKelemen(NdotL, NdotV, VdotH);
-#elif	GEOMETRY == GEOMETRY_SCHLICK
+#elif defined(GEOMETRY_SCHLICK)
 	return GeometrySchlick(NdotL, NdotV, roughness);
-#elif	GEOMETRY == GEOMETRY_GGX_SMITH
+#elif defined(GEOMETRY_GGX_SMITH)
 	return GeometryGGXSmith(NdotV, NdotL, roughness);
 #endif
 }
@@ -183,19 +211,39 @@ float Fresnel(float f0, float LdotH)
 	return FresnelSchlick(f0, LdotH); //Default
 }
 
-#if DIFFUSE_ENERGY_CONSERVATION == DIFFUSE_ENERGY_CONSERVATION_NONE
 float DiffuseEnergyConservation(float f0, float NdotH)
 {
+#if defined(DIFFUSE_ENERGY_CONSERVATION_NONE)
 	return 1.0f;
-}
-#elif DIFFUSE_ENERGY_CONSERVATION == DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
-float DiffuseEnergyConservation(float f0, float NdotH)
-{
+#elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL)
 	return 1.0f - Fresnel(f0, NdotH);
-}
-#elif DIFFUSE_ENERGY_CONSERVATION == DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0
-float DiffuseEnergyConservation(float f0, float NdotH)
-{
+#elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0)
 	return 1.0f - f0;
+#endif
 }
+
+
+void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
+				  in LightingParams lightingParams, in LightingCommonParams commonParamas)
+{
+	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
+
+	float NdotL			= saturate(dot(lightingParams.normal,	commonParamas.lightDir));
+	float NdotH			= saturate(dot(lightingParams.normal,	halfVector));
+	float NdotV			= saturate(dot(lightingParams.normal,	lightingParams.viewDir));
+	float VdotH			= saturate(dot(lightingParams.viewDir,	halfVector));
+	float LdotH			= saturate(dot(commonParamas.lightDir,	halfVector));
+	float VdotL			= saturate(dot(lightingParams.viewDir,	commonParamas.lightDir));
+
+	float	Fr = Fresnel(lightingParams.fresnel0, LdotH) * 
+		Geometry(lightingParams.roughness, NdotH, NdotV, NdotL, VdotH) * 
+		Distribution(lightingParams.roughness, NdotH) 
+		/ (4.0f * NdotL * NdotV);
+
+	float diffuseEnergyConservation = DiffuseEnergyConservation(lightingParams.fresnel0, NdotH);
+	resultDiffuseColor	= Diffuse(lightingParams.diffuseColor, lightingParams.roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * diffuseEnergyConservation.xxx * commonParamas.lightIntensity.xxx;
+
+	resultSpecularColor	= Fr * NdotL * lightingParams.specularColor * commonParamas.lightColor * commonParamas.lightIntensity.xxx;
+}
+
 #endif

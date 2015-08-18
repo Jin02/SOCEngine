@@ -3,7 +3,7 @@
 #include "DirectX.h"
 #include <string>
 #include "Structure.h"
-#include "Texture.h"
+#include "Texture2D.h"
 
 #include <hash_map>
 
@@ -14,7 +14,7 @@ namespace Rendering
 		class TextureManager
 		{
 		private:
-			std::hash_map<std::string, Texture::Texture*> _hash;
+			std::hash_map<std::string, Texture::Texture2D*> _hash;
 
 		public:
 			TextureManager();
@@ -24,8 +24,8 @@ namespace Rendering
 			static bool LoadTextureFromFile(ID3D11ShaderResourceView** outShaderResourceView, const std::string& fileDir);
 
 		public:
-			Texture::Texture* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha);
-			Texture::Texture* Find(const std::string& name);
+			Texture::Texture2D* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha);
+			Texture::Texture2D* Find(const std::string& name);
 			void Remoave(const std::string& name);
 			void RemoveAll();
 		};

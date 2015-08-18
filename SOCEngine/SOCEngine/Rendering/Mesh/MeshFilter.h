@@ -18,27 +18,15 @@ namespace Rendering
 
 		class MeshFilter
 		{
-		public:
-			enum class BufferElement : unsigned int
-			{
-				Normal		= 1,
-				UV			= 2,
-				Tangent		= 4,
-				Binormal	= 8,
-				Custom		= 16
-			};
-			typedef unsigned int BufferElementFlag;
-
 		private:
 			Buffer::VertexBuffer*	_vertexBuffer;
 			Buffer::IndexBuffer*	_indexBuffer;
-
-			BufferElementFlag		_bufferFlag;
 
 		private:
 			bool			_alloc;
 			unsigned int	_vertexCount;
 			unsigned int	_indexCount;
+			uint			_bufferFlag;
 
 		public:
 			MeshFilter();
@@ -57,13 +45,13 @@ namespace Rendering
 				Buffer<void>					vertex;
 				Buffer<unsigned int>			index;
 				bool							isDynamic;
-				MeshFilter::BufferElementFlag	bufferFlag;
 
 				const std::string				fileName;
 				const std::string				key;
+				uint							bufferFlag;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
-					:fileName(_fileName), key(_key) {}
+					:fileName(_fileName), key(_key), bufferFlag(0) {}
 				~CreateFuncArguments() {}
 			};
 			bool CreateBuffer(const CreateFuncArguments& args);
@@ -72,9 +60,9 @@ namespace Rendering
 			void UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size);
 
 		public:
-			GET_ACCESSOR(BufferElementFlag, BufferElementFlag, _bufferFlag);
 			GET_ACCESSOR(VertexCount, unsigned int, _vertexCount);
 			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
+			GET_ACCESSOR(BufferFlag, uint, _bufferFlag);
 		};
 	}
 }

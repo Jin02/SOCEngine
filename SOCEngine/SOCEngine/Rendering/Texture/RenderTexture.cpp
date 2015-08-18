@@ -4,7 +4,7 @@
 using namespace Rendering::Texture;
 using namespace Device;
 
-RenderTexture::RenderTexture() : Texture(), _renderTargetView(nullptr)
+RenderTexture::RenderTexture() : Texture2D(), _renderTargetView(nullptr)
 {
 
 }
@@ -14,27 +14,26 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format)
+bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags)
 {
-	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | optionalBindFlags;
 	
-	Texture::Initialize(size, format, bindFlags);
+	Texture2D::Initialize(size, format, bindFlags);
 
-	if(bindFlags & D3D11_BIND_RENDER_TARGET)
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	renderTargetViewDesc.Format = format;
+
+	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+
+	renderTargetViewDesc.ViewDimension = (dx->GetMSAADesc().Count > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	ID3D11Device* device = dx->GetDevice();
+
+	if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
 	{
-		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-		renderTargetViewDesc.Format = format;
-		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
-		ID3D11Device* device = dx->GetDevice();
-
-		if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
-		{
-			ASSERT_MSG("Error, not create render targer view, check srv desc or texture desc");
-			return false;
-		}
+		ASSERT_MSG("Error, not create render targer view, check srv desc or texture desc");
+		return false;
 	}
 
 	return true;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CameraForm.h"
-#include "LightCulling.h"
+#include "DeferredShadingWithLightCulling.h"
 #include "DirectX.h"
+#include "OnlyLightCulling.h"
 
 namespace Rendering
 {
@@ -18,12 +19,15 @@ namespace Rendering
 			bool _useTransparent;
 
 		private:
-			Texture::RenderTexture*		_albedo_metallic;
-			Texture::RenderTexture*		_normal_roughness;
-			Texture::RenderTexture*		_specular_fresnel0;
+			Texture::RenderTexture*				_albedo_metallic;
+			Texture::RenderTexture*				_normal_roughness;
+			Texture::RenderTexture*				_specular_fresnel0;
 
-			Texture::DepthBuffer*		_transparentDepthBuffer;
-			Texture::DepthBuffer*		_opaqueDepthBuffer;
+			DeferredShadingWithLightCulling*	_deferredShadingWithLightCulling;
+			Texture::DepthBuffer*				_opaqueDepthBuffer;
+
+			Light::OnlyLightCulling*			_blendedMeshLightCulling;
+			Texture::DepthBuffer*				_blendedDepthBuffer;
 
 		public:
 			DeferredCamera();
@@ -37,7 +41,7 @@ namespace Rendering
 			void Render(float dt, Device::DirectX* dx);
 
 		public:
-			void EnableRenderBlendedMesh(bool enable);
+			void EnableRenderTransparentMesh(bool enable);
 
 		public:
 			virtual Core::Component* Clone() const;

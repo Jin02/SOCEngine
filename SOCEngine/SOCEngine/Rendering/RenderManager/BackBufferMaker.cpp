@@ -31,7 +31,7 @@ void BackBufferMaker::Initialize()
 	Manager::ShaderManager* shaderMgr = resourceManager->GetShaderManager();
 
 	Factory::EngineFactory shaderLoader(shaderMgr);
-	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, nullptr, &_vertexShader, &_pixelShader);
+	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, &_vertexShader, &_pixelShader);
 	ASSERT_COND_MSG(_vertexShader && _pixelShader, "Error, Cant load BackBufferMaker shader files");
 
 	const Size<uint>& winSize = GlobalDeviceDirectorGetScreenSize;
@@ -134,7 +134,6 @@ void BackBufferMaker::Initialize()
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
 		meshCreateArgs.isDynamic		= false;
-		meshCreateArgs.bufferFlag		= (uint)Mesh::MeshFilter::BufferElement::UV;
 
 		_meshFilter = new MeshFilter;
 		_meshFilter->CreateBuffer(meshCreateArgs);

@@ -91,9 +91,6 @@
     <Filter Include="GPGPU\DirectCompute">
       <UniqueIdentifier>{45c4a43f-0f7a-4e74-9ce3-c3f797bc8d3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GPGPU\DirectCompute\Buffer">
-      <UniqueIdentifier>{f5a362be-e937-4fb1-9da9-2a1d0a4bfaf0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{4cdce50f-2d2c-4998-ba7b-7efb7d319831}</UniqueIdentifier>
     </Filter>
@@ -135,9 +132,6 @@
     </Filter>
     <Filter Include="Rendering\Shader\Vertex">
       <UniqueIdentifier>{e0c47a67-31e3-4c81-b6ac-50ad293c1ef9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Shader\Mgr">
-      <UniqueIdentifier>{3487cdc5-5d70-428c-8d14-ef81a680dde5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{227d4182-a43f-482c-ac9a-59e0c44b2e7e}</UniqueIdentifier>
@@ -247,11 +241,62 @@
     <Filter Include="Rendering\Camera\CameraForm">
       <UniqueIdentifier>{72517065-541d-462c-9334-c409a8494fe3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Deferred">
-      <UniqueIdentifier>{acb5a2eb-7b61-4524-909a-ef16771da35a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\DeferredCamera">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Manager">
+      <UniqueIdentifier>{3487cdc5-5d70-428c-8d14-ef81a680dde5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Macro">
+      <UniqueIdentifier>{65f2ac00-35fe-41f7-9abd-803503957b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes">
+      <UniqueIdentifier>{877cecda-6dde-4a84-8f71-3e96cf36edd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Core">
+      <UniqueIdentifier>{d841022d-dffb-4ea5-807d-ac5080ce91fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBS">
+      <UniqueIdentifier>{85de1ee0-7e07-4f7e-8b4a-ef117da465b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\UI">
+      <UniqueIdentifier>{6809cf50-2eae-4027-9b0a-25acc6f06b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBS\Common">
+      <UniqueIdentifier>{b2e9f017-7671-457f-ade4-0fdbfb36966b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBS\GBuffer">
+      <UniqueIdentifier>{88135b69-cc45-4b5e-bf31-e2b4d4387614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBS\Transparency">
+      <UniqueIdentifier>{7573495d-744c-4d79-987e-a4d8c95cbec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Core\Deferred">
+      <UniqueIdentifier>{6234f508-e009-42cc-9ea1-e5a0603b5720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Core\Temp">
+      <UniqueIdentifier>{f57201a0-c04e-486d-911a-289f4b272bab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Core\LightCulling">
+      <UniqueIdentifier>{ff502500-e60a-415f-9c54-299247ef8fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Core\Common">
+      <UniqueIdentifier>{46a47092-08bd-4611-b92f-83faacd950c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shading">
+      <UniqueIdentifier>{ca3d40b4-c7af-48a7-a91f-a479d482217a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPGPU\DirectCompute\Output">
+      <UniqueIdentifier>{1f177282-58da-4cea-82e8-50f71419e581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPGPU\DirectCompute\Output\RWTexture">
+      <UniqueIdentifier>{15f70036-b82d-49da-9f90-3112156c70ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPGPU\DirectCompute\Input">
+      <UniqueIdentifier>{ab8c3a52-1836-4141-8077-25b44e05ea70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GPGPU\DirectCompute\Output\RWBuffer">
+      <UniqueIdentifier>{773d7581-f22f-483c-8459-d9623f173f01}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -348,17 +393,11 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\Texture.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
     <ClInclude Include="Importer\ObjImporter.h">
       <Filter>Importer\Obj</Filter>
-    </ClInclude>
-    <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
-      <Filter>Template</Filter>
     </ClInclude>
     <ClInclude Include="Importer\ImporterUtility.h">
       <Filter>Importer\Utility</Filter>
@@ -385,7 +424,7 @@
       <Filter>Rendering\Shader\Vertex</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
-      <Filter>Rendering\Shader\Mgr</Filter>
+      <Filter>Rendering\Shader\Manager</Filter>
     </ClInclude>
     <ClInclude Include="GPGPU\ComputeShader.h">
       <Filter>GPGPU\DirectCompute</Filter>
@@ -401,9 +440,6 @@
     </ClInclude>
     <ClInclude Include="Utility\DirectoryManager.h">
       <Filter>Utility\DirectoryManager</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSInputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h">
       <Filter>Rendering\Mesh\data</Filter>
@@ -423,17 +459,8 @@
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\CSOutputBuffer_ReadCPU.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSOutputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
       <Filter>Rendering\Buffer\Const</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.h">
-      <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material\Manager</Filter>
@@ -598,14 +625,41 @@
     <ClInclude Include="Rendering\Camera\DeferredCamera.h">
       <Filter>Rendering\Camera\DeferredCamera</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Deferred\DeferredShadingWithLightCulling.h">
-      <Filter>Rendering\Deferred</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Light\Lights.h">
       <Filter>Rendering\Light\Lights</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager\OriginObjectManager.h">
       <Filter>Core\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
+      <Filter>Template</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderMacro.h">
+      <Filter>Rendering\Shader\Macro</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shading\DeferredShadingWithLightCulling.h">
+      <Filter>Rendering\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSInputBuffer.h">
+      <Filter>GPGPU\DirectCompute\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSRWTexture.h">
+      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture2D.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSOutput.h">
+      <Filter>GPGPU\DirectCompute\Output</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\CSRWBuffer.h">
+      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Structure\VectorHashMap.h">
+      <Filter>Structure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -678,9 +732,6 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\Texture.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="Importer\ObjImporter.cpp">
       <Filter>Importer\Obj</Filter>
     </ClCompile>
@@ -700,7 +751,7 @@
       <Filter>Rendering\Shader\Vertex</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
-      <Filter>Rendering\Shader\Mgr</Filter>
+      <Filter>Rendering\Shader\Manager</Filter>
     </ClCompile>
     <ClCompile Include="GPGPU\ComputeShader.cpp">
       <Filter>GPGPU\DirectCompute</Filter>
@@ -717,9 +768,6 @@
     <ClCompile Include="Utility\DirectoryManager.cpp">
       <Filter>Utility\DirectoryManager</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSInputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp">
       <Filter>Rendering\Mesh\data</Filter>
     </ClCompile>
@@ -735,17 +783,8 @@
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSOutputBuffer_ReadCPU.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSOutputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Buffer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\Culling\LightCulling_CSOutputBuffer.cpp">
-      <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material\Manager</Filter>
@@ -828,11 +867,82 @@
     <ClCompile Include="Rendering\Camera\DeferredCamera.cpp">
       <Filter>Rendering\Camera\DeferredCamera</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Deferred\DeferredShadingWithLightCulling.cpp">
-      <Filter>Rendering\Deferred</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceManager\OriginObjectManager.cpp">
       <Filter>Core\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
+      <Filter>Rendering\Shader\Macro</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shading\DeferredShadingWithLightCulling.cpp">
+      <Filter>Rendering\Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSInputBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSRWTexture.cpp">
+      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSOutput.cpp">
+      <Filter>GPGPU\DirectCompute\Output</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\CSRWBuffer.cpp">
+      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ShaderCodes\BackBufferMaker.hlsl">
+      <Filter>ShaderCodes\Core\Temp</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\LightCulling_CS.h">
+      <Filter>ShaderCodes\Core\LightCulling</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyLightCulling.hlsl">
+      <Filter>ShaderCodes\Core\LightCulling</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Common.h">
+      <Filter>ShaderCodes\PBS\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV.hlsl">
+      <Filter>ShaderCodes\PBS\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TBN_UV.hlsl">
+      <Filter>ShaderCodes\PBS\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV.hlsl">
+      <Filter>ShaderCodes\PBS\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV.hlsl">
+      <Filter>ShaderCodes\PBS\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TBN_UV.hlsl">
+      <Filter>ShaderCodes\PBS\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV.hlsl">
+      <Filter>ShaderCodes\PBS\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
+      <Filter>ShaderCodes\PBS\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_Common.h">
+      <Filter>ShaderCodes\PBS\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ShaderCommon.h">
+      <Filter>ShaderCodes\Core\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\TileBasedDeferredShading.hlsl">
+      <Filter>ShaderCodes\Core\Deferred</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
+      <Filter>ShaderCodes\UI</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\BRDF.h">
+      <Filter>ShaderCodes\PBS\Common</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

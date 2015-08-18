@@ -25,26 +25,26 @@ bool TextureManager::LoadTextureFromFile(ID3D11ShaderResourceView** outShaderRes
 }
 
 
-Texture* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool hasAlpha)
+Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool hasAlpha)
 {
 	std::string folderPath, name, extension;
 	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &extension);
 
-	Texture::Texture* tex = Find(name);
+	Texture::Texture2D* tex = Find(name);
 	if(tex)
 		return tex;
 
 	ID3D11ShaderResourceView* srv = nullptr;
 
 	ASSERT_COND_MSG(LoadTextureFromFile(&srv, fileDir), "Fail, Not Load Texture!");
-	tex = new Texture::Texture(srv, hasAlpha);
+	tex = new Texture::Texture2D(srv, hasAlpha);
 
 	_hash.insert(std::make_pair(name + extension, tex));
 
 	return tex;
 }
 
-Texture* TextureManager::Find(const std::string& name)
+Texture2D* TextureManager::Find(const std::string& name)
 {
 	auto findIter = _hash.find(name);
 	return findIter == _hash.end() ? nullptr : findIter->second;

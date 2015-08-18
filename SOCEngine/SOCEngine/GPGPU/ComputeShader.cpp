@@ -52,12 +52,12 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		}
 	}
 
-	for(auto iter = _outputBuffers.begin(); iter != _outputBuffers.end(); ++iter)
+	for(auto iter = _outputs.begin(); iter != _outputs.end(); ++iter)
 	{
-		auto buffer = iter->buffer;
-		if(buffer)
+		auto output = iter->output;
+		if(output)
 		{
-			ID3D11UnorderedAccessView* uav = buffer->GetUnorderedAccessView();
+			ID3D11UnorderedAccessView* uav = output->GetUnorderedAccessView();
 			context->CSSetUnorderedAccessViews(iter->idx, 1, &uav, nullptr);
 		}
 	}
@@ -75,7 +75,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
 	{
-		for(auto iter = _outputBuffers.begin(); iter != _outputBuffers.end(); ++iter)
+		for(auto iter = _outputs.begin(); iter != _outputs.end(); ++iter)
 			context->CSSetUnorderedAccessViews(iter->idx, 0, &nullUAV, nullptr);
 	}
 	context->CSSetShader(nullptr, nullptr, 0);
