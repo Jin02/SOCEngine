@@ -31,7 +31,7 @@ namespace Rendering
 		return true;
 	}
 
-	void PixelShader::UpdateShader(ID3D11DeviceContext* context)
+	void PixelShader::SetShaderToContext(ID3D11DeviceContext* context)
 	{
 		context->PSSetShader(_shader, nullptr, 0);
 	}
@@ -59,9 +59,9 @@ namespace Rendering
 				const Texture::Texture2D* tex = iter->second;
 				if(tex)
 				{
-					ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
+					auto srv = iter->second->GetShaderResourceView();
 					if(srv)
-						context->PSSetShaderResources( iter->first, 1, &srv );
+						context->PSSetShaderResources( iter->first, 1, srv );
 				}
 			}
 		}

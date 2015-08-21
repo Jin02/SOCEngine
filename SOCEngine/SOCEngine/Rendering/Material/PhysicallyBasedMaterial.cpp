@@ -33,7 +33,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
 		GetMetallic(param.metallic);
 		GetUVTiling(param.uvTiling);
 
-		_gbufferCB->Update(dx->GetContext(), &param);
+		_gbufferCB->UpdateSubResource(dx->GetContext(), &param);
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
 		UpdateConstBuffer_ShaderSlotIndex(GBufferShaderSlotIndex, _gbufferCB);

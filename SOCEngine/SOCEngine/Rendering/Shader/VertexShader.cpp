@@ -61,12 +61,12 @@ namespace Rendering
 		return true;
 	}
 
-	void VertexShader::UpdateShader(ID3D11DeviceContext* context)
+	void VertexShader::SetShaderToContext(ID3D11DeviceContext* context)
 	{
 		context->VSSetShader(_shader, nullptr, 0);
 	}
 
-	void VertexShader::UpdateInputLayout(ID3D11DeviceContext* context)
+	void VertexShader::SetInputLayoutToContext(ID3D11DeviceContext* context)
 	{
 		context->IASetInputLayout(_layout);
 	}
@@ -87,9 +87,9 @@ namespace Rendering
 		{
 			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 			{
-				ID3D11ShaderResourceView* srv = iter->second->GetShaderResourceView();
+				auto srv = iter->second->GetShaderResourceView();
 				if(srv)
-					context->VSSetShaderResources( iter->first, 1, &srv );
+					context->VSSetShaderResources( iter->first, 1, srv );
 			}
 		}
 	}
