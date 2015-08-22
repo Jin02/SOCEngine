@@ -13,7 +13,17 @@ BaseBuffer::~BaseBuffer()
 	SAFE_RELEASE(_buffer);
 }
 
-void BaseBuffer::Update(ID3D11DeviceContext* context, const void* data)
+void BaseBuffer::UpdateSubResource(ID3D11DeviceContext* context, const void* data)
 {
 	context->UpdateSubresource(_buffer, 0, nullptr, data, 0, 0);
+}
+
+void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const void* data, uint size)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	memcpy(mappedResource.pData, data, size);
+
+	context->Unmap(_buffer, 0);
 }

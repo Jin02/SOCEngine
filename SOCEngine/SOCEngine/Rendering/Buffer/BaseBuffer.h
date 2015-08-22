@@ -16,7 +16,8 @@ namespace Rendering
 			virtual ~BaseBuffer();
 
 		public:
-			void Update(ID3D11DeviceContext* context, const void* data);
+			void UpdateSubResource(ID3D11DeviceContext* context, const void* data);
+			void UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const void* data, uint size);
 
 		public:
 			GET_ACCESSOR(Buffer, ID3D11Buffer*, _buffer);
