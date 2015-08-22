@@ -13,7 +13,7 @@ namespace Rendering
 		{
 		public:
 			ConstBuffer_CPURead();
-			~ConstBuffer_CPURead();
+			virtual ~ConstBuffer_CPURead();
 
 		public:
 			bool Initialize(unsigned int stride, unsigned int num);
