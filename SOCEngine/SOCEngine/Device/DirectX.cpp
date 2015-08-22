@@ -380,3 +380,43 @@ Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
 
 	return shaderMacro;
 }
+
+Math::Size<uint> DirectX::FetchBackBufferSize() const
+{
+	uint num = 1;
+	D3D11_VIEWPORT vp;
+	_immediateContext->RSGetViewports(&num, &vp);
+
+	Math::Size<uint> size;
+	size.w = vp.Width;
+	size.h = vp.Height;
+
+	return size;
+}
+
+void DirectX::GetViewportMatrix(Math::Matrix& outMat) const
+{
+	uint num = 1;
+	D3D11_VIEWPORT vp;
+	_immediateContext->RSGetViewports(&num, &vp);
+
+	outMat._11 = vp.Width /  2.0f;
+	outMat._12 = 0.0f;
+	outMat._13 = 0.0f;
+	outMat._14 = 0.0f;
+
+	outMat._21 = 0.0f;
+	outMat._22 = -vp.Height / 2.0f;
+	outMat._23 = 0.0f;
+	outMat._24 = 0.0f;
+
+	outMat._31 = 0.0f;
+	outMat._32 = 0.0f;
+	outMat._33 = vp.MaxDepth - vp.MinDepth;
+	outMat._34 = 0.0f;
+
+	outMat._41 = vp.TopLeftX + vp.Width / 2.0f;
+	outMat._42 = vp.TopLeftY + vp.Height / 2.0f;
+	outMat._43 = vp.MinDepth;
+	outMat._44 = 1.0f;
+}

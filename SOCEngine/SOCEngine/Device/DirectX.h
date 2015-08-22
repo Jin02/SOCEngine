@@ -15,6 +15,8 @@
 #include "Color.h"
 #include "ShaderMacro.h"
 
+#include "Matrix.h"
+
 namespace Device
 {
 	class DirectX
@@ -69,6 +71,8 @@ namespace Device
 		bool InitDevice(const Win32* win, bool isDeferredRender = false);
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
 		void ClearDeviceContext();
+		Math::Size<uint> FetchBackBufferSize() const;
+		void GetViewportMatrix(Math::Matrix& outMat) const;
 
 	public:
 		GET_ACCESSOR(Device,								ID3D11Device*,				_device);
@@ -77,23 +81,23 @@ namespace Device
 
 		GET_ACCESSOR(BackBuffer,							ID3D11RenderTargetView*,	_renderTargetView);
 
-		GET_ACCESSOR(DefaultCullingRasterizerState,			ID3D11RasterizerState*,		_defaultCulling);
-		GET_ACCESSOR(DisableCullingRasterizerState,			ID3D11RasterizerState*,		_disableCulling);
+		GET_ACCESSOR(RasterizerStateDefaultCulling,			ID3D11RasterizerState*,		_defaultCulling);
+		GET_ACCESSOR(RasterizerStateDisableCulling,			ID3D11RasterizerState*,		_disableCulling);
 
-		GET_ACCESSOR(OpaqueBlendState,						ID3D11BlendState*,			_opaqueBlend);
-		GET_ACCESSOR(AlphaToCoverageBlendState,				ID3D11BlendState*,			_alphaToCoverageBlend);
-		GET_ACCESSOR(OpaqueDepthOnlyBlendState,				ID3D11BlendState*,			_opaqueBlendDepthOnly);
-		GET_ACCESSOR(AlphaBlendState,						ID3D11BlendState*,			_alphaBlend);
+		GET_ACCESSOR(BlendStateOpaque,						ID3D11BlendState*,			_opaqueBlend);
+		GET_ACCESSOR(BlendStateAlphaToCoverage,				ID3D11BlendState*,			_alphaToCoverageBlend);
+		GET_ACCESSOR(BlendStateOpaqueDepthOnly,				ID3D11BlendState*,			_opaqueBlendDepthOnly);
+		GET_ACCESSOR(BlendStateAlpha,						ID3D11BlendState*,			_alphaBlend);
 
-		GET_ACCESSOR(DepthDisableDepthTestState,			ID3D11DepthStencilState*,	_depthDisableDepthTest);
-		GET_ACCESSOR(DepthLessState,						ID3D11DepthStencilState*,	_depthLess);
-		GET_ACCESSOR(DepthEqualAndDisableDepthWriteState,	ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
-		GET_ACCESSOR(DepthGreaterState,						ID3D11DepthStencilState*,	_depthGreater);
-		GET_ACCESSOR(DepthGreaterAndDisableDepthWriteState, ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
+		GET_ACCESSOR(DepthStateDisableDepthTest,			ID3D11DepthStencilState*,	_depthDisableDepthTest);
+		GET_ACCESSOR(DepthStateLess,						ID3D11DepthStencilState*,	_depthLess);
+		GET_ACCESSOR(DepthStateEqualAndDisableDepthWrite,	ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
+		GET_ACCESSOR(DepthStateGreater,						ID3D11DepthStencilState*,	_depthGreater);
+		GET_ACCESSOR(DepthStateGreaterAndDisableDepthWrite, ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
 
-		GET_ACCESSOR(AnisotropicSamplerState,				ID3D11SamplerState*,		_anisotropicSamplerState);
-		GET_ACCESSOR(LinearSamplerState,					ID3D11SamplerState*,		_linearSamplerState);
-		GET_ACCESSOR(PointSamplerState,						ID3D11SamplerState*,		_pointSamplerState);
+		GET_ACCESSOR(SamplerStateAnisotropic,				ID3D11SamplerState*,		_anisotropicSamplerState);
+		GET_ACCESSOR(SamplerStateLinear,					ID3D11SamplerState*,		_linearSamplerState);
+		GET_ACCESSOR(SamplerStatePoint,						ID3D11SamplerState*,		_pointSamplerState);
 
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
