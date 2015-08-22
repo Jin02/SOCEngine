@@ -33,13 +33,22 @@ bool ComputeShader::Initialize()
 void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 {
 	context->CSSetShader(_shader, nullptr, 0);
-	for(auto iter = _inputBuffers.begin(); iter != _inputBuffers.end(); ++iter)
+	for(auto iter = _inputSRBuffers.begin(); iter != _inputSRBuffers.end(); ++iter)
 	{
 		auto buffer = iter->buffer;
 		if(buffer)
 		{
-			ID3D11ShaderResourceView* srv = buffer->GetShaderResourceView();
-			context->CSSetShaderResources(iter->idx, 1, &srv);
+			auto srv = buffer->GetShaderResourceView();
+			context->CSSetShaderResources(iter->idx, 1, srv);
+		}
+	}
+	for(auto iter = _inputConstBuffers.begin(); iter != _inputConstBuffers.end(); ++iter)
+	{
+		auto cb = iter->buffer;
+		if(cb)
+		{
+			auto buffer = cb->GetBuffer();
+			context->CSSetConstantBuffers(iter->idx, 1, &buffer);
 		}
 	}
 	for(auto iter = _inputTextures.begin(); iter != _inputTextures.end(); ++iter)
@@ -47,8 +56,8 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		auto texture = iter->texture;
 		if(texture)
 		{
-			ID3D11ShaderResourceView* srv = texture->GetShaderResourceView();
-			context->CSSetShaderResources(iter->idx, 1, &srv);
+			auto srv = texture->GetShaderResourceView();
+			context->CSSetShaderResources(iter->idx, 1, srv);
 		}
 	}
 
@@ -66,7 +75,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	{
-		for(auto iter = _inputBuffers.begin(); iter != _inputBuffers.end(); ++iter)
+		for(auto iter = _inputSRBuffers.begin(); iter != _inputSRBuffers.end(); ++iter)
 			context->CSSetShaderResources(iter->idx, 1, &nullSRV);
 
 		for(auto iter = _inputTextures.begin(); iter != _inputTextures.end(); ++iter)
