@@ -56,6 +56,7 @@ namespace Rendering
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
 
 			std::hash_map<uint, const Shader::ShaderGroup>	_transparentShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_transparent_depthOnly_Shaders;
 
 		public:
 			RenderManager();
@@ -70,7 +71,7 @@ namespace Rendering
 			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
 
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest);
-			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag);
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly);
 
 		public:
 			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
