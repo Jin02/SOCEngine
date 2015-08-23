@@ -17,7 +17,7 @@ namespace Rendering
 		{
 		public:
 			static const uint TileSize					= 16;
-			static const uint LightMaxNumInTile			= 544;
+			static const uint LightMaxNumInTile			= 272;
 
 			enum class InputBufferShaderIndex : unsigned int
 			{
@@ -90,7 +90,7 @@ namespace Rendering
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;
-			unsigned int CalcMaxNumLightsInTile();
+			static unsigned int CalcMaxNumLightsInTile();
 		};
 	}
 }

@@ -255,7 +255,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 			Matrix::Inverse(param.invProjMat, param.invProjMat); //invProj
 
 			param.screenSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
-			param.maxNumOfperLightInTile = LightCulling::LightMaxNumInTile;
+			param.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
 			_tbrParamConstBuffer->UpdateSubResource(context, &param);
 
@@ -266,22 +266,6 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
-	}
-
-	// TBFR
-	{
-		/*
-		struct MeshInForwardRendering
-		{
-			const Mesh::Mesh*	mesh;
-			const Material*		material;
-		};
-		*/
-		std::vector<MeshInForwardRendering> tbfrQueue;
-		for(auto iter = tbfrQueue.begin(); iter != tbfrQueue.end(); ++iter)
-		{
-
-		}
 	}
 
 	// Transparency
