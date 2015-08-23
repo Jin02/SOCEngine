@@ -28,7 +28,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
 
-	_screenSize = director->GetWindowSize();
+	_screenSize = director->GetBackBufferSize();
 	_maxLength = maxLength;
 
 	const FontLoader* fontLoader =

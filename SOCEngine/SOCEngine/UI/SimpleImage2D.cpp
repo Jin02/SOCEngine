@@ -82,7 +82,7 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 
 	if(_changeSize)
 	{
-		const Math::Size<uint>& screenSize = Director::GetInstance()->GetWindowSize();
+		const Math::Size<uint>& screenSize = Director::GetInstance()->GetBackBufferSize();
 
 		float left		= -(_size.w / 2.0f);
 		float right		= -left;
