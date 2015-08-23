@@ -27,3 +27,14 @@ void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const
 
 	context->Unmap(_buffer, 0);
 }
+
+void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const void* data, uint startOffset, uint size, D3D11_MAP mapType)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = context->Map(_buffer, 0, mapType, 0, &mappedResource);
+
+	void* mem = ((char*)mappedResource.pData + startOffset);
+	memcpy(mem, data, size);
+
+	context->Unmap(_buffer, 0);
+}
