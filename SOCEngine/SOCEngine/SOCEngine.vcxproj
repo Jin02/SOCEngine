@@ -48,7 +48,6 @@
     <ClInclude Include="External\rapidjson\writer.h" />
     <ClInclude Include="External\tiny_obj_loader.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
-    <ClInclude Include="GPGPU\CSInputBuffer.h" />
     <ClInclude Include="GPGPU\CSOutput.h" />
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
@@ -75,6 +74,7 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
@@ -142,18 +142,13 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_Common.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\ShaderCommon.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\FontLoader.h" />
@@ -185,7 +180,6 @@
     <ClCompile Include="Core\Transform\Transform.cpp" />
     <ClCompile Include="External\tiny_obj_loader.cc" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
-    <ClCompile Include="GPGPU\CSInputBuffer.cpp" />
     <ClCompile Include="GPGPU\CSOutput.cpp" />
     <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
@@ -208,6 +202,7 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />

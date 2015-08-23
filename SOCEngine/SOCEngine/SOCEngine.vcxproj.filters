@@ -292,11 +292,14 @@
     <Filter Include="GPGPU\DirectCompute\Output\RWTexture">
       <UniqueIdentifier>{15f70036-b82d-49da-9f90-3112156c70ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GPGPU\DirectCompute\Input">
-      <UniqueIdentifier>{ab8c3a52-1836-4141-8077-25b44e05ea70}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GPGPU\DirectCompute\Output\RWBuffer">
       <UniqueIdentifier>{773d7581-f22f-483c-8459-d9623f173f01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\ShaderResource">
+      <UniqueIdentifier>{8dd9a6a6-33d6-4f65-920c-3801c361ef8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBS\Forward">
+      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -640,9 +643,6 @@
     <ClInclude Include="Rendering\Shading\DeferredShadingWithLightCulling.h">
       <Filter>Rendering\Shading</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\CSInputBuffer.h">
-      <Filter>GPGPU\DirectCompute\Input</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\CSRWTexture.h">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClInclude>
@@ -660,6 +660,12 @@
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h">
       <Filter>Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
+      <Filter>Rendering\Buffer\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
+      <Filter>ShaderCodes\PBS\Forward</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -876,9 +882,6 @@
     <ClCompile Include="Rendering\Shading\DeferredShadingWithLightCulling.cpp">
       <Filter>Rendering\Shading</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSInputBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Input</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\CSRWTexture.cpp">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClCompile>
@@ -893,6 +896,9 @@
     </ClCompile>
     <ClCompile Include="GPGPU\CSRWBuffer.cpp">
       <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
+      <Filter>Rendering\Buffer\ShaderResource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -928,9 +934,6 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
       <Filter>ShaderCodes\PBS\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_Common.h">
-      <Filter>ShaderCodes\PBS\Transparency</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\ShaderCommon.h">
       <Filter>ShaderCodes\Core\Common</Filter>
