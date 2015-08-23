@@ -57,14 +57,9 @@ namespace Rendering
 
 		void Mesh::OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
 		{
+			//업데이트 할지 안할지에 대한 여부는, Object에서 판단함
 			ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-
-			int res = memcmp(&_prevConstBufferData, &transpose_Transform, sizeof(Core::TransformPipelineShaderInput));
-			if(res != 0)
-			{
-				_transformConstBuffer->UpdateSubResource(context, &transpose_Transform);
-				_prevConstBufferData = transpose_Transform;
-			}
+			_transformConstBuffer->UpdateSubResource(context, &transpose_Transform);
 		}
 
 		void Mesh::OnDestroy()
