@@ -137,7 +137,7 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Obje
 		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
 		_camConstBuffer->UpdateSubResource(context, &camCB);
 
-		memcpy(&_prevConstBufferData, &camCB, sizeof(ConstBufferParam));
+		_prevConstBufferData = camCB;
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
