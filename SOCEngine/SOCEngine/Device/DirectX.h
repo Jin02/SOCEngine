@@ -16,6 +16,8 @@
 #include "ShaderMacro.h"
 
 #include "Matrix.h"
+#include "Size.h"
+#include "Rect.h"
 
 namespace Device
 {
@@ -53,6 +55,7 @@ namespace Device
 		ID3D11SamplerState			*_pointSamplerState;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
+		Math::Size<uint>			_backBufferSize;
 
 	public:
 		DirectX();
@@ -61,17 +64,17 @@ namespace Device
 	private:
 		bool CreateRenderTargetView();
 		bool CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC* multiSampler = nullptr);
-		bool CreateViewport(const Math::Size<unsigned int>& winSize);
+		bool InitViewport(const Math::Rect<uint>& rect);
 		bool CreateSwapChain(const Win32* win);
 	
 		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);		
 		void CreateBlendStates(bool isDeferredRender);
 
 	public:
-		bool InitDevice(const Win32* win, bool isDeferredRender = false);
+		bool InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect, bool isDeferredRender = false);
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
 		void ClearDeviceContext();
-		Math::Size<uint> FetchBackBufferSize() const;
+		Math::Size<uint> FetchBackBufferSize();
 		void GetViewportMatrix(Math::Matrix& outMat) const;
 
 	public:
@@ -101,5 +104,6 @@ namespace Device
 
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
+		GET_ACCESSOR(BackBufferSize,						const Math::Size<uint>&,	_backBufferSize);
 	};
 }
