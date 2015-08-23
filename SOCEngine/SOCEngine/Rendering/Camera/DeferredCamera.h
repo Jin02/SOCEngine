@@ -17,6 +17,8 @@ namespace Rendering
 
 		private:
 			bool _useTransparent;
+			Light::LightCulling::TBRChangeableParam		_prevParamData;
+			Buffer::ConstBuffer* _tbrParamConstBuffer;
 
 		private:
 			Texture::RenderTexture*				_albedo_metallic;
@@ -28,6 +30,7 @@ namespace Rendering
 
 			Light::OnlyLightCulling*			_blendedMeshLightCulling;
 			Texture::DepthBuffer*				_blendedDepthBuffer;
+
 
 		public:
 			DeferredCamera();
