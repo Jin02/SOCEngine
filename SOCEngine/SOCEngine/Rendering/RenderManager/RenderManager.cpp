@@ -66,17 +66,18 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 	{
 		repo = &_gbufferShaders_alphaTest;
 
-		if(macros)
-		{
-			ShaderMacro alphaTestMacro;
-			alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
-
-			targetShaderMacros.push_back(alphaTestMacro);
-		}
-
+		ShaderMacro alphaTestMacro;
+		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
+		targetShaderMacros.push_back(alphaTestMacro);
 	}
 	else if(meshType == MeshType::Transparent)
+	{
 		repo = &_transparentShaders;
+
+		ShaderMacro useTransparencyMacro;
+		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
+		targetShaderMacros.push_back(useTransparencyMacro);
+	}
 	else
 	{
 		ASSERT_MSG("Error, not supported mesh type");
@@ -88,12 +89,12 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-	auto LoadShader = [](const std::string& fileName, const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr)
+	auto LoadShader = [](const std::string& fileName, const std::string& vsMainName, const std::string& psMainName, const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr)
 	{
 		Factory::EngineFactory shaderLoader(shaderMgr);
 
 		ShaderGroup shaders;
-		shaderLoader.LoadShader(fileName, "VS", "PS", macros, &shaders.vs, &shaders.ps);
+		shaderLoader.LoadShader(fileName, vsMainName, psMainName, macros, &shaders.vs, &shaders.ps);
 
 		ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
 		return shaders;
@@ -101,8 +102,14 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 
 	ShaderGroup shader;
 	{
-		shader = LoadShader(fileName, &targetShaderMacros, resourceManager->GetShaderManager());
+		shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
 		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+
+		if(meshType == MeshType::Transparent)
+		{
+			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
+			_transparent_depthOnly_Shaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+		}
 	}
 
 	return shader;
@@ -181,9 +188,11 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag,
 	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag)
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly)
 {
-	auto iter = _transparentShaders.find(bufferFlag);
+	auto iter = isDepthOnly ?	_transparent_depthOnly_Shaders.find(bufferFlag) : 
+								_transparentShaders.find(bufferFlag);
+
 	if(iter == _transparentShaders.end())
 		return false;
 

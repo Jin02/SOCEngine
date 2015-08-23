@@ -13,7 +13,7 @@ namespace Rendering
 
 		public:
 			VertexBuffer();
-			~VertexBuffer();
+			virtual ~VertexBuffer();
 
 		public:
 			bool Initialize(const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic);

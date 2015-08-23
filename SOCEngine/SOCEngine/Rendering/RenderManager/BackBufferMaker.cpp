@@ -44,14 +44,14 @@ void BackBufferMaker::Initialize()
 		Matrix::Identity(world);
 		world._43 = -10;
 
-		Camera::CameraForm::ViewMatrix(view, world);
+		Camera::CameraForm::GetViewMatrix(view, world);
 		Matrix::OrthoLH(proj, (float)winSize.w, (float)winSize.h, 0.01f, 1000.0f);
 
 		Matrix viewProj = view * proj;
 		Matrix::Transpose(viewProj, viewProj);
 		
 		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-		transformConstBuffer->Update(context, &viewProj); 
+		transformConstBuffer->UpdateSubResource(context, &viewProj); 
 
 		BaseShader::BufferType bufferType;
 		bufferType.first	= 0;
@@ -163,16 +163,16 @@ void BackBufferMaker::Render(const Device::DirectX* dx, const Rendering::Camera:
 	float color[] = {0, 0, 0, 1};
 	context->ClearRenderTargetView(deviceBackBuffer, color);
 
-	ID3D11SamplerState* sampler = dx->GetPointSamplerState();
+	ID3D11SamplerState* sampler = dx->GetSamplerStatePoint();
 	context->PSSetSamplers(0, 1, &sampler);
 	{
 		_meshFilter->IASetBuffer(dx);
 
-		_vertexShader->UpdateShader(context);
-		_vertexShader->UpdateInputLayout(context);
+		_vertexShader->SetShaderToContext(context);
+		_vertexShader->SetInputLayoutToContext(context);
 		_vertexShader->UpdateResources(context, &_constBuffers, nullptr);
 
-		_pixelShader->UpdateShader(context);
+		_pixelShader->SetShaderToContext(context);
 		_textures[0].second = mainCamRT;
 		_textures[1].second = uiCamRT;
 		_pixelShader->UpdateResources(context, nullptr, &_textures);

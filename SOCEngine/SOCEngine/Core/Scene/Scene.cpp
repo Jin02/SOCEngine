@@ -74,7 +74,7 @@ void Scene::Render()
 	
 	ID3D11DeviceContext* context = _dx->GetContext();
 	//Turn off depth writing
-	context->OMSetDepthStencilState(_dx->GetDepthDisableDepthTestState(), 0);
+	context->OMSetDepthStencilState(_dx->GetDepthStateDisableDepthTest(), 0);
 
 	Camera::CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	_backBufferMaker->Render(_dx, mainCam, nullptr);

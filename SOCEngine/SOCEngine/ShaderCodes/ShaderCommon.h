@@ -49,13 +49,6 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 #endif
 
-cbuffer TileBasedDeferredShadingParams								: register( b0 )
-{
-	matrix	g_invViewProjViewport;
-	float3	g_cameraWorldPosition;
-	uint	g_directionalLightCount;
-};
-
 struct LightingParams
 {
 	uint	lightIndex;
@@ -72,6 +65,14 @@ struct LightingCommonParams
 	float3	lightColor;
 	float	lightIntensity;
 	float3	lightDir;
+};
+
+cbuffer Camera : register( b0 )			//CameraForm
+{
+	float4 	camera_pos;
+	float 	camera_near;
+	float 	camera_far;
+	float2 	camera_screenSize;
 };
 
 #endif

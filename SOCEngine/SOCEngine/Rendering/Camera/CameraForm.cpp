@@ -14,7 +14,6 @@ using namespace Rendering::Manager;
 CameraForm::CameraForm() 
 	: Component(),	_frustum(nullptr), _renderTarget(nullptr), _isInvertedDepthWriting(false)
 {
-	_renderType = RenderType::Unknown;
 }
 
 CameraForm::~CameraForm(void)
@@ -40,7 +39,7 @@ void CameraForm::OnInitialize()
 	_renderTarget->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	_camConstBuffer = new Buffer::ConstBuffer;
-	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
 		ASSERT_MSG("Error, cam->constbuffer->Initialize");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
@@ -58,7 +57,7 @@ void CameraForm::CalcAspect()
 	_aspect = (float)windowSize.w / (float)windowSize.h;
 }
 
-void CameraForm::ProjectionMatrix(Math::Matrix& outMatrix)
+void CameraForm::GetProjectionMatrix(Math::Matrix& outMatrix) const
 {
 	if(_projectionType == ProjectionType::Perspective)
 	{
@@ -79,7 +78,7 @@ void CameraForm::ProjectionMatrix(Math::Matrix& outMatrix)
 	}
 }
 
-void CameraForm::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
+void CameraForm::GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
 {
 	outMatrix = worldMatrix;
 
@@ -103,24 +102,24 @@ void CameraForm::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMa
 	outMatrix._44 = 1.0f;
 }
 
-void CameraForm::ViewMatrix(Math::Matrix& outMatrix)
+void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
 
-	ViewMatrix(outMatrix, worldMat);
+	GetViewMatrix(outMatrix, worldMat);
 }
 
 void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects)
 {
 	TransformPipelineParam tfParam;
-	ProjectionMatrix(tfParam.projMat);
-	ViewMatrix(tfParam.viewMat);
+	GetProjectionMatrix(tfParam.projMat);
+	GetViewMatrix(tfParam.viewMat);
 
-	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
-	_frustum->Make(viewProj);
+	_viewProjMatrixInPrevRenderState = tfParam.viewMat * tfParam.projMat;
+	_frustum->Make(_viewProjMatrixInPrevRenderState);
 
-	CameraConstBuffer camCB;
+	ConstBufferParam camCB;
 	{
 		Matrix worldMat;
 		_owner->GetTransform()->FetchWorldMatrix(worldMat);
@@ -132,9 +131,14 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Obje
 		camCB.screenSize.w = static_cast<float>(size.w);
 		camCB.screenSize.h = static_cast<float>(size.h);
 	}
+	
+	if( memcmp(&_prevConstBufferData, &camCB, sizeof(ConstBufferParam)) != 0 )
+	{
+		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		_camConstBuffer->UpdateSubResource(context, &camCB);
 
-	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-	_camConstBuffer->Update(context, &camCB);
+		memcpy(&_prevConstBufferData, &camCB, sizeof(ConstBufferParam));
+	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
@@ -197,6 +201,6 @@ void CameraForm::_Clone(CameraForm* newCam) const
 	}
 
 	newCam->_camConstBuffer	= new Buffer::ConstBuffer;
-	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
 		ASSERT_MSG("Error, cant create const buffer in _Clone");
 }

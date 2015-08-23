@@ -10,7 +10,7 @@ namespace Rendering
 		{
 		public:
 			ConstBuffer();
-			~ConstBuffer();
+			virtual ~ConstBuffer();
 
 		public:
 			bool Initialize(unsigned int size);

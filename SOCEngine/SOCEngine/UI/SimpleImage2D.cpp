@@ -131,10 +131,10 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 	{		
 		_meshFilter->IASetBuffer(dx);
 
-		vs->UpdateShader(context);
-		vs->UpdateInputLayout(context);
+		vs->SetShaderToContext(context);
+		vs->SetInputLayoutToContext(context);
 
-		ps->UpdateShader(context);
+		ps->SetShaderToContext(context);
 
 		std::vector<Shader::BaseShader::BufferType> constBuffers;
 		{

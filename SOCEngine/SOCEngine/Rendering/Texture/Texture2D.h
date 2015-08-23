@@ -27,7 +27,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(Texture, ID3D11Texture2D*, _texture);
-			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);
+			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView* const*, &_srv);
 			GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 		};
 	}

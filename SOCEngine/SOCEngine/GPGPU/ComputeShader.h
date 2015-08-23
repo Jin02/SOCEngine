@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseShader.h"
-#include "CSInputBuffer.h"
+#include "ShaderResourceBuffer.h"
 #include "Texture2D.h"
 #include "CSRWBuffer.h"
 
@@ -12,12 +12,19 @@ namespace GPGPU
 		class ComputeShader : public Rendering::Shader::BaseShader
 		{
 		public:
-			struct InputBuffer
+			struct InputShaderResourceBuffer
 			{
 				unsigned int idx;
-				CSInputBuffer* buffer;
-				InputBuffer() : idx(0), buffer(nullptr){}
-				~InputBuffer(){}
+				const Rendering::Buffer::ShaderResourceBuffer* buffer;
+				InputShaderResourceBuffer() : idx(0), buffer(nullptr){}
+				~InputShaderResourceBuffer(){}
+			};
+			struct InputConstBuffer
+			{
+				uint idx;
+				const Rendering::Buffer::ConstBuffer* buffer;
+				InputConstBuffer() : idx(0), buffer(nullptr) {}
+				~InputConstBuffer() {}
 			};
 			struct InputTexture
 			{
@@ -42,8 +49,9 @@ namespace GPGPU
 			};
 
 		private:
-			std::vector<InputBuffer>	_inputBuffers;
-			std::vector<InputTexture>	_inputTextures;
+			std::vector<InputShaderResourceBuffer>	_inputSRBuffers;
+			std::vector<InputTexture>				_inputTextures;
+			std::vector<InputConstBuffer>			_inputConstBuffers;
 
 			std::vector<Output>			_outputs;
 
@@ -59,13 +67,15 @@ namespace GPGPU
 			void Dispatch(ID3D11DeviceContext* context);
 
 		public:
-			inline void ClearOutputSlot()		{ _outputs.clear();			}
-			inline void ClearInputBufferSlot()	{ _inputBuffers.clear();	}
-			inline void ClearInputTextureSlot()	{ _inputTextures.clear();	}
+			inline void ClearOutputSlot()						{ _outputs.clear();				}
+			inline void ClearInputShaderResourceBufferSlot()	{ _inputSRBuffers.clear();		}
+			inline void ClearInputTextureSlot()					{ _inputTextures.clear();		}
+			inline void ClearInputConstBuffer()					{ _inputConstBuffers.clear();	}
 
 		public:
 			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
-			GET_SET_ACCESSOR(InputBuffers, const std::vector<InputBuffer>&, _inputBuffers);
+			GET_SET_ACCESSOR(InputConstBuffers, const std::vector<InputConstBuffer>&, _inputConstBuffers); 
+			GET_SET_ACCESSOR(InputSRBuffers, const std::vector<InputShaderResourceBuffer>&, _inputSRBuffers);
 			GET_SET_ACCESSOR(InputTextures, const std::vector<InputTexture>&, _inputTextures);
 
 			GET_SET_ACCESSOR(Outputs, const std::vector<Output>&, _outputs);
