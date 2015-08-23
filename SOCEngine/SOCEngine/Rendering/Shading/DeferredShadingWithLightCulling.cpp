@@ -1,5 +1,6 @@
 #include "DeferredShadingWithLightCulling.h"
 #include "EngineShaderFactory.hpp"
+#include "Director.h"
 
 using namespace Device;
 using namespace Core;
@@ -22,8 +23,14 @@ DeferredShadingWithLightCulling::~DeferredShadingWithLightCulling()
 	Destory();
 }
 
-void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::RenderTexture* gbuffer_albedo_metallic,  const Texture::RenderTexture* gbuffer_specular_fresnel0,  const Texture::RenderTexture* gbuffer_normal_roughness,  const Math::Size<uint>& size)
+void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
+												 const Texture::RenderTexture* gbuffer_albedo_metallic,  
+												 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
+												 const Texture::RenderTexture* gbuffer_normal_roughness, 
+												 const Math::Size<uint>& size)
 {
+	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
+
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
@@ -37,13 +44,15 @@ void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opa
 		// Point Light Color
 		{
 			uint idx = (uint)InputBufferShaderIndex::PointLightColor;
-			_Init_InputBuffer_And_Append_To_InputBufferList(_inputPointLightColorBuffer, idx, 4, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R8G8B8A8_UNORM);
+			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorBufferSR();
+			AddInputBufferToList(_inputPointLightColorBuffer, idx, srBuffer);
 		}
 
 		// Spot Light Color
 		{
 			uint idx = (uint)InputBufferShaderIndex::SpotLightColor;
-			_Init_InputBuffer_And_Append_To_InputBufferList(_inputSpotLightColorBuffer, idx, 4, SPOT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R8G8B8A8_UNORM);
+			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorBufferSR();
+			AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
 		}
 
 		// Directional Light
@@ -51,19 +60,22 @@ void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opa
 			// Center With DirZ
 			{
 				uint idx = (uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ;
-				_Init_InputBuffer_And_Append_To_InputBufferList(_inputDirectionalLightTransformBuffer, idx, sizeof(Math::Vector4), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightTransformBufferSR();
+				AddInputBufferToList(_inputDirectionalLightTransformBuffer, idx, srBuffer);
 			}
 
 			// Color
 			{
 				uint idx = (uint)InputBufferShaderIndex::DirectionalLightColor;
-				_Init_InputBuffer_And_Append_To_InputBufferList(_inputDirectionalLightColorBuffer, idx, 4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R8G8B8A8_UNORM);
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorBufferSR();
+				AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
 			}
 
 			// Param half / DirX, DirY
 			{
 				uint idx = (uint)InputBufferShaderIndex::DirectionalLightParam;
-				_Init_InputBuffer_And_Append_To_InputBufferList(_inputDirectionalLightParamBuffer, idx, sizeof(Math::Vector2) / 2, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16_FLOAT);
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightParamBufferSR();
+				AddInputBufferToList(_inputDirectionalLightParamBuffer, idx, srBuffer);
 			}
 		}
 	}
@@ -109,70 +121,8 @@ void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opa
 	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
 }
 
-void DeferredShadingWithLightCulling::UpdateInputDatas( const Device::DirectX* dx, 
-														const GlobalData* globalData,
-														const Rendering::Manager::LightManager* lightManager)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-
-	// Directional Light
-	{
-		uint updateCounter = lightManager->GetDirectionalLightUpdateCounter();
-		if(updateCounter != _directionalLightUpdateCounter)
-		{
-			//center, dirZ
-			{
-				const void* buffer = lightManager->GetDirectionalLightTransformBuffer();
-				_inputDirectionalLightTransformBuffer->buffer->Update(context, buffer);
-			}
-
-			//color
-			{
-				const void* buffer = lightManager->GetDirectionalLightColorBuffer();
-				_inputDirectionalLightColorBuffer->buffer->Update(context, buffer);
-			}
-
-			//param(dirX, dirY)
-			{
-				const void* buffer = lightManager->GetDirectionalLightParamBuffer();
-				_inputDirectionalLightParamBuffer->buffer->Update(context, buffer);
-			}
-
-			_directionalLightUpdateCounter = updateCounter;
-		}
-	}
-
-	//Light Culling 전용 UpdateCounter는 LightCulling에서 처리함
-	//이 함수 최 하단의 UpdateInputDatas에서 호출되고 처리될테니 걱정 ㄴㄴ
-
-	// Point Light Color Buffer
-	{
-		uint updateCounter = lightManager->GetPointLightUpdateCounter();
-		if(updateCounter != GetPointLightUpdateCounter())
-		{
-			const void* buffer = lightManager->GetPointLightColorBuffer();
-			_inputPointLightColorBuffer->buffer->Update(context, buffer);
-		}
-	}
-
-	// Spot Light Color Buffer
-	{
-		uint updateCounter = lightManager->GetSpotLightUpdateCounter();
-		if(updateCounter != GetSpotLightUpdateCounter())
-		{
-			const void* buffer = lightManager->GetSpotLightColorBuffer();
-			_inputSpotLightColorBuffer->buffer->Update(context, buffer);
-		}
-	}
-
-	LightCulling::UpdateInputBuffers(dx, globalData, lightManager);
-}
-
 void DeferredShadingWithLightCulling::Destory()
 {
-	//Input Buffer들은 LightCulling에서 지워짐
-	//idx 체크용 변수들만 null 처리하면 됨
-
 	_inputPointLightColorBuffer				= nullptr;
 	_inputSpotLightColorBuffer				= nullptr;
 	_inputDirectionalLightTransformBuffer	= nullptr;

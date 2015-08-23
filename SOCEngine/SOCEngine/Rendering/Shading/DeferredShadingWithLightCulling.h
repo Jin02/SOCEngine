@@ -40,16 +40,14 @@ namespace Rendering
 		//	GlobalData						= 1
 		};
 
-		static const int DIRECTIONAL_LIGHT_BUFFER_MAX_NUM	= 1024;
-
 	private:
 		GPGPU::DirectCompute::CSRWTexture*					_offScreen;
 
-		GPGPU::DirectCompute::ComputeShader::InputBuffer*	_inputPointLightColorBuffer;
-		GPGPU::DirectCompute::ComputeShader::InputBuffer*	_inputSpotLightColorBuffer;
-		GPGPU::DirectCompute::ComputeShader::InputBuffer*	_inputDirectionalLightTransformBuffer;
-		GPGPU::DirectCompute::ComputeShader::InputBuffer*	_inputDirectionalLightColorBuffer;
-		GPGPU::DirectCompute::ComputeShader::InputBuffer*	_inputDirectionalLightParamBuffer;
+		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
+		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
+		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
+		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
+		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
 
 		uint _directionalLightUpdateCounter;
 
@@ -59,8 +57,6 @@ namespace Rendering
 
 	public:
 		void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::RenderTexture* gbuffer_albedo_metallic, const Texture::RenderTexture* gbuffer_specular_fresnel0, const Texture::RenderTexture* gbuffer_normal_roughness, const Math::Size<uint>& screenSize);
-		void UpdateInputDatas(const Device::DirectX* dx, const GlobalData* globalData, const Rendering::Manager::LightManager* lightManager);
-
 		void Destory();
 
 	public:
