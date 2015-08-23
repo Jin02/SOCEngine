@@ -17,9 +17,7 @@ using namespace Resource;
 
 LightCulling::LightCulling() : 
 	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
-	_inputSpotLightTransformBuffer(nullptr), 
-	_inputSpotLightParamBuffer(nullptr), _pointLightUpdateCounter(0),
-	_spotLightUpdateCounter(0)
+	_inputSpotLightTransformBuffer(nullptr), _inputSpotLightParamBuffer(nullptr)
 {
 
 }
@@ -142,10 +140,10 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
-	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
 	const unsigned key = 16;
 
-	return ( LightMaxNumInTile - ( key * ( winSize.h / 120 ) ) );
+	return ( LightMaxNumInTile - ( key * ( size.h / 120 ) ) );
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer)
@@ -185,10 +183,10 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 		return (unsigned int)((size+TileSize-1) / (float)TileSize);
 	};
 
-	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
 
-	unsigned int width	= CalcThreadLength(winSize.w);
-	unsigned int height = CalcThreadLength(winSize.h);
+	unsigned int width	= CalcThreadLength(size.w);
+	unsigned int height = CalcThreadLength(size.h);
 
 	return Math::Size<unsigned int>(width, height);
 }

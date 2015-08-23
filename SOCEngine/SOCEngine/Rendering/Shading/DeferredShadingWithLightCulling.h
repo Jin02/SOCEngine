@@ -49,8 +49,6 @@ namespace Rendering
 		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
 		GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
 
-		uint _directionalLightUpdateCounter;
-
 	public:
 		DeferredShadingWithLightCulling();
 		virtual ~DeferredShadingWithLightCulling();

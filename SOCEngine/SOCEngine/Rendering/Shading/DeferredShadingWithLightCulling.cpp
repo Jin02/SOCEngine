@@ -13,8 +13,7 @@ using namespace GPGPU::DirectCompute;
 DeferredShadingWithLightCulling::DeferredShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
 	_inputSpotLightColorBuffer(nullptr), _inputDirectionalLightColorBuffer(nullptr),
-	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr),
-	_directionalLightUpdateCounter(0)
+	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr)
 {
 }
 
@@ -128,8 +127,6 @@ void DeferredShadingWithLightCulling::Destory()
 	_inputDirectionalLightTransformBuffer	= nullptr;
 	_inputDirectionalLightColorBuffer		= nullptr;
 	_inputDirectionalLightParamBuffer		= nullptr;
-
-	_directionalLightUpdateCounter = 0;
 
 	SAFE_DELETE(_offScreen);
 	LightCulling::Destroy();

@@ -27,7 +27,6 @@ namespace Rendering
 			MaterialUpdateType		_updateType;
 			unsigned int			_selectMaterialIndex;
 
-			Core::TransformPipelineShaderInput _prevConstBufferData;
 		public:
 			Mesh();
 			~Mesh();

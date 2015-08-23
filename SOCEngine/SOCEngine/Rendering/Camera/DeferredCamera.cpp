@@ -29,22 +29,22 @@ void DeferredCamera::OnInitialize()
 {
 	CameraForm::OnInitialize();
 
-	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+	Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
 	_albedo_metallic = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _albedo_metallic->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create albedo_opacity render texture" );
+	ASSERT_COND_MSG( _albedo_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create albedo_opacity render texture" );
 
 	_specular_fresnel0 = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _specular_fresnel0->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _specular_fresnel0 render texture" );
+	ASSERT_COND_MSG( _specular_fresnel0->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _specular_fresnel0 render texture" );
 
 	_normal_roughness = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _normal_roughness->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _normal_roughness render texture" );
+	ASSERT_COND_MSG( _normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _normal_roughness render texture" );
 
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
-	_opaqueDepthBuffer->Initialize(windowSize);
+	_opaqueDepthBuffer->Initialize(backBufferSize);
 
 	_deferredShadingWithLightCulling = new DeferredShadingWithLightCulling;
-	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, windowSize);
+	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
 
 	EnableRenderTransparentMesh(true);
 
@@ -254,8 +254,8 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 			Matrix::Inverse(param.invViewProjViewport, param.invViewProjViewport); //invViewProjViewport
 			Matrix::Inverse(param.invProjMat, param.invProjMat); //invProj
 
-			param.screenSize = dx->FetchBackBufferSize().Cast<float>();
-			param.maxNumOfperLightInTile = LightCulling::LightMaxNumInTile;
+			param.screenSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
+			param.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
 			_tbrParamConstBuffer->UpdateSubResource(context, &param);
 
@@ -266,22 +266,6 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
-	}
-
-	// TBFR
-	{
-		/*
-		struct MeshInForwardRendering
-		{
-			const Mesh::Mesh*	mesh;
-			const Material*		material;
-		};
-		*/
-		std::vector<MeshInForwardRendering> tbfrQueue;
-		for(auto iter = tbfrQueue.begin(); iter != tbfrQueue.end(); ++iter)
-		{
-
-		}
 	}
 
 	// Transparency
@@ -322,12 +306,12 @@ void DeferredCamera::EnableRenderTransparentMesh(bool enable)
 {	
 	if(enable)
 	{
-		const Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
+		const Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
 		ASSERT_COND_MSG(_blendedDepthBuffer, "Error, Already allocated depth");
 		{
 			_blendedDepthBuffer =  new DepthBuffer;
-			_blendedDepthBuffer->Initialize(windowSize);
+			_blendedDepthBuffer->Initialize(backBufferSize);
 		}
 
 

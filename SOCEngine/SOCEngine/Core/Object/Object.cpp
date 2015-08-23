@@ -91,11 +91,18 @@ void Object::RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transfor
 		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
 	}
 
+	bool updateCB = memcmp(&_prevTransformParam, &transformParam, sizeof(TransformPipelineParam)) != 0;
+
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
-		(*iter)->OnUpdateTransformCB(transposeTransform);
+		if(updateCB)
+			(*iter)->OnUpdateTransformCB(transposeTransform);
+
 		(*iter)->OnRenderPreview();
 	}
+
+	if(updateCB)
+		_prevTransformParam = transformParam;
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 		(*iter)->RenderPreviewWithUpdateTransformCB(transformParam);

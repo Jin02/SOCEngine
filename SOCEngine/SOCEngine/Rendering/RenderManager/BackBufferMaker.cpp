@@ -34,7 +34,7 @@ void BackBufferMaker::Initialize()
 	shaderLoader.LoadShader("BackBufferMaker", "VS", "PS", nullptr, &_vertexShader, &_pixelShader);
 	ASSERT_COND_MSG(_vertexShader && _pixelShader, "Error, Cant load BackBufferMaker shader files");
 
-	const Size<uint>& winSize = GlobalDeviceDirectorGetScreenSize;
+	const Size<uint>& backBufferSize = Director::GetInstance()->GetDirectX()->GetBackBufferSize();
 
 	ConstBuffer* transformConstBuffer = new ConstBuffer;
 	transformConstBuffer->Initialize(sizeof(Matrix));
@@ -45,7 +45,7 @@ void BackBufferMaker::Initialize()
 		world._43 = -10;
 
 		Camera::CameraForm::GetViewMatrix(view, world);
-		Matrix::OrthoLH(proj, (float)winSize.w, (float)winSize.h, 0.01f, 1000.0f);
+		Matrix::OrthoLH(proj, (float)backBufferSize.w, (float)backBufferSize.h, 0.01f, 1000.0f);
 
 		Matrix viewProj = view * proj;
 		Matrix::Transpose(viewProj, viewProj);
@@ -70,7 +70,7 @@ void BackBufferMaker::Initialize()
 	}
 
 	_depthBuffer = new DepthBuffer;	
-	_depthBuffer->Initialize(winSize);
+	_depthBuffer->Initialize(backBufferSize);
 
 	//Initialize Mesh
 	{
@@ -82,9 +82,9 @@ void BackBufferMaker::Initialize()
 			Math::Vector2	uv;
 		};
 		
-		float left		= -(winSize.w / 2.0f);
+		float left		= -(backBufferSize.w / 2.0f);
 		float right		= -left;
-		float bottom	= -(winSize.h / 2.0f);
+		float bottom	= -(backBufferSize.h / 2.0f);
 		float top		= -bottom;
 
 		Vertex vertices[4];
