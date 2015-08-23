@@ -51,7 +51,6 @@ namespace Rendering
 			float							_FOV;
 			float							_clippingNear;
 			float							_clippingFar;
-			//ClearFlag						_clearFlag;
 			ProjectionType					_projectionType;
 			float							_aspect;
 			Color							_clearColor;

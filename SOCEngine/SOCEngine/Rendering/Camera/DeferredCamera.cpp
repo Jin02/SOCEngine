@@ -254,7 +254,7 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 			Matrix::Inverse(param.invViewProjViewport, param.invViewProjViewport); //invViewProjViewport
 			Matrix::Inverse(param.invProjMat, param.invProjMat); //invProj
 
-			param.screenSize = dx->FetchBackBufferSize().Cast<float>();
+			param.screenSize = Director::GetInstance()->GetWindowSize().Cast<float>();
 			param.maxNumOfperLightInTile = LightCulling::LightMaxNumInTile;
 
 			_tbrParamConstBuffer->UpdateSubResource(context, &param);

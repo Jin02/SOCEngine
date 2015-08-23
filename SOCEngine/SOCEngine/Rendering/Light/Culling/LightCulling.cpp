@@ -17,9 +17,7 @@ using namespace Resource;
 
 LightCulling::LightCulling() : 
 	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
-	_inputSpotLightTransformBuffer(nullptr), 
-	_inputSpotLightParamBuffer(nullptr), _pointLightUpdateCounter(0),
-	_spotLightUpdateCounter(0)
+	_inputSpotLightTransformBuffer(nullptr), _inputSpotLightParamBuffer(nullptr)
 {
 
 }

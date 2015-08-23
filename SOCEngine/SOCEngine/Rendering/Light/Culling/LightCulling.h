@@ -66,9 +66,6 @@ namespace Rendering
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightTransformBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightParamBuffer;
 
-			uint _pointLightUpdateCounter;
-			uint _spotLightUpdateCounter;
-
 		public:
 			LightCulling();
 			virtual ~LightCulling();
@@ -90,10 +87,6 @@ namespace Rendering
 
 		public:	
 			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer);
-
-		protected:
-			GET_ACCESSOR(PointLightUpdateCounter, uint, _pointLightUpdateCounter);
-			GET_ACCESSOR(SpotLightUpdateCounter, uint, _spotLightUpdateCounter);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;
