@@ -11,7 +11,7 @@ using namespace Rendering;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _backBufferMaker(nullptr)
+	_renderMgr(nullptr)
 {
 	_state = State::Init;
 }
@@ -31,9 +31,6 @@ void Scene::Initialize()
 	_uiManager		= new UI::Manager::UIManager;
 
 	_dx				= Device::Director::GetInstance()->GetDirectX();
-
-	_backBufferMaker = new PostProcessing::BackBufferMaker;
-	_backBufferMaker->Initialize();
 
 	_lightManager	= new Manager::LightManager;
 
@@ -72,16 +69,7 @@ void Scene::Render()
 
 #endif
 	
-	ID3D11DeviceContext* context = _dx->GetContext();
-	//Turn off depth writing
-	context->OMSetDepthStencilState(_dx->GetDepthStateDisableDepthTest(), 0);
-
-	Camera::CameraForm* mainCam = _cameraMgr->GetMainCamera();
-	_backBufferMaker->Render(_dx, mainCam, nullptr);
-
-	//swap
 	_dx->GetSwapChain()->Present(0, 0);
-
 	OnRenderPost();
 }
 
@@ -92,7 +80,6 @@ void Scene::Destroy()
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_renderMgr);
 	SAFE_DELETE(_uiManager);
-	SAFE_DELETE(_backBufferMaker);
 	SAFE_DELETE(_lightManager);
 
 	OnDestroy();

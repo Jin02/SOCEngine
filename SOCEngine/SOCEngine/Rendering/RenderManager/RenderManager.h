@@ -6,7 +6,6 @@
 #include <functional>
 
 #include "DeferredCamera.h"
-#include "BackBufferMaker.h"
 
 #include "GlobalSetting.h"
 
