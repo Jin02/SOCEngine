@@ -33,13 +33,19 @@ namespace Rendering
 
 		public:
 			bool CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
-			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
+			void Clear(ID3D11DeviceContext* context,
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers);
 
 		public:
-			void UpdateShader(ID3D11DeviceContext* context);
-			void UpdateInputLayout(ID3D11DeviceContext* context);
+			void SetShaderToContext(ID3D11DeviceContext* context);
+			void SetInputLayoutToContext(ID3D11DeviceContext* context);
 
-			void UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures);
+			void UpdateResources(ID3D11DeviceContext* context,
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers);
 		};
 	}
 }

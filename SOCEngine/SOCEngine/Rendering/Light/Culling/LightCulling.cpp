@@ -16,10 +16,8 @@ using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
 LightCulling::LightCulling() : 
-	_computeShader(nullptr), _globalDataBuffer(nullptr), 
-	_inputPointLightTransformBuffer(nullptr), _inputSpotLightTransformBuffer(nullptr), 
-	_inputSpotLightParamBuffer(nullptr), _pointLightUpdateCounter(0),
-	_spotLightUpdateCounter(0)
+	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
+	_inputSpotLightTransformBuffer(nullptr), _inputSpotLightParamBuffer(nullptr)
 {
 
 }
@@ -29,18 +27,12 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::_Init_InputBuffer_And_Append_To_InputBufferList(GPGPU::DirectCompute::ComputeShader::InputBuffer*& outBuffer, uint idx, uint bufferStride, uint bufferElementNum, DXGI_FORMAT format)
+void LightCulling::AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const ShaderResourceBuffer*& buffer)
 {
-	ComputeShader::InputBuffer inputBufferElement;
-	const void* nullData[] = {nullptr, };
-
-	ComputeShader::InputBuffer inputBuffer;
+	ComputeShader::InputShaderResourceBuffer inputBuffer;
 	{
 		inputBuffer.idx			= idx;
-		inputBuffer.buffer		= new CSInputBuffer;
-
-		auto& buffer = inputBuffer.buffer;
-		buffer->Initialize(bufferStride, bufferElementNum, format, nullData);
+		inputBuffer.buffer		= buffer;
 	}
 
 	_inputBuffers.push_back(inputBuffer);
@@ -64,6 +56,7 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
 							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer)
 {
+	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 	//Check duplicated input datas
 	{
 		for(const auto& iter : _inputBuffers)
@@ -108,24 +101,21 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
 
-	_globalDataBuffer = new ConstBuffer;
-	ASSERT_COND_MSG(_globalDataBuffer->Initialize(sizeof(GlobalData)), "can not create const buffer");
-
 	// Input Buffer Setting
 	{
-		ComputeShader::InputBuffer inputBufferElement;
-		const void* nullData[] = {nullptr, };
-
 		// Point Light Transform
 		uint idx = (uint)InputBufferShaderIndex::PointLightRadiusWithCenter;
-		_Init_InputBuffer_And_Append_To_InputBufferList(_inputPointLightTransformBuffer, idx, sizeof(Math::Vector4), POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
-
+		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformBufferSR();
+		AddInputBufferToList(_inputPointLightTransformBuffer, idx, srBuffer);
+		
 		// Spot Light Transform
 		idx = (uint)InputBufferShaderIndex::SpotLightRadiusWithCenter;
-		_Init_InputBuffer_And_Append_To_InputBufferList(_inputSpotLightTransformBuffer, idx, sizeof(Math::Vector4), SPOT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
+		srBuffer = lightManager->GetSpotLightTransformBufferSR();
+		AddInputBufferToList(_inputSpotLightTransformBuffer, idx, srBuffer);
 
 		idx = (uint)InputBufferShaderIndex::SpotLightParam;
-		_Init_InputBuffer_And_Append_To_InputBufferList(_inputSpotLightParamBuffer, idx, sizeof(Math::Vector4) / 2, SPOT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		srBuffer = lightManager->GetSpotLightParamBufferSR();
+		AddInputBufferToList(_inputSpotLightParamBuffer, idx, srBuffer);
 
 		// depth buffer
 		{
@@ -141,7 +131,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 			}
 		}
 
-		_computeShader->SetInputBuffers(_inputBuffers);
+		_computeShader->SetInputSRBuffers(_inputBuffers);
 		_computeShader->SetInputTextures(_inputTextures);
 	}
 
@@ -150,50 +140,27 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
-	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
 	const unsigned key = 16;
 
-	return ( LightMaxNumInTile - ( key * ( winSize.h / 120 ) ) );
+	return ( LightMaxNumInTile - ( key * ( size.h / 120 ) ) );
 }
 
-void LightCulling::UpdateInputBuffers(const Device::DirectX* dx, const GlobalData* globalData, const Rendering::Manager::LightManager* lightManager)
+void LightCulling::Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-	
-	if(globalData)
-		_globalDataBuffer->Update(context, globalData);
 
-	// Point Light
+	if(tbrConstBuffer)
 	{
-		uint updateCounter = lightManager->GetPointLightUpdateCounter();
-		if(updateCounter != _pointLightUpdateCounter)
+		std::vector<ComputeShader::InputConstBuffer> tbrCB;
 		{
-			const void* buffer = lightManager->GetPointLightTransformBuffer();
-			_inputPointLightTransformBuffer->buffer->Update(context, buffer);
-			
-			_pointLightUpdateCounter = updateCounter;
+			ComputeShader::InputConstBuffer icb;
+			icb.buffer = tbrConstBuffer;
+			icb.idx = (uint)ConstBufferShaderIndex::TBRParam;
 		}
+
+		_computeShader->SetInputConstBuffers(tbrCB);
 	}
-
-	// Spot Light
-	{
-		uint updateCounter = lightManager->GetSpotLightUpdateCounter();
-		if(updateCounter != _spotLightUpdateCounter)
-		{
-			const void* buffer = lightManager->GetSpotLightTransformBuffer();
-			_inputSpotLightTransformBuffer->buffer->Update(context, buffer);
-
-			buffer = lightManager->GetSpotLightParamBuffer();
-			_inputSpotLightParamBuffer->buffer->Update(context, buffer);
-
-			_spotLightUpdateCounter = updateCounter;
-		}
-	}
-}
-
-void LightCulling::Dispatch(const Device::DirectX* dx)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
 	_computeShader->Dispatch(context);
 }
 
@@ -216,19 +183,16 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 		return (unsigned int)((size+TileSize-1) / (float)TileSize);
 	};
 
-	const Math::Size<unsigned int>& winSize = Director::GetInstance()->GetWindowSize();
+	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
 
-	unsigned int width	= CalcThreadLength(winSize.w);
-	unsigned int height = CalcThreadLength(winSize.h);
+	unsigned int width	= CalcThreadLength(size.w);
+	unsigned int height = CalcThreadLength(size.h);
 
 	return Math::Size<unsigned int>(width, height);
 }
 
 void LightCulling::Destroy()
 {
-	for(auto& iter : _inputBuffers)
-		SAFE_DELETE(iter.buffer);
-
 	_inputBuffers.clear();
 	_inputTextures.clear();
 
@@ -237,7 +201,6 @@ void LightCulling::Destroy()
 	_inputSpotLightParamBuffer		= nullptr;
 
 	SAFE_DELETE(_computeShader);
-	SAFE_DELETE(_globalDataBuffer);
 
 	_useBlendedMeshCulling = false;
 }

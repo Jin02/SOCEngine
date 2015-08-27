@@ -28,7 +28,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
 
-	_screenSize = director->GetWindowSize();
+	_screenSize = director->GetBackBufferSize();
 	_maxLength = maxLength;
 
 	const FontLoader* fontLoader =
@@ -177,34 +177,25 @@ void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPro
 	{		
 		_meshFilter->IASetBuffer(dx);
 
-		vs->UpdateShader(context);
-		vs->UpdateInputLayout(context);
+		vs->SetShaderToContext(context);
+		vs->SetInputLayoutToContext(context);
 
-		ps->UpdateShader(context);
+		ps->SetShaderToContext(context);
 
 		std::vector<Shader::BaseShader::BufferType> constBuffers;
 		{
-			Shader::BaseShader::BufferType type;
-			type.first = 0;
-			type.second = dynamic_cast<Buffer::BaseBuffer*>(_transformCB);
-
-			constBuffers.push_back(type);
+			Buffer::BaseBuffer* buffer = dynamic_cast<Buffer::BaseBuffer*>(_transformCB);
+			constBuffers.push_back(Shader::BaseShader::BufferType(0, buffer, true, false, false, false));
 		}
 		std::vector<Shader::BaseShader::TextureType> textures;
 		{
-			Shader::BaseShader::TextureType type;
-			type.first = 0;
-
 			const Texture::Texture2D* tex = nullptr;
 			_material->GetVariable<const Texture::Texture2D*>(tex, "font");
-
-			type.second = tex;
-
-			textures.push_back(type);
+			textures.push_back(Shader::BaseShader::TextureType(0, tex, false, false, false, true));
 		}
 
-		vs->UpdateResources(context, &constBuffers, nullptr);
-		ps->UpdateResources(context, nullptr, &textures);
+		vs->UpdateResources(context, &constBuffers, nullptr, nullptr);
+		ps->UpdateResources(context, nullptr, &textures, nullptr);
 		context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
 	}
 }

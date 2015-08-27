@@ -9,7 +9,6 @@ using namespace Math;
 
 UICamera::UICamera() : CameraForm(), _depthBuffer(nullptr)
 {
-	_renderType			= RenderType::Forward;
 }
 
 UICamera::~UICamera(void)
@@ -21,7 +20,7 @@ void UICamera::Initialize()
 	CameraForm::OnInitialize();
 
 	_depthBuffer =  new DepthBuffer;
-	_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
+	_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize());
 
 	_projectionType		= ProjectionType::Orthographic;
 	_owner->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
@@ -61,16 +60,16 @@ void UICamera::Render()
 	_depthBuffer->Clear(context, 1.0f, 0);
 	_renderTarget->Clear(context, _clearColor);
 
-	ID3D11SamplerState* sampler = dx->GetLinearSamplerState();
+	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
 	context->PSSetSamplers(0, 1, &sampler);
 
 	Math::Matrix viewProjMat;
 	{
 		Math::Matrix viewMat;
-		ViewMatrix(viewMat);
+		GetViewMatrix(viewMat);
 
 		Math::Matrix projMat;
-		ProjectionMatrix(projMat);
+		GetProjectionMatrix(projMat);
 
 		viewProjMat = viewMat * projMat;
 	}
@@ -95,7 +94,7 @@ Core::Component* UICamera::Clone() const
 	_Clone(uiCam);
 
 	uiCam->_depthBuffer = new DepthBuffer;
-	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetWindowSize());
+	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize());
 
 	return uiCam;
 }

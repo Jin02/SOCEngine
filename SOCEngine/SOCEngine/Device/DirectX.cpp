@@ -110,18 +110,21 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	return true;
 }
 
-bool DirectX::CreateViewport(const Math::Size<unsigned int>& winSize)
+bool DirectX::InitViewport(const Math::Rect<uint>& rect)
 {
 	D3D11_VIEWPORT vp;
 
-	vp.Width = (FLOAT)winSize.w;
-	vp.Height = (FLOAT)winSize.h;
+	vp.Width = (float)rect.size.w;
+	vp.Height = (float)rect.size.h;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
+	vp.TopLeftX = (float)rect.x;
+	vp.TopLeftY = (float)rect.y;
 
 	_immediateContext->RSSetViewports( 1, &vp );
+
+	_backBufferSize.w = (unsigned int)vp.Width;
+	_backBufferSize.h = (unsigned int)vp.Height;
 
 	return true;
 }
@@ -209,7 +212,7 @@ void DirectX::CreateBlendStates(bool isDeferredRender)
 		ASSERT_MSG("Error!, device cant create _alphaBlend blend state");
 }
 
-bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
+bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect, bool isDeferredRender)
 {
 	if( CreateDeviceAndSwapChain(win) == false )
 		return false;
@@ -219,7 +222,7 @@ bool DirectX::InitDevice(const Win32* win, bool isDeferredRender)
 
 	_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	CreateViewport(win->GetSize());
+	InitViewport(renderScreenRect);
 
 	//Initialize rasterizer State
 	{
@@ -379,4 +382,43 @@ Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
 	shaderMacro.SetDefinition( std::to_string(_msaaDesc.Count) );
 
 	return shaderMacro;
+}
+
+Math::Size<uint> DirectX::FetchBackBufferSize()
+{
+	uint num = 1;
+	D3D11_VIEWPORT vp;
+	_immediateContext->RSGetViewports(&num, &vp);
+
+	_backBufferSize.w = (unsigned int)vp.Width;
+	_backBufferSize.h = (unsigned int)vp.Height;
+
+	return _backBufferSize;
+}
+
+void DirectX::GetViewportMatrix(Math::Matrix& outMat) const
+{
+	uint num = 1;
+	D3D11_VIEWPORT vp;
+	_immediateContext->RSGetViewports(&num, &vp);
+
+	outMat._11 = vp.Width /  2.0f;
+	outMat._12 = 0.0f;
+	outMat._13 = 0.0f;
+	outMat._14 = 0.0f;
+
+	outMat._21 = 0.0f;
+	outMat._22 = -vp.Height / 2.0f;
+	outMat._23 = 0.0f;
+	outMat._24 = 0.0f;
+
+	outMat._31 = 0.0f;
+	outMat._32 = 0.0f;
+	outMat._33 = vp.MaxDepth - vp.MinDepth;
+	outMat._34 = 0.0f;
+
+	outMat._41 = vp.TopLeftX + vp.Width / 2.0f;
+	outMat._42 = vp.TopLeftY + vp.Height / 2.0f;
+	outMat._43 = vp.MinDepth;
+	outMat._44 = 1.0f;
 }

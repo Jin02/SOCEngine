@@ -10,7 +10,7 @@ namespace Rendering
 		{		
 		public:
 			IndexBuffer();
-			~IndexBuffer();
+			virtual ~IndexBuffer();
 
 		public:
 			bool Initialize(const unsigned int* sysMem, unsigned int byteWidth, bool isDynamic = false);

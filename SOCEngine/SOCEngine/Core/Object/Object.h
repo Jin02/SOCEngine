@@ -25,6 +25,8 @@ namespace Core
 
 		std::vector<Component*> _components;
 
+		TransformPipelineParam	_prevTransformParam;
+
 	public:
 		Object(const std::string& name, const Object* parent = NULL);
 		virtual ~Object(void);

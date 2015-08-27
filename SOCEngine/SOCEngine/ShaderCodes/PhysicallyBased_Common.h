@@ -9,19 +9,11 @@
 #define ALPHA_TEST_BIAS		0.5f
 #endif
 
-cbuffer Transform : register( b0 )		//Mesh
+cbuffer Transform : register( b1 )		//Mesh
 {
 	matrix transform_world;
 	matrix transform_worldView;
 	matrix transform_worldViewProj;
-};
-
-cbuffer Camera : register( b1 )			//CameraForm
-{
-	float4 	camera_pos;
-	float 	camera_near;
-	float 	camera_far;
-	float2 	camera_screenSize;
 };
 
 cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
