@@ -24,7 +24,7 @@ namespace Rendering
 			void Initialize(const std::string& shaderFileName, const std::string& psName);
 
 		public:
-			void Render(const Texture::RenderTexture* rt);
+			void Render(const Texture::RenderTexture* outResultRT);
 			void Destroy();
 
 		public:

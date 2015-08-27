@@ -53,9 +53,9 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	}
 }
 
-void FullScreen::Render(const RenderTexture* rt)
+void FullScreen::Render(const RenderTexture* outResultRT)
 {
-	ID3D11RenderTargetView* rtv = rt->GetRenderTargetView();	
+	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
 
 	auto dx = Director::GetInstance()->GetDirectX();
 	ID3D11DeviceContext* context = dx->GetContext();
