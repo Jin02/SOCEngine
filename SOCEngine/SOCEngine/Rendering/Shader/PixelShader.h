@@ -19,9 +19,15 @@ namespace Rendering
 			bool CreateShader();
 			
 			void SetShaderToContext(ID3D11DeviceContext* context);
-			void UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures);
+			void UpdateResources(ID3D11DeviceContext* context, 
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers);
 
-			void ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures);
+			void Clear(ID3D11DeviceContext* context,
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers);
 		};
 	}
 }

@@ -2,106 +2,146 @@
 #include "Director.h"
 
 using namespace Device;
+using namespace Rendering::Shader;
 
-namespace Rendering
+
+VertexShader::VertexShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr), _layout(nullptr)
 {
-	using namespace Shader;
+	_type = Type::Vertex;
+}
 
-	VertexShader::VertexShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr), _layout(nullptr)
+VertexShader::~VertexShader(void)
+{
+	SAFE_RELEASE(_shader);
+}
+
+bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+{
+	if(_blob == nullptr)
+		return false;
+
+	uint count = vertexDeclations.size();
+
+	const DirectX* dx = Director::GetInstance()->GetDirectX();
+	ID3D11Device* device = dx->GetDevice();
+
+	HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
+
+	if( FAILED( hr ) )
+		return false;
+
+	hr = device->CreateInputLayout(vertexDeclations.data(), count,
+		_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
+
+	_blob->Release();
+
+	if( FAILED( hr ) )
+		return false;
+
+	for(unsigned int i=0; i<count; ++i)
 	{
-		_type = Type::Vertex;
-	}
+		const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
 
-	VertexShader::~VertexShader(void)
-	{
-		SAFE_RELEASE(_shader);
-	}
-
-	bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
-	{
-		if(_blob == nullptr)
-			return false;
-
-		uint count = vertexDeclations.size();
-
-		const DirectX* dx = Director::GetInstance()->GetDirectX();
-		ID3D11Device* device = dx->GetDevice();
-
-		HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
-
-		if( FAILED( hr ) )
-			return false;
-
-		hr = device->CreateInputLayout(vertexDeclations.data(), count,
-			_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
-
-		_blob->Release();
-
-		if( FAILED( hr ) )
-			return false;
-
-		for(unsigned int i=0; i<count; ++i)
+		SemanticInfo info;
 		{
-			const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
+			info.name = desc.SemanticName;
+			info.semanticIndex = desc.SemanticIndex;
 
-			SemanticInfo info;
-			{
-				info.name = desc.SemanticName;
-				info.semanticIndex = desc.SemanticIndex;
-
-				if( (i+1) != count )
-					info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
-			}
-
-			_semanticInfo.push_back(info);
+			if( (i+1) != count )
+				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
 		}
 
-		_semanticInfo.back().size = dx->CalcFormatSize(vertexDeclations[count-1].Format);
-
-		return true;
+		_semanticInfo.push_back(info);
 	}
 
-	void VertexShader::SetShaderToContext(ID3D11DeviceContext* context)
-	{
-		context->VSSetShader(_shader, nullptr, 0);
-	}
+	_semanticInfo.back().size = dx->CalcFormatSize(vertexDeclations[count-1].Format);
 
-	void VertexShader::SetInputLayoutToContext(ID3D11DeviceContext* context)
-	{
-		context->IASetInputLayout(_layout);
-	}
+	return true;
+}
 
-	void VertexShader::UpdateResources(ID3D11DeviceContext* context, const std::vector<BufferType>* constBuffers, const std::vector<TextureType>* textures)
+void VertexShader::SetShaderToContext(ID3D11DeviceContext* context)
+{
+	context->VSSetShader(_shader, nullptr, 0);
+}
+
+void VertexShader::SetInputLayoutToContext(ID3D11DeviceContext* context)
+{
+	context->IASetInputLayout(_layout);
+}
+
+void VertexShader::UpdateResources(
+				ID3D11DeviceContext* context,
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers)
+{
+	if(constBuffers)
 	{
-		if(constBuffers)
+		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
-			for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
-			{
-				ID3D11Buffer* buffer = (*iter).second->GetBuffer();
-				if(buffer)
-					context->VSSetConstantBuffers( (*iter).first, 1, &buffer );
-			}
-		}
-
-		if(textures)
-		{
-			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
-			{
-				auto srv = iter->second->GetShaderResourceView();
-				if(srv)
-					context->VSSetShaderResources( iter->first, 1, srv );
-			}
+			ID3D11Buffer* buffer = (*iter).buffer->GetBuffer();
+			if(buffer && iter->useVS)
+				context->VSSetConstantBuffers( (*iter).semanticIndex, 1, &buffer );
 		}
 	}
-	
-	void VertexShader::ClearResource(ID3D11DeviceContext* context, const std::vector<TextureType>* textures)
-	{
-		if(textures)
-		{
-			ID3D11ShaderResourceView* nullSrv = nullptr;
 
-			for(auto iter = textures->begin(); iter != textures->end(); ++iter)
-				context->VSSetShaderResources( iter->first, 1, &nullSrv );
+	if(textures)
+	{
+		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
+		{
+			auto srv = iter->texture->GetShaderResourceView();
+			if(srv && iter->useVS)
+				context->VSSetShaderResources( iter->semanticIndex, 1, srv );
+		}
+	}
+
+	if(srBuffers)
+	{
+		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
+		{
+			auto srv = iter->srBuffer->GetShaderResourceView();
+			if(srv && iter->useVS)
+				context->VSSetShaderResources( iter->semanticIndex, 1, srv );
+		}
+	}
+}
+
+void VertexShader::Clear(
+				ID3D11DeviceContext* context,
+				const std::vector<BufferType>* constBuffers, 
+				const std::vector<TextureType>* textures,
+				const std::vector<ShaderResourceType>* srBuffers)
+{
+	if(textures)
+	{
+		ID3D11ShaderResourceView* nullSrv = nullptr;
+
+		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
+		{
+			if(iter->useVS)
+				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+		}
+	}
+
+	if(srBuffers)
+	{
+		ID3D11ShaderResourceView* nullSrv = nullptr;
+
+		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
+		{
+			if(iter->useVS)
+				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+		}
+	}
+
+	if(constBuffers)
+	{
+		ID3D11Buffer* nullBuffer = nullptr;
+
+		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
+		{
+			if(iter->useVS)
+				context->VSSetConstantBuffers( iter->semanticIndex, 1, &nullBuffer );
 		}
 	}
 }

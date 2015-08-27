@@ -4,6 +4,7 @@
 #include "DirectX.h"
 #include "ConstBuffer.h"
 #include "Texture2D.h"
+#include "ShaderResourceBuffer.h"
 #include <vector>
 
 #define BASIC_SHADER_NAME "Basic"
@@ -37,11 +38,46 @@ namespace Rendering
 			virtual ~BaseShader(void);
 
 		public:
-			//first value is shader slot index
-			typedef std::pair<unsigned int, const Rendering::Buffer::BaseBuffer*> BufferType;
+			struct Usage
+			{
+				bool useVS, usePS, useGS, useHS;
+				Usage(bool useVS, bool useGS, bool useHS, bool usePS);
+				~Usage(){}
 
-			//first value is shader slot index
-			typedef std::pair<unsigned int, const Texture::Texture2D*> TextureType;
+				void SetUsage(Usage usage);
+			};
+
+			struct BufferType : public Usage
+			{
+				uint semanticIndex;
+				const Rendering::Buffer::BaseBuffer* buffer;
+
+				BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, Usage usage);
+
+				~BufferType(){}
+			};
+
+			struct TextureType : public Usage
+			{
+				uint semanticIndex;
+				const Texture::Texture2D* texture;
+
+				TextureType(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS);
+				TextureType(uint semanticIndex, const Texture::Texture2D* texture, Usage usage);
+
+				~TextureType(){}
+			};
+
+			struct ShaderResourceType : public Usage
+			{
+				uint semanticIndex;
+				const Buffer::ShaderResourceBuffer* srBuffer;
+
+				ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
+				~ShaderResourceType(){}
+			};
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);
