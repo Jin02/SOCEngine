@@ -4,6 +4,7 @@
 #include "ShadingWithLightCulling.h"
 #include "DirectX.h"
 #include "OnlyLightCulling.h"
+#include "OffScreen.h"
 
 namespace Rendering
 {
@@ -25,11 +26,12 @@ namespace Rendering
 			Texture::RenderTexture*						_normal_roughness;
 			Texture::RenderTexture*						_specular_fresnel0;
 
-			DeferrdShading::ShadingWithLightCulling*	_deferredShadingWithLightCulling;
+			DeferredShading::ShadingWithLightCulling*	_deferredShadingWithLightCulling;
 			Texture::DepthBuffer*						_opaqueDepthBuffer;
 
 			Light::OnlyLightCulling*					_blendedMeshLightCulling;
 			Texture::DepthBuffer*						_blendedDepthBuffer;
+			DeferredShading::OffScreen*					_offScreen;
 
 
 		public:

@@ -12,12 +12,13 @@ using namespace Rendering::Factory;
 using namespace Rendering::Light;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
+using namespace Rendering::DeferredShading;
 
 MainRenderer::MainRenderer() : CameraForm(),
 	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
-	_tbrParamConstBuffer(nullptr)
+	_tbrParamConstBuffer(nullptr), _offScreen(nullptr)
 {
 }
 
@@ -43,13 +44,16 @@ void MainRenderer::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize);
 
-	_deferredShadingWithLightCulling = new DeferrdShading::ShadingWithLightCulling;
+	_deferredShadingWithLightCulling = new DeferredShading::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
 
 	EnableRenderTransparentMesh(true);
 
 	_tbrParamConstBuffer = new ConstBuffer;
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
+
+	_offScreen = new OffScreen;
+	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
 
 	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
 	CameraForm* thisCam = this;
@@ -232,8 +236,7 @@ void MainRenderer::Render(float dt, Device::DirectX* dx)
 	}
 
 	LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
-
-	// Light Culling and Deferred DeferrdShading
+	// Light Culling and Deferred DeferredShading
 	{
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
 		ID3D11DepthStencilView* nullDSV = nullptr;
@@ -284,9 +287,9 @@ void MainRenderer::Render(float dt, Device::DirectX* dx)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 	}
 
+	// Main RT
 	{
-
-
+		_offScreen->Render(_renderTarget);
 	}
 
 	// Transparency
