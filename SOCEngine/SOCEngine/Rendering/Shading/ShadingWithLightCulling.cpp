@@ -1,4 +1,4 @@
-#include "DeferredShadingWithLightCulling.h"
+#include "ShadingWithLightCulling.h"
 #include "EngineShaderFactory.hpp"
 #include "Director.h"
 
@@ -9,20 +9,21 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
+using namespace Rendering::DeferrdShading;
 
-DeferredShadingWithLightCulling::DeferredShadingWithLightCulling() : 
+ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
 	_inputSpotLightColorBuffer(nullptr), _inputDirectionalLightColorBuffer(nullptr),
 	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr)
 {
 }
 
-DeferredShadingWithLightCulling::~DeferredShadingWithLightCulling()
+ShadingWithLightCulling::~ShadingWithLightCulling()
 {
 	Destory();
 }
 
-void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
+void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
 												 const Texture::RenderTexture* gbuffer_albedo_metallic,  
 												 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
 												 const Texture::RenderTexture* gbuffer_normal_roughness, 
@@ -120,7 +121,7 @@ void DeferredShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opa
 	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
 }
 
-void DeferredShadingWithLightCulling::Destory()
+void ShadingWithLightCulling::Destory()
 {
 	_inputPointLightColorBuffer				= nullptr;
 	_inputSpotLightColorBuffer				= nullptr;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CameraForm.h"
-#include "DeferredShadingWithLightCulling.h"
+#include "ShadingWithLightCulling.h"
 #include "DirectX.h"
 #include "OnlyLightCulling.h"
 
@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Camera
 	{		
-		class DeferredCamera : public CameraForm
+		class MainRenderer : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
@@ -21,20 +21,20 @@ namespace Rendering
 			Buffer::ConstBuffer* _tbrParamConstBuffer;
 
 		private:
-			Texture::RenderTexture*				_albedo_metallic;
-			Texture::RenderTexture*				_normal_roughness;
-			Texture::RenderTexture*				_specular_fresnel0;
+			Texture::RenderTexture*						_albedo_metallic;
+			Texture::RenderTexture*						_normal_roughness;
+			Texture::RenderTexture*						_specular_fresnel0;
 
-			DeferredShadingWithLightCulling*	_deferredShadingWithLightCulling;
-			Texture::DepthBuffer*				_opaqueDepthBuffer;
+			DeferrdShading::ShadingWithLightCulling*	_deferredShadingWithLightCulling;
+			Texture::DepthBuffer*						_opaqueDepthBuffer;
 
-			Light::OnlyLightCulling*			_blendedMeshLightCulling;
-			Texture::DepthBuffer*				_blendedDepthBuffer;
+			Light::OnlyLightCulling*					_blendedMeshLightCulling;
+			Texture::DepthBuffer*						_blendedDepthBuffer;
 
 
 		public:
-			DeferredCamera();
-			virtual ~DeferredCamera(void);
+			MainRenderer();
+			virtual ~MainRenderer(void);
 		
 		public:
 			virtual void OnInitialize();
@@ -50,6 +50,6 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 		};
 
-		typedef DeferredCamera Camera;
+		typedef MainRenderer Camera;
 	}
 }

@@ -1,4 +1,4 @@
-#include "DeferredCamera.h"
+#include "MainRenderer.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
@@ -13,7 +13,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 
-DeferredCamera::DeferredCamera() : CameraForm(),
+MainRenderer::MainRenderer() : CameraForm(),
 	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
@@ -21,11 +21,11 @@ DeferredCamera::DeferredCamera() : CameraForm(),
 {
 }
 
-DeferredCamera::~DeferredCamera()
+MainRenderer::~MainRenderer()
 {
 }
 
-void DeferredCamera::OnInitialize()
+void MainRenderer::OnInitialize()
 {
 	CameraForm::OnInitialize();
 
@@ -43,7 +43,7 @@ void DeferredCamera::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize);
 
-	_deferredShadingWithLightCulling = new DeferredShadingWithLightCulling;
+	_deferredShadingWithLightCulling = new DeferrdShading::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
 
 	EnableRenderTransparentMesh(true);
@@ -56,7 +56,7 @@ void DeferredCamera::OnInitialize()
 	camMgr->Add(_owner->GetName(), thisCam);
 }
 
-void DeferredCamera::OnDestroy()
+void MainRenderer::OnDestroy()
 {
 	SAFE_DELETE(_albedo_metallic);
 	SAFE_DELETE(_specular_fresnel0);
@@ -68,7 +68,7 @@ void DeferredCamera::OnDestroy()
 	CameraForm::OnDestroy();
 }
 
-void DeferredCamera::Render(float dt, Device::DirectX* dx)
+void MainRenderer::Render(float dt, Device::DirectX* dx)
 {
 	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -112,11 +112,11 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 	//			mfr.material = material;
 	//			mfr.mesh = mesh;
 	//		}
-
+	//
 	//		tbfrQueue.push_back(mfr);
 	//		return true;
 	//	}
-
+	//
 	//	return false;
 	//};
 	
@@ -150,18 +150,29 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 
 				std::vector<BaseShader::BufferType> constBuffers = material->GetConstBuffers();
 				{
-					constBuffers.push_back(BaseShader::BufferType(0, _camConstBuffer));
-					constBuffers.push_back(BaseShader::BufferType(1, mesh->GetConstBuffer()));
+					// Setting Camera CosntBuffer
+					{
+						BaseShader::BufferType buf = BaseShader::BufferType(0, _camConstBuffer, true, true, false, false);
+						constBuffers.push_back(buf);
+					}
+
+					// Setting Transform ConstBuffer
+					{
+						BaseShader::BufferType buf = BaseShader::BufferType(1, mesh->GetTransformConstBuffer(), true, false, false, false);
+						constBuffers.push_back(buf);
+					}
 				}
+
+				const auto& srBuffers = material->GetShaderResourceBuffers();
 
 				shaders.vs->SetShaderToContext(context);
 				shaders.vs->SetInputLayoutToContext(context);
-				shaders.vs->UpdateResources(context, &constBuffers, nullptr);
+				shaders.vs->UpdateResources(context, &constBuffers, &tex, &srBuffers);
 
 				if(renderType != RenderType::Transparency_DepthOnly)
 				{
 					shaders.ps->SetShaderToContext(context);
-					shaders.ps->UpdateResources(context, &constBuffers, &tex);
+					shaders.ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
 				}
 
 				context->DrawIndexed(filter->GetIndexCount(), 0, 0);
@@ -222,13 +233,18 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 
 	LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
-	// Light Culling and Deferred Shading
+	// Light Culling and Deferred DeferrdShading
 	{
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
 		ID3D11DepthStencilView* nullDSV = nullptr;
 		context->OMSetRenderTargets(NumOfRenderTargets, nullRTVs, nullDSV);
 		context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0);
-		
+
+		context->VSSetShader(nullptr, nullptr, 0);
+		context->PSSetShader(nullptr, nullptr, 0);
+		ID3D11SamplerState* nullSampler = nullptr;
+		context->PSSetSamplers(0, 1, &nullSampler);
+
 		LightCulling::TBRChangeableParam changeableParam;
 		{
 			changeableParam.lightNum = lightManager->GetPackedLightCount();
@@ -268,6 +284,11 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 	}
 
+	{
+
+
+	}
+
 	// Transparency
 	if(_useTransparent)
 	{
@@ -284,9 +305,6 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 		context->PSSetShaderResources(6, 1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
 		context->PSSetShaderResources(7, 1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
-		ID3D11RenderTargetView* nullRTV = nullptr;
-		context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
-
 		const std::vector<const Mesh::Mesh*>& meshes = renderMgr->GetTransparentMeshes().meshes.GetVector();
 		RenderMesh(meshes, RenderType::Transparency);
 
@@ -299,10 +317,12 @@ void DeferredCamera::Render(float dt, Device::DirectX* dx)
 		context->PSSetShaderResources(5, 1, &nullSRV);
 		context->PSSetShaderResources(6, 1, &nullSRV);
 		context->PSSetShaderResources(7, 1, &nullSRV);
+		
+		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 	}
 }
 
-void DeferredCamera::EnableRenderTransparentMesh(bool enable)
+void MainRenderer::EnableRenderTransparentMesh(bool enable)
 {	
 	if(enable)
 	{
@@ -336,7 +356,7 @@ void DeferredCamera::EnableRenderTransparentMesh(bool enable)
 	}
 }
 
-Core::Component* DeferredCamera::Clone() const
+Core::Component* MainRenderer::Clone() const
 {
 	return nullptr;
 }
