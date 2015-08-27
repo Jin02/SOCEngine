@@ -1,6 +1,5 @@
 #pragma once
 
-#include "BaseShader.h"
 #include "BaseBuffer.h"
 
 namespace Rendering
