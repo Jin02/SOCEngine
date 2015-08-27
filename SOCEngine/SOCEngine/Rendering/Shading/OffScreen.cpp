@@ -1,7 +1,7 @@
 #include "OffScreen.h"
 #include "Utility.h"
 
-using namespace Rendering::DeferrdShading;
+using namespace Rendering::DeferredShading;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Shader;
 

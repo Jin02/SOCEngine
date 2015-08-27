@@ -5,7 +5,7 @@
 
 namespace Rendering
 {
-	namespace DeferrdShading
+	namespace DeferredShading
 	{
 		class ShadingWithLightCulling : public Light::LightCulling
 		{

@@ -4,7 +4,7 @@
 
 namespace Rendering
 {
-	namespace DeferrdShading
+	namespace DeferredShading
 	{
 		class OffScreen : private PostProcessing::FullScreen
 		{
