@@ -79,7 +79,7 @@
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
-    <ClInclude Include="Rendering\Camera\DeferredCamera.h" />
+    <ClInclude Include="Rendering\Camera\MainRenderer.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GlobalSetting.h" />
@@ -98,7 +98,7 @@
     <ClInclude Include="Rendering\Mesh\MeshBasicData.h" />
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
-    <ClInclude Include="Rendering\RenderManager\BackBufferMaker.h" />
+    <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
@@ -111,43 +111,51 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
-    <ClInclude Include="Rendering\Shading\DeferredShadingWithLightCulling.h" />
+    <ClInclude Include="Rendering\Shading\OffScreen.h" />
+    <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
     <ClInclude Include="ResourceManager\OriginObjectManager.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
-    <FxCompile Include="ShaderCodes\BRDF.h">
+    <ClInclude Include="ShaderCodes\BRDF.h">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+    </ClInclude>
+    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\LightCulling_CS.h">
+    <ClInclude Include="ShaderCodes\LightCulling_CS.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Common.h">
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ShaderCommon.h">
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\ShaderCommon.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\FullScreenShader.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
@@ -206,7 +214,7 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
-    <ClCompile Include="Rendering\Camera\DeferredCamera.cpp" />
+    <ClCompile Include="Rendering\Camera\MainRenderer.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
@@ -223,7 +231,7 @@
     <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
-    <ClCompile Include="Rendering\RenderManager\BackBufferMaker.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
@@ -234,7 +242,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
-    <ClCompile Include="Rendering\Shading\DeferredShadingWithLightCulling.cpp" />
+    <ClCompile Include="Rendering\Shading\OffScreen.cpp" />
+    <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
@@ -254,12 +263,6 @@
     <ClCompile Include="Device\Win32.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderCodes\BackBufferMaker.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCulling.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -349,7 +352,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);$(FBX2014_DIR)include;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>
