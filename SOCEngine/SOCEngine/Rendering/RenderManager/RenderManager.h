@@ -5,7 +5,7 @@
 #include "Utility.h"
 #include <functional>
 
-#include "DeferredCamera.h"
+#include "MainRenderer.h"
 
 #include "GlobalSetting.h"
 

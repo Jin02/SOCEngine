@@ -59,7 +59,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 
-			GET_ACCESSOR(ConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
+			GET_ACCESSOR(TransformConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
 
 		public:
 			virtual Core::Component* Clone() const;
