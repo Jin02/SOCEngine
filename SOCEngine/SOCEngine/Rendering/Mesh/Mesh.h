@@ -26,6 +26,7 @@ namespace Rendering
 
 			MaterialUpdateType		_updateType;
 			unsigned int			_selectMaterialIndex;
+
 		public:
 			Mesh();
 			~Mesh();
@@ -57,6 +58,8 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
+
+			GET_ACCESSOR(TransformConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
 
 		public:
 			virtual Core::Component* Clone() const;

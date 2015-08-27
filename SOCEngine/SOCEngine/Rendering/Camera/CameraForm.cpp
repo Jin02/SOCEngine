@@ -14,7 +14,6 @@ using namespace Rendering::Manager;
 CameraForm::CameraForm() 
 	: Component(),	_frustum(nullptr), _renderTarget(nullptr), _isInvertedDepthWriting(false)
 {
-	_renderType = RenderType::Unknown;
 }
 
 CameraForm::~CameraForm(void)
@@ -28,8 +27,8 @@ void CameraForm::OnInitialize()
 	_clippingNear	= 0.1f;
 	_clippingFar	= 1000.0f;
 
-	Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
-	_aspect = (float)windowSize.w / (float)windowSize.h;
+	const Size<unsigned int>& backBufferSize = Director::GetInstance()->GetBackBufferSize();
+	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
 
 	_projectionType    = ProjectionType::Perspective;
 	_clearColor = Color(0.5f, 0.5f, 1.0f, 1.0f);
@@ -37,10 +36,10 @@ void CameraForm::OnInitialize()
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	_camConstBuffer = new Buffer::ConstBuffer;
-	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
 		ASSERT_MSG("Error, cam->constbuffer->Initialize");
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
@@ -54,11 +53,11 @@ void CameraForm::OnDestroy()
 
 void CameraForm::CalcAspect()
 {
-	Size<unsigned int> windowSize =  Device::Director::GetInstance()->GetWindowSize();
-	_aspect = (float)windowSize.w / (float)windowSize.h;
+	const Size<unsigned int>& backBufferSize =  Device::Director::GetInstance()->GetBackBufferSize();
+	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
 }
 
-void CameraForm::ProjectionMatrix(Math::Matrix& outMatrix)
+void CameraForm::GetProjectionMatrix(Math::Matrix& outMatrix) const
 {
 	if(_projectionType == ProjectionType::Perspective)
 	{
@@ -74,12 +73,12 @@ void CameraForm::ProjectionMatrix(Math::Matrix& outMatrix)
 	}
 	else if(_projectionType == ProjectionType::Orthographic)
 	{
-		Size<unsigned int> windowSize = Device::Director::GetInstance()->GetWindowSize();
-		Matrix::OrthoLH(outMatrix, (float)(windowSize.w), (float)(windowSize.h), _clippingNear, _clippingFar);
+		const Size<unsigned int>& backBufferSize = Device::Director::GetInstance()->GetBackBufferSize();
+		Matrix::OrthoLH(outMatrix, (float)(backBufferSize.w), (float)(backBufferSize.h), _clippingNear, _clippingFar);
 	}
 }
 
-void CameraForm::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
+void CameraForm::GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
 {
 	outMatrix = worldMatrix;
 
@@ -103,38 +102,41 @@ void CameraForm::ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMa
 	outMatrix._44 = 1.0f;
 }
 
-void CameraForm::ViewMatrix(Math::Matrix& outMatrix)
+void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
 
-	ViewMatrix(outMatrix, worldMat);
+	GetViewMatrix(outMatrix, worldMat);
 }
 
 void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects)
 {
 	TransformPipelineParam tfParam;
-	ProjectionMatrix(tfParam.projMat);
-	ViewMatrix(tfParam.viewMat);
+	GetProjectionMatrix(tfParam.projMat);
+	GetViewMatrix(tfParam.viewMat);
 
-	Matrix viewProj = tfParam.viewMat * tfParam.projMat;
-	_frustum->Make(viewProj);
+	_viewProjMatrixInPrevRenderState = tfParam.viewMat * tfParam.projMat;
+	_frustum->Make(_viewProjMatrixInPrevRenderState);
 
-	CameraConstBuffer camCB;
+	ConstBufferParam camCB;
 	{
 		Matrix worldMat;
 		_owner->GetTransform()->FetchWorldMatrix(worldMat);
 
-		camCB.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
-		camCB.clippingNear = _clippingNear;
-		camCB.clippingFar = _clippingFar;
-		const auto& size = Device::Director::GetInstance()->GetWindowSize();
-		camCB.screenSize.w = static_cast<float>(size.w);
-		camCB.screenSize.h = static_cast<float>(size.h);
+		camCB.worldPos		= Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
+		camCB.clippingNear	= _clippingNear;
+		camCB.clippingFar	= _clippingFar;
+		camCB.screenSize	= Device::Director::GetInstance()->GetBackBufferSize().Cast<float>();
 	}
+	
+	if( memcmp(&_prevConstBufferData, &camCB, sizeof(ConstBufferParam)) != 0 )
+	{
+		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		_camConstBuffer->UpdateSubResource(context, &camCB);
 
-	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-	_camConstBuffer->Update(context, &camCB);
+		_prevConstBufferData = camCB;
+	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
@@ -192,11 +194,11 @@ void CameraForm::_Clone(CameraForm* newCam) const
 	newCam->_frustum		= new Frustum(0.0f);
 	newCam->_renderTarget	= new Texture::RenderTexture;
 	{
-		Size<unsigned int> windowSize = Director::GetInstance()->GetWindowSize();
-		newCam->_renderTarget->Initialize(windowSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+		const Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
+		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
 	newCam->_camConstBuffer	= new Buffer::ConstBuffer;
-	if(_camConstBuffer->Initialize(sizeof(CameraConstBuffer)) == false)
+	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
 		ASSERT_MSG("Error, cant create const buffer in _Clone");
 }

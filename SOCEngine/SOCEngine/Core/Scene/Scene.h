@@ -10,7 +10,6 @@
 #include "BufferManager.h"
 #include "RenderManager.h"
 #include "UIManager.h"
-#include "BackBufferMaker.h"
 #include "LightManager.h"
 
 namespace Core
@@ -22,7 +21,6 @@ namespace Core
 
 	private:
 		State _state;
-		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	

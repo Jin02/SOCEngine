@@ -15,6 +15,7 @@
 using namespace Importer;
 using namespace Importer::Obj;
 using namespace Rendering;
+using namespace Rendering::Shader;
 using namespace Manager;
 using namespace Utility;
 using namespace Resource;
@@ -65,7 +66,7 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
 
 			const uint shaderSlotIndex = 0; // Default Diffuse Texture Shader Slot Index
-			material->UpdateTexture_ShaderSlotIndex(shaderSlotIndex, texture);
+			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, BaseShader::Usage(false, false, false, true));
 		}
 
 		if(tinyMaterial.normal_texname.empty() == false)
@@ -73,7 +74,7 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
 
 			const uint shaderSlotIndex = 1; // Default Diffuse Texture Shader Slot Index
-			material->UpdateTexture_ShaderSlotIndex(shaderSlotIndex, texture);
+			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, BaseShader::Usage(false, false, false, true));
 		}
 
 		if(tinyMaterial.specular_texname.empty() == false)
@@ -81,7 +82,7 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
 
 			const uint shaderSlotIndex = 2; // Default Diffuse Texture Shader Slot Index
-			material->UpdateTexture_ShaderSlotIndex(shaderSlotIndex, texture);
+			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, BaseShader::Usage(false, false, false, true));
 		}
 
 		materialMgr->Add(fileName, materialName, material);

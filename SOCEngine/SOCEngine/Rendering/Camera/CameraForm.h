@@ -5,19 +5,10 @@
 #include "Frustum.h"
 #include "Structure.h"
 #include "RenderTexture.h"
-#include "CameraConstBuffer.h"
 #include "ConstBuffer.h"
 
 namespace Rendering
 {
-	enum class RenderType
-	{
-		Unknown,
-		Forward,
-		Deferred,
-		ForwardPlus,
-	};
-
 	namespace Camera
 	{
 		class CameraForm : public Core::Component
@@ -37,24 +28,29 @@ namespace Rendering
 				RenderQueue() : updateCounter(0){}
 				~RenderQueue(){}
 			};
+			struct ConstBufferParam
+			{
+				Math::Vector4 worldPos;
+				float clippingNear, clippingFar;
+				Math::Size<float> screenSize;
+			};
+
+		private:
+			ConstBufferParam				_prevConstBufferData;
 
 		protected:
 			Frustum*						_frustum;
 			Texture::RenderTexture*			_renderTarget;
-
-			// CameraConstBuffer
 			Buffer::ConstBuffer*			_camConstBuffer;
-
-			RenderType						_renderType;
-
 			RenderQueue						_transparentMeshQueue;
+			
+			Math::Matrix					_viewProjMatrixInPrevRenderState;
 
 		protected:
 			bool							_isInvertedDepthWriting;
 			float							_FOV;
 			float							_clippingNear;
 			float							_clippingFar;
-			//ClearFlag						_clearFlag;
 			ProjectionType					_projectionType;
 			float							_aspect;
 			Color							_clearColor;
@@ -68,10 +64,10 @@ namespace Rendering
 			void SortTransparentMeshRenderQueue();
 
 		public:
-			void ProjectionMatrix(Math::Matrix &outMatrix);
+			void GetProjectionMatrix(Math::Matrix &outMatrix) const;
 
-			static void  ViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
-			void ViewMatrix(Math::Matrix& outMatrix);
+			static void  GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
+			void GetViewMatrix(Math::Matrix& outMatrix) const;
 
 		public:
 			virtual void OnInitialize();
@@ -90,7 +86,6 @@ namespace Rendering
 			GET_SET_ACCESSOR(IsInvertedDepthWriting, bool, _isInvertedDepthWriting);
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
-			GET_ACCESSOR(RenderType, RenderType, _renderType);
 			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
 		};
 	}

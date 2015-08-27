@@ -19,10 +19,12 @@ groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
 
 #endif
 
-cbuffer LightCullingGlobalData : register( b1 )
+cbuffer TBRParam : register( b3 )
 {
 	matrix	g_viewMat;
 	matrix 	g_invProjMat;
+	matrix	g_invViewProjViewport;
+
 	float2	g_screenSize;
 	uint 	g_lightNum;
 	uint	g_maxNumOfperLightInTile;
@@ -35,6 +37,21 @@ struct CornerMinMax
 	float min_bl, max_bl;
 	float min_br, max_br;
 };
+
+uint GetNumOfPointLight()
+{
+	return (g_lightNum & 0xFFE00000) >> 21;
+}
+
+uint GetNumOfSpotLight()
+{
+	return (g_lightNum & 0x0001FFC00) >> 10;
+}
+
+uint GetNumOfDirectionalLight()
+{
+	return g_lightNum & 0x000007FF;
+}
 
 uint GetNumTilesX()
 {
@@ -292,7 +309,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	ClacMinMaxAndCheckEdgeDetection(halfGlobalIdx.xy, halfLocalIdx.xy, idxInTile, minZ, maxZ);
 	//GroupMemoryBarrierWithGroupSync
 
-    uint pointLightCount = g_lightNum & 0x0000FFFF;
+	uint pointLightCount = GetNumOfPointLight();
     for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=LIGHT_CULLING_THREAD_COUNT)
     {
 		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
@@ -320,7 +337,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	uint pointLightCountInTile = s_lightIndexCounter;
 	outPointLightCountInTile = pointLightCountInTile;
 
-	uint spotLightCount = (g_lightNum & 0xFFFF0000) >> 16;
+	uint spotLightCount = GetNumOfSpotLight();
 	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=LIGHT_CULLING_THREAD_COUNT)
 	{
 		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];

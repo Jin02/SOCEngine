@@ -121,6 +121,14 @@ namespace Math
 		return res;
 	}
 
+	Matrix Matrix::operator* (const Matrix& mat) const
+	{
+		Matrix res;
+		Matrix::Multiply(res, (*this), mat);
+
+		return res;
+	}
+
 	Matrix Matrix::operator/ (float f) const
 	{
 		Matrix res( *this );

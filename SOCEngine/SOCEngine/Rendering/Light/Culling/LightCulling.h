@@ -17,7 +17,7 @@ namespace Rendering
 		{
 		public:
 			static const uint TileSize					= 16;
-			static const uint LightMaxNumInTile			= 544;
+			static const uint LightMaxNumInTile			= 272;
 
 			enum class InputBufferShaderIndex : unsigned int
 			{
@@ -32,40 +32,39 @@ namespace Rendering
 				InvetedBlendedDepthBuffer		= 12
 			};
 
-			enum class CostBufferShaderIndex : unsigned int
+			enum class ConstBufferShaderIndex : unsigned int
 			{
-				GlobalData = 1
+				TBRParam = 1
 			};
 
 		public:
-			struct GlobalData
-			{	
-				Math::Matrix	viewMat;
-				Math::Matrix 	invProjMat;
-				Math::Vector2	screenSize;
-				unsigned int 	lightNum;
-				unsigned int 	maxNumOfperLightInTile;
+			struct TBRChangeableParam
+			{
+				Math::Matrix		viewMat;
+				Math::Matrix 		invProjMat;
+				unsigned int 		lightNum;
 			};
 
-			static const int POINT_LIGHT_BUFFER_MAX_NUM			= 2048;
-			static const int SPOT_LIGHT_BUFFER_MAX_NUM			= 2048;
+			struct TBRParam : TBRChangeableParam
+			{	
+				Math::Matrix 		invViewProjViewport;
+
+				Math::Size<float>	screenSize;
+				unsigned int 		maxNumOfperLightInTile;
+			};
 
 		private:
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputBuffer>		_inputBuffers;
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>		_inputTextures;
-			std::vector<GPGPU::DirectCompute::ComputeShader::Output>			_outputs;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer>		_inputBuffers;
+			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>					_inputTextures;
+			std::vector<GPGPU::DirectCompute::ComputeShader::Output>						_outputs;
 
 			GPGPU::DirectCompute::ComputeShader*								_computeShader;
 
-			Rendering::Buffer::ConstBuffer*										_globalDataBuffer;			
 			bool																_useBlendedMeshCulling;
 
-			GPGPU::DirectCompute::ComputeShader::InputBuffer*					_inputPointLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputBuffer*					_inputSpotLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputBuffer*					_inputSpotLightParamBuffer;
-
-			uint _pointLightUpdateCounter;
-			uint _spotLightUpdateCounter;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputPointLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightParamBuffer;
 
 		public:
 			LightCulling();
@@ -74,25 +73,24 @@ namespace Rendering
 		protected:
 			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
 				const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer);
+
+			void UpdateTBRCommonParam(const Device::DirectX* dx, const TBRParam* param);
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
+
 			void Destroy();
+
 			inline void SetOuputBuferToComputeShader(const std::vector<GPGPU::DirectCompute::ComputeShader::Output>&  outputs) { _computeShader->SetOutputs(outputs); }
 
 		protected:
-			void _Init_InputBuffer_And_Append_To_InputBufferList(GPGPU::DirectCompute::ComputeShader::InputBuffer*& outBuffer,	uint idx, uint bufferStride, uint bufferElementNum, DXGI_FORMAT format);
+			void AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
 			void _Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture,	uint idx, const Texture::Texture2D* texture);
 
 		public:	
-			void UpdateInputBuffers(const Device::DirectX* dx, const GlobalData* globalData, const Rendering::Manager::LightManager* lightManager);
-			void Dispatch(const Device::DirectX* dx);
-
-		protected:
-			GET_ACCESSOR(PointLightUpdateCounter, uint, _pointLightUpdateCounter);
-			GET_ACCESSOR(SpotLightUpdateCounter, uint, _spotLightUpdateCounter);
+			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;
-			unsigned int CalcMaxNumLightsInTile();
+			static unsigned int CalcMaxNumLightsInTile();
 		};
 	}
 }

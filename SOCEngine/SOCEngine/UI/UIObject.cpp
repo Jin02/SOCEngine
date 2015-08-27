@@ -83,7 +83,7 @@ void UIObject::UpdateTransform(ID3D11DeviceContext* context, const Matrix& viewP
 	Matrix worldViewProj = world * viewProj;
 	Matrix::Transpose(worldViewProj, worldViewProj);
 
-	_transformCB->Update(context, &worldViewProj);
+	_transformCB->UpdateSubResource(context, &worldViewProj);
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
 	{

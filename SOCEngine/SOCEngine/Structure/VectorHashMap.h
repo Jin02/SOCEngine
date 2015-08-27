@@ -37,10 +37,20 @@ namespace Structure
 			_map.insert(std::make_pair(key, p));
 		}
 
-		Object* Find(const Key& key)
+		Object* Find(const Key& key, uint* outIdx = nullptr)
 		{
 			std::hash_map<Key, std::pair<Object*, uint>>::iterator iter = _map.find(key);
-			return iter == _map.end() ? nullptr :iter->second.first;
+
+			Object* ret = nullptr;
+			if(iter != _map.end())
+			{
+				ret = iter->second.first;
+
+				if(outIdx)
+					(*outIdx) = iter->second.second;
+			}
+
+			return ret;
 		}
 
 		Object& Get(unsigned int index)

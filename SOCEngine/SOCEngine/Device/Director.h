@@ -31,7 +31,7 @@ namespace Device
 		void CalculateFPS();
 
 	public:
-		void Initialize(Math::Rect<unsigned int> &rect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
+		void Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
 		void Run();
 		void Exit();
 
@@ -39,13 +39,9 @@ namespace Device
 		GET_ACCESSOR(Win, const Win32*, _win);
 		GET_ACCESSOR(DirectX, const DirectX*, _directX);
 		GET_ACCESSOR(WindowSize, const Math::Size<unsigned int>&, _win->GetSize());
+		GET_ACCESSOR(BackBufferSize, const Math::Size<unsigned int>&, _directX->GetBackBufferSize());
 
 		GET_SET_ACCESSOR(CurrentScene, Core::Scene*, _scene);
 		GET_SET_ACCESSOR(NextScene, Core::Scene*, _nextScene);
 	};
 }
-
-#define GlobalDirectX Device::Director::GetInstance()->GetDirectX()
-#define GlobalDeviceDirector Device::Director::GetInstance()
-#define GlobalDeviceDirectorGetCurrentScene Device::Director::GetInstance()->GetCurrentScene()
-#define GlobalDeviceDirectorGetScreenSize Device::Director::GetInstance()->GetWindowSize()

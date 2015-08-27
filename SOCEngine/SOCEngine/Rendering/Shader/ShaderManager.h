@@ -46,6 +46,8 @@ namespace Rendering
 			void Add(const std::string& fullCommand, Shader::BaseShader* shader);
 			bool LoadShader(const std::string filePath);
 
+			static std::string MakeCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType);
+
 		public:
 			Shader::BaseShader*		FindShader(const std::string& fileName, const std::string& mainFunc, Shader::BaseShader::Type type);
 

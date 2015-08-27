@@ -31,21 +31,24 @@ namespace Rendering
 			Users
 		};
 
+
 	private:
-		std::string										_name;
-		Math::Vector2									_tiling;
+		std::string												_name;
+		Math::Vector2											_tiling;
 
-		std::vector<Shader::BaseShader::BufferType>		_constBuffers;
-		std::vector<Shader::BaseShader::TextureType>	_textures;
-		std::map<const std::string, Container>			_datas;
+		std::vector<Shader::BaseShader::BufferType>				_constBuffers;
+		std::vector<Shader::BaseShader::TextureType>			_textures;
+		std::vector<Shader::BaseShader::ShaderResourceType>		_srBuffers;
 
-		const Type										_type;
-		uint											_variableUpdateCounter;
+		std::map<const std::string, Container>					_datas;
+
+		const Type												_type;
+		uint													_variableUpdateCounter;
 
 	protected:
-		Shader::ShaderGroup								_customShaders; //in forward rendering
-		bool											_hasAlpha;
-		bool											_changedAlpha;
+		Shader::ShaderGroup										_customShaders; //in forward rendering
+		bool													_hasAlpha;
+		bool													_changedAlpha;
 
 	public:
 		Material(const std::string& name, Type type);
@@ -54,14 +57,21 @@ namespace Rendering
 	public:
 		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool UpdateConstBuffer_ShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb);
-		bool UpdateConstBuffer_ArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb);
+		bool SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::BaseShader::Usage usage);
+		bool SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::BaseShader::Usage usage);
 
 	public:
 		const Rendering::Texture::Texture2D* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool UpdateTexture_ShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture);
-		bool UpdateTexture_ArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture);
+		bool SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::BaseShader::Usage usage);
+		bool SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::BaseShader::Usage usage);
+
+	public:
+		const Rendering::Buffer::ShaderResourceBuffer* FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+
+		bool SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::BaseShader::Usage usage);
+		bool SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::BaseShader::Usage usage);
+
 
 	public:
 		template<typename Type>
@@ -116,5 +126,6 @@ namespace Rendering
 	public:
 		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);
 		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::BufferType>&, _constBuffers);
+		GET_ACCESSOR(ShaderResourceBuffers, const std::vector<Shader::BaseShader::ShaderResourceType>&, _srBuffers);
 	};
 }

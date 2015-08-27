@@ -28,6 +28,7 @@ namespace Math
 		Matrix operator* (const Matrix& mat);
 		Matrix operator* (float f) const;
 		Matrix operator/ (float f) const;
+		Matrix operator* (const Matrix& mat) const;
 
 		const Vector2 operator* (const Vector2& v) const;
 		const Vector3 operator* (const Vector3& v) const;

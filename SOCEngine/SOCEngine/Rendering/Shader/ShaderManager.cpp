@@ -340,3 +340,8 @@ const char*	ShaderManager::FindShaderCode(const std::string& fileName)
 	auto findIter = _shaderCodes.find(fileName);
 	return (findIter == _shaderCodes.end()) ? "" : findIter->second.c_str();
 }
+
+std::string ShaderManager::MakeCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType)
+{
+	return shaderName + ":" + shaderType + ":" + shaderMainFuncName;
+}

@@ -1,28 +1,30 @@
-#include "CSInputBuffer.h"
+#include "ShaderResourceBuffer.h"
 #include "Director.h"
 
 using namespace Device;
-using namespace GPGPU::DirectCompute;
+using namespace Rendering::Buffer;
 
-CSInputBuffer::CSInputBuffer() : BaseBuffer(), _srv(nullptr)
+ShaderResourceBuffer::ShaderResourceBuffer() : BaseBuffer(), _srv(nullptr)
 {
 
 }
 
-CSInputBuffer::~CSInputBuffer()
+ShaderResourceBuffer::~ShaderResourceBuffer()
 {
 	SAFE_RELEASE(_srv);
 	SAFE_RELEASE(_buffer);
 }
 
-void CSInputBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format, const void* sysMem)
+void ShaderResourceBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format,
+									  const void* sysMem, bool useMapWriteNoOverWrite, D3D11_USAGE usage)
 {
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
 
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
-	desc.ByteWidth = stride * num;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.Usage				= usage;
+	desc.ByteWidth			= stride * num;
+	desc.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags		= useMapWriteNoOverWrite ? D3D11_CPU_ACCESS_WRITE : 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = sysMem;
