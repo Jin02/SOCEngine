@@ -56,7 +56,7 @@ namespace Rendering
 			virtual ~ShadingWithLightCulling();
 
 		public:
-			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::RenderTexture* gbuffer_albedo_metallic, const Texture::RenderTexture* gbuffer_specular_fresnel0, const Texture::RenderTexture* gbuffer_normal_roughness, const Math::Size<uint>& screenSize);
+			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::RenderTexture* gbuffer_albedo_metallic, const Texture::RenderTexture* gbuffer_specular_fresnel0, const Texture::RenderTexture* gbuffer_normal_roughness, const Math::Size<uint>& backBufferSize);
 			void Destory();
 
 		public:

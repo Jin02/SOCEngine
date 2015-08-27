@@ -27,7 +27,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 												 const Texture::RenderTexture* gbuffer_albedo_metallic,  
 												 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
 												 const Texture::RenderTexture* gbuffer_normal_roughness, 
-												 const Math::Size<uint>& size)
+												 const Math::Size<uint>& backBufferSize)
 {
 	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
@@ -103,8 +103,18 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 
 	// Offscreen
 	{
+		Math::Size<uint> bufferSize = backBufferSize;
+		{
+			const DXGI_SAMPLE_DESC& msaaDesc = Director::GetInstance()->GetDirectX()->GetMSAADesc();
+			if(msaaDesc.Count > 1)
+			{
+				bufferSize.w *= 2;
+				bufferSize.h *= 2;
+			}
+		}
+
 		_offScreen = new CSRWTexture;
-		_offScreen->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 		ComputeShader::Output output;
 		{
