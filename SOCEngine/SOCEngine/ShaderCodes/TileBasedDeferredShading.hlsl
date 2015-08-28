@@ -122,7 +122,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( g_cameraWorldPosition - worldPosition.xyz );
+	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
 
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( globalIdx, sampleIdx );
 
@@ -168,7 +168,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint directionalLightIdx=0; directionalLightIdx<g_directionalLightCount; ++directionalLightIdx)
+	uint directionalLightCount = GetNumOfDirectionalLight();
+	for(uint directionalLightIdx=0; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 

@@ -56,29 +56,6 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
 							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer)
 {
-	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
-	//Check duplicated input datas
-	{
-		for(const auto& iter : _inputBuffers)
-		{
-			if( iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
-				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
-				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter )
-			{
-				ASSERT_MSG("Error, duplicated input data");
-			}
-		}
-
-		for(const auto& iter : _inputTextures)
-		{
-			if( iter.idx == (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer ||
-				iter.idx == (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer )
-			{
-				ASSERT_MSG("Error, duplicated input data");
-			}
-		}
-	}
-
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
@@ -100,6 +77,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	_computeShader = new ComputeShader(threadGroup, blob);
 
 	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
+	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
 	// Input Buffer Setting
 	{
@@ -130,12 +108,15 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
 			}
 		}
-
-		_computeShader->SetInputSRBuffers(_inputBuffers);
-		_computeShader->SetInputTextures(_inputTextures);
 	}
 
 	_useBlendedMeshCulling = useRenderBlendedMesh;
+}
+
+void LightCulling::SetInputsToCS()
+{
+	_computeShader->SetInputSRBuffers(_inputBuffers);
+	_computeShader->SetInputTextures(_inputTextures);
 }
 
 unsigned int LightCulling::CalcMaxNumLightsInTile()

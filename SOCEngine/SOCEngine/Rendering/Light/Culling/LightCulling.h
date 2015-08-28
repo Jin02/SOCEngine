@@ -74,12 +74,14 @@ namespace Rendering
 			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
 				const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer);
 
+			void SetInputsToCS();
+
 			void UpdateTBRCommonParam(const Device::DirectX* dx, const TBRParam* param);
 			void UpdateThreadGroup(GPGPU::DirectCompute::ComputeShader::ThreadGroup* outThreadGroup, bool updateComputeShader = true);
 
 			void Destroy();
 
-			inline void SetOuputBuferToComputeShader(const std::vector<GPGPU::DirectCompute::ComputeShader::Output>&  outputs) { _computeShader->SetOutputs(outputs); }
+			inline void SetOuputBuferToCS(const std::vector<GPGPU::DirectCompute::ComputeShader::Output>&  outputs) { _computeShader->SetOutputs(outputs); }
 
 		protected:
 			void AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);

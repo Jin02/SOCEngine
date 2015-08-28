@@ -52,6 +52,6 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 		};
 
-		typedef MainRenderer Camera;
+		typedef MainRenderer DefaultCamera;
 	}
 }

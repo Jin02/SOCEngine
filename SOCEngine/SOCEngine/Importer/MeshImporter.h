@@ -15,6 +15,6 @@ namespace Importer
 
 	public:
 		void Initialize();
-		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType, bool isDynamicMesh = false);
+		Core::Object* Load(const std::string& fileDir, const std::string& materialFolder, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel, bool isDynamicMesh = false);
 	};
 }

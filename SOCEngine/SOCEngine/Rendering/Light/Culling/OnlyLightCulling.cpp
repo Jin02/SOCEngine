@@ -31,10 +31,11 @@ void OnlyLightCulling::Initialize(const std::string& filePath, const std::string
 		std::vector<ComputeShader::Output> outputs;
 		outputs.push_back(outputBuffer);
 
-		SetOuputBuferToComputeShader(outputs);
+		SetOuputBuferToCS(outputs);
 	}
 
 	LightCulling::Initialize(filePath, mainFunc, useRenderBlendedMesh, opaqueDepthBuffer, blendedDepthBuffer);
+	SetInputsToCS();
 }
 
 void OnlyLightCulling::Destroy()

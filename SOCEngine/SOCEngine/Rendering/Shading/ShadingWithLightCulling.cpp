@@ -39,6 +39,8 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
+	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
+
 	// Input buffer
 	{
 		// Point Light Color
@@ -114,7 +116,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		}
 
 		_offScreen = new CSRWTexture;
-		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
 
 		ComputeShader::Output output;
 		{
@@ -125,10 +127,10 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		std::vector<ComputeShader::Output> outputs;
 		outputs.push_back(output);
 
-		SetOuputBuferToComputeShader(outputs);
+		SetOuputBuferToCS(outputs);
 	}
 
-	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
+	SetInputsToCS();
 }
 
 void ShadingWithLightCulling::Destory()
