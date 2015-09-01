@@ -9,6 +9,8 @@
 #include "Lightform.h"
 #include "LightManager.h"
 
+#include "RenderingCommon.h"
+
 namespace Rendering
 {
 	namespace Light
@@ -71,8 +73,10 @@ namespace Rendering
 			virtual ~LightCulling();
 
 		protected:
-			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
-				const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer);
+			void Initialize(const std::string& filePath, const std::string& mainFunc,
+				const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
+				RenderType renderType,
+				const std::vector<Shader::ShaderMacro>* opationalMacros = nullptr);
 
 			void SetInputsToCS();
 

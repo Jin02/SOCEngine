@@ -53,8 +53,10 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 		(*outTexture) = &_inputTextures.back();
 }
 
-void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
-							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer)
+void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc,
+							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
+							  RenderType renderType,
+							  const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
@@ -66,11 +68,30 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 		macros.push_back(ShaderMacro("USE_COMPUTE_SHADER", ""));
 
-		if(useRenderBlendedMesh)
+		if(blendedDepthBuffer)
 			macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
+
+		if(renderType == RenderType::TBDR)
+		{
+			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
+		}
+		else if(renderType == RenderType::ForwardPlus)
+		{
+			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
+		}
+		else
+		{
+			ASSERT_MSG("Can't suuport this render type");
+		}
+
+		if(opationalMacros)
+		{
+			for(const auto& iter : (*opationalMacros))
+				macros.push_back(iter);
+		}
 	}
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", mainFunc, false, &macros);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
@@ -102,7 +123,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
-			if(useRenderBlendedMesh)
+			if(blendedDepthBuffer)
 			{
 				idx = (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer;
 				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
@@ -110,7 +131,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		}
 	}
 
-	_useBlendedMeshCulling = useRenderBlendedMesh;
+	_useBlendedMeshCulling = blendedDepthBuffer != nullptr;
 }
 
 void LightCulling::SetInputsToCS()
