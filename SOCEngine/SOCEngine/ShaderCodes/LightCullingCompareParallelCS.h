@@ -1,35 +1,18 @@
-//NOT_CREATE_META
+//NOT_CREATE_META_DATA
 
-#ifndef __SOC_LIGHT_CULLING_COMMON_H__
-#define __SOC_LIGHT_CULLING_COMMON_H__
+#ifndef __SOC_LIGHT_CULLING_CS_COMPARE_PARALLEL_H__
+#define __SOC_LIGHT_CULLING_CS_COMPARE_PARALLEL_H__
 
-#define EDGE_DETECTION_VALUE	10.0f
+#include "LightCullingCommonCS.h"
 
-#include "ShaderCommon.h"
-
-#if defined(USE_COMPUTE_SHADER)
+#define THREAD_COUNT TILE_RES_HALF*TILE_RES_HALF
 
 groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
-groupshared uint	s_lightIndexCounter;
-groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
+RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
 
-groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
-
-#endif
-
-cbuffer TBRParam : register( b3 )
-{
-	matrix	g_viewMat;
-	matrix 	g_invProjMat;
-	matrix	g_invViewProjViewport;
-
-	float2	g_screenSize;
-	uint 	g_lightNum;
-	uint	g_maxNumOfperLightInTile;
-};
-
+#if (MSAA_SAMPLES_COUNT > 1) && defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 struct CornerMinMax
 {
 	float min_tl, max_tl;
@@ -37,81 +20,6 @@ struct CornerMinMax
 	float min_bl, max_bl;
 	float min_br, max_br;
 };
-
-uint GetNumOfPointLight()
-{
-	return (g_lightNum & 0xFFE00000) >> 21;
-}
-
-uint GetNumOfSpotLight()
-{
-	return (g_lightNum & 0x0001FFC00) >> 10;
-}
-
-uint GetNumOfDirectionalLight()
-{
-	return g_lightNum & 0x000007FF;
-}
-
-uint GetNumTilesX()
-{
-	return (uint)((g_screenSize.x + TILE_RES - 1) / (float)TILE_RES);
-}
-
-uint GetNumTilesY()
-{
-	return (uint)((g_screenSize.y + TILE_RES - 1) / (float)TILE_RES);
-}
-
-float4 ProjToView( float4 p )
-{
-    p = mul( p, g_invProjMat );
-    p /= p.w;
-    return p;
-}
-
-float4 CreatePlaneNormal( float4 b, float4 c )
-{
-    float4 n;
-    //b.xyz - a.xyz, c.xyz - a.xyz이다.
-    //여기서, a는 원점이다. 즉, ab는 원점에서 해당 타일의 꼭짓점까지 떨어진 방향을 뜻한다.
-    n.xyz = normalize(cross( b.xyz, c.xyz ));
-    n.w = 0;
-
-    return n;
-}
-
-bool InFrustum( float4 p, float4 frusutmNormal, float r )
-{
-	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
-	return dot( frusutmNormal.xyz, p.xyz ) < r;
-}
-
-float InvertProjDepthToWorldViewDepth(float depth)
-{
-	/*
-	1.0f = (depth * g_invProjMat._33 + g_invProjMat._43)
-	but, g_invProjMat._33 is always zero and _43 is always 1
-		
-	if you dont understand, calculate inverse projection matrix.
-	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
-	*/
-
-	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
-}
-
-uint GetTileIndex(float2 screenPos)
-{
-	float tileRes = (float)TILE_RES;
-	uint tileIndex = (uint)(screenPos.x / tileRes) + ((uint)(screenPos.y / tileRes) * GetNumTilesX());
-
-	return tileIndex;
-}
-
-
-#if defined(USE_COMPUTE_SHADER)
-
-#if (MSAA_SAMPLES_COUNT > 1)
 void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax, inout CornerMinMax ioCornerMinMax)
 #else
 void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint depthBufferSamplerIdx, out float outMin, out float outMax)
@@ -147,16 +55,16 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 
 #endif
 
-	float viewDepth_tl = InvertProjDepthToWorldViewDepth(depth_tl);
-	float viewDepth_tr = InvertProjDepthToWorldViewDepth(depth_tr);
-	float viewDepth_bl = InvertProjDepthToWorldViewDepth(depth_bl);
-	float viewDepth_br = InvertProjDepthToWorldViewDepth(depth_br);
+	float viewDepth_tl = InvertProjDepthToView(depth_tl);
+	float viewDepth_tr = InvertProjDepthToView(depth_tr);
+	float viewDepth_bl = InvertProjDepthToView(depth_bl);
+	float viewDepth_br = InvertProjDepthToView(depth_br);
 
 #if defined(ENABLE_BLEND)
-	float viewBlendedDepth_tl = InvertProjDepthToWorldViewDepth(blendedDepth_tl);
-	float viewBlendedDepth_tr = InvertProjDepthToWorldViewDepth(blendedDepth_tr);
-	float viewBlendedDepth_br = InvertProjDepthToWorldViewDepth(blendedDepth_br);
-	float viewBlendedDepth_bl = InvertProjDepthToWorldViewDepth(blendedDepth_bl);
+	float viewBlendedDepth_tl = InvertProjDepthToView(blendedDepth_tl);
+	float viewBlendedDepth_tr = InvertProjDepthToView(blendedDepth_tr);
+	float viewBlendedDepth_br = InvertProjDepthToView(blendedDepth_br);
+	float viewBlendedDepth_bl = InvertProjDepthToView(blendedDepth_bl);
 
 	float minDepth_tl = (blendedDepth_tl != 0.0f) ? viewBlendedDepth_tl : FLOAT_MAX;
 	float minDepth_tr = (blendedDepth_tr != 0.0f) ? viewBlendedDepth_tr : FLOAT_MAX;
@@ -174,12 +82,14 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	float maxDepth_bl = (depth_bl != 0.0f) ? viewDepth_bl : 0.0f;
 	float maxDepth_br = (depth_br != 0.0f) ? viewDepth_br : 0.0f;
 
+#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
+
 #if (MSAA_SAMPLES_COUNT > 1)
 	ioCornerMinMax.min_tl = min(minDepth_tl, ioCornerMinMax.min_tl); 	ioCornerMinMax.max_tl = max(maxDepth_tl, ioCornerMinMax.max_tl);
 	ioCornerMinMax.min_tr = min(minDepth_tr, ioCornerMinMax.min_tr); 	ioCornerMinMax.max_tr = max(maxDepth_tr, ioCornerMinMax.max_tr);
 	ioCornerMinMax.min_bl = min(minDepth_bl, ioCornerMinMax.min_bl); 	ioCornerMinMax.max_bl = max(maxDepth_bl, ioCornerMinMax.max_bl);
 	ioCornerMinMax.min_br = min(minDepth_br, ioCornerMinMax.min_br); 	ioCornerMinMax.max_br = max(maxDepth_br, ioCornerMinMax.max_br);
-#else //Non-MSAA, MSAA처리 시, 여기서하는 edge 검사는 밖에서 함.
+#else // Edge 체크, MSAA는 밖에서 처리함
 	uint2 localIdx = halfLocalIdx * 2;
 	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
 
@@ -187,6 +97,8 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	s_isDetectedEdge[idxInOriginTile + 1]				= (maxDepth_tr - minDepth_tr) > EDGE_DETECTION_VALUE;
 	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (maxDepth_bl - minDepth_bl) > EDGE_DETECTION_VALUE;
 	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (maxDepth_br - minDepth_br) > EDGE_DETECTION_VALUE;
+#endif
+
 #endif
 
 	s_depthMinDatas[idxInTile] = min( minDepth_tl, min(minDepth_tr, min(minDepth_bl, minDepth_br)) );	
@@ -218,34 +130,46 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	outMax = s_depthMaxDatas[0];
 }
 
-bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, out float outMin, out float outMax)
+void ClacMinMaxWithCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, out float outMin, out float outMax)
 {
 	float minZ = FLOAT_MAX;
 	float maxZ = 0.0f;
 
 #if (MSAA_SAMPLES_COUNT > 1)
+
+#if defined(USE_FORWARD_PLUS)
 	uint2 depthBufferSize;
 	uint depthBufferSampleCount;
 
 	g_tDepth.GetDimensions(depthBufferSize.x, depthBufferSize.y, depthBufferSampleCount);
+#elif defined(USE_TILE_BASED_DEFERRED)
+	uint depthBufferSampleCount = MSAA_SAMPLES_COUNT;
+#endif
 
 	float tmpMin = FLOAT_MAX;
 	float tmpMax = 0.0f;
 
+#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 	CornerMinMax cornerMinMax;
 	{
 		cornerMinMax.min_tl = FLOAT_MAX;	cornerMinMax.min_tr = FLOAT_MAX;	cornerMinMax.min_bl = FLOAT_MAX;	cornerMinMax.min_br = FLOAT_MAX;
 		cornerMinMax.max_tl = 0;			cornerMinMax.max_tr = 0;			cornerMinMax.max_bl = 0;			cornerMinMax.max_br = 0;
 	}
+#endif
 
 	for(uint sampleIdx=0; sampleIdx<depthBufferSampleCount; ++sampleIdx)
 	{
+#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax, cornerMinMax);
+#else
+		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax);
+#endif
 
 		minZ = min(tmpMin, minZ);
 		maxZ = max(tmpMax, maxZ);
 	}
 
+#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 	uint2 localIdx = halfLocalIdx * 2;
 	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
 
@@ -253,6 +177,7 @@ bool ClacMinMaxAndCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, ui
 	s_isDetectedEdge[idxInOriginTile + 1]				= (cornerMinMax.max_tr - cornerMinMax.min_tr) > EDGE_DETECTION_VALUE;
 	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (cornerMinMax.max_bl - cornerMinMax.min_bl) > EDGE_DETECTION_VALUE;
 	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (cornerMinMax.max_br - cornerMinMax.min_br) > EDGE_DETECTION_VALUE;
+#endif
 
 #else // Non-MSAA
 	CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, 0, minZ, maxZ);
@@ -281,8 +206,8 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 											TILE_RES * (groupIdx.y + 1));
 		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
 											(float)(TILE_RES * GetNumTilesY()) );
-										//스크린 픽셀 사이즈라 생각해도 좋고,
-										//현재 돌아가는 전체 가로x세로 스레드 수?
+											//스크린 픽셀 사이즈라 생각해도 좋고,
+											//현재 돌아가는 전체 가로x세로 스레드 수?
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
 											   (totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
@@ -306,11 +231,11 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	minZ = FLOAT_MAX;
 	maxZ = 0.0f;
 
-	ClacMinMaxAndCheckEdgeDetection(halfGlobalIdx.xy, halfLocalIdx.xy, idxInTile, minZ, maxZ);
-	//GroupMemoryBarrierWithGroupSync
+	ClacMinMaxWithCheckEdgeDetection(halfGlobalIdx.xy, halfLocalIdx.xy, idxInTile, minZ, maxZ);
+	GroupMemoryBarrierWithGroupSync();
 
 	uint pointLightCount = GetNumOfPointLight();
-    for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=LIGHT_CULLING_THREAD_COUNT)
+    for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
     {
 		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
 		float r = center.w;
@@ -327,18 +252,18 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 				uint target = 0;
 				InterlockedAdd(s_lightIndexCounter, 1, target);
 
-				if(target < LIGHT_MAX_COUNT_IN_TILE)
-					s_lightIdx[target] = pointLightIdx;
+				s_lightIdx[target] = pointLightIdx;
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
+
 	uint pointLightCountInTile = s_lightIndexCounter;
 	outPointLightCountInTile = pointLightCountInTile;
 
 	uint spotLightCount = GetNumOfSpotLight();
-	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=LIGHT_CULLING_THREAD_COUNT)
+	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=THREAD_COUNT)
 	{
 		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];
 		float r = center.w;
@@ -355,15 +280,12 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 				uint target = 0;
 				InterlockedAdd(s_lightIndexCounter, 1, target);
 
-				if(target < LIGHT_MAX_COUNT_IN_TILE)
-					s_lightIdx[target] = spotLightIdx;
+				s_lightIdx[target] = spotLightIdx;
 			}
 		}
 	}
 
 	GroupMemoryBarrierWithGroupSync();
 }
-
-#endif
 
 #endif
