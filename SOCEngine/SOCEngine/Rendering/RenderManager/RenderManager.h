@@ -7,7 +7,7 @@
 
 #include "MainRenderer.h"
 
-#include "GlobalSetting.h"
+#include "RenderingCommon.h"
 
 #include <sys/timeb.h>
 #include <time.h>
