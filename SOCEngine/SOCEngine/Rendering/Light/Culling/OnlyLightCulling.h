@@ -22,7 +22,11 @@ namespace Rendering
 			virtual ~OnlyLightCulling();
 
 		public:
-			void Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh, const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer);
+			void Initialize(
+				const Texture::DepthBuffer* opaqueDepthBuffer, 
+				const Texture::DepthBuffer* blendedDepthBuffer,
+				RenderType renderType,
+				const std::vector<Shader::ShaderMacro>* opationalMacros = nullptr);
 			void Destroy();
 		};
 	}

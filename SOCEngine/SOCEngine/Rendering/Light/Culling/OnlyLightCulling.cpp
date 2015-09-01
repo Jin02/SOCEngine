@@ -1,8 +1,11 @@
 #include "OnlyLightCulling.h"
+#include "EngineShaderFactory.hpp"
 
 using namespace Rendering::Light;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::Texture;
+using namespace Rendering::Factory;
+using namespace Rendering;
 
 OnlyLightCulling::OnlyLightCulling() : LightCulling(), _lightIndexBuffer(nullptr)
 {
@@ -12,8 +15,24 @@ OnlyLightCulling::~OnlyLightCulling()
 {
 }
 
-void OnlyLightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh, const DepthBuffer* opaqueDepthBuffer, const DepthBuffer* blendedDepthBuffer)
+void OnlyLightCulling::Initialize(
+	const DepthBuffer* opaqueDepthBuffer,
+	const DepthBuffer* blendedDepthBuffer,
+	RenderType renderType,
+	const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
+	std::string path = "";
+	{
+		EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
+		shaderFactory.FetchShaderFullPath(path, "LightCulling_CS");
+
+		ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
+	}
+
+	LightCulling::Initialize(path, "OnlyLightCullingCS",
+		opaqueDepthBuffer, blendedDepthBuffer,
+		renderType, opationalMacros);
+
 	// Ouput Buffer Setting
 	{
 		_lightIndexBuffer = new CSRWBuffer;
@@ -34,7 +53,6 @@ void OnlyLightCulling::Initialize(const std::string& filePath, const std::string
 		SetOuputBuferToCS(outputs);
 	}
 
-	LightCulling::Initialize(filePath, mainFunc, useRenderBlendedMesh, opaqueDepthBuffer, blendedDepthBuffer);
 	SetInputsToCS();
 }
 
