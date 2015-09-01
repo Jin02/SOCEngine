@@ -85,10 +85,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		}
 
 		if(opationalMacros)
-		{
-			for(const auto& iter : (*opationalMacros))
-				macros.push_back(iter);
-		}
+			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
 	}
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", mainFunc, false, &macros);

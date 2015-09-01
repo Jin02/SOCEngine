@@ -6,6 +6,7 @@ using namespace GPGPU::DirectCompute;
 using namespace Rendering::Texture;
 using namespace Rendering::Factory;
 using namespace Rendering;
+using namespace Rendering::Shader;
 
 OnlyLightCulling::OnlyLightCulling() : LightCulling(), _lightIndexBuffer(nullptr)
 {
@@ -19,19 +20,31 @@ void OnlyLightCulling::Initialize(
 	const DepthBuffer* opaqueDepthBuffer,
 	const DepthBuffer* blendedDepthBuffer,
 	RenderType renderType,
-	const std::vector<Shader::ShaderMacro>* opationalMacros)
+	const std::vector<ShaderMacro>* opationalMacros)
 {
 	std::string path = "";
 	{
 		EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
-		shaderFactory.FetchShaderFullPath(path, "LightCulling_CS");
+		shaderFactory.FetchShaderFullPath(path, "OnlyLightCullingCS");
 
 		ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
 	}
 
+	std::vector<ShaderMacro> macros;
+	{
+		// LightCulling시, Depth Bound 계산을 atomic 비교 방식을 사용함
+		macros.push_back(ShaderMacro("USE_ATOMIC", ""));
+
+		// Parallel 방식
+		//macros.push_back(ShaderMacro("USE_PARALLEL", ""));
+
+		if(opationalMacros)
+			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
+	}
+
 	LightCulling::Initialize(path, "OnlyLightCullingCS",
 		opaqueDepthBuffer, blendedDepthBuffer,
-		renderType, opationalMacros);
+		renderType, &macros);
 
 	// Ouput Buffer Setting
 	{
