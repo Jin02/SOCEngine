@@ -13,12 +13,14 @@ using namespace Rendering::Light;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::DeferredShading;
+using namespace Rendering;
 
 MainRenderer::MainRenderer() : CameraForm(),
 	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
-	_tbrParamConstBuffer(nullptr), _offScreen(nullptr)
+	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
+	_blendedMeshLightCulling(nullptr)
 {
 }
 
@@ -44,10 +46,10 @@ void MainRenderer::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize);
 
+	EnableRenderTransparentMesh(true);
+
 	_deferredShadingWithLightCulling = new DeferredShading::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
-
-	EnableRenderTransparentMesh(true);
 
 	_tbrParamConstBuffer = new ConstBuffer;
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
@@ -331,25 +333,16 @@ void MainRenderer::EnableRenderTransparentMesh(bool enable)
 	{
 		const Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
-		ASSERT_COND_MSG(_blendedDepthBuffer, "Error, Already allocated depth");
+		ASSERT_COND_MSG(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
 		{
 			_blendedDepthBuffer =  new DepthBuffer;
 			_blendedDepthBuffer->Initialize(backBufferSize);
 		}
 
-
-		ASSERT_COND_MSG(_blendedMeshLightCulling, "Error, Already allocated depth");
+		ASSERT_COND_MSG(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
 		{
 			_blendedMeshLightCulling = new OnlyLightCulling;
-			{
-				EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
-
-				std::string path = "";
-				shaderFactory.FetchShaderFullPath(path, "TileBasedDeferredShading");
-
-				ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
-				_blendedMeshLightCulling->Initialize(path, "CS", true, _opaqueDepthBuffer, _blendedDepthBuffer);
-			}
+			_blendedMeshLightCulling->Initialize(_opaqueDepthBuffer, _blendedDepthBuffer, RenderType::TBDR);
 		}
 	}
 	else // enable == false
