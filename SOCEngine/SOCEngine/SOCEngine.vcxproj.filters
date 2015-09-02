@@ -420,9 +420,6 @@
     <ClInclude Include="Rendering\Buffer\BufferManager.h">
       <Filter>Rendering\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="Common\LPVoidType.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Structure\MapInMap.h">
       <Filter>Structure</Filter>
     </ClInclude>
