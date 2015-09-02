@@ -12,6 +12,8 @@
 #include "UIManager.h"
 #include "LightManager.h"
 
+#include "MainRenderer.h"
+
 namespace Core
 {
 	class Scene

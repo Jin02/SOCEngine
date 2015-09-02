@@ -60,15 +60,10 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
-#ifndef DEPRECATED_MESH_RENDERER
-	auto CamIteration = [&](Camera::CameraForm* cam)
-	{
-		cam->Render();
-	};
-	_cameraMgr->IterateContent(CamIteration);
+	const std::vector<Camera::CameraForm*>& cameras = _cameraMgr->GetVector();
+	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
+		(*iter)->Render(_dx, _renderMgr);
 
-#endif
-	
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
 }
