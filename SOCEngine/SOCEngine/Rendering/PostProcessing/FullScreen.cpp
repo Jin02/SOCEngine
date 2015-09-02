@@ -25,12 +25,10 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	
 	std::string path = "";
 	shaderPathFinder.FetchShaderFullPath(path, shaderFileName);
-
 	
 	std::string folderPath = "";
 	bool success = Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
 	ASSERT_COND_MSG(success, "Error!, Invalid File Path");
-
 
 	std::vector<ShaderMacro> macros;
 	{
@@ -43,12 +41,12 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
 
 	{
-		std::string command = Manager::ShaderManager::MakeCommand(shaderFileName, "FullScreenVS", "vs");
-		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, &macros);
+		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, "FullScreenVS");
+		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, nullptr);
 	}
 
 	{
-		std::string command = Manager::ShaderManager::MakeCommand(shaderFileName, psName, "ps");
+		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, psName);
 		_pixelShader = shaderManager->LoadPixelShader(folderPath, command, false, &macros);
 	}
 }

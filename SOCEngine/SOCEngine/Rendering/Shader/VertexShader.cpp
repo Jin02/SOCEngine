@@ -30,6 +30,9 @@ bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& ver
 	if( FAILED( hr ) )
 		return false;
 
+	if(vertexDeclations.size() == 0)
+		return true;
+
 	hr = device->CreateInputLayout(vertexDeclations.data(), count,
 		_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
 
