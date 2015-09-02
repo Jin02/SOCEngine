@@ -75,7 +75,7 @@ namespace Rendering
 
 		public:
 			void RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects);
-			virtual void Render(float dt, Device::DirectX* dx) = 0;
+			virtual void Render(const Device::DirectX* dx) = 0;
 
 		protected:
 			void _Clone(CameraForm* newCam) const;

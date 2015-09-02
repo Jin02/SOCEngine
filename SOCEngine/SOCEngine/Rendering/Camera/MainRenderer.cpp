@@ -74,7 +74,7 @@ void MainRenderer::OnDestroy()
 	CameraForm::OnDestroy();
 }
 
-void MainRenderer::Render(float dt, Device::DirectX* dx)
+void MainRenderer::Render(const Device::DirectX* dx)
 {
 	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	ID3D11DeviceContext* context = dx->GetContext();

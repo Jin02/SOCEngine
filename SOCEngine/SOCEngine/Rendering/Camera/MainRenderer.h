@@ -43,7 +43,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual void Render(float dt, Device::DirectX* dx);
+			virtual void Render(const Device::DirectX* dx);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
