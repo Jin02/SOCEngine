@@ -349,6 +349,8 @@ void MainRenderer::EnableRenderTransparentMesh(bool enable)
 		SAFE_DELETE(_blendedDepthBuffer);
 		SAFE_DELETE(_blendedMeshLightCulling);
 	}
+
+	_useTransparent = enable;
 }
 
 Core::Component* MainRenderer::Clone() const
