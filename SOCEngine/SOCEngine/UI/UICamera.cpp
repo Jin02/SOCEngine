@@ -46,10 +46,9 @@ void UICamera::Update(float delta)
 		iter->Update(delta);
 }
 
-void UICamera::Render()
+void UICamera::Render(float dt, Device::DirectX* dx)
 {
 	const Device::Director* director	= Device::Director::GetInstance();
-	const Device::DirectX* dx			= director->GetDirectX();
 	Core::Scene* scene					= director->GetCurrentScene();
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 	ID3D11DeviceContext* context		= dx->GetContext();

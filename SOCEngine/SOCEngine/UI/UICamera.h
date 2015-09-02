@@ -24,7 +24,7 @@ namespace Rendering
 
 		public:
 			void Update(float delta);
-			void Render();
+			virtual void Render(float dt, Device::DirectX* dx);
 
 		public:
 			virtual Core::Component* Clone() const;
