@@ -28,8 +28,7 @@ const Rendering::Texture::Texture2D* Material::FindTexture(unsigned int& outArra
 		}
 	}
 
-	DEBUG_LOG("Material FindTexture Warning : Undefined UsageTextureType");
-	outArrayIndex = 0;
+	outArrayIndex = -1;
 	return nullptr;
 }
 
