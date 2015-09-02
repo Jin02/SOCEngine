@@ -157,23 +157,35 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh, MeshType type)
 	++(meshList->updateCounter);
 }
 
-const Mesh::Mesh* RenderManager::FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type)
 {
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+	const Mesh::Mesh* foundedMesh = nullptr;
 
 	if(type == MeshType::Transparent)
-		return (*_transparentMeshes.meshes.Find(meshAddress));
+	{
+		auto found = _transparentMeshes.meshes.Find(meshAddress);
+		foundedMesh = found ? (*found) : nullptr;
+	}
 	else if(type == MeshType::Opaque)
-		return (*_opaqueMeshes.meshes.Find(meshAddress));
+	{
+		auto found = _opaqueMeshes.meshes.Find(meshAddress);
+		foundedMesh = found ? (*found) : nullptr;
+	}
 	else if(type == MeshType::AlphaTest)
-		return (*_alphaTestMeshes.meshes.Find(meshAddress));
+	{
+		auto found = _alphaTestMeshes.meshes.Find(meshAddress);
+		foundedMesh = found ? (*found) : nullptr;
+	}
 	else
+	{
 		ASSERT_MSG("Error!, undefined MeshType");
+	}
 
-	return nullptr;
+	return foundedMesh != nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest)
+bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
 {
 	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key)
 	{
@@ -188,7 +200,7 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag,
 	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly)
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
 {
 	auto iter = isDepthOnly ?	_transparent_depthOnly_Shaders.find(bufferFlag) : 
 								_transparentShaders.find(bufferFlag);

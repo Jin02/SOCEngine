@@ -5,8 +5,6 @@
 #include "Utility.h"
 #include <functional>
 
-#include "MainRenderer.h"
-
 #include "RenderingCommon.h"
 
 #include <sys/timeb.h>
@@ -67,10 +65,10 @@ namespace Rendering
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
 			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
-			const Mesh::Mesh* FindMeshFromRenderList(const Mesh::Mesh* mesh, MeshType type);
+			bool HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type);
 
-			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest);
-			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly);
+			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
 
 		public:
 			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
