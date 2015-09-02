@@ -32,20 +32,20 @@ void BufferManager::Add(const std::string& file, const std::string& key, const v
 
 bool BufferManager::Find(VertexBuffer** outBuffer, const std::string& file, const std::string& key)
 {
-	VertexBuffer* buffer = *_vertexBuffers.Find(file, key);
+	VertexBuffer** buffer = _vertexBuffers.Find(file, key);
 
 	if(outBuffer && buffer != nullptr)
-		(*outBuffer) = buffer;
+		(*outBuffer) = (*buffer);
 
 	return buffer != nullptr;
 }
 
 bool BufferManager::Find(IndexBuffer** outBuffer, const std::string& file, const std::string& key)
 {
-	IndexBuffer* buffer = *_indexBuffers.Find(file, key);
+	IndexBuffer** buffer = _indexBuffers.Find(file, key);
 
 	if(outBuffer && buffer != nullptr)
-		(*outBuffer) = buffer;
+		(*outBuffer) = (*buffer);
 
 	return buffer != nullptr;
 }
