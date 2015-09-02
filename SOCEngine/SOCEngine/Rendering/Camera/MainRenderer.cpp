@@ -87,12 +87,14 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 		_normal_roughness->Clear(context, allZeroColor);
 	}
 
-	_opaqueDepthBuffer->Clear(context, 0.0f, 0); //inverted depth
+	//inverted depth, so clear value is 0
+	_opaqueDepthBuffer->Clear(context, 0.0f, 0);
 
 	if(_useTransparent)
 	{
+		//inverted depth, so clear value is 0
 		_blendedDepthBuffer->Clear(context, 0.0f, 0);
-		SortTransparentMeshRenderQueue();
+		SortTransparentMeshRenderQueue(renderManager);
 	}
 
 	// off alpha blending
