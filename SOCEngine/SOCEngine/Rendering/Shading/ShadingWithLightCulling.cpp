@@ -34,12 +34,12 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
-		pathFind.FetchShaderFullPath(filePath, "TileBasedDeferredShading");
+		pathFind.FetchShaderFullPath(filePath, "TBDR");
 
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
-	LightCulling::Initialize(filePath, "CS", opaqueDepthBuffer, nullptr, RenderType::TBDR);
+	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, RenderType::TBDR);
 
 	// Input buffer
 	{

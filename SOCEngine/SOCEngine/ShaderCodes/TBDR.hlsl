@@ -43,6 +43,9 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 
 	float lightRadius				= lightCenterWithRadius.w;
 
+	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
+	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
+
 	if( distanceOfLightAndVertex < lightRadius )
 	{
 		LightingCommonParams commonParams;
@@ -86,6 +89,8 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 	float	lightCosineConeAngle		= spotLightParam.z;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
 
+	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
+	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
 
 	if( (distanceOfLightAndVertex < lightRadius) && 
 		(lightCosineConeAngle < currentCosineConeAngle) )
@@ -197,6 +202,12 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float minZ, maxZ;
 	uint pointLightCountInThisTile = 0;
 
+#if (MSAA_SAMPLES_COUNT > 1)
+	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
+	if(idxInTile == 0)
+		s_edgePixelCounter = 0;
+#endif
+
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	bool isDetectedEdge = LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
 #else
@@ -251,6 +262,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	lightParams.fresnel0		= fresnel0;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
+	lightParams.specularColor	= specularColor;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
@@ -326,8 +338,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	uint sample_mul_LightCount = (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
-	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
-	for(uint i=idxInTile; i < sample_mul_LightCount; i += SHADING_THREAD_COUNT)
+	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
 	{
 		uint edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
 		uint sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1부터 시작
