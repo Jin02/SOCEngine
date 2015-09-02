@@ -4,7 +4,6 @@
 #include "Director.h"
 #include "ImporterUtility.h"
 
-#include "LPVoidType.h"
 #include "RenderManager.h"
 
 #include "ResourceManager.h"
@@ -135,12 +134,7 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 	std::vector<tinyobj::material_t>	materials;
 
 	std::string error = tinyobj::LoadObj(shapes, materials, fileDir.c_str(), materialFileFolder.c_str());
-
-	if( error.empty() == false )
-	{
-		DEBUG_LOG(error.c_str());
-		return nullptr;
-	}
+	ASSERT_COND_MSG(error.empty(), error.c_str());
 
 	LoadMaterials(materials, fileName, materialFileFolder, materialType);
 
@@ -162,9 +156,15 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 									Rendering::Material::Type materialType,
 									bool isDynamicMesh)
 {
+	std::string shapeName = tinyShape.name;
+	{
+		if(shapeName.empty())
+			shapeName = fileName;
+	}
+
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
 	{
-		Core::Object* obj = CloneOriginObject(fileName, tinyShape.name);
+		Core::Object* obj = CloneOriginObject(fileName, shapeName);
 		if(obj)
 			return obj;
 	}
@@ -174,7 +174,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-	if(resourceManager->GetBufferManager()->Find( (LPVoidType*)nullptr, fileName, tinyShape.name ))
+	if(resourceManager->GetBufferManager()->Find( (const void**)nullptr, fileName, shapeName ))
 		ASSERT_MSG("Error, BufferMgr already has buffer");
 
 	CheckCorrectShape(tinyShape);
@@ -286,12 +286,11 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 	
-	Core::Object* object = new Core::Object(tinyShape.name);
 
+	Core::Object* object = new Core::Object(shapeName);
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 
-	LPVoidType bufferData(bufferHead);
-	resourceManager->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
+	resourceManager->GetBufferManager()->Add(fileName, shapeName, bufferHead);
 
 	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
@@ -299,9 +298,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	//sizeof(ENGINE_INDEX_TYPE) * _indexCount
 
-	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	Mesh::Mesh::CreateFuncArguments args(fileName, shapeName);
 	{
-		args.vertex.data		= bufferData.GetBuffer();
+		args.vertex.data		= bufferHead;
 		args.vertex.count		= vtxCount;
 		args.vertex.byteWidth	= stride;
 
@@ -316,7 +315,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	
 	mesh->Initialize(args);
 
-	const std::string objKey = fileName + ':' + tinyShape.name;
+	const std::string objKey = fileName + ':' + shapeName;
 	resourceManager->GetOriginObjectManager()->Add(objKey, object);
 
 	return object;
@@ -328,23 +327,29 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 									Rendering::Material::Type materialType,
 									bool isDynamicMesh)
 {
+	std::string shapeName = tinyShape.name;
+	{
+		if(shapeName.empty())
+			shapeName = fileName;
+	}
+
 	//이전에 이미 로드되어 있는 오브젝트라면, 복사해서 리턴함
 	{
-		Core::Object* obj = CloneOriginObject(fileName, tinyShape.name);
+		Core::Object* obj = CloneOriginObject(fileName, shapeName);
 		if(obj)
 			return obj;
 	}
 
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
-	if(resourceManager->GetBufferManager()->Find( (LPVoidType*)nullptr, fileName, tinyShape.name ))
+	if(resourceManager->GetBufferManager()->Find( (const void**)nullptr, fileName, shapeName ))
 		ASSERT_MSG("Error, BufferMgr already has buffer");
 
 	CheckCorrectShape(tinyShape);
 
-	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
-	const std::vector<float>& tiny_texcoords		 = tinyShape.mesh.texcoords;
-	const std::vector<float>& tiny_normals			 = tinyShape.mesh.normals;
-	const std::vector<uint>& indices		 = tinyShape.mesh.indices;
+	const std::vector<float>& tiny_positions		= tinyShape.mesh.positions;
+	const std::vector<float>& tiny_texcoords		= tinyShape.mesh.texcoords;
+	const std::vector<float>& tiny_normals			= tinyShape.mesh.normals;
+	const std::vector<uint>& indices				= tinyShape.mesh.indices;
 
 	bool isNormalMapUse = (tinyMtl.normal_texname.empty() == false);
 
@@ -429,22 +434,18 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 		}
 	}
 
-	Core::Object* object = new Core::Object(tinyShape.name);
+	Core::Object* object = new Core::Object(shapeName);
 
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
-	
-	LPVoidType bufferData(bufferHead);
-	resourceManager->GetBufferManager()->Add(fileName, tinyShape.name, bufferData);
+	resourceManager->GetBufferManager()->Add(fileName, shapeName, bufferHead);
 
 	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
-	const std::string bufferKey = fileName + ':' + tinyShape.name;
-
-	Mesh::Mesh::CreateFuncArguments args(fileName, tinyShape.name);
+	Mesh::Mesh::CreateFuncArguments args(fileName, shapeName);
 	{
-		args.vertex.data		= bufferData.GetBuffer();
+		args.vertex.data		= bufferHead;
 		args.vertex.count		= vtxCount;
 		args.vertex.byteWidth	= stride;
 
@@ -458,7 +459,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	}
 	
 	mesh->Initialize(args);
-	resourceManager->GetOriginObjectManager()->Add(bufferKey, object);
+
+	const std::string objKey = fileName + ':' + shapeName;
+	resourceManager->GetOriginObjectManager()->Add(objKey, object);
 
 	return object;
 }
