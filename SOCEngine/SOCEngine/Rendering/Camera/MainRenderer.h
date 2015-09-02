@@ -2,7 +2,6 @@
 
 #include "CameraForm.h"
 #include "ShadingWithLightCulling.h"
-#include "DirectX.h"
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
 
@@ -43,7 +42,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual void Render(const Device::DirectX* dx);
+			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);

@@ -74,9 +74,8 @@ void MainRenderer::OnDestroy()
 	CameraForm::OnDestroy();
 }
 
-void MainRenderer::Render(const Device::DirectX* dx)
+void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* renderManager)
 {
-	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	//Clear
@@ -137,9 +136,9 @@ void MainRenderer::Render(const Device::DirectX* dx)
 
 			ShaderGroup shaders;
 			if(renderType == RenderType::Opaque || renderType == RenderType::AlphaMesh)
-				renderMgr->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::AlphaMesh);
+				renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::AlphaMesh);
 			else if(renderType == RenderType::Transparency || renderType == RenderType::Transparency_DepthOnly)
-				renderMgr->FindTransparencyShader(shaders, filter->GetBufferFlag(), renderType == RenderType::Transparency_DepthOnly);
+				renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag(), renderType == RenderType::Transparency_DepthOnly);
 
 			Mesh::MeshRenderer* renderer	= mesh->GetMeshRenderer();
 			const auto& materials			= renderer->GetMaterials();
@@ -203,7 +202,7 @@ void MainRenderer::Render(const Device::DirectX* dx)
 
 		//Opaque Mesh
 		{
-			const std::vector<const Mesh::Mesh*>& meshes = renderMgr->GetOpaqueMeshes().meshes.GetVector();
+			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetOpaqueMeshes().meshes.GetVector();
 			RenderMesh(meshes, RenderType::Opaque);
 		}
 
@@ -216,7 +215,7 @@ void MainRenderer::Render(const Device::DirectX* dx)
 
 			context->RSSetState( dx->GetRasterizerStateDisableCulling() );
 		
-			const std::vector<const Mesh::Mesh*>& meshes = renderMgr->GetAlphaTestMeshes().meshes.GetVector();
+			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetAlphaTestMeshes().meshes.GetVector();
 			RenderMesh(meshes, RenderType::AlphaMesh);
 
 			context->RSSetState(nullptr);
@@ -232,7 +231,7 @@ void MainRenderer::Render(const Device::DirectX* dx)
 			ID3D11RenderTargetView* nullRTV = nullptr;
 			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
 			
-			const std::vector<const Mesh::Mesh*>& meshes = renderMgr->GetTransparentMeshes().meshes.GetVector();
+			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
 			RenderMesh(meshes, RenderType::Transparency_DepthOnly);
 		}
 	}
@@ -310,7 +309,7 @@ void MainRenderer::Render(const Device::DirectX* dx)
 		context->PSSetShaderResources(6, 1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
 		context->PSSetShaderResources(7, 1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
-		const std::vector<const Mesh::Mesh*>& meshes = renderMgr->GetTransparentMeshes().meshes.GetVector();
+		const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
 		RenderMesh(meshes, RenderType::Transparency);
 
 		ID3D11ShaderResourceView* nullSRV = nullptr;

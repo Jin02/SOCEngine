@@ -6,6 +6,7 @@
 #include "Structure.h"
 #include "RenderTexture.h"
 #include "ConstBuffer.h"
+#include "RenderManager.h"
 
 namespace Rendering
 {
@@ -75,7 +76,7 @@ namespace Rendering
 
 		public:
 			void RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects);
-			virtual void Render(const Device::DirectX* dx) = 0;
+			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager) = 0;
 
 		protected:
 			void _Clone(CameraForm* newCam) const;
