@@ -11,6 +11,9 @@
 
 #include "RenderingCommon.h"
 
+#define LIGHT_CULLING_TILE_RESOLUTION						16
+#define LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE 				256
+
 namespace Rendering
 {
 	namespace Light
@@ -18,9 +21,6 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
-			static const uint TileSize					= 16;
-			static const uint LightMaxNumInTile			= 272;
-
 			enum class InputBufferShaderIndex : unsigned int
 			{
 				PointLightRadiusWithCenter		= 0,

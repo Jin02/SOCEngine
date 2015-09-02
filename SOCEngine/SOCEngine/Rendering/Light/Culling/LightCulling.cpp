@@ -137,12 +137,13 @@ void LightCulling::SetInputsToCS()
 	_computeShader->SetInputTextures(_inputTextures);
 }
 
+// 화면 크기에 따라 유동적으로 타일 안 최대 빛 갯수를 계산한다.
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
-	const unsigned key = 16;
+	const uint key = LIGHT_CULLING_TILE_RESOLUTION;
 
-	return ( LightMaxNumInTile - ( key * ( size.h / 120 ) ) );
+	return ( LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - ( key * ( size.h / 120 ) ) );
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer)
@@ -179,7 +180,7 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 {
 	auto CalcThreadLength = [](unsigned int size)
 	{
-		return (unsigned int)((size+TileSize-1) / (float)TileSize);
+		return (unsigned int)((size + LIGHT_CULLING_TILE_RESOLUTION - 1) / (float)LIGHT_CULLING_TILE_RESOLUTION);
 	};
 
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
