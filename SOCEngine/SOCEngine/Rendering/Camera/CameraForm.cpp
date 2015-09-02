@@ -12,7 +12,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm() 
-	: Component(),	_frustum(nullptr), _renderTarget(nullptr), _isInvertedDepthWriting(false)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr)
 {
 }
 
@@ -23,9 +23,9 @@ CameraForm::~CameraForm(void)
 
 void CameraForm::OnInitialize()
 {
-	_FOV			= 60.0f;
-	_clippingNear	= 0.1f;
-	_clippingFar	= 1000.0f;
+	_fieldOfViewDegree	= 60.0f;
+	_clippingNear		= 0.1f;
+	_clippingFar		= 1000.0f;
 
 	const Size<unsigned int>& backBufferSize = Director::GetInstance()->GetBackBufferSize();
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
@@ -61,15 +61,8 @@ void CameraForm::GetProjectionMatrix(Math::Matrix& outMatrix) const
 {
 	if(_projectionType == ProjectionType::Perspective)
 	{
-		float radian = _FOV * PI / 180.0f;
-
-		float clippingNear = _clippingNear;
-		float clippingFar = _clippingFar;
-
-		if(_isInvertedDepthWriting)
-			std::swap(clippingNear, clippingFar);
-
-		Matrix::PerspectiveFovLH(outMatrix, _aspect, radian, clippingNear, clippingFar);
+		float fovRadian = Math::Common::Deg2Rad(_fieldOfViewDegree);
+		Matrix::PerspectiveFovLH(outMatrix, _aspect, fovRadian, _clippingFar, _clippingNear);
 	}
 	else if(_projectionType == ProjectionType::Orthographic)
 	{
@@ -145,10 +138,8 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Obje
 	}
 }
 
-void CameraForm::SortTransparentMeshRenderQueue()
+void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 {
-	RenderManager* renderMgr = Director::GetInstance()->GetCurrentScene()->GetRenderManager();
-	
 	const RenderManager::MeshList transparentList = renderMgr->GetTransparentMeshes();
 	if( transparentList.updateCounter > _transparentMeshQueue.updateCounter )
 	{
