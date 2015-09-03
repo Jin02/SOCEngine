@@ -33,6 +33,8 @@ void Scene::Initialize()
 	_dx				= Device::Director::GetInstance()->GetDirectX();
 
 	_lightManager	= new Manager::LightManager;	
+	_lightManager->InitializeAllShaderResourceBuffer();
+
 	_materialMgr	= new Manager::MaterialManager;
 
 	NextState();
@@ -67,7 +69,7 @@ void Scene::Render()
 {
 	const std::vector<Camera::CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->Render(_dx, _renderMgr);
+		(*iter)->Render(_dx, _renderMgr, _lightManager);
 
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
