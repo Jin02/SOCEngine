@@ -1,6 +1,9 @@
 #pragma once
 
-#include "DirectX.h"
+#include "RenderingCommon.h"
+#include "ShaderForm.h"
+#include "Mesh.h"
+#include <functional>
 
 namespace Rendering
 {
@@ -9,6 +12,9 @@ namespace Rendering
 		class TransparencyRenderer
 		{
 		protected:
+			std::vector<Shader::ShaderForm::InputConstBuffer>			_inputConstBuffers;
+			std::vector<Shader::ShaderForm::InputTexture>				_inputTextures;
+			std::vector<Shader::ShaderForm::InputShaderResourceBuffer>	_inputSRBuffers;
 
 		public:
 			TransparencyRenderer();
@@ -19,7 +25,8 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void Render(ID3D11RenderTargetView* outResultRT);
+			void Render(ID3D11RenderTargetView* outResultRT,
+				const std::function<void(const std::vector<const Mesh::Mesh*>& meshes, RenderType renderType)>& renderMesh);
 		};
 	}
 }
