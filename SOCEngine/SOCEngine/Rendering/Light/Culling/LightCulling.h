@@ -10,6 +10,7 @@
 #include "LightManager.h"
 
 #include "RenderingCommon.h"
+#include "TBRShaderIndexSlotInfo.h"
 
 #define LIGHT_CULLING_TILE_RESOLUTION						16
 #define LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE 				256
@@ -21,30 +22,14 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
-			enum class InputBufferShaderIndex : unsigned int
-			{
-				PointLightRadiusWithCenter		= 0,
-				SpotLightRadiusWithCenter		= 2,
-				SpotLightParam					= 4
-			};
-
-			enum class InputTextureShaderIndex : unsigned int
-			{
-				InvetedOpaqueDepthBuffer		= 11,
-				InvetedBlendedDepthBuffer		= 12
-			};
-
-			enum class ConstBufferShaderIndex : unsigned int
-			{
-				TBRParam = 1
-			};
-
-		public:
 			struct TBRChangeableParam
 			{
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
 				unsigned int 		lightNum;
+
+				TBRChangeableParam(){}
+				~TBRChangeableParam(){}
 			};
 
 			struct TBRParam : TBRChangeableParam
@@ -53,6 +38,8 @@ namespace Rendering
 
 				Math::Size<float>	screenSize;
 				unsigned int 		maxNumOfperLightInTile;
+				TBRParam() : TBRChangeableParam() {}
+				~TBRParam(){}
 			};
 
 		private:
@@ -92,7 +79,9 @@ namespace Rendering
 			void _Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture,	uint idx, const Texture::Texture2D* texture);
 
 		public:	
-			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer);
+			void Dispatch(const Device::DirectX* dx,
+				const Buffer::ConstBuffer* tbrConstBuffer,
+				const Buffer::ConstBuffer* cameraConstBuffer);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;

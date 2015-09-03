@@ -14,6 +14,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
+using namespace Rendering::TBDR;
 
 LightCulling::LightCulling() : 
 	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
@@ -116,13 +117,13 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		// depth buffer
 		{
 			// Opaque Depth Buffer
-			idx = (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer;
+			idx = (uint)InputTextureShaderIndex::GBuffer_Depth;
 			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
 			{
-				idx = (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer;
+				idx = (uint)InputTextureShaderIndex::GBuffer_BlendedDepth;
 				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
 			}
 		}
@@ -146,20 +147,28 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 	return ( LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - ( key * ( size.h / 120 ) ) );
 }
 
-void LightCulling::Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer)
+void LightCulling::Dispatch(const Device::DirectX* dx,
+							const Buffer::ConstBuffer* tbrConstBuffer,
+							const Buffer::ConstBuffer* cameraConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	if(tbrConstBuffer)
 	{
-		std::vector<ComputeShader::InputConstBuffer> tbrCB;
+		std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
 		{
 			ComputeShader::InputConstBuffer icb;
+
 			icb.buffer = tbrConstBuffer;
-			icb.idx = (uint)ConstBufferShaderIndex::TBRParam;
+			icb.idx = (uint)InputConstBufferShaderIndex::TBRParam;
+			inputConstBuffers.push_back(icb);
+
+			icb.buffer = cameraConstBuffer;
+			icb.idx = (uint)InputConstBufferShaderIndex::Camera;
+			inputConstBuffers.push_back(icb);
 		}
 
-		_computeShader->SetInputConstBuffers(tbrCB);
+		_computeShader->SetInputConstBuffers(inputConstBuffers);
 	}
 	_computeShader->Dispatch(context);
 }
