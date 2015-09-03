@@ -103,7 +103,7 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 	GetViewMatrix(outMatrix, worldMat);
 }
 
-void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects)
+void CameraForm::UpdateTransformCB(const std::vector<Core::Object*>& objects)
 {
 	TransformPipelineParam tfParam;
 	GetProjectionMatrix(tfParam.projMat);
@@ -134,7 +134,7 @@ void CameraForm::RenderPreviewWithUpdateTransformCB(const std::vector<Core::Obje
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		(*iter)->Culling(_frustum);
-		(*iter)->RenderPreviewWithUpdateTransformCB(tfParam);
+		(*iter)->UpdateTransformCB(tfParam);
 	}
 }
 

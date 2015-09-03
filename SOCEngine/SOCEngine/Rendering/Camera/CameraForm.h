@@ -74,7 +74,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			void RenderPreviewWithUpdateTransformCB(const std::vector<Core::Object*>& objects);
+			void UpdateTransformCB(const std::vector<Core::Object*>& objects);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager) = 0;
 
 		protected:
