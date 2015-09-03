@@ -5,41 +5,14 @@
 
 namespace Rendering
 {
-	namespace DeferredShading
+	namespace TBDR
 	{
 		class ShadingWithLightCulling : public Light::LightCulling
 		{
 		public:
-			enum class InputBufferShaderIndex : unsigned int
-			{
-			//	PointLightRadiusWithCenter		= 0,
-				PointLightColor					= 1,
-			//	SpotLightRadiusWithCenter		= 2,
-				SpotLightColor					= 3,
-			//	SpotLightParam					= 4,
-				DirectionalLightCenterWithDirZ	= 5,
-				DirectionalLightColor			= 6,
-				DirectionalLightParam			= 7
-			};
-
-			enum class InputTextureShaderIndex : unsigned int
-			{
-				GBuffer_Albedo_Metallic			= 8,
-				GBuffer_Specular_Fresnel0		= 9,
-				GBuffer_Normal_Roughness		= 10,
-			//	GBuffer_Depth					= 11,
-			//	GBuffer_BlendedDepth			= 12
-			};
-
 			enum class OutputBufferShaderIndex : unsigned int
 			{
 				OutScreen = 0
-			};
-
-			enum class CostBufferShaderIndex : unsigned int
-			{
-				TileBasedDeferredShadingParam	= 0,
-			//	GlobalData						= 1
 			};
 
 		private:

@@ -9,7 +9,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
-using namespace Rendering::DeferredShading;
+using namespace Rendering::TBDR;
 
 ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
