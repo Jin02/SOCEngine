@@ -1,4 +1,4 @@
-#include "MainRenderer.h"
+#include "MainCamera.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
@@ -16,7 +16,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
 using namespace Rendering;
 
-MainRenderer::MainRenderer() : CameraForm(),
+MainCamera::MainCamera() : CameraForm(),
 	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
 	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
@@ -25,11 +25,11 @@ MainRenderer::MainRenderer() : CameraForm(),
 {
 }
 
-MainRenderer::~MainRenderer()
+MainCamera::~MainCamera()
 {
 }
 
-void MainRenderer::OnInitialize()
+void MainCamera::OnInitialize()
 {
 	CameraForm::OnInitialize();
 
@@ -63,7 +63,7 @@ void MainRenderer::OnInitialize()
 	camMgr->Add(_owner->GetName(), thisCam);
 }
 
-void MainRenderer::OnDestroy()
+void MainCamera::OnDestroy()
 {
 	SAFE_DELETE(_albedo_metallic);
 	SAFE_DELETE(_specular_fresnel0);
@@ -75,7 +75,7 @@ void MainRenderer::OnDestroy()
 	CameraForm::OnDestroy();
 }
 
-void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
+void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -334,7 +334,7 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 	}
 }
 
-void MainRenderer::EnableRenderTransparentMesh(bool enable)
+void MainCamera::EnableRenderTransparentMesh(bool enable)
 {	
 	if(enable)
 	{
@@ -361,7 +361,7 @@ void MainRenderer::EnableRenderTransparentMesh(bool enable)
 	_useTransparent = enable;
 }
 
-Core::Component* MainRenderer::Clone() const
+Core::Component* MainCamera::Clone() const
 {
 	return nullptr;
 }

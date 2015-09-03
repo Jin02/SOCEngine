@@ -12,7 +12,7 @@
 #include "UIManager.h"
 #include "LightManager.h"
 
-#include "MainRenderer.h"
+#include "MainCamera.h"
 
 namespace Core
 {

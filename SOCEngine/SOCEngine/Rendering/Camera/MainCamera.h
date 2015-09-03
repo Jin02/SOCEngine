@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Camera
 	{		
-		class MainRenderer : public CameraForm
+		class MainCamera : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
@@ -34,8 +34,8 @@ namespace Rendering
 
 
 		public:
-			MainRenderer();
-			virtual ~MainRenderer(void);
+			MainCamera();
+			virtual ~MainCamera(void);
 		
 		public:
 			virtual void OnInitialize();
@@ -50,7 +50,5 @@ namespace Rendering
 		public:
 			virtual Core::Component* Clone() const;
 		};
-
-		typedef MainRenderer DefaultCamera;
 	}
 }
