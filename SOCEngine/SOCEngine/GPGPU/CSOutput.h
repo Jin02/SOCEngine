@@ -8,6 +8,13 @@ namespace GPGPU
 	{
 		class CSOutput
 		{
+		public:
+			enum class Type
+			{
+				Buffer,
+				Texture
+			};
+
 		private:
 			ID3D11UnorderedAccessView*		_uav;
 
@@ -16,7 +23,7 @@ namespace GPGPU
 			virtual ~CSOutput();
 
 		public:
-			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource);
+			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, Type type);
 			void Destroy();
 
 		public:

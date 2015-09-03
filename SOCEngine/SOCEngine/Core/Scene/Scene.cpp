@@ -32,7 +32,10 @@ void Scene::Initialize()
 
 	_dx				= Device::Director::GetInstance()->GetDirectX();
 
-	_lightManager	= new Manager::LightManager;
+	_lightManager	= new Manager::LightManager;	
+	_lightManager->InitializeAllShaderResourceBuffer();
+
+	_materialMgr	= new Manager::MaterialManager;
 
 	NextState();
 	OnInitialize();
@@ -53,22 +56,21 @@ void Scene::RenderPreview()
 {
 	OnRenderPreview();
 
+	auto materials = _materialMgr->GetMaterials().GetVector();
+	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
+		(*iter)->UpdateConstBuffer(_dx);
+
 	const std::vector<Camera::CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->RenderPreviewWithUpdateTransformCB(_rootObjects.GetVector());
+		(*iter)->UpdateTransformCB(_rootObjects.GetVector());
 }
 
 void Scene::Render()
 {
-#ifndef DEPRECATED_MESH_RENDERER
-	auto CamIteration = [&](Camera::CameraForm* cam)
-	{
-		cam->Render();
-	};
-	_cameraMgr->IterateContent(CamIteration);
+	const std::vector<Camera::CameraForm*>& cameras = _cameraMgr->GetVector();
+	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
+		(*iter)->Render(_dx, _renderMgr, _lightManager);
 
-#endif
-	
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
 }
@@ -80,7 +82,8 @@ void Scene::Destroy()
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_renderMgr);
 	SAFE_DELETE(_uiManager);
-	SAFE_DELETE(_lightManager);
+	SAFE_DELETE(_lightManager);	
+	SAFE_DELETE(_materialMgr);
 
 	OnDestroy();
 }

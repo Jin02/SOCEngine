@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Structure.h"
 #include <hash_map>
+#include "VectorHashMap.h"
 
 namespace Rendering
 {
@@ -11,7 +12,7 @@ namespace Rendering
 		class MaterialManager
 		{
 		private:
-			std::hash_map<std::string, Material*>				_hash;
+			Structure::VectorHashMap<std::string, Material*>	_materials;
 
 		public:
 			MaterialManager();
@@ -27,6 +28,9 @@ namespace Rendering
 			void Add(const std::string& key, Material* material);
 			Material* Find(const std::string& key);
 			void Delete(const std::string& key);
+
+		public:
+			inline const Structure::VectorHashMap<std::string, Material*>& GetMaterials() const { return _materials; }
 		};
 	}
 }

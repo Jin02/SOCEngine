@@ -14,7 +14,7 @@ namespace Rendering
 			Shader::VertexShader*							_vertexShader;
 			Shader::PixelShader*							_pixelShader;
 		
-			std::vector<Shader::BaseShader::TextureType>	_inputPSTextures;
+			std::vector<Shader::ShaderForm::InputTexture>	_inputPSTextures;
 
 		public:
 			FullScreen();
@@ -28,7 +28,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_SET_ACCESSOR(InputPSTextures, const std::vector<Shader::BaseShader::TextureType>&, _inputPSTextures);
+			GET_SET_ACCESSOR(InputPSTextures, const std::vector<Shader::ShaderForm::InputTexture>&, _inputPSTextures);
 		};
 	}
 }

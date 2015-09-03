@@ -1,13 +1,13 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "ShaderForm.h"
 #include "ConstBuffer.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class HullShader : public BaseShader
+		class HullShader : public ShaderForm
 		{
 		};
 	}

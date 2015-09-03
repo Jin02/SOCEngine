@@ -4,7 +4,6 @@
 #include "MeshRenderer.h"
 #include "MeshBasicData.h"
 #include "Component.h"
-#include "LPVoidType.h"
 
 namespace Rendering
 {

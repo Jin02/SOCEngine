@@ -24,7 +24,7 @@ namespace Rendering
 
 		public:
 			void Update(float delta);
-			void Render();
+			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager);
 
 		public:
 			virtual Core::Component* Clone() const;

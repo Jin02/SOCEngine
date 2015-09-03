@@ -12,6 +12,8 @@
 #include "UIManager.h"
 #include "LightManager.h"
 
+#include "MainCamera.h"
+
 namespace Core
 {
 	class Scene
@@ -29,6 +31,7 @@ namespace Core
 		Rendering::Manager::RenderManager*		_renderMgr;	
 		UI::Manager::UIManager*					_uiManager;
 		Rendering::Manager::LightManager*		_lightManager;
+		Rendering::Manager::MaterialManager*	_materialMgr;
 
 		const Device::DirectX*					_dx;
 
@@ -63,5 +66,6 @@ namespace Core
 		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
 		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
 		GET_ACCESSOR(LightManager, Rendering::Manager::LightManager*, _lightManager);
+		GET_ACCESSOR(MaterialManager, Rendering::Manager::MaterialManager*, _materialMgr);
 	};
 }

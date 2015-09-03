@@ -5,7 +5,6 @@
 #include "IndexBuffer.h"
 
 #include "Structure.h"
-#include "LPVoidType.h"
 
 namespace Rendering
 {
@@ -16,7 +15,7 @@ namespace Rendering
 		private:
 			Structure::MapInMap<std::string, Buffer::VertexBuffer*>		_vertexBuffers;
 			Structure::MapInMap<std::string, Buffer::IndexBuffer*>		_indexBuffers;
-			Structure::MapInMap<std::string, LPVoidType>				_originVertexBufferDatas;
+			Structure::MapInMap<std::string, const void*>				_originVertexBufferDatas;
 
 		public:
 			BufferManager();
@@ -25,11 +24,11 @@ namespace Rendering
 		public:
 			void Add(const std::string& file, const std::string& key, Buffer::VertexBuffer* bufferData);
 			void Add(const std::string& file, const std::string& key, Buffer::IndexBuffer* bufferData);
-			void Add(const std::string& file, const std::string& key, const LPVoidType& bufferData);
+			void Add(const std::string& file, const std::string& key, const void* bufferData);
 
 			bool Find(Buffer::VertexBuffer** outBuffer, const std::string& file, const std::string& key);
 			bool Find(Buffer::IndexBuffer** outBuffer, const std::string& file, const std::string& key);
-			bool Find(LPVoidType* outBuffer, const std::string& file, const std::string& key);
+			bool Find(const void** outBuffer, const std::string& file, const std::string& key);
 
 			void DeleteVertexBuffer(const std::string& file, const std::string& key);
 			void DeleteIndexBuffer(const std::string& file, const std::string& key);

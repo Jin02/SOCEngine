@@ -7,7 +7,7 @@
 
 #include "PhysicallyBased_Common.h"
 #include "BRDF.h"
-#include "LightCulling_CS.h"
+#include "LightCullingCommonCS.h"
 
 Buffer<uint> g_perLightIndicesInTile	: register( t13 );
 SamplerState defaultSampler				: register( s0 );

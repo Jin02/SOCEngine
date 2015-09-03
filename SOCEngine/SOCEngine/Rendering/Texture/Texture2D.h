@@ -16,7 +16,7 @@ namespace Rendering
 			bool						_hasAlpha;
 
 		public:
-			Texture2D(ID3D11ShaderResourceView* srv = nullptr, bool hasAlpha = false);
+			Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha);
 			virtual ~Texture2D();
 
 		protected:

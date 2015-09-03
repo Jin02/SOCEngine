@@ -4,10 +4,10 @@
 
 namespace Rendering
 {
-	class PhysicallyBasedMaterial : private Material
+	class PhysicallyBasedMaterial : public Material
 	{
 	public:
-		enum class PSTextureSlot : uint
+		enum class InputTextureShaderIndex : uint
 		{ 
 			Diffuse		= 0,
 			Normal		= 1,
@@ -15,8 +15,11 @@ namespace Rendering
 			Opacity		= 3
 		};
 
-		static const uint GBufferShaderSlotIndex = 2; //Material
-
+		enum class InputConstBufferShaderIndex : uint
+		{
+			Transform	= 1,
+			Material	= 2
+		};
 
 	public:
 		struct GBufferParam
@@ -27,6 +30,9 @@ namespace Rendering
 			float			roughness;
 			float			fresnel0;
 			Math::Vector2	uvTiling;
+
+			GBufferParam();
+			~GBufferParam();
 		};
 
 	private:
@@ -39,8 +45,10 @@ namespace Rendering
 		PhysicallyBasedMaterial(const std::string& name);
 		~PhysicallyBasedMaterial(void);
 
-	private:
-		void UpdateConstBuffer(Device::DirectX* dx);
+	public:
+		virtual void Initialize();
+		virtual void Destroy();
+		virtual void UpdateConstBuffer(const Device::DirectX* dx);
 
 	public:
 		void UpdateMainColor(const Color& color);

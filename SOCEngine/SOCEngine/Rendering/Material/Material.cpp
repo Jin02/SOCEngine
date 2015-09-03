@@ -5,6 +5,7 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
+using namespace Rendering::Texture;
 
 Material::Material(const std::string& name, Type type)	
 	: _name(name), _hasAlpha(false), _changedAlpha(true),
@@ -17,7 +18,11 @@ Material::~Material(void)
 
 }
 
-const Rendering::Texture::Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+void Material::Initialize(){}
+void Material::Destroy(){}
+void Material::UpdateConstBuffer(const Device::DirectX* dx){}
+
+const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
 {	
 	for(unsigned int i=0; i<_textures.size(); ++i)
 	{		
@@ -28,12 +33,11 @@ const Rendering::Texture::Texture2D* Material::FindTexture(unsigned int& outArra
 		}
 	}
 
-	DEBUG_LOG("Material FindTexture Warning : Undefined UsageTextureType");
-	outArrayIndex = 0;
+	outArrayIndex = -1;
 	return nullptr;
 }
 
-bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, BaseShader::Usage usage)
+bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
 	auto hasTexture = FindTexture(arrayIdx, shaderSlotIndex);
@@ -44,13 +48,13 @@ bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const 
 	}
 	else
 	{
-		_textures.push_back(BaseShader::TextureType(shaderSlotIndex, texture, usage));
+		_textures.push_back(ShaderForm::InputTexture(shaderSlotIndex, texture, usage));
 	}
 
 	return hasTexture != nullptr;
 }
 
-bool Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, BaseShader::Usage usage)
+bool Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
 {
 	if(arrayIndex >= _textures.size())
 		return false;
@@ -60,7 +64,7 @@ bool Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering:
 	return true;
 }
 
-bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, BaseShader::Usage usage)
+bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
 	auto has = FindConstBuffer(arrayIdx, shaderSlotIdx);
@@ -71,13 +75,13 @@ bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer
 	}
 	else
 	{
-		_constBuffers.push_back(BaseShader::BufferType(shaderSlotIdx, cb, usage));
+		_constBuffers.push_back(ShaderForm::InputConstBuffer(shaderSlotIdx, cb, usage));
 	}
 
 	return has != nullptr;
 }
 
-bool Material::SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, BaseShader::Usage usage)
+bool Material::SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
 {
 	if(arrayIdx >= _constBuffers.size())
 		return false;
@@ -117,7 +121,7 @@ const ShaderResourceBuffer* Material::FindShaderResourceBuffer(unsigned int& out
 	return nullptr;
 }
 
-bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, BaseShader::Usage usage)
+bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
 	auto has = FindConstBuffer(arrayIdx, shaderSlotIndex);
@@ -128,13 +132,13 @@ bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlot
 	}
 	else
 	{
-		_srBuffers.push_back(BaseShader::ShaderResourceType(shaderSlotIndex, srBuffer, usage));
+		_srBuffers.push_back(ShaderForm::InputShaderResourceBuffer(shaderSlotIndex, srBuffer, usage));
 	}
 
 	return has != nullptr;
 }
 
-bool Material::SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, BaseShader::Usage usage)
+bool Material::SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
 {
 	if(arrayIndex >= _srBuffers.size())
 		return false;

@@ -66,13 +66,22 @@ namespace Utility
 			return ParseNameAndExtension( &path.c_str()[fileNameStartPos+1] );
 		}
 	};
-}
-#if defined(_DEBUG)
-#define DEBUG_LOG(MSG)\
-	OutputDebugString(MSG);
-#else
-#define DEBUG_LOG(X) X;
-#endif
 
+	class Debug
+	{
+	public:
+		static void Log(const std::string& log)
+		{
+#if defined(_DEBUG)
+			std::string outputLog = "SOCEngine | ";
+			outputLog += log;
+
+			OutputDebugString(outputLog.c_str());
+#endif
+		}
+	};
+}
+
+#define DEBUG_LOG(message) Utility::Debug::Log(message);
 #define ASSERT_MSG(MSG) assert(!MSG)
 #define ASSERT_COND_MSG(CONDITION, MSG) if(!(CONDITION)){assert(!MSG);}

@@ -4,7 +4,8 @@
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-DepthBuffer::DepthBuffer() : _depthStencilView(nullptr), Texture2D()
+DepthBuffer::DepthBuffer() 
+	: Texture2D(nullptr, nullptr, false), _depthStencilView(nullptr)
 {
 }
 

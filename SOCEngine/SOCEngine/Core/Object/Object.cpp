@@ -73,7 +73,7 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transformParam)
+void Object::UpdateTransformCB(TransformPipelineParam& transformParam)
 {
 	if(_use == false)
 		return;
@@ -105,7 +105,7 @@ void Object::RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transfor
 		_prevTransformParam = transformParam;
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->RenderPreviewWithUpdateTransformCB(transformParam);
+		(*iter)->UpdateTransformCB(transformParam);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)

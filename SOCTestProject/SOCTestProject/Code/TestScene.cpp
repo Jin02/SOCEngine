@@ -27,7 +27,7 @@ TestScene::~TestScene(void)
 void TestScene::OnInitialize()
 {
 	Object* camObj = new Object("Default");
-	DefaultCamera* cam = camObj->AddComponent<DefaultCamera>();
+	MainCamera* cam = camObj->AddComponent<MainCamera>();
 	camObj->GetTransform()->UpdateDirection(Vector3(0, 0, 1));
 
 	MeshImporter importer;

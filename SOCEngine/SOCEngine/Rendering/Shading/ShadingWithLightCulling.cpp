@@ -9,7 +9,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
-using namespace Rendering::DeferredShading;
+using namespace Rendering::TBDR;
 
 ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
@@ -34,12 +34,12 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
-		pathFind.FetchShaderFullPath(filePath, "TileBasedDeferredShading");
+		pathFind.FetchShaderFullPath(filePath, "TBDR");
 
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
-	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
+	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, RenderType::TBDR);
 
 	// Input buffer
 	{
