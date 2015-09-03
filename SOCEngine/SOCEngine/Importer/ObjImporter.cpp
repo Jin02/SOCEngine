@@ -3,10 +3,9 @@
 #include "MaterialManager.h"
 #include "Director.h"
 #include "ImporterUtility.h"
-
 #include "RenderManager.h"
-
 #include "ResourceManager.h"
+#include "PhysicallyBasedMaterial.h"
 
 #include <algorithm>
 #include <ctype.h>
@@ -42,7 +41,14 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 	if(material == nullptr)
 	{
-		material = new Material(materialName, materialType);
+		if(materialType == Material::Type::PhysicallyBasedModel)
+			material = new PhysicallyBasedMaterial(materialName);			
+		else
+		{
+			DEBUG_LOG("Warning, can't support material type.");
+			material = new Material(materialName, materialType);
+		}
+
 		material->Initialize();
 
 		// main color = diffuse color

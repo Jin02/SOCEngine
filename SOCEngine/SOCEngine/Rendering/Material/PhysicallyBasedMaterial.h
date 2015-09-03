@@ -4,7 +4,7 @@
 
 namespace Rendering
 {
-	class PhysicallyBasedMaterial : private Material
+	class PhysicallyBasedMaterial : public Material
 	{
 	public:
 		enum class PSTextureSlot : uint
