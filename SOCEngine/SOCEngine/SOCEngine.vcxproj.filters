@@ -301,17 +301,11 @@
     <Filter Include="ShaderCodes\PBR\Forward">
       <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\Renderer">
-      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Camera\Renderer\Main">
-      <UniqueIdentifier>{31aa9323-cd3b-4f17-a678-dff9f4f12208}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Camera\Renderer\Transparency">
-      <UniqueIdentifier>{f295c860-9392-469d-93cf-a065ce3eaf4c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shader\Form">
       <UniqueIdentifier>{76c609d7-2300-44b4-83e6-d5e0dd6f981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\MainCamera">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -699,14 +693,11 @@
     <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h">
       <Filter>Rendering\Shading</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\TransparencyRenderer.h">
-      <Filter>Rendering\Camera\Renderer\Transparency</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\MainCamera.h">
-      <Filter>Rendering\Camera\Renderer\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderForm.h">
       <Filter>Rendering\Shader\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\MainCamera.h">
+      <Filter>Rendering\Camera\MainCamera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -938,14 +929,11 @@
     <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp">
       <Filter>Rendering\Shading\Deferred</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\TransparencyRenderer.cpp">
-      <Filter>Rendering\Camera\Renderer\Transparency</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\MainCamera.cpp">
-      <Filter>Rendering\Camera\Renderer\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderForm.cpp">
       <Filter>Rendering\Shader\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\MainCamera.cpp">
+      <Filter>Rendering\Camera\MainCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

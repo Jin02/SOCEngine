@@ -4,7 +4,6 @@
 #include "ShadingWithLightCulling.h"
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
-#include "TransparencyRenderer.h"
 
 namespace Rendering
 {

@@ -307,28 +307,36 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
 		context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
 		context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
-		
-		context->PSSetShaderResources(0, 1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(1, 1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(2, 1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(3, 1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(4, 1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(5, 1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(6, 1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
-		context->PSSetShaderResources(7, 1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
+				
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter, 
+			1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor, 
+			1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter, 
+			1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor, 
+			1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,
+			1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ,
+			1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,
+			1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
+			1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
 		const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
 		RenderMesh(meshes, RenderType::Transparency);
 
 		ID3D11ShaderResourceView* nullSRV = nullptr;
-		context->PSSetShaderResources(0, 1, &nullSRV);
-		context->PSSetShaderResources(1, 1, &nullSRV);
-		context->PSSetShaderResources(2, 1, &nullSRV);
-		context->PSSetShaderResources(3, 1, &nullSRV);
-		context->PSSetShaderResources(4, 1, &nullSRV);
-		context->PSSetShaderResources(5, 1, &nullSRV);
-		context->PSSetShaderResources(6, 1, &nullSRV);
-		context->PSSetShaderResources(7, 1, &nullSRV);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter,		1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor,				1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter,		1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor,					1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,					1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ, 1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,			1, nullptr);
+		context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,			1, nullptr);
 		
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 	}
