@@ -77,8 +77,9 @@
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
-    <ClInclude Include="Rendering\Camera\MainRenderer.h" />
+    <ClInclude Include="Rendering\Camera\MainCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
+    <ClInclude Include="Rendering\Camera\TransparencyRenderer.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\RenderingCommon.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
@@ -215,8 +216,9 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
-    <ClCompile Include="Rendering\Camera\MainRenderer.cpp" />
+    <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
+    <ClCompile Include="Rendering\Camera\TransparencyRenderer.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />

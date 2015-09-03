@@ -277,9 +277,6 @@
     <Filter Include="Rendering\Shading\Deferred\MainRT">
       <UniqueIdentifier>{e5ae4add-57a7-442a-98b8-69a442355779}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\MainRenderer">
-      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\LightCulling">
       <UniqueIdentifier>{ff502500-e60a-415f-9c54-299247ef8fd6}</UniqueIdentifier>
     </Filter>
@@ -306,6 +303,15 @@
     </Filter>
     <Filter Include="ShaderCodes\PBR\Forward">
       <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Renderer">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Renderer\Main">
+      <UniqueIdentifier>{31aa9323-cd3b-4f17-a678-dff9f4f12208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Renderer\Transparency">
+      <UniqueIdentifier>{f295c860-9392-469d-93cf-a065ce3eaf4c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -675,9 +681,6 @@
     <ClInclude Include="ShaderCodes\FullScreenShader.h">
       <Filter>ShaderCodes\PostProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\MainRenderer.h">
-      <Filter>Rendering\Camera\MainRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shading\OffScreen.h">
       <Filter>Rendering\Shading\Deferred\MainRT</Filter>
     </ClInclude>
@@ -698,6 +701,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h">
       <Filter>Rendering\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\TransparencyRenderer.h">
+      <Filter>Rendering\Camera\Renderer\Transparency</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\MainCamera.h">
+      <Filter>Rendering\Camera\Renderer\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -926,14 +935,17 @@
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
       <Filter>Rendering\PostProcessing</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\MainRenderer.cpp">
-      <Filter>Rendering\Camera\MainRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shading\OffScreen.cpp">
       <Filter>Rendering\Shading\Deferred\MainRT</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp">
       <Filter>Rendering\Shading\Deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\TransparencyRenderer.cpp">
+      <Filter>Rendering\Camera\Renderer\Transparency</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\MainCamera.cpp">
+      <Filter>Rendering\Camera\Renderer\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

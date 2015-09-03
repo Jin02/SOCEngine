@@ -4,6 +4,7 @@
 #include "ShadingWithLightCulling.h"
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
+#include "TransparencyRenderer.h"
 
 namespace Rendering
 {
@@ -50,5 +51,10 @@ namespace Rendering
 		public:
 			virtual Core::Component* Clone() const;
 		};
+	}
+
+	namespace Renderer
+	{
+		typedef Camera::MainCamera MainRenderer;
 	}
 }
