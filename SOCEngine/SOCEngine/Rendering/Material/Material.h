@@ -9,10 +9,12 @@
 #include <map>
 
 //dont use const reference
-#define SET_ACCESSOR_MATERIAL(name, type) inline void Set##name(const type& data)			{ SetVariable(#name, data);}
+#define SET_ACCESSOR_MATERIAL(name, type)\
+	inline void Set##name(const type& data)	{ SetVariable(#name, data);}
 
 //dont use const reference
-#define GET_ACCESSOR_MATERIAL(name, type) inline bool Get##name(type& out) const			{ return GetVariable(out, #name); }
+#define GET_ACCESSOR_MATERIAL(name, type)\
+	inline bool Get##name(type& out) const { return GetVariable(out, #name); }
 
 //dont use const reference
 #define GET_SET_ACCESSOR_MATERIAL(name, type)\
