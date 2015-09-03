@@ -159,7 +159,7 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 				{
 					// Setting Camera CosntBuffer
 					{
-						BaseShader::BufferType buf = BaseShader::BufferType(0, _camConstBuffer, true, true, false, false);
+						BaseShader::BufferType buf = BaseShader::BufferType(0, _camConstBuffer, true, false, false, true);
 						constBuffers.push_back(buf);
 					}
 
