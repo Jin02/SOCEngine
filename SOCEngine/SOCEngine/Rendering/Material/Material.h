@@ -57,6 +57,7 @@ namespace Rendering
 	public:
 		virtual void Initialize();
 		virtual void Destroy();
+		virtual void UpdateConstBuffer(const Device::DirectX* dx);
 
 	public:
 		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);

@@ -30,7 +30,7 @@ void PhysicallyBasedMaterial::Destroy()
 	SAFE_DELETE(_gbufferCB);
 }
 
-void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
+void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 {
 	if( _constBufferUpdateCounter < GetVariableUpdateCounter() )
 	{

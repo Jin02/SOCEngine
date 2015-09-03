@@ -42,7 +42,7 @@ namespace Rendering
 	public:
 		virtual void Initialize();
 		virtual void Destroy();
-		virtual void UpdateConstBuffer(Device::DirectX* dx);
+		virtual void UpdateConstBuffer(const Device::DirectX* dx);
 
 	public:
 		void UpdateMainColor(const Color& color);

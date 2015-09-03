@@ -20,7 +20,7 @@ Material::~Material(void)
 
 void Material::Initialize(){}
 void Material::Destroy(){}
-void Material::UpdateConstBuffer(Device::DirectX* dx){}
+void Material::UpdateConstBuffer(const Device::DirectX* dx){}
 
 const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
 {	
