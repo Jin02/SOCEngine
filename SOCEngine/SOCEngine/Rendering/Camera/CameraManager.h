@@ -19,8 +19,8 @@ namespace Rendering
 			~CameraManager(void);
 
 		public:
-			void SetMainCamera(Camera::CameraForm* cam);
-			Camera::CameraForm* GetMainCamera();
+			void SetFirstCamera(Camera::CameraForm* cam);
+			Camera::CameraForm* GetFirstCamera() const;
 
 		public:
 			GET_ACCESSOR(LightCullingCS, Light::LightCulling*, _lightCullingCS);

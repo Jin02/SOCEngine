@@ -16,7 +16,7 @@ CameraManager::~CameraManager()
 	SAFE_DELETE(_lightCullingCS);
 }
 
-void CameraManager::SetMainCamera(Camera::CameraForm *cam)
+void CameraManager::SetFirstCamera(Camera::CameraForm *cam)
 {
 	auto mainCamIter = _vector.begin();
 	auto findIter = _vector.begin();
@@ -31,7 +31,7 @@ void CameraManager::SetMainCamera(Camera::CameraForm *cam)
 	std::swap(findIter, mainCamIter);
 }
 
-Camera::CameraForm* CameraManager::GetMainCamera()
+Camera::CameraForm* CameraManager::GetFirstCamera() const
 {
 	return _vector.empty() ? nullptr : _vector.front();
 }
