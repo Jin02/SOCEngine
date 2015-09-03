@@ -61,7 +61,7 @@ bool FontLoader::LoadTexture(const std::string& texturePath)
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 
 	auto textureMgr = resourceManager->GetTextureManager();
-	_texture = textureMgr->LoadTextureFromFile(texturePath, false);
+	_texture = textureMgr->LoadTextureFromFile(texturePath, false, true);
 
 	ASSERT_COND_MSG(_texture, "Error! can not create texture");
 
