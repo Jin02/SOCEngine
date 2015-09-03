@@ -1,7 +1,7 @@
 #include "OffScreen.h"
 #include "Utility.h"
 
-using namespace Rendering::DeferredShading;
+using namespace Rendering::TBDR;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;

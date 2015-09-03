@@ -5,7 +5,7 @@
 
 namespace Rendering
 {
-	namespace DeferredShading
+	namespace TBDR
 	{
 		class OffScreen : public PostProcessing::FullScreen
 		{
