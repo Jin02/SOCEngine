@@ -16,7 +16,7 @@ namespace Rendering
 		class ShaderManager
 		{
 		private:
-			std::map<std::string, Shader::BaseShader*>		_shaders;
+			std::map<std::string, Shader::ShaderForm*>		_shaders;
 			std::map<std::string, Shader::ShaderCode>		_shaderCodes;
 
 		public:
@@ -43,14 +43,14 @@ namespace Rendering
 			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<Shader::ShaderMacro>* macros);
 			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<Shader::ShaderMacro>* macros);
 
-			void Add(const std::string& fullCommand, Shader::BaseShader* shader);
+			void Add(const std::string& fullCommand, Shader::ShaderForm* shader);
 			bool LoadShader(const std::string filePath);
 
 			static std::string MakePartlyCommand(const std::string& shaderName, const std::string& shaderMainFuncName);
 			static std::string MakeFullCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType);
 
 		public:
-			Shader::BaseShader*		FindShader(const std::string& fileName, const std::string& mainFunc, Shader::BaseShader::Type type);
+			Shader::ShaderForm*		FindShader(const std::string& fileName, const std::string& mainFunc, Shader::ShaderForm::Type type);
 
 			Shader::VertexShader*	FindVertexShader(const std::string& fileName, const std::string& mainFunc);
 

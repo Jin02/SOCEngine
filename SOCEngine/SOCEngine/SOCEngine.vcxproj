@@ -103,7 +103,7 @@
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\HullShader.h" />
     <ClInclude Include="Rendering\Shader\PixelShader.h" />
-    <ClInclude Include="Rendering\Shader\BaseShader.h" />
+    <ClInclude Include="Rendering\Shader\ShaderForm.h" />
     <ClInclude Include="Rendering\Shader\ShaderMacro.h" />
     <ClInclude Include="Rendering\Shader\Shaders.h" />
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
@@ -239,7 +239,7 @@
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
-    <ClCompile Include="Rendering\Shader\BaseShader.cpp" />
+    <ClCompile Include="Rendering\Shader\ShaderForm.cpp" />
     <ClCompile Include="Rendering\Shader\ShaderMacro.cpp" />
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

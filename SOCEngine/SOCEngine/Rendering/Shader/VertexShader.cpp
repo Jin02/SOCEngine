@@ -5,7 +5,7 @@ using namespace Device;
 using namespace Rendering::Shader;
 
 
-VertexShader::VertexShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr), _layout(nullptr)
+VertexShader::VertexShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr), _layout(nullptr)
 {
 	_type = Type::Vertex;
 }

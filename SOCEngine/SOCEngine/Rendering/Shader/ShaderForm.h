@@ -19,7 +19,7 @@ namespace Rendering
 	{
 		typedef std::string ShaderCode;
 
-		class BaseShader
+		class ShaderForm
 		{
 		public:
 			enum Type
@@ -34,8 +34,8 @@ namespace Rendering
 			Type			_type;
 
 		public:
-			BaseShader(ID3DBlob* blob);
-			virtual ~BaseShader(void);
+			ShaderForm(ID3DBlob* blob);
+			virtual ~ShaderForm(void);
 
 		public:
 			struct Usage

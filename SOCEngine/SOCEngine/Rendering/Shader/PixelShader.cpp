@@ -3,7 +3,7 @@
 
 using namespace Rendering::Shader;
 
-PixelShader::PixelShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr)
+PixelShader::PixelShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr)
 {
 	_type = Type::Pixel;
 }

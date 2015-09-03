@@ -156,19 +156,19 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				const auto& tex	= material->GetTextures();
 
-				std::vector<BaseShader::InputConstBuffer> constBuffers = material->GetConstBuffers();
+				std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
 				{
 					// Setting Camera CosntBuffer
 					{
 						uint semanticIdx = (uint)InputConstBufferShaderIndex::Camera;
-						BaseShader::InputConstBuffer buf = BaseShader::InputConstBuffer(semanticIdx, _camConstBuffer, true, false, false, true);
+						ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, _camConstBuffer, true, false, false, true);
 						constBuffers.push_back(buf);
 					}
 
 					// Setting Transform ConstBuffer
 					{
 						uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
-						BaseShader::InputConstBuffer buf = BaseShader::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
+						ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
 						constBuffers.push_back(buf);
 					}
 				}

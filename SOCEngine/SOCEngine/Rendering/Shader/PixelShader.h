@@ -1,12 +1,12 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "ShaderForm.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class PixelShader : public BaseShader
+		class PixelShader : public ShaderForm
 		{
 		private:
 			ID3D11PixelShader* _shader;

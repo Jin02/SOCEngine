@@ -305,11 +305,11 @@ void ShaderManager::RemoveShader(const std::string& command)
 	}
 }
 
-BaseShader* ShaderManager::FindShader(const std::string& fileName, const std::string& mainFunc, BaseShader::Type type)
+ShaderForm* ShaderManager::FindShader(const std::string& fileName, const std::string& mainFunc, ShaderForm::Type type)
 {
-	if(type == BaseShader::Type::Vertex)
+	if(type == ShaderForm::Type::Vertex)
 		return FindVertexShader(fileName, mainFunc);
-	else if(type == BaseShader::Type::Pixel)
+	else if(type == ShaderForm::Type::Pixel)
 		return FindPixelShader(fileName, mainFunc);
 
 	return nullptr;
@@ -327,7 +327,7 @@ PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const s
 	return findIter == _shaders.end() ? nullptr : dynamic_cast<PixelShader*>(findIter->second);
 }
 
-void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::BaseShader* shader)
+void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::ShaderForm* shader)
 {
 	if(CommandValidator(fullCommand, nullptr, nullptr, nullptr) == false)
 		ASSERT_MSG("Error, invalied command");

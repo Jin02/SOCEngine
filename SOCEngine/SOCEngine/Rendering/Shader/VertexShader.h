@@ -1,13 +1,13 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "ShaderForm.h"
 #include "ConstBuffer.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class VertexShader : public BaseShader
+		class VertexShader : public ShaderForm
 		{
 		public:
 			struct SemanticInfo
