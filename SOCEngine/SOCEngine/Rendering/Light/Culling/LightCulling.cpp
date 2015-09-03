@@ -14,6 +14,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
+using namespace Rendering::TBDR;
 
 LightCulling::LightCulling() : 
 	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
@@ -53,32 +54,11 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 		(*outTexture) = &_inputTextures.back();
 }
 
-void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh,
-							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer)
+void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc,
+							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
+							  RenderType renderType,
+							  const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
-	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
-	//Check duplicated input datas
-	{
-		for(const auto& iter : _inputBuffers)
-		{
-			if( iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
-				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter ||
-				iter.idx == (uint)InputBufferShaderIndex::PointLightRadiusWithCenter )
-			{
-				ASSERT_MSG("Error, duplicated input data");
-			}
-		}
-
-		for(const auto& iter : _inputTextures)
-		{
-			if( iter.idx == (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer ||
-				iter.idx == (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer )
-			{
-				ASSERT_MSG("Error, duplicated input data");
-			}
-		}
-	}
-
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
@@ -89,17 +69,34 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 		macros.push_back(ShaderMacro("USE_COMPUTE_SHADER", ""));
 
-		if(useRenderBlendedMesh)
+		if(blendedDepthBuffer)
 			macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
+
+		if(renderType == RenderType::TBDR)
+		{
+			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
+		}
+		else if(renderType == RenderType::ForwardPlus)
+		{
+			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
+		}
+		else
+		{
+			ASSERT_MSG("Can't suuport this render type");
+		}
+
+		if(opationalMacros)
+			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
 	}
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", mainFunc, false, &macros);
 
 	ComputeShader::ThreadGroup threadGroup;
 	UpdateThreadGroup(&threadGroup, false);
 	_computeShader = new ComputeShader(threadGroup, blob);
 
 	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
+	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
 	// Input Buffer Setting
 	{
@@ -120,46 +117,58 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		// depth buffer
 		{
 			// Opaque Depth Buffer
-			idx = (uint)InputTextureShaderIndex::InvetedOpaqueDepthBuffer;
+			idx = (uint)InputTextureShaderIndex::GBuffer_Depth;
 			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
-			if(useRenderBlendedMesh)
+			if(blendedDepthBuffer)
 			{
-				idx = (uint)InputTextureShaderIndex::InvetedBlendedDepthBuffer;
+				idx = (uint)InputTextureShaderIndex::GBuffer_BlendedDepth;
 				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
 			}
 		}
-
-		_computeShader->SetInputSRBuffers(_inputBuffers);
-		_computeShader->SetInputTextures(_inputTextures);
 	}
 
-	_useBlendedMeshCulling = useRenderBlendedMesh;
+	_useBlendedMeshCulling = blendedDepthBuffer != nullptr;
 }
 
+void LightCulling::SetInputsToCS()
+{
+	_computeShader->SetInputSRBuffers(_inputBuffers);
+	_computeShader->SetInputTextures(_inputTextures);
+}
+
+// 화면 크기에 따라 유동적으로 타일 안 최대 빛 갯수를 계산한다.
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
-	const unsigned key = 16;
+	const uint key = LIGHT_CULLING_TILE_RESOLUTION;
 
-	return ( LightMaxNumInTile - ( key * ( size.h / 120 ) ) );
+	return ( LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - ( key * ( size.h / 120 ) ) );
 }
 
-void LightCulling::Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer)
+void LightCulling::Dispatch(const Device::DirectX* dx,
+							const Buffer::ConstBuffer* tbrConstBuffer,
+							const Buffer::ConstBuffer* cameraConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	if(tbrConstBuffer)
 	{
-		std::vector<ComputeShader::InputConstBuffer> tbrCB;
+		std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
 		{
 			ComputeShader::InputConstBuffer icb;
+
 			icb.buffer = tbrConstBuffer;
-			icb.idx = (uint)ConstBufferShaderIndex::TBRParam;
+			icb.idx = (uint)InputConstBufferShaderIndex::TBRParam;
+			inputConstBuffers.push_back(icb);
+
+			icb.buffer = cameraConstBuffer;
+			icb.idx = (uint)InputConstBufferShaderIndex::Camera;
+			inputConstBuffers.push_back(icb);
 		}
 
-		_computeShader->SetInputConstBuffers(tbrCB);
+		_computeShader->SetInputConstBuffers(inputConstBuffers);
 	}
 	_computeShader->Dispatch(context);
 }
@@ -180,7 +189,7 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 {
 	auto CalcThreadLength = [](unsigned int size)
 	{
-		return (unsigned int)((size+TileSize-1) / (float)TileSize);
+		return (unsigned int)((size + LIGHT_CULLING_TILE_RESOLUTION - 1) / (float)LIGHT_CULLING_TILE_RESOLUTION);
 	};
 
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();

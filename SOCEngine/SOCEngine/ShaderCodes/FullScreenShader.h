@@ -6,15 +6,14 @@
 struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
-	float2 uv				: TEXCOORD0;
+	float2 uv					: TEXCOORD0;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 	uint sampleIdx				: SV_SAMPLEINDEX;
 #endif
 };
 
-
-// id는 0, 1, 2 3개의 값만 들어온다.
+// id는 0, 1, 2 이 3개의 값만 들어온다.
 PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 {
 	PS_INPUT ps = (PS_INPUT)0;

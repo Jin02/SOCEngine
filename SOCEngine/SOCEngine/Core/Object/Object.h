@@ -38,7 +38,7 @@ namespace Core
 		void Update(float delta);
 
 		bool Culling(const Rendering::Camera::Frustum *frustum);
-		void RenderPreviewWithUpdateTransformCB(TransformPipelineParam& transformParam);
+		void UpdateTransformCB(TransformPipelineParam& transformParam);
 
 		bool Intersects(Intersection::Sphere &sphere);
 

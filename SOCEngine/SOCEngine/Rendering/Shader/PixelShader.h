@@ -1,12 +1,12 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "ShaderForm.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class PixelShader : public BaseShader
+		class PixelShader : public ShaderForm
 		{
 		private:
 			ID3D11PixelShader* _shader;
@@ -20,14 +20,14 @@ namespace Rendering
 			
 			void SetShaderToContext(ID3D11DeviceContext* context);
 			void UpdateResources(ID3D11DeviceContext* context, 
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers);
+				const std::vector<InputConstBuffer>*			constBuffers, 
+				const std::vector<InputTexture>*				textures,
+				const std::vector<InputShaderResourceBuffer>*	srBuffers);
 
 			void Clear(ID3D11DeviceContext* context,
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers);
+				const std::vector<InputConstBuffer>*			constBuffers, 
+				const std::vector<InputTexture>*				textures,
+				const std::vector<InputShaderResourceBuffer>*	srBuffers);
 		};
 	}
 }

@@ -1,12 +1,12 @@
 //EMPTY_META_DATA
 
-#include "LightCulling_CS.h"
+#include "LightCullingCompareAtomicCS.h"
 #include "BRDF.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
-groupshared uint s_edgePixelIdx[TILE_RES * TILE_RES];
+groupshared uint s_edgePackedPixelIdx[TILE_RES * TILE_RES];
 
 #endif
 
@@ -42,6 +42,9 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 	lightDir = normalize(lightDir);
 
 	float lightRadius				= lightCenterWithRadius.w;
+
+	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
+	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
 
 	if( distanceOfLightAndVertex < lightRadius )
 	{
@@ -86,6 +89,8 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 	float	lightCosineConeAngle		= spotLightParam.z;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
 
+	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
+	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
 
 	if( (distanceOfLightAndVertex < lightRadius) && 
 		(lightCosineConeAngle < currentCosineConeAngle) )
@@ -122,7 +127,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( g_cameraWorldPosition - worldPosition.xyz );
+	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
 
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( globalIdx, sampleIdx );
 
@@ -168,7 +173,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint directionalLightIdx=0; directionalLightIdx<g_directionalLightCount; ++directionalLightIdx)
+	uint directionalLightCount = GetNumOfDirectionalLight();
+	for(uint directionalLightIdx=0; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
@@ -189,16 +195,24 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 #endif
 
 [numthreads(TILE_RES, TILE_RES, 1)]
-void CS(uint3 globalIdx : SV_DispatchThreadID, 
-		uint3 localIdx	: SV_GroupThreadID,
-		uint3 groupIdx	: SV_GroupID)
+void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID, 
+								uint3 localIdx	: SV_GroupThreadID,
+								uint3 groupIdx	: SV_GroupID)
 {
 	float minZ, maxZ;
 	uint pointLightCountInThisTile = 0;
 
-	if( (localIdx.x < TILE_RES_HALF) && (localIdx.y < TILE_RES_HALF) )
-		LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+#if (MSAA_SAMPLES_COUNT > 1)
+	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
+	if(idxInTile == 0)
+		s_edgePixelCounter = 0;
+#endif
 
+#if (MSAA_SAMPLES_COUNT > 1) // MSAA
+	bool isDetectedEdge = LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+#else
+	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+#endif
 	GroupMemoryBarrierWithGroupSync();
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
@@ -248,6 +262,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 	lightParams.fresnel0		= fresnel0;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
+	lightParams.specularColor	= specularColor;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
@@ -294,7 +309,6 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	bool isDetectedEdge = s_isDetectedEdge[localIdx.x + localIdx.y * TILE_RES];
 
 	uint2 scale_2_idx = globalIdx.xy * uint2(2, 2);
 	g_tOutScreen[scale_2_idx] = float4(result, 1.0f);
@@ -303,7 +317,8 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 	{
 		float3 sampleNormal = g_tGBufferNormal_roughness.Load( uint2(globalIdx.x, globalIdx.y), sampleIdx).rgb;
 		sampleNormal *= 2; sampleNormal -= float3(1.0f, 1.0f, 1.0f);
-		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, normal) < 1.04719755f); //1.04719755 is 60 degree
+
+		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, normal) < DEG_2_RAD(60.0f) );
 	}
 
 	if(isDetectedEdge)
@@ -311,7 +326,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 		uint targetIdx = 0;
 		InterlockedAdd(s_edgePixelCounter, 1, targetIdx);
 		
-		s_edgePixelIdx[targetIdx] = (globalIdx.y << 16) | globalIdx.x;
+		s_edgePackedPixelIdx[targetIdx] = (globalIdx.y << 16) | globalIdx.x;
 	}
 	else
 	{
@@ -323,13 +338,12 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	uint sample_mul_LightCount = (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
-	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
-	for(uint i=idxInTile; i < sample_mul_LightCount; i += SHADING_THREAD_COUNT)
+	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
 	{
 		uint edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
 		uint sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1부터 시작
 
-		uint packedIdxValue = s_edgePixelIdx[edgePixelIdx];
+		uint packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
 		uint2 edge_globalIdx_inThisTile = uint2(packedIdxValue & 0x0000ffff, packedIdxValue >> 16);
 
 		uint2 scale_sample_coord = edge_globalIdx_inThisTile * uint2(2, 2);

@@ -4,7 +4,8 @@
 using namespace Rendering::Texture;
 using namespace Device;
 
-RenderTexture::RenderTexture() : Texture2D(), _renderTargetView(nullptr)
+RenderTexture::RenderTexture()
+	: Texture2D(nullptr, nullptr, false), _renderTargetView(nullptr)
 {
 
 }

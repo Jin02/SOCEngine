@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "ShaderForm.h"
 #include "ShaderResourceBuffer.h"
 #include "Texture2D.h"
 #include "CSRWBuffer.h"
@@ -9,7 +9,7 @@ namespace GPGPU
 {
 	namespace DirectCompute
 	{
-		class ComputeShader : public Rendering::Shader::BaseShader
+		class ComputeShader : public Rendering::Shader::ShaderForm
 		{
 		public:
 			struct InputShaderResourceBuffer

@@ -7,7 +7,7 @@ SamplerState samplerState				: register( s0 );
 #if (MSAA_SAMPLES_COUNT > 1)
 Texture2DMS<float4,MSAA_SAMPLES_COUNT>	offScreenBuffer	: register( t0 );
 #else
-Texture2D<float4>			offScreenBuffer	: register( t0 );
+Texture2D<float4>						offScreenBuffer	: register( t0 );
 #endif
 
 float4 PS( PS_INPUT input ) : SV_Target

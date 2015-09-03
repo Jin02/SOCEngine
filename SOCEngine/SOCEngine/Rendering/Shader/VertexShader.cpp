@@ -5,7 +5,7 @@ using namespace Device;
 using namespace Rendering::Shader;
 
 
-VertexShader::VertexShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr), _layout(nullptr)
+VertexShader::VertexShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr), _layout(nullptr)
 {
 	_type = Type::Vertex;
 }
@@ -29,6 +29,9 @@ bool VertexShader::CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& ver
 
 	if( FAILED( hr ) )
 		return false;
+
+	if(vertexDeclations.size() == 0)
+		return true;
 
 	hr = device->CreateInputLayout(vertexDeclations.data(), count,
 		_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
@@ -71,9 +74,9 @@ void VertexShader::SetInputLayoutToContext(ID3D11DeviceContext* context)
 
 void VertexShader::UpdateResources(
 				ID3D11DeviceContext* context,
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers)
+				const std::vector<InputConstBuffer>* constBuffers, 
+				const std::vector<InputTexture>* textures,
+				const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(constBuffers)
 	{
@@ -108,9 +111,9 @@ void VertexShader::UpdateResources(
 
 void VertexShader::Clear(
 				ID3D11DeviceContext* context,
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers)
+				const std::vector<InputConstBuffer>* constBuffers, 
+				const std::vector<InputTexture>* textures,
+				const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(textures)
 	{

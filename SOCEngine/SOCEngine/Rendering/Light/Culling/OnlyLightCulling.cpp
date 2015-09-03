@@ -1,8 +1,12 @@
 #include "OnlyLightCulling.h"
+#include "EngineShaderFactory.hpp"
 
 using namespace Rendering::Light;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::Texture;
+using namespace Rendering::Factory;
+using namespace Rendering;
+using namespace Rendering::Shader;
 
 OnlyLightCulling::OnlyLightCulling() : LightCulling(), _lightIndexBuffer(nullptr)
 {
@@ -12,8 +16,36 @@ OnlyLightCulling::~OnlyLightCulling()
 {
 }
 
-void OnlyLightCulling::Initialize(const std::string& filePath, const std::string& mainFunc, bool useRenderBlendedMesh, const DepthBuffer* opaqueDepthBuffer, const DepthBuffer* blendedDepthBuffer)
+void OnlyLightCulling::Initialize(
+	const DepthBuffer* opaqueDepthBuffer,
+	const DepthBuffer* blendedDepthBuffer,
+	RenderType renderType,
+	const std::vector<ShaderMacro>* opationalMacros)
 {
+	std::string path = "";
+	{
+		EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
+		shaderFactory.FetchShaderFullPath(path, "OnlyLightCullingCS");
+
+		ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
+	}
+
+	std::vector<ShaderMacro> macros;
+	{
+		// LightCulling시, Depth Bound 계산을 atomic 비교 방식을 사용함
+		macros.push_back(ShaderMacro("USE_ATOMIC", ""));
+
+		// Parallel 방식
+		//macros.push_back(ShaderMacro("USE_PARALLEL", ""));
+
+		if(opationalMacros)
+			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
+	}
+
+	LightCulling::Initialize(path, "OnlyLightCullingCS",
+		opaqueDepthBuffer, blendedDepthBuffer,
+		renderType, &macros);
+
 	// Ouput Buffer Setting
 	{
 		_lightIndexBuffer = new CSRWBuffer;
@@ -31,10 +63,10 @@ void OnlyLightCulling::Initialize(const std::string& filePath, const std::string
 		std::vector<ComputeShader::Output> outputs;
 		outputs.push_back(outputBuffer);
 
-		SetOuputBuferToComputeShader(outputs);
+		SetOuputBuferToCS(outputs);
 	}
 
-	LightCulling::Initialize(filePath, mainFunc, useRenderBlendedMesh, opaqueDepthBuffer, blendedDepthBuffer);
+	SetInputsToCS();
 }
 
 void OnlyLightCulling::Destroy()

@@ -9,10 +9,12 @@
 #include <map>
 
 //dont use const reference
-#define SET_ACCESSOR_MATERIAL(name, type) inline void Set##name(const type& data)			{ SetVariable(#name, data);}
+#define SET_ACCESSOR_MATERIAL(name, type)\
+	inline void Set##name(const type& data)	{ SetVariable(#name, data);}
 
 //dont use const reference
-#define GET_ACCESSOR_MATERIAL(name, type) inline bool Get##name(type& out) const			{ return GetVariable(out, #name); }
+#define GET_ACCESSOR_MATERIAL(name, type)\
+	inline bool Get##name(type& out) const { return GetVariable(out, #name); }
 
 //dont use const reference
 #define GET_SET_ACCESSOR_MATERIAL(name, type)\
@@ -36,9 +38,9 @@ namespace Rendering
 		std::string												_name;
 		Math::Vector2											_tiling;
 
-		std::vector<Shader::BaseShader::BufferType>				_constBuffers;
-		std::vector<Shader::BaseShader::TextureType>			_textures;
-		std::vector<Shader::BaseShader::ShaderResourceType>		_srBuffers;
+		std::vector<Shader::ShaderForm::InputConstBuffer>				_constBuffers;
+		std::vector<Shader::ShaderForm::InputTexture>			_textures;
+		std::vector<Shader::ShaderForm::InputShaderResourceBuffer>		_srBuffers;
 
 		std::map<const std::string, Container>					_datas;
 
@@ -55,22 +57,27 @@ namespace Rendering
 		~Material(void);
 
 	public:
+		virtual void Initialize();
+		virtual void Destroy();
+		virtual void UpdateConstBuffer(const Device::DirectX* dx);
+
+	public:
 		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::BaseShader::Usage usage);
-		bool SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::BaseShader::Usage usage);
+		bool SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
+		bool SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
 
 	public:
 		const Rendering::Texture::Texture2D* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::BaseShader::Usage usage);
-		bool SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::BaseShader::Usage usage);
+		bool SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
+		bool SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
 
 	public:
 		const Rendering::Buffer::ShaderResourceBuffer* FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
-		bool SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::BaseShader::Usage usage);
-		bool SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::BaseShader::Usage usage);
+		bool SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
+		bool SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
 
 
 	public:
@@ -124,8 +131,8 @@ namespace Rendering
 		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
 
 	public:
-		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);
-		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::BufferType>&, _constBuffers);
-		GET_ACCESSOR(ShaderResourceBuffers, const std::vector<Shader::BaseShader::ShaderResourceType>&, _srBuffers);
+		GET_ACCESSOR(Textures, const std::vector<Shader::ShaderForm::InputTexture>&, _textures);
+		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::ShaderForm::InputConstBuffer>&, _constBuffers);
+		GET_ACCESSOR(ShaderResourceBuffers, const std::vector<Shader::ShaderForm::InputShaderResourceBuffer>&, _srBuffers);
 	};
 }

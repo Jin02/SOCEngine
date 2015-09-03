@@ -45,7 +45,7 @@ void CSRWBuffer::Initialize(DXGI_FORMAT format, uint stride, uint num)
 		ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. does not create srv");
 	}
 
-	CSOutput::Initialize(format, num, _buffer);	
+	CSOutput::Initialize(format, num, _buffer, CSOutput::Type::Buffer);	
 }
 
 void CSRWBuffer::Destroy()

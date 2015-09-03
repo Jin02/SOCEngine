@@ -5,8 +5,15 @@
 #include "LightCulling.h"
 
 #include "Director.h"
+#include "ResourceManager.h"
 
 using namespace Rendering;
+using namespace Core;
+using namespace Rendering::Camera;
+using namespace Resource;
+using namespace Device;
+using namespace Importer;
+using namespace Math;
 
 TestScene::TestScene(void)
 {
@@ -19,8 +26,16 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	Core::Object* camObj = new Core::Object("Default");
-	Camera::Camera* cam = camObj->AddComponent<Camera::Camera>();
+	Object* camObj = new Object("Default");
+	MainCamera* cam = camObj->AddComponent<MainCamera>();
+	camObj->GetTransform()->UpdateDirection(Vector3(0, 0, 1));
+
+	MeshImporter importer;
+	importer.Initialize();
+	Object* sphere = importer.Load("./Resource/sphere.obj", "./Resource/");
+	sphere->GetTransform()->UpdatePosition(Vector3(0, 0, 10));
+	
+	AddObject(sphere);
 }
 
 void TestScene::OnRenderPreview()

@@ -5,14 +5,7 @@
 
 #define PI								3.141592654f
 #define FLOAT_MAX						3.402823466e+38F
-
-#define TILE_RES 						16
-#define TILE_RES_HALF					(TILE_RES / 2)
-#define SHADING_THREAD_COUNT			(TILE_RES * TILE_RES)
-#define LIGHT_CULLING_THREAD_COUNT 		(TILE_RES_HALF * TILE_RES_HALF)
-
-#define LIGHT_MAX_COUNT_IN_TILE 		544
-
+#define DEG_2_RAD(X)					PI * X / 180.0f
 
 Buffer<float4> g_inputPointLightTransformBuffer						: register( t0 ); // center, radius
 Buffer<float4> g_inputPointLightColorBuffer							: register( t1 ); // rgb, intensity

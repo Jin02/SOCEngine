@@ -20,10 +20,8 @@ namespace Resource
 	private:
 		Rendering::Manager::ShaderManager*		_shaderMgr;
 		Rendering::Manager::TextureManager*		_textureMgr;
-		Rendering::Manager::MaterialManager*	_materialMgr;
 		Rendering::Manager::BufferManager*		_bufferManager;
 		OriginObjectManager*					_originObjMgr;
-		UI::Manager::UIManager*					_uiManager;
 
 	private:
 		ResourceManager();
@@ -36,7 +34,6 @@ namespace Resource
 	public:
 		GET_ACCESSOR(TextureManager, Rendering::Manager::TextureManager*, _textureMgr);
 		GET_ACCESSOR(ShaderManager, Rendering::Manager::ShaderManager*, _shaderMgr);
-		GET_ACCESSOR(MaterialManager, Rendering::Manager::MaterialManager*, _materialMgr);
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
 		GET_ACCESSOR(OriginObjectManager, OriginObjectManager*, _originObjMgr);
 	};

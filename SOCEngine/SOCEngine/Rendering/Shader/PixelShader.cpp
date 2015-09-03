@@ -3,7 +3,7 @@
 
 using namespace Rendering::Shader;
 
-PixelShader::PixelShader(ID3DBlob* blob) : BaseShader(blob), _shader(nullptr)
+PixelShader::PixelShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr)
 {
 	_type = Type::Pixel;
 }
@@ -36,9 +36,9 @@ void PixelShader::SetShaderToContext(ID3D11DeviceContext* context)
 
 void PixelShader::UpdateResources(
 	ID3D11DeviceContext* context,
-	const std::vector<BufferType>* constBuffers,
-	const std::vector<TextureType>* textures,
-	const std::vector<ShaderResourceType>* srBuffers)
+	const std::vector<InputConstBuffer>* constBuffers,
+	const std::vector<InputTexture>* textures,
+	const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(constBuffers)
 	{
@@ -73,9 +73,9 @@ void PixelShader::UpdateResources(
 
 void PixelShader::Clear(
 	ID3D11DeviceContext* context,
-	const std::vector<BufferType>* constBuffers, 
-	const std::vector<TextureType>* textures,
-	const std::vector<ShaderResourceType>* srBuffers)
+	const std::vector<InputConstBuffer>* constBuffers, 
+	const std::vector<InputTexture>* textures,
+	const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(textures)
 	{

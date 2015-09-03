@@ -22,7 +22,7 @@ void CSRWTexture::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, u
 	_renderTexture->Initialize(size, format, bindFlag);
 
 	// create uav
-	CSOutput::Initialize(format, size.w * size.h, _renderTexture->GetTexture());
+	CSOutput::Initialize(format, size.w * size.h, _renderTexture->GetTexture(), CSOutput::Type::Texture);
 }
 
 void CSRWTexture::Destroy()

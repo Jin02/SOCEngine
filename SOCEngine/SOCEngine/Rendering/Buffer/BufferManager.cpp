@@ -25,37 +25,37 @@ void BufferManager::Add(const std::string& file, const std::string& key, IndexBu
 	ASSERT_COND_MSG(_indexBuffers.Add(file, key, bufferData), "Error, Duplicated Key");
 }
 
-void BufferManager::Add(const std::string& file, const std::string& key, const LPVoidType& bufferData)
+void BufferManager::Add(const std::string& file, const std::string& key, const void* bufferData)
 {
 	_originVertexBufferDatas.Add(file, key, bufferData);
 }
 
 bool BufferManager::Find(VertexBuffer** outBuffer, const std::string& file, const std::string& key)
 {
-	VertexBuffer* buffer = *_vertexBuffers.Find(file, key);
+	VertexBuffer** buffer = _vertexBuffers.Find(file, key);
 
-	if(buffer != nullptr)
-		(*outBuffer) = buffer;
+	if(outBuffer && buffer != nullptr)
+		(*outBuffer) = (*buffer);
 
 	return buffer != nullptr;
 }
 
 bool BufferManager::Find(IndexBuffer** outBuffer, const std::string& file, const std::string& key)
 {
-	IndexBuffer* buffer = *_indexBuffers.Find(file, key);
+	IndexBuffer** buffer = _indexBuffers.Find(file, key);
 
-	if(buffer != nullptr)
-		(*outBuffer) = buffer;
+	if(outBuffer && buffer != nullptr)
+		(*outBuffer) = (*buffer);
 
 	return buffer != nullptr;
 }
 
-bool BufferManager::Find(LPVoidType* outBuffer, const std::string& file, const std::string& key)
+bool BufferManager::Find(const void** outBuffer, const std::string& file, const std::string& key)
 {
-	LPVoidType* buffer = _originVertexBufferDatas.Find(file, key);
+	const void* buffer = _originVertexBufferDatas.Find(file, key);
 
-	if(buffer != nullptr)
-		(*outBuffer) = (*buffer);
+	if(outBuffer && buffer != nullptr)
+		(*outBuffer) = buffer;
 
 	return buffer != nullptr;
 }
@@ -80,12 +80,9 @@ void BufferManager::DeleteIndexBuffer(const std::string& file, const std::string
 
 void BufferManager::DeleteOriginVBData(const std::string& file, const std::string& key)
 {
-	LPVoidType* ovb =  _originVertexBufferDatas.Find(file, key);
+	const void* ovb =  _originVertexBufferDatas.Find(file, key);
 	if(ovb)
-	{
-		const void* buffer = ovb->GetBuffer();
-		SAFE_DELETE(buffer);
-	}
+		SAFE_DELETE(ovb);
 
 	_originVertexBufferDatas.Delete(file, key);
 }
@@ -116,12 +113,12 @@ void BufferManager::DeleteIndexBuffer(const std::string& file)
 
 void BufferManager::DeleteOriginVBData(const std::string& file)
 {
-	std::map<std::string, LPVoidType> ovbs;
+	std::map<std::string, const void*> ovbs;
 	if( _originVertexBufferDatas.Find(ovbs, file) )
 	{
 		for(auto iter = ovbs.begin(); iter != ovbs.end(); ++iter)
 		{
-			const void* buffer = iter->second.GetBuffer();
+			const void* buffer = iter->second;
 			SAFE_DELETE(buffer);
 		}
 
@@ -167,7 +164,7 @@ void BufferManager::DeleteAllOriginVBData()
 		auto inMap = fileLoopIter->second;
 		for(auto iter = inMap.begin(); iter != inMap.end(); ++iter)
 		{
-			const void* buffer = iter->second.GetBuffer();
+			const void* buffer = iter->second;
 			SAFE_DELETE(buffer);
 		}
 	}

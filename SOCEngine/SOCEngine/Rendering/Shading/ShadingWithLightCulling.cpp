@@ -9,7 +9,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
-using namespace Rendering::DeferredShading;
+using namespace Rendering::TBDR;
 
 ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
@@ -34,10 +34,12 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
-		pathFind.FetchShaderFullPath(filePath, "TileBasedDeferredShading");
+		pathFind.FetchShaderFullPath(filePath, "TBDR");
 
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
+
+	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, RenderType::TBDR);
 
 	// Input buffer
 	{
@@ -114,7 +116,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		}
 
 		_offScreen = new CSRWTexture;
-		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
 
 		ComputeShader::Output output;
 		{
@@ -125,10 +127,10 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		std::vector<ComputeShader::Output> outputs;
 		outputs.push_back(output);
 
-		SetOuputBuferToComputeShader(outputs);
+		SetOuputBuferToCS(outputs);
 	}
 
-	LightCulling::Initialize(filePath, "CS", false, opaqueDepthBuffer, nullptr);
+	SetInputsToCS();
 }
 
 void ShadingWithLightCulling::Destory()

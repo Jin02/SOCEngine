@@ -6,6 +6,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Device;
 using namespace Math;
+using namespace Rendering::Manager;
 
 UICamera::UICamera() : CameraForm(), _depthBuffer(nullptr)
 {
@@ -46,10 +47,9 @@ void UICamera::Update(float delta)
 		iter->Update(delta);
 }
 
-void UICamera::Render()
+void UICamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
 {
 	const Device::Director* director	= Device::Director::GetInstance();
-	const Device::DirectX* dx			= director->GetDirectX();
 	Core::Scene* scene					= director->GetCurrentScene();
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 	ID3D11DeviceContext* context		= dx->GetContext();

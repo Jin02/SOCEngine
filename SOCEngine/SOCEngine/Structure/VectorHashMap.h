@@ -31,8 +31,8 @@ namespace Structure
 			_vector.push_back(object);
 
 			std::pair<Object*, uint> p;
-			p.first = &object;
 			p.second = _vector.size() - 1;
+			p.first = &_vector[p.second];
 
 			_map.insert(std::make_pair(key, p));
 		}

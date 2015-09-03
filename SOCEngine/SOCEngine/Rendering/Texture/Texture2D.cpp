@@ -3,8 +3,8 @@
 
 using namespace Rendering::Texture;
 
-Texture2D::Texture2D(ID3D11ShaderResourceView* srv, bool hasAlpha) 
-	: _srv(srv), _hasAlpha(false), _texture(nullptr)
+Texture2D::Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha) 
+	: _srv(srv), _hasAlpha(false), _texture(tex)
 {
 }
 
@@ -51,8 +51,10 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 	{
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		dx->GetSwapChain()->GetDesc(&swapChainDesc);
-		textureDesc.SampleDesc.Count	= swapChainDesc.SampleDesc.Count;
-		textureDesc.SampleDesc.Quality	= swapChainDesc.SampleDesc.Quality;
+
+		int count = (bindFlags & D3D11_BIND_UNORDERED_ACCESS) ? 1 : swapChainDesc.SampleDesc.Count;
+		textureDesc.SampleDesc.Count	= count;
+		textureDesc.SampleDesc.Quality	= 0;//swapChainDesc.SampleDesc.Quality;
 	}
 
 	//Initialize texture
