@@ -143,11 +143,11 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 	const RenderManager::MeshList transparentList = renderMgr->GetTransparentMeshes();
 	if( transparentList.updateCounter > _transparentMeshQueue.updateCounter )
 	{
-		const auto& meshes = transparentList.meshes.GetVector();
+		const auto& renderMgrMeshes = transparentList.meshes.GetVector();
+		auto& thisCamMeshes = _transparentMeshQueue.meshes;
 
-		_transparentMeshQueue.meshes.clear();
-		for(auto iter = meshes.begin(); iter != meshes.end(); ++iter)
-			_transparentMeshQueue.meshes.push_back((*iter));
+		thisCamMeshes.clear();
+		thisCamMeshes.insert( thisCamMeshes.end(), renderMgrMeshes.begin(), renderMgrMeshes.end());
 
 		_transparentMeshQueue.updateCounter = transparentList.updateCounter;
 	}
