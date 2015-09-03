@@ -48,7 +48,7 @@ bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const 
 	}
 	else
 	{
-		_textures.push_back(BaseShader::TextureType(shaderSlotIndex, texture, usage));
+		_textures.push_back(BaseShader::InputTexture(shaderSlotIndex, texture, usage));
 	}
 
 	return hasTexture != nullptr;
@@ -75,7 +75,7 @@ bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer
 	}
 	else
 	{
-		_constBuffers.push_back(BaseShader::BufferType(shaderSlotIdx, cb, usage));
+		_constBuffers.push_back(BaseShader::InputConstBuffer(shaderSlotIdx, cb, usage));
 	}
 
 	return has != nullptr;
@@ -132,7 +132,7 @@ bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlot
 	}
 	else
 	{
-		_srBuffers.push_back(BaseShader::ShaderResourceType(shaderSlotIndex, srBuffer, usage));
+		_srBuffers.push_back(BaseShader::InputShaderResourceBuffer(shaderSlotIndex, srBuffer, usage));
 	}
 
 	return has != nullptr;

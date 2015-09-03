@@ -74,9 +74,9 @@ void VertexShader::SetInputLayoutToContext(ID3D11DeviceContext* context)
 
 void VertexShader::UpdateResources(
 				ID3D11DeviceContext* context,
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers)
+				const std::vector<InputConstBuffer>* constBuffers, 
+				const std::vector<InputTexture>* textures,
+				const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(constBuffers)
 	{
@@ -111,9 +111,9 @@ void VertexShader::UpdateResources(
 
 void VertexShader::Clear(
 				ID3D11DeviceContext* context,
-				const std::vector<BufferType>* constBuffers, 
-				const std::vector<TextureType>* textures,
-				const std::vector<ShaderResourceType>* srBuffers)
+				const std::vector<InputConstBuffer>* constBuffers, 
+				const std::vector<InputTexture>* textures,
+				const std::vector<InputShaderResourceBuffer>* srBuffers)
 {
 	if(textures)
 	{

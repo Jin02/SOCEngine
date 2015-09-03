@@ -25,14 +25,14 @@ void BaseShader::Usage::SetUsage(BaseShader::Usage usage)
 }
 
 
-BaseShader::BufferType::BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS)
+BaseShader::InputConstBuffer::InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
 	this->semanticIndex = semanticIndex;
 	this->buffer = buffer;
 }
 
-BaseShader::BufferType::BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, Usage usage)
+BaseShader::InputConstBuffer::InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage)
 	: Usage(usage)
 {
 	this->semanticIndex = semanticIndex;
@@ -41,14 +41,14 @@ BaseShader::BufferType::BufferType(uint semanticIndex, const Rendering::Buffer::
 
 
 
-BaseShader::TextureType::TextureType(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS)
+BaseShader::InputTexture::InputTexture(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
 	this->semanticIndex = semanticIndex;
 	this->texture = texture;
 }
 
-BaseShader::TextureType::TextureType(uint semanticIndex, const Texture::Texture2D* texture, Usage usage)
+BaseShader::InputTexture::InputTexture(uint semanticIndex, const Texture::Texture2D* texture, Usage usage)
 	: Usage(usage)
 {
 	this->semanticIndex = semanticIndex;
@@ -57,14 +57,14 @@ BaseShader::TextureType::TextureType(uint semanticIndex, const Texture::Texture2
 
 
 
-BaseShader::ShaderResourceType::ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS)
+BaseShader::InputShaderResourceBuffer::InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
 	this->semanticIndex = semanticIndex;
 	this->srBuffer = srBuffer;
 }
 
-BaseShader::ShaderResourceType::ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage)
+BaseShader::InputShaderResourceBuffer::InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage)
 	: Usage(usage)
 {
 	this->semanticIndex = semanticIndex;

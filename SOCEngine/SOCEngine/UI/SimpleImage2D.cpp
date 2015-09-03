@@ -136,16 +136,16 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 
 		ps->SetShaderToContext(context);
 
-		std::vector<Shader::BaseShader::BufferType> constBuffers;
+		std::vector<Shader::BaseShader::InputConstBuffer> constBuffers;
 		{
-			Buffer::BaseBuffer* buffer = buffer = dynamic_cast<Buffer::BaseBuffer*>(_transformCB);
-			constBuffers.push_back(Shader::BaseShader::BufferType(0, buffer, true, false, false, false));
+			auto buffer = _transformCB;
+			constBuffers.push_back(Shader::BaseShader::InputConstBuffer(0, buffer, true, false, false, false));
 		}
-		std::vector<Shader::BaseShader::TextureType> textures;
+		std::vector<Shader::BaseShader::InputTexture> textures;
 		{
 			Texture::Texture2D* tex = nullptr;
 			_material->GetVariable<Texture::Texture2D*>(tex, "main");
-			textures.push_back(Shader::BaseShader::TextureType(0, tex, false, false, false, true));
+			textures.push_back(Shader::BaseShader::InputTexture(0, tex, false, false, false, true));
 		}
 
 		vs->UpdateResources(context, &constBuffers, nullptr, nullptr);

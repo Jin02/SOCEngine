@@ -47,36 +47,36 @@ namespace Rendering
 				void SetUsage(Usage usage);
 			};
 
-			struct BufferType : public Usage
+			struct InputConstBuffer : public Usage
 			{
 				uint semanticIndex;
-				const Rendering::Buffer::BaseBuffer* buffer;
+				const Rendering::Buffer::ConstBuffer* buffer;
 
-				BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
-				BufferType(uint semanticIndex, const Rendering::Buffer::BaseBuffer* buffer, Usage usage);
+				InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage);
 
-				~BufferType(){}
+				~InputConstBuffer(){}
 			};
 
-			struct TextureType : public Usage
+			struct InputTexture : public Usage
 			{
 				uint semanticIndex;
 				const Texture::Texture2D* texture;
 
-				TextureType(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS);
-				TextureType(uint semanticIndex, const Texture::Texture2D* texture, Usage usage);
+				InputTexture(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputTexture(uint semanticIndex, const Texture::Texture2D* texture, Usage usage);
 
-				~TextureType(){}
+				~InputTexture(){}
 			};
 
-			struct ShaderResourceType : public Usage
+			struct InputShaderResourceBuffer : public Usage
 			{
 				uint semanticIndex;
 				const Buffer::ShaderResourceBuffer* srBuffer;
 
-				ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
-				ShaderResourceType(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
-				~ShaderResourceType(){}
+				InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
+				~InputShaderResourceBuffer(){}
 			};
 
 		public:

@@ -38,9 +38,9 @@ namespace Rendering
 		std::string												_name;
 		Math::Vector2											_tiling;
 
-		std::vector<Shader::BaseShader::BufferType>				_constBuffers;
-		std::vector<Shader::BaseShader::TextureType>			_textures;
-		std::vector<Shader::BaseShader::ShaderResourceType>		_srBuffers;
+		std::vector<Shader::BaseShader::InputConstBuffer>				_constBuffers;
+		std::vector<Shader::BaseShader::InputTexture>			_textures;
+		std::vector<Shader::BaseShader::InputShaderResourceBuffer>		_srBuffers;
 
 		std::map<const std::string, Container>					_datas;
 
@@ -131,8 +131,8 @@ namespace Rendering
 		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
 
 	public:
-		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::TextureType>&, _textures);
-		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::BufferType>&, _constBuffers);
-		GET_ACCESSOR(ShaderResourceBuffers, const std::vector<Shader::BaseShader::ShaderResourceType>&, _srBuffers);
+		GET_ACCESSOR(Textures, const std::vector<Shader::BaseShader::InputTexture>&, _textures);
+		GET_ACCESSOR(ConstBuffers, const std::vector<Shader::BaseShader::InputConstBuffer>&, _constBuffers);
+		GET_ACCESSOR(ShaderResourceBuffers, const std::vector<Shader::BaseShader::InputShaderResourceBuffer>&, _srBuffers);
 	};
 }

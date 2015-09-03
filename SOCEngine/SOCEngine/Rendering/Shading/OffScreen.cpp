@@ -19,11 +19,11 @@ void OffScreen::Initialize(const CSRWTexture* offScreen)
 {
 	FullScreen::Initialize("DeferredMainOffScreen", "PS");
 
-	std::vector<BaseShader::TextureType> inputTextures;
+	std::vector<BaseShader::InputTexture> inputTextures;
 	{
 		auto texture = offScreen->GetRenderTexture();
 
-		BaseShader::TextureType input(0, texture, false, false, false, true);
+		BaseShader::InputTexture input(0, texture, false, false, false, true);
 		inputTextures.push_back(input);
 	}
 
