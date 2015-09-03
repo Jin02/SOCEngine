@@ -30,8 +30,9 @@ ObjImporter::~ObjImporter()
 Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
 	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+	auto scene = Device::Director::GetInstance()->GetCurrentScene();
 
-	MaterialManager* materialMgr = resourceMgr->GetMaterialManager();
+	MaterialManager* materialMgr = scene->GetMaterialManager();
 	TextureManager* textureMgr = resourceMgr->GetTextureManager();
 
 	const std::string materialName = tinyMaterial.name;
@@ -98,8 +99,9 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 void ObjImporter::LoadMaterials(const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType)
 {
 	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+	auto scene = Device::Director::GetInstance()->GetCurrentScene();
 
-	MaterialManager* materialMgr = resourceMgr->GetMaterialManager();
+	MaterialManager* materialMgr = scene->GetMaterialManager();
 	TextureManager* textureMgr = resourceMgr->GetTextureManager();
 
 	for(auto iter = tinyMaterials.begin(); iter != tinyMaterials.end(); ++iter)
@@ -293,7 +295,8 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	resourceManager->GetBufferManager()->Add(fileName, shapeName, bufferHead);
 
-	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
+	auto scene = Device::Director::GetInstance()->GetCurrentScene();
+	MaterialManager* materialMgr = scene->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
@@ -440,7 +443,9 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	Mesh::Mesh* mesh = object->AddComponent<Mesh::Mesh>();
 	resourceManager->GetBufferManager()->Add(fileName, shapeName, bufferHead);
 
-	MaterialManager* materialMgr = resourceManager->GetMaterialManager();
+	auto scene = Device::Director::GetInstance()->GetCurrentScene();
+
+	MaterialManager* materialMgr = scene->GetMaterialManager();
 	Material* material = materialMgr->Find(fileName, tinyMtl.name);
 	ASSERT_COND_MSG(material, "can not found material");
 
