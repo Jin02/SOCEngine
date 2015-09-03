@@ -55,6 +55,10 @@ namespace Rendering
 		~Material(void);
 
 	public:
+		virtual void Initialize();
+		virtual void Destroy();
+
+	public:
 		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
 
 		bool SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::BaseShader::Usage usage);

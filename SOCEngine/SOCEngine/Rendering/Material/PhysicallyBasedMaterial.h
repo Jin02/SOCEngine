@@ -39,8 +39,10 @@ namespace Rendering
 		PhysicallyBasedMaterial(const std::string& name);
 		~PhysicallyBasedMaterial(void);
 
-	private:
-		void UpdateConstBuffer(Device::DirectX* dx);
+	public:
+		virtual void Initialize();
+		virtual void Destroy();
+		virtual void UpdateConstBuffer(Device::DirectX* dx);
 
 	public:
 		void UpdateMainColor(const Color& color);

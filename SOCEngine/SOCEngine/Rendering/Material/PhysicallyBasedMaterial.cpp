@@ -14,17 +14,24 @@ PhysicallyBasedMaterial::PhysicallyBasedMaterial(const std::string& name)
 
 PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
 {
+	Destroy();
+}
+
+void PhysicallyBasedMaterial::Initialize()
+{
+	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
+
+	_gbufferCB = new ConstBuffer;
+	_gbufferCB->Initialize(sizeof(GBufferParam));
+}
+
+void PhysicallyBasedMaterial::Destroy()
+{
 	SAFE_DELETE(_gbufferCB);
 }
 
 void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX* dx)
 {
-	if(_gbufferCB == nullptr)
-	{
-		_gbufferCB = new ConstBuffer;
-		_gbufferCB->Initialize(sizeof(GBufferParam));
-	}
-
 	if( _constBufferUpdateCounter < GetVariableUpdateCounter() )
 	{
 		GBufferParam param;

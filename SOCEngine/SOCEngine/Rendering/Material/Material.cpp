@@ -5,6 +5,7 @@
 using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
+using namespace Rendering::Texture;
 
 Material::Material(const std::string& name, Type type)	
 	: _name(name), _hasAlpha(false), _changedAlpha(true),
@@ -17,7 +18,11 @@ Material::~Material(void)
 
 }
 
-const Rendering::Texture::Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+void Material::Initialize(){}
+void Material::Destroy(){}
+void Material::UpdateConstBuffer(Device::DirectX* dx){}
+
+const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
 {	
 	for(unsigned int i=0; i<_textures.size(); ++i)
 	{		
