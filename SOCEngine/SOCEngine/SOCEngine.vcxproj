@@ -76,7 +76,6 @@
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
-    <ClInclude Include="Rendering\Camera\CameraConstBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MainRenderer.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
@@ -112,6 +111,7 @@
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
     <ClInclude Include="Rendering\Shading\OffScreen.h" />
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
+    <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />

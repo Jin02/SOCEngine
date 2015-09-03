@@ -2,6 +2,7 @@
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
+#include "PhysicallyBasedMaterial.h"
 
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
@@ -12,7 +13,7 @@ using namespace Rendering::Factory;
 using namespace Rendering::Light;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
-using namespace Rendering::DeferredShading;
+using namespace Rendering::TBDR;
 using namespace Rendering;
 
 MainRenderer::MainRenderer() : CameraForm(),
@@ -48,7 +49,7 @@ void MainRenderer::OnInitialize()
 
 	EnableRenderTransparentMesh(true);
 
-	_deferredShadingWithLightCulling = new DeferredShading::ShadingWithLightCulling;
+	_deferredShadingWithLightCulling = new TBDR::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
 
 	_tbrParamConstBuffer = new ConstBuffer;
@@ -74,7 +75,7 @@ void MainRenderer::OnDestroy()
 	CameraForm::OnDestroy();
 }
 
-void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* renderManager)
+void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -159,13 +160,15 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 				{
 					// Setting Camera CosntBuffer
 					{
-						BaseShader::BufferType buf = BaseShader::BufferType(0, _camConstBuffer, true, false, false, true);
+						uint semanticIdx = (uint)InputConstBufferShaderIndex::Camera;
+						BaseShader::BufferType buf = BaseShader::BufferType(semanticIdx, _camConstBuffer, true, false, false, true);
 						constBuffers.push_back(buf);
 					}
 
 					// Setting Transform ConstBuffer
 					{
-						BaseShader::BufferType buf = BaseShader::BufferType(1, mesh->GetTransformConstBuffer(), true, false, false, false);
+						uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
+						BaseShader::BufferType buf = BaseShader::BufferType(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
 						constBuffers.push_back(buf);
 					}
 				}
@@ -210,20 +213,24 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 
 		//Alpha Test Mesh
 		{
-			bool useMSAA = dx->GetMSAADesc().Count > 1;
-
-			if(useMSAA) //on alpha blending
-				context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
-
-			context->RSSetState( dx->GetRasterizerStateDisableCulling() );
-		
 			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetAlphaTestMeshes().meshes.GetVector();
-			RenderMesh(meshes, RenderType::AlphaMesh);
 
-			context->RSSetState(nullptr);
+			if(meshes.size() > 0)
+			{
+				bool useMSAA = dx->GetMSAADesc().Count > 1;
 
-			if(useMSAA) //off alpha blending
-				context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+				if(useMSAA) //on alpha blending
+					context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
+
+				context->RSSetState( dx->GetRasterizerStateDisableCulling() );
+		
+				RenderMesh(meshes, RenderType::AlphaMesh);
+
+				context->RSSetState(nullptr);
+
+				if(useMSAA) //off alpha blending
+					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+			}
 		}
 
 		// Transparent Mesh
@@ -238,7 +245,6 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 		}
 	}
 
-	LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 	// Light Culling and Deferred DeferredShading
 	{
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
@@ -262,32 +268,32 @@ void MainRenderer::Render(const Device::DirectX* dx, const RenderManager* render
 
 		if( memcmp(&_prevParamData, &changeableParam, sizeof(LightCulling::TBRChangeableParam)) != 0 )
 		{
-			LightCulling::TBRParam param;
+			LightCulling::TBRParam tbrParam;
 			//viewMat, lightNum
-			memcpy(&param, &changeableParam, sizeof(LightCulling::TBRChangeableParam));
+			memcpy(&tbrParam, &changeableParam, sizeof(LightCulling::TBRChangeableParam));
 
-			const Matrix& viewMat = param.viewMat;
-			const Matrix& projMat = param.invProjMat; //酒流 inverse 贸府 救窃
+			const Matrix& viewMat = tbrParam.viewMat;
+			const Matrix& projMat = tbrParam.invProjMat; //酒流 inverse 贸府 救窃
 
 			Matrix viewportMat;
 			dx->GetViewportMatrix(viewportMat);
 
-			param.invViewProjViewport = viewMat * projMat * viewportMat;
-			Matrix::Inverse(param.invViewProjViewport, param.invViewProjViewport); //invViewProjViewport
-			Matrix::Inverse(param.invProjMat, param.invProjMat); //invProj
+			tbrParam.invViewProjViewport = viewMat * projMat * viewportMat;
+			Matrix::Inverse(tbrParam.invViewProjViewport, tbrParam.invViewProjViewport); //invViewProjViewport
+			Matrix::Inverse(tbrParam.invProjMat, tbrParam.invProjMat); //invProj
 
-			param.screenSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
-			param.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
+			tbrParam.screenSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
+			tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
-			_tbrParamConstBuffer->UpdateSubResource(context, &param);
+			_tbrParamConstBuffer->UpdateSubResource(context, &tbrParam);
 
-			_prevParamData = param;
+			_prevParamData = changeableParam;
 		}
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camConstBuffer);
 
 		if(_useTransparent)
-			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camConstBuffer);
 	}
 
 	// Main RT

@@ -18,19 +18,19 @@ namespace Rendering
 		private:
 			bool _useTransparent;
 			Light::LightCulling::TBRChangeableParam		_prevParamData;
-			Buffer::ConstBuffer* _tbrParamConstBuffer;
+			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
 			Texture::RenderTexture*						_albedo_metallic;
 			Texture::RenderTexture*						_normal_roughness;
 			Texture::RenderTexture*						_specular_fresnel0;
 
-			DeferredShading::ShadingWithLightCulling*	_deferredShadingWithLightCulling;
+			TBDR::ShadingWithLightCulling*				_deferredShadingWithLightCulling;
 			Texture::DepthBuffer*						_opaqueDepthBuffer;
 
 			Light::OnlyLightCulling*					_blendedMeshLightCulling;
 			Texture::DepthBuffer*						_blendedDepthBuffer;
-			DeferredShading::OffScreen*					_offScreen;
+			TBDR::OffScreen*							_offScreen;
 
 
 		public:
@@ -42,7 +42,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager);
+			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
