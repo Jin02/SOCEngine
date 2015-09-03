@@ -6,6 +6,15 @@ using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 
+PhysicallyBasedMaterial::GBufferParam::GBufferParam()
+{
+	mainColor.r = mainColor.g = mainColor.b = 1.0f;
+	metallic = roughness = fresnel0 = 0.0f;
+	uvTiling.x = uvTiling.y = 1.0f;
+}
+
+PhysicallyBasedMaterial::GBufferParam::~GBufferParam(){}
+
 PhysicallyBasedMaterial::PhysicallyBasedMaterial(const std::string& name)
 	: Material(name, Type::PhysicallyBasedModel), 
 	_gbufferCB(nullptr), _constBufferUpdateCounter(0)
@@ -44,7 +53,8 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		_gbufferCB->UpdateSubResource(dx->GetContext(), &param);
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
-		SetConstBufferUseShaderSlotIndex(GBufferShaderSlotIndex, _gbufferCB, BaseShader::Usage(false, false, false, true));
+		uint idx = (uint)InputConstBufferShaderIndex::Material;
+		SetConstBufferUseShaderSlotIndex(idx, _gbufferCB, BaseShader::Usage(false, false, false, true));
 	}
 }
 
@@ -64,24 +74,24 @@ void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
 
 void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)PSTextureSlot::Diffuse, tex, BaseShader::Usage(false, false, false, true));
+	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Diffuse, tex, BaseShader::Usage(false, false, false, true));
 	_hasAlpha = tex->GetHasAlpha();
 	_changedAlpha = true;
 }
 
 void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)PSTextureSlot::Normal, tex, BaseShader::Usage(false, false, false, true));
+	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Normal, tex, BaseShader::Usage(false, false, false, true));
 }
 
 void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)PSTextureSlot::Specular, tex, BaseShader::Usage(false, false, false, true));
+	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Specular, tex, BaseShader::Usage(false, false, false, true));
 }
 
 void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)PSTextureSlot::Opacity, tex, BaseShader::Usage(false, false, false, true));
+	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Opacity, tex, BaseShader::Usage(false, false, false, true));
 
 	_hasAlpha = tex != nullptr;
 	_changedAlpha = true;
