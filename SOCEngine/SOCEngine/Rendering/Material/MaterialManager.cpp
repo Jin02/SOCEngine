@@ -31,30 +31,31 @@ void MaterialManager::Delete(const std::string& file, const std::string& name)
 
 void MaterialManager::DeleteAll()
 {
-	for(auto iter = _hash.begin(); iter != _hash.end(); ++iter)
-		SAFE_DELETE(iter->second);
+	auto materials = _materials.GetVector();
+	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
+		SAFE_DELETE(*iter);
 
-	_hash.clear();
+	_materials.DeleteAll();
 }
 
 void MaterialManager::Add(const std::string& key, Material* material)
 {
 	ASSERT_COND_MSG(Find(key) == nullptr, "Error, Duplicated key");
-	_hash.insert(std::make_pair(key, material));
+	_materials.Add(key, material);
 }
 
 Material* MaterialManager::Find(const std::string& key)
 {
-	auto findIter = _hash.find(key);
-	return findIter != _hash.end() ? findIter->second : nullptr;;
+	Material** found = _materials.Find(key);
+	return found ? (*found) : nullptr;
 }
 
 void MaterialManager::Delete(const std::string& key)
 {
-	auto findIter = _hash.find(key);
-	if(findIter != _hash.end())
+	Material** found = _materials.Find(key);
+	if(found)
 	{
-		SAFE_DELETE(findIter->second);
-		_hash.erase(findIter);
+		SAFE_DELETE(*found);
+		_materials.Delete(key);
 	}
 }
