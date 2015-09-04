@@ -56,7 +56,7 @@ void MainCamera::OnInitialize()
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
 
 	_offScreen = new OffScreen;
-	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
+	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen()->GetRenderTexture());
 
 	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
 	CameraForm* thisCam = this;
@@ -71,6 +71,9 @@ void MainCamera::OnDestroy()
 	SAFE_DELETE(_blendedDepthBuffer);
 
 	SAFE_DELETE(_tbrParamConstBuffer);
+	SAFE_DELETE(_deferredShadingWithLightCulling);
+	SAFE_DELETE(_offScreen);
+	SAFE_DELETE(_blendedMeshLightCulling);
 
 	CameraForm::OnDestroy();
 }
@@ -298,7 +301,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 	// Main RT
 	{
-		_offScreen->Render(_renderTarget);
+		_offScreen->Render(_renderTarget, dx->GetSamplerStateLinear());
 	}
 
 	// Transparency
