@@ -36,16 +36,25 @@ void MainCamera::OnInitialize()
 	Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
 	_albedo_metallic = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _albedo_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create albedo_opacity render texture" );
+	ASSERT_COND_MSG( 
+		_albedo_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		"GBuffer Error : cant create albedo_opacity render texture" 
+		);
 
 	_specular_fresnel0 = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _specular_fresnel0->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _specular_fresnel0 render texture" );
+	ASSERT_COND_MSG( 
+		_specular_fresnel0->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		"GBuffer Error : cant create _specular_fresnel0 render texture"
+		);
 
 	_normal_roughness = new Texture::RenderTexture;
-	ASSERT_COND_MSG( _normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM), "GBuffer Error : cant create _normal_roughness render texture" );
+	ASSERT_COND_MSG( 
+		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		"GBuffer Error : cant create _normal_roughness render texture" 
+		);
 
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
-	_opaqueDepthBuffer->Initialize(backBufferSize);
+	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
 	EnableRenderTransparentMesh(true);
 
@@ -354,7 +363,7 @@ void MainCamera::EnableRenderTransparentMesh(bool enable)
 		ASSERT_COND_MSG(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
 		{
 			_blendedDepthBuffer =  new DepthBuffer;
-			_blendedDepthBuffer->Initialize(backBufferSize);
+			_blendedDepthBuffer->Initialize(backBufferSize, true);
 		}
 
 		ASSERT_COND_MSG(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
