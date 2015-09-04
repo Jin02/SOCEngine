@@ -14,11 +14,12 @@ UICamera::UICamera() : CameraForm(), _depthBuffer(nullptr)
 
 UICamera::~UICamera(void)
 {
+	Destroy();
 }
 
-void UICamera::Initialize()
+void UICamera::OnInitialize()
 {
-	CameraForm::OnInitialize();
+	CameraForm::Initialize(1);
 
 	_depthBuffer =  new DepthBuffer;
 	_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize(), false, 1);
@@ -30,10 +31,10 @@ void UICamera::Initialize()
 	_clearColor.a = 0.0f;
 }
 
-void UICamera::Destroy()
+void UICamera::OnDestroy()
 {
 	SAFE_DELETE(_depthBuffer);
-	CameraForm::OnDestroy();
+	CameraForm::Destroy();
 }
 
 void UICamera::Update(float delta)
