@@ -70,9 +70,10 @@ namespace Rendering
 			static void  GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void GetViewMatrix(Math::Matrix& outMatrix) const;
 
-		public:
-			virtual void OnInitialize();
-			virtual void OnDestroy();
+		protected:
+			// if mainRTSampleCount = -1, mainRTSampleCount = msaa.count
+			void Initialize(uint mainRTSampleCount = -1);
+			void Destroy();
 
 		public:
 			void UpdateTransformCB(const std::vector<Core::Object*>& objects);

@@ -18,10 +18,10 @@ CameraForm::CameraForm()
 
 CameraForm::~CameraForm(void)
 {
-
+	Destroy();
 }
 
-void CameraForm::OnInitialize()
+void CameraForm::Initialize(uint mainRTSampleCount)
 {
 	_fieldOfViewDegree	= 60.0f;
 	_clippingNear		= 0.1f;
@@ -36,7 +36,7 @@ void CameraForm::OnInitialize()
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
 
 	_camConstBuffer = new Buffer::ConstBuffer;
 	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
@@ -45,7 +45,7 @@ void CameraForm::OnInitialize()
 	//_clearFlag = ClearFlag::FlagSolidColor;
 }
 
-void CameraForm::OnDestroy()
+void CameraForm::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
