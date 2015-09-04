@@ -21,7 +21,7 @@ void UICamera::Initialize()
 	CameraForm::OnInitialize();
 
 	_depthBuffer =  new DepthBuffer;
-	_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize());
+	_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize(), false, 1);
 
 	_projectionType		= ProjectionType::Orthographic;
 	_owner->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
@@ -94,7 +94,7 @@ Core::Component* UICamera::Clone() const
 	_Clone(uiCam);
 
 	uiCam->_depthBuffer = new DepthBuffer;
-	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize());
+	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize(), false, 1);
 
 	return uiCam;
 }

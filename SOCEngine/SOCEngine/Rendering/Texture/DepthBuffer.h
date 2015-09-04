@@ -17,7 +17,8 @@ namespace Rendering
 			virtual ~DepthBuffer();
 
 		public:
-			bool Initialize(const Math::Size<unsigned int>& size, bool useShaderResource = false);
+			// if SampleCount = -1, sampleCount = msaa.count
+			bool Initialize(const Math::Size<unsigned int>& size, bool useShaderResource, uint sampleCount = -1);
 			void Destroy();
 
 			void Clear(ID3D11DeviceContext* context, float depth, unsigned char stencil);

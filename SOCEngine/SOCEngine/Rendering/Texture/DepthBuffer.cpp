@@ -14,12 +14,12 @@ DepthBuffer::~DepthBuffer()
 	Destroy();
 }
 
-bool DepthBuffer::Initialize(const Math::Size<unsigned int>& size, bool useShaderResource)
+bool DepthBuffer::Initialize(const Math::Size<unsigned int>& size, bool useShaderResource, uint sampleCount)
 {
 	unsigned int bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
 							(useShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);
 
-	Texture2D::Initialize(size, DXGI_FORMAT_D32_FLOAT, bindFlag);
+	Texture2D::Initialize(size, DXGI_FORMAT_D32_FLOAT, bindFlag, sampleCount);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
