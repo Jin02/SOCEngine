@@ -51,7 +51,7 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	}
 }
 
-void FullScreen::Render(const RenderTexture* outResultRT)
+void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sampler)
 {
 	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
 
@@ -78,7 +78,6 @@ void FullScreen::Render(const RenderTexture* outResultRT)
 
 	_pixelShader->UpdateResources(context, nullptr, &_inputPSTextures, nullptr);
 
-	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
 	context->PSSetSamplers(0, 1, &sampler);
 
 	context->Draw(3, 0);

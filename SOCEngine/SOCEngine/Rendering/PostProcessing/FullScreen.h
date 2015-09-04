@@ -24,7 +24,7 @@ namespace Rendering
 			void Initialize(const std::string& shaderFileName, const std::string& psName);
 
 		public:
-			void Render(const Texture::RenderTexture* outResultRT);
+			void Render(const Texture::RenderTexture* outResultRT, ID3D11SamplerState* sampler);
 			void Destroy();
 
 		public:
