@@ -218,6 +218,8 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
 		context->PSSetSamplers(0, 1, &samplerState);
 
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		//Opaque Mesh
 		{
 			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetOpaqueMeshes().meshes.GetVector();
