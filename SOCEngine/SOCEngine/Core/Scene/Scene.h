@@ -11,6 +11,7 @@
 #include "RenderManager.h"
 #include "UIManager.h"
 #include "LightManager.h"
+#include "FullScreen.h"
 
 #include "MainCamera.h"
 
@@ -35,6 +36,7 @@ namespace Core
 
 		const Device::DirectX*					_dx;
 
+
 	public:
 		Scene(void);
 		~Scene(void);
@@ -57,6 +59,9 @@ namespace Core
 
 	protected:
 		void AddObject(Core::Object* object);
+		Core::Object* FindObject(const std::string& key);
+		void DeleteObject(Core::Object* object);
+		void DeleteAllObject();
 
 	public:
 		void NextState();

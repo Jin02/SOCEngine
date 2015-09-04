@@ -8,6 +8,11 @@ using namespace Core;
 using namespace std;
 using namespace Structure;
 using namespace Rendering;
+using namespace Rendering::Manager;
+using namespace Rendering::PostProcessing;
+using namespace Rendering::TBDR;
+using namespace Rendering::Shader;
+using namespace UI::Manager;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
@@ -23,19 +28,20 @@ Scene::~Scene(void)
 
 void Scene::Initialize()
 {
-	_cameraMgr		= new Manager::CameraManager;
+	_cameraMgr		= new CameraManager;
 
-	_renderMgr		= new Manager::RenderManager;
+	_renderMgr		= new RenderManager;
 	_renderMgr->TestInit();
 
-	_uiManager		= new UI::Manager::UIManager;
+	_uiManager		= new UIManager;
 
 	_dx				= Device::Director::GetInstance()->GetDirectX();
 
-	_lightManager	= new Manager::LightManager;	
+	_lightManager	= new LightManager;	
 	_lightManager->InitializeAllShaderResourceBuffer();
 
-	_materialMgr	= new Manager::MaterialManager;
+	_materialMgr	= new MaterialManager;
+
 
 	NextState();
 	OnInitialize();
@@ -71,6 +77,8 @@ void Scene::Render()
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->Render(_dx, _renderMgr, _lightManager);
 
+
+
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
 }
@@ -96,6 +104,37 @@ void Scene::NextState()
 void Scene::AddObject(Core::Object* object)
 {
 	_rootObjects.Add(object->GetName(), object);
+}
+
+Core::Object* Scene::FindObject(const std::string& key)
+{
+	Core::Object** objAddr = _rootObjects.Find(key);
+	return objAddr ? (*objAddr) : nullptr;
+}
+
+void Scene::DeleteObject(Core::Object* object)
+{
+	std::string key = object->GetName();
+	Core::Object** objectAddr = _rootObjects.Find(key);
+	if(objectAddr)
+	{
+		Core::Object* object = (*objectAddr);
+		SAFE_DELETE(object);
+
+		_rootObjects.Delete(key);
+	}
+}
+
+void Scene::DeleteAllObject()
+{
+	auto& objects = _rootObjects.GetVector();
+	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
+	{
+		Core::Object* object = (*iter);
+		SAFE_DELETE(object);
+	}
+
+	_rootObjects.DeleteAll();
 }
 
 void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
