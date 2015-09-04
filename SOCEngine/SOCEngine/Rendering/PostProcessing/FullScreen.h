@@ -10,7 +10,7 @@ namespace Rendering
 	{
 		class FullScreen
 		{
-		private:
+		protected:
 			Shader::VertexShader*							_vertexShader;
 			Shader::PixelShader*							_pixelShader;
 		

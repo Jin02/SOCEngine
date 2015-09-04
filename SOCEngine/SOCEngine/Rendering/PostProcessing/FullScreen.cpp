@@ -55,10 +55,7 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 
 	ID3D11DepthStencilView* nullDSV = nullptr;
 	context->OMSetRenderTargets(1, &rtv, nullDSV);
-
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
-
-	context->IASetInputLayout(nullptr);
 
 	uint stride = 0;
 	uint offset = 0;
