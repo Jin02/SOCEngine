@@ -18,7 +18,7 @@ OffScreen::~OffScreen()
 
 void OffScreen::Initialize(const RenderTexture* inputRenderTexture)
 {
-	FullScreen::Initialize("DeferredMainOffScreen", "PS");
+	FullScreen::Initialize("DeferredMainOffScreen", "PS", nullptr);
 
 	std::vector<ShaderForm::InputTexture> inputTextures;
 	{
