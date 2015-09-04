@@ -36,7 +36,7 @@ void CameraForm::OnInitialize()
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 	_camConstBuffer = new Buffer::ConstBuffer;
 	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
