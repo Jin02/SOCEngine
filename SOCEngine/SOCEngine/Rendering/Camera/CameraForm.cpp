@@ -36,7 +36,7 @@ void CameraForm::OnInitialize()
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
 
 	_camConstBuffer = new Buffer::ConstBuffer;
 	if(_camConstBuffer->Initialize(sizeof(ConstBufferParam)) == false)
@@ -186,7 +186,10 @@ void CameraForm::_Clone(CameraForm* newCam) const
 	newCam->_renderTarget	= new Texture::RenderTexture;
 	{
 		const Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
-		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+		D3D11_TEXTURE2D_DESC desc;
+		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		
+		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
 	}
 
 	newCam->_camConstBuffer	= new Buffer::ConstBuffer;
