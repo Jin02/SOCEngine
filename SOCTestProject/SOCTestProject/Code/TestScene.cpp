@@ -10,6 +10,7 @@
 using namespace Rendering;
 using namespace Core;
 using namespace Rendering::Camera;
+using namespace Rendering::Light;
 using namespace Resource;
 using namespace Device;
 using namespace Importer;
@@ -36,6 +37,10 @@ void TestScene::OnInitialize()
 	sphere->GetTransform()->UpdatePosition(Vector3(0, 0, 10));
 	
 	AddObject(sphere);
+
+	Object* lightObj = new Object("Directional Light");
+	DirectionalLight* dl = lightObj->AddComponent<DirectionalLight>();
+	AddObject(lightObj);
 }
 
 void TestScene::OnRenderPreview()
