@@ -14,7 +14,7 @@ Texture2D::~Texture2D()
 	SAFE_RELEASE(_texture);
 }
 
-void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags)
+void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags, unsigned int sampleCount)
 {
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
@@ -49,11 +49,19 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 
 	//multisampler
 	{
-		DXGI_SWAP_CHAIN_DESC swapChainDesc;
-		dx->GetSwapChain()->GetDesc(&swapChainDesc);
+		if(sampleCount == -1)
+		{
+			DXGI_SWAP_CHAIN_DESC swapChainDesc;
+			dx->GetSwapChain()->GetDesc(&swapChainDesc);
 
-		int count = (bindFlags & D3D11_BIND_UNORDERED_ACCESS) ? 1 : swapChainDesc.SampleDesc.Count;
-		textureDesc.SampleDesc.Count	= count;
+			int count = (bindFlags & D3D11_BIND_UNORDERED_ACCESS) ? 1 : swapChainDesc.SampleDesc.Count;
+			textureDesc.SampleDesc.Count = count;
+		}
+		else
+		{
+			textureDesc.SampleDesc.Count = sampleCount;
+		}
+
 		textureDesc.SampleDesc.Quality	= 0;//swapChainDesc.SampleDesc.Quality;
 	}
 
