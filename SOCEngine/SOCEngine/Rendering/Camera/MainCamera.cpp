@@ -27,11 +27,12 @@ MainCamera::MainCamera() : CameraForm(),
 
 MainCamera::~MainCamera()
 {
+	OnDestroy();
 }
 
 void MainCamera::OnInitialize()
 {
-	CameraForm::OnInitialize();
+	CameraForm::Initialize();
 
 	Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
@@ -84,7 +85,7 @@ void MainCamera::OnDestroy()
 	SAFE_DELETE(_offScreen);
 	SAFE_DELETE(_blendedMeshLightCulling);
 
-	CameraForm::OnDestroy();
+	CameraForm::Destroy();
 }
 
 void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
