@@ -148,7 +148,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
@@ -176,7 +176,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), g_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{

@@ -23,43 +23,43 @@ groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
 
 cbuffer TBRParam : register( b3 )
 {
-	matrix	g_viewMat;
-	matrix 	g_invProjMat;
-	matrix	g_invViewProjViewport;
+	matrix	tbrParam_viewMat;
+	matrix 	tbrParam_invProjMat;
+	matrix	tbrParam_invViewProjViewportMat;
 
-	float2	g_screenSize;
-	uint 	g_lightNum;
-	uint	g_maxNumOfperLightInTile;
+	float2	tbrParam_viewPortSize;
+	uint 	tbrParam_numOfLights;
+	uint	tbrParam_maxNumOfPerLightInTile;
 };
 
 uint GetNumOfPointLight()
 {
-	return (g_lightNum & 0xFFE00000) >> 21;
+	return (tbrParam_numOfLights & 0xFFE00000) >> 21;
 }
 
 uint GetNumOfSpotLight()
 {
-	return (g_lightNum & 0x0001FFC00) >> 10;
+	return (tbrParam_numOfLights & 0x0001FFC00) >> 10;
 }
 
 uint GetNumOfDirectionalLight()
 {
-	return g_lightNum & 0x000007FF;
+	return tbrParam_numOfLights & 0x000007FF;
 }
 
 uint GetNumTilesX()
 {
-	return (uint)((g_screenSize.x + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((tbrParam_viewPortSize.x + TILE_RES - 1) / (float)TILE_RES);
 }
 
 uint GetNumTilesY()
 {
-	return (uint)((g_screenSize.y + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((tbrParam_viewPortSize.y + TILE_RES - 1) / (float)TILE_RES);
 }
 
 float4 ProjToView( float4 p )
 {
-    p = mul( p, g_invProjMat );
+    p = mul( p, tbrParam_invProjMat );
     p /= p.w;
     return p;
 }
@@ -84,14 +84,14 @@ bool InFrustum( float4 p, float4 frusutmNormal, float r )
 float InvertProjDepthToView(float depth)
 {
 	/*
-	1.0f = (depth * g_invProjMat._33 + g_invProjMat._43)
-	but, g_invProjMat._33 is always zero and _43 is always 1
+	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
+	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
 		
 	if you dont understand, calculate inverse projection matrix.
 	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
 	*/
 
-	return 1.0f / (depth * g_invProjMat._34 + g_invProjMat._44);
+	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
 }
 
 uint GetTileIndex(float2 screenPos)

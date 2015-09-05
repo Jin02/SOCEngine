@@ -28,7 +28,7 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES;
 #endif
 	uint tileIdx	= groupIdx.x + groupIdx.y * GetNumTilesX();
-	uint startOffset = g_maxNumOfperLightInTile * tileIdx + 1;
+	uint startOffset = tbrParam_maxNumOfPerLightInTile * tileIdx + 1;
 
 	if(idxInTile == 0)
 		g_outPerLightIndicesInTile[startOffset - 1] = (((s_lightIndexCounter - pointLightCountInThisTile) & 0x0000ffff) << 16) | (pointLightCountInThisTile & 0x0000ffff);

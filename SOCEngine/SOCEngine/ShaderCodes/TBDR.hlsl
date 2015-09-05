@@ -124,7 +124,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	float depth = g_tDepth.Load( globalIdx, sampleIdx ).x;
 
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
+	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
 	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
@@ -232,7 +232,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float depth = g_tDepth.Load( uint3(globalIdx.x,	globalIdx.y, 0) ).x;
 #endif
 
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
+	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
 	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );

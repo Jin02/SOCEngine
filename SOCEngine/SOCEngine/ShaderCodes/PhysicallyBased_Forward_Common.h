@@ -172,7 +172,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	lightParams.specularColor	= specularTexture.Sample(defaultSampler, uv).rgb;
 
 	uint tileIdx				= GetTileIndex(SVPosition);
-	uint startIdx				= tileIdx * g_maxNumOfperLightInTile + 1;
+	uint startIdx				= tileIdx * tbrParam_maxNumOfPerLightInTile + 1;
 
 	uint packedLightCountValue	= g_perLightIndicesInTile[startIdx - 1];
 	uint pointLightCount		= packedLightCountValue & 0x0000ffff;
