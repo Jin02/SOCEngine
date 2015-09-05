@@ -11,28 +11,12 @@
 #define TILE_RES 						16
 #define TILE_RES_HALF					(TILE_RES / 2)
 
-#if defined(USE_COMPUTE_SHADER)
 groupshared uint	s_lightIndexCounter;
 groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
 #if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
 #endif
-
-#endif
-
-cbuffer TBRParam : register( b3 )
-{
-	matrix	tbrParam_viewMat;
-	matrix 	tbrParam_invProjMat;
-	matrix	tbrParam_invViewProjViewportMat;
-
-	float2	tbrParam_viewPortSize;
-	uint 	tbrParam_numOfLights;
-	uint	tbrParam_maxNumOfPerLightInTile;
-	
-	float4	tbrParam_cameraWorldPosition;
-};
 
 uint GetNumOfPointLight()
 {
