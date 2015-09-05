@@ -32,17 +32,15 @@ void BackBufferMaker::Initialize(bool useUI)
 }
 
 void BackBufferMaker::Render(
-	const Texture::RenderTexture* outResultRT,
-	const Texture::RenderTexture* renderScene,
-	const Texture::RenderTexture* uiScene)
+	ID3D11RenderTargetView* outResultRTV,
+	const RenderTexture* renderScene,
+	const RenderTexture* uiScene)
 {
-	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
-
 	auto dx = Director::GetInstance()->GetDirectX();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	ID3D11DepthStencilView* nullDSV = nullptr;
-	context->OMSetRenderTargets(1, &rtv, nullDSV);
+	context->OMSetRenderTargets(1, &outResultRTV, nullDSV);
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
 
 	uint stride = 0;

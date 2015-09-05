@@ -15,6 +15,9 @@ namespace Rendering
 				UIScene		= 1
 			};
 
+		private:
+			bool _useUI;
+
 		public:
 			BackBufferMaker();
 			virtual ~BackBufferMaker();
@@ -25,7 +28,7 @@ namespace Rendering
 		public:
 			void Initialize(bool useUI);
 			void Render(
-				const Texture::RenderTexture* outResultRT,
+				ID3D11RenderTargetView* outResultRTV,
 				const Texture::RenderTexture* renderScene,
 				const Texture::RenderTexture* uiScene
 				);
