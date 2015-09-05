@@ -82,7 +82,7 @@ namespace Device
 		GET_ACCESSOR(SwapChain,								IDXGISwapChain*,			_swapChain);
 		GET_ACCESSOR(Context,								ID3D11DeviceContext*,		_immediateContext);
 
-		GET_ACCESSOR(BackBuffer,							ID3D11RenderTargetView*,	_renderTargetView);
+		GET_ACCESSOR(BackBufferRTV,							ID3D11RenderTargetView*,	_renderTargetView);
 
 		GET_ACCESSOR(RasterizerStateDefaultCulling,			ID3D11RasterizerState*,		_defaultCulling);
 		GET_ACCESSOR(RasterizerStateDisableCulling,			ID3D11RasterizerState*,		_disableCulling);
