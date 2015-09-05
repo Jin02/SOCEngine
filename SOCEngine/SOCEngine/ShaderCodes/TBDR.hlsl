@@ -127,7 +127,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( globalIdx, sampleIdx );
 
@@ -235,7 +235,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( uint2(globalIdx.x, globalIdx.y), 0 );

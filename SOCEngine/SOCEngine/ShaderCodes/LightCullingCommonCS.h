@@ -30,6 +30,8 @@ cbuffer TBRParam : register( b3 )
 	float2	tbrParam_viewPortSize;
 	uint 	tbrParam_numOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
+	
+	float4	tbrParam_cameraWorldPosition;
 };
 
 uint GetNumOfPointLight()

@@ -60,12 +60,4 @@ struct LightingCommonParams
 	float3	lightDir;
 };
 
-cbuffer Camera : register( b0 )			//CameraForm
-{
-	float4 	camera_pos;
-	float 	camera_near;
-	float 	camera_far;
-	float2 	camera_screenSize;
-};
-
 #endif
