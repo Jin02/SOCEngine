@@ -7,12 +7,10 @@
 
 #define THREAD_COUNT TILE_RES * TILE_RES
 
-#if defined(USE_COMPUTE_SHADER)
 RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
 
 groupshared int s_minZ;
 groupshared int s_maxZ;
-#endif
 
 #if (MSAA_SAMPLES_COUNT > 1)
 void CalcMinMax(uint2 globalIdx, uint depthBufferSamplerIdx, inout float ioMinZ, inout float ioMaxZ)

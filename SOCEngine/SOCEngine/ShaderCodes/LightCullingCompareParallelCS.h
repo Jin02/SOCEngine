@@ -7,12 +7,10 @@
 
 #define THREAD_COUNT TILE_RES_HALF*TILE_RES_HALF
 
-#if defined(USE_COMPUTE_SHADER)
 groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
 RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
-#endif
 
 #if (MSAA_SAMPLES_COUNT > 1) && defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 struct CornerMinMax
