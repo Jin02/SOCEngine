@@ -11,9 +11,9 @@
 #include "RenderManager.h"
 #include "UIManager.h"
 #include "LightManager.h"
-#include "FullScreen.h"
 
 #include "MainCamera.h"
+#include "BackBufferMaker.h"
 
 namespace Core
 {
@@ -28,11 +28,13 @@ namespace Core
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	
 
-		Rendering::Manager::CameraManager*		_cameraMgr;
-		Rendering::Manager::RenderManager*		_renderMgr;	
-		UI::Manager::UIManager*					_uiManager;
-		Rendering::Manager::LightManager*		_lightManager;
-		Rendering::Manager::MaterialManager*	_materialMgr;
+		Rendering::Manager::CameraManager*			_cameraMgr;
+		Rendering::Manager::RenderManager*			_renderMgr;	
+		UI::Manager::UIManager*						_uiManager;
+		Rendering::Manager::LightManager*			_lightManager;
+		Rendering::Manager::MaterialManager*		_materialMgr;
+
+		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 		const Device::DirectX*					_dx;
 

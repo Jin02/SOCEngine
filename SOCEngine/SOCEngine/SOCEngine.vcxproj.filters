@@ -307,6 +307,12 @@
     <Filter Include="Rendering\Camera\MainCamera">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\PostProcessing\FullScreen">
+      <UniqueIdentifier>{4916d140-66c0-4481-a48e-04eb03dedbf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\BackBufferMaker">
+      <UniqueIdentifier>{6dc42fd7-ce2d-4f11-8bb2-7ba4c8f7b85b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -651,9 +657,6 @@
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\PostProcessing\FullScreen.h">
-      <Filter>Rendering\PostProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\ShaderCommon.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
@@ -698,6 +701,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\MainCamera.h">
       <Filter>Rendering\Camera\MainCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\FullScreen.h">
+      <Filter>Rendering\PostProcessing\FullScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h">
+      <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -920,9 +929,6 @@
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
-      <Filter>Rendering\PostProcessing</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shading\OffScreen.cpp">
       <Filter>Rendering\Shading\Deferred\MainRT</Filter>
     </ClCompile>
@@ -934,6 +940,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\MainCamera.cpp">
       <Filter>Rendering\Camera\MainCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
+      <Filter>Rendering\PostProcessing\FullScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp">
+      <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -966,6 +978,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <Filter>ShaderCodes\LightCulling</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

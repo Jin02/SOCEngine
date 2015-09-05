@@ -80,6 +80,7 @@
     <ClInclude Include="Rendering\Camera\MainCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
+    <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\RenderingCommon.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
@@ -264,6 +266,12 @@
     <ClCompile Include="Device\Win32.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
