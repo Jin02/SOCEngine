@@ -148,8 +148,7 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
-							const Buffer::ConstBuffer* tbrConstBuffer,
-							const Buffer::ConstBuffer* cameraConstBuffer)
+							const Buffer::ConstBuffer* tbrConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -161,10 +160,6 @@ void LightCulling::Dispatch(const Device::DirectX* dx,
 
 			icb.buffer = tbrConstBuffer;
 			icb.idx = (uint)InputConstBufferShaderIndex::TBRParam;
-			inputConstBuffers.push_back(icb);
-
-			icb.buffer = cameraConstBuffer;
-			icb.idx = (uint)InputConstBufferShaderIndex::Camera;
 			inputConstBuffers.push_back(icb);
 		}
 

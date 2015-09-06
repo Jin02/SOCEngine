@@ -27,6 +27,7 @@ namespace Rendering
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
 				unsigned int 		lightNum;
+				Math::Vector4		camWorldPosition;
 
 				TBRChangeableParam(){}
 				~TBRChangeableParam(){}
@@ -80,8 +81,7 @@ namespace Rendering
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
-				const Buffer::ConstBuffer* tbrConstBuffer,
-				const Buffer::ConstBuffer* cameraConstBuffer);
+				const Buffer::ConstBuffer* tbrConstBuffer);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;

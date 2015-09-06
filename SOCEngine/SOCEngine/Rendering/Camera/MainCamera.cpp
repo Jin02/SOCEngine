@@ -171,13 +171,6 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
 				{
-					// Setting Camera CosntBuffer
-					{
-						uint semanticIdx = (uint)InputConstBufferShaderIndex::Camera;
-						ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, _camConstBuffer, true, false, false, true);
-						constBuffers.push_back(buf);
-					}
-
 					// Setting Transform ConstBuffer
 					{
 						uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
@@ -275,7 +268,15 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		LightCulling::TBRChangeableParam changeableParam;
 		{
 			changeableParam.lightNum = lightManager->GetPackedLightCount();
-			GetViewMatrix(changeableParam.viewMat);
+
+			Matrix camWorldMat;
+			_owner->GetTransform()->FetchWorldMatrix(camWorldMat);
+
+			changeableParam.camWorldPosition 
+				= Math::Vector4(camWorldMat._41, camWorldMat._42,
+								camWorldMat._43, camWorldMat._44);
+
+			CameraForm::GetViewMatrix(changeableParam.viewMat, camWorldMat);
 
 			//inverse 처리는, const buffer 업데이트 직전에 함
 			GetProjectionMatrix(changeableParam.invProjMat);
@@ -305,10 +306,10 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			_prevParamData = changeableParam;
 		}
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camConstBuffer);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 
 		if(_useTransparent)
-			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camConstBuffer);
+			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 	}
 
 	// Main RT
