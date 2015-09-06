@@ -30,20 +30,10 @@ namespace Rendering
 				RenderQueue() : updateCounter(0){}
 				~RenderQueue(){}
 			};
-			struct ConstBufferParam
-			{
-				Math::Vector4 worldPos;
-				float clippingNear, clippingFar;
-				Math::Size<float> screenSize;
-			};
-
-		private:
-			ConstBufferParam				_prevConstBufferData;
 
 		protected:
 			Frustum*						_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			Buffer::ConstBuffer*			_camConstBuffer;
 			RenderQueue						_transparentMeshQueue;
 			
 			Math::Matrix					_viewProjMatrixInPrevRenderState;
