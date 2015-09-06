@@ -298,7 +298,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			Matrix::Inverse(tbrParam.invViewProjViewport, tbrParam.invViewProjViewport); //invViewProjViewport
 			Matrix::Inverse(tbrParam.invProjMat, tbrParam.invProjMat); //invProj
 
-			tbrParam.screenSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
+			tbrParam.viewportSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
 			tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
 			_tbrParamConstBuffer->UpdateSubResource(context, &tbrParam);

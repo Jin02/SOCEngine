@@ -37,7 +37,7 @@ namespace Rendering
 			{	
 				Math::Matrix 		invViewProjViewport;
 
-				Math::Size<float>	screenSize;
+				Math::Size<float>	viewportSize;
 				unsigned int 		maxNumOfperLightInTile;
 				TBRParam() : TBRChangeableParam() {}
 				~TBRParam(){}
