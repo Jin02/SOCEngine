@@ -81,7 +81,6 @@
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
-    <ClInclude Include="Rendering\RenderingCommon.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
     <ClInclude Include="Rendering\Light\DirectionalLight.h" />

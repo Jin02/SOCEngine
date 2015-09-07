@@ -681,9 +681,6 @@
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h">
       <Filter>Rendering\Shading\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\RenderingCommon.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <Filter>ShaderCodes\LightCulling\header</Filter>
     </ClInclude>
