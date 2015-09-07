@@ -136,16 +136,6 @@ void ClacMinMaxWithCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, u
 	float maxZ = 0.0f;
 
 #if (MSAA_SAMPLES_COUNT > 1)
-
-#if defined(USE_FORWARD_PLUS)
-	uint2 depthBufferSize;
-	uint depthBufferSampleCount;
-
-	g_tDepth.GetDimensions(depthBufferSize.x, depthBufferSize.y, depthBufferSampleCount);
-#elif defined(USE_TILE_BASED_DEFERRED)
-	uint depthBufferSampleCount = MSAA_SAMPLES_COUNT;
-#endif
-
 	float tmpMin = FLOAT_MAX;
 	float tmpMax = 0.0f;
 
@@ -157,7 +147,7 @@ void ClacMinMaxWithCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, u
 	}
 #endif
 
-	for(uint sampleIdx=0; sampleIdx<depthBufferSampleCount; ++sampleIdx)
+	for(uint sampleIdx=0; sampleIdx<MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
 #if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 		CalcMinMax(halfGlobalIdx, halfLocalIdx, idxInTile, sampleIdx, tmpMin, tmpMax, cornerMinMax);

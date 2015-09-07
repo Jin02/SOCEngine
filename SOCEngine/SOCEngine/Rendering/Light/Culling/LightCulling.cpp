@@ -56,7 +56,6 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 
 void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc,
 							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
-							  RenderType renderType,
 							  const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
@@ -71,19 +70,6 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 		if(blendedDepthBuffer)
 			macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
-
-		if(renderType == RenderType::TBDR)
-		{
-			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
-		}
-		else if(renderType == RenderType::ForwardPlus)
-		{
-			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
-		}
-		else
-		{
-			ASSERT_MSG("Can't suuport this render type");
-		}
 
 		if(opationalMacros)
 			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());

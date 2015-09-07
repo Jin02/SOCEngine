@@ -373,7 +373,7 @@ void MainCamera::EnableRenderTransparentMesh(bool enable)
 		ASSERT_COND_MSG(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
 		{
 			_blendedMeshLightCulling = new OnlyLightCulling;
-			_blendedMeshLightCulling->Initialize(_opaqueDepthBuffer, _blendedDepthBuffer, RenderType::TBDR);
+			_blendedMeshLightCulling->Initialize(_opaqueDepthBuffer, _blendedDepthBuffer);
 		}
 	}
 	else // enable == false

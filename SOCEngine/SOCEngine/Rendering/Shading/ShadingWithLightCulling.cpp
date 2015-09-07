@@ -39,7 +39,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
-	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, RenderType::TBDR);
+	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr);
 
 	// Input buffer
 	{
