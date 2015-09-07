@@ -18,7 +18,9 @@ LightForm::~LightForm()
 void LightForm::OnInitialize()
 {
 	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
-	scene->GetLightManager()->Add(this, _owner->GetName().c_str());
+
+	const std::string& key = _owner->GetName();
+	scene->GetLightManager()->Add(this, key.c_str());
 }
 
 void LightForm::OnDestroy()
