@@ -49,6 +49,9 @@ namespace Rendering
 
 		public:
 			virtual Core::Component* Clone() const;
+
+		public:
+			GET_ACCESSOR(TBRParamConstBuffer, const Buffer::ConstBuffer*, _tbrParamConstBuffer);
 		};
 	}
 

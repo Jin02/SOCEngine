@@ -29,8 +29,9 @@ namespace Rendering
 			void Initialize(bool useUI);
 			void Render(
 				ID3D11RenderTargetView* outResultRTV,
-				const Texture::RenderTexture* renderScene,
-				const Texture::RenderTexture* uiScene
+				const Texture::RenderTexture*& renderScene,
+				const Texture::RenderTexture* uiScene,
+				const Buffer::ConstBuffer* const& tbrParamConstBuffer
 				);
 		};
 	}
