@@ -109,7 +109,8 @@ void LightManager::Add(const LightForm* light, const char* key)
 {
 	std::string searchKey = key ? key : light->GetOwner()->GetName();
 
-	ASSERT_COND_MSG(HasKey(searchKey), "Already has Key");
+	bool found = HasKey(searchKey);
+	ASSERT_COND_MSG(found == false, "Already has Key");
 
 	//1을 더하는건, UpdateBuffer에서 비교할때 버그 안생기게 하려고 -ㅠ-..
 	uint counter = light->GetOwner()->GetTransform()->GetUpdateCounter() + 1;
@@ -128,7 +129,8 @@ void LightManager::UpdateBuffer()
 
 	auto UpdateSRBuffer = [](ID3D11DeviceContext* context, ShaderResourceBuffer* srBuffer, const void* inputData, uint bufferElementSize, uint startIdx, uint endIdx)
 	{
-		const void* data = (char*)inputData + (startIdx * bufferElementSize);
+		uint offset = startIdx * bufferElementSize;
+		const void* data = (char*)inputData + offset;
 		uint size = ((endIdx+1) - startIdx) * bufferElementSize;
 
 		srBuffer->UpdateResourceUsingMapUnMap(context, data, startIdx * bufferElementSize, size, D3D11_MAP_WRITE_NO_OVERWRITE);
