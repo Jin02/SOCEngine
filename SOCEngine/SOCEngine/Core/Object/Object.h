@@ -13,19 +13,19 @@ namespace Core
 	class Object : protected Structure::VectorMap<std::string, Object*>
 	{
 	protected:
-		bool					_use;
-		bool					_culled;
-		bool					_hasMesh;
+		bool							_use;
+		bool							_culled;
+		bool							_hasMesh;
 
-		std::string				_name;
+		std::string						_name;
 
-		const Object*			_parent;
-		const Object*			_root;
-		Transform*				_transform;
+		const Object*					_parent;
+		const Object*					_root;
+		Transform*						_transform;
 
-		std::vector<Component*> _components;
+		std::vector<Component*>			_components;
 
-		TransformPipelineParam	_prevTransformParam;
+		TransformPipelineShaderInput	_prevTransformParam;
 
 	public:
 		Object(const std::string& name, const Object* parent = NULL);
@@ -38,7 +38,7 @@ namespace Core
 		void Update(float delta);
 
 		bool Culling(const Rendering::Camera::Frustum *frustum);
-		void UpdateTransformCB(TransformPipelineParam& transformParam);
+		void UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& projMat);
 
 		bool Intersects(Intersection::Sphere &sphere);
 

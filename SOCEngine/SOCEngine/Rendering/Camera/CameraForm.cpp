@@ -101,17 +101,17 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 
 void CameraForm::UpdateTransformCB(const std::vector<Core::Object*>& objects)
 {
-	TransformPipelineParam tfParam;
-	GetProjectionMatrix(tfParam.projMat);
-	GetViewMatrix(tfParam.viewMat);
+	Matrix projMat, viewMat;
+	GetProjectionMatrix(projMat);
+	GetViewMatrix(viewMat);
 
-	_viewProjMatrixInPrevRenderState = tfParam.viewMat * tfParam.projMat;
+	_viewProjMatrixInPrevRenderState = viewMat * projMat;
 	_frustum->Make(_viewProjMatrixInPrevRenderState);
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		(*iter)->Culling(_frustum);
-		(*iter)->UpdateTransformCB(tfParam);
+		(*iter)->UpdateTransformCB(viewMat, projMat);
 	}
 }
 
