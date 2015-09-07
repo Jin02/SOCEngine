@@ -105,5 +105,8 @@ namespace Device
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 		GET_ACCESSOR(BackBufferSize,						const Math::Size<uint>&,	_backBufferSize);
+
+		GET_ACCESSOR(FeatureLevel,							D3D_FEATURE_LEVEL,			_featureLevel);
+		GET_ACCESSOR(DriverType,							D3D_DRIVER_TYPE,			_driverType);
 	};
 }
