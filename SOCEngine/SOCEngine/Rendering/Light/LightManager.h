@@ -64,12 +64,16 @@ namespace Rendering
 			LightManager(void);
 			~LightManager(void);
 
+		private:
+			void UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context);
+			void UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context);
+
 		public:
 			void InitializeAllShaderResourceBuffer();
 			void DestroyAllShaderReourceBuffer();
 
 			void Add(const Light::LightForm* light, const char* key = nullptr);
-			void UpdateBuffer();
+			void UpdateBuffer(const Device::DirectX* dx);
 
 			bool HasKey(const std::string& key);
 

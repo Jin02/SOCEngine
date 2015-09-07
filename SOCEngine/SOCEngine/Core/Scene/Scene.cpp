@@ -59,7 +59,7 @@ void Scene::Update(float dt)
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
 		(*iter)->Update(dt);
 
-	_lightManager->UpdateBuffer();
+	_lightManager->UpdateBuffer(_dx);
 }
 
 void Scene::RenderPreview()
