@@ -9,7 +9,7 @@ struct VS_INPUT
 	float3 binormal			: BINORMAL;
 };
 
-struct GEOMETRY_BUFFER_PS_INPUT
+struct VS_OUTPUT
 {
 	float4 position 	 	: SV_POSITION;
 	float2 uv				: TEXCOORD0;
@@ -19,9 +19,9 @@ struct GEOMETRY_BUFFER_PS_INPUT
 	float3 binormal 		: BINORMAL;
 };
 
-GEOMETRY_BUFFER_PS_INPUT VS( VS_INPUT input )
+VS_OUTPUT VS( VS_INPUT input )
 {
-	GEOMETRY_BUFFER_PS_INPUT ps;
+	VS_OUTPUT ps;
 
 	ps.position 	= mul( input.position, transform_worldViewProj );
 	ps.uv			= input.uv;
@@ -41,19 +41,19 @@ float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
 	return normalize( mul(texNormal, TBN) );
 }
 
-GBuffer PS( GEOMETRY_BUFFER_PS_INPUT input )
+GBuffer PS( VS_OUTPUT input ) : SV_Target
 {
 	GBuffer outGBuffer;
 	float4 diffuseTex = diffuseTexture.Sample(GBufferDefaultSampler, input.uv);
 
 #ifdef ENABLE_ALPHA_TEST
-	float alpha = diffuseTex.a * opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
-	if(alpha < ALPHA_TEST_BIAS)
-		discard;
+	//float alpha = diffuseTex.a * opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
+	//if(alpha < ALPHA_TEST_BIAS)
+	//	discard;
 #endif
 
-	outGBuffer.albedo_metallic.rgb	= diffuseTex.rgb * material_mainColor;
-	outGBuffer.albedo_metallic.a	= material_metallic;
+	outGBuffer.albedo_metallic.rgb	= float3(0, 1, 0);//diffuseTex.rgb * material_mainColor;
+	outGBuffer.albedo_metallic.a	= 1.0f;//material_metallic;
 
 	outGBuffer.specular_fresnel0	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 	outGBuffer.specular_fresnel0.a 	= material_fresnel0;

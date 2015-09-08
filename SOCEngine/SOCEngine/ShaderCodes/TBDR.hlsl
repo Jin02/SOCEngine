@@ -355,6 +355,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 
 #else // off MSAA
-	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+	//g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+
+	//uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
+	//float testPixel = (float)idxInTile / (float)(TILE_RES * TILE_RES);
+	//g_tOutScreen[globalIdx.xy] = float4(testPixel, testPixel, testPixel, 1.0f);
+
+	//albedo, normal
+	g_tOutScreen[globalIdx.xy] = float4(albedo, 1.0f);
+
 #endif
 }
