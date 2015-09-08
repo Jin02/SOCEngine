@@ -75,7 +75,7 @@ namespace Rendering
 
 		protected:
 			void AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
-			void _Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture,	uint idx, const Texture::Texture2D* texture);
+			void AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture);
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,

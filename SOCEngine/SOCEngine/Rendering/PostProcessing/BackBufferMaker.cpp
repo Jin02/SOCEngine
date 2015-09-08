@@ -51,8 +51,6 @@ void BackBufferMaker::Render(
 	uint offset = 0;
 	ID3D11Buffer* nullBuffer[] = {nullptr};
 
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
 	_vertexShader->SetShaderToContext(context);
 	_vertexShader->SetInputLayoutToContext(context);
 	

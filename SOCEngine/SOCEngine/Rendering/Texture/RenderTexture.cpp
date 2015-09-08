@@ -22,6 +22,8 @@ bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT
 	Texture2D::Initialize(size, format, bindFlags, sampleCount);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+
 	renderTargetViewDesc.Format = format;
 
 	D3D11_TEXTURE2D_DESC texDesc;

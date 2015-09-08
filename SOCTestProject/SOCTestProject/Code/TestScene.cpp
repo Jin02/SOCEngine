@@ -34,8 +34,8 @@ void TestScene::OnInitialize()
 	MeshImporter importer;
 	importer.Initialize();
 	Object* sphere = importer.Load("./Resource/sphere.obj", "./Resource/");
-	sphere->GetTransform()->UpdatePosition(Vector3(0, 0, 10));
-	
+	sphere->GetTransform()->UpdatePosition(Vector3(0, 0, 3));
+	sphere->GetTransform()->UpdateScale(Vector3(1.5f, 1.5f, 1.5f));	
 	AddObject(sphere);
 
 	Object* lightObj = new Object("Directional Light");

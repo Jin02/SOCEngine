@@ -188,10 +188,10 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	CheckCorrectShape(tinyShape);
 
-	const std::vector<float>& tiny_positions		 = tinyShape.mesh.positions;
-	const std::vector<float>& tiny_texcoords		 = tinyShape.mesh.texcoords;
-	const std::vector<float>& tiny_normals			 = tinyShape.mesh.normals;
-	const std::vector<uint>& indices		 = tinyShape.mesh.indices;
+	const std::vector<float>& tiny_positions	= tinyShape.mesh.positions;
+	const std::vector<float>& tiny_texcoords	= tinyShape.mesh.texcoords;
+	const std::vector<float>& tiny_normals		= tinyShape.mesh.normals;
+	const std::vector<uint>& indices			= tinyShape.mesh.indices;
 
 	bool isNormalMapUse = (tinyMtl.normal_texname.empty() == false);
 

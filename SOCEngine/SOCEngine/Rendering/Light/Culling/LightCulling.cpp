@@ -40,7 +40,7 @@ void LightCulling::AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::Inp
 	outBuffer = &_inputBuffers.back();
 }
 
-void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture, uint idx, const Texture::Texture2D* texture)
+void LightCulling::AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture)
 {
 	ComputeShader::InputTexture inputTex;
 	{
@@ -49,9 +49,6 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 	}
 
 	_inputTextures.push_back(inputTex);
-
-	if(outTexture)
-		(*outTexture) = &_inputTextures.back();
 }
 
 void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc,
@@ -104,13 +101,13 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		{
 			// Opaque Depth Buffer
 			idx = (uint)InputTextureShaderIndex::GBuffer_Depth;
-			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
+			AddTextureToInputTextureList(idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
 			{
 				idx = (uint)InputTextureShaderIndex::GBuffer_BlendedDepth;
-				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
+				AddTextureToInputTextureList(idx, blendedDepthBuffer);
 			}
 		}
 	}

@@ -24,10 +24,10 @@ ShadingWithLightCulling::~ShadingWithLightCulling()
 }
 
 void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
-												 const Texture::RenderTexture* gbuffer_albedo_metallic,  
-												 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
-												 const Texture::RenderTexture* gbuffer_normal_roughness, 
-												 const Math::Size<uint>& backBufferSize)
+										 const Texture::RenderTexture* gbuffer_albedo_metallic,  
+										 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
+										 const Texture::RenderTexture* gbuffer_normal_roughness, 
+										 const Math::Size<uint>& backBufferSize)
 {
 	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
@@ -87,19 +87,19 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		// Albedo_Metallic
 		{
 			uint idx = (uint)InputTextureShaderIndex::GBuffer_Albedo_Metallic;
-			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, gbuffer_albedo_metallic);
+			AddTextureToInputTextureList(idx, gbuffer_albedo_metallic);
 		}
 
 		// Specular_Fresnel0
 		{
 			uint idx = (uint)InputTextureShaderIndex::GBuffer_Specular_Fresnel0;
-			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, gbuffer_specular_fresnel0);
+			AddTextureToInputTextureList(idx, gbuffer_specular_fresnel0);
 		}
 
 		// Normal_Roughness
 		{
 			uint idx = (uint)InputTextureShaderIndex::GBuffer_Normal_Roughness;
-			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, gbuffer_normal_roughness);
+			AddTextureToInputTextureList(idx, gbuffer_normal_roughness);
 		}
 	}
 
