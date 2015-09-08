@@ -19,7 +19,7 @@ FullScreen::~FullScreen()
 {
 }
 
-void FullScreen::Initialize(const std::string& shaderFileName, const std::string& psName)
+void FullScreen::Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<ShaderMacro>* macros)
 {
 	Factory::EngineFactory shaderPathFinder(nullptr);
 	
@@ -30,28 +30,23 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	bool success = Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
 	ASSERT_COND_MSG(success, "Error!, Invalid File Path");
 
-	std::vector<ShaderMacro> macros;
-	{
-		const ShaderMacro& msaaMacro = Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
-		macros.push_back(msaaMacro);
-	}
-
 	auto shaderManager = ResourceManager::GetInstance()->GetShaderManager();
 
-	std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
-
+	// Setting Vertex Shader
 	{
+		std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
 		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, "FullScreenVS");
 		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, nullptr);
 	}
 
+	// Setting Pixel Shader
 	{
 		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, psName);
-		_pixelShader = shaderManager->LoadPixelShader(folderPath, command, false, &macros);
+		_pixelShader = shaderManager->LoadPixelShader(folderPath, command, false, macros);
 	}
 }
 
-void FullScreen::Render(const RenderTexture* outResultRT)
+void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sampler)
 {
 	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
 
@@ -60,10 +55,7 @@ void FullScreen::Render(const RenderTexture* outResultRT)
 
 	ID3D11DepthStencilView* nullDSV = nullptr;
 	context->OMSetRenderTargets(1, &rtv, nullDSV);
-
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
-
-	context->IASetInputLayout(nullptr);
 
 	uint stride = 0;
 	uint offset = 0;
@@ -78,7 +70,6 @@ void FullScreen::Render(const RenderTexture* outResultRT)
 
 	_pixelShader->UpdateResources(context, nullptr, &_inputPSTextures, nullptr);
 
-	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
 	context->PSSetSamplers(0, 1, &sampler);
 
 	context->Draw(3, 0);

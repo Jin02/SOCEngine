@@ -6,10 +6,10 @@ using namespace Device;
 DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
 	_renderTargetView(nullptr), _disableCulling(nullptr),
-	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr), _defaultCulling(nullptr),
+	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr),
 	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
 	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
-	_depthGreaterAndDisableDepthWrite(nullptr),  _opaqueBlendDepthOnly(nullptr), _alphaBlend(nullptr),
+	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
@@ -61,7 +61,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	//msaa
 	if(multiSampler == nullptr)
 	{
-		sd.SampleDesc.Count = 4;
+		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 	}
 	else
@@ -79,6 +79,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -147,72 +148,58 @@ void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXG
 	}
 }
 
-void DirectX::CreateBlendStates(bool isDeferredRender)
+void DirectX::CreateBlendStates()
 {
-	D3D11_BLEND_DESC desc;
-	memset(&desc, 0, sizeof(D3D11_BLEND_DESC));
+	D3D11_BLEND_DESC blendDesc;
+	memset(&blendDesc, 0, sizeof(D3D11_BLEND_DESC));
 
-	desc.AlphaToCoverageEnable					= false;
-	desc.IndependentBlendEnable					= false;
+	blendDesc.AlphaToCoverageEnable				= false;
+	blendDesc.IndependentBlendEnable			= false;
 
 	D3D11_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc;
 
 	renderTargetBlendDesc.BlendEnable			= false;
 
-	renderTargetBlendDesc.BlendOp				= D3D11_BLEND_OP_ADD;
-	renderTargetBlendDesc.BlendOpAlpha			= D3D11_BLEND_OP_ADD;
-
 	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_ONE; 
+	renderTargetBlendDesc.DestBlend				= D3D11_BLEND_ZERO; 
+
+	renderTargetBlendDesc.BlendOp				= D3D11_BLEND_OP_ADD;
 	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_ONE; 
 
-	renderTargetBlendDesc.DestBlend				= D3D11_BLEND_ZERO; 
 	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_ZERO; 
+	renderTargetBlendDesc.BlendOpAlpha			= D3D11_BLEND_OP_ADD;
 
 	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	desc.RenderTarget[0] = renderTargetBlendDesc;
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc; // albedo_metallic or color
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
 
-	if(isDeferredRender)
-	{
-		desc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
-		desc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
-	}
-
-	if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlend)) )
+	if( FAILED(_device->CreateBlendState(&blendDesc, &_opaqueBlend)) )
 		ASSERT_MSG("Error!, device cant create opaque blend state");
 
-
-	renderTargetBlendDesc.RenderTargetWriteMask	= 0;
-	if( FAILED(_device->CreateBlendState(&desc, &_opaqueBlendDepthOnly)) )
-		ASSERT_MSG("Error!, device cant create _opaqueBlendDepthOnly state");
-
-	desc.AlphaToCoverageEnable = true;
-	if( FAILED(_device->CreateBlendState(&desc, &_alphaToCoverageBlend)) )
+	blendDesc.AlphaToCoverageEnable = true;
+	if( FAILED(_device->CreateBlendState(&blendDesc, &_alphaToCoverageBlend)) )
 		ASSERT_MSG("Error!, device cant create alphaToCoverage blend state");
 
+	blendDesc.AlphaToCoverageEnable = false;
 	renderTargetBlendDesc.BlendEnable			= true;
 
+	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_SRC_ALPHA;
 	renderTargetBlendDesc.DestBlend				= D3D11_BLEND_INV_SRC_ALPHA;
+
+	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
 	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_INV_SRC_ALPHA;
 
-	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_SRC_ALPHA;
-	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc; // albedo_metallic or color
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
 
-	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	desc.RenderTarget[0] = renderTargetBlendDesc;
-
-	if(isDeferredRender)
-	{
-		desc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
-		desc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
-	}
-
-	if( FAILED(_device->CreateBlendState(&desc, &_alphaBlend)) )
+	if( FAILED(_device->CreateBlendState(&blendDesc, &_alphaBlend)) )
 		ASSERT_MSG("Error!, device cant create _alphaBlend blend state");
 }
 
-bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect, bool isDeferredRender)
+bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect)
 {
 	if( CreateDeviceAndSwapChain(win) == false )
 		return false;
@@ -228,8 +215,8 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 	{
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_BACK;
-		desc.FrontCounterClockwise	= true;
+		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.FrontCounterClockwise	= false;
 		desc.DepthBias				= 0;
 		desc.DepthBiasClamp			= 0.0f;
 		desc.SlopeScaledDepthBias	= 0.0f;
@@ -238,32 +225,31 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.MultisampleEnable		= false;
 		desc.AntialiasedLineEnable	= false;
 
-		if( FAILED(_device->CreateRasterizerState(&desc, &_defaultCulling)) )
-			ASSERT_MSG("Error!, device cant create rasterizer state");
-
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
 		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
 	//Initialize Blend State
-	CreateBlendStates(isDeferredRender);
+	CreateBlendStates();
 
 	//Initialize Depth State
 	//using inverted 32bit float depth
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
+		memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
 		desc.DepthEnable		= true; 
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL; 
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //invvvvvverrreeettted
+		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //inverted depth
 		desc.StencilEnable		= false; 
 		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
 		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreater)) )
 			ASSERT_MSG("Error!, device cant create lessEqual dpeth state");
 
-		//disable depth test write
+		//disable depth write
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthDisableDepthWrite)) )
+			ASSERT_MSG("Error!, device cant create _depthDisableDepthWrite");
 		
 		//disable depth test
 		desc.DepthEnable = false;
@@ -296,7 +282,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampDesc.MaxAnisotropy = 16;
 		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		sampDesc.MinLOD = 0;
+		sampDesc.MinLOD = -D3D11_FLOAT32_MAX;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 		HRESULT hr = _device ->CreateSamplerState( &sampDesc, &_anisotropicSamplerState );
@@ -341,7 +327,7 @@ unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
 	return 0;
 }
 
-void DirectX::ClearDeviceContext()
+void DirectX::ClearDeviceContext() const
 {
     ID3D11ShaderResourceView* pSRVs[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
     ID3D11RenderTargetView* pRTVs[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };

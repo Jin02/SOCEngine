@@ -35,22 +35,22 @@ namespace Rendering
 
 
 	private:
-		std::string												_name;
-		Math::Vector2											_tiling;
+		std::string														_name;
+		Math::Vector2													_tiling;
 
 		std::vector<Shader::ShaderForm::InputConstBuffer>				_constBuffers;
-		std::vector<Shader::ShaderForm::InputTexture>			_textures;
+		std::vector<Shader::ShaderForm::InputTexture>					_textures;
 		std::vector<Shader::ShaderForm::InputShaderResourceBuffer>		_srBuffers;
 
-		std::map<const std::string, Container>					_datas;
+		std::map<const std::string, Container>							_datas;
 
-		const Type												_type;
-		uint													_variableUpdateCounter;
+		const Type														_type;
+		uint															_variableUpdateCounter;
 
 	protected:
-		Shader::ShaderGroup										_customShaders; //in forward rendering
-		bool													_hasAlpha;
-		bool													_changedAlpha;
+		Shader::ShaderGroup												_customShaders; //in forward rendering
+		bool															_hasAlpha;
+		bool															_changedAlpha;
 
 	public:
 		Material(const std::string& name, Type type);

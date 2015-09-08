@@ -124,10 +124,10 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	float depth = g_tDepth.Load( globalIdx, sampleIdx ).x;
 
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
+	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( globalIdx, sampleIdx );
 
@@ -232,10 +232,10 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float depth = g_tDepth.Load( uint3(globalIdx.x,	globalIdx.y, 0) ).x;
 #endif
 
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), g_invViewProjViewport );
+	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
 	worldPosition /= worldPosition.w;
 
-	float3 viewDir = normalize( camera_pos.xyz - worldPosition.xyz );
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( uint2(globalIdx.x, globalIdx.y), 0 );
@@ -355,6 +355,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 
 #else // off MSAA
-	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+	//g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+
+	//uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
+	//float testPixel = (float)idxInTile / (float)(TILE_RES * TILE_RES);
+	//g_tOutScreen[globalIdx.xy] = float4(testPixel, testPixel, testPixel, 1.0f);
+
+	//albedo, normal
+	g_tOutScreen[globalIdx.xy] = float4(albedo, 1.0f);
+
 #endif
 }

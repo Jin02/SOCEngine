@@ -30,23 +30,13 @@ namespace Rendering
 				RenderQueue() : updateCounter(0){}
 				~RenderQueue(){}
 			};
-			struct ConstBufferParam
-			{
-				Math::Vector4 worldPos;
-				float clippingNear, clippingFar;
-				Math::Size<float> screenSize;
-			};
-
-		private:
-			ConstBufferParam				_prevConstBufferData;
 
 		protected:
 			Frustum*						_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			Buffer::ConstBuffer*			_camConstBuffer;
 			RenderQueue						_transparentMeshQueue;
 			
-			Math::Matrix					_viewProjMatrixInPrevRenderState;
+			Math::Matrix					_viewProjMat;
 
 		protected:
 			float							_fieldOfViewDegree;
@@ -70,12 +60,13 @@ namespace Rendering
 			static void  GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void GetViewMatrix(Math::Matrix& outMatrix) const;
 
-		public:
-			virtual void OnInitialize();
-			virtual void OnDestroy();
+		protected:
+			// if mainRTSampleCount = -1, mainRTSampleCount = msaa.count
+			void Initialize(uint mainRTSampleCount = -1);
+			void Destroy();
 
 		public:
-			void UpdateTransformCB(const std::vector<Core::Object*>& objects);
+			virtual void UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager) = 0;
 
 		protected:

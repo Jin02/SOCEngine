@@ -172,9 +172,6 @@
     <Filter Include="Rendering\Texture\RenderTarget">
       <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\Mgr">
-      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
@@ -306,6 +303,18 @@
     </Filter>
     <Filter Include="Rendering\Camera\MainCamera">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\FullScreen">
+      <UniqueIdentifier>{4916d140-66c0-4481-a48e-04eb03dedbf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\BackBufferMaker">
+      <UniqueIdentifier>{6dc42fd7-ce2d-4f11-8bb2-7ba4c8f7b85b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectXTK">
+      <UniqueIdentifier>{197c00a3-ca0a-4d6e-879e-19980317d55a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Manager">
+      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -490,7 +499,7 @@
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\TextureManager.h">
-      <Filter>Rendering\Texture\Mgr</Filter>
+      <Filter>Rendering\Texture\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera\Manager</Filter>
@@ -651,9 +660,6 @@
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\PostProcessing\FullScreen.h">
-      <Filter>Rendering\PostProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\ShaderCommon.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
@@ -678,9 +684,6 @@
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h">
       <Filter>Rendering\Shading\Deferred</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\RenderingCommon.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <Filter>ShaderCodes\LightCulling\header</Filter>
     </ClInclude>
@@ -698,6 +701,21 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\MainCamera.h">
       <Filter>Rendering\Camera\MainCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\FullScreen.h">
+      <Filter>Rendering\PostProcessing\FullScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h">
+      <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTK\WICTextureLoader.h">
+      <Filter>External\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTK\DirectXHelpers.h">
+      <Filter>External\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTK\PlatformHelpers.h">
+      <Filter>External\DirectXTK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -843,7 +861,7 @@
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureManager.cpp">
-      <Filter>Rendering\Texture\Mgr</Filter>
+      <Filter>Rendering\Texture\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
@@ -920,9 +938,6 @@
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
-      <Filter>Rendering\PostProcessing</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shading\OffScreen.cpp">
       <Filter>Rendering\Shading\Deferred\MainRT</Filter>
     </ClCompile>
@@ -934,6 +949,15 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\MainCamera.cpp">
       <Filter>Rendering\Camera\MainCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
+      <Filter>Rendering\PostProcessing\FullScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp">
+      <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp">
+      <Filter>External\DirectXTK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -966,6 +990,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <Filter>ShaderCodes\LightCulling</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

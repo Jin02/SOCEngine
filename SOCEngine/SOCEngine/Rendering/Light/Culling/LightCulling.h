@@ -9,7 +9,6 @@
 #include "Lightform.h"
 #include "LightManager.h"
 
-#include "RenderingCommon.h"
 #include "TBRShaderIndexSlotInfo.h"
 
 #define LIGHT_CULLING_TILE_RESOLUTION						16
@@ -27,6 +26,7 @@ namespace Rendering
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
 				unsigned int 		lightNum;
+				Math::Vector4		camWorldPosition;
 
 				TBRChangeableParam(){}
 				~TBRChangeableParam(){}
@@ -36,7 +36,7 @@ namespace Rendering
 			{	
 				Math::Matrix 		invViewProjViewport;
 
-				Math::Size<float>	screenSize;
+				Math::Size<float>	viewportSize;
 				unsigned int 		maxNumOfperLightInTile;
 				TBRParam() : TBRChangeableParam() {}
 				~TBRParam(){}
@@ -62,7 +62,6 @@ namespace Rendering
 		protected:
 			void Initialize(const std::string& filePath, const std::string& mainFunc,
 				const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
-				RenderType renderType,
 				const std::vector<Shader::ShaderMacro>* opationalMacros = nullptr);
 
 			void SetInputsToCS();
@@ -76,12 +75,11 @@ namespace Rendering
 
 		protected:
 			void AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
-			void _Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture,	uint idx, const Texture::Texture2D* texture);
+			void AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture);
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
-				const Buffer::ConstBuffer* tbrConstBuffer,
-				const Buffer::ConstBuffer* cameraConstBuffer);
+				const Buffer::ConstBuffer* tbrConstBuffer);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;

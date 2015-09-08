@@ -19,7 +19,7 @@ void CSRWTexture::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, u
 	uint bindFlag = D3D11_BIND_UNORDERED_ACCESS | optionalBindFlags;
 
 	_renderTexture = new RenderTexture;
-	_renderTexture->Initialize(size, format, bindFlag);
+	_renderTexture->Initialize(size, format, bindFlag, 1);
 
 	// create uav
 	CSOutput::Initialize(format, size.w * size.h, _renderTexture->GetTexture(), CSOutput::Type::Texture);

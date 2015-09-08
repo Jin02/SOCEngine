@@ -5,8 +5,6 @@
 #include "Utility.h"
 #include <functional>
 
-#include "RenderingCommon.h"
-
 #include <sys/timeb.h>
 #include <time.h>
 #include "VectorMap.h"

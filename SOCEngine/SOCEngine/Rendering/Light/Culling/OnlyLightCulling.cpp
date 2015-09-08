@@ -19,7 +19,6 @@ OnlyLightCulling::~OnlyLightCulling()
 void OnlyLightCulling::Initialize(
 	const DepthBuffer* opaqueDepthBuffer,
 	const DepthBuffer* blendedDepthBuffer,
-	RenderType renderType,
 	const std::vector<ShaderMacro>* opationalMacros)
 {
 	std::string path = "";
@@ -43,8 +42,7 @@ void OnlyLightCulling::Initialize(
 	}
 
 	LightCulling::Initialize(path, "OnlyLightCullingCS",
-		opaqueDepthBuffer, blendedDepthBuffer,
-		renderType, &macros);
+		opaqueDepthBuffer, blendedDepthBuffer, &macros);
 
 	// Ouput Buffer Setting
 	{

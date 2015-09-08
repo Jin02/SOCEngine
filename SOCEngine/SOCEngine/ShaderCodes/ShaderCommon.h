@@ -60,12 +60,17 @@ struct LightingCommonParams
 	float3	lightDir;
 };
 
-cbuffer Camera : register( b0 )			//CameraForm
+cbuffer TBRParam : register( b0 )
 {
-	float4 	camera_pos;
-	float 	camera_near;
-	float 	camera_far;
-	float2 	camera_screenSize;
+	matrix	tbrParam_viewMat;
+	matrix 	tbrParam_invProjMat;
+	matrix	tbrParam_invViewProjViewportMat;
+
+	float2	tbrParam_viewPortSize;
+	uint 	tbrParam_numOfLights;
+	uint	tbrParam_maxNumOfPerLightInTile;
+	
+	float4	tbrParam_cameraWorldPosition;
 };
 
 #endif
