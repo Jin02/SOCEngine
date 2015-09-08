@@ -14,7 +14,7 @@ namespace Rendering
 			virtual ~OffScreen();
 
 		public:
-			void Initialize(const GPGPU::DirectCompute::CSRWTexture* offScreen);
+			void Initialize(const Rendering::Texture::RenderTexture* inputRenderTexture);
 		};
 	}
 }

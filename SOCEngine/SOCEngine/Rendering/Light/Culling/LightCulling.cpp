@@ -40,7 +40,7 @@ void LightCulling::AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::Inp
 	outBuffer = &_inputBuffers.back();
 }
 
-void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::DirectCompute::ComputeShader::InputTexture** outTexture, uint idx, const Texture::Texture2D* texture)
+void LightCulling::AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture)
 {
 	ComputeShader::InputTexture inputTex;
 	{
@@ -49,14 +49,10 @@ void LightCulling::_Set_InputTexture_And_Append_To_InputTextureList(GPGPU::Direc
 	}
 
 	_inputTextures.push_back(inputTex);
-
-	if(outTexture)
-		(*outTexture) = &_inputTextures.back();
 }
 
 void LightCulling::Initialize(const std::string& filePath, const std::string& mainFunc,
 							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
-							  RenderType renderType,
 							  const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
 	ResourceManager* resourceManager = ResourceManager::GetInstance();
@@ -71,19 +67,6 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 		if(blendedDepthBuffer)
 			macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
-
-		if(renderType == RenderType::TBDR)
-		{
-			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
-		}
-		else if(renderType == RenderType::ForwardPlus)
-		{
-			macros.push_back(ShaderMacro("USE_FORWARD_PLUS", ""));
-		}
-		else
-		{
-			ASSERT_MSG("Can't suuport this render type");
-		}
 
 		if(opationalMacros)
 			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
@@ -118,13 +101,13 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		{
 			// Opaque Depth Buffer
 			idx = (uint)InputTextureShaderIndex::GBuffer_Depth;
-			_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, opaqueDepthBuffer);
+			AddTextureToInputTextureList(idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
 			{
 				idx = (uint)InputTextureShaderIndex::GBuffer_BlendedDepth;
-				_Set_InputTexture_And_Append_To_InputTextureList(nullptr, idx, blendedDepthBuffer);
+				AddTextureToInputTextureList(idx, blendedDepthBuffer);
 			}
 		}
 	}
@@ -148,8 +131,7 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
-							const Buffer::ConstBuffer* tbrConstBuffer,
-							const Buffer::ConstBuffer* cameraConstBuffer)
+							const Buffer::ConstBuffer* tbrConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -161,10 +143,6 @@ void LightCulling::Dispatch(const Device::DirectX* dx,
 
 			icb.buffer = tbrConstBuffer;
 			icb.idx = (uint)InputConstBufferShaderIndex::TBRParam;
-			inputConstBuffers.push_back(icb);
-
-			icb.buffer = cameraConstBuffer;
-			icb.idx = (uint)InputConstBufferShaderIndex::Camera;
 			inputConstBuffers.push_back(icb);
 		}
 

@@ -20,7 +20,8 @@ namespace Rendering
 			virtual ~Texture2D();
 
 		protected:
-			void Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags = 0);
+			// if SampleCount = -1, sampleCount = msaa.count
+			void Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags, unsigned int sampleCount);
 
 		public:
 			Math::Size<uint> FetchSize() const;

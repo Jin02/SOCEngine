@@ -9,10 +9,10 @@ namespace Rendering
 	public:
 		enum class InputTextureShaderIndex : uint
 		{ 
-			Diffuse		= 0,
-			Normal		= 1,
-			Specular	= 2,
-			Opacity		= 3
+			Diffuse		= 8,
+			Normal		= 9,
+			Specular	= 10,
+			Opacity		= 11
 		};
 
 		enum class InputConstBufferShaderIndex : uint

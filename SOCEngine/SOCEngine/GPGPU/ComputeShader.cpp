@@ -85,7 +85,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
 	{
 		for(auto iter = _outputs.begin(); iter != _outputs.end(); ++iter)
-			context->CSSetUnorderedAccessViews(iter->idx, 0, &nullUAV, nullptr);
+			context->CSSetUnorderedAccessViews(iter->idx, 1, &nullUAV, nullptr);
 	}
 	context->CSSetShader(nullptr, nullptr, 0);
 }

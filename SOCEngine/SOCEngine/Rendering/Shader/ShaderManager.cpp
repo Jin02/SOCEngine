@@ -51,12 +51,12 @@ bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath,
 	}
 
 	ID3DBlob* pErrorBlob = nullptr;
-
-	HRESULT hr = D3DX11CompileFromMemory(
+	
+	HRESULT hr = D3DCompile(
 		shaderCode.data(), shaderCode.size(),
-		fileFullPath.c_str(), d3dMacros.data(), nullptr, funcName.data(),
-		shaderModel.data(), dwShaderFlags, 0, nullptr,
-		outBlob, &pErrorBlob, nullptr);
+		fileFullPath.c_str(), d3dMacros.data(), D3D_COMPILE_STANDARD_FILE_INCLUDE, funcName.data(),
+		shaderModel.data(), dwShaderFlags, 0,
+		outBlob, &pErrorBlob);
 
 	if( FAILED(hr) )
 	{

@@ -15,21 +15,24 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags)
+bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags, uint sampleCount)
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | optionalBindFlags;
 	
-	Texture2D::Initialize(size, format, bindFlags);
+	Texture2D::Initialize(size, format, bindFlags, sampleCount);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+
 	renderTargetViewDesc.Format = format;
 
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	D3D11_TEXTURE2D_DESC texDesc;
+	_texture->GetDesc(&texDesc);
 
-	renderTargetViewDesc.ViewDimension = (dx->GetMSAADesc().Count > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.ViewDimension = (texDesc.SampleDesc.Count > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	ID3D11Device* device = dx->GetDevice();
+	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
 
 	if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
 	{

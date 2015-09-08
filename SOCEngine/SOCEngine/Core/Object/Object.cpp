@@ -73,25 +73,26 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::UpdateTransformCB(TransformPipelineParam& transformParam)
+void Object::UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& projMat)
 {
 	if(_use == false)
 		return;
 
-	_transform->FetchWorldMatrix(transformParam.worldMat);
+	Math::Matrix worldMat;
+	_transform->FetchWorldMatrix(worldMat);
 
 	TransformPipelineShaderInput transposeTransform;
 	{
-		Matrix::Transpose(transposeTransform.worldMat, transformParam.worldMat);
+		Matrix::Transpose(transposeTransform.worldMat, worldMat);
 
-		Matrix worldView = transformParam.worldMat * transformParam.viewMat;
+		Matrix worldView = worldMat * viewMat;
 		Matrix::Transpose(transposeTransform.worldViewMat, worldView);
 
-		Matrix worldViewProj = worldView * transformParam.projMat;
+		Matrix worldViewProj = worldView * projMat;
 		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
 	}
 
-	bool updateCB = memcmp(&_prevTransformParam, &transformParam, sizeof(TransformPipelineParam)) != 0;
+	bool updateCB = memcmp(&_prevTransformParam, &transposeTransform, sizeof(TransformPipelineShaderInput)) != 0;
 
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
@@ -102,10 +103,12 @@ void Object::UpdateTransformCB(TransformPipelineParam& transformParam)
 	}
 
 	if(updateCB)
-		_prevTransformParam = transformParam;
+	{
+		memcpy(&_prevTransformParam, &transposeTransform, sizeof(TransformPipelineShaderInput));
+	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->UpdateTransformCB(transformParam);
+		(*iter)->UpdateTransformCB(viewMat, projMat);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)

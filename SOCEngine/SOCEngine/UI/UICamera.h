@@ -19,8 +19,8 @@ namespace Rendering
 			virtual ~UICamera(void);
 		
 		public:
-			virtual void Initialize();
-			virtual void Destroy();
+			virtual void OnInitialize();
+			virtual void OnDestroy();
 
 		public:
 			void Update(float delta);

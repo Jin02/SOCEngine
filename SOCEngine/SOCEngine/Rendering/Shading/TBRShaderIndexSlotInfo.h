@@ -27,10 +27,9 @@ namespace Rendering
 
 		enum class InputConstBufferShaderIndex : unsigned int
 		{
-			Camera							= 0,
+			TBRParam						= 0
 		//	Transform						= 1,
 		//	PhysicallyBasedMaterial			= 2,
-			TBRParam						= 3
 		};
 	}
 }

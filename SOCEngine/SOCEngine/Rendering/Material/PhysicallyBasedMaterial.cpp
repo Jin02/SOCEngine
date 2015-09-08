@@ -9,7 +9,7 @@ using namespace Rendering::Shader;
 PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 {
 	mainColor.r = mainColor.g = mainColor.b = 1.0f;
-	metallic = roughness = fresnel0 = 0.0f;
+	metallic = roughness = fresnel0 = 1.0f;
 	uvTiling.x = uvTiling.y = 1.0f;
 }
 
