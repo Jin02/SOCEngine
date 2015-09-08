@@ -172,9 +172,6 @@
     <Filter Include="Rendering\Texture\RenderTarget">
       <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\Mgr">
-      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Frustum">
       <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
     </Filter>
@@ -312,6 +309,12 @@
     </Filter>
     <Filter Include="Rendering\PostProcessing\BackBufferMaker">
       <UniqueIdentifier>{6dc42fd7-ce2d-4f11-8bb2-7ba4c8f7b85b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectXTK">
+      <UniqueIdentifier>{197c00a3-ca0a-4d6e-879e-19980317d55a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Manager">
+      <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -496,7 +499,7 @@
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\TextureManager.h">
-      <Filter>Rendering\Texture\Mgr</Filter>
+      <Filter>Rendering\Texture\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera\Manager</Filter>
@@ -705,6 +708,15 @@
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h">
       <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
     </ClInclude>
+    <ClInclude Include="External\DirectXTK\WICTextureLoader.h">
+      <Filter>External\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTK\DirectXHelpers.h">
+      <Filter>External\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTK\PlatformHelpers.h">
+      <Filter>External\DirectXTK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -849,7 +861,7 @@
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureManager.cpp">
-      <Filter>Rendering\Texture\Mgr</Filter>
+      <Filter>Rendering\Texture\Manager</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
@@ -943,6 +955,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp">
       <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp">
+      <Filter>External\DirectXTK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
