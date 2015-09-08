@@ -248,9 +248,6 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				if(renderType != RenderType::Transparency_DepthOnly)
 				{
-					ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-					context->PSSetSamplers(0, 1, &samplerState);
-
 					shaders.ps->SetShaderToContext(context);
 					shaders.ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
 				}
@@ -274,9 +271,8 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->OMSetRenderTargets(NumOfRenderTargets, renderTargetViews, dsv);
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 
-		//ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-		//context->PSSetSamplers(0, 1, &samplerState);
-
+		ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
+		context->PSSetSamplers(0, 1, &samplerState);
 
 		//Opaque Mesh
 		{
