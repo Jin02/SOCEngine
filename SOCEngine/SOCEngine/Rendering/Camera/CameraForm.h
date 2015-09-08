@@ -36,7 +36,7 @@ namespace Rendering
 			Texture::RenderTexture*			_renderTarget;
 			RenderQueue						_transparentMeshQueue;
 			
-			Math::Matrix					_viewProjMatrixInPrevRenderState;
+			Math::Matrix					_viewProjMat;
 
 		protected:
 			float							_fieldOfViewDegree;
@@ -66,7 +66,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void UpdateTransformCB(const std::vector<Core::Object*>& objects);
+			virtual void UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager) = 0;
 
 		protected:

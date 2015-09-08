@@ -58,6 +58,9 @@ void CameraForm::GetProjectionMatrix(Math::Matrix& outMatrix) const
 	if(_projectionType == ProjectionType::Perspective)
 	{
 		float fovRadian = Math::Common::Deg2Rad(_fieldOfViewDegree);
+
+		// inverted depth
+		// reverse near and far
 		Matrix::PerspectiveFovLH(outMatrix, _aspect, fovRadian, _clippingFar, _clippingNear);
 	}
 	else if(_projectionType == ProjectionType::Orthographic)
@@ -99,14 +102,14 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 	GetViewMatrix(outMatrix, worldMat);
 }
 
-void CameraForm::UpdateTransformCB(const std::vector<Core::Object*>& objects)
+void CameraForm::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
 	Matrix projMat, viewMat;
 	GetProjectionMatrix(projMat);
 	GetViewMatrix(viewMat);
 
-	_viewProjMatrixInPrevRenderState = viewMat * projMat;
-	_frustum->Make(_viewProjMatrixInPrevRenderState);
+	_viewProjMat = viewMat * projMat;
+	_frustum->Make(_viewProjMat);
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{

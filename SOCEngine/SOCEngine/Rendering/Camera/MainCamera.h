@@ -42,6 +42,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
+			virtual void UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager);
 
 		public:
