@@ -21,7 +21,7 @@ namespace Rendering
 			~TextureManager();
 
 		public:
-			Texture::Texture2D* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha, bool onlyUseSRV);
+			Texture::Texture2D* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha);
 			Texture::Texture2D* Find(const std::string& name);
 			void Remoave(const std::string& name);
 			void RemoveAll();
