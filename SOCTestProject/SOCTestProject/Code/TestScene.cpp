@@ -34,7 +34,7 @@ void TestScene::OnInitialize()
 	MeshImporter importer;
 	importer.Initialize();
 
-	testObject = importer.Load("./Resource/capsule.obj", "./Resource/");
+	testObject = importer.Load("./Resources/capsule.obj", "./Resources/");
 	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 	AddObject(testObject);
 
