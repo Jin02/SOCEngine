@@ -187,6 +187,11 @@ namespace Math
 		out._41 = origin._14;
 		out._42 = origin._24;
 		out._43 = origin._34;
+
+		out._11 = origin._11;
+		out._22 = origin._22;
+		out._33 = origin._33;
+		out._44 = origin._44;
 	}
 
 	void Matrix::Set( float _11, float _12, float _13, float _14,
