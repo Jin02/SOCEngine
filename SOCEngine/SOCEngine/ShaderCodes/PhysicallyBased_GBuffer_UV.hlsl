@@ -29,9 +29,10 @@ GBuffer PS( VS_OUTPUT input) : SV_Target
 	float4 diffuseTex = diffuseTexture.Sample(GBufferDefaultSampler, input.uv);
 
 #ifdef ENABLE_ALPHA_TEST
-	//float alpha = diffuseTex.a * opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
-	//if(alpha < ALPHA_TEST_BIAS)
-	//	discard;
+	float opacityMap = 1.0f - opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
+	float alpha = diffuseTex.a * opacityMap;
+	if(alpha < ALPHA_TEST_BIAS)
+		discard;
 #endif
 
 	outGBuffer.albedo_metallic.rgb	= diffuseTex.rgb * material_mainColor;
