@@ -25,8 +25,6 @@ namespace Core
 
 		std::vector<Component*>			_components;
 
-		TransformPipelineShaderInput	_prevTransformParam;
-
 	public:
 		Object(const std::string& name, const Object* parent = NULL);
 		virtual ~Object(void);
