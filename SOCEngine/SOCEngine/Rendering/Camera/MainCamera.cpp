@@ -94,10 +94,11 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 	{
 		_owner->GetTransform()->FetchWorldMatrix(worldMat);
 		CameraForm::GetViewMatrix(viewMat, worldMat);
-		GetProjectionMatrix(projMat);
+		GetProjectionMatrix(projMat, false);
 
+		_frustum->Make(viewMat * projMat);
+		GetProjectionMatrix(projMat, true);
 		_viewProjMat = viewMat * projMat;
-		_frustum->Make(_viewProjMat);
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		{
@@ -202,7 +203,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 	
 	enum class RenderType { AlphaMesh, Opaque, Transparency, Transparency_DepthOnly };
-	auto RenderMesh = [&](const std::vector<const Mesh::Mesh*>& meshes, RenderType renderType)
+	auto RenderMesh = [&](const std::vector<const Mesh::Mesh*>& meshes, ID3D11SamplerState* samplerState, RenderType renderType)
 	{
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter)
 		{
@@ -250,13 +251,15 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 				{
 					shaders.ps->SetShaderToContext(context);
 					shaders.ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+					context->PSSetSamplers(0, 1, &samplerState);
 				}
 
 				context->DrawIndexed(filter->GetIndexCount(), 0, 0);
 			}
 		}
 	};
-
+	
+	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
 
 	//GBuffer
 	{
@@ -271,13 +274,10 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->OMSetRenderTargets(NumOfRenderTargets, renderTargetViews, dsv);
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 
-		ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-		context->PSSetSamplers(0, 1, &samplerState);
-
 		//Opaque Mesh
 		{
 			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetOpaqueMeshes().meshes.GetVector();
-			RenderMesh(meshes, RenderType::Opaque);
+			RenderMesh(meshes, samplerState, RenderType::Opaque);
 		}
 
 		//Alpha Test Mesh
@@ -293,7 +293,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				context->RSSetState( dx->GetRasterizerStateDisableCulling() );
 		
-				RenderMesh(meshes, RenderType::AlphaMesh);
+				RenderMesh(meshes, samplerState, RenderType::AlphaMesh);
 
 				context->RSSetState(nullptr);
 
@@ -310,7 +310,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
 			
 			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
-			RenderMesh(meshes, RenderType::Transparency_DepthOnly);
+			RenderMesh(meshes, samplerState, RenderType::Transparency_DepthOnly);
 		}
 	}
 
@@ -368,7 +368,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
 				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
-			RenderMesh(meshes, RenderType::Transparency);
+			RenderMesh(meshes, samplerState, RenderType::Transparency);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
