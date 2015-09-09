@@ -308,6 +308,22 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	//float3 result = (accumulativeDiffuse * diffuseColor) + (specularColor * specularColor);
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 
+#if defined(DEBUG_MODE)
+	int debugLightCount = directionalLightCount + pointLightCountInThisTile + (s_lightIndexCounter - pointLightCountInThisTile);
+	if(debugLightCount > 0)
+		result += float3(0.2f, 0.2f, 0.2f);
+	if(debugLightCount > 5)
+		result += float3(0.2f, 0.2f, 0.2f);
+	if(debugLightCount > 10)
+		result += float3(0.2f, 0.2f, 0.2f);
+	if(debugLightCount > 15)
+		result += float3(0.2f, 0.2f, 0.2f);
+	if(debugLightCount > 20)
+		result += float3(0.2f, 0.2f, 0.2f);
+	if(debugLightCount > 25)
+		result += float3(0.2f, 0.2f, 0.2f);	
+#endif
+
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
 	uint2 scale_2_idx = globalIdx.xy * uint2(2, 2);
