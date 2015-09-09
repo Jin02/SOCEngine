@@ -175,7 +175,12 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 
 	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
 	{
-		Core::Object* child = LoadMesh((*iter), materials[iter->mesh.material_ids[0]], fileName, materialType, isDynamicMesh);
+		int materialIdx = iter->mesh.material_ids[0];
+
+		if(materialIdx < 0)
+			materialIdx = 0;
+
+		Core::Object* child = LoadMesh((*iter), materials[materialIdx], fileName, materialType, isDynamicMesh);
 		parent->AddChild(child);
 	}
 
