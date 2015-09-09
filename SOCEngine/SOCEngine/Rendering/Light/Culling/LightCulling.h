@@ -47,13 +47,13 @@ namespace Rendering
 			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>					_inputTextures;
 			std::vector<GPGPU::DirectCompute::ComputeShader::Output>						_outputs;
 
-			GPGPU::DirectCompute::ComputeShader*								_computeShader;
+			GPGPU::DirectCompute::ComputeShader*											_computeShader;
 
-			bool																_useBlendedMeshCulling;
+			bool																			_useBlendedMeshCulling;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputPointLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
 
 		public:
 			LightCulling();
