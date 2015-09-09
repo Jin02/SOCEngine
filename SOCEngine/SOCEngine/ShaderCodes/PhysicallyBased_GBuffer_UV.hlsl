@@ -34,8 +34,8 @@ GBuffer PS( VS_OUTPUT input) : SV_Target
 	//	discard;
 #endif
 
-	outGBuffer.albedo_metallic.rgb	= float3(1, 0, 0);//diffuseTex.rgb * material_mainColor;
-	outGBuffer.albedo_metallic.a	= 1.0f;//material_metallic;
+	outGBuffer.albedo_metallic.rgb	= diffuseTex.rgb * material_mainColor;
+	outGBuffer.albedo_metallic.a	= material_metallic;
 
 	outGBuffer.specular_fresnel0	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 	outGBuffer.specular_fresnel0.a 	= material_fresnel0;
