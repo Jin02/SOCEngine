@@ -27,20 +27,20 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	Object* camObj = new Object("Default");
-	MainCamera* cam = camObj->AddComponent<MainCamera>();
-	camObj->GetTransform()->UpdateDirection(Vector3(0, 0, 1));
+	camera = new Object("Default");
+	MainCamera* cam = camera->AddComponent<MainCamera>();
+	camera->GetTransform()->UpdateDirection(Vector3(0, 0, 1));
 
 	MeshImporter importer;
 	importer.Initialize();
-	Object* sphere = importer.Load("./Resource/sphere.obj", "./Resource/");
-	sphere->GetTransform()->UpdatePosition(Vector3(0, 0, 3));
-	sphere->GetTransform()->UpdateScale(Vector3(1.5f, 1.5f, 1.5f));	
-	AddObject(sphere);
 
-	Object* lightObj = new Object("Directional Light");
-	DirectionalLight* dl = lightObj->AddComponent<DirectionalLight>();
-	AddObject(lightObj);
+	testObject = importer.Load("./Resource/capsule.obj", "./Resource/");
+	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+	AddObject(testObject);
+
+	light = new Object("Directional Light");
+	DirectionalLight* dl = light->AddComponent<DirectionalLight>();
+	AddObject(light);
 }
 
 void TestScene::OnRenderPreview()
@@ -53,6 +53,10 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
+	static float x = 0.0f;
+
+	x += 0.01f;
+	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(0, x, 0));
 }
 
 void TestScene::OnRenderPost()
