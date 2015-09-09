@@ -134,7 +134,7 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 		Matrix invViewProj;
 		Matrix::Inverse(invViewProj, _viewProjMat);
 
-		tbrParam.invViewProjViewport = invViewProj * invViewportMat;
+		tbrParam.invViewProjViewport = invViewportMat * invViewProj;
 		tbrParam.viewportSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
 		tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
