@@ -58,8 +58,6 @@ void Scene::Update(float dt)
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
 		(*iter)->Update(dt);
-
-	_lightManager->UpdateBuffer(_dx);
 }
 
 void Scene::RenderPreview()
@@ -69,6 +67,8 @@ void Scene::RenderPreview()
 	auto materials = _materialMgr->GetMaterials().GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		(*iter)->UpdateConstBuffer(_dx);
+
+	_lightManager->UpdateBuffer(_dx);
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)

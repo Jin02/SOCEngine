@@ -38,8 +38,15 @@ void TestScene::OnInitialize()
 	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 	AddObject(testObject);
 
-	light = new Object("Directional Light");
-	DirectionalLight* dl = light->AddComponent<DirectionalLight>();
+	light = new Object("Light");
+	DirectionalLight* pl = light->AddComponent<DirectionalLight>();
+	//pl->SetRadius(3.0f);
+	//pl->SetSpotAngleDegree(30.0f);
+	//pl->SetFalloff(2.0f);
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+//	light->GetTransform()->UpdatePosition(Vector3(2, 0, 3));
+	light->GetTransform()->UpdateEulerAngles(Vector3(140, 270, 0));
+
 	AddObject(light);
 }
 
@@ -53,10 +60,10 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
-	static float x = 0.0f;
+	//static float x = 0.0f;
 
-	x += 0.01f;
-	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(0, x, 0));
+	//x += 0.01f;
+	//testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(0, x, 0));
 }
 
 void TestScene::OnRenderPost()

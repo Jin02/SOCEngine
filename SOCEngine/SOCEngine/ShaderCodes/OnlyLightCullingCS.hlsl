@@ -1,5 +1,7 @@
 //EMPTY_META_DATA
 
+RWBuffer<uint> g_outPerLightIndicesInTile : register(u0);
+
 #define USE_ATOMIC
 
 #if defined(USE_PARALLEL)
@@ -17,10 +19,8 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 						uint3 localIdx	: SV_GroupThreadID,
 						uint3 groupIdx	: SV_GroupID)
 {
-	float minZ, maxZ;
 	uint pointLightCountInThisTile = 0;
-
-	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile);
 
 #if defined(USE_PARALLEL)
 	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES_HALF;
