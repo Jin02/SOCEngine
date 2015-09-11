@@ -3,6 +3,8 @@
 #include "LightCullingCompareAtomicCS.h"
 #include "BRDF.h"
 
+//#define DEBUG_MODE
+
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
@@ -35,13 +37,13 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 					  in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
+
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
+	float lightRadius				= lightCenterWithRadius.w;
 
 	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
 	float distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
-
-	float lightRadius				= lightCenterWithRadius.w;
 
 	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
 	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
@@ -55,12 +57,12 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 
-		float x = distanceOfLightAndVertex / lightRadius;
-		float k = 100.0f - commonParams.lightIntensity; //testing
-		float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
+		//float x = distanceOfLightAndVertex / lightRadius;
+		//float k = 100.0f - commonParams.lightIntensity; //testing
+		//float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
 
-		resultDiffuseColor	*= falloff;
-		resultSpecularColor	*= falloff;
+		//resultDiffuseColor	*= falloff;
+		//resultSpecularColor	*= falloff;
 	}
 }
 
@@ -74,7 +76,7 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
 
 		bool isDirZMinus	= spotLightParam.w < 0;
-		spotLightDir.z		= spotLightDir.z * (1 - (2 * (uint)isDirZMinus));
+		spotLightDir.z		= spotLightDir.z * (1.0f - (float)(2.0f * (uint)isDirZMinus));
 	}
 
 	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
@@ -102,12 +104,12 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 
-		float falloffCoef = abs(spotLightParam.w);
-		float x = distanceOfLightAndVertex / lightRadius;
-		float falloff = -(1.0f / falloffCoef) * (1.0f - (falloffCoef + 1) / (1.0f + falloffCoef * x * x) );
+		//float k = 100.0f - abs(spotLightParam.w);
+		//float x = distanceOfLightAndVertex / lightRadius;
+		//float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
 
-		resultDiffuseColor	*= falloff;
-		resultSpecularColor	*= falloff;
+		//resultDiffuseColor	*= falloff;
+		//resultSpecularColor	*= falloff;
 	}
 }
 
@@ -174,7 +176,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight();
-	for(uint directionalLightIdx=0; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
+	uint directionalLightIdx = (int)(depth == 0) * directionalLightCount;
+	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
@@ -194,24 +197,35 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 }
 #endif
 
+#if defined(DEBUG_MODE)
+groupshared bool isRenderDL;
+#endif
+
 [numthreads(TILE_RES, TILE_RES, 1)]
 void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID, 
 								uint3 localIdx	: SV_GroupThreadID,
 								uint3 groupIdx	: SV_GroupID)
 {
-	float minZ, maxZ;
 	uint pointLightCountInThisTile = 0;
 
-#if (MSAA_SAMPLES_COUNT > 1)
 	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
 	if(idxInTile == 0)
+	{
+#if (MSAA_SAMPLES_COUNT > 1) // MSAA
 		s_edgePixelCounter = 0;
 #endif
+#if defined(DEBUG_MODE)
+		isRenderDL = false;
+#endif
+		s_lightIndexCounter	= 0;
+		s_minZ = 0x7f7fffff; //float max as uint
+		s_maxZ = 0;
+	}
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	bool isDetectedEdge = LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+	bool isDetectedEdge = LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile);
 #else
-	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile, minZ, maxZ);
+	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile);
 #endif
 	GroupMemoryBarrierWithGroupSync();
 
@@ -267,8 +281,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
 
-	uint startIdx = 0;
-	for(uint pointLightIdx=startIdx; pointLightIdx<pointLightCountInThisTile; pointLightIdx++)
+	uint pointLightIdx = (int)(depth == 0.0f) * pointLightCountInThisTile;
+	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
 		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 
@@ -279,7 +293,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint spotLightIdx=pointLightCountInThisTile; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
+	uint spotLightIdx = pointLightCountInThisTile;//((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
+	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
 
@@ -291,7 +306,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight();
-	for(uint directionalLightIdx=0; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
+	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
+	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx) //이게 왜 1이냐고
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
@@ -300,6 +316,10 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 		accumulativeDiffuse			+= diffuse;
 		accumulativeSpecular		+= specular;
+
+#if defined(DEBUG_MODE)
+		isRenderDL = true;
+#endif
 	}
 
 	//float3 diffuseColor = albedo - albedo * metallic;
@@ -307,22 +327,6 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	//float3 result = (accumulativeDiffuse * diffuseColor) + (specularColor * specularColor);
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
-
-#if defined(DEBUG_MODE)
-	int debugLightCount = directionalLightCount + pointLightCountInThisTile + (s_lightIndexCounter - pointLightCountInThisTile);
-	if(debugLightCount > 0)
-		result += float3(0.2f, 0.2f, 0.2f);
-	if(debugLightCount > 5)
-		result += float3(0.2f, 0.2f, 0.2f);
-	if(debugLightCount > 10)
-		result += float3(0.2f, 0.2f, 0.2f);
-	if(debugLightCount > 15)
-		result += float3(0.2f, 0.2f, 0.2f);
-	if(debugLightCount > 20)
-		result += float3(0.2f, 0.2f, 0.2f);
-	if(debugLightCount > 25)
-		result += float3(0.2f, 0.2f, 0.2f);	
-#endif
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
@@ -371,14 +375,37 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 
 #else // off MSAA
-	//g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+
+
+#if defined(DEBUG_MODE)
+	float3 debugTiles = float3(0, 0, 0);
+	int debugLightCount = s_lightIndexCounter;
+						//+ (s_lightIndexCounter - pointLightCountInThisTile)
+						//+ (int)isRenderDL * directionalLightCount;
+
+	if(debugLightCount > 0)
+		debugTiles = float3(1, 0, 0);
+	if(debugLightCount > 1)
+		debugTiles = float3(0, 1, 0);
+	if(debugLightCount > 2)
+		debugTiles = float3(0, 0, 1);
+	if(debugLightCount > 3)
+		debugTiles = float3(0, 1, 1);
+	if(debugLightCount > 4)
+		debugTiles = float3(1, 1, 0);
+	if(debugLightCount > 5)
+		debugTiles = float3(1, 1, 1);	
+
+	g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
+#else
+	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+#endif
 
 	//uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
 	//float testPixel = (float)idxInTile / (float)(TILE_RES * TILE_RES);
 	//g_tOutScreen[globalIdx.xy] = float4(testPixel, testPixel, testPixel, 1.0f);
 
 	//albedo, normal
-	g_tOutScreen[globalIdx.xy] = float4(albedo, 1.0f);
-
+	//g_tOutScreen[globalIdx.xy] = float4(normal_roughness.xyz, 1.0f);
 #endif
 }
