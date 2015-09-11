@@ -26,7 +26,7 @@ DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
 DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0
 */
 
-#define DIFFUSE_BURLEY
+#define DIFFUSE_OREN_NAYAR
 #define DISTRIBUTION_GGX
 #define GEOMETRY_COOK_TORRANCE
 #define DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
@@ -75,7 +75,7 @@ float GeometryNeumann(float NdotL, float NdotV)
 {
 	//float d = max(NdotL, NdotV);
 	//return NdotL * NdotV / denominator;
-	return 1.0f / (4 * max(NdotL, NdotV));
+	return 1.0f / (4.0f * max(NdotL, NdotV));
 }
 
 // Cook and Torrance 1982, "A Reflectance Model for Computer Graphics"
@@ -108,8 +108,8 @@ float GeometrySchlick(float NdotL, float NdotV, float roughness)
 // Smith 1967, Geometrical shadowing of a random rough surface
 float GeometryGGXSmith(float NdotV, float NdotL, float roughness)
 {
-	float m = roughness;
-	float m2 = roughness;
+	float m = roughness * roughness;
+	float m2 = m * m;
 
 	float NoVTerm = NdotV + sqrt(NdotV * (NdotV - NdotV * m2) + m2);
 	float NoLTerm = NdotL + sqrt(NdotL * (NdotL - NdotL * m2) + m2);
@@ -163,6 +163,8 @@ float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float
 	return diffuseColor / PI * (NdotL * A + B);
 }
 
+
+
 float3 Diffuse(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotH, float VdotL)
 {
 #if defined(DIFFUSE_LAMBERT)
@@ -170,14 +172,15 @@ float3 Diffuse(float3 diffuseColor, float roughness, float NdotV, float NdotL, f
 #elif defined(DIFFUSE_BURLEY)
 	return DiffuseBurley(diffuseColor, roughness, NdotV, NdotL, VdotH);
 #elif defined(DIFFUSE_OREN_NAYAR)
-	return DiffuseOrenNayer(diffuseColor, roughness, NdotV, NdotL, VdotL);
+	return DiffuseOrenNayar(diffuseColor, roughness, NdotV, NdotL, VdotL);
 #endif
 }
 
 float Distribution(float roughness, float NdotH)
 {
-	float m = roughness * roughness;
-	float m2 = m * m;
+	//float m = roughness * roughness;
+	//float m2 = m * m;
+	float m2 = roughness * roughness;
 
 #if defined(DISTRIBUTION_BECKMANN)
 	return DistributionBeckmann(m2, NdotH);
@@ -211,39 +214,41 @@ float Fresnel(float f0, float LdotH)
 	return FresnelSchlick(f0, LdotH); //Default
 }
 
-float DiffuseEnergyConservation(float f0, float NdotH)
+float DiffuseEnergyConservation(float f0, float NdotL)
 {
 #if defined(DIFFUSE_ENERGY_CONSERVATION_NONE)
 	return 1.0f;
 #elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL)
-	return 1.0f - Fresnel(f0, NdotH);
+	return 1.0f - Fresnel(f0, NdotL);
 #elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0)
 	return 1.0f - f0;
 #endif
 }
-
 
 void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 				  in LightingParams lightingParams, in LightingCommonParams commonParamas)
 {
 	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
 
-	float NdotL			= saturate(dot(lightingParams.normal,	commonParamas.lightDir));
-	float NdotH			= saturate(dot(lightingParams.normal,	halfVector));
-	float NdotV			= saturate(dot(lightingParams.normal,	lightingParams.viewDir));
-	float VdotH			= saturate(dot(lightingParams.viewDir,	halfVector));
-	float LdotH			= saturate(dot(commonParamas.lightDir,	halfVector));
-	float VdotL			= saturate(dot(lightingParams.viewDir,	commonParamas.lightDir));
+	float NdotL			= max(0.0f,	dot(lightingParams.normal,	commonParamas.lightDir));
+	float NdotH			= max(0.0f,	dot(lightingParams.normal,	halfVector));
+	float NdotV			= max(0.0f,	dot(lightingParams.normal,	lightingParams.viewDir));
+	float VdotH			= max(0.0f,	dot(lightingParams.viewDir,	halfVector));
+	float LdotH			= max(0.0f,	dot(commonParamas.lightDir,	halfVector));
+	float VdotL			= max(0.0f,	dot(lightingParams.viewDir,	commonParamas.lightDir));
 
-	float	Fr = Fresnel(lightingParams.fresnel0, LdotH) * 
-		Geometry(lightingParams.roughness, NdotH, NdotV, NdotL, VdotH) * 
-		Distribution(lightingParams.roughness, NdotH) 
-		/ (4.0f * NdotL * NdotV);
+	float fresnel0		= 0.8f;//lightingParams.fresnel0;
+	float roughness		= 0.1f;//lightingParams.roughness;
+	float intensity		= 8.0f;//commonParamas.lightIntensity * 8.0f;
 
-	float diffuseEnergyConservation = DiffuseEnergyConservation(lightingParams.fresnel0, NdotH);
-	resultDiffuseColor	= Diffuse(lightingParams.diffuseColor, lightingParams.roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * diffuseEnergyConservation.xxx * commonParamas.lightIntensity.xxx;
+	float	Fr = Fresnel(fresnel0, LdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
 
-	resultSpecularColor	= Fr * NdotL * lightingParams.specularColor * commonParamas.lightColor * commonParamas.lightIntensity.xxx;
+	//float intensity = commonParamas.lightIntensity * 8.0f;
+	//float diffuseEnergyConservation = DiffuseEnergyConservation(lightingParams.fresnel0, NdotL);
+	//resultDiffuseColor = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * intensity * diffuseEnergyConservation;
+	float diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
+	resultDiffuseColor = Diffuse(float3(1, 1, 1), roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * intensity * diffuseEnergyConservation;
+	resultSpecularColor	= Fr * /*lightingParams.specularColor*/float3(1, 1, 1) * commonParamas.lightColor * intensity;
 }
 
 #endif

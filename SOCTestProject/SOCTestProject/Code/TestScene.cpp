@@ -45,7 +45,7 @@ void TestScene::OnInitialize()
 	//pl->SetFalloff(2.0f);
 	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 //	light->GetTransform()->UpdatePosition(Vector3(2, 0, 3));
-	light->GetTransform()->UpdateEulerAngles(Vector3(140, 270, 0));
+	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
 	AddObject(light);
 }
