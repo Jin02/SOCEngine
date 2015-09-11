@@ -21,24 +21,19 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
-			struct TBRChangeableParam
-			{
+			struct TBRParam
+			{	
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
-				unsigned int 		lightNum;
-				Math::Vector4		camWorldPosition;
-
-				TBRChangeableParam(){}
-				~TBRChangeableParam(){}
-			};
-
-			struct TBRParam : TBRChangeableParam
-			{	
 				Math::Matrix 		invViewProjViewport;
 
 				Math::Size<float>	viewportSize;
+				unsigned int 		packedNumOfLights;
 				unsigned int 		maxNumOfperLightInTile;
-				TBRParam() : TBRChangeableParam() {}
+
+				Math::Vector4		camWorldPosition;
+
+				TBRParam(){}
 				~TBRParam(){}
 			};
 
