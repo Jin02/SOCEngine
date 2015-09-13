@@ -70,7 +70,7 @@ void UICamera::Render(const Device::DirectX* dx, const RenderManager* renderMana
 		GetViewMatrix(viewMat);
 
 		Math::Matrix projMat;
-		GetProjectionMatrix(projMat);
+		GetProjectionMatrix(projMat, true);
 
 		viewProjMat = viewMat * projMat;
 	}

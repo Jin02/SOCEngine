@@ -30,7 +30,7 @@ LightManager::~LightManager(void)
 
 void LightManager::InitializeAllShaderResourceBuffer()
 {
-	const int dummyData[POINT_LIGHT_BUFFER_MAX_NUM] = {0, };
+	const __int32 dummyData[POINT_LIGHT_BUFFER_MAX_NUM * 4] = {0, };
 
 	// Point Light
 	{
@@ -112,8 +112,7 @@ void LightManager::Add(const LightForm* light, const char* key)
 	bool found = HasKey(searchKey);
 	ASSERT_COND_MSG(found == false, "Already has Key");
 
-	//1을 더하는건, UpdateBuffer에서 비교할때 버그 안생기게 하려고 -ㅠ-..
-	uint counter = light->GetOwner()->GetTransform()->GetUpdateCounter() + 1;
+	uint counter = -1;
 	_lights.Add(searchKey, Lights(light, counter));
 }
 
@@ -230,7 +229,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		// Transform
 		{
 			const void* data = _directionalLightTransformBuffer.GetVector().data();
-			_directionalLightColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
+			_directionalLightTransformBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
 		}
 
 		// Color
@@ -253,7 +252,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		// Transform
 		{
 			const void* data = _pointLightTransformBuffer.GetVector().data();
-			_pointLightColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
+			_pointLightTransformBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
 		}
 
 		// Color
@@ -270,7 +269,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		// Transform
 		{
 			const void* data = _spotLightTransformBuffer.GetVector().data();
-			_spotLightColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
+			_spotLightTransformBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(LightForm::LightTransformBuffer));
 		}
 
 		// Color

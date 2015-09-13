@@ -55,7 +55,7 @@ namespace Rendering
 			void SortTransparentMeshRenderQueue(const Manager::RenderManager* renderMgr);
 
 		public:
-			void GetProjectionMatrix(Math::Matrix &outMatrix) const;
+			void GetProjectionMatrix(Math::Matrix &outMatrix, bool isInverted) const;
 
 			static void  GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void GetViewMatrix(Math::Matrix& outMatrix) const;

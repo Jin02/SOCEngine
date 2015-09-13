@@ -28,7 +28,7 @@ cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 Texture2D diffuseTexture			: register( t8 );
 Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
-Texture2D opacityTexture			: register( t11 ); //inverse, 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
+Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
 float3 ComputeFaceNormal(float3 position)
 {

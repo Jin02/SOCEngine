@@ -13,10 +13,8 @@ namespace Structure
 	class VectorHashMap
 	{
 	protected:
-		std::vector<Object>										_vector;
-
-		//pair second value is vector index
-		std::hash_map<Key, std::pair<Object*, uint>>			_map;
+		std::vector<Object>			_vector;
+		std::hash_map<Key, uint>	_map;
 
 	public:
 		VectorHashMap(void){}
@@ -24,30 +22,27 @@ namespace Structure
 		{
 			DeleteAll();
 		}
-	
+
 	public:
 		void Add(const Key& key, Object& object)
 		{
 			_vector.push_back(object);
 
-			std::pair<Object*, uint> p;
-			p.second = _vector.size() - 1;
-			p.first = &_vector[p.second];
-
-			_map.insert(std::make_pair(key, p));
+			uint idx = _vector.size() - 1;
+			_map.insert(std::make_pair(key, idx));
 		}
 
 		Object* Find(const Key& key, uint* outIdx = nullptr)
 		{
-			std::hash_map<Key, std::pair<Object*, uint>>::iterator iter = _map.find(key);
+			std::hash_map<Key, uint>::iterator iter = _map.find(key);
 
 			Object* ret = nullptr;
 			if(iter != _map.end())
 			{
-				ret = iter->second.first;
+				ret = &_vector[iter->second];
 
 				if(outIdx)
-					(*outIdx) = iter->second.second;
+					(*outIdx) = iter->second;
 			}
 
 			return ret;
@@ -61,32 +56,26 @@ namespace Structure
 
 		void Delete(const Key& key)
 		{
-			std::hash_map<Key, std::pair<Object*, uint>>::iterator iter = _map.find(key);
-			
-			if( iter == _map.end() )
+			std::hash_map<Key, uint>::iterator iter = _map.find(key);
+
+			if( iter == _map.end() )		
 				return;
 
-			_vector.erase(_vector.begin() + iter->second.second);
+			uint ereaseIdx = iter->second;
+			_vector.erase(_vector.begin() + ereaseIdx);
 			_map.erase(iter);
+
+			for(auto mapIter = _map.begin(); mapIter != _map.end(); ++mapIter)
+			{
+				if(mapIter->second < ereaseIdx)
+					mapIter->second -= 1;
+			}
 		}
 
 		void DeleteAll()
 		{
 			_vector.clear();
 			_map.clear();
-		}
-
-		
-		void Iterate(const std::function<void(const Key& key, Object* obj)>& recvFunc) const
-		{
-			for(auto iter = _map.cbegin(); iter != _map.cend(); ++iter)
-				recvFunc(iter.first, iter.second.first);
-		}
-		
-		void IterateContent(const std::function<void(Object* obj)>& recvFunc) const
-		{
-			for(auto iter = _vector.cbegin(); iter != _vector.cend(); ++iter)
-				recvFunc( (*iter) );
 		}
 
 		GET_ACCESSOR(Vector, const std::vector<Object>&, _vector);

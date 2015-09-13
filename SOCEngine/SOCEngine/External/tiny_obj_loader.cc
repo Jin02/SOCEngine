@@ -262,8 +262,8 @@ exportFaceGroupToShape(
       unsigned int v2 = updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals, shape.mesh.texcoords, in_positions, in_normals, in_texcoords, i2);
 
       shape.mesh.indices.push_back(v0);
-      shape.mesh.indices.push_back(v2);
       shape.mesh.indices.push_back(v1);
+      shape.mesh.indices.push_back(v2);
 
       shape.mesh.material_ids.push_back(material_id);
     }

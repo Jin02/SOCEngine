@@ -21,24 +21,19 @@ namespace Rendering
 		class LightCulling
 		{
 		public:
-			struct TBRChangeableParam
-			{
+			struct TBRParam
+			{	
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
-				unsigned int 		lightNum;
-				Math::Vector4		camWorldPosition;
-
-				TBRChangeableParam(){}
-				~TBRChangeableParam(){}
-			};
-
-			struct TBRParam : TBRChangeableParam
-			{	
 				Math::Matrix 		invViewProjViewport;
 
 				Math::Size<float>	viewportSize;
+				unsigned int 		packedNumOfLights;
 				unsigned int 		maxNumOfperLightInTile;
-				TBRParam() : TBRChangeableParam() {}
+
+				Math::Vector4		camWorldPosition;
+
+				TBRParam(){}
 				~TBRParam(){}
 			};
 
@@ -47,13 +42,13 @@ namespace Rendering
 			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>					_inputTextures;
 			std::vector<GPGPU::DirectCompute::ComputeShader::Output>						_outputs;
 
-			GPGPU::DirectCompute::ComputeShader*								_computeShader;
+			GPGPU::DirectCompute::ComputeShader*											_computeShader;
 
-			bool																_useBlendedMeshCulling;
+			bool																			_useBlendedMeshCulling;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputPointLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*		_inputSpotLightParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
 
 		public:
 			LightCulling();

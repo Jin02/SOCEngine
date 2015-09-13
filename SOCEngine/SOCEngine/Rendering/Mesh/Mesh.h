@@ -19,12 +19,14 @@ namespace Rendering
 			};
 
 		private:
-			MeshFilter*				_filter;
-			MeshRenderer*			_renderer;
-			Buffer::ConstBuffer*	_transformConstBuffer;
+			MeshFilter*							_filter;
+			MeshRenderer*						_renderer;
+			Buffer::ConstBuffer*				_transformConstBuffer;
 
-			MaterialUpdateType		_updateType;
-			unsigned int			_selectMaterialIndex;
+			MaterialUpdateType					_updateType;
+			unsigned int						_selectMaterialIndex;
+
+			Core::TransformPipelineShaderInput	_prevTransformData;
 
 		public:
 			Mesh();

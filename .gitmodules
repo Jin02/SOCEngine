@@ -1,0 +1,3 @@
+[submodule "SOCTestProject/SOCTestProject/Resources"]
+	path = SOCTestProject/SOCTestProject/Resources
+	url = git://github.com/Jin02/TestResources.git

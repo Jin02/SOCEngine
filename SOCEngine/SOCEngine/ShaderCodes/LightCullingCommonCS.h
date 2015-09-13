@@ -16,25 +16,21 @@
 groupshared uint	s_lightIndexCounter;
 groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
-#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
-groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
-#endif
-
 #endif
 
 uint GetNumOfPointLight()
 {
-	return (tbrParam_numOfLights & 0xFFE00000) >> 21;
+	return tbrParam_packedNumOfLights >> 21;
 }
 
 uint GetNumOfSpotLight()
 {
-	return (tbrParam_numOfLights & 0x0001FFC00) >> 10;
+	return (tbrParam_packedNumOfLights & 0x001FFC00) >> 10;
 }
 
 uint GetNumOfDirectionalLight()
 {
-	return tbrParam_numOfLights & 0x000007FF;
+	return tbrParam_packedNumOfLights & 0x000003FF;
 }
 
 uint GetNumTilesX()
@@ -68,7 +64,7 @@ float4 CreatePlaneNormal( float4 b, float4 c )
 bool InFrustum( float4 p, float4 frusutmNormal, float r )
 {
 	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
-	return dot( frusutmNormal.xyz, p.xyz ) < r;
+	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
 }
 
 float InvertProjDepthToView(float depth)

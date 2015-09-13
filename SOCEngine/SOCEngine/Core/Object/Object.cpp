@@ -41,6 +41,12 @@ void Object::AddChild(Object *child)
 	child->_parent = this;
 }
 
+Object* Object::FindChild(const std::string& key)
+{
+	Object** ret = Find(key, nullptr);
+	return ret ? (*ret) : nullptr;
+}
+
 bool Object::CompareIsChildOfParent(Object *parent)
 {
 	return (parent == _parent); 
@@ -92,19 +98,10 @@ void Object::UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& 
 		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
 	}
 
-	bool updateCB = memcmp(&_prevTransformParam, &transposeTransform, sizeof(TransformPipelineShaderInput)) != 0;
-
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
-		if(updateCB)
-			(*iter)->OnUpdateTransformCB(transposeTransform);
-
+		(*iter)->OnUpdateTransformCB(transposeTransform);
 		(*iter)->OnRenderPreview();
-	}
-
-	if(updateCB)
-	{
-		memcpy(&_prevTransformParam, &transposeTransform, sizeof(TransformPipelineShaderInput));
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
