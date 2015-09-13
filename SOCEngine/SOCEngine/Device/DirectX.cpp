@@ -61,7 +61,7 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	//msaa
 	if(multiSampler == nullptr)
 	{
-		sd.SampleDesc.Count = 4;
+		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 	}
 	else

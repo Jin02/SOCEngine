@@ -237,15 +237,15 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	float LdotH			= max(0.0f,	dot(commonParamas.lightDir,	halfVector));
 	float VdotL			= max(0.0f,	dot(lightingParams.viewDir,	commonParamas.lightDir));
 
-	float fresnel0		= lightingParams.fresnel0;
-	float roughness		= lightingParams.roughness;
-	float intensity		= commonParamas.lightIntensity * 8.0f;
+	float fresnel0		= 0.8f;//lightingParams.fresnel0;
+	float roughness		= 0.1f;//lightingParams.roughness;
+	float intensity		= 8.0f;//commonParamas.lightIntensity * 8.0f;
 
 	float	Fr = Fresnel(fresnel0, LdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
 
 	float diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
-	resultDiffuseColor = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * intensity * diffuseEnergyConservation;
-	resultSpecularColor	= Fr * lightingParams.specularColor * commonParamas.lightColor * intensity;
+	resultDiffuseColor = Diffuse(/*lightingParams.diffuseColor*/float3(1,1,1), roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * intensity * diffuseEnergyConservation;
+	resultSpecularColor	= Fr * /*lightingParams.specularColor*/float3(1,1,1) * commonParamas.lightColor * intensity;
 }
 
 #endif
