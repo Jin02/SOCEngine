@@ -13,10 +13,8 @@ namespace Structure
 	class VectorMap
 	{
 	protected:
-		std::vector<Object>								_vector;
-
-		//pair second value is vector index
-		std::map<Key, std::pair<Object*, uint>>			_map;
+		std::vector<Object>		_vector;
+		std::map<Key, uint>		_map;
 
 	public:
 		VectorMap(void){}
@@ -26,69 +24,56 @@ namespace Structure
 		}
 	
 	public:
-		void Add(const Key& key, Object& object)
+	void Add(const Key& key, Object& object)
+	{
+		_vector.push_back(object);
+
+		uint idx = _vector.size() - 1;
+		_map.insert(std::make_pair(key, idx));
+	}
+	Object* Find(const Key& key, uint* outIdx = nullptr)
+	{
+		std::map<Key, uint>::iterator iter = _map.find(key);
+
+		Object* ret = nullptr;
+		if(iter != _map.end())
 		{
-			_vector.push_back(object);
+			ret = &_vector[iter->second];
 
-			std::pair<Object*, uint> p;
-			p.second = _vector.size() - 1;
-			p.first = &_vector[p.second];
-
-			_map.insert(std::make_pair(key, p));
+			if(outIdx)
+				(*outIdx) = iter->second;
 		}
 
-		Object* Find(const Key& key, uint* outIdx = nullptr)
+		return ret;
+	}
+	Object& Get(unsigned int index)
+	{
+		ASSERT_COND_MSG(index < _vector.size(), "Out index");
+		return _vector[index];
+	}
+	void Delete(const Key& key)
+	{
+		std::map<Key, uint>::iterator iter = _map.find(key);
+
+		if( iter == _map.end() )		
+			return;
+
+		uint ereaseIdx = iter->second;
+		_vector.erase(_vector.begin() + ereaseIdx);
+		_map.erase(iter);
+
+		for(auto mapIter = _map.begin(); mapIter != _map.end(); ++mapIter)
 		{
-			std::map<Key, std::pair<Object*, uint>>::iterator iter = _map.find(key);
-
-			Object* ret = nullptr;
-			if(iter != _map.end())
-			{
-				ret = iter->second.first;
-
-				if(outIdx)
-					(*outIdx) = iter->second.second;
-			}
-
-			return ret;
+			if(mapIter->second < ereaseIdx)
+				mapIter->second -= 1;
 		}
-
-		Object& Get(unsigned int index)
-		{
-			ASSERT_COND_MSG(index < _vector.size(), "Out index");
-			return _vector[index];
-		}
-
-		void Delete(const Key& key)
-		{
-			std::map<Key, std::pair<Object*, uint>>::iterator iter = _map.find(key);
-			
-			if( iter == _map.end() )
-				return;
-
-			_vector.erase(_vector.begin() + iter->second.second);
-			_map.erase(iter);
-		}
-
-		void DeleteAll()
-		{
-			_vector.clear();
-			_map.clear();
-		}
-
+	}
+	void DeleteAll()
+	{
+		_vector.clear();
+		_map.clear();
+	}
 		
-		void Iterate(const std::function<void(const Key& key, Object* obj)>& recvFunc) const
-		{
-			for(auto iter = _map.cbegin(); iter != _map.cend(); ++iter)
-				recvFunc(iter.first, iter.second.first);
-		}
-		
-		void IterateContent(const std::function<void(Object* obj)>& recvFunc) const
-		{
-			for(auto iter = _vector.cbegin(); iter != _vector.cend(); ++iter)
-				recvFunc( (*iter) );
-		}
-
 		GET_ACCESSOR(Vector, const std::vector<Object>&, _vector);
 		inline std::map<Key, Object*>& GetMap() const { return _map; }
 

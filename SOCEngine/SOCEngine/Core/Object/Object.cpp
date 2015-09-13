@@ -41,6 +41,12 @@ void Object::AddChild(Object *child)
 	child->_parent = this;
 }
 
+Object* Object::FindChild(const std::string& key)
+{
+	Object** ret = Find(key, nullptr);
+	return ret ? (*ret) : nullptr;
+}
+
 bool Object::CompareIsChildOfParent(Object *parent)
 {
 	return (parent == _parent); 

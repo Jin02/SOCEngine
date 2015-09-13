@@ -41,9 +41,9 @@ namespace Core
 		bool Intersects(Intersection::Sphere &sphere);
 
 	public:
-		void AddChild(Object *child);
-		inline Object* FindChild(const std::string& key)	{ return *Find(key); }
-		inline Object* GetChild(uint index)					{ return Get(index); }
+		void			AddChild(Object *child);
+		Object*			FindChild(const std::string& key);
+		inline Object*	GetChild(uint index) { return Get(index); }
 
 		template<typename ComponentType>
 		ComponentType* AddComponent()
