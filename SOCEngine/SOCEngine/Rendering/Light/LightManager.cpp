@@ -30,7 +30,7 @@ LightManager::~LightManager(void)
 
 void LightManager::InitializeAllShaderResourceBuffer()
 {
-	const int dummyData[POINT_LIGHT_BUFFER_MAX_NUM] = {0, };
+	const __int32 dummyData[POINT_LIGHT_BUFFER_MAX_NUM * 4] = {0, };
 
 	// Point Light
 	{
