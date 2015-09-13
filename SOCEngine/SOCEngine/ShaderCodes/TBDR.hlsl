@@ -58,7 +58,7 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 
 		//float x = distanceOfLightAndVertex / lightRadius;
-		//float k = 100.0f - commonParams.lightIntensity; //testing
+		//float k = 100.0f - commonParams.lightIntensity;
 		//float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
 
 		//resultDiffuseColor	*= falloff;
@@ -152,8 +152,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
 
-	uint startIdx = 0;
-	for(uint pointLightIdx=startIdx; pointLightIdx<pointLightCountInThisTile; pointLightIdx++)
+	uint pointLightIdx = (int)(depth == 0.0f) * pointLightCountInThisTile;
+	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
 		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 
@@ -164,7 +164,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= specular;
 	}
 
-	for(uint spotLightIdx=pointLightCountInThisTile; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
+	uint spotLightIdx = ((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
+	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
 
@@ -176,7 +177,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight();
-	uint directionalLightIdx = (int)(depth == 0) * directionalLightCount;
+	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
@@ -236,7 +237,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 
 	float3 normal = normal_roughness.xyz;
-	normal *= 2; normal -= float3(1, 1, 1);
+	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 
 	float roughness = normal_roughness.w;
 
@@ -293,7 +294,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		accumulativeSpecular		+= specular;
 	}
 
-	uint spotLightIdx = pointLightCountInThisTile;//((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
+	uint spotLightIdx = ((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
@@ -307,7 +308,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	uint directionalLightCount = GetNumOfDirectionalLight();
 	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
-	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx) //이게 왜 1이냐고
+	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 

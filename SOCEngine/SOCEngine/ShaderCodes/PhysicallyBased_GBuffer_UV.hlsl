@@ -35,14 +35,14 @@ GBuffer PS( VS_OUTPUT input) : SV_Target
 		discard;
 #endif
 
-	outGBuffer.albedo_metallic.rgb	= diffuseTex.rgb * material_mainColor;
-	outGBuffer.albedo_metallic.a	= material_metallic;
+	outGBuffer.albedo_metallic.rgb		= diffuseTex.rgb * material_mainColor;
+	outGBuffer.albedo_metallic.a		= material_metallic;
 
-	outGBuffer.specular_fresnel0	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
-	outGBuffer.specular_fresnel0.a 	= material_fresnel0;
+	outGBuffer.specular_fresnel0.rgb	= specularTexture.Sample(GBufferDefaultSampler, input.uv).rgb;
+	outGBuffer.specular_fresnel0.a 		= material_fresnel0;
 
-	outGBuffer.normal_roughness.rgb = DecodeNormalTexture(normalTexture, input.uv, GBufferDefaultSampler) * 0.5f + 0.5f;
-	outGBuffer.normal_roughness.a 	= material_roughness;
+	outGBuffer.normal_roughness.rgb		= DecodeNormalTexture(normalTexture, input.uv, GBufferDefaultSampler) * 0.5f + 0.5f;
+	outGBuffer.normal_roughness.a 		= material_roughness;
 
 	return outGBuffer;
 }
