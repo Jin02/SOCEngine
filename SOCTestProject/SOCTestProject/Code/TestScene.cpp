@@ -36,7 +36,9 @@ void TestScene::OnInitialize()
 	importer.Initialize();
 
 //	testObject = importer.Load("./Resources/Sponza/sponza.obj", "./Resources/Sponza/");
-	testObject = importer.Load("./Resources/Sphere/sphere.obj", "./Resources/Sphere/");
+	//testObject = importer.Load("./Resources/Sphere/sphere.obj", "./Resources/Sphere/");
+	testObject = importer.Load("./Resources/Capsule/capsule.obj", "./Resources/Capsule/");
+
 	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 //	testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
 	testObject->GetTransform()->UpdateEulerAngles(Vector3(0, 90, 0));
@@ -57,44 +59,44 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 {
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = camera->GetTransform()->GetLocalPosition();
-		camera->GetTransform()->UpdatePosition(pos + Vector3(0, 10, 0));
+		Vector3 pos = testObject->GetTransform()->GetLocalPosition();
+		testObject->GetTransform()->UpdatePosition(pos + Vector3(0, 10, 0));
 	}
 	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = camera->GetTransform()->GetLocalPosition();
-		camera->GetTransform()->UpdatePosition(pos + Vector3(-10, 0, 0));
+		Vector3 pos = testObject->GetTransform()->GetLocalPosition();
+		testObject->GetTransform()->UpdatePosition(pos + Vector3(-10, 0, 0));
 	}
 	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = camera->GetTransform()->GetLocalPosition();
-		camera->GetTransform()->UpdatePosition(pos + Vector3(0, -10, 0));
+		Vector3 pos = testObject->GetTransform()->GetLocalPosition();
+		testObject->GetTransform()->UpdatePosition(pos + Vector3(0, -10, 0));
 	}
 	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = camera->GetTransform()->GetLocalPosition();
-		camera->GetTransform()->UpdatePosition(pos + Vector3(10, 0, 0));
+		Vector3 pos = testObject->GetTransform()->GetLocalPosition();
+		testObject->GetTransform()->UpdatePosition(pos + Vector3(10, 0, 0));
 	}
 
 	if(keyboard.states['Y'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = camera->GetTransform()->GetLocalEulerAngle();
-		camera->GetTransform()->UpdateEulerAngles(e + Vector3(10, 0, 0));
+		Vector3 e = testObject->GetTransform()->GetLocalEulerAngle();
+		testObject->GetTransform()->UpdateEulerAngles(e + Vector3(10, 0, 0));
 	}
 	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = camera->GetTransform()->GetLocalEulerAngle();
-		camera->GetTransform()->UpdateEulerAngles(e + Vector3(0, -10, 0));
+		Vector3 e = testObject->GetTransform()->GetLocalEulerAngle();
+		testObject->GetTransform()->UpdateEulerAngles(e + Vector3(0, -10, 0));
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = camera->GetTransform()->GetLocalEulerAngle();
-		camera->GetTransform()->UpdateEulerAngles(e + Vector3(-10, 0, 0));
+		Vector3 e = testObject->GetTransform()->GetLocalEulerAngle();
+		testObject->GetTransform()->UpdateEulerAngles(e + Vector3(-10, 0, 0));
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = camera->GetTransform()->GetLocalEulerAngle();
-		camera->GetTransform()->UpdateEulerAngles(e + Vector3(0, 10, 0));
+		Vector3 e = testObject->GetTransform()->GetLocalEulerAngle();
+		testObject->GetTransform()->UpdateEulerAngles(e + Vector3(0, 10, 0));
 	}
 }
 
