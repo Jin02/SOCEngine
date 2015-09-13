@@ -201,7 +201,7 @@ namespace Core
 			s.y *= tf->_scale.y;
 			s.z *= tf->_scale.z;
 
-			e += _eulerAngle;
+			e += tf->_eulerAngle;
 		}
 
 		out._position = p;

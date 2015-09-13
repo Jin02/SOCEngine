@@ -51,45 +51,69 @@ Material* ObjImporter::LoadMaterial(const tinyobj::material_t& tinyMaterial, con
 
 		material->Initialize();
 
-		// main color = diffuse color
+		if(materialType == Material::Type::PhysicallyBasedModel)
 		{
+			PhysicallyBasedMaterial* pbm = dynamic_cast<PhysicallyBasedMaterial*>(material);
+			pbm->UpdateMainColor(Color(tinyMaterial.diffuse[0], tinyMaterial.diffuse[1], tinyMaterial.diffuse[2], tinyMaterial.dissolve));
+
+			if(tinyMaterial.diffuse_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
+				pbm->UpdateDiffuseMap(texture);
+			}
+
+			if(tinyMaterial.normal_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
+				pbm->UpdateNormalMap(texture);
+			}
+
+			if(tinyMaterial.specular_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
+				pbm->UpdateSpecularMap(texture);
+			}
+		}
+		else
+		{
+			DEBUG_LOG("Warning, can't support material type.");
+
 			Color diffuseColor;
 			diffuseColor.r = tinyMaterial.diffuse[0];
 			diffuseColor.g = tinyMaterial.diffuse[1];
 			diffuseColor.b = tinyMaterial.diffuse[2];
 			diffuseColor.a = tinyMaterial.dissolve;
 
-			material->SetVariable("mainColor", diffuseColor);
-		}
+			material->SetVariable("MainColor", diffuseColor);
 
-		if( tinyMaterial.shininess > 0.0f )
-			material->SetVariable("shininess", tinyMaterial.shininess);
+			if( tinyMaterial.shininess > 0.0f )
+				material->SetVariable("Shininess", tinyMaterial.shininess);
 
-		// Using Utility::String::ParseDirectory
-		std::string textureFileName, textureExtension;
+			std::string textureFileName, textureExtension;
 
-		if(tinyMaterial.diffuse_texname.empty() == false)
-		{
-			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
+			if(tinyMaterial.diffuse_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.diffuse_texname, false);
 
-			const uint shaderSlotIndex = 0; // Default Diffuse Texture Shader Slot Index
-			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
-		}
+				const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Diffuse;
+				material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
+			}
 
-		if(tinyMaterial.normal_texname.empty() == false)
-		{
-			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
+			if(tinyMaterial.normal_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.normal_texname, false);
 
-			const uint shaderSlotIndex = 1; // Default Diffuse Texture Shader Slot Index
-			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
-		}
+				const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Normal;
+				material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
+			}
 
-		if(tinyMaterial.specular_texname.empty() == false)
-		{
-			Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
+			if(tinyMaterial.specular_texname.empty() == false)
+			{
+				Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(materialFileFolder + tinyMaterial.specular_texname, false);
 
-			const uint shaderSlotIndex = 2; // Default Diffuse Texture Shader Slot Index
-			material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
+				const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Specular;
+				material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
+			}
 		}
 
 		materialMgr->Add(fileName, materialName, material);
@@ -151,7 +175,12 @@ Core::Object* ObjImporter::Load(const std::string& fileDir,
 
 	for(auto iter = shapes.begin(); iter != shapes.end(); ++iter)
 	{
-		Core::Object* child = LoadMesh((*iter), materials[iter->mesh.material_ids[0]], fileName, materialType, isDynamicMesh);
+		int materialIdx = iter->mesh.material_ids[0];
+
+		if(materialIdx < 0)
+			materialIdx = 0;
+
+		Core::Object* child = LoadMesh((*iter), materials[materialIdx], fileName, materialType, isDynamicMesh);
 		parent->AddChild(child);
 	}
 

@@ -94,10 +94,11 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 	{
 		_owner->GetTransform()->FetchWorldMatrix(worldMat);
 		CameraForm::GetViewMatrix(viewMat, worldMat);
-		GetProjectionMatrix(projMat);
+		GetProjectionMatrix(projMat, false);
 
+		_frustum->Make(viewMat * projMat);
+		GetProjectionMatrix(projMat, true);
 		_viewProjMat = viewMat * projMat;
-		_frustum->Make(_viewProjMat);
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		{
@@ -106,21 +107,13 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 		}
 	}
 
-	LightCulling::TBRChangeableParam changeableParam;
+	LightCulling::TBRParam tbrParam;
 	{
-		changeableParam.lightNum = lightManager->GetPackedLightCount();
+		Matrix::Transpose(tbrParam.viewMat, viewMat);
 
-		changeableParam.camWorldPosition 
-			= Math::Vector4(worldMat._41, worldMat._42, worldMat._43, worldMat._44);
-
-		changeableParam.viewMat = viewMat;
-		Matrix::Inverse(changeableParam.invProjMat, projMat);
-	}
-
-	if( memcmp(&_prevParamData, &changeableParam, sizeof(LightCulling::TBRChangeableParam)) != 0 )
-	{
-		LightCulling::TBRParam tbrParam;
-		memcpy(&tbrParam, &changeableParam, sizeof(LightCulling::TBRChangeableParam));
+		Matrix invProjMat;
+		Matrix::Inverse(invProjMat, projMat);
+		Matrix::Transpose(tbrParam.invProjMat, invProjMat);
 
 		Matrix invViewportMat;
 		{
@@ -132,18 +125,26 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 
 		Matrix invViewProj;
 		Matrix::Inverse(invViewProj, _viewProjMat);
+		Matrix invViewProjViewport = invViewportMat * invViewProj;
 
-		tbrParam.invViewProjViewport = invViewProj * invViewportMat;
+		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
+
 		tbrParam.viewportSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
+		tbrParam.packedNumOfLights = lightManager->GetPackedLightCount();
+
 		tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
 
-		// Update Const Buffer
-		{
-			ID3D11DeviceContext* context = dx->GetContext();
-			_tbrParamConstBuffer->UpdateSubResource(context, &tbrParam);
-		}
+		tbrParam.camWorldPosition 
+			= Math::Vector4(worldMat._41, worldMat._42, worldMat._43, worldMat._44);
+	}
 
-		_prevParamData = changeableParam;
+	if( memcmp(&_prevParamData, &tbrParam, sizeof(LightCulling::TBRParam)) != 0 )
+	{
+		// Update Const Buffer
+		ID3D11DeviceContext* context = dx->GetContext();
+		_tbrParamConstBuffer->UpdateSubResource(context, &tbrParam);
+
+		_prevParamData = tbrParam;
 	}
 }
 
@@ -256,7 +257,9 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			}
 		}
 	};
-
+	
+	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
+	context->PSSetSamplers(0, 1, &samplerState);
 
 	//GBuffer
 	{
@@ -270,9 +273,6 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		ID3D11DepthStencilView* dsv = _opaqueDepthBuffer->GetDepthStencilView();
 		context->OMSetRenderTargets(NumOfRenderTargets, renderTargetViews, dsv);
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
-
-		ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-		context->PSSetSamplers(0, 1, &samplerState);
 
 		//Opaque Mesh
 		{

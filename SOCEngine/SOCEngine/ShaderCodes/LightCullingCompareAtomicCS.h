@@ -7,101 +7,86 @@
 
 #define THREAD_COUNT TILE_RES * TILE_RES
 
-RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
-
-groupshared int s_minZ;
-groupshared int s_maxZ;
+groupshared uint s_minZ;
+groupshared uint s_maxZ;
 
 #if (MSAA_SAMPLES_COUNT > 1)
-void CalcMinMax(uint2 globalIdx, uint depthBufferSamplerIdx, inout float ioMinZ, inout float ioMaxZ)
-#else
-void CalcMinMax(uint2 globalIdx, inout float ioMinZ, inout float ioMaxZ)
-#endif
-{
-#if (MSAA_SAMPLES_COUNT > 1)
-	float depth = g_tDepth.Load( uint2(globalIdx.x, globalIdx.y), depthBufferSamplerIdx ).x;
-#if defined(ENABLE_BLEND)
-	float blendedDepth = g_tBlendedDepth.Load( uint2(globalIdx.x, globalIdx.y), depthBufferSamplerIdx ).x;
-#endif
-#else
-	float depth = g_tDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
-#if defined(ENABLE_BLEND)
-	float blendedDepth = g_tBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
-#endif
-#endif
-
-	float opaqueViewDepth = InvertProjDepthToView(depth);
-
-#if defined(ENABLE_BLEND)
-	float blendedViewDepth = InvertProjDepthToView(blendedDepth);
-
-	if(blendedViewDepth != 0.0f)
-	{
-		ioMinZ = min(ioMinZ, blendedViewDepth);
-		ioMaxZ = max(ioMaxZ, opaqueViewDepth);
-	}
-#else
-	if(opaqueViewDepth != 0.0f)
-	{
-		ioMinZ = min(ioMinZ, opaqueViewDepth);
-		ioMaxZ = max(ioMaxZ, opaqueViewDepth);
-	}
-#endif
-}
-
-#if (MSAA_SAMPLES_COUNT > 1)
-bool CalcMinMaxDepthWithCheckEdgeDetection(uint2 globalIdx, out float outMin, out float outMax)
-#else
-void CalcMinMaxDepth(uint2 globalIdx, out float outMin, out float outMax)
-#endif
+bool CalcDepthBoundMSAA(uint2 globalIdx)
 {
 	float minZ = FLOAT_MAX;
 	float maxZ = 0.0f;
 
-#if (MSAA_SAMPLES_COUNT > 1)
 	for(uint sampleIdx=0; sampleIdx<MSAA_SAMPLES_COUNT; ++sampleIdx)
-		CalcMinMax(globalIdx, sampleIdx, minZ, maxZ);
-#else // Non-MSAA
-	CalcMinMax(globalIdx, minZ, maxZ);
-#endif
+	{
+		float opaqueDepth			= g_tDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
+#if defined(ENABLE_BLEND)
+		float blendedDepth			= g_tBlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
 
-	uint reinterpretMinZ = asuint(minZ);
-	InterlockedMin(s_minZ, reinterpretMinZ);
+		if(blendedDepth != 0.0f)
+		{
+			minZ = min(minZ, blendedDepthToView);
+			maxZ = max(maxZ, opaqueDepthToView);
+		}
+#else
+		if(opaqueDepth != 0.0f)
+		{
+			minZ = min(minZ, opaqueDepthToView);
+			maxZ = max(maxZ, opaqueDepthToView);
+		}
+#endif
+	}
 
 	uint reinterpretMaxZ = asuint(maxZ);
+	uint reinterpretMinZ = asuint(minZ);
+	InterlockedMin(s_minZ, reinterpretMinZ);
 	InterlockedMax(s_maxZ, reinterpretMaxZ);
 
-	outMin = minZ;
-	outMax = maxZ;
-
-#if (MSAA_SAMPLES_COUNT > 1)
 	return (maxZ - minZ) > EDGE_DETECTION_COMPARE_DISTANCE;
+}
+#else
+void CalcDepthBound(uint2 globalIdx)
+{
+	float opaqueDepth		= g_tDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+	float opaqueDepthToView	= InvertProjDepthToView(opaqueDepth);
+	uint opaqueZ = asuint(opaqueDepthToView);
+
+#if defined(ENABLE_BLEND)
+	float blendedDepth			= g_tBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+	float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
+
+	uint blendedZ = asuint(blendedDepthToView);
+
+	if(blendedDepth != 0.0f)
+	{
+		InterlockedMin(s_minZ, blendedZ);
+		InterlockedMax(s_maxZ, opaqueZ);
+	}
+#else
+	if(opaqueDepth != 0.0f)
+	{
+		InterlockedMin(s_minZ, opaqueZ);
+		InterlockedMax(s_maxZ, opaqueZ);
+	}
 #endif
 }
+#endif
 
 #if (MSAA_SAMPLES_COUNT > 1)
-bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile, out float minZ, out float maxZ)
+bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile)
 #else
-void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile, out float minZ, out float maxZ)
+void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile)
 #endif
 {
 	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES;
-	uint idxOfGroup	= groupIdx.x + groupIdx.y * GetNumTilesX();
 	
-	//한번만 초기화
-	if(idxInTile == 0)
-	{
-		s_lightIndexCounter	= 0;
-		s_minZ = 0;
-		s_maxZ = 0;
-	}
-
 	float4 frustumPlaneNormal[4];
 	{
-		uint2 tl =					uint2(	TILE_RES * groupIdx.x,
-											TILE_RES * groupIdx.y);
-		uint2 br =					uint2(	TILE_RES * (groupIdx.x + 1), 
-											TILE_RES * (groupIdx.y + 1));
+		float2 tl =					float2(	(float)(TILE_RES * groupIdx.x),
+											(float)(TILE_RES * groupIdx.y));
+		float2 br =					float2(	(float)(TILE_RES * (groupIdx.x + 1)), 
+											(float)(TILE_RES * (groupIdx.y + 1)));
 		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
 											(float)(TILE_RES * GetNumTilesY()) );
 											//스크린 픽셀 사이즈라 생각해도 좋고,
@@ -109,7 +94,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
-											   (totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
+												(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
 												1.f, 1.f) ); //TL
 		frustum[1] = ProjToView( float4( br.x / totalThreadLength.x * 2.f - 1.f, 
 												(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
@@ -122,23 +107,20 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 												1.f, 1.f) ); //BL
 
 		for(uint i=0; i<4; ++i)
-			frustumPlaneNormal[i] = CreatePlaneNormal(frustum[i], frustum[(i+1) % 4]);
+			frustumPlaneNormal[i] = CreatePlaneNormal(frustum[i], frustum[(i+1) & 3]);
 	}
 
 	GroupMemoryBarrierWithGroupSync();
 
-	minZ = FLOAT_MAX;
-	maxZ = 0.0f;
-
 #if (MSAA_SAMPLES_COUNT > 1)
-	bool isEdge = CalcMinMaxDepthWithCheckEdgeDetection(globalIdx.xy, minZ, maxZ);
+	bool isEdge = CalcDepthBoundMSAA(globalIdx.xy);
 #else
-	CalcMinMaxDepth(globalIdx.xy, minZ, maxZ);
+	CalcDepthBound(globalIdx.xy);
 #endif
 	GroupMemoryBarrierWithGroupSync();
 
-	minZ = asfloat(s_minZ);
-	maxZ = asfloat(s_maxZ);
+	float minZ = asfloat(s_minZ);
+	float maxZ = asfloat(s_maxZ);
 
 	uint pointLightCount = GetNumOfPointLight();
     for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
@@ -165,8 +147,8 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 
 	GroupMemoryBarrierWithGroupSync();
 
+	outPointLightCountInTile = s_lightIndexCounter;
 	uint pointLightCountInTile = s_lightIndexCounter;
-	outPointLightCountInTile = pointLightCountInTile;
 
 	uint spotLightCount = GetNumOfSpotLight();
 	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=THREAD_COUNT)

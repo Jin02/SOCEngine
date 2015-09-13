@@ -10,7 +10,9 @@
 groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
-RWBuffer<uint> g_outPerLightIndicesInTile	: register( u0 );
+#if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
+groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
+#endif
 
 #if (MSAA_SAMPLES_COUNT > 1) && defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 struct CornerMinMax

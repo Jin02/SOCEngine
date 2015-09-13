@@ -8,6 +8,9 @@
 class TestScene : public Core::Scene
 {
 private:
+	Core::Object* testObject;
+	Core::Object* camera;
+	Core::Object* light;
 
 public:
 	TestScene(void);

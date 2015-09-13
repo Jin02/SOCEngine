@@ -27,7 +27,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 										 const Texture::RenderTexture* gbuffer_albedo_metallic,  
 										 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
 										 const Texture::RenderTexture* gbuffer_normal_roughness, 
-										 const Math::Size<uint>& backBufferSize)
+										 const Math::Size<uint>& backBufferSize, bool useDebugMode)
 {
 	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
 
@@ -39,7 +39,13 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
-	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr);
+	std::vector<ShaderMacro> macros;
+	{
+		if(useDebugMode)
+			macros.push_back(ShaderMacro("DEBUG_MODE", ""));
+	}
+
+	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
 
 	// Input buffer
 	{

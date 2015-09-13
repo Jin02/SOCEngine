@@ -55,9 +55,13 @@ void Mesh::OnUpdate(float deltaTime)
 
 void Mesh::OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
 {
-	//업데이트 할지 안할지에 대한 여부는, Object에서 판단함
-	ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-	_transformConstBuffer->UpdateSubResource(context, &transpose_Transform);
+	if( memcmp(&transpose_Transform, &_prevTransformData, sizeof(Core::TransformPipelineShaderInput)) )
+	{
+		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
+		_transformConstBuffer->UpdateSubResource(context, &transpose_Transform);
+
+		memcpy(&_prevTransformData, &transpose_Transform, sizeof(Core::TransformPipelineShaderInput));
+	}
 }
 
 void Mesh::OnDestroy()
