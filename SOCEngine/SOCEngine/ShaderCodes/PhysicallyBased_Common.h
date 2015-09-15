@@ -19,10 +19,10 @@ cbuffer Transform : register( b1 )		//Mesh
 cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 {
 	float3	material_mainColor;
-	float	material_metallic;
-	float 	material_roughness;
-	float 	material_fresnel0;
+	uint	material_metallic_roughness_emission;
+
 	float2 	material_uvTiling;
+	float2 	material_uvOffset;
 };
 
 Texture2D diffuseTexture			: register( t8 );
@@ -41,6 +41,20 @@ float3 DecodeNormalTexture(in Texture2D tex, in float2 uv, in SamplerState sampl
 	norm *= 2.0f; norm -= float3(1.0f, 1.0f, 1.0f);
 
 	return norm;
+}
+
+void Parse_Metallic_Roughness_Emission(in uint material_mre,
+									   out float metallic,
+									   out float roughness,
+									   out float emission)
+{
+	uint scaledMetallic		= material_mre & 0x3ff00000;
+	uint scaledRoughness	= material_mre & 0x000ffc00;
+	uint scaledEmission		= material_mre & 0x000003ff;
+
+	metallic	= (float)scaledMetallic	/ 1024.0f;
+	roughness	= (float)scaledRoughness	/ 1024.0f;
+	emission	= (float)scaledEmission	/ 1024.0f;
 }
 
 #endif
