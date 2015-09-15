@@ -63,6 +63,27 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		GetUVTiling(param.uvTiling);
 		GetUVOffset(param.uvOffset);
 
+		uint dummy = 0;
+
+		// diffuse tex
+		{
+			bool hasTexture = FindTexture(dummy, (uint)InputTextureShaderIndex::Diffuse) != nullptr;
+			if(hasTexture)
+				param.mainColor.r *= -1.0f;
+		}
+		// normal tex
+		{
+			bool hasTexture = FindTexture(dummy, (uint)InputTextureShaderIndex::Normal) != nullptr;
+			if(hasTexture)
+				param.mainColor.g *= -1.0f;
+		}
+		// specular tex
+		{
+			bool hasTexture = FindTexture(dummy, (uint)InputTextureShaderIndex::Specular) != nullptr;
+			if(hasTexture)
+				param.mainColor.b *= -1.0f;
+		}
+
 		_gbufferCB->UpdateSubResource(dx->GetContext(), &param);
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
