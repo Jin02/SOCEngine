@@ -119,7 +119,6 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
-    <ClInclude Include="ResourceManager\OriginObjectManager.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -254,7 +253,6 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
-    <ClCompile Include="ResourceManager\OriginObjectManager.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="UI\FontLoader.cpp" />
     <ClCompile Include="UI\SimpleImage2D.cpp" />

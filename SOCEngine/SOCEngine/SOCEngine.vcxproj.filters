@@ -630,9 +630,6 @@
     <ClInclude Include="Rendering\Light\Lights.h">
       <Filter>Rendering\Light\Lights</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager\OriginObjectManager.h">
-      <Filter>Core\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
       <Filter>Template</Filter>
     </ClInclude>
@@ -913,9 +910,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraForm.cpp">
       <Filter>Rendering\Camera\CameraForm</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager\OriginObjectManager.cpp">
-      <Filter>Core\Object</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
       <Filter>Rendering\Shader\Macro</Filter>

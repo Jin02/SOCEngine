@@ -21,7 +21,6 @@ void ResourceManager::Initialize()
 	_shaderMgr		= new Manager::ShaderManager;
 	_textureMgr		= new Manager::TextureManager;
 	_bufferManager	= new Manager::BufferManager;
-	_originObjMgr	= new OriginObjectManager;
 }
 
 void ResourceManager::Destroy()
@@ -29,5 +28,4 @@ void ResourceManager::Destroy()
 	SAFE_DELETE(_shaderMgr);
 	SAFE_DELETE(_textureMgr);
 	SAFE_DELETE(_bufferManager);
-	SAFE_DELETE(_originObjMgr);
 }

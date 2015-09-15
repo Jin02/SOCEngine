@@ -8,7 +8,6 @@
 #include "MaterialManager.h"
 #include "BufferManager.h"
 #include "UIManager.h"
-#include "OriginObjectManager.h"
 
 namespace Resource
 {
@@ -21,7 +20,6 @@ namespace Resource
 		Rendering::Manager::ShaderManager*		_shaderMgr;
 		Rendering::Manager::TextureManager*		_textureMgr;
 		Rendering::Manager::BufferManager*		_bufferManager;
-		OriginObjectManager*					_originObjMgr;
 
 	private:
 		ResourceManager();
@@ -35,6 +33,5 @@ namespace Resource
 		GET_ACCESSOR(TextureManager, Rendering::Manager::TextureManager*, _textureMgr);
 		GET_ACCESSOR(ShaderManager, Rendering::Manager::ShaderManager*, _shaderMgr);
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager*, _bufferManager);
-		GET_ACCESSOR(OriginObjectManager, OriginObjectManager*, _originObjMgr);
 	};
 }
