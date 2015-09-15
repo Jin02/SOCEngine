@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -27,8 +28,14 @@ namespace Importer
 				CustomSemantic(const std::string& _semanticName, const void* _data) : semanticName(_semanticName), data(_data) {}
 			};
 
+		private:
+			const std::function<Core::Object*(const std::string& key)>					_findOriginObjFunc;
+			const std::function<void(const std::string& key, Core::Object* obj)>	_addOriginObject;
+
 		public:
-			ObjImporter();
+			ObjImporter(
+				const std::function<Core::Object*(const std::string& key)>& findOriginObjFunc,
+				const std::function<void(const std::string& key, Core::Object* obj)>& addOriginObjectFunc);
 			~ObjImporter();
 
 		private:		
@@ -58,7 +65,7 @@ namespace Importer
 				const std::string& fileDir,
 				const std::string& fileName, 
 				const std::string& materialFileFolder, 
-				Rendering::Material::Type materialType, 
+				Rendering::Material::Type materialType,
 				bool isDynamicMesh = false);
 
 			bool Load(std::vector<tinyobj::shape_t>& outShapes, std::vector<tinyobj::material_t>& outMaterials, const std::string& fileDir, const std::string& materialFileFolder);

@@ -37,7 +37,7 @@ void TestScene::OnInitialize()
 
 //	testObject = importer.Load("./Resources/Sponza/sponza.obj", "./Resources/Sponza/");
 	//testObject = importer.Load("./Resources/Sphere/sphere.obj", "./Resources/Sphere/");
-	testObject = importer.Load("./Resources/Capsule/capsule.obj", "./Resources/Capsule/");
+	testObject = importer.Load("./Resources/Capsule/capsule.obj");
 
 	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 //	testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));

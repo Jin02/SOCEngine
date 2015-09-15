@@ -18,8 +18,12 @@ using namespace Manager;
 using namespace Utility;
 using namespace Resource;
 
-ObjImporter::ObjImporter()
+ObjImporter::ObjImporter(
+	const std::function<Core::Object*(const std::string& key)>& findOriginObjFunc,
+	const std::function<void(const std::string& key, Core::Object* obj)>& addOriginObjectFunc) :
+	_findOriginObjFunc(findOriginObjFunc), _addOriginObject(addOriginObjectFunc)
 {
+
 }
 
 ObjImporter::~ObjImporter()
@@ -355,7 +359,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	mesh->Initialize(args);
 
 	const std::string objKey = fileName + ':' + shapeName;
-	resourceManager->GetOriginObjectManager()->Add(objKey, object);
+	_addOriginObject(objKey, object);
 
 	return object;
 }
@@ -502,7 +506,7 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 	mesh->Initialize(args);
 
 	const std::string objKey = fileName + ':' + shapeName;
-	resourceManager->GetOriginObjectManager()->Add(objKey, object);
+	_addOriginObject(objKey, object);
 
 	return object;
 }
@@ -519,7 +523,7 @@ void ObjImporter::CheckCorrectShape(const tinyobj::shape_t& tinyShape)
 Core::Object* ObjImporter::CloneOriginObject(const std::string& fileName, const std::string& tinyShapeName)
 {
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
-	const Core::Object* object = resourceManager->GetOriginObjectManager()->Find(fileName + ':' + tinyShapeName);
+	const Core::Object* object = _findOriginObjFunc(fileName + ':' + tinyShapeName);
 
 	return object ? object->Clone() : nullptr;
 }
