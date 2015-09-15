@@ -7,8 +7,8 @@
 
 struct GBuffer
 {
-	float4 albedo_metallic			: SV_Target0;
-	float4 specular_fresnel0		: SV_Target1;
+	float4 albedo_emission			: SV_Target0;
+	float4 specular_metallic		: SV_Target1;
 	float4 normal_roughness 		: SV_Target2;
 };
 

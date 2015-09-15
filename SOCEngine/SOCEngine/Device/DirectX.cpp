@@ -171,8 +171,8 @@ void DirectX::CreateBlendStates()
 
 	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	blendDesc.RenderTarget[0] = renderTargetBlendDesc; // albedo_metallic or color
-	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc;	// albedo_emission or color
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_metallic
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
 
 	if( FAILED(_device->CreateBlendState(&blendDesc, &_opaqueBlend)) )
@@ -191,8 +191,8 @@ void DirectX::CreateBlendStates()
 	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
 	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_INV_SRC_ALPHA;
 
-	blendDesc.RenderTarget[0] = renderTargetBlendDesc; // albedo_metallic or color
-	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_fresnel0
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc;	// albedo_emission or color
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_metallic
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
 
 	if( FAILED(_device->CreateBlendState(&blendDesc, &_alphaBlend)) )

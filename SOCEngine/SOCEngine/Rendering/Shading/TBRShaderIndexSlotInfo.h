@@ -18,8 +18,8 @@ namespace Rendering
 
 		enum class InputTextureShaderIndex : unsigned int
 		{
-			GBuffer_Albedo_Metallic			= 8,
-			GBuffer_Specular_Fresnel0		= 9,
+			GBuffer_Albedo_Emission			= 8,
+			GBuffer_Specular_Metallic		= 9,
 			GBuffer_Normal_Roughness		= 10,
 			GBuffer_Depth					= 11,
 			GBuffer_BlendedDepth			= 12

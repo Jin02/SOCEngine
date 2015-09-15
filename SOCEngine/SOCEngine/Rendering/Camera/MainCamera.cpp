@@ -17,8 +17,8 @@ using namespace Rendering::TBDR;
 using namespace Rendering;
 
 MainCamera::MainCamera() : CameraForm(),
-	_blendedDepthBuffer(nullptr), _albedo_metallic(nullptr),
-	_specular_fresnel0(nullptr), _normal_roughness(nullptr),
+	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
+	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
 	_blendedMeshLightCulling(nullptr)
@@ -36,16 +36,16 @@ void MainCamera::OnInitialize()
 
 	Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
 
-	_albedo_metallic = new Texture::RenderTexture;
+	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
-		"GBuffer Error : cant create albedo_opacity render texture" 
+		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		"GBuffer Error : cant create albedo_emission render texture" 
 		);
 
-	_specular_fresnel0 = new Texture::RenderTexture;
+	_specular_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_fresnel0->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
-		"GBuffer Error : cant create _specular_fresnel0 render texture"
+		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		"GBuffer Error : cant create _specular_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
@@ -60,7 +60,7 @@ void MainCamera::OnInitialize()
 	EnableRenderTransparentMesh(false);
 
 	_deferredShadingWithLightCulling = new TBDR::ShadingWithLightCulling;
-	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_metallic, _specular_fresnel0, _normal_roughness, backBufferSize);
+	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_emission, _specular_metallic, _normal_roughness, backBufferSize);
 
 	_tbrParamConstBuffer = new ConstBuffer;
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
@@ -75,8 +75,8 @@ void MainCamera::OnInitialize()
 
 void MainCamera::OnDestroy()
 {
-	SAFE_DELETE(_albedo_metallic);
-	SAFE_DELETE(_specular_fresnel0);
+	SAFE_DELETE(_albedo_emission);
+	SAFE_DELETE(_specular_metallic);
 	SAFE_DELETE(_normal_roughness);
 	SAFE_DELETE(_blendedDepthBuffer);
 
@@ -157,8 +157,8 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	{
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
-		_albedo_metallic->Clear(context, allZeroColor);
-		_specular_fresnel0->Clear(context, allZeroColor);
+		_albedo_emission->Clear(context, allZeroColor);
+		_specular_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
 	}
 
@@ -264,9 +264,9 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//GBuffer
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
-			_albedo_metallic->GetRenderTargetView(),
+			_albedo_emission->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
-			_specular_fresnel0->GetRenderTargetView(),
+			_specular_metallic->GetRenderTargetView(),
 			nullptr
 		};
 
