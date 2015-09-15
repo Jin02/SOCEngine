@@ -24,8 +24,8 @@ ShadingWithLightCulling::~ShadingWithLightCulling()
 }
 
 void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
-										 const Texture::RenderTexture* gbuffer_albedo_metallic,  
-										 const Texture::RenderTexture* gbuffer_specular_fresnel0, 
+										 const Texture::RenderTexture* gbuffer_albedo_emission,  
+										 const Texture::RenderTexture* gbuffer_specular_metallic, 
 										 const Texture::RenderTexture* gbuffer_normal_roughness, 
 										 const Math::Size<uint>& backBufferSize, bool useDebugMode)
 {
@@ -90,16 +90,16 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 
 	// Input Texture
 	{
-		// Albedo_Metallic
+		// Albedo_Emission
 		{
-			uint idx = (uint)InputTextureShaderIndex::GBuffer_Albedo_Metallic;
-			AddTextureToInputTextureList(idx, gbuffer_albedo_metallic);
+			uint idx = (uint)InputTextureShaderIndex::GBuffer_Albedo_Emission;
+			AddTextureToInputTextureList(idx, gbuffer_albedo_emission);
 		}
 
-		// Specular_Fresnel0
+		// Specular_Metallic
 		{
-			uint idx = (uint)InputTextureShaderIndex::GBuffer_Specular_Fresnel0;
-			AddTextureToInputTextureList(idx, gbuffer_specular_fresnel0);
+			uint idx = (uint)InputTextureShaderIndex::GBuffer_Specular_Metallic;
+			AddTextureToInputTextureList(idx, gbuffer_specular_metallic);
 		}
 
 		// Normal_Roughness

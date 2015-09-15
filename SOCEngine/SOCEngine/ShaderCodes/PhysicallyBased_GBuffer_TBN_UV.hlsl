@@ -52,15 +52,17 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
+	bool hasNormalMap = HasNormalTexture();
 
-	outGBuffer.albedo_metallic.rgb		= diffuseTex.rgb * material_mainColor;
-	outGBuffer.albedo_metallic.a		= material_metallic;
+	float3 normal	= lerp(input.normal, DecodeNormal(input.normal, input.tangent, input.binormal, input.uv), hasNormalMap);
+	float4 specular	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 
-	outGBuffer.specular_fresnel0.rgb	= specularTexture.Sample(GBufferDefaultSampler, input.uv).rgb;
-	outGBuffer.specular_fresnel0.a 		= material_fresnel0;
-
-	outGBuffer.normal_roughness.rgb		= DecodeNormal(input.normal, input.tangent, input.binormal, input.uv) * 0.5f + 0.5f;
-	outGBuffer.normal_roughness.a 		= material_roughness;
+#if defined(USE_PBR_TEXTURE)
+	float roughness = normalTexture.Sample(GBufferDefaultSampler, input.uv).a;
+	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+#else
+	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+#endif
 
 	return outGBuffer;
 }

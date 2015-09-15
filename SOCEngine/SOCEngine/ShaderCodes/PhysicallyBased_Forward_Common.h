@@ -156,20 +156,33 @@ void RenderSpotLight(
 	}
 }
 
-
+#if defined(USE_PBR_TEXTURE)
+float4 Lighting(float3 normal, float roughnessInTex, float3 vtxWorldPos, float2 SVPosition, float2 uv)
+#else
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
+#endif
 {
-	float4	diffuseTex		= diffuseTexture.Sample(defaultSampler, uv);
-	float3	diffuseColor	= diffuseTex.rgb;
+	float4 diffuseTex	= diffuseTexture.Sample(defaultSampler, uv);
+	float4 specularTex	= specularTexture.Sample(defaultSampler, uv);
+
+	float metallic, emission, roughness;
+	Parse_Metallic_Roughness_Emission(material_metallic_roughness_emission, metallic, roughness, emission);
+
+#if defined(USE_PBR_TEXTURE)
+	metallic = specularTex.a;
+	roughness = roughnessInTex;
+#endif
+
+	float3 specularColor = lerp(float3(1.f, 1.f, 1.f), specularTex.rgb, HasSpecularTexture());
+	float3 diffuseColor  = lerp(float3(1.f, 1.f, 1.f), diffuseTex.rgb * abs(material_mainColor), HasDiffuseTexture());
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition.xyz - vtxWorldPos );
 	lightParams.normal			= normal;
-	lightParams.fresnel0		= material_fresnel0;
-	lightParams.roughness		= material_roughness;
+	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= diffuseColor;
-	lightParams.specularColor	= specularTexture.Sample(defaultSampler, uv).rgb;
+	lightParams.specularColor	= specularColor;
 
 	uint tileIdx				= GetTileIndex(SVPosition);
 	uint startIdx				= tileIdx * tbrParam_maxNumOfPerLightInTile + 1;

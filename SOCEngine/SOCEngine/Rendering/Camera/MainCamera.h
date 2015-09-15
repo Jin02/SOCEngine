@@ -21,9 +21,9 @@ namespace Rendering
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
-			Texture::RenderTexture*						_albedo_metallic;
+			Texture::RenderTexture*						_albedo_emission;
 			Texture::RenderTexture*						_normal_roughness;
-			Texture::RenderTexture*						_specular_fresnel0;
+			Texture::RenderTexture*						_specular_metallic;
 
 			TBDR::ShadingWithLightCulling*				_deferredShadingWithLightCulling;
 			Texture::DepthBuffer*						_opaqueDepthBuffer;

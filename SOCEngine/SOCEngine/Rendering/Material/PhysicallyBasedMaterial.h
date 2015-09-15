@@ -26,10 +26,10 @@ namespace Rendering
 		{
 			struct MainColor { float r, g, b; };
 			MainColor		mainColor;
-			float			metallic;
-			float			roughness;
-			float			fresnel0;
+			uint			metallic_roughness_emission;
+
 			Math::Vector2	uvTiling;
+			Math::Vector2	uvOffset;
 
 			GBufferParam();
 			~GBufferParam();
@@ -62,7 +62,8 @@ namespace Rendering
 		GET_ACCESSOR_MATERIAL(MainColor,		GBufferParam::MainColor);
 		GET_SET_ACCESSOR_MATERIAL(Metallic,		float);
 		GET_SET_ACCESSOR_MATERIAL(Roughness,	float);
-		GET_SET_ACCESSOR_MATERIAL(Fresnel_0,	float);
+		GET_SET_ACCESSOR_MATERIAL(Emission,		float);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling,		Math::Vector2);
+		GET_SET_ACCESSOR_MATERIAL(UVOffset,		Math::Vector2);
 	};
 }

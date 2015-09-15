@@ -131,20 +131,17 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
-	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( globalIdx, sampleIdx );
+	float4 albedo_emission	= g_tGBufferAlbedo_emission.Load( globalIdx, sampleIdx );
+	float3 albedo			= albedo_emission.xyz;
 
-	float3 albedo	= albedo_metallic.xyz;
-	float metallic	= albedo_metallic.w;;
-
-	float4 specular_fresnel0 = g_tGBufferSpecular_fresnel0.Load( globalIdx, sampleIdx );
-	float3 specularColor = specular_fresnel0.rgb;
-	float fresnel0 = specular_fresnel0.a;
+	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( globalIdx, sampleIdx );
+	float3 specularColor = specular_metallic.rgb;
+	float metallic = specular_metallic.a;
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= viewDir;
 	lightParams.normal			= normal;
-	lightParams.fresnel0		= fresnel0;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
 	lightParams.specularColor	= specularColor;
@@ -189,10 +186,6 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= specular;
 	}
 
-	//float3 diffuseColor = albedo - albedo * metallic;
-	//float3 specularColor = lerp(0.08f * fresnel0.xxx, albedo, metallic.xxx);
-
-	//float3 result = (accumulativeDiffuse * diffuseColor) + (specularColor * specularColor);
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	return float4(result, 1.0f);
 }
@@ -253,28 +246,24 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( uint2(globalIdx.x, globalIdx.y), 0 );
+	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( uint2(globalIdx.x, globalIdx.y), 0 );
 #else
-	float4 albedo_metallic = g_tGBufferAlbedo_metallic.Load( uint3(globalIdx.x, globalIdx.y, 0) );
+	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( uint3(globalIdx.x, globalIdx.y, 0) );
 #endif
-
-	float3 albedo	= albedo_metallic.xyz;
-	float metallic	= albedo_metallic.w;;
+	float3 albedo	= albedo_emission.xyz;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 specular_fresnel0 = g_tGBufferSpecular_fresnel0.Load( uint2(globalIdx.x, globalIdx.y), 0 );
+	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( uint2(globalIdx.x, globalIdx.y), 0 );
 #else
-	float4 specular_fresnel0 = g_tGBufferSpecular_fresnel0.Load( uint3(globalIdx.x, globalIdx.y, 0) );
+	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( uint3(globalIdx.x, globalIdx.y, 0) );
 #endif
-
-	float3 specularColor = specular_fresnel0.rgb;
-	float fresnel0 = specular_fresnel0.a;
+	float3 specularColor = specular_metallic.rgb;
+	float metallic = specular_metallic.a;
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= viewDir;
 	lightParams.normal			= normal;
-	lightParams.fresnel0		= fresnel0;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
 	lightParams.specularColor	= specularColor;
@@ -323,10 +312,6 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 	}
 
-	//float3 diffuseColor = albedo - albedo * metallic;
-	//float3 specularColor = lerp(0.08f * fresnel0.xxx, albedo, metallic.xxx);
-
-	//float3 result = (accumulativeDiffuse * diffuseColor) + (specularColor * specularColor);
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
