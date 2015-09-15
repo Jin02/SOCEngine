@@ -119,7 +119,7 @@ float GeometryGGXSmith(float NdotV, float NdotL, float roughness)
 
 
 
-float FresnelSchlick(float f0, float LdotH)
+float3 FresnelSchlick(float3 f0, float LdotH)
 {
 	return f0 + (1.0f - f0) * pow(1.0f - LdotH, 5.0f);
 }
@@ -208,20 +208,20 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 #endif
 }
 
-float Fresnel(float f0, float LdotH)
+float3 Fresnel(float3 f0, float LdotH)
 {
 	//나머지는 구현하기 귀찮으니 나중에 생각날때 하면 될 것 같다
 	return FresnelSchlick(f0, LdotH); //Default
 }
 
-float DiffuseEnergyConservation(float f0, float NdotL)
+float3 DiffuseEnergyConservation(float3 f0, float NdotL)
 {
 #if defined(DIFFUSE_ENERGY_CONSERVATION_NONE)
-	return 1.0f;
+	return float3(1.0f, 1.0f, 1.0f);
 #elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL)
-	return 1.0f - Fresnel(f0, NdotL);
+	return float3(1.0f, 1.0f, 1.0f) - Fresnel(f0, NdotL);
 #elif defined(DIFFUSE_ENERGY_CONSERVATION_1_MINUS_F0)
-	return 1.0f - f0;
+	return float3(1.0f, 1.0f, 1.0f) - f0;
 #endif
 }
 
@@ -237,15 +237,15 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	float LdotH			= max(0.0f,	dot(commonParamas.lightDir,	halfVector));
 	float VdotL			= max(0.0f,	dot(lightingParams.viewDir,	commonParamas.lightDir));
 
-	float fresnel0		= 0.3f;//lightingParams.fresnel0;
+	float3 fresnel0		= float3(0.3f,0.3f, 0.3f);//lightingParams.specularColor;
 	float roughness		= 0.4f;//lightingParams.roughness;
-	float intensity		= 4.0f;//commonParamas.lightIntensity * 8.0f;
+	float intensity		= commonParamas.lightIntensity;
 
-	float	Fr = Fresnel(fresnel0, LdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
+	float3	Fr = Fresnel(fresnel0, LdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
 
-	float diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
-	resultDiffuseColor = Diffuse(/*lightingParams.diffuseColor*/float3(1,1,1), roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * intensity * diffuseEnergyConservation;
-	resultSpecularColor	= Fr * /*lightingParams.specularColor*/float3(1,1,1) * commonParamas.lightColor/* * intensity*/;
+	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
+	resultDiffuseColor = Diffuse(/*lightingParams.diffuseColor*/float3(1,1,1), roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * diffuseEnergyConservation * intensity;
+	resultSpecularColor	= Fr * commonParamas.lightColor * intensity;
 }
 
 #endif
