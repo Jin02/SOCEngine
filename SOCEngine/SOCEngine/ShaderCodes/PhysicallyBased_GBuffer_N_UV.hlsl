@@ -38,20 +38,15 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
-	float metallic, roughness, emission;
-	Parse_Metallic_Roughness_Emission(material_metallic_roughness_emission,
-		metallic, roughness, emission);
+	float3 normal	= normalize(input.normal);
+	float4 specular	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 
-	outGBuffer.albedo_emission.rgb		= diffuseTex.xyz * material_mainColor;
-	outGBuffer.albedo_emission.a		= emission;
-
-	outGBuffer.specular_metallic.rgb	= specularTexture.Sample(GBufferDefaultSampler, input.uv).rgb;
-	outGBuffer.specular_metallic.a 		= metallic;
-
-	float3 normal = normalize(input.normal);
-
-	outGBuffer.normal_roughness.rgb = float3(normal * 0.5f + 0.5f);
-	outGBuffer.normal_roughness.a 	= roughness;
+#if defined(USE_PBR_TEXTURE)
+	float roughness = normalTexture.Sample(GBufferDefaultSampler, input.uv).a;
+	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+#else
+	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+#endif
 
 	return outGBuffer;
 }
