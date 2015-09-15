@@ -159,6 +159,10 @@ void RenderSpotLight(
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 {
+	float metallic, roughness, emission;
+	Parse_Metallic_Roughness_Emission(material_metallic_roughness_emission,
+		metallic, roughness, emission);
+
 	float4	diffuseTex		= diffuseTexture.Sample(defaultSampler, uv);
 	float3	diffuseColor	= diffuseTex.rgb;
 
@@ -166,8 +170,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 
 	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition.xyz - vtxWorldPos );
 	lightParams.normal			= normal;
-	lightParams.fresnel0		= material_fresnel0;
-	lightParams.roughness		= material_roughness;
+	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= diffuseColor;
 	lightParams.specularColor	= specularTexture.Sample(defaultSampler, uv).rgb;
 
