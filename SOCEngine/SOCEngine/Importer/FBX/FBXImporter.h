@@ -2,30 +2,27 @@
 
 #include <fbxsdk.h>
 #include <string>
-#include "FBXTinyScene.h"
-#include "VectorMap.h"
+#include "TinyFBXImporter.h"
 
 namespace Importer
 {
 	namespace FBX
 	{
-		class TinyFBXImporter
+		class FBXImporter
 		{
 		private:
-			fbxsdk_2014_1::FbxImporter*			_importer;
-			fbxsdk_2014_1::FbxManager*			_sdkManager;
-
-		private:
-			Structure::VectorMap<std::string, TinyFBXScene*>	_tinyScenes;
+			TinyFBXImporter* _importer;
 
 		public:
-			TinyFBXImporter();
-			~TinyFBXImporter();
+			FBXImporter();
+			~FBXImporter();
 
 		public:
 			void Initialize();
 			void Destroy();
-			const TinyFBXScene* LoadScene(const std::string& filePath);
+
+		public:
+			void LoadOnlyMesh(const std::string& filePath);
 		};
 	}
 }

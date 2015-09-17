@@ -14,7 +14,7 @@ TinyFBXScene::~TinyFBXScene()
 {
 }
 
-void TinyFBXScene::LoadScene(const std::string& filePath)
+TinyFBXScene::Object* TinyFBXScene::LoadScene(const std::string& filePath)
 {
 	int fileFormat = -1;
 	if(_sdkManager->GetIOPluginRegistry()->DetectReaderFileFormat(filePath.c_str(), fileFormat))
@@ -55,9 +55,16 @@ void TinyFBXScene::LoadScene(const std::string& filePath)
 	{
 		ProcessSkeletonHierarchy(_fbxScene->GetRootNode());
 		_hasAnimation = (_skeleton.mJoints.empty() == false);
-		ProcessGeometry(_fbxScene->GetRootNode());
+		Object* root = new Object;
+		root->name = "TEST";
+		root->parent =  nullptr;
+		ProcessGeometry(_fbxScene->GetRootNode(), root);
 		Optimize();
+
+		return root;
 	}
+
+	return nullptr;
 }
 
 void TinyFBXScene::Triangulate(FbxNode* fbxNode)
@@ -105,8 +112,13 @@ void TinyFBXScene::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDe
 	}
 }
 
-void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode)
+void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* parent)
 {
+	Object* object = new Object;
+	object->parent = parent;
+	object->name = inNode->GetName();
+	parent->childs.push_back(object);
+
 	if (inNode->GetNodeAttribute())
 	{
 		switch (inNode->GetNodeAttribute()->GetAttributeType())
@@ -126,7 +138,7 @@ void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode)
 
 	for (int i = 0; i < inNode->GetChildCount(); ++i)
 	{
-		ProcessGeometry(inNode->GetChild(i));
+		ProcessGeometry(inNode->GetChild(i), object);
 	}
 }
 

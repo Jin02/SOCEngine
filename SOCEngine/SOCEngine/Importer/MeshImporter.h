@@ -4,6 +4,7 @@
 #include <string>
 
 #include "ObjImporter.h"
+#include "FBXImporter.h"
 
 namespace Importer
 {
@@ -13,7 +14,8 @@ namespace Importer
 		Structure::VectorMap<std::string, Core::Object*>	_originObjects;
 
 	private:
-		ObjImporter*	_objImporter;
+		ObjImporter*		_objImporter;
+		FBX::FBXImporter*	_fbxImporter;
 
 	public:
 		MeshImporter();

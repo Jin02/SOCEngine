@@ -14,6 +14,15 @@ namespace Importer
 	{
 		class TinyFBXScene
 		{
+		public:
+			struct Object
+			{
+				std::string				name;
+
+				Object*					parent;
+				std::vector<Object*>	childs;
+			};
+
 		private:
 			fbxsdk_2014_1::FbxImporter*			_importer;
 			fbxsdk_2014_1::FbxManager*			_sdkManager;
@@ -39,14 +48,14 @@ namespace Importer
 			~TinyFBXScene();
 
 		public:
-			void LoadScene(const std::string& filePath);
+			Object* LoadScene(const std::string& filePath);
 			void Cleanup();
 
 		private:
 			void Triangulate(fbxsdk_2014_1::FbxNode* fbxNode);
 			void ProcessSkeletonHierarchy(fbxsdk_2014_1::FbxNode* inRootNode);
 			void ProcessSkeletonHierarchyRecursively(fbxsdk_2014_1::FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);
-			void ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode);
+			void ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* parent);
 			void ProcessControlPoints(fbxsdk_2014_1::FbxNode* inNode);
 			void ProcessJointsAndAnimations(fbxsdk_2014_1::FbxNode* inNode);
 			unsigned int FindJointIndexUsingName(const std::string& inJointName);

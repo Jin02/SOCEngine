@@ -27,28 +27,32 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	camera = new Object("Default");
-	MainCamera* cam = camera->AddComponent<MainCamera>();
-	//camera->GetTransform()->UpdateEulerAngles(Vector3(20, 340, 0));
-	//camera->GetTransform()->UpdatePosition(Vector3(150, 200, 100));
-
 	MeshImporter importer;
 	importer.Initialize();
+	importer.Load("./Resources/Turrets Pack/turret_1.FBX");
 
-//	testObject = importer.Load("./Resources/Sponza/sponza.obj", "./Resources/Sponza/");
-	//testObject = importer.Load("./Resources/Sphere/sphere.obj", "./Resources/Sphere/");
-	testObject = importer.Load("./Resources/Capsule/capsule.obj");
-
-	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
-//	testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
-	testObject->GetTransform()->UpdateEulerAngles(Vector3(0, 90, 0));
-	AddObject(testObject);
-
-	light = new Object("Light");
-	light->AddComponent<DirectionalLight>();
-	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
-
-	AddObject(light);
+//	camera = new Object("Default");
+//	MainCamera* cam = camera->AddComponent<MainCamera>();
+//	//camera->GetTransform()->UpdateEulerAngles(Vector3(20, 340, 0));
+//	//camera->GetTransform()->UpdatePosition(Vector3(150, 200, 100));
+//
+//	MeshImporter importer;
+//	importer.Initialize();
+//
+////	testObject = importer.Load("./Resources/Sponza/sponza.obj", "./Resources/Sponza/");
+//	//testObject = importer.Load("./Resources/Sphere/sphere.obj", "./Resources/Sphere/");
+//	testObject = importer.Load("./Resources/Capsule/capsule.obj");
+//
+//	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+////	testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
+//	testObject->GetTransform()->UpdateEulerAngles(Vector3(0, 90, 0));
+//	AddObject(testObject);
+//
+//	light = new Object("Light");
+//	light->AddComponent<DirectionalLight>();
+//	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+//
+//	AddObject(light);
 }
 
 void TestScene::OnRenderPreview()

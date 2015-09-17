@@ -54,6 +54,7 @@
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
     <ClInclude Include="Importer\FBX\FBXImporter.h" />
+    <ClInclude Include="Importer\FBX\TinyFBXImporter.h" />
     <ClInclude Include="Importer\FBX\FBXMaterial.h" />
     <ClInclude Include="Importer\FBX\FBXTinyScene.h" />
     <ClInclude Include="Importer\FBX\FBXUtilities.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
     <ClCompile Include="Importer\FBX\FBXImporter.cpp" />
+    <ClCompile Include="Importer\FBX\TinyFBXImporter.cpp" />
     <ClCompile Include="Importer\FBX\FBXTinyScene.cpp" />
     <ClCompile Include="Importer\FBX\FBXUtilities.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />

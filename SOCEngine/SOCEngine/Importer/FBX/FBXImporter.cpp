@@ -1,66 +1,31 @@
 #include "FBXImporter.h"
 #include "Utility.h"
 
-using namespace Importer;
 using namespace Importer::FBX;
 using namespace fbxsdk_2014_1;
 
-TinyFBXImporter::TinyFBXImporter()
-	: _importer(nullptr), _sdkManager(nullptr)
+FBXImporter::FBXImporter() : _importer(nullptr)
 {
 }
 
-TinyFBXImporter::~TinyFBXImporter()
+FBXImporter::~FBXImporter()
 {
 	Destroy();
 }
 
-void TinyFBXImporter::Initialize()
+void FBXImporter::Initialize()
 {
-	FBX_SAFE_DELETE(_sdkManager);
-	_sdkManager = FbxManager::Create();
-
-	FbxIOSettings* ioSetting = FbxIOSettings::Create(_sdkManager, IOSROOT);
-	_sdkManager->SetIOSettings(ioSetting);
-
-	FbxString path = FbxGetApplicationDirectory();
-#if defined (FBXSDK_ENV_WIN)
-	FbxString IExtension = "dll";
-#elif defined (FBXSDK_ENV_MAC)
-	FbxString IExtension = "dylib";				
-#elif defined (FBXSDK_ENV_LINUX)
-	FbxString IExtension = "so";
-#endif
-
-	_sdkManager->LoadPluginsDirectory(path.Buffer(), IExtension.Buffer());
-	_importer = FbxImporter::Create(_sdkManager, "");
+	_importer = new TinyFBXImporter;
+	_importer->Initialize();
 }
 
-void TinyFBXImporter::Destroy()
+void FBXImporter::Destroy()
 {
-	auto vector = _tinyScenes.GetVector();
-	for(auto iter=vector.begin(); iter != vector.end(); ++iter)
-		(*iter)->Cleanup();
-
-	_sdkManager->Destroy();
-	_importer->Destroy(true);
+	SAFE_DELETE(_importer);
 }
 
-const TinyFBXScene* TinyFBXImporter::LoadScene(const std::string& filePath)
+void FBXImporter::LoadOnlyMesh(const std::string& filePath)
 {
-	std::string fileName;
-	Utility::String::ParseDirectory(filePath, nullptr, &fileName, nullptr);
-
-	// Check duplicated scene
-	{
-		TinyFBXScene** found = _tinyScenes.Find(fileName);
-		if(found)
-			return (*found);
-	}
-
-	TinyFBXScene* tinyScene = new TinyFBXScene(_importer, _sdkManager);
-	tinyScene->LoadScene(filePath);
-
-	_tinyScenes.Add(fileName, tinyScene);
-	return tinyScene;
+	const TinyFBXScene* scene = _importer->LoadScene(filePath);
+	ASSERT_COND_MSG(scene, "Error, TinyFBXScene is Null");
 }
