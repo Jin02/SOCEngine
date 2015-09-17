@@ -13,7 +13,7 @@ namespace Importer
 		Structure::VectorMap<std::string, Core::Object*>	_originObjects;
 
 	private:
-		Obj::ObjImporter*	_objImporter;
+		ObjImporter*	_objImporter;
 
 	public:
 		MeshImporter();

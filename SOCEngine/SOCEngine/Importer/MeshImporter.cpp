@@ -29,7 +29,7 @@ void MeshImporter::Initialize()
 		return this->Find(key);
 	};
 
-	_objImporter = new Obj::ObjImporter(Find, Add);
+	_objImporter = new ObjImporter(Find, Add);
 }
 
 void MeshImporter::Destroy()

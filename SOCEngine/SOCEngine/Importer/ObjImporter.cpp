@@ -11,7 +11,6 @@
 #include <ctype.h>
 
 using namespace Importer;
-using namespace Importer::Obj;
 using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Manager;
