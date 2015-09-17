@@ -6,9 +6,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(FBX_SDK)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(FBX_SDK)lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(FBX_SDK)lib\vs2012\x86\debug;$(LibraryPath)</LibraryPath>
+    <_PropertySheetDisplayName>ExternalLib</_PropertySheetDisplayName>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="FBX_SDK">
       <Value>$(FBX_SDK)</Value>
