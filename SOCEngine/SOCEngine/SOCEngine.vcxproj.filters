@@ -316,6 +316,9 @@
     <Filter Include="Rendering\Texture\Manager">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Importer\FBX">
+      <UniqueIdentifier>{26d8193a-bbf8-49e8-a758-7bd03b4c189c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -714,6 +717,21 @@
     <ClInclude Include="External\DirectXTK\PlatformHelpers.h">
       <Filter>External\DirectXTK</Filter>
     </ClInclude>
+    <ClInclude Include="Importer\FBX\FBXImporter.h">
+      <Filter>Importer\FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\FBX\FBXMaterial.h">
+      <Filter>Importer\FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\FBX\FBXUtilities.h">
+      <Filter>Importer\FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\FBX\FBXVertex.h">
+      <Filter>Importer\FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\FBX\FBXTinyScene.h">
+      <Filter>Importer\FBX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -952,6 +970,15 @@
     </ClCompile>
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp">
       <Filter>External\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\FBX\FBXImporter.cpp">
+      <Filter>Importer\FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\FBX\FBXUtilities.cpp">
+      <Filter>Importer\FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\FBX\FBXTinyScene.cpp">
+      <Filter>Importer\FBX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
