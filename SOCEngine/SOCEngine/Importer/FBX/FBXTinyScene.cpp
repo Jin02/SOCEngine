@@ -5,8 +5,22 @@ using namespace Importer;
 using namespace Importer::FBX;
 using namespace fbxsdk_2014_1;
 
+TinyFBXScene::Object::Object(TinyFBXScene::Object* _parent, const std::string& _name)
+	: name(_name), parent(_parent)
+{
+}
+
+TinyFBXScene::Object::~Object()
+{
+	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
+		SAFE_DELETE(*iter);
+}
+
+
 TinyFBXScene::TinyFBXScene(FbxImporter* importer, FbxManager* sdkManager)
-	:_importer(importer), _sdkManager(sdkManager), _animLayer(nullptr), _animStack(nullptr), _fbxScene(nullptr)
+	:_importer(importer), _sdkManager(sdkManager), _fbxScene(nullptr)
+//	_hasAnimation(false), _animationLength(0)
+//	,_animLayer(nullptr), _animStack(nullptr)
 {
 }
 
@@ -53,13 +67,12 @@ TinyFBXScene::Object* TinyFBXScene::LoadScene(const std::string& filePath)
 
 	if(_fbxScene->GetRootNode())
 	{
-		ProcessSkeletonHierarchy(_fbxScene->GetRootNode());
-		_hasAnimation = (_skeleton.mJoints.empty() == false);
-		Object* root = new Object;
-		root->name = "TEST";
-		root->parent =  nullptr;
+		//ProcessSkeletonHierarchy(_fbxScene->GetRootNode());
+		//_hasAnimation = (_skeleton.mJoints.empty() == false);
+		Object* root = new Object(nullptr, fileName);
+
 		ProcessGeometry(_fbxScene->GetRootNode(), root);
-		Optimize();
+		Optimize(*root);
 
 		return root;
 	}
@@ -99,12 +112,18 @@ void TinyFBXScene::ProcessSkeletonHierarchy(FbxNode* inRootNode)
 
 void TinyFBXScene::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex)
 {
-	if(inNode->GetNodeAttribute() && inNode->GetNodeAttribute()->GetAttributeType() && inNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
+	if(inNode->GetNodeAttribute())
 	{
-		Joint currJoint;
-		currJoint.mParentIndex = inParentIndex;
-		currJoint.mName = inNode->GetName();
-		_skeleton.mJoints.push_back(currJoint);
+		FbxNodeAttribute::EType type = inNode->GetNodeAttribute()->GetAttributeType();
+
+		if(type == FbxNodeAttribute::eSkeleton)
+		{
+			Joint currJoint;
+			currJoint.mParentIndex = inParentIndex;
+			currJoint.mName = inNode->GetName();
+			_skeleton.mJoints.push_back(currJoint);
+		}
+
 	}
 	for (int i = 0; i < inNode->GetChildCount(); i++)
 	{
@@ -114,23 +133,23 @@ void TinyFBXScene::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDe
 
 void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* parent)
 {
-	Object* object = new Object;
-	object->parent = parent;
-	object->name = inNode->GetName();
+	Object* object = new Object(parent, inNode->GetName());
 	parent->childs.push_back(object);
 
 	if (inNode->GetNodeAttribute())
 	{
-		switch (inNode->GetNodeAttribute()->GetAttributeType())
+		auto type = inNode->GetNodeAttribute()->GetAttributeType();
+		switch (type)
 		{
 		case FbxNodeAttribute::eMesh:
 			ProcessControlPoints(inNode);
-			if(_hasAnimation)
-			{
-				ProcessJointsAndAnimations(inNode);
-			}
-			ProcessMesh(inNode);
-			AssociateMaterialToMesh(inNode);
+			//if(_hasAnimation)
+			//{
+			//	ProcessJointsAndAnimations(inNode);
+			//}
+
+			ProcessMesh(inNode, *object);
+			AssociateMaterialToMesh(inNode, *object);
 			ProcessMaterials(inNode);
 			break;
 		}
@@ -212,6 +231,7 @@ void TinyFBXScene::ProcessJointsAndAnimations(FbxNode* inNode)
 
 			// Get animation information
 			// Now only supports one take
+			/*
 			FbxAnimStack* currAnimStack = _fbxScene->GetSrcObject<FbxAnimStack>(0);
 			FbxString animStackName = currAnimStack->GetName();
 			_animationName = animStackName.Buffer();
@@ -231,6 +251,7 @@ void TinyFBXScene::ProcessJointsAndAnimations(FbxNode* inNode)
 				(*currAnim)->mGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
 				currAnim = &((*currAnim)->mNext);
 			}
+			*/
 		}
 	}
 
@@ -263,22 +284,22 @@ unsigned int TinyFBXScene::FindJointIndexUsingName(const std::string& inJointNam
 	throw std::exception("Skeleton information in FBX file is corrupted.");
 }
 
-void TinyFBXScene::ProcessMesh(FbxNode* inNode)
+void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 {
 	FbxMesh* currMesh = inNode->GetMesh();
 
-	_triangleCount = currMesh->GetPolygonCount();
+	uint triangleCount = currMesh->GetPolygonCount();
 	int vertexCounter = 0;
-	_triangles.reserve(_triangleCount);
+	obj.triangles.reserve(triangleCount);
 
-	for (unsigned int i = 0; i < _triangleCount; ++i)
+	for (unsigned int i = 0; i < triangleCount; ++i)
 	{
 		Math::Vector3 normal[3];
 		Math::Vector3 tangent[3];
 		Math::Vector3 binormal[3];
 		Math::Vector2 UV[3][2];
 		Triangle currTriangle;
-		_triangles.push_back(currTriangle);
+		obj.triangles.push_back(currTriangle);
 
 		for (unsigned int j = 0; j < 3; ++j)
 		{
@@ -310,8 +331,8 @@ void TinyFBXScene::ProcessMesh(FbxNode* inNode)
 			// duplicated vertices
 			temp.SortBlendingInfoByWeight();
 
-			_vertices.push_back(temp);
-			_triangles.back().mIndices.push_back(vertexCounter);
+			obj.vertices.push_back(temp);
+			obj.triangles.back().mIndices.push_back(vertexCounter);
 			++vertexCounter;
 		}
 	}
@@ -565,39 +586,42 @@ void TinyFBXScene::ReadTangent(FbxMesh* inMesh, int inCtrlPointIndex, int inVert
 // This function removes the duplicated vertices and
 // adjust the index buffer properly
 // This function should take a while, though........
-void TinyFBXScene::Optimize()
+void TinyFBXScene::Optimize(Object& obj)
 {
 	// First get a list of unique vertices
 	std::vector<PNTIWVertex> uniqueVertices;
-	for(unsigned int i = 0; i < _triangles.size(); ++i)
+	for(unsigned int i = 0; i < obj.triangles.size(); ++i)
 	{
 		for(unsigned int j = 0; j < 3; ++j)
 		{
 			// If current vertex has not been added to
 			// our unique vertex list, then we add it
-			if(FindVertex(_vertices[i * 3 + j], uniqueVertices) == -1)
+			if(FindVertex(obj.vertices[i * 3 + j], uniqueVertices) == -1)
 			{
-				uniqueVertices.push_back(_vertices[i * 3 + j]);
+				uniqueVertices.push_back(obj.vertices[i * 3 + j]);
 			}
 		}
 	}
 
 	// Now we update the index buffer
-	for(unsigned int i = 0; i < _triangles.size(); ++i)
+	for(unsigned int i = 0; i < obj.triangles.size(); ++i)
 	{
 		for(unsigned int j = 0; j < 3; ++j)
 		{
-			_triangles[i].mIndices[j] = FindVertex(_vertices[i * 3 + j], uniqueVertices);
+			obj.triangles[i].mIndices[j] = FindVertex(obj.vertices[i * 3 + j], uniqueVertices);
 		}
 	}
 	
-	_vertices.clear();
-	_vertices = uniqueVertices;
+	obj.vertices.clear();
+	obj.vertices = uniqueVertices;
 	uniqueVertices.clear();
 
 	// Now we sort the triangles by materials to reduce 
 	// shader's workload
-	std::sort(_triangles.begin(), _triangles.end());
+	std::sort(obj.triangles.begin(), obj.triangles.end());
+
+	for(auto iter = obj.childs.begin(); iter != obj.childs.end(); ++iter)
+		Optimize(**iter);
 }
 
 int TinyFBXScene::FindVertex(const PNTIWVertex& inTargetVertex, const std::vector<PNTIWVertex>& uniqueVertices)
@@ -613,11 +637,13 @@ int TinyFBXScene::FindVertex(const PNTIWVertex& inTargetVertex, const std::vecto
 	return -1;
 }
 
-void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode)
+void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode, Object& obj)
 {
 	FbxLayerElementArrayTemplate<int>* materialIndices;
 	FbxGeometryElement::EMappingMode materialMappingMode = FbxGeometryElement::eNone;
 	FbxMesh* currMesh = inNode->GetMesh();
+
+	uint triangleCount = obj.triangles.size();
 
 	if(currMesh->GetElementMaterial())
 	{
@@ -630,12 +656,12 @@ void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode)
 			{
 			case FbxGeometryElement::eByPolygon:
 			{
-				if (materialIndices->GetCount() == _triangleCount)
+				if (materialIndices->GetCount() == triangleCount)
 				{
-					for (unsigned int i = 0; i < _triangleCount; ++i)
+					for (unsigned int i = 0; i < triangleCount; ++i)
 					{
 						unsigned int materialIndex = materialIndices->GetAt(i);
-						_triangles[i].mMaterialIndex = materialIndex;
+						obj.triangles[i].mMaterialIndex = materialIndex;
 					}
 				}
 			}
@@ -644,9 +670,9 @@ void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode)
 			case FbxGeometryElement::eAllSame:
 			{
 				unsigned int materialIndex = materialIndices->GetAt(0);
-				for (unsigned int i = 0; i < _triangleCount; ++i)
+				for (unsigned int i = 0; i < triangleCount; ++i)
 				{
-					_triangles[i].mMaterialIndex = materialIndex;
+					obj.triangles[i].mMaterialIndex = materialIndex;
 				}
 			}
 			break;
@@ -810,8 +836,6 @@ void TinyFBXScene::Cleanup()
 {
 	_fbxScene->Destroy();
 
-	_triangles.clear();
-	_vertices.clear();
 	_skeleton.mJoints.clear();
 
 	for(auto itr = _materialLookUp.begin(); itr != _materialLookUp.end(); ++itr)
