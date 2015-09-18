@@ -29,7 +29,7 @@ void TestScene::OnInitialize()
 {
 	MeshImporter importer;
 	importer.Initialize();
-	importer.Load("./Resources/Turrets Pack/turret_1.FBX");
+	importer.Load("./Resources/Turrets Pack/turret_1.fbx");
 
 //	camera = new Object("Default");
 //	MainCamera* cam = camera->AddComponent<MainCamera>();
