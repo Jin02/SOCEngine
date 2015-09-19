@@ -87,8 +87,7 @@ namespace Importer
 
 		struct Triangle
 		{
-			std::vector<unsigned int> mIndices; 
-			std::string mMaterialName;
+			std::vector<unsigned int> mIndices;
 			unsigned int mMaterialIndex;
 
 			bool operator<(const Triangle& rhs)
