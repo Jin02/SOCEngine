@@ -134,26 +134,25 @@ void TinyFBXScene::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDe
 
 void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* parent)
 {
-	Object* object = new Object(parent, inNode->GetName());
-	parent->childs.push_back(object);
+	Object* object = parent;
 
-	if (inNode->GetNodeAttribute())
+	FbxNodeAttribute* fbxAttr = inNode->GetNodeAttribute();
+	if (fbxAttr)
 	{
-		auto type = inNode->GetNodeAttribute()->GetAttributeType();
-		switch (type)
+		FbxNodeAttribute::EType type = fbxAttr->GetAttributeType();
+		if(type == FbxNodeAttribute::eMesh)
 		{
-		case FbxNodeAttribute::eMesh:
+			object = new Object(parent, inNode->GetName());
+			parent->childs.push_back(object);
+
 			ProcessControlPoints(inNode);
-			//if(_hasAnimation)
-			//{
-			//	ProcessJointsAndAnimations(inNode);
-			//}
+//			if(_hasAnimation)
+//				ProcessJointsAndAnimations(inNode);
 
 			ProcessMesh(inNode, *object);
 			AssociateMaterialToMesh(inNode, *object);
 			ProcessMaterials(inNode);
 			ComputeTransformMatrix(inNode, *object);
-			break;
 		}
 	}
 
