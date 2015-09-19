@@ -233,12 +233,11 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	if(isNormalMapUse)
 	{
-		const Math::Vector3* vertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
-		const Math::Vector3* originNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
-		const Math::Vector2* texcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
+		const Math::Vector3* tinyVertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
+		const Math::Vector3* tinyOriginNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
+		const Math::Vector2* tinyTexcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
 
-		ImporterUtility::ReCalculateTBN(tangents, binormals, reCalcNormals,
-			vertices, tiny_positions.size() / 3, originNormals, texcoords, indices.data(), indices.size());
+		CalculateTBN(tangents, binormals, reCalcNormals, tinyVertices, tinyOriginNormals, tinyTexcoords, indices, tiny_positions.size() / 3);
 	}
 
 	struct InputSemanticData
@@ -401,12 +400,11 @@ Core::Object* ObjImporter::LoadMesh(const tinyobj::shape_t& tinyShape,
 
 	if(isNormalMapUse)
 	{
-		const Math::Vector3* vertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
-		const Math::Vector3* originNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
-		const Math::Vector2* texcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
+		const Math::Vector3* tinyVertices		= reinterpret_cast<const Math::Vector3*>(tiny_positions.data());
+		const Math::Vector3* tinyOriginNormals	= reinterpret_cast<const Math::Vector3*>(tiny_normals.data());
+		const Math::Vector2* tinyTexcoords		= reinterpret_cast<const Math::Vector2*>(tiny_texcoords.data());
 
-		ImporterUtility::ReCalculateTBN(tangents, binormals, reCalcNormals,
-			vertices, tiny_positions.size() / 3, originNormals, texcoords, indices.data(), indices.size());
+		CalculateTBN(tangents, binormals, reCalcNormals, tinyVertices, tinyOriginNormals, tinyTexcoords, indices, tiny_positions.size() / 3);
 	}
 
 	uint vtxCount = tinyShape.mesh.positions.size() / 3;
@@ -525,4 +523,64 @@ Core::Object* ObjImporter::CloneOriginObject(const std::string& fileName, const 
 	const Core::Object* object = _findOriginObjFunc(fileName + ':' + tinyShapeName);
 
 	return object ? object->Clone() : nullptr;
+}
+
+void ObjImporter::CalculateTBN(
+	std::vector<Math::Vector3>& outTangents,
+	std::vector<Math::Vector3>& outBinormals, 
+	std::vector<Math::Vector3>& outNormals,
+	const Math::Vector3*& tinyVertices, 
+	const Math::Vector3*& tinyOriginNormals, 
+	const Math::Vector2*& tinyTexcoords,
+	const std::vector<uint>& indices, uint vertexCount)
+{
+	outTangents.reserve(vertexCount);
+	outBinormals.reserve(vertexCount);
+	outNormals.reserve(vertexCount);
+
+	for(uint i=0; i<indices.size(); i+=3)
+	{
+		uint idx0 = indices[i + 0];
+		uint idx1 = indices[i + 1];
+		uint idx2 = indices[i + 2];
+
+		std::array<const Math::Vector3*, 3> vertices;
+		{
+			vertices[0] = &tinyVertices[idx0];
+			vertices[1] = &tinyVertices[idx1];
+			vertices[2] = &tinyVertices[idx2];
+		}
+
+		std::array<const Math::Vector2*, 3> uvs;
+		{
+			uvs[0] = &tinyTexcoords[idx0];
+			uvs[1] = &tinyTexcoords[idx1];
+			uvs[2] = &tinyTexcoords[idx2];
+		}
+
+		Math::Vector3 tangent, binormal;
+		ImporterUtility::CalculateTangentBinormal(tangent, binormal, vertices, uvs);
+
+		Math::Vector3 newNormal;
+		ImporterUtility::CalculateNormal(newNormal, binormal, tangent);
+
+		outTangents[idx0] += tangent;
+		outTangents[idx1] += tangent;
+		outTangents[idx2] += tangent;
+
+		outBinormals[idx0] += binormal;
+		outBinormals[idx1] += binormal;
+		outBinormals[idx2] += binormal;
+
+		outNormals[idx0] += newNormal;
+		outNormals[idx1] += newNormal;
+		outNormals[idx2] += newNormal;
+	}
+
+	for(uint i=0; i<vertexCount; ++i)
+	{
+		outTangents[i] /= 3.0f;
+		outBinormals[i] /= 3.0f;
+		outNormals[i] /= 3.0f;
+	}
 }

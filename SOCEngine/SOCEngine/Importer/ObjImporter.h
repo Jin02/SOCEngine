@@ -48,6 +48,11 @@ namespace Importer
 			Rendering::Material::Type materialType,
 			bool isDynamicMesh = false);
 
+		void CalculateTBN(
+			std::vector<Math::Vector3>& outTangents, std::vector<Math::Vector3>& outBinormals, std::vector<Math::Vector3>& outNormals,
+			const Math::Vector3*& tinyVertices, const Math::Vector3*& tinyOriginNormals, const Math::Vector2*& tinyTexcoords, const std::vector<uint>& indices,
+			uint vertexCount);
+
 	public:
 		Rendering::Material* LoadMaterial(const tinyobj::material_t& tinyMaterial, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
 		void LoadMaterials(const std::vector<tinyobj::material_t>& tinyMaterials, const std::string& fileName, const std::string& materialFileFolder, Rendering::Material::Type materialType);
