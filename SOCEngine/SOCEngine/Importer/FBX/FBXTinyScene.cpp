@@ -1,6 +1,8 @@
 #include "FBXTinyScene.h"
 #include "Utility.h"
 
+//#define OPTIMIZATION_COMPARE_HASH_KEY
+
 using namespace Importer;
 using namespace Importer::FBX;
 using namespace fbxsdk_2014_1;
@@ -308,296 +310,50 @@ unsigned int TinyFBXScene::FindJointIndexUsingName(const std::string& inJointNam
 
 void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 {
-	FbxMesh* currMesh = inNode->GetMesh();
+	FbxMesh* fbxMesh = inNode->GetMesh();
+	ASSERT_COND_MSG(fbxMesh, "fbxMesh is null");	
+	ASSERT_COND_MSG(fbxMesh->GetControlPointsCount() > 0, "Invalid control points");
 
-	uint triangleCount = currMesh->GetPolygonCount();
-	int vertexCounter = 0;
-	obj.triangles.reserve(triangleCount);
+	FbxLayer* frontLayer	= fbxMesh->GetLayer(0);
+	int polygonCount		= fbxMesh->GetPolygonCount();
+	std::vector<uint> indices(polygonCount * 3);
 
-	for (unsigned int i = 0; i < triangleCount; ++i)
+	uint indexCounter = 0;
+	for(uint polyIdx = 0; polyIdx < polygonCount; ++polyIdx)
 	{
-		Math::Vector3 normal[3];
-		Math::Vector3 tangent[3];
-		Math::Vector3 binormal[3];
-		Math::Vector2 UV[3][2];
-		Triangle currTriangle;
-		obj.triangles.push_back(currTriangle);
-
-		for (unsigned int j = 0; j < 3; ++j)
+		int polySize = fbxMesh->GetPolygonSize(polyIdx);
+		for(uint i=0; i<polySize; ++i)
 		{
-			int ctrlPointIndex = currMesh->GetPolygonVertex(i, j);
-			const CtrlPoint& currCtrlPoint = _controlPoints[ctrlPointIndex];
+			int index = fbxMesh->GetPolygonVertex(polyIdx, i);
 
-			auto fbxFrontLayer = currMesh->GetLayer(0);
-			if(fbxFrontLayer->GetNormals())
-				ReadNormal(currMesh, ctrlPointIndex, vertexCounter, normal[j]);
-
-			if(fbxFrontLayer->GetUVs())
+			if(frontLayer->GetUVs())
 			{
-				for (int k = 0; k < 1; ++k)
-					ReadUV(currMesh, ctrlPointIndex, currMesh->GetTextureUVIndex(i, j), k, UV[j][k]);
 			}
 
-			if(fbxFrontLayer->GetTangents())
-				ReadTangent(currMesh, ctrlPointIndex, vertexCounter, tangent[j]);
-
-			if(fbxFrontLayer->GetBinormals())
-				ReadBinormal(currMesh, ctrlPointIndex, vertexCounter, binormal[j]);
-
-			PNTIWVertex temp;
-			temp.mPosition = currCtrlPoint.mPosition;
-			temp.mNormal = normal[j];
-			temp.mUV = UV[j][0];
-			temp.mBinormal = binormal[j];
-			temp.mTangent = tangent[j];
-			// Copy the blending info from each control point
-			for(unsigned int i = 0; i < currCtrlPoint.mBlendingInfo.size(); ++i)
+			if(frontLayer->GetNormals())
 			{
-				VertexBlendingInfo currBlendingInfo;
-				currBlendingInfo.mBlendingIndex = currCtrlPoint.mBlendingInfo[i].mBlendingIndex;
-				currBlendingInfo.mBlendingWeight = currCtrlPoint.mBlendingInfo[i].mBlendingWeight;
-				temp.mVertexBlendingInfos.push_back(currBlendingInfo);
 			}
-			// Sort the blending info so that later we can remove
-			// duplicated vertices
-			temp.SortBlendingInfoByWeight();
 
-			obj.vertices.push_back(temp);
-			obj.triangles.back().mIndices.push_back(vertexCounter);
-			++vertexCounter;
+			if(frontLayer->GetBinormals())
+			{
+			}
+
+			if(frontLayer->GetTangents())
+			{
+			}
+
+			indices[indexCounter++] = index;
 		}
 	}
 
-	_controlPoints.clear();
+	return;
 }
 
-void TinyFBXScene::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, Math::Vector2& outUV)
-{
-	if(inUVLayer >= 2 || inMesh->GetElementUVCount() <= inUVLayer)
-	{
-		throw std::exception("Invalid UV Layer Number");
-	}
-	FbxGeometryElementUV* vertexUV = inMesh->GetElementUV(inUVLayer);
-
-	switch(vertexUV->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch(vertexUV->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
-			outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexUV->GetIndexArray().GetAt(inCtrlPointIndex);
-			outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-			outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-
-	case FbxGeometryElement::eByPolygonVertex:
-		switch(vertexUV->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[0]);
-			outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[1]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-	}
-}
-
-void TinyFBXScene::ReadNormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outNormal)
-{
-	FbxGeometryElementNormal* vertexNormal = inMesh->GetElementNormal(0);
-	switch(vertexNormal->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch(vertexNormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outNormal.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
-			outNormal.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
-			outNormal.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexNormal->GetIndexArray().GetAt(inCtrlPointIndex);
-			outNormal.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
-			outNormal.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
-			outNormal.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-
-	case FbxGeometryElement::eByPolygonVertex:
-		switch(vertexNormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outNormal.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inVertexCounter).mData[0]);
-			outNormal.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inVertexCounter).mData[1]);
-			outNormal.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(inVertexCounter).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexNormal->GetIndexArray().GetAt(inVertexCounter);
-			outNormal.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
-			outNormal.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
-			outNormal.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-	}
-}
-
-void TinyFBXScene::ReadBinormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outBinormal)
-{
-	FbxGeometryElementBinormal* vertexBinormal = inMesh->GetElementBinormal(0);
-	switch(vertexBinormal->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch(vertexBinormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outBinormal.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
-			outBinormal.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
-			outBinormal.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inCtrlPointIndex).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexBinormal->GetIndexArray().GetAt(inCtrlPointIndex);
-			outBinormal.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
-			outBinormal.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
-			outBinormal.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-
-	case FbxGeometryElement::eByPolygonVertex:
-		switch(vertexBinormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outBinormal.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inVertexCounter).mData[0]);
-			outBinormal.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inVertexCounter).mData[1]);
-			outBinormal.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(inVertexCounter).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexBinormal->GetIndexArray().GetAt(inVertexCounter);
-			outBinormal.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
-			outBinormal.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
-			outBinormal.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-	}
-}
-
-void TinyFBXScene::ReadTangent(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outTangent)
-{
-	FbxGeometryElementTangent* vertexTangent = inMesh->GetElementTangent(0);
-	switch(vertexTangent->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch(vertexTangent->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outTangent.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
-			outTangent.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
-			outTangent.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inCtrlPointIndex).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexTangent->GetIndexArray().GetAt(inCtrlPointIndex);
-			outTangent.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
-			outTangent.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
-			outTangent.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-
-	case FbxGeometryElement::eByPolygonVertex:
-		switch(vertexTangent->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-			outTangent.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inVertexCounter).mData[0]);
-			outTangent.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inVertexCounter).mData[1]);
-			outTangent.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(inVertexCounter).mData[2]);
-		}
-		break;
-
-		case FbxGeometryElement::eIndexToDirect:
-		{
-			int index = vertexTangent->GetIndexArray().GetAt(inVertexCounter);
-			outTangent.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
-			outTangent.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
-			outTangent.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-
-		default:
-			throw std::exception("Invalid Reference");
-		}
-		break;
-	}
-}
-
-// This function removes the duplicated vertices and
-// adjust the index buffer properly
-// This function should take a while, though........
 void TinyFBXScene::Optimize(Object& obj)
 {
+#ifdef OPTIMIZATION_COMPARE_HASH_KEY
+
+#else
 	auto FindVertex = [](const PNTIWVertex& inTargetVertex, const std::vector<PNTIWVertex>& uniqueVertices)
 	{
 		for(uint i = 0; i < uniqueVertices.size(); ++i)
@@ -632,6 +388,7 @@ void TinyFBXScene::Optimize(Object& obj)
 			obj.triangles[i].mIndices[j] = FindVertex(obj.vertices[i * 3 + j], uniqueVertices);
 		}
 	}
+#endif
 	
 	obj.vertices.clear();
 	obj.vertices = uniqueVertices;
@@ -640,9 +397,9 @@ void TinyFBXScene::Optimize(Object& obj)
 	// Now we sort the triangles by materials to reduce 
 	// shader's workload
 	std::sort(obj.triangles.begin(), obj.triangles.end());
-
 	for(auto iter = obj.childs.begin(); iter != obj.childs.end(); ++iter)
 		Optimize(**iter);
+
 }
 
 void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode, Object& obj)
@@ -851,4 +608,90 @@ void TinyFBXScene::Cleanup()
 		delete itr->second;
 	}
 	_materialLookUp.clear();
+}
+
+
+bool TinyFBXScene::ParseNormals(FbxLayer*& layer, int index, int vertexIdx, Math::Vector3& out)
+{
+	int index = -1;
+	bool res = ParseElements(layer->GetNormals(), index, vertexIdx, &index);
+
+	if(res)
+	{				
+		FbxLayerElementNormal *fbxNormal = layer->GetNormals();
+		FbxVector4 v = fbxNormal->GetDirectArray().GetAt(index);
+		v.Normalize();
+
+		out = Math::Vector3((float)v[0], (float)v[1], (float)v[2]);
+	}
+
+	return res;
+}
+
+bool TinyFBXScene::ParseUV(FbxLayer* layer, FbxMesh* fbxMesh, int ctrlPointIdx, int polygonIdx, int vertexIdx, int pointIdx, Math::Vector2& out)
+{
+	FbxLayerElementUV *fbxUV = layer->GetUVs();
+
+	if(fbxUV == nullptr)
+		return false;
+
+	int index = -1;
+
+	{
+		FbxLayerElement::EMappingMode mappingMode = fbxUV->GetMappingMode();
+		FbxLayerElement::EReferenceMode refMode = fbxUV->GetReferenceMode();
+
+		if(mappingMode == FbxLayerElement::eByControlPoint)
+		{
+			if(refMode == FbxLayerElement::eDirect)
+				index = ctrlPointIdx;
+			else if(refMode == FbxLayerElement::eIndexToDirect)
+				index = fbxUV->GetIndexArray().GetAt(ctrlPointIdx);
+		}
+		else if(mappingMode == FbxLayerElement::eByPolygonVertex)
+		{
+			if(refMode == FbxLayerElement::eDirect)
+				index = vertexIdx;
+			else if(refMode == FbxLayerElement::eIndexToDirect)
+				index = fbxMesh->GetTextureUVIndex(polygonIdx, pointIdx);
+		}
+	}
+
+	if(index != -1)
+	{
+		FbxVector2 v = fbxUV->GetDirectArray().GetAt(index);
+		out = Math::Vector2(1.0f - (float)v[0], 1.0f - (float)v[1]);
+	}
+
+	return index != -1;
+}
+
+bool TinyFBXScene::ParseTangents(FbxLayer* layer, int ctrlPointIdx, int vertexCount, Math::Vector3& out)
+{
+	int index = -1;
+	bool res = ParseElements(layer->GetTangents(), ctrlPointIdx, vertexCount, &index);
+
+	if(res)
+	{
+		FbxLayerElementTangent *fbxTangent = layer->GetTangents();
+		FbxVector4 v = fbxTangent->GetDirectArray().GetAt(index);
+		out = Math::Vector3((float)v[0], (float)v[1], (float)v[2]);
+	}
+
+	return res;
+}
+
+bool TinyFBXScene::ParseBinormals(FbxLayer* layer, int ctrlPointIdx, int vertexCount, Math::Vector3& out)
+{
+	int index = -1;
+	bool res = ParseElements(layer->GetBinormals(), ctrlPointIdx, vertexCount, &index);
+
+	if(res)
+	{
+		FbxLayerElementBinormal *fbxBinormal = layer->GetBinormals();
+		FbxVector4 v = fbxBinormal->GetDirectArray().GetAt(index);
+		out = Math::Vector3((float)v[0], (float)v[1], (float)v[2]);
+	}
+
+	return res;
 }

@@ -55,30 +55,49 @@ namespace Importer
 				std::sort(mVertexBlendingInfos.begin(), mVertexBlendingInfos.end());
 			}
 
+			bool SimplyCompare(const PNTIWVertex& rhs) const
+			{
+				return false;
+			}
+
 			bool operator==(const PNTIWVertex& rhs) const
 			{
 				bool sameBlendingInfo = true;
-
-				// We only compare the blending info when there is blending info
-				if(!(mVertexBlendingInfos.empty() && rhs.mVertexBlendingInfos.empty()))
 				{
-					// Each vertex should only have 4 index-weight blending info pairs
-					for (unsigned int i = 0; i < 4; ++i)
+					// We only compare the blending info when there is blending info
+					if(!(mVertexBlendingInfos.empty() && rhs.mVertexBlendingInfos.empty()))
 					{
-						if (mVertexBlendingInfos[i].mBlendingIndex != rhs.mVertexBlendingInfos[i].mBlendingIndex ||
-							abs(mVertexBlendingInfos[i].mBlendingWeight - rhs.mVertexBlendingInfos[i].mBlendingWeight) > 0.001)
+						// Each vertex should only have 4 index-weight blending info pairs
+						for (unsigned int i = 0; i < 4; ++i)
 						{
-							sameBlendingInfo = false;
-							break;
+							uint thisBlendingIdx = mVertexBlendingInfos[i].mBlendingIndex;
+							uint rhsBlendingIdx = rhs.mVertexBlendingInfos[i].mBlendingIndex;
+							bool isNotEqualBlendInfo = thisBlendingIdx != rhsBlendingIdx;
+
+							bool isNotEqualBlendingWeight;
+							{
+								double diffWeight = mVertexBlendingInfos[i].mBlendingWeight - rhs.mVertexBlendingInfos[i].mBlendingWeight;
+								diffWeight = (diffWeight < 0.0f) ? -diffWeight : diffWeight;
+
+								isNotEqualBlendingWeight = diffWeight > 0.001f;
+							}
+
+							if( isNotEqualBlendInfo || isNotEqualBlendingWeight )
+							{
+								sameBlendingInfo = false;
+								break;
+							}
 						}
 					}
 				}
 
 				bool result1 = mPosition == rhs.mPosition;
-				bool result2 = mNormal == rhs.mNormal;
-				bool result3 = mUV == rhs.mUV;
+				bool result2 = mNormal	 == rhs.mNormal;
+				bool result3 = mUV		 == rhs.mUV;
+				bool result4 = mTangent	 == rhs.mTangent;
+				bool result5 = mBinormal == rhs.mBinormal;
 
-				return result1 && result2 && result3 && sameBlendingInfo;
+				return result1 && result2 && result3 && result4 && result5 && sameBlendingInfo;
 			}
 		};
 	}

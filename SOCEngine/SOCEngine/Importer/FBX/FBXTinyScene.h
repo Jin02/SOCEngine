@@ -36,18 +36,18 @@ namespace Importer
 		private:
 			fbxsdk_2014_1::FbxImporter*			_importer;
 			fbxsdk_2014_1::FbxManager*			_sdkManager;
-//			fbxsdk_2014_1::FbxAnimLayer*		_animLayer;
-//			fbxsdk_2014_1::FbxAnimStack*		_animStack;
+			//			fbxsdk_2014_1::FbxAnimLayer*		_animLayer;
+			//			fbxsdk_2014_1::FbxAnimStack*		_animStack;
 			fbxsdk_2014_1::FbxScene*			_fbxScene;
 
-//			FbxAnimationStackMap				_animationStackMap;
+			//			FbxAnimationStackMap				_animationStackMap;
 
 		private:
-//			bool	_hasAnimation;
+			//			bool	_hasAnimation;
 
 			Skeleton					_skeleton;
-//			FbxLongLong					_animationLength;
-//			std::string					_animationName;
+			//			FbxLongLong					_animationLength;
+			//			std::string					_animationName;
 
 			std::unordered_map<unsigned int, Material*>		_materialLookUp;
 			std::unordered_map<unsigned int, CtrlPoint>		_controlPoints;
@@ -70,22 +70,52 @@ namespace Importer
 			void ProcessJointsAndAnimations(fbxsdk_2014_1::FbxNode* inNode);
 			unsigned int FindJointIndexUsingName(const std::string& inJointName);
 			void ProcessMesh(fbxsdk_2014_1::FbxNode* inNode, Object& obj);
-			void ReadUV(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, Math::Vector2& outUV);
-			void ReadNormal(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outNormal);
-			void ReadBinormal(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outBinormal);
-			void ReadTangent(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outTangent);
 			void Optimize(Object& obj);
 			void AssociateMaterialToMesh(fbxsdk_2014_1::FbxNode* inNode, Object& obj);
 			void ProcessMaterials(fbxsdk_2014_1::FbxNode* inNode);
 			void ProcessMaterialAttribute(fbxsdk_2014_1::FbxSurfaceMaterial* inMaterial, unsigned int inMaterialIndex);
 			void ProcessMaterialTexture(fbxsdk_2014_1::FbxSurfaceMaterial* inMaterial, Material* ioMaterial);
 
+			template <typename ElementType>
+			bool ParseElements(ElementType e, int ctrlPointIdx, int vertexIdx, int *outIdx)
+			{
+				if(e == nullptr)
+					return false;
+
+				int index = -1;
+				fbxsdk_2014_1::FbxLayerElement::EMappingMode mappingMode = e->GetMappingMode();
+				fbxsdk_2014_1::FbxLayerElement::EReferenceMode refMode = e->GetReferenceMode();
+
+				if(mappingMode == fbxsdk_2014_1::FbxLayerElement::eByControlPoint)
+				{
+					if(refMode == fbxsdk_2014_1::FbxLayerElement::eDirect)
+						index = ctrlPointIdx;
+					else if(refMode == Ffbxsdk_2014_1::bxLayerElement::eIndexToDirect)
+						index = e->GetIndexArray().GetAt(ctrlPointIdx);
+				}
+				else if(mappingMode == fbxsdk_2014_1::FbxLayerElement::eByPolygonVertex)
+				{
+					if(refMode == fbxsdk_2014_1::FbxLayerElement::eDirect)
+						index = vertexIdx;
+					else if(refMode == fbxsdk_2014_1::FbxLayerElement::eIndexToDirect)
+						index = e->GetIndexArray().GetAt(vertexIdx);
+				}
+
+				*outIdx = index;
+
+				return index != -1;
+			}
+			bool ParseNormals(FbxLayer*& layer, int index, int vertexIdx, Math::Vector3& out);
+			bool ParseUV(FbxLayer* layer, FbxMesh* fbxMesh, int ctrlPointIdx, int polygonIdx, int vertexIdx, int pointIdx, Math::Vector2& out);
+			bool ParseTangents(FbxLayer* layer, int ctrlPointIdx, int vertexCount, Math::Vector3& out);
+			bool ParseBinormals(FbxLayer* layer, int ctrlPointIdx, int vertexCount, Math::Vector3& out);
+
 		public:
 			GET_ACCESSOR(Skeleton, const Skeleton&, _skeleton);
-//			GET_ACCESSOR(AnimationLength, const FbxLongLong&, _animationLength);
-//			GET_ACCESSOR(AnimationName, const std::string&, _animationName);
+			//			GET_ACCESSOR(AnimationLength, const FbxLongLong&, _animationLength);
+			//			GET_ACCESSOR(AnimationName, const std::string&, _animationName);
 			inline const std::unordered_map<unsigned int, Material*>& MaterialLookUp() const { return _materialLookUp; }
-//			GET_ACCESSOR(HasAnimation, bool, _hasAnimation);
+			//			GET_ACCESSOR(HasAnimation, bool, _hasAnimation);
 		};
 	}
 }
