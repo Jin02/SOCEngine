@@ -8,6 +8,7 @@ using namespace fbxsdk_2014_1;
 TinyFBXScene::Object::Object(TinyFBXScene::Object* _parent, const std::string& _name)
 	: name(_name), parent(_parent)
 {
+	Math::Matrix::Identity(transform);
 }
 
 TinyFBXScene::Object::~Object()
@@ -151,6 +152,7 @@ void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* paren
 			ProcessMesh(inNode, *object);
 			AssociateMaterialToMesh(inNode, *object);
 			ProcessMaterials(inNode);
+			ComputeTransformMatrix(inNode, *object);
 			break;
 		}
 	}
@@ -158,6 +160,24 @@ void TinyFBXScene::ProcessGeometry(fbxsdk_2014_1::FbxNode* inNode, Object* paren
 	for (int i = 0; i < inNode->GetChildCount(); ++i)
 	{
 		ProcessGeometry(inNode->GetChild(i), object);
+	}
+}
+
+void TinyFBXScene::ComputeTransformMatrix(FbxNode* fbxNode, Object& obj)
+{
+	ASSERT_COND_MSG(fbxNode, "Error, fbxNode is null");
+	FbxAnimEvaluator* fbxEvaluator = _fbxScene->GetEvaluator();
+	FbxMatrix fbxMat; fbxMat.SetIdentity();
+
+	if(fbxNode != _fbxScene->GetRootNode())
+		fbxMat= fbxEvaluator->GetNodeGlobalTransform(fbxNode);
+
+	for(uint i=0; i<4; ++i)
+	{
+		for(uint j=0; j<4; ++j)
+		{
+			obj.transform._m[i][j] = static_cast<float>(fbxMat.Get(i, j));
+		}
 	}
 }
 
@@ -306,19 +326,28 @@ void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 			int ctrlPointIndex = currMesh->GetPolygonVertex(i, j);
 			CtrlPoint* currCtrlPoint = _controlPoints[ctrlPointIndex];
 
+			auto fbxFrontLayer = currMesh->GetLayer(0);
+			if(fbxFrontLayer->GetNormals())
+				ReadNormal(currMesh, ctrlPointIndex, vertexCounter, normal[j]);
 
-			ReadNormal(currMesh, ctrlPointIndex, vertexCounter, normal[j]);
-			// We only have diffuse texture
-			for (int k = 0; k < 1; ++k)
+			if(fbxFrontLayer->GetUVs())
 			{
-				ReadUV(currMesh, ctrlPointIndex, currMesh->GetTextureUVIndex(i, j), k, UV[j][k]);
+				for (int k = 0; k < 1; ++k)
+					ReadUV(currMesh, ctrlPointIndex, currMesh->GetTextureUVIndex(i, j), k, UV[j][k]);
 			}
 
+			if(fbxFrontLayer->GetTangents())
+				ReadTangent(currMesh, ctrlPointIndex, vertexCounter, tangent[j]);
+
+			if(fbxFrontLayer->GetBinormals())
+				ReadBinormal(currMesh, ctrlPointIndex, vertexCounter, binormal[j]);
 
 			PNTIWVertex temp;
 			temp.mPosition = currCtrlPoint->mPosition;
 			temp.mNormal = normal[j];
 			temp.mUV = UV[j][0];
+			temp.mBinormal = binormal[j];
+			temp.mTangent = tangent[j];
 			// Copy the blending info from each control point
 			for(unsigned int i = 0; i < currCtrlPoint->mBlendingInfo.size(); ++i)
 			{
@@ -399,11 +428,6 @@ void TinyFBXScene::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUV
 
 void TinyFBXScene::ReadNormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outNormal)
 {
-	if(inMesh->GetElementNormalCount() < 1)
-	{
-		throw std::exception("Invalid Normal Number");
-	}
-
 	FbxGeometryElementNormal* vertexNormal = inMesh->GetElementNormal(0);
 	switch(vertexNormal->GetMappingMode())
 	{
@@ -461,11 +485,6 @@ void TinyFBXScene::ReadNormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVerte
 
 void TinyFBXScene::ReadBinormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outBinormal)
 {
-	if(inMesh->GetElementBinormalCount() < 1)
-	{
-		throw std::exception("Invalid Binormal Number");
-	}
-
 	FbxGeometryElementBinormal* vertexBinormal = inMesh->GetElementBinormal(0);
 	switch(vertexBinormal->GetMappingMode())
 	{
@@ -523,11 +542,6 @@ void TinyFBXScene::ReadBinormal(FbxMesh* inMesh, int inCtrlPointIndex, int inVer
 
 void TinyFBXScene::ReadTangent(FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outTangent)
 {
-	if(inMesh->GetElementTangentCount() < 1)
-	{
-		throw std::exception("Invalid Tangent Number");
-	}
-
 	FbxGeometryElementTangent* vertexTangent = inMesh->GetElementTangent(0);
 	switch(vertexTangent->GetMappingMode())
 	{
@@ -588,6 +602,17 @@ void TinyFBXScene::ReadTangent(FbxMesh* inMesh, int inCtrlPointIndex, int inVert
 // This function should take a while, though........
 void TinyFBXScene::Optimize(Object& obj)
 {
+	auto FindVertex = [](const PNTIWVertex& inTargetVertex, const std::vector<PNTIWVertex>& uniqueVertices)
+	{
+		for(uint i = 0; i < uniqueVertices.size(); ++i)
+		{
+			if(inTargetVertex == uniqueVertices[i])
+				return (int)i;
+		}
+
+		return -1;
+	};
+
 	// First get a list of unique vertices
 	std::vector<PNTIWVertex> uniqueVertices;
 	for(unsigned int i = 0; i < obj.triangles.size(); ++i)
@@ -622,19 +647,6 @@ void TinyFBXScene::Optimize(Object& obj)
 
 	for(auto iter = obj.childs.begin(); iter != obj.childs.end(); ++iter)
 		Optimize(**iter);
-}
-
-int TinyFBXScene::FindVertex(const PNTIWVertex& inTargetVertex, const std::vector<PNTIWVertex>& uniqueVertices)
-{
-	for(unsigned int i = 0; i < uniqueVertices.size(); ++i)
-	{
-		if(inTargetVertex == uniqueVertices[i])
-		{
-			return i;
-		}
-	}
-
-	return -1;
 }
 
 void TinyFBXScene::AssociateMaterialToMesh(FbxNode* inNode, Object& obj)

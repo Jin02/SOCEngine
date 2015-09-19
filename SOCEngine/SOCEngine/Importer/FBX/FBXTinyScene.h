@@ -8,13 +8,12 @@
 #include <unordered_map>
 #include "Common.h"
 #include <unordered_map>
+#include "Matrix.h"
 
 namespace Importer
 {
 	namespace FBX
 	{
-		typedef std::unordered_map<std::string, FbxAnimStack*> FbxAnimationStackMap; 
-
 		class TinyFBXScene
 		{
 		public:
@@ -28,7 +27,7 @@ namespace Importer
 				std::vector<Triangle>		triangles;
 				std::vector<PNTIWVertex>	vertices;
 
-				std::unordered_map<unsigned int, Material*>		materialLookUp;
+				Math::Matrix				transform;
 
 				Object(Object* parent, const std::string& name);
 				~Object();
@@ -62,6 +61,7 @@ namespace Importer
 			void Cleanup();
 
 		private:
+			void ComputeTransformMatrix(fbxsdk_2014_1::FbxNode* fbxNode, Object& obj);
 			void Triangulate(fbxsdk_2014_1::FbxNode* fbxNode);
 			void ProcessSkeletonHierarchy(fbxsdk_2014_1::FbxNode* inRootNode);
 			void ProcessSkeletonHierarchyRecursively(fbxsdk_2014_1::FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);
@@ -75,21 +75,16 @@ namespace Importer
 			void ReadBinormal(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outBinormal);
 			void ReadTangent(fbxsdk_2014_1::FbxMesh* inMesh, int inCtrlPointIndex, int inVertexCounter, Math::Vector3& outTangent);
 			void Optimize(Object& obj);
-			int  FindVertex(const PNTIWVertex& inTargetVertex, const std::vector<PNTIWVertex>& uniqueVertices);
 			void AssociateMaterialToMesh(fbxsdk_2014_1::FbxNode* inNode, Object& obj);
 			void ProcessMaterials(fbxsdk_2014_1::FbxNode* inNode);
 			void ProcessMaterialAttribute(fbxsdk_2014_1::FbxSurfaceMaterial* inMaterial, unsigned int inMaterialIndex);
 			void ProcessMaterialTexture(fbxsdk_2014_1::FbxSurfaceMaterial* inMaterial, Material* ioMaterial);
 
 		public:
-//			GET_ACCESSOR(Triangles, const std::vector<Triangle>&, _triangles);
-//			GET_ACCESSOR(Vertices, const std::vector<PNTIWVertex>&, _vertices);
 			GET_ACCESSOR(Skeleton, const Skeleton&, _skeleton);
 //			GET_ACCESSOR(AnimationLength, const FbxLongLong&, _animationLength);
 //			GET_ACCESSOR(AnimationName, const std::string&, _animationName);
 			inline const std::unordered_map<unsigned int, Material*>& MaterialLookUp() const { return _materialLookUp; }
-			inline const std::unordered_map<unsigned int, CtrlPoint*>& ControlPoints() const { return _controlPoints; }
-//			GET_ACCESSOR(TriangleCount, uint, _triangleCount);
 //			GET_ACCESSOR(HasAnimation, bool, _hasAnimation);
 		};
 	}
