@@ -42,9 +42,12 @@ namespace Importer
 
 		struct PNTIWVertex
 		{
-			Math::Vector3 mPosition;
-			Math::Vector3 mNormal;
-			Math::Vector2 mUV;
+			Math::Vector3		mPosition;
+			Math::Vector3		mNormal;
+			Math::Vector2		mUV;
+			Math::Vector3		mTangent;
+			Math::Vector3		mBinormal;
+
 			std::vector<VertexBlendingInfo> mVertexBlendingInfos;
 
 			void SortBlendingInfoByWeight()
