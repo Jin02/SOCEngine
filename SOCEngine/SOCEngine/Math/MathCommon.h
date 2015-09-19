@@ -6,8 +6,8 @@
 namespace Math
 {
 #define PI 3.141592654f
-#define EPSILON 1.0e-6
-
+#define EPSILON FLT_EPSILON
+	
 	class Vector3;
 
 	class Common
