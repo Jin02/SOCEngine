@@ -50,7 +50,7 @@ namespace Importer
 //			std::string					_animationName;
 
 			std::unordered_map<unsigned int, Material*>		_materialLookUp;
-			std::unordered_map<unsigned int, CtrlPoint*>	_controlPoints;
+			std::unordered_map<unsigned int, CtrlPoint>		_controlPoints;
 
 		public:
 			TinyFBXScene(fbxsdk_2014_1::FbxImporter* importer, fbxsdk_2014_1::FbxManager* sdkManager);

@@ -186,13 +186,13 @@ void TinyFBXScene::ProcessControlPoints(FbxNode* inNode)
 	unsigned int ctrlPointCount = currMesh->GetControlPointsCount();
 	for(unsigned int i = 0; i < ctrlPointCount; ++i)
 	{
-		CtrlPoint* currCtrlPoint = new CtrlPoint();
-		Math::Vector3 currPosition;
-		currPosition.x = static_cast<float>(currMesh->GetControlPointAt(i).mData[0]);
-		currPosition.y = static_cast<float>(currMesh->GetControlPointAt(i).mData[1]);
-		currPosition.z = static_cast<float>(currMesh->GetControlPointAt(i).mData[2]);
-		currCtrlPoint->mPosition = currPosition;
-		_controlPoints[i] = currCtrlPoint;
+		CtrlPoint& currCtrlPoint = _controlPoints[i];
+		{
+			Math::Vector3& currPosition = currCtrlPoint.mPosition;
+			currPosition.x = static_cast<float>(currMesh->GetControlPointAt(i).mData[0]);
+			currPosition.y = static_cast<float>(currMesh->GetControlPointAt(i).mData[1]);
+			currPosition.z = static_cast<float>(currMesh->GetControlPointAt(i).mData[2]);
+		}
 	}
 }
 
@@ -245,7 +245,9 @@ void TinyFBXScene::ProcessJointsAndAnimations(FbxNode* inNode)
 				BlendingIndexWeightPair currBlendingIndexWeightPair;
 				currBlendingIndexWeightPair.mBlendingIndex = currJointIndex;
 				currBlendingIndexWeightPair.mBlendingWeight = currCluster->GetControlPointWeights()[i];
-				_controlPoints[currCluster->GetControlPointIndices()[i]]->mBlendingInfo.push_back(currBlendingIndexWeightPair);
+
+				uint index = currCluster->GetControlPointIndices()[i];
+				_controlPoints[index].mBlendingInfo.push_back(currBlendingIndexWeightPair);
 			}
 
 			// Get animation information
@@ -283,10 +285,11 @@ void TinyFBXScene::ProcessJointsAndAnimations(FbxNode* inNode)
 	currBlendingIndexWeightPair.mBlendingWeight = 0;
 	for(auto itr = _controlPoints.begin(); itr != _controlPoints.end(); ++itr)
 	{
-		for(unsigned int i = itr->second->mBlendingInfo.size(); i <= 4; ++i)
-		{
-			itr->second->mBlendingInfo.push_back(currBlendingIndexWeightPair);
-		}
+		auto& blendInfos = itr->second.mBlendingInfo;
+		uint blendSize = blendInfos.size();
+
+		for(unsigned int i = blendSize; i <= 4; ++i)
+			blendInfos.push_back(currBlendingIndexWeightPair);
 	}
 }
 
@@ -323,7 +326,7 @@ void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 		for (unsigned int j = 0; j < 3; ++j)
 		{
 			int ctrlPointIndex = currMesh->GetPolygonVertex(i, j);
-			CtrlPoint* currCtrlPoint = _controlPoints[ctrlPointIndex];
+			const CtrlPoint& currCtrlPoint = _controlPoints[ctrlPointIndex];
 
 			auto fbxFrontLayer = currMesh->GetLayer(0);
 			if(fbxFrontLayer->GetNormals())
@@ -342,17 +345,17 @@ void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 				ReadBinormal(currMesh, ctrlPointIndex, vertexCounter, binormal[j]);
 
 			PNTIWVertex temp;
-			temp.mPosition = currCtrlPoint->mPosition;
+			temp.mPosition = currCtrlPoint.mPosition;
 			temp.mNormal = normal[j];
 			temp.mUV = UV[j][0];
 			temp.mBinormal = binormal[j];
 			temp.mTangent = tangent[j];
 			// Copy the blending info from each control point
-			for(unsigned int i = 0; i < currCtrlPoint->mBlendingInfo.size(); ++i)
+			for(unsigned int i = 0; i < currCtrlPoint.mBlendingInfo.size(); ++i)
 			{
 				VertexBlendingInfo currBlendingInfo;
-				currBlendingInfo.mBlendingIndex = currCtrlPoint->mBlendingInfo[i].mBlendingIndex;
-				currBlendingInfo.mBlendingWeight = currCtrlPoint->mBlendingInfo[i].mBlendingWeight;
+				currBlendingInfo.mBlendingIndex = currCtrlPoint.mBlendingInfo[i].mBlendingIndex;
+				currBlendingInfo.mBlendingWeight = currCtrlPoint.mBlendingInfo[i].mBlendingWeight;
 				temp.mVertexBlendingInfos.push_back(currBlendingInfo);
 			}
 			// Sort the blending info so that later we can remove
@@ -365,12 +368,6 @@ void TinyFBXScene::ProcessMesh(FbxNode* inNode, Object& obj)
 		}
 	}
 
-	// Now _controlPoints has served its purpose
-	// We can free its memory
-	for(auto itr = _controlPoints.begin(); itr != _controlPoints.end(); ++itr)
-	{
-		delete itr->second;
-	}
 	_controlPoints.clear();
 }
 
