@@ -6,7 +6,7 @@ using namespace Core;
 using namespace Utility;
 
 MeshImporter::MeshImporter()
-	: _objImporter(nullptr), _fbxImporter(nullptr)
+	: _objImporter(nullptr)//, _fbxImporter(nullptr)
 //	: _objImporter(this->Find, this->Add)
 {
 }
@@ -30,8 +30,8 @@ void MeshImporter::Initialize()
 	};
 
 	_objImporter = new ObjImporter(Find, Add);
-	_fbxImporter = new FBX::FBXImporter;
-	_fbxImporter->Initialize();
+	//_fbxImporter = new FBX::FBXImporter;
+	//_fbxImporter->Initialize();
 }
 
 void MeshImporter::Destroy()
@@ -43,7 +43,7 @@ void MeshImporter::Destroy()
 	_originObjects.DeleteAll();
 
 	SAFE_DELETE(_objImporter);
-	SAFE_DELETE(_fbxImporter);
+	//SAFE_DELETE(_fbxImporter);
 }
 
 Core::Object* MeshImporter::Find(const std::string& key)
@@ -68,7 +68,7 @@ Object* MeshImporter::Load(const std::string& fileDir, Rendering::Material::Type
 	}
 	else if(fileExtension == "fbx")
 	{
-		_fbxImporter->LoadOnlyMesh(fileDir);
+	//	_fbxImporter->LoadOnlyMesh(fileDir);
 	}
 
 	return meshObject;

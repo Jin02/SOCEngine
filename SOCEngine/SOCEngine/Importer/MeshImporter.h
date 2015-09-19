@@ -4,7 +4,7 @@
 #include <string>
 
 #include "ObjImporter.h"
-#include "FBXImporter.h"
+//#include "FBXImporter.h"
 
 namespace Importer
 {
@@ -15,7 +15,7 @@ namespace Importer
 
 	private:
 		ObjImporter*		_objImporter;
-		FBX::FBXImporter*	_fbxImporter;
+		//FBX::FBXImporter*	_fbxImporter;
 
 	public:
 		MeshImporter();
