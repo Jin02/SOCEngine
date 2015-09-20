@@ -76,9 +76,6 @@
     <Filter Include="Importer">
       <UniqueIdentifier>{7bea5a55-516d-4542-85d2-f139666b8712}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Importer\Obj">
-      <UniqueIdentifier>{c820752c-d594-4730-bdaf-28e035ebdcad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Template">
       <UniqueIdentifier>{e86b05aa-b1a7-4f38-a51c-a90ee7c640cf}</UniqueIdentifier>
     </Filter>
@@ -204,9 +201,6 @@
     </Filter>
     <Filter Include="External\rapidJson">
       <UniqueIdentifier>{9ebbd374-d17d-4bdd-9bc4-bd52ca114e24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\tiny_obj_loader">
-      <UniqueIdentifier>{7ab4b83a-dff2-4d3f-87a4-72db5da6a344}</UniqueIdentifier>
     </Filter>
     <Filter Include="ResourceManager">
       <UniqueIdentifier>{17e22084-e070-4576-bfe4-0ee1f8859e32}</UniqueIdentifier>
@@ -414,9 +408,6 @@
     <ClInclude Include="Core\Transform\TransformPipelineParam.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="Importer\ObjImporter.h">
-      <Filter>Importer\Obj</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\ImporterUtility.h">
       <Filter>Importer\Utility</Filter>
     </ClInclude>
@@ -527,9 +518,6 @@
     </ClInclude>
     <ClInclude Include="UI\FontLoader.h">
       <Filter>UI\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="External\tiny_obj_loader.h">
-      <Filter>External\tiny_obj_loader</Filter>
     </ClInclude>
     <ClInclude Include="External\rapidjson\allocators.h">
       <Filter>External\rapidJson</Filter>
@@ -785,9 +773,6 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
-    <ClCompile Include="Importer\ObjImporter.cpp">
-      <Filter>Importer\Obj</Filter>
-    </ClCompile>
     <ClCompile Include="Importer\ImporterUtility.cpp">
       <Filter>Importer\Utility</Filter>
     </ClCompile>
@@ -886,9 +871,6 @@
     </ClCompile>
     <ClCompile Include="UI\FontLoader.cpp">
       <Filter>UI\Text</Filter>
-    </ClCompile>
-    <ClCompile Include="External\tiny_obj_loader.cc">
-      <Filter>External\tiny_obj_loader</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager\ResourceManager.cpp">
       <Filter>ResourceManager</Filter>

@@ -6,8 +6,6 @@ using namespace Core;
 using namespace Utility;
 
 MeshImporter::MeshImporter()
-	: _objImporter(nullptr)//, _fbxImporter(nullptr)
-//	: _objImporter(this->Find, this->Add)
 {
 }
 
@@ -29,9 +27,7 @@ void MeshImporter::Initialize()
 		return this->Find(key);
 	};
 
-	_objImporter = new ObjImporter(Find, Add);
-	//_fbxImporter = new FBX::FBXImporter;
-	//_fbxImporter->Initialize();
+
 }
 
 void MeshImporter::Destroy()
@@ -42,8 +38,6 @@ void MeshImporter::Destroy()
 
 	_originObjects.DeleteAll();
 
-	SAFE_DELETE(_objImporter);
-	//SAFE_DELETE(_fbxImporter);
 }
 
 Core::Object* MeshImporter::Find(const std::string& key)
@@ -58,18 +52,5 @@ Object* MeshImporter::Load(const std::string& fileDir, Rendering::Material::Type
 	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
 		return nullptr;
 
-	Object* meshObject = nullptr;
-	if(fileExtension == "obj")
-	{
-		DEBUG_LOG("Warning, .obj importer may not create correct shape.");
-
-		std::string materialFolder = folderDir;
-		meshObject = _objImporter->Load(fileDir, fileName, materialFolder, materialType, isDynamicMesh);
-	}
-	else if(fileExtension == "fbx")
-	{
-	//	_fbxImporter->LoadOnlyMesh(fileDir);
-	}
-
-	return meshObject;
+	return nullptr;
 }

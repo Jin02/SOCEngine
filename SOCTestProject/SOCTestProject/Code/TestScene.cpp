@@ -7,6 +7,8 @@
 #include "Director.h"
 #include "ResourceManager.h"
 
+#include "MeshImporter.h"
+
 using namespace Rendering;
 using namespace Core;
 using namespace Rendering::Camera;
@@ -27,9 +29,6 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	MeshImporter importer;
-	importer.Initialize();
-	importer.Load("./Resources/Turrets Pack/turret_1.fbx");
 
 //	camera = new Object("Default");
 //	MainCamera* cam = camera->AddComponent<MainCamera>();
