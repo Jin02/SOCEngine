@@ -53,12 +53,6 @@
     <ClInclude Include="GPGPU\CSOutput.h" />
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
-    <ClInclude Include="Importer\FBX\FBXImporter.h" />
-    <ClInclude Include="Importer\FBX\TinyFBXImporter.h" />
-    <ClInclude Include="Importer\FBX\FBXMaterial.h" />
-    <ClInclude Include="Importer\FBX\FBXTinyScene.h" />
-    <ClInclude Include="Importer\FBX\FBXUtilities.h" />
-    <ClInclude Include="Importer\FBX\FBXVertex.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Importer\ObjImporter.h" />
@@ -201,10 +195,6 @@
     <ClCompile Include="GPGPU\CSOutput.cpp" />
     <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
-    <ClCompile Include="Importer\FBX\FBXImporter.cpp" />
-    <ClCompile Include="Importer\FBX\TinyFBXImporter.cpp" />
-    <ClCompile Include="Importer\FBX\FBXTinyScene.cpp" />
-    <ClCompile Include="Importer\FBX\FBXUtilities.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Importer\ObjImporter.cpp" />
@@ -373,7 +363,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External/Collada;External;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>
