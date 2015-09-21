@@ -1,5 +1,6 @@
 import sys
 import os, os.path
+import subprocess
 
 def CheckParameter():
 	fbxConvPath 		= None
@@ -37,7 +38,12 @@ def Dump():
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
-print "SOC Framework, FBX-Conv Luncher\n"
+print "SOC Framework FBX-Conv Luncher\n"
+
+if not 'FBX_SDK_ROOT' in os.environ:
+	print "ERROR: Environment variable FBX_SDK_ROOT is not set."
+	print "Set it to something like: C:\\Program Files\\Autodesk\\FBX\\FBX SDK\\2013.3"
+	exit()
 
 result, fbxConvPath, outputType, runStartDir = CheckParameter()
 if result == False:
@@ -71,12 +77,9 @@ for (path, dirs, files) in os.walk(targetDir):
 		if os.path.isfile(outputFilePath):
 			continue
 
-		command = fbxConvPath + " -f -v " + fileFullPath + ' ' + outputFilePath
+		command = fbxConvPath + " -f " + fileFullPath + ' ' + outputFilePath
 
-		res = os.system(command)
-		if res == 1:
-			assert("Invalid Command : " + command)
-
+		res = subprocess.check_output(command, shell=True)
 		print "Generate File : " + outputFileNameWithExtension
 
 print "Done!\n"
