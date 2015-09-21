@@ -4,6 +4,8 @@
 #include <string>
 #include "Object.h"
 #include "Material.h"
+#include "rapidjson/document.h"
+#include "G3djDataTypes.h"
 
 namespace Importer
 {
@@ -21,6 +23,15 @@ namespace Importer
 	public:
 		void Initialize();
 		void Destroy();
+
+	private:
+		void ParseNodes(Node& outNodes, const rapidjson::Value& node);
+		void ParseMaterials(Material& outMaterial, const rapidjson::Value& matNode);
+		void ParseMeshes(std::vector<Meshes>& outMeshes, const rapidjson::Value& meshes);
+
+	public:
+		Core::Object* ParseJson(const char* buffer);
+		Core::Object* ParseBinary(const void* buffer, uint size);
 		Core::Object* Load(const std::string& fileDir, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel, bool isDynamicMesh = false);
 
 	public:
