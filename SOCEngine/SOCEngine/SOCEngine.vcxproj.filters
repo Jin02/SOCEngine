@@ -310,6 +310,9 @@
     <Filter Include="Rendering\Texture\Manager">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\bson">
+      <UniqueIdentifier>{d4ca8081-4004-4bf9-a924-bea1d34e0438}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
