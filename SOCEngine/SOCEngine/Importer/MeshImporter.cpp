@@ -36,7 +36,7 @@ Core::Object* MeshImporter::Find(const std::string& key)
 	return found ? (*found) : nullptr;
 }
 
-void MeshImporter::ParseNodes(Node& outNodes, const rapidjson::Value& node)
+void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
 {
 	Quaternion rotation(0.f, 0.f, 0.f, 1.f);
 	{
@@ -93,8 +93,8 @@ void MeshImporter::ParseNodes(Node& outNodes, const rapidjson::Value& node)
 
 			if(node.HasMember("meshpartid"))
 				parts.meshPartId = node["meshpartid"].GetString();
-			if(node.HasMember("materialId"))
-				parts.materialId = node["materialId"].GetString();
+			if(node.HasMember("materialid"))
+				parts.materialId = node["materialid"].GetString();
 
 			outParts.push_back(parts);
 		}
@@ -119,13 +119,15 @@ void MeshImporter::ParseNodes(Node& outNodes, const rapidjson::Value& node)
 		for(uint i=0; i<size; ++i)
 		{
 			Node childNode;
-			ParseNodes(childNode, childs[i]);
+			ParseNode(childNode, childs[i]);
 			currentNode.childs.push_back(childNode);
 		}
 	}
+
+	outNodes = currentNode;
 }
 
-void MeshImporter::ParseMaterials(Material& outMaterial, const rapidjson::Value& matNode)
+void MeshImporter::ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode)
 {
 	Material material;
 
@@ -162,19 +164,15 @@ void MeshImporter::ParseMaterials(Material& outMaterial, const rapidjson::Value&
 			texInfo.id			= texInfoNode["id"].GetString();
 			texInfo.fileName	= texInfoNode["filename"].GetString();
 			texInfo.type		= texInfoNode["type"].GetString();
+			outMaterial.textures.push_back(texInfo);
 		}
 	}
 
 	outMaterial = material;
 }
 
-void MeshImporter::ParseMeshes(Mesh& outMesh, const rapidjson::Value& meshNode)
+void MeshImporter::ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode)
 {
-	std::string id = "";
-	if(meshNode.HasMember("id"))
-		id = meshNode["id"].GetString();
-	outMesh.id = id;
-
 	// Setting Attributes
 	{
 		const auto& attributesNode = meshNode["attributes"];
@@ -216,7 +214,7 @@ void MeshImporter::ParseMeshes(Mesh& outMesh, const rapidjson::Value& meshNode)
 	}
 }
 
-Core::Object* MeshImporter::ParseJson(const char* buffer)
+Core::Object* MeshImporter::ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer)
 {
 	Document document;
 	document.Parse(buffer);
@@ -225,23 +223,43 @@ Core::Object* MeshImporter::ParseJson(const char* buffer)
 	ASSERT_COND_MSG(document.HasMember("nodes"), "Error, Where is Node?");
 	{
 		const Value& nodes = document["nodes"];
+		uint size = nodes.Size();
+		for(uint i=0; i<size; ++i)
+		{
+			Node node;
+			ParseNode(node, nodes[i]);
+			outNodes.push_back(node);
+		}
 	}
-
 
 	ASSERT_COND_MSG(document.HasMember("meshes"), "Error, Where is Mesh?");
 	{
 		const Value& nodes = document["meshes"];
+		uint size = nodes.Size();
+		for(uint i=0; i<size; ++i)
+		{
+			Mesh mesh;
+			ParseMesh(mesh, nodes[i]);
+			outMeshes.push_back(mesh);
+		}
 	}
 
 	ASSERT_COND_MSG(document.HasMember("materials"), "Error, Where is Material?");
 	{
 		const Value& nodes = document["materials"];
+		uint size = nodes.Size();
+		for(uint i=0; i<size; ++i)
+		{
+			Material mat;
+			ParseMaterial(mat, nodes[i]);
+			outMaterials.push_back(mat);
+		}
 	}
 
 	return nullptr;
 }
 
-Core::Object* MeshImporter::ParseBinary(const void* buffer, uint size)
+Core::Object* MeshImporter::ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size)
 {
 	ASSERT_MSG("can't supported format");
 	return nullptr;
@@ -280,8 +298,12 @@ Object* MeshImporter::Load(const std::string& fileDir, Rendering::Material::Type
 	}
 	g3dFile.close();
 
-	if(g3dFileFormat == "g3dj")	ParseJson(buffer);
-	else						ParseBinary((void*)buffer, length-1);
+	std::vector<Mesh>		meshes;
+	std::vector<Material>	materials;
+	std::vector<Node>		nodes;
+
+	if(g3dFileFormat == "g3dj")	ParseJson(meshes, materials, nodes, buffer);
+	else						ParseBinary(meshes, materials, nodes, (void*)buffer, length-1);
 
 	delete buffer;
 

@@ -61,7 +61,6 @@ namespace Importer
 			std::vector<unsigned int> indices;
 		};
 
-		std::string					id;
 		std::vector<std::string>	attributes;
 		std::vector<float>			vertexDatas;
 		std::vector<Part>			parts;

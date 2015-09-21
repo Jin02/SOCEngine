@@ -25,13 +25,15 @@ namespace Importer
 		void Destroy();
 
 	private:
-		void ParseNodes(Node& outNodes, const rapidjson::Value& node);
-		void ParseMaterials(Material& outMaterial, const rapidjson::Value& matNode);
-		void ParseMeshes(Mesh& outMesh, const rapidjson::Value& meshNode);
+		void ParseNode(Node& outNodes, const rapidjson::Value& node);
+		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode);
+		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode);
+
+	private:
 
 	public:
-		Core::Object* ParseJson(const char* buffer);
-		Core::Object* ParseBinary(const void* buffer, uint size);
+		Core::Object* ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer);
+		Core::Object* ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size);
 		Core::Object* Load(const std::string& fileDir, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel, bool isDynamicMesh = false);
 
 	public:
