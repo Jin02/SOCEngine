@@ -27,7 +27,7 @@ namespace Importer
 	private:
 		void ParseNodes(Node& outNodes, const rapidjson::Value& node);
 		void ParseMaterials(Material& outMaterial, const rapidjson::Value& matNode);
-		void ParseMeshes(std::vector<Meshes>& outMeshes, const rapidjson::Value& meshes);
+		void ParseMeshes(Mesh& outMesh, const rapidjson::Value& meshNode);
 
 	public:
 		Core::Object* ParseJson(const char* buffer);
