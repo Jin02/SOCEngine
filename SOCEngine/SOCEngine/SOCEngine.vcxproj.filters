@@ -705,6 +705,9 @@
     <ClInclude Include="External\DirectXTK\PlatformHelpers.h">
       <Filter>External\DirectXTK</Filter>
     </ClInclude>
+    <ClInclude Include="Importer\G3djDataTypes.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

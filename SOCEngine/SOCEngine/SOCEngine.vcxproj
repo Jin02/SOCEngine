@@ -52,6 +52,7 @@
     <ClInclude Include="GPGPU\CSOutput.h" />
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
+    <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Intersection\AABB.h" />
