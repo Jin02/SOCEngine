@@ -214,7 +214,7 @@ void MeshImporter::ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode)
 	}
 }
 
-Core::Object* MeshImporter::ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer)
+void MeshImporter::ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer)
 {
 	Document document;
 	document.Parse(buffer);
@@ -255,14 +255,11 @@ Core::Object* MeshImporter::ParseJson(std::vector<Mesh>& outMeshes, std::vector<
 			outMaterials.push_back(mat);
 		}
 	}
-
-	return nullptr;
 }
 
-Core::Object* MeshImporter::ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size)
+void MeshImporter::ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size)
 {
 	ASSERT_MSG("can't supported format");
-	return nullptr;
 }
 
 Object* MeshImporter::Load(const std::string& fileDir, Rendering::Material::Type materialType, bool isDynamicMesh)
