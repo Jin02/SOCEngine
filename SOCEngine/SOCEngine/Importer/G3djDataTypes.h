@@ -34,9 +34,22 @@ namespace Importer
 	{
 		struct Texture
 		{
+			enum class Type
+			{
+				Undefined,
+				Ambient,
+				Normal,
+				Diffuse,
+				Emissive,
+				Reflection,
+				Shininess,
+				Specular,
+				Transparency
+			};
+
 			std::string id;
 			std::string fileName;
-			std::string type;
+			Type		type;
 		};
 
 		std::string		id;
