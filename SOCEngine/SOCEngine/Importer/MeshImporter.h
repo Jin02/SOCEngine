@@ -42,7 +42,9 @@ namespace Importer
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
 
 		// key is meshPartId, second value is materialId
-		void FetchAllPartsInHashMap_Recursive(std::hash_map<std::string, std::string>& outParts, const Node& node);
+		void FetchAllPartsInHashMap_Recursive(
+			std::hash_map<std::string, std::vector<std::string>>& outParts,
+			const Node& node);
 
 	public:
 		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer);

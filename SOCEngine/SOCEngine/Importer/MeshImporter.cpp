@@ -345,7 +345,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 	MaterialManager* materialManager = Director::GetInstance()->GetCurrentScene()->GetMaterialManager();
 
 	// key is meshPartId, second value is materialId
-	std::hash_map<std::string, std::string> meshMaterialIdInAllParts;
+	std::hash_map<std::string, std::vector<std::string>> meshMaterialIdInAllParts;
 	//auto FetchAllPartsInHashMap = [&]()
 	{
 		for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
@@ -377,20 +377,26 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 			}
 
 			bool hasNormalMap = false;
-			for(auto iter = meshPartIdKeys.begin(); iter != meshPartIdKeys.end(); ++iter)
+			for(auto iter = meshPartIdKeys.begin();
+				(iter != meshPartIdKeys.end()) && (hasNormalMap == false);
+				++iter)
 			{
 				auto findIter = meshMaterialIdInAllParts.find(*iter);
 
 				if(findIter == meshMaterialIdInAllParts.end())
 					ASSERT_MSG("Error, Invalid meshPartId");
 
-				const std::string& materialId	= findIter->second;
-				auto normalMapMatFindIter		= normalMapMaterialKeys.find(materialId);
-
-				if(normalMapMatFindIter != normalMapMaterialKeys.end())
+				const auto& matIds = findIter->second;
+				for(auto matIdsIter = matIds.begin(); matIdsIter != matIds.end(); ++matIdsIter)
 				{
-					hasNormalMap = true;
-					break;
+					const std::string& materialId	= *matIdsIter;
+					auto normalMapMatFindIter		= normalMapMaterialKeys.find(materialId);
+
+					if(normalMapMatFindIter != normalMapMaterialKeys.end())
+					{
+						hasNormalMap = true;
+						break;
+					}
 				}
 			}
 
@@ -507,11 +513,22 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 }
 
 void MeshImporter::FetchAllPartsInHashMap_Recursive(
-	std::hash_map<std::string, std::string>& outParts, const Node& node)
+	std::hash_map<std::string, std::vector<std::string>>& outParts, const Node& node)
 {
 	const auto& parts = node.parts;
 	for(auto iter = parts.begin(); iter != parts.end(); ++iter)
-		outParts.insert(std::make_pair(iter->meshPartId, iter->materialId));
+	{
+		auto findIter = outParts.find(iter->materialId);
+		if(findIter != outParts.end())
+			findIter->second.push_back(iter->materialId);
+		else
+		{
+			std::vector<std::string> materialIds;
+			materialIds.push_back(iter->materialId);
+
+			outParts.insert(std::make_pair(iter->meshPartId, materialIds));
+		}
+	}
 
 	const auto& childs = node.childs;
 	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
