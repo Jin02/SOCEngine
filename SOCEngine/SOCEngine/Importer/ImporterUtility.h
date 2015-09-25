@@ -13,9 +13,6 @@ namespace Importer
 	class ImporterUtility
 	{
 	public:
-		static void CalculateTangentBinormal(Math::Vector3& outTangents, Math::Vector3& outBinormal,
-			const std::array<const Math::Vector3*, 3>& vertex,
-			const std::array<const Math::Vector2*, 3>& uvs);
-		static void CalculateNormal(Math::Vector3& outNormal, const Math::Vector3& binormal, const Math::Vector3& tangent);	
+		static void CalculateTangent(Math::Vector3& outTangents, const std::array<Math::Vector3, 3>& vertex,	const std::array<Math::Vector2, 3>& uvs);
 	};
 }
