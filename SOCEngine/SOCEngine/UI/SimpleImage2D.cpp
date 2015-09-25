@@ -59,7 +59,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		meshCreateArgs.index.count		= ARRAYSIZE(indices);
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
-		meshCreateArgs.isDynamic		= true;
+		meshCreateArgs.useDynamicVB		= true;
 	}
 
 	_meshFilter = new Mesh::MeshFilter;

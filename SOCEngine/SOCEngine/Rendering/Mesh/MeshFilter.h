@@ -44,14 +44,18 @@ namespace Rendering
 				};
 				Buffer<void>					vertex;
 				Buffer<unsigned int>			index;
-				bool							isDynamic;
+				bool							useDynamicVB;
+				bool							useDynamicIB;
 
 				const std::string				fileName;
 				const std::string				key;
 				uint							bufferFlag;
 
+				const std::vector<Rendering::Buffer::VertexBuffer::SemanticInfo>* semanticInfos;
+
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
-					:fileName(_fileName), key(_key), bufferFlag(0) {}
+					:fileName(_fileName), key(_key), bufferFlag(0),
+					useDynamicVB(false), useDynamicIB(false), semanticInfos(nullptr) {}
 				~CreateFuncArguments() {}
 			};
 			bool CreateBuffer(const CreateFuncArguments& args);

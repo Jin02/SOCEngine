@@ -84,7 +84,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		meshCreateArgs.index.count		= indices.size();
 		meshCreateArgs.index.byteWidth	= 0; //not use
 
-		meshCreateArgs.isDynamic		= true;
+		meshCreateArgs.useDynamicVB		= true;
 	}
 
 	_meshFilter = new Mesh::MeshFilter;
