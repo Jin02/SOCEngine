@@ -65,6 +65,16 @@ namespace Importer
 		~Material(){}
 	};
 
+	enum class Attribute : uint //In order of buffer data
+	{
+		Position	= 0,
+		Normal		= 1,
+		Tangent		= 2,
+		Color		= 3,
+		TexCoord	= 4,
+		BlendWeight	= 5
+	};
+
 	struct Mesh
 	{
 		struct Part
