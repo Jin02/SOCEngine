@@ -12,13 +12,16 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic)
+bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferStrideSize, unsigned int count, bool isDynamic, const std::vector<SemanticInfo>* semanticInfos)
 {	
-	_stride = bufferSize;
+	if(semanticInfos)
+		_semantics = (*semanticInfos);
+
+	_stride = bufferStrideSize;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
-	bufferDesc.ByteWidth = bufferSize * count;
+	bufferDesc.ByteWidth = bufferStrideSize * count;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 	bufferDesc.MiscFlags = 0;
