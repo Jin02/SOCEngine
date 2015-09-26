@@ -12,12 +12,13 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferStrideSize, unsigned int count, bool isDynamic, const std::vector<SemanticInfo>* semanticInfos)
+void VertexBuffer::Initialize( const void* sysMem, unsigned int bufferStrideSize, unsigned int count, bool isDynamic, const std::vector<SemanticInfo>* semanticInfos)
 {	
 	if(semanticInfos)
 		_semantics = (*semanticInfos);
 
-	_stride = bufferStrideSize;
+	_stride		 = bufferStrideSize;
+	_vertexCount = count;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
@@ -35,8 +36,6 @@ bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferStrideSize
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create vb");
-
-	return true;
 }
 
 void VertexBuffer::IASetBuffer(ID3D11DeviceContext* context)
