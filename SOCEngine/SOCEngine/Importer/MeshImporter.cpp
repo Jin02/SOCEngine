@@ -367,7 +367,9 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 					const auto& indices = partsIter->indices;
 					IndexBuffer* indexBuffer = new IndexBuffer;
 
-					bool success = indexBuffer->Initialize(indices.data(), sizeof(ENGINE_INDEX_TYPE) * indices.size(), useDynamicIB);
+					std::string vertexBufferKey = meshFileName + ":" + GetVertexBufferKey(meshIterIdx);
+
+					bool success = indexBuffer->Initialize(indices, vertexBufferKey, useDynamicIB);
 					ASSERT_COND_MSG(success, "Error, Can't create index buffer");
 
 					bufferMgr->Add(meshFileName, partsIter->meshPartId, indexBuffer);
@@ -491,11 +493,10 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 
 					bool success = 
 						vertexBuffer->Initialize(vertices.data(), stride, count,
-						useDynamicVB, nullptr);
+						useDynamicVB, &semantics);
 					ASSERT_COND_MSG(success, "Error, Can't create index buffer");
 
-					std::string key = "Chunk" + std::to_string(meshIterIdx);
-					bufferMgr->Add(meshFileName, key, vertexBuffer);
+					bufferMgr->Add(meshFileName, GetVertexBufferKey(meshIterIdx), vertexBuffer);
 				}
 			}
 		}
@@ -506,7 +507,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 		Object* root = new Object(meshFileName, nullptr);
 		
 		for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-			MakeHierarchy(root, (*iter));
+			MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager);
 	}
 
 	return nullptr;
@@ -544,6 +545,11 @@ void MeshImporter::FetchNormalMapMeshKeyLists(
 	{
 		const std::string& materialId = iter->materialId;
 	}
+}
+
+std::string MeshImporter::GetVertexBufferKey(uint meshIdx) const
+{
+	return "Chunk" + std::to_string(meshIdx);
 }
 
 void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Importer::Material>& materials, const std::string& meshFileName)
@@ -652,7 +658,9 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 		MakeMaterial(*iter, Rendering::Material::Type::PhysicallyBasedModel);
 }
 
-void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node)
+void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
+								 const std::string& meshFileName,
+								 BufferManager* bufferManager, MaterialManager* materialManager)
 {
 	Object* object = new Object(node.id, parent);
 	parent->AddChild(object);
@@ -665,7 +673,35 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node)
 		tf->UpdateScale(node.scale);
 	}
 
-	// Setting SubMesh
+	auto AttachMeshComponent = [&](Object* object, const Node::Parts& part)
+	{
+		IndexBuffer* indexBuffer = nullptr;
+		bool success = bufferManager->Find(&indexBuffer, meshFileName, part.meshPartId);
+		ASSERT_COND_MSG(success, "Error, Invalid mesh part id");
+
+		std::string vbKey = "";
+		{
+			std::vector<std::string> tokens;
+			{
+				const std::string& vertexBufferKey = indexBuffer->GetUseVertexBufferKey();
+				Utility::String::Tokenize(vertexBufferKey, tokens, ":");
+			}
+
+			vbKey = tokens.back();
+		}
+		ASSERT_COND_MSG(vbKey.empty() == false, "Error, Invalid vertex Buffer Key");
+
+		VertexBuffer* vertexBuffer = nullptr;
+		success = bufferManager->Find(&vertexBuffer, meshFileName, vbKey);
+		ASSERT_COND_MSG(success, "Error, Invalid vertex buffer key");
+
+		Rendering::Material* material = materialManager->Find(meshFileName, part.materialId);
+
+		Rendering::Mesh::Mesh* mesh = object->AddComponent<Rendering::Mesh::Mesh>();
+		mesh->Initialize(vertexBuffer, indexBuffer, material);
+	};
+
+	// attach submesh and mesh component.
 	{
 		const auto& parts =  node.parts;
 		uint size = parts.size();
@@ -675,13 +711,20 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node)
 			{
 				const std::string& subMeshId = iter->meshPartId;
 				Object* subMeshObj = new Object(subMeshId, object);
+
+				AttachMeshComponent(subMeshObj, *iter);
 			}
+		}
+		else
+		{
+			const Node::Parts& part = node.parts[0];
+			AttachMeshComponent(object, part);
 		}
 	}
 
 	auto& childs = node.childs;
 	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
-		MakeHierarchy(object, *iter);
+		MakeHierarchy(object, *iter, meshFileName, bufferManager, materialManager);
 }
 
 void MeshImporter::CalculateTangents(

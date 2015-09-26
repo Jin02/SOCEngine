@@ -9,6 +9,7 @@
 #include "MaterialManager.h"
 #include <set>
 #include <hash_map>
+#include "BufferManager.h"
 
 namespace Importer
 {
@@ -34,10 +35,11 @@ namespace Importer
 			const std::vector<Mesh::Part>& parts, 
 			const std::vector<float>& vertices, 
 			uint originStrideSize, uint uv0PosInAttributes);
+		std::string GetVertexBufferKey(uint meshIdx) const;
 
 	private:
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Material>& materials, const std::string& meshFileName);
-		void MakeHierarchy(Core::Object* parent, const Node& node);
+		void MakeHierarchy(Core::Object* parent, const Node& node, const std::string& meshFileName, Rendering::Manager::BufferManager* bufferManager, Rendering::Manager::MaterialManager* materialManager);
 		Core::Object* BuildMesh(std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB);
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
 
