@@ -490,12 +490,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 					VertexBuffer* vertexBuffer = new VertexBuffer;
 
 					uint count = vertices.size() / (stride / 4);
-
-					bool success = 
-						vertexBuffer->Initialize(vertices.data(), stride, count,
-						useDynamicVB, &semantics);
-					ASSERT_COND_MSG(success, "Error, Can't create index buffer");
-
+					vertexBuffer->Initialize(vertices.data(), stride, count, useDynamicVB, &semantics);
 					bufferMgr->Add(meshFileName, GetVertexBufferKey(meshIterIdx), vertexBuffer);
 				}
 			}

@@ -43,27 +43,24 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	RectVertexInfo rectVertex[4];
 	memset(rectVertex, 0, sizeof(RectVertexInfo) * 4);
 
-	uint indices[] =
+	std::vector<uint> indices(6);
 	{
-		0, 1, 2,
-		1, 3, 2
-	};
+		indices[0] = 0; indices[1] = 1; indices[2] = 2;
+		indices[3] = 1; indices[4] = 3; indices[3] = 2;
+	}
 
 	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:SimpleImage2D", sharedVerticesKey);
 	{
-		meshCreateArgs.vertex.data		= rectVertex;
-		meshCreateArgs.vertex.count		= 4;
-		meshCreateArgs.vertex.byteWidth	= sizeof(RectVertexInfo);
+		meshCreateArgs.vertices.data		= rectVertex;
+		meshCreateArgs.vertices.count		= 4;
+		meshCreateArgs.vertices.byteWidth	= sizeof(RectVertexInfo);
 
-		meshCreateArgs.index.data		= indices;
-		meshCreateArgs.index.count		= ARRAYSIZE(indices);
-		meshCreateArgs.index.byteWidth	= 0; //not use
-
-		meshCreateArgs.useDynamicVB		= true;
+		meshCreateArgs.indices				= &indices;
+		meshCreateArgs.useDynamicVB			= true;
 	}
 
 	_meshFilter = new Mesh::MeshFilter;
-	bool success = _meshFilter->CreateBuffer(meshCreateArgs);
+	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
