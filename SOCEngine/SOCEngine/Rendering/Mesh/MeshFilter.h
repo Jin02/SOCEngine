@@ -24,13 +24,14 @@ namespace Rendering
 
 		private:
 			bool			_alloc;
-			unsigned int	_vertexCount;
-			unsigned int	_indexCount;
 			uint			_bufferFlag;
 
 		public:
 			MeshFilter();
 			~MeshFilter();
+
+		private:
+			uint ComputeBufferFlag(const std::vector<Buffer::VertexBuffer::SemanticInfo>& semantics) const;
 
 		public:
 			struct CreateFuncArguments
@@ -42,31 +43,33 @@ namespace Rendering
 					unsigned int count;
 					unsigned int byteWidth;
 				};
-				Buffer<void>					vertex;
-				Buffer<unsigned int>			index;
+				Buffer<void>					vertices;
+				std::vector<uint>*				indices;
 				bool							useDynamicVB;
 				bool							useDynamicIB;
 
 				const std::string				fileName;
 				const std::string				key;
-				uint							bufferFlag;
 
 				const std::vector<Rendering::Buffer::VertexBuffer::SemanticInfo>* semanticInfos;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
-					:fileName(_fileName), key(_key), bufferFlag(0),
+					:fileName(_fileName), key(_key),
 					useDynamicVB(false), useDynamicIB(false), semanticInfos(nullptr) {}
 				~CreateFuncArguments() {}
 			};
-			bool CreateBuffer(const CreateFuncArguments& args);
+			bool Initialize(const CreateFuncArguments& args);
+			bool Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer);
 
 			void IASetBuffer(const Device::DirectX* dx);
 			void UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size);
 
 		public:
-			GET_ACCESSOR(VertexCount, unsigned int, _vertexCount);
-			GET_ACCESSOR(IndexCount, unsigned int, _indexCount);
-			GET_ACCESSOR(BufferFlag, uint, _bufferFlag);
+			GET_ACCESSOR(BufferFlag,	uint,							_bufferFlag);
+			GET_ACCESSOR(IndexCount,	uint,							_indexBuffer->GetIndexCount());
+			GET_ACCESSOR(VertexCount,	uint,							_vertexBuffer->GetVertexCount());
+			GET_ACCESSOR(VertexBuffer,	const Buffer::VertexBuffer*,	_vertexBuffer);
+			GET_ACCESSOR(IndexBuffer,	const Buffer::IndexBuffer*,		_indexBuffer);
 		};
 	}
 }
