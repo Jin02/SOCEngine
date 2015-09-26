@@ -41,7 +41,8 @@ namespace Rendering
 				~CreateFuncArguments() {}
 			};
 
-			bool Initialize(const CreateFuncArguments& args);
+			void Initialize(const CreateFuncArguments& args);
+			void Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer, Rendering::Material*& initMaterial);
 
 		private:
 			void ClassifyRenderMeshType();
