@@ -160,7 +160,7 @@ void SimpleText2D::UpdateText(const std::string& text)
 
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
-	_meshFilter->UpdateVertexBufferData(dx, vertices.data(), sizeof(RectVertexInfo) * vertices.size());
+	_meshFilter->GetVertexBuffer()->UpdateVertexData(dx->GetContext(), vertices.data(), sizeof(RectVertexInfo) * vertices.size());
 }
 
 void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat)
@@ -172,7 +172,8 @@ void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPro
 
 	if(_material->GetCustomShader().ableRender())
 	{		
-		_meshFilter->IASetBuffer(dx);
+		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
+		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
 
 		vs->SetShaderToContext(context);
 		vs->SetInputLayoutToContext(context);

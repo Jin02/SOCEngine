@@ -117,7 +117,7 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 			vertices[3].uv.y		=  1.0f;
 		};
 
-		_meshFilter->UpdateVertexBufferData(dx, vertices, sizeof(RectVertexInfo) * 4);
+		_meshFilter->GetVertexBuffer()->UpdateVertexData(dx->GetContext(), vertices, sizeof(RectVertexInfo) * 4);
 		_changeSize = false;
 	}
 
@@ -126,7 +126,8 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 
 	if(_material->GetCustomShader().ableRender())
 	{		
-		_meshFilter->IASetBuffer(dx);
+		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
+		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
 
 		vs->SetShaderToContext(context);
 		vs->SetInputLayoutToContext(context);
