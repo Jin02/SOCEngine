@@ -8,7 +8,8 @@ using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _transformConstBuffer(nullptr)
+	_selectMaterialIndex(0), _transformConstBuffer(nullptr),
+	_prevRenderType(MeshRenderer::Type::Opaque)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -83,14 +84,8 @@ void Mesh::OnDestroy()
 void Mesh::ClassifyRenderMeshType()
 {
 	Manager::RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
-	if(_renderer)
-	{
-		bool isTransparentMesh = _renderer->IsTransparent();
-		RenderManager::MeshType type = isTransparentMesh ? 
-			RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
-
-		renderMgr->UpdateRenderList(this, type);
-	}
+	renderMgr->UpdateRenderList(this);
+	_prevRenderType = _renderer->GetCurrentRenderType();
 }
 
 void Mesh::OnRenderPreview()
