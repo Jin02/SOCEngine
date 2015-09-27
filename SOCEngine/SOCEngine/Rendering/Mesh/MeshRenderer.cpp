@@ -8,7 +8,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-MeshRenderer::MeshRenderer()
+MeshRenderer::MeshRenderer() : _useAlphaBlending(false)
 {
 
 }
@@ -17,7 +17,7 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-bool MeshRenderer::HasMaterial(Material* material)
+bool MeshRenderer::HasMaterial(const Material* material) const
 {
 	for(auto iter = _materials.begin(); iter != _materials.end(); ++iter)
 	{
@@ -37,7 +37,7 @@ bool MeshRenderer::AddMaterial(Material* material)
 	return true;
 }
 
-bool MeshRenderer::IsTransparent()
+bool MeshRenderer::IsTransparent() const
 {
 	for(auto iter = _materials.begin(); iter != _materials.end(); ++iter)
 	{
@@ -46,4 +46,14 @@ bool MeshRenderer::IsTransparent()
 	}
 
 	return true;
+}
+
+MeshRenderer::Type MeshRenderer::GetCurrentRenderType() const
+{
+	bool isTransparnet = IsTransparent();
+
+	if(isTransparnet)			return Type::Transparent;
+	else if(_useAlphaBlending)	return Type::AlphaBlend;
+
+	return Type::Opaque;
 }
