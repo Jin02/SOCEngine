@@ -35,7 +35,7 @@ namespace Importer
 			const std::vector<Mesh::Part>& parts, 
 			const std::vector<float>& vertices, 
 			uint originStrideSize, uint uv0PosInAttributes);
-		std::string GetVertexBufferKey(uint meshIdx) const;
+		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
 
 	private:
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Material>& materials, const std::string& meshFileName);

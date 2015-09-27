@@ -357,6 +357,9 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 		uint meshIterIdx = 0;
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter, ++meshIterIdx)
 		{
+			std::string vbChunkKey = "";
+			std::string vertexBufferKey = GetVertexBufferKey(meshFileName, meshIterIdx, &vbChunkKey);
+
 			std::vector<std::string> meshPartIdKeys;
 
 			// Make IndexBuffer
@@ -366,8 +369,6 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 				{
 					const auto& indices = partsIter->indices;
 					IndexBuffer* indexBuffer = new IndexBuffer;
-
-					std::string vertexBufferKey = meshFileName + ":" + GetVertexBufferKey(meshIterIdx);
 
 					bool success = indexBuffer->Initialize(indices, vertexBufferKey, useDynamicIB);
 					ASSERT_COND_MSG(success, "Error, Can't create index buffer");
@@ -490,8 +491,8 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 					VertexBuffer* vertexBuffer = new VertexBuffer;
 
 					uint count = vertices.size() / (stride / 4);
-					vertexBuffer->Initialize(vertices.data(), stride, count, useDynamicVB, &semantics);
-					bufferMgr->Add(meshFileName, GetVertexBufferKey(meshIterIdx), vertexBuffer);
+					vertexBuffer->Initialize(vertices.data(), stride, count, useDynamicVB, vertexBufferKey, &semantics);
+					bufferMgr->Add(meshFileName, vbChunkKey, vertexBuffer);
 				}
 			}
 		}
@@ -542,9 +543,11 @@ void MeshImporter::FetchNormalMapMeshKeyLists(
 	}
 }
 
-std::string MeshImporter::GetVertexBufferKey(uint meshIdx) const
+std::string MeshImporter::GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const
 {
-	return "Chunk" + std::to_string(meshIdx);
+	std::string chunkKey = "Chunk" + std::to_string(meshIdx);
+	if(outChunkKey)	(*outChunkKey) = chunkKey;
+	return meshFileName + ":" + chunkKey;
 }
 
 void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Importer::Material>& materials, const std::string& meshFileName)
@@ -674,7 +677,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 		bool success = bufferManager->Find(&indexBuffer, meshFileName, part.meshPartId);
 		ASSERT_COND_MSG(success, "Error, Invalid mesh part id");
 
-		std::string vbKey = "";
+		std::string vbChunkKey = "";
 		{
 			std::vector<std::string> tokens;
 			{
@@ -682,13 +685,13 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 				Utility::String::Tokenize(vertexBufferKey, tokens, ":");
 			}
 
-			vbKey = tokens.back();
+			vbChunkKey = tokens.back();
 		}
-		ASSERT_COND_MSG(vbKey.empty() == false, "Error, Invalid vertex Buffer Key");
+		ASSERT_COND_MSG(vbChunkKey.empty() == false, "Error, Invalid vb Chunk Key");
 
 		VertexBuffer* vertexBuffer = nullptr;
-		success = bufferManager->Find(&vertexBuffer, meshFileName, vbKey);
-		ASSERT_COND_MSG(success, "Error, Invalid vertex buffer key");
+		success = bufferManager->Find(&vertexBuffer, meshFileName, vbChunkKey);
+		ASSERT_COND_MSG(success, "Error, Invalid vb Chunk Key");
 
 		Rendering::Material* material = materialManager->Find(meshFileName, part.materialId);
 
