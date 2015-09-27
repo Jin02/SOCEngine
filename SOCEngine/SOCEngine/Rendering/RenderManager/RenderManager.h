@@ -19,18 +19,12 @@ namespace Rendering
 		class RenderManager
 		{
 		public:
-			enum class MeshType
-			{
-				Opaque,
-				Transparent,
-				AlphaTest
-			};
 			struct MeshList
 			{
 				uint updateCounter;
 
 				//first value is just key.
-				Structure::VectorMap<unsigned int, const Mesh::Mesh*> meshes;
+				Structure::VectorMap<unsigned __int64, const Mesh::Mesh*> meshes;
 
 				MeshList(){}
 				~MeshList(){}
@@ -45,7 +39,7 @@ namespace Rendering
 		private:
 			MeshList	_transparentMeshes;
 			MeshList	_opaqueMeshes;
-			MeshList	_alphaTestMeshes;
+			MeshList	_alphaBlendMeshes;
 
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders;
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
@@ -59,11 +53,11 @@ namespace Rendering
 
 		public:
 			bool TestInit();
-			Shader::ShaderGroup LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
+			Shader::ShaderGroup LoadDefaultSahder(Mesh::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
-			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
-			bool HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type);
+			void UpdateRenderList(const Mesh::Mesh* mesh);
+			bool HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type);
 
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
@@ -71,7 +65,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
 			GET_ACCESSOR(OpaqueMeshes, const MeshList&, _opaqueMeshes);
-			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaTestMeshes);
+			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaBlendMeshes);
 		};
 	}
 }

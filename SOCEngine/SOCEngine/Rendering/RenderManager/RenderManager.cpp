@@ -17,7 +17,7 @@ RenderManager::~RenderManager()
 {
 }
 
-Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
+Shader::ShaderGroup RenderManager::LoadDefaultSahder(Mesh::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 													 const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName = "";
@@ -38,9 +38,9 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 
 		std::string frontFileName = "";
 
-		if(meshType == MeshType::Opaque || meshType == MeshType::AlphaTest)
+		if(meshType == Mesh::MeshRenderer::Type::Opaque || meshType == Mesh::MeshRenderer::Type::AlphaBlend)
 			frontFileName = "PhysicallyBased_GBuffer_";
-		else if(meshType == MeshType::Transparent)
+		else if(meshType == Mesh::MeshRenderer::Type::Transparent)
 			frontFileName = "PhysicallyBased_Transparency_";
 		else
 		{
@@ -60,9 +60,9 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 	if(macros)
 		targetShaderMacros.assign(macros->begin(), macros->end());
 
-	if(meshType == MeshType::Opaque)
+	if(meshType == Mesh::MeshRenderer::Type::Opaque)
 		repo = &_gbufferShaders;
-	else if(meshType == MeshType::AlphaTest)
+	else if(meshType == Mesh::MeshRenderer::Type::AlphaBlend)
 	{
 		repo = &_gbufferShaders_alphaTest;
 
@@ -70,7 +70,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	else if(meshType == MeshType::Transparent)
+	else if(meshType == Mesh::MeshRenderer::Type::Transparent)
 	{
 		repo = &_transparentShaders;
 
@@ -105,7 +105,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 		shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
 		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 
-		if(meshType == MeshType::Transparent)
+		if(meshType == Mesh::MeshRenderer::Type::Transparent)
 		{
 			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
 			_transparent_depthOnly_Shaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
@@ -123,63 +123,74 @@ bool RenderManager::TestInit()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=0; i< ((uint)MeshType::AlphaTest + 1); ++i)
+	for(uint i=0; i< ((uint)Mesh::MeshRenderer::Type::AlphaBlend + 1); ++i)
 	{
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
 	}
 
 	return true;
 }
 
-void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh, MeshType type)
+void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 {
-	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
-	MeshList* meshList = nullptr;
+	unsigned __int64 meshAddress = reinterpret_cast<unsigned __int64>(mesh);
 
-	if( type == MeshType::Transparent )
-		meshList = &_transparentMeshes;
-	else if( type == MeshType::Opaque )
-		meshList = &_opaqueMeshes;
-	else if( type == MeshType::AlphaTest )
-		meshList = &_alphaTestMeshes;
-	else
+	auto GetMeshList = [&](Mesh::MeshRenderer::Type renderType)
 	{
-		ASSERT_MSG("Error, unsupported mesh type");
-	}
+		MeshList* meshList = nullptr;
 
-	meshList->meshes.Delete(meshAddress);
+		if( renderType == Mesh::MeshRenderer::Type::Transparent )
+			meshList = &_transparentMeshes;
+		else if( renderType == Mesh::MeshRenderer::Type::Opaque )
+			meshList = &_opaqueMeshes;
+		else if( renderType == Mesh::MeshRenderer::Type::AlphaBlend )
+			meshList = &_alphaBlendMeshes;
+		else
+			ASSERT_MSG("Error, unsupported mesh type");
+		
+		return meshList;
+	};
 
-	if(meshList->meshes.Find(meshAddress) == nullptr)
-		meshList->meshes.Add(meshAddress, mesh);
+	Mesh::MeshRenderer::Type currentType	= mesh->GetMeshRenderer()->GetCurrentRenderType();
+	Mesh::MeshRenderer::Type prevType		= mesh->GetPrevRenderType();
 
-	++(meshList->updateCounter);
+	if(prevType == currentType)
+		return; // not changed
+
+	MeshList* prevMeshList = GetMeshList(prevType);
+	prevMeshList->meshes.Delete(meshAddress);
+	++prevMeshList->updateCounter;
+
+	MeshList* currentMeshList = GetMeshList(currentType);
+	currentMeshList->meshes.Add(meshAddress, mesh);
+	++currentMeshList->updateCounter;
 }
 
-bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type)
 {
 	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
 	const Mesh::Mesh* foundedMesh = nullptr;
 
-	if(type == MeshType::Transparent)
+	if(type == Mesh::MeshRenderer::Type::Transparent)
 	{
 		auto found = _transparentMeshes.meshes.Find(meshAddress);
 		foundedMesh = found ? (*found) : nullptr;
 	}
-	else if(type == MeshType::Opaque)
+	else if(type == Mesh::MeshRenderer::Type::Opaque)
 	{
 		auto found = _opaqueMeshes.meshes.Find(meshAddress);
 		foundedMesh = found ? (*found) : nullptr;
 	}
-	else if(type == MeshType::AlphaTest)
+	else if(type == Mesh::MeshRenderer::Type::AlphaBlend)
 	{
-		auto found = _alphaTestMeshes.meshes.Find(meshAddress);
+		auto found = _alphaBlendMeshes.meshes.Find(meshAddress);
 		foundedMesh = found ? (*found) : nullptr;
 	}
 	else
 	{
-		ASSERT_MSG("Error!, undefined MeshType");
+		ASSERT_MSG("Error!, undefined Mesh::MeshRenderer::Type");
 	}
 
 	return foundedMesh != nullptr;
