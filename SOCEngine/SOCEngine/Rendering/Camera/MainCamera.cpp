@@ -203,13 +203,16 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 	
 	enum class RenderType { AlphaMesh, Opaque, Transparency, Transparency_DepthOnly };
-	auto RenderMesh = [&](const std::vector<const Mesh::Mesh*>& meshes, RenderType renderType)
+	auto RenderMesh = [&](const std::vector<const Mesh::Mesh*>& meshes, RenderType renderType, bool usePreUpdatedVB)
 	{
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter)
 		{
 			const Mesh::Mesh* mesh = (*meshIter);
 			Mesh::MeshFilter* filter = mesh->GetMeshFilter();
-			filter->IASetBuffer(dx);
+
+			if(usePreUpdatedVB)
+				filter->GetVertexBuffer()->IASetBuffer(context);
+			filter->GetIndexBuffer()->IASetBuffer(context);
 
 			ShaderGroup shaders;
 			if(renderType == RenderType::Opaque || renderType == RenderType::AlphaMesh)
@@ -276,41 +279,45 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 		//Opaque Mesh
 		{
-			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetOpaqueMeshes().meshes.GetVector();
-			RenderMesh(meshes, RenderType::Opaque);
+			const auto& sortedMeshByVertexBuffer = renderManager->GetOpaqueMeshes().meshes.GetVector();
+			for(auto iter = sortedMeshByVertexBuffer.begin(); iter != sortedMeshByVertexBuffer.end(); ++iter)
+			{
+				const auto& meshes = iter->GetVector();
+				RenderMesh(meshes, RenderType::Opaque, true);
+			}
 		}
 
 		//Alpha Test Mesh
 		{
-			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetAlphaTestMeshes().meshes.GetVector();
+			//const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetAlphaTestMeshes().meshes.GetVector();
 
-			if(meshes.size() > 0)
-			{
-				bool useMSAA = dx->GetMSAADesc().Count > 1;
+			//if(meshes.size() > 0)
+			//{
+			//	bool useMSAA = dx->GetMSAADesc().Count > 1;
 
-				if(useMSAA) //on alpha blending
-					context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
+			//	if(useMSAA) //on alpha blending
+			//		context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
 
-				context->RSSetState( dx->GetRasterizerStateDisableCulling() );
+			//	context->RSSetState( dx->GetRasterizerStateDisableCulling() );
 		
-				RenderMesh(meshes, RenderType::AlphaMesh);
+			//	RenderMesh(meshes, RenderType::AlphaMesh);
 
-				context->RSSetState(nullptr);
+			//	context->RSSetState(nullptr);
 
-				if(useMSAA) //off alpha blending
-					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
-			}
+			//	if(useMSAA) //off alpha blending
+			//		context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+			//}
 		}
 
 		// Transparent Mesh
 		// Write blended depth buffer
 		if(_useTransparent)
 		{
-			ID3D11RenderTargetView* nullRTV = nullptr;
-			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
-			
-			const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
-			RenderMesh(meshes, RenderType::Transparency_DepthOnly);
+			//ID3D11RenderTargetView* nullRTV = nullptr;
+			//context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
+			//
+			//const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
+			//RenderMesh(meshes, RenderType::Transparency_DepthOnly);
 		}
 	}
 
@@ -340,51 +347,51 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	// Transparency
 	if(_useTransparent)
 	{
-		const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
+		//const std::vector<const Mesh::Mesh*>& meshes = renderManager->GetTransparentMeshes().meshes.GetVector();
 
-		if(meshes.size() > 0)
-		{
-			context->RSSetState(dx->GetRasterizerStateDisableCulling());
-			context->OMSetBlendState(dx->GetBlendStateAlpha(), blendFactor, 0xffffffff);
+		//if(meshes.size() > 0)
+		//{
+		//	context->RSSetState(dx->GetRasterizerStateDisableCulling());
+		//	context->OMSetBlendState(dx->GetBlendStateAlpha(), blendFactor, 0xffffffff);
 
-			ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
-			context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
-			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
-				
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter, 
-				1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor, 
-				1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter, 
-				1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor, 
-				1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,
-				1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ,
-				1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,
-				1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
-				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
+		//	ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
+		//	context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
+		//	context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
+		//		
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter, 
+		//		1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor, 
+		//		1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter, 
+		//		1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor, 
+		//		1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,
+		//		1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ,
+		//		1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,
+		//		1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
+		//		1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
-			RenderMesh(meshes, RenderType::Transparency);
+		//	RenderMesh(meshes, RenderType::Transparency);
 
-			context->RSSetState(nullptr);
-			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+		//	context->RSSetState(nullptr);
+		//	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-			ID3D11ShaderResourceView* nullSRV = nullptr;
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter,		1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor,				1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter,		1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor,					1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,					1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ, 1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,			1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,			1, nullptr);
-		
-			context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
-		}
+		//	ID3D11ShaderResourceView* nullSRV = nullptr;
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter,		1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor,				1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter,		1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor,					1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,					1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ, 1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,			1, nullptr);
+		//	context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,			1, nullptr);
+		//
+		//	context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
+		//}
 	}
 }
 
