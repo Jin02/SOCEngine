@@ -61,15 +61,12 @@ namespace Rendering
 			bool Initialize(const CreateFuncArguments& args);
 			bool Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer);
 
-			void IASetBuffer(const Device::DirectX* dx);
-			void UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size);
-
 		public:
-			GET_ACCESSOR(BufferFlag,	uint,							_bufferFlag);
-			GET_ACCESSOR(IndexCount,	uint,							_indexBuffer->GetIndexCount());
-			GET_ACCESSOR(VertexCount,	uint,							_vertexBuffer->GetVertexCount());
-			GET_ACCESSOR(VertexBuffer,	const Buffer::VertexBuffer*,	_vertexBuffer);
-			GET_ACCESSOR(IndexBuffer,	const Buffer::IndexBuffer*,		_indexBuffer);
+			GET_ACCESSOR(BufferFlag,	uint,					_bufferFlag);
+			GET_ACCESSOR(IndexCount,	uint,					_indexBuffer->GetIndexCount());
+			GET_ACCESSOR(VertexCount,	uint,					_vertexBuffer->GetVertexCount());
+			GET_ACCESSOR(VertexBuffer,	Buffer::VertexBuffer*,	_vertexBuffer);
+			GET_ACCESSOR(IndexBuffer,	Buffer::IndexBuffer*,	_indexBuffer);
 		};
 	}
 }

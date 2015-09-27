@@ -28,13 +28,15 @@ bool MeshFilter::Initialize(const CreateFuncArguments& args)
 
 	Manager::BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
 
+	std::string vbKey = args.fileName + ":" + args.key;
+
 	// Vertex Buffer Setting
 	{
 		Buffer::VertexBuffer* vertexBuffer	= nullptr;
 		if( bufferMgr->Find(&vertexBuffer, args.fileName, args.key) == false )
 		{
 			vertexBuffer = new Buffer::VertexBuffer;
-			vertexBuffer->Initialize(args.vertices.data, args.vertices.byteWidth, vertexCount, args.useDynamicVB, args.semanticInfos);
+			vertexBuffer->Initialize(args.vertices.data, args.vertices.byteWidth, vertexCount, args.useDynamicVB, vbKey, args.semanticInfos);
 			
 			bufferMgr->Add(args.fileName, args.key, vertexBuffer);
 		}
@@ -48,7 +50,7 @@ bool MeshFilter::Initialize(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&indexBuffer, args.fileName, args.key) == false )
 		{
 			indexBuffer = new Buffer::IndexBuffer;
-			if( indexBuffer->Initialize(*args.indices, args.fileName + ":" + args.key, args.useDynamicIB) == false )
+			if( indexBuffer->Initialize(*args.indices, vbKey, args.useDynamicIB) == false )
 				ASSERT_MSG("Error, can not create index buffer");
 
 			bufferMgr->Add(args.fileName, args.key, indexBuffer);
@@ -76,18 +78,4 @@ uint MeshFilter::ComputeBufferFlag(
 	const std::vector<Rendering::Buffer::VertexBuffer::SemanticInfo>& semantics) const
 {
 	return 0;
-}
-
-void MeshFilter::IASetBuffer(const Device::DirectX* dx)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-
-	_vertexBuffer->IASetBuffer(context);
-	_indexBuffer->IASetBuffer(context);
-}
-
-void MeshFilter::UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-	_vertexBuffer->UpdateVertexData(context, data, size);
 }
