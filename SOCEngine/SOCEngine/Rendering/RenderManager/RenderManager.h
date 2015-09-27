@@ -7,8 +7,7 @@
 
 #include <sys/timeb.h>
 #include <time.h>
-#include "VectorMap.h"
-#include <hash_map>
+#include "VectorHashMap.h"
 
 #include "ShaderMacro.h"
 
@@ -21,10 +20,13 @@ namespace Rendering
 		public:
 			struct MeshList
 			{
-				uint updateCounter;
+				typedef unsigned __int64 meshkey;
+				typedef Structure::VectorMap<meshkey, const Mesh::Mesh*> MeshesMap;
 
-				//first value is just key.
-				Structure::VectorMap<unsigned __int64, const Mesh::Mesh*> meshes;
+				//first key is vbkey.
+				Structure::VectorMap<std::string, MeshesMap> meshes;
+
+				uint updateCounter;
 
 				MeshList(){}
 				~MeshList(){}
@@ -63,9 +65,9 @@ namespace Rendering
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
 
 		public:
-			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
-			GET_ACCESSOR(OpaqueMeshes, const MeshList&, _opaqueMeshes);
-			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaBlendMeshes);
+			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);
+			GET_ACCESSOR(OpaqueMeshes,		const MeshList&,	_opaqueMeshes);
+			GET_ACCESSOR(AlphaTestMeshes,	const MeshList&,	_alphaBlendMeshes);
 		};
 	}
 }

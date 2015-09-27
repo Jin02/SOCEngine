@@ -135,7 +135,7 @@ bool RenderManager::TestInit()
 
 void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 {
-	unsigned __int64 meshAddress = reinterpret_cast<unsigned __int64>(mesh);
+	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
 
 	auto GetMeshList = [&](Mesh::MeshRenderer::Type renderType)
 	{
@@ -159,38 +159,65 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 	if(prevType == currentType)
 		return; // not changed
 
+	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
+
 	MeshList* prevMeshList = GetMeshList(prevType);
-	prevMeshList->meshes.Delete(meshAddress);
-	++prevMeshList->updateCounter;
+	{
+		MeshList::MeshesMap* list = prevMeshList->meshes.Find(vbKey);
+		if(list)
+		{
+			list->Delete(meshAddress);
+
+			if(list->GetSize() == 0)
+				prevMeshList->meshes.Delete(vbKey);
+
+			++prevMeshList->updateCounter;
+		}
+	}
 
 	MeshList* currentMeshList = GetMeshList(currentType);
-	currentMeshList->meshes.Add(meshAddress, mesh);
-	++currentMeshList->updateCounter;
+	{
+		MeshList::MeshesMap* list = currentMeshList->meshes.Find(vbKey);
+		if(list == nullptr)
+		{
+			MeshList::MeshesMap mm;
+			mm.Add(meshAddress, mesh);
+
+			currentMeshList->meshes.Add(vbKey, mm);
+		}
+		else
+		{
+			list->Add(meshAddress, mesh);
+		}
+
+		++currentMeshList->updateCounter;
+	}
 }
 
 bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type)
 {
-	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
+	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
 	const Mesh::Mesh* foundedMesh = nullptr;
+	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
+
+	MeshList* meshList = nullptr;
 
 	if(type == Mesh::MeshRenderer::Type::Transparent)
-	{
-		auto found = _transparentMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
+		meshList = &_transparentMeshes;
 	else if(type == Mesh::MeshRenderer::Type::Opaque)
-	{
-		auto found = _opaqueMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
+		meshList = &_opaqueMeshes;
 	else if(type == Mesh::MeshRenderer::Type::AlphaBlend)
-	{
-		auto found = _alphaBlendMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
+		meshList = &_alphaBlendMeshes;
 	else
 	{
 		ASSERT_MSG("Error!, undefined Mesh::MeshRenderer::Type");
+	}
+
+	MeshList::MeshesMap* meshesMap = meshList->meshes.Find(vbKey);
+	if(meshesMap)
+	{
+		const Mesh::Mesh** found = meshesMap->Find(meshAddress);
+		foundedMesh = found ? (*found) : nullptr;
 	}
 
 	return foundedMesh != nullptr;
