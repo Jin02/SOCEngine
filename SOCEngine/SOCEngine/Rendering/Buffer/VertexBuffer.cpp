@@ -4,7 +4,7 @@
 using namespace Rendering::Buffer;
 using namespace Device;
 
-VertexBuffer::VertexBuffer() : BaseBuffer()
+VertexBuffer::VertexBuffer() : BaseBuffer(), _key(nullptr)
 {
 }
 
@@ -12,13 +12,17 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-void VertexBuffer::Initialize( const void* sysMem, unsigned int bufferStrideSize, unsigned int count, bool isDynamic, const std::vector<SemanticInfo>* semanticInfos)
-{	
+void VertexBuffer::Initialize(
+	const void* sysMem, unsigned int bufferStrideSize, unsigned int count,
+	bool isDynamic, const std::string& key,
+	const std::vector<SemanticInfo>* semanticInfos)
+{
 	if(semanticInfos)
 		_semantics = (*semanticInfos);
 
-	_stride		 = bufferStrideSize;
-	_vertexCount = count;
+	_stride			= bufferStrideSize;
+	_vertexCount	= count;
+	_key			= key;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;

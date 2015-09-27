@@ -19,6 +19,7 @@ namespace Rendering
 			};
 
 		private:
+			std::string					_key;
 			unsigned int				_stride;
 			std::vector<SemanticInfo>	_semantics; //attributes
 			uint						_vertexCount;
@@ -29,13 +30,15 @@ namespace Rendering
 
 		public:
 			void Initialize(const void* sysMem, unsigned int bufferStrideSize,
-				unsigned int count, bool isDynamic, const std::vector<SemanticInfo>* semanticInfos);
+				unsigned int count, bool isDynamic, const std::string& key,
+				const std::vector<SemanticInfo>* semanticInfos);
 			void IASetBuffer(ID3D11DeviceContext* context);
 			void UpdateVertexData(ID3D11DeviceContext* context, const void* data, uint size);
 
 		public:
 			GET_ACCESSOR(VertexCount, uint, _vertexCount);
 			GET_ACCESSOR(Semantics, const std::vector<SemanticInfo>&, _semantics);
+			GET_ACCESSOR(Key, const std::string&, _key);
 		};
 	}
 }
