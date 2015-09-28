@@ -74,7 +74,6 @@ namespace Structure
 			_map.clear();
 		}
 
-//		GET_ACCESSOR(Vector, std::vector<Object>&, _vector);
 		inline const std::vector<Object>& GetVector() const { return _vector; }
 		inline const std::map<Key, Object*>& GetMap() const { return _map; }
 
