@@ -163,12 +163,12 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 
 	MeshList* prevMeshList = GetMeshList(prevType);
 	{
-		MeshList::MeshesMap* list = prevMeshList->meshes.Find(vbKey);
-		if(list)
+		std::set<MeshList::meshkey>* meshSets = prevMeshList->meshes.Find(vbKey);
+		if(meshSets)
 		{
-			list->Delete(meshAddress);
-
-			if(list->GetSize() == 0)
+			meshSets->erase(meshAddress);
+			
+			if(meshSets->empty())
 				prevMeshList->meshes.Delete(vbKey);
 
 			++prevMeshList->updateCounter;
@@ -177,19 +177,18 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 
 	MeshList* currentMeshList = GetMeshList(currentType);
 	{
-		MeshList::MeshesMap* list = currentMeshList->meshes.Find(vbKey);
-		if(list == nullptr)
+		std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
+		if(meshSets == nullptr)
 		{
-			MeshList::MeshesMap mm;
-			mm.Add(meshAddress, mesh);
+			std::set<MeshList::meshkey> set;
+			set.insert(meshAddress);
 
-			currentMeshList->meshes.Add(vbKey, mm);
+			currentMeshList->meshes.Add(vbKey, set);
 		}
 		else
 		{
-			list->Add(meshAddress, mesh);
+			meshSets->insert(meshAddress);
 		}
-
 		++currentMeshList->updateCounter;
 	}
 }
@@ -213,11 +212,11 @@ bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRender
 		ASSERT_MSG("Error!, undefined Mesh::MeshRenderer::Type");
 	}
 
-	MeshList::MeshesMap* meshesMap = meshList->meshes.Find(vbKey);
-	if(meshesMap)
+	std::set<MeshList::meshkey>* meshSets = meshList->meshes.Find(vbKey);
+	if(meshSets)
 	{
-		const Mesh::Mesh** found = meshesMap->Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
+		auto foundIter = meshSets->find(meshAddress);
+		foundedMesh = (foundIter != meshSets->end()) ? reinterpret_cast<Mesh::Mesh*>(*foundIter) : nullptr;
 	}
 
 	return foundedMesh != nullptr;

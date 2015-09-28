@@ -10,6 +10,7 @@
 #include "VectorHashMap.h"
 
 #include "ShaderMacro.h"
+#include <set>
 
 namespace Rendering
 {
@@ -20,11 +21,10 @@ namespace Rendering
 		public:
 			struct MeshList
 			{
-				typedef unsigned __int64 meshkey;
-				typedef Structure::VectorMap<meshkey, const Mesh::Mesh*> MeshesMap;
+				typedef unsigned __int64 meshkey; //is address
 
 				//first key is vbkey.
-				Structure::VectorMap<std::string, MeshesMap> meshes;
+				Structure::VectorHashMap<std::string, std::set<meshkey>> meshes;
 
 				uint updateCounter;
 
