@@ -51,8 +51,15 @@ float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
 
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
-	float3 normal	= DecodeNormal(input.normal, input.tangent, input.binormal, input.uv);
+	bool hasNormalMap = HasNormalTexture();
+	float3 normal	= lerp(input.normal, DecodeNormal(input.normal, input.tangent, input.binormal, input.uv), hasNormalMap);
+
+#if defined(USE_PBR_TEXTURE)
+	float roughness = normalTexture.Sample(defaultSampler, input.uv).a;
+	return Lighting(normal, roughness, input.positionWorld, input.position.xy, input.uv);
+#else
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
+#endif
 }
 
 /******************** Only Position, Only Write DepthBuffer ********************/
