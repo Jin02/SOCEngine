@@ -3,6 +3,7 @@
 #include "Director.h"
 #include "ResourceManager.h"
 
+using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Manager;
 using namespace Rendering::Shader;
@@ -22,40 +23,12 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Mesh::MeshRenderer::Type me
 {
 	std::string fileName = "";
 	if(customShaderFileName ? customShaderFileName->empty() : true)
-	{
-		std::string defaultVertexInputTypeStr = "";
-
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::NORMAL)
-		{
-			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TANGENT)
-				defaultVertexInputTypeStr += "T";
-
-			defaultVertexInputTypeStr += "N_";
-		}
-
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV0)
-			defaultVertexInputTypeStr += "UV0";
-
-		std::string frontFileName = "";
-
-		if(meshType == Mesh::MeshRenderer::Type::Opaque || meshType == Mesh::MeshRenderer::Type::AlphaBlend)
-			frontFileName = "PhysicallyBased_GBuffer_";
-		else if(meshType == Mesh::MeshRenderer::Type::Transparent)
-			frontFileName = "PhysicallyBased_Transparency_";
-		else
-		{
-			ASSERT_MSG("Error, unsupported mesh type");
-		}
-
-		fileName = frontFileName + defaultVertexInputTypeStr;
-	}
+		MakeDefaultSahderFileName(fileName, meshType, defaultVertexInputTypeFlag);
 	else
-	{
 		fileName = (*customShaderFileName);
-	}
 
 	std::hash_map<uint, const Shader::ShaderGroup>* repo = nullptr;
-	std::vector<ShaderMacro>	targetShaderMacros;
+	std::vector<ShaderMacro> targetShaderMacros;
 
 	if(macros)
 		targetShaderMacros.assign(macros->begin(), macros->end());
@@ -230,20 +203,23 @@ bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRender
 	return foundedMesh != nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
+bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest, bool useAutoLoad) const
 {
-	return FindShaderFromHashMap(out, 
-		isAlphaTest ?	_gbufferShaders_alphaTest :
-						_gbufferShaders,
-						bufferFlag);
+	bool success = FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
+
+	if(success == false && useAutoLoad)
+	{
+
+	}
+
+	return success;
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly, bool useAutoLoad) const
 {
-	return FindShaderFromHashMap(out,
-		isDepthOnly ?	_transparent_depthOnly_Shaders :
-						_transparentShaders,
-						bufferFlag);
+	bool success = FindShaderFromHashMap(out, isDepthOnly ? _transparent_depthOnly_Shaders : _transparentShaders, bufferFlag);
+
+	return success;
 }
 
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
@@ -253,5 +229,99 @@ bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const 
 		return false;
 
 	outObject = iter->second;
+	return true;
+}
+
+bool RenderManager::HasGBufferShader(uint bufferFlag, bool isAlphaTest) const
+{
+	ShaderGroup dummy;
+	return FindGBufferShader(dummy, bufferFlag, isAlphaTest);
+}
+
+bool RenderManager::HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const
+{
+	ShaderGroup dummy;
+	return FindTransparencyShader(dummy, bufferFlag, isDepthOnly);
+}
+
+void RenderManager::MakeDefaultSahderFileName(
+	std::string& outFileName,
+	Mesh::MeshRenderer::Type meshType, uint bufferFlag) const
+{
+	std::string defaultVertexInputTypeStr = "";
+
+	if(bufferFlag & (uint)DefaultVertexInputTypeFlag::NORMAL)
+	{
+		if(bufferFlag & (uint)DefaultVertexInputTypeFlag::TANGENT)
+			defaultVertexInputTypeStr += "T";
+
+		defaultVertexInputTypeStr += "N_";
+	}
+
+	if(bufferFlag & (uint)DefaultVertexInputTypeFlag::UV0)
+		defaultVertexInputTypeStr += "UV0";
+
+	std::string frontFileName = "";
+
+	if( meshType == Mesh::MeshRenderer::Type::Opaque || 
+		meshType == Mesh::MeshRenderer::Type::AlphaBlend )
+		frontFileName = "PhysicallyBased_GBuffer_";
+	else if(meshType == Mesh::MeshRenderer::Type::Transparent)
+		frontFileName = "PhysicallyBased_Transparency_";
+	else
+	{
+		ASSERT_MSG("Error, unsupported mesh type");
+	}
+
+	outFileName = frontFileName + defaultVertexInputTypeStr;
+}
+
+bool RenderManager::Fuck(
+	Mesh::MeshRenderer::Type meshType,
+	uint defaultShaderBufferFlag,
+	const std::vector<VertexShader::SemanticInfo>& semanticInfos)
+{
+	std::string approximatedShaderFileName = "";
+	MakeDefaultSahderFileName(approximatedShaderFileName, meshType, defaultShaderBufferFlag);
+
+	ShaderManager* shaderMgr = ResourceManager::GetInstance()->GetShaderManager();
+
+	std::string shaderCode = shaderMgr->FindShaderCode(approximatedShaderFileName);
+
+	uint startPos = 0, endPos = 0;
+	std::vector<ShaderManager::ParseSemanticInfoInShaderCode> semanticsInCode;
+	bool success = ShaderManager::ParseStartEndPosInShaderCode(startPos, endPos, semanticsInCode, shaderCode);
+	
+	if(success == false)
+		return false;
+
+	std::string semanticDeclaration = "";
+	for(auto codeIter = semanticsInCode.begin(); codeIter != semanticsInCode.end(); ++codeIter)
+	{
+		std::string semanticName = "";
+		for(auto vsIter = semanticInfos.begin(); vsIter != semanticInfos.end(); ++vsIter)
+		{
+			if( codeIter->semanticName == vsIter->name )
+			{
+				semanticName = codeIter->variableName;
+				break;
+			}
+		}
+
+		if(semanticName.empty() == false)
+		{
+
+		}
+	}
+
+	shaderCode.erase(shaderCode.begin() + startPos, shaderCode.begin() + endPos);
+	shaderCode.insert(shaderCode.begin() + startPos, 
+		semanticDeclaration.begin(), semanticDeclaration.end());
+
+	std::vector<Shader::ShaderMacro> macros;
+	success = shaderMgr->LoadShaderMacro(macros, ShaderManager::MakeFullCommand(approximatedShaderFileName, "VS", "vs"));
+	if(success == false)
+		return false;
+
 	return true;
 }

@@ -68,9 +68,16 @@ namespace Rendering
 			void UpdateRenderList(const Mesh::Mesh* mesh);
 			bool HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type);
 
-			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
-			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
+			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest, bool useAutoLoad = true) const;
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly, bool useAutoLoad = true) const;
 
+			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
+			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
+
+			void MakeDefaultSahderFileName(std::string& outFileName, Mesh::MeshRenderer::Type meshType, uint bufferFlag) const;
+			bool Fuck(Mesh::MeshRenderer::Type meshType, uint defaultShaderBufferFlag,
+				const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos);
+		
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);
 			GET_ACCESSOR(OpaqueMeshes,		const MeshList&,	_opaqueMeshes);
