@@ -33,9 +33,13 @@ namespace Rendering
 			};
 			enum class DefaultVertexInputTypeFlag : uint
 			{
-				UV	= 1, //UV
-				N	= 2, //Normal
-				TB	= 4, //Tangent, Normal
+				UV0			= 1,
+				UV1			= 2,
+				NORMAL		= 4,
+				TANGENT		= 8,
+				COLOR		= 16,
+				BONE		= 32, //BONE ID WITH WEIGHT -> float2(id, weight).
+				USERS		= 8192
 			};
 
 		private:

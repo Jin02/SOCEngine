@@ -25,16 +25,16 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Mesh::MeshRenderer::Type me
 	{
 		std::string defaultVertexInputTypeStr = "";
 
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::N)
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::NORMAL)
 		{
-			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TB)
-				defaultVertexInputTypeStr += "TB";
+			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TANGENT)
+				defaultVertexInputTypeStr += "T";
 
 			defaultVertexInputTypeStr += "N_";
 		}
 
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV)
-			defaultVertexInputTypeStr += "UV";
+		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV0)
+			defaultVertexInputTypeStr += "UV0";
 
 		std::string frontFileName = "";
 
@@ -125,9 +125,17 @@ bool RenderManager::TestInit()
 
 	for(uint i=0; i< ((uint)Mesh::MeshRenderer::Type::AlphaBlend + 1); ++i)
 	{
-		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
-		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
-		LoadDefaultSahder((Mesh::MeshRenderer::Type)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
+
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0 | 
+			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
+
+		LoadDefaultSahder((Mesh::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0 | 
+			(uint)DefaultVertexInputTypeFlag::NORMAL | 
+			(uint)DefaultVertexInputTypeFlag::TANGENT, nullptr, &macros);
 	}
 
 	return true;
