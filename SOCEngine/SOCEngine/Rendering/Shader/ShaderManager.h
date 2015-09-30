@@ -18,7 +18,6 @@ namespace Rendering
 		private:
 			std::map<std::string, Shader::ShaderForm*>					_shaders;
 			std::map<std::string, Shader::ShaderCode>					_shaderCodes;
-			std::map<std::string, std::vector<Shader::ShaderMacro>>		_shaderMacros;
 
 		public:
 			ShaderManager();
@@ -44,24 +43,11 @@ namespace Rendering
 			Shader::VertexShader* LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<Shader::ShaderMacro>* macros);
 			Shader::PixelShader* LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<Shader::ShaderMacro>* macros);
 
-			bool LoadShaderMacro(std::vector<Shader::ShaderMacro>& outMacros, const std::string& fullCommand) const;
-
 			void Add(const std::string& fullCommand, Shader::ShaderForm* shader);
 			bool LoadShader(const std::string filePath);
 
 			static std::string MakePartlyCommand(const std::string& shaderName, const std::string& shaderMainFuncName);
 			static std::string MakeFullCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType);
-
-			struct ParseSemanticInfoInShaderCode
-			{
-				std::string type;
-				std::string variableName;
-				std::string semanticName;
-				uint elemNum;
-
-				std::string lineCode;
-			};
-			static bool ParseStartEndPosInShaderCode(uint& outStartPos, uint& outEndPos, std::vector<ParseSemanticInfoInShaderCode>& outSemanticInfo, const std::string& shaderCode);
 
 		public:
 			Shader::ShaderForm*		FindShader(const std::string& fileName, const std::string& mainFunc, Shader::ShaderForm::Type type);

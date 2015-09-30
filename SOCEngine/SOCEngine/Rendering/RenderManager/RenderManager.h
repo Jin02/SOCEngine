@@ -75,8 +75,6 @@ namespace Rendering
 			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
 
 			void MakeDefaultSahderFileName(std::string& outFileName, Mesh::MeshRenderer::Type meshType, uint bufferFlag) const;
-			bool Fuck(Mesh::MeshRenderer::Type meshType, uint defaultShaderBufferFlag,
-				const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos);
 		
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);

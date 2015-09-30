@@ -246,9 +246,6 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 		std::string key = VS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
-
-		if(useRecycle && (macros != nullptr))
-			_shaderMacros.insert(std::make_pair(key, *macros));
 	}
 
 	return shader;
@@ -274,9 +271,6 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 		std::string key = PS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
-
-		if(useRecycle && (macros != nullptr))
-			_shaderMacros.insert(std::make_pair(key, *macros));
 	}
 
 	return shader;
@@ -357,21 +351,4 @@ std::string ShaderManager::MakePartlyCommand(const std::string& shaderName, cons
 std::string ShaderManager::MakeFullCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType)
 {
 	return shaderName + ":" + shaderType + ":" + shaderMainFuncName;
-}
-
-bool ShaderManager::ParseStartEndPosInShaderCode(
-	uint& outStartPos, uint& outEndPos,
-	std::vector<ParseSemanticInfoInShaderCode>& outSemanticInfo,
-	const std::string& shaderCode)
-{
-	shaderCode
-
-	return true;
-}
-
-bool ShaderManager::LoadShaderMacro(std::vector<Shader::ShaderMacro>& outMacros,
-									const std::string& fullCommand) const
-{
-
-	return true;
 }
