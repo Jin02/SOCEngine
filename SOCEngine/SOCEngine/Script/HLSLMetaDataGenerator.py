@@ -197,17 +197,17 @@ class ParseCode:
 
 		nameLength = len(semanticName)
 
-		wtf = 0
+		foundIdx = 0
 		for si in xrange(nameLength-1, 0, -1):
-			wtf = si
+			foundIdx = si
 			if not semanticName[si:nameLength].isdigit():
 				break
 
-		hasSemanticIdx = (nameLength-1) != wtf
+		hasSemanticIdx = (nameLength-1) != foundIdx
 
 		if hasSemanticIdx:
-			semanticIndex = int(semanticName[wtf+1:])
-			semanticName = semanticName[:wtf+1]
+			semanticIndex = int(semanticName[foundIdx+1:])
+			semanticName = semanticName[:foundIdx+1]
 		elif semanticName == "SV_InstanceID": # not write
 			return
 		elif semanticName == "INSTANCE":
