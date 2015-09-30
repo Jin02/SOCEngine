@@ -99,9 +99,6 @@
     <ClInclude Include="Template\ShaderFactory.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\Test.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\SOCEngine\SOCEngine\SOCEngine.vcxproj">
       <Project>{d2f8e424-3f82-4761-840d-187b4405a969}</Project>
       <Private>false</Private>

@@ -277,21 +277,6 @@
     <Filter Include="ShaderCodes\Common">
       <UniqueIdentifier>{46a47092-08bd-4611-b92f-83faacd950c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\PBR">
-      <UniqueIdentifier>{85de1ee0-7e07-4f7e-8b4a-ef117da465b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\PBR\Common">
-      <UniqueIdentifier>{b2e9f017-7671-457f-ade4-0fdbfb36966b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\PBR\GBuffer">
-      <UniqueIdentifier>{88135b69-cc45-4b5e-bf31-e2b4d4387614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\PBR\Transparency">
-      <UniqueIdentifier>{7573495d-744c-4d79-987e-a4d8c95cbec0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\PBR\Forward">
-      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shader\Form">
       <UniqueIdentifier>{76c609d7-2300-44b4-83e6-d5e0dd6f981c}</UniqueIdentifier>
     </Filter>
@@ -312,6 +297,18 @@
     </Filter>
     <Filter Include="External\bson">
       <UniqueIdentifier>{d4ca8081-4004-4bf9-a924-bea1d34e0438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh">
+      <UniqueIdentifier>{85de1ee0-7e07-4f7e-8b4a-ef117da465b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\GBuffer">
+      <UniqueIdentifier>{88135b69-cc45-4b5e-bf31-e2b4d4387614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\Transparency">
+      <UniqueIdentifier>{7573495d-744c-4d79-987e-a4d8c95cbec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\Forward">
+      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -651,17 +648,11 @@
     <ClInclude Include="ShaderCodes\ShaderCommon.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
-      <Filter>ShaderCodes\PBR\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\BRDF.h">
-      <Filter>ShaderCodes\PBR\Common</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
-      <Filter>ShaderCodes\PBR\Forward</Filter>
+      <Filter>ShaderCodes\Mesh\Forward</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
-      <Filter>ShaderCodes\PBR\GBuffer</Filter>
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\FullScreenShader.h">
       <Filter>ShaderCodes\PostProcessing</Filter>
@@ -707,6 +698,12 @@
     </ClInclude>
     <ClInclude Include="Importer\G3djDataTypes.h">
       <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\BRDF.h">
+      <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -944,22 +941,22 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV.hlsl">
-      <Filter>ShaderCodes\PBR\GBuffer</Filter>
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TBN_UV.hlsl">
-      <Filter>ShaderCodes\PBR\GBuffer</Filter>
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV.hlsl">
-      <Filter>ShaderCodes\PBR\GBuffer</Filter>
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV.hlsl">
-      <Filter>ShaderCodes\PBR\Transparency</Filter>
+      <Filter>ShaderCodes\Mesh\Transparency</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TBN_UV.hlsl">
-      <Filter>ShaderCodes\PBR\Transparency</Filter>
+      <Filter>ShaderCodes\Mesh\Transparency</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV.hlsl">
-      <Filter>ShaderCodes\PBR\Transparency</Filter>
+      <Filter>ShaderCodes\Mesh\Transparency</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
       <Filter>ShaderCodes\UI</Filter>
