@@ -15,6 +15,9 @@ namespace Importer
 {
 	class MeshImporter
 	{
+	public:
+		static const int MaximumRecognizeBoneCount = 4;
+
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_originObjects;
 
