@@ -403,7 +403,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 				}
 			}
 
-			std::vector<VertexBuffer::SemanticInfo> semantics; // attributes
+			std::vector<VertexShader::SemanticInfo> semantics; // attributes
 			// Setting VB
 			{
 				auto& attributes = meshIter->attributes;
@@ -436,7 +436,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 							if(IsValidAttribute(attr, "BONEWEIGHT"))	stride += sizeof(Vector2);
 						}
 
-						VertexBuffer::SemanticInfo semantic;
+						VertexShader::SemanticInfo semantic;
 						{
 							semantic.name = attr;
 							semantic.size = stride - prevStride;
@@ -477,7 +477,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 						size = vertexDatas.size();
 					}
 
-					VertexBuffer::SemanticInfo info;
+					VertexShader::SemanticInfo info;
 					{
 						info.name = "TANGENT";
 						info.size = sizeof(Vector3);

@@ -2,6 +2,7 @@
 #include "Director.h"
 
 using namespace Rendering::Buffer;
+using namespace Rendering::Shader;
 using namespace Device;
 
 VertexBuffer::VertexBuffer() : BaseBuffer(), _key(nullptr)
@@ -15,7 +16,7 @@ VertexBuffer::~VertexBuffer()
 void VertexBuffer::Initialize(
 	const void* sysMem, unsigned int bufferStrideSize, unsigned int count,
 	bool isDynamic, const std::string& key,
-	const std::vector<SemanticInfo>* semanticInfos)
+	const std::vector<VertexShader::SemanticInfo>* semanticInfos)
 {
 	if(semanticInfos)
 		_semantics = (*semanticInfos);

@@ -31,7 +31,7 @@ namespace Rendering
 			~MeshFilter();
 
 		private:
-			uint ComputeBufferFlag(const std::vector<Buffer::VertexBuffer::SemanticInfo>& semantics) const;
+			uint ComputeBufferFlag(const std::vector<Shader::VertexShader::SemanticInfo>& semantics) const;
 
 		public:
 			struct CreateFuncArguments
@@ -51,7 +51,7 @@ namespace Rendering
 				const std::string				fileName;
 				const std::string				key;
 
-				const std::vector<Rendering::Buffer::VertexBuffer::SemanticInfo>* semanticInfos;
+				const std::vector<Rendering::Shader::VertexShader::SemanticInfo>* semanticInfos;
 
 				CreateFuncArguments(const std::string& _fileName, const std::string& _key)
 					:fileName(_fileName), key(_key),
