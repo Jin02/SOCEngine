@@ -57,6 +57,9 @@ namespace Rendering
 			RenderManager();
 			~RenderManager();
 
+		private:
+			bool FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const;
+
 		public:
 			bool TestInit();
 			Shader::ShaderGroup LoadDefaultSahder(Mesh::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,

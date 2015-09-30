@@ -232,27 +232,26 @@ bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRender
 
 bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
 {
-	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key)
-	{
-		auto iter = hashMap.find(key);
-		if(iter == hashMap.end())
-			return false;
-
-		outObject = iter->second;
-		return true;
-	};
-
-	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
+	return FindShaderFromHashMap(out, 
+		isAlphaTest ?	_gbufferShaders_alphaTest :
+						_gbufferShaders,
+						bufferFlag);
 }
 
 bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
 {
-	auto iter = isDepthOnly ?	_transparent_depthOnly_Shaders.find(bufferFlag) : 
-								_transparentShaders.find(bufferFlag);
+	return FindShaderFromHashMap(out,
+		isDepthOnly ?	_transparent_depthOnly_Shaders :
+						_transparentShaders,
+						bufferFlag);
+}
 
-	if(iter == _transparentShaders.end())
+bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
+{
+	auto iter = hashMap.find(key);
+	if(iter == hashMap.end())
 		return false;
 
-	out = iter->second;
+	outObject = iter->second;
 	return true;
 }
