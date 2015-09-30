@@ -203,23 +203,14 @@ bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRender
 	return foundedMesh != nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest, bool useAutoLoad) const
-{
-	bool success = FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
-
-	if(success == false && useAutoLoad)
-	{
-
-	}
-
-	return success;
+bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
+{	
+	return FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly, bool useAutoLoad) const
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
 {
-	bool success = FindShaderFromHashMap(out, isDepthOnly ? _transparent_depthOnly_Shaders : _transparentShaders, bufferFlag);
-
-	return success;
+	return FindShaderFromHashMap(out, isDepthOnly ? _transparent_depthOnly_Shaders : _transparentShaders, bufferFlag);
 }
 
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
