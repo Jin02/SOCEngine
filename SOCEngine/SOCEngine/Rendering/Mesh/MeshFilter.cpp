@@ -1,8 +1,11 @@
 #include "MeshFilter.h"
 #include "Director.h"
 #include "ResourceManager.h"
+#include "MeshImporter.h"
 
+using namespace Rendering::Shader;
 using namespace Rendering::Mesh;
+using namespace Rendering::Manager;
 using namespace Resource;
 
 MeshFilter::MeshFilter() 
@@ -75,7 +78,44 @@ bool MeshFilter::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rend
 }
 
 uint MeshFilter::ComputeBufferFlag(
-	const std::vector<Rendering::Buffer::VertexBuffer::SemanticInfo>& semantics) const
+	const std::vector<VertexShader::SemanticInfo>& semantics) const
 {
-	return 0;
+	uint flag = 0;
+	for(auto iter = semantics.begin(); iter != semantics.end(); ++iter)
+	{
+		const auto& semantic = *iter;
+
+		if(		semantic.name == "POSITION")		continue;
+		else if(semantic.name == "TEXCOORD")
+		{
+			if(semantic.semanticIndex > 1)
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+			else
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::UV0 << semantic.semanticIndex;
+		}
+		else if(semantic.name == "NORMAL")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::NORMAL;
+		else if(semantic.name == "TANGENT")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::TANGENT;
+		else if(semantic.name == "COLOR")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::COLOR;
+		else if(semantic.name == "BONEWEIGHT")
+		{
+			if(semantic.semanticIndex+1 >= Importer::MeshImporter::MaximumRecognizeBoneCount)
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::BONE << semantic.semanticIndex;
+			else
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+		}
+		else
+		{
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+		}
+	}
+
+	if(flag & (uint)RenderManager::DefaultVertexInputTypeFlag::USERS)
+	{
+		DEBUG_LOG("Warning, You use undefined semantic in RenderManager::DefaultVertexInputTypeFlag.");
+	}
+
+	return flag;
 }
