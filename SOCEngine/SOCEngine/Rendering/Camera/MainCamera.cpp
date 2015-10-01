@@ -229,16 +229,16 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		{					
 			Material* material = (*iter);
 			const Material::CustomShader& customShader = material->GetCustomShader();
-			if(customShader.isDeferred == false)
-			{
-				DEBUG_LOG("Warning, Current version doesn't support custom shader(and normal forward rendering)");
-				continue;
-			}
-
-			PixelShader*	ps	= shaders.ps;
+			PixelShader* ps = shaders.ps;
 
 			if(customShader.shaderGroup.IsAllEmpty() == false)
 			{
+				if(customShader.isDeferred == false)
+				{
+					DEBUG_LOG("Warning, Current version doesn't support custom shader(and normal forward rendering)");
+					continue;
+				}
+
 				const ShaderGroup& shaderGroup = customShader.shaderGroup;
 				ps = shaderGroup.ps;
 			//	gs = shaderGroup.gs;
@@ -251,30 +251,28 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 					vs->SetInputLayoutToContext(context);
 				}
 			}
-			else
+
+			std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
 			{
-				ASSERT_COND_MSG(vs, "Invalid Shaders. VS is null. and did you check your material::shader?");
+				// Setting Transform ConstBuffer
+				{
+					uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
+					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
+					constBuffers.push_back(buf);
+				}
 			}
+
+			const auto& textures	= material->GetTextures();
+			const auto& srBuffers	= material->GetShaderResourceBuffers();
+
+			vs->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 
 			if(ps && (renderType != RenderType::Transparency_DepthOnly) )
 			{
-				const auto& tex	= material->GetTextures();
-
-				std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
-				{
-					// Setting Transform ConstBuffer
-					{
-						uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
-						ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
-						constBuffers.push_back(buf);
-					}
-				}
-
-				const auto& srBuffers = material->GetShaderResourceBuffers();
-				ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+				ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 
 				ps->SetShaderToContext(context);
-				ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+				ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 			}
 
 			context->DrawIndexed(filter->GetIndexCount(), 0, 0);
@@ -350,7 +348,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		
 				RenderMeshesUsingMeshList(meshList, RenderType::AlphaMesh);
 
-				context->RSSetState(nullptr);
+				context->RSSetState( dx->GetRasterizerStateDefaultState() );
 
 				if(useMSAA) //off alpha blending
 					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
@@ -425,7 +423,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 			RenderMeshesUsingMeshVector(meshes, RenderType::Transparency);
 
-			context->RSSetState(nullptr);
+			context->RSSetState(dx->GetRasterizerStateDefaultState());
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 			ID3D11ShaderResourceView* nullSRV = nullptr;

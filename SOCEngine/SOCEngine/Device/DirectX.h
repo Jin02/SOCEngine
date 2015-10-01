@@ -33,6 +33,7 @@ namespace Device
 		D3D_DRIVER_TYPE				_driverType;
 
 		ID3D11RasterizerState*		_disableCulling;
+		ID3D11RasterizerState*		_defaultRasterizer;
 
 		ID3D11BlendState*			_opaqueBlend;
 
@@ -83,6 +84,7 @@ namespace Device
 		GET_ACCESSOR(BackBufferRTV,							ID3D11RenderTargetView*,	_renderTargetView);
 
 		GET_ACCESSOR(RasterizerStateDisableCulling,			ID3D11RasterizerState*,		_disableCulling);
+		GET_ACCESSOR(RasterizerStateDefaultState,			ID3D11RasterizerState*,		_defaultRasterizer);
 
 		GET_ACCESSOR(BlendStateOpaque,						ID3D11BlendState*,			_opaqueBlend);
 		GET_ACCESSOR(BlendStateAlphaToCoverage,				ID3D11BlendState*,			_alphaToCoverageBlend);
