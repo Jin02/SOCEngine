@@ -191,7 +191,7 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 			else if(type == "SPECULAR")		texInfo.type = Material::Texture::Type::Specular;
 			else							texInfo.type = Material::Texture::Type::Undefined;
 
-			outMaterial.textures.push_back(texInfo);
+			material.textures.push_back(texInfo);
 		}
 	}
 
@@ -608,18 +608,21 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 				{
 					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(meshFileName + ":" + iter->fileName, false);
 
-					if(iter->type == Material::Texture::Type::Diffuse)
-						pbm->UpdateDiffuseMap(texture);
-					else if( (iter->type == Material::Texture::Type::Normal) )
+					if(texture)
 					{
-						pbm->UpdateNormalMap(texture);
-						outNormalMapMaterialKeys.insert(materialName);
-					}
-					else if(iter->type == Material::Texture::Type::Specular)
-						pbm->UpdateSpecularMap(texture);
-					else
-					{
-						DEBUG_LOG("Warning, Unsupported Texture Type.");
+						if(iter->type == Material::Texture::Type::Diffuse)
+							pbm->UpdateDiffuseMap(texture);
+						else if( (iter->type == Material::Texture::Type::Normal) )
+						{
+							pbm->UpdateNormalMap(texture);
+							outNormalMapMaterialKeys.insert(materialName);
+						}
+						else if(iter->type == Material::Texture::Type::Specular)
+							pbm->UpdateSpecularMap(texture);
+						else
+						{
+							DEBUG_LOG("Warning, Unsupported Texture Type.");
+						}
 					}
 				}
 			}
@@ -724,6 +727,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 	{
 		const auto& parts =  node.parts;
 		uint size = parts.size();
+
 		if(size > 1)
 		{
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
@@ -734,7 +738,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 				AttachMeshComponent(subMeshObj, *iter);
 			}
 		}
-		else
+		else if(size > 0)
 		{
 			const Node::Parts& part = node.parts[0];
 			AttachMeshComponent(object, part);

@@ -96,7 +96,7 @@ bool RenderManager::TestInit()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=0; i< ((uint)Mesh::MeshRenderer::Type::AlphaBlend + 1); ++i)
+	for(uint i=1; i< ((uint)Mesh::MeshRenderer::Type::AlphaBlend + 1); ++i)
 	{
 		LoadDefaultSahder((Mesh::MeshRenderer::Type)i,
 			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
@@ -142,13 +142,15 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 
 	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
 
-	MeshList* prevMeshList = GetMeshList(prevType);
+	if(prevType != Mesh::MeshRenderer::Type::Unknown)
 	{
+		MeshList* prevMeshList = GetMeshList(prevType);
+
 		std::set<MeshList::meshkey>* meshSets = prevMeshList->meshes.Find(vbKey);
 		if(meshSets)
 		{
 			meshSets->erase(meshAddress);
-			
+
 			if(meshSets->empty())
 				prevMeshList->meshes.Delete(vbKey);
 
@@ -156,8 +158,9 @@ void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh)
 		}
 	}
 
-	MeshList* currentMeshList = GetMeshList(currentType);
+	if(currentType != Mesh::MeshRenderer::Type::Unknown)
 	{
+		MeshList* currentMeshList = GetMeshList(currentType);
 		std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
 		if(meshSets == nullptr)
 		{
