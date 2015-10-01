@@ -49,7 +49,12 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
-		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
+		Material::CustomShader customShader;
+		{
+			customShader.isDeferred = false;
+			customShader.shaderGroup = Shader::ShaderGroup(vs, ps, nullptr, nullptr);
+		}
+		_material->SetCustomShader(customShader);
 
 		const Texture::Texture2D* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture2D*>("font", texture);
@@ -167,10 +172,10 @@ void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPro
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	Shader::VertexShader* vs = _material->GetCustomShader().vs;
-	Shader::PixelShader* ps = _material->GetCustomShader().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().shaderGroup.vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().shaderGroup.ps;
 
-	if(_material->GetCustomShader().ableRender())
+	if(_material->GetCustomShader().shaderGroup.ableRender())
 	{		
 		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
 		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
