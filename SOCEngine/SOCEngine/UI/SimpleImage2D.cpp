@@ -9,7 +9,7 @@ using namespace Rendering;
 using namespace Device;
 using namespace Resource;
 
-SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
+SimpleImage2D::SimpleImage2D(const std::string& name, Core::Object* parent) 
 	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
 {
 }

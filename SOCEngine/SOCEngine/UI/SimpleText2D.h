@@ -24,7 +24,7 @@ namespace UI
 		uint							_maxLength;
 
 	public:
-		SimpleText2D(const std::string& name, const Core::Object* parent = nullptr);
+		SimpleText2D(const std::string& name, Core::Object* parent = nullptr);
 		virtual ~SimpleText2D();
 
 	public:

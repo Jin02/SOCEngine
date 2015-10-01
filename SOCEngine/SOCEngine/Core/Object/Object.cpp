@@ -10,11 +10,14 @@ using namespace Core;
 
 #define _child _vector
 
-Object::Object(const std::string& name, const Object* parent /* = NULL */) :
+Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name)
 {
 	_transform = new Transform( this );		
 	_root = parent ? parent->_root : this;
+
+	if(parent)
+		parent->AddChild(this);
 }
 
 Object::~Object(void)
@@ -35,10 +38,18 @@ void Object::DeleteAllChild()
 
 void Object::AddChild(Object *child)
 {
-	ASSERT_COND_MSG(child->_parent == nullptr, "Error, child object already has parent");
+	ASSERT_COND_MSG( (child->_parent == nullptr) || (child->_parent == this), 
+		"Error, Invalid parent");
 
-	Add(child->_name, child);
-	child->_parent = this;
+	if(FindChild(child->GetName()) == nullptr)
+	{
+		Add(child->_name, child);
+		child->_parent = this;
+	}
+	else
+	{
+		ASSERT_MSG("Duplicated child. plz check your code.");
+	}
 }
 
 Object* Object::FindChild(const std::string& key)
