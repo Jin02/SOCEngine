@@ -222,11 +222,29 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		const auto& materials			= renderer->GetMaterials();
 		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		{					
-			Material* material = (*iter);	
-			if(material->GetCustomShader().IsAllEmpty() == false)
+			Material* material = (*iter);
+			const Material::CustomShader& customShader = material->GetCustomShader();
+			if(customShader.isDeferred == false)
 			{
 				DEBUG_LOG("Warning, Current version doesn't support custom shader(and normal forward rendering)");
 				continue;
+			}
+
+			PixelShader*	ps	= shaders.ps;
+
+			if(customShader.shaderGroup.IsAllEmpty() == false)
+			{
+				const ShaderGroup& shaderGroup = customShader.shaderGroup;
+				ps = shaderGroup.ps;
+			//	gs = shaderGroup.gs;
+			//	hs = shaderGroup.hs;
+
+				VertexShader* vs = shaderGroup.vs;
+				if(vs)
+				{
+					vs->SetShaderToContext(context);
+					vs->SetInputLayoutToContext(context);
+				}
 			}
 
 			const auto& tex	= material->GetTextures();
@@ -241,13 +259,16 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 				}
 			}
 
-			const auto& srBuffers = material->GetShaderResourceBuffers();
-			shaders.vs->UpdateResources(context, &constBuffers, &tex, &srBuffers);
-
-			if(renderType != RenderType::Transparency_DepthOnly)
+			if(ps)
 			{
-				shaders.ps->SetShaderToContext(context);
-				shaders.ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+				const auto& srBuffers = material->GetShaderResourceBuffers();
+				ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+
+				if(renderType != RenderType::Transparency_DepthOnly)
+				{
+					ps->SetShaderToContext(context);
+					ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
+				}
 			}
 
 			context->DrawIndexed(filter->GetIndexCount(), 0, 0);

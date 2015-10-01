@@ -33,6 +33,15 @@ namespace Rendering
 			Users
 		};
 
+		struct CustomShader
+		{
+			bool isDeferred;
+			Shader::ShaderGroup shaderGroup;
+
+			CustomShader();
+			~CustomShader();
+		};
+
 
 	private:
 		std::string														_name;
@@ -48,7 +57,7 @@ namespace Rendering
 		uint															_variableUpdateCounter;
 
 	protected:
-		Shader::ShaderGroup												_customShaders; //in forward rendering
+		CustomShader													_customShaders; //in forward rendering
 		bool															_hasAlpha;
 		bool															_changedAlpha;
 
@@ -126,7 +135,7 @@ namespace Rendering
 		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
 
-		GET_SET_ACCESSOR(CustomShader, const Shader::ShaderGroup&, _customShaders);
+		GET_SET_ACCESSOR(CustomShader, const CustomShader&, _customShaders);
 
 		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
 
