@@ -3,10 +3,9 @@
 struct VS_INPUT
 {
 	float4 position					: POSITION;
-	float2 uv						: TEXCOORD0;
 	float3 normal					: NORMAL;
 	float3 tangent					: TANGENT;
-	float3 binormal					: BINORMAL;
+	float2 uv						: TEXCOORD0;
 };
 
 struct PS_SCENE_INPUT
@@ -18,7 +17,6 @@ struct PS_SCENE_INPUT
 
 	float3 normal 					: NORMAL;
 	float3 tangent 					: TANGENT;
-	float3 binormal 				: BINORMAL;
 };
 
 struct PS_POSITION_ONLY_INPUT //used in writing depth buffer
@@ -36,26 +34,20 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 	ps.uv				= input.uv;
 	ps.normal			= mul(float4(input.normal, 0), transform_world).xyz;
 	ps.tangent			= mul(float4(input.tangent, 0), transform_world).xyz;
-	ps.binormal			= mul(float4(input.binormal, 0), transform_world).xyz;
 
 	return ps;
 }
 
-float3 DecodeNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
-{
-	float3 texNormal = DecodeNormalTexture(normalTexture, uv, defaultSampler);
-	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
-
-	return normalize( mul(texNormal, TBN) );
-}
-
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
+	float4 normalMap = normalTexture.Sample(defaultSampler, input.uv);
 	bool hasNormalMap = HasNormalTexture();
-	float3 normal	= lerp(input.normal, DecodeNormal(input.normal, input.tangent, input.binormal, input.uv), hasNormalMap);
+
+	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
+	float3 normal	= lerp(input.normal, bumpedNormal, hasNormalMap);
 
 #if defined(USE_PBR_TEXTURE)
-	float roughness = normalTexture.Sample(defaultSampler, input.uv).a;
+	float roughness = normalMap.a;
 	return Lighting(normal, roughness, input.positionWorld, input.position.xy, input.uv);
 #else
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);

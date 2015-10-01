@@ -30,12 +30,16 @@ Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
 Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
-float3 DecodeNormalTexture(in Texture2D tex, in float2 uv, in SamplerState samplerState)
+float3 NormalMapping(float3 normalMapXYZ, float3 normal, float3 tangent, float2 uv)
 {
-	float3 norm = tex.Sample(samplerState, uv).xyz;
-	norm *= 2.0f; norm -= float3(1.0f, 1.0f, 1.0f);
+	float3 binormal = normalize( cross(normal, tangent) );
 
-	return norm;
+	float3 texNormal = normalMapXYZ;
+	texNormal *= 2.0f; texNormal -= float3(1.0f, 1.0f, 1.0f);
+
+	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
+
+	return normalize( mul(texNormal, TBN) );
 }
 
 void Parse_Metallic_Roughness_Emission(in uint material_mre,
