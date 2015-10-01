@@ -684,8 +684,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 								 const std::string& meshFileName,
 								 BufferManager* bufferManager, MaterialManager* materialManager)
 {
-	Object* object = new Object(node.id, parent);
-	parent->AddChild(object);
+	Object* object = new Object(node.id ,parent);
 
 	// Setting Transform
 	{

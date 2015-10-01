@@ -5,7 +5,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Device;
 
-VertexBuffer::VertexBuffer() : BaseBuffer(), _key(nullptr)
+VertexBuffer::VertexBuffer() : BaseBuffer(), _key("")
 {
 }
 
