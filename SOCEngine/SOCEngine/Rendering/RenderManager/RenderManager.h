@@ -68,8 +68,8 @@ namespace Rendering
 			void UpdateRenderList(const Mesh::Mesh* mesh);
 			bool HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type);
 
-			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest, bool useAutoLoad = true) const;
-			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly, bool useAutoLoad = true) const;
+			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
 
 			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
 			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
