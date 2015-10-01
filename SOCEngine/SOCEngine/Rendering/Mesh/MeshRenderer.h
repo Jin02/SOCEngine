@@ -13,6 +13,7 @@ namespace Rendering
 		public:
 			enum class Type
 			{
+				Unknown,
 				Opaque,
 				Transparent,
 				AlphaBlend

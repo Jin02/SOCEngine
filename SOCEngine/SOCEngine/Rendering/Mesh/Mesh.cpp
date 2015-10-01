@@ -9,7 +9,7 @@ using namespace Rendering::Buffer;
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
 	_selectMaterialIndex(0), _transformConstBuffer(nullptr),
-	_prevRenderType(MeshRenderer::Type::Opaque)
+	_prevRenderType(MeshRenderer::Type::Unknown)
 {
 	_updateType = MaterialUpdateType::All;
 }
