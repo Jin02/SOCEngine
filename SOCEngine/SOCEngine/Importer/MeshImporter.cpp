@@ -331,9 +331,9 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 
 	delete buffer;
 
-	BuildMesh(meshes, materials, nodes, fileName, useDynamicVB, useDynamicIB);
+	Object* object = BuildMesh(meshes, materials, nodes, fileName, useDynamicVB, useDynamicIB);
 
-	return nullptr;
+	return object;
 }
 
 Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const std::vector<Importer::Material>& materials, const std::vector<Node>& nodes, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB)
@@ -523,14 +523,12 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 	}
 
 	// Make Hierachy
-	{
-		Object* root = new Object(meshFileName, nullptr);
+	Object* root = new Object(meshFileName, nullptr);
 		
-		for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-			MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager);
-	}
+	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
+		MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager);
 
-	return nullptr;
+	return root;
 }
 
 void MeshImporter::FetchAllPartsInHashMap_Recursive(
