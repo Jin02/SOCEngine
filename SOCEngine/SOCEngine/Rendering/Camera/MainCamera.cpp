@@ -320,8 +320,8 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
 			_albedo_emission->GetRenderTargetView(),
-			_normal_roughness->GetRenderTargetView(),
 			_specular_metallic->GetRenderTargetView(),
+			_normal_roughness->GetRenderTargetView(),
 			nullptr
 		};
 

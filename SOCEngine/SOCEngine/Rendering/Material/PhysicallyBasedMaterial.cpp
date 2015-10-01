@@ -48,7 +48,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		GBufferParam param;
 		GetMainColor(param.mainColor);
 
-		float metallic, roughness, emission;
+		float metallic = 0.0f, roughness = 0.0f, emission = 0.0f;
 		GetMetallic(metallic);
 		GetRoughness(roughness);
 		GetEmission(emission);

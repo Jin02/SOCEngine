@@ -2,9 +2,9 @@
 
 struct VS_INPUT
 {
-	float4 position 			: POSITION;
-	float2 uv					: TEXCOORD0;
+	float3 position 			: POSITION;
 	float3 normal				: NORMAL;
+	float2 uv					: TEXCOORD0;
 };
 
 struct VS_OUTPUT
@@ -19,9 +19,10 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( input.position, transform_worldViewProj );
+	ps.position 	= mul( float4(input.position, 1.0f), transform_worldViewProj );
 	ps.uv			= input.uv;
-	ps.normal 		= normalize( mul(input.normal, (float3x3)transform_worldView ) );
+
+	ps.normal 		= mul(input.normal, (float3x3)transform_world);
  
     return ps;
 }
@@ -45,7 +46,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float roughness = normalTexture.Sample(GBufferDefaultSampler, input.uv).a;
 	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
 #else
-	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic, outGBuffer.normal_roughness);
 #endif
 
 	return outGBuffer;

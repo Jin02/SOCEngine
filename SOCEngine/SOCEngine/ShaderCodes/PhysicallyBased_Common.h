@@ -51,9 +51,9 @@ void Parse_Metallic_Roughness_Emission(in uint material_mre,
 	uint scaledRoughness	= material_mre & 0x000ffc00;
 	uint scaledEmission		= material_mre & 0x000003ff;
 
-	metallic	= (float)scaledMetallic	/ 1024.0f;
+	metallic	= (float)scaledMetallic		/ 1024.0f;
 	roughness	= (float)scaledRoughness	/ 1024.0f;
-	emission	= (float)scaledEmission	/ 1024.0f;
+	emission	= (float)scaledEmission		/ 1024.0f;
 }
 
 bool HasDiffuseTexture()

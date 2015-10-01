@@ -217,7 +217,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
 		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
-		desc.FrontCounterClockwise	= false;
+		desc.FrontCounterClockwise	= true;
 		desc.DepthBias				= 0;
 		desc.DepthBiasClamp			= 0.0f;
 		desc.SlopeScaledDepthBias	= 0.0f;
@@ -229,9 +229,9 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 
-		//desc.CullMode = D3D11_CULL_BACK;
-		//if( FAILED(_device->CreateRasterizerState(&desc, &_defaultRasterizer)) )
-		//	ASSERT_MSG("Error!, device cant create rasterizer state");
+		desc.CullMode = D3D11_CULL_BACK;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_defaultRasterizer)) )
+			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
 	//Initialize Blend State
