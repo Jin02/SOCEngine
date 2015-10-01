@@ -11,6 +11,12 @@ Material::CustomShader::CustomShader() : isDeferred(false), shaderGroup()
 {
 }
 
+Material::CustomShader::CustomShader(bool isDeferred, const Shader::ShaderGroup& shaderGroup)
+{
+	this->isDeferred = isDeferred;
+	this->shaderGroup = shaderGroup;
+}
+
 Material::CustomShader::~CustomShader()
 {
 }

@@ -39,6 +39,8 @@ namespace Rendering
 			Shader::ShaderGroup shaderGroup;
 
 			CustomShader();
+			CustomShader(bool isDeferred, const Shader::ShaderGroup& shaderGroup);
+
 			~CustomShader();
 		};
 
