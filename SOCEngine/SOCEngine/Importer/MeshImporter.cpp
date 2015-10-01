@@ -414,31 +414,55 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 					uint prevStride = 0;
 					for(auto iter = attributes.begin(); iter != attributes.end(); ++iter)
 					{
-						const std::string& attr = *iter;
+						std::string attr = *iter;
+
+						uint semanticIndex = 0;
 
 						if(attr == "POSITION")		stride += sizeof(Vector3);
 						else if(attr == "NORMAL")	stride += sizeof(Vector3);
 						else if(attr == "COLOR")	stride += sizeof(Vector4);
 						else
 						{
-							auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr)
+							auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr) -> bool
 							{
 								return ( attr.find(getAttrStr) == 0) && ( attr.size() > getAttrStr.size() );
+							};
+							auto GetAttributeIndex = [](const std::string& attr) -> uint
+							{
+								std::string numStr = "";
+								for(auto iter = attr.rbegin(); iter != attr.rend(); ++iter)
+								{									
+									if('0' <= *iter && *iter <='9')
+										numStr.insert(numStr.begin(), *iter);
+									else break;
+								}
+
+								return atoi(numStr.c_str());
 							};
 
 							if(IsValidAttribute(attr, "TEXCOORD"))
 							{
+								semanticIndex = GetAttributeIndex(attr);
+								attr = "TEXCOORD";
+
 								if(uv0Pos == 0)
 									uv0Pos = stride / sizeof(float);
 
 								stride += sizeof(Vector2);
 							}
-							if(IsValidAttribute(attr, "BONEWEIGHT"))	stride += sizeof(Vector2);
+							if(IsValidAttribute(attr, "BONEWEIGHT"))
+							{
+								semanticIndex = GetAttributeIndex(attr);
+
+								attr = "BONEWEIGHT";
+								stride += sizeof(Vector2);
+							}
 						}
 
 						VertexShader::SemanticInfo semantic;
 						{
 							semantic.name = attr;
+							semantic.semanticIndex = semanticIndex;
 							semantic.size = stride - prevStride;
 						}
 						semantics.push_back(semantic);
