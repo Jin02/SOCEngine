@@ -940,18 +940,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV.hlsl">
-      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV.hlsl">
-      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV.hlsl">
-      <Filter>ShaderCodes\Mesh\Transparency</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV.hlsl">
-      <Filter>ShaderCodes\Mesh\Transparency</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
       <Filter>ShaderCodes\UI</Filter>
     </FxCompile>
@@ -967,10 +955,22 @@
     <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
       <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TN_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TN_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\Transparency</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Transparency</Filter>
     </FxCompile>
   </ItemGroup>
