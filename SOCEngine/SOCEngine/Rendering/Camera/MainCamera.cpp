@@ -215,8 +215,13 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		else if(renderType == RenderType::Transparency || renderType == RenderType::Transparency_DepthOnly)
 			renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag(), renderType == RenderType::Transparency_DepthOnly);
 
-		shaders.vs->SetShaderToContext(context);
-		shaders.vs->SetInputLayoutToContext(context);
+		VertexShader* vs = shaders.vs;
+
+		if(vs)
+		{
+			shaders.vs->SetShaderToContext(context);
+			shaders.vs->SetInputLayoutToContext(context);
+		}
 
 		Mesh::MeshRenderer* renderer	= mesh->GetMeshRenderer();
 		const auto& materials			= renderer->GetMaterials();
@@ -240,35 +245,36 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			//	hs = shaderGroup.hs;
 
 				VertexShader* vs = shaderGroup.vs;
-				if(vs)
+				ASSERT_COND_MSG(vs, "VS is null");
 				{
 					vs->SetShaderToContext(context);
 					vs->SetInputLayoutToContext(context);
 				}
 			}
-
-			const auto& tex	= material->GetTextures();
-
-			std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
+			else
 			{
-				// Setting Transform ConstBuffer
-				{
-					uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
-					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
-					constBuffers.push_back(buf);
-				}
+				ASSERT_COND_MSG(vs, "Invalid Shaders. VS is null. and did you check your material::shader?");
 			}
 
-			if(ps)
+			if(ps && (renderType != RenderType::Transparency_DepthOnly) )
 			{
+				const auto& tex	= material->GetTextures();
+
+				std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
+				{
+					// Setting Transform ConstBuffer
+					{
+						uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
+						ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
+						constBuffers.push_back(buf);
+					}
+				}
+
 				const auto& srBuffers = material->GetShaderResourceBuffers();
 				ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
 
-				if(renderType != RenderType::Transparency_DepthOnly)
-				{
-					ps->SetShaderToContext(context);
-					ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
-				}
+				ps->SetShaderToContext(context);
+				ps->UpdateResources(context, &constBuffers, &tex, &srBuffers);
 			}
 
 			context->DrawIndexed(filter->GetIndexCount(), 0, 0);
