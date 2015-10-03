@@ -1,6 +1,7 @@
 import sys
 import os, os.path
 import json
+import platform
 
 def tap(num):
 	return '\t'*num
@@ -26,7 +27,7 @@ class ShaderFactory:
 
 		begin 		= source.find(self.addCodeBeginCommand) + len(self.addCodeBeginCommand)
 		end 		= source.find(self.addCodeEndCommand)
-		source 		= source[:begin] + code + source[end:]
+		source 		= source[:begin] + code + tap(4) + source[end:]
 
 		begin 		= source.find(self.addCodeFullPathBeginCommand) + len(self.addCodeFullPathBeginCommand)
 		end 		= source.find(self.addCodeFullPathEndCommand)
@@ -110,7 +111,11 @@ targetDir = os.path.normpath(scriptRunStartDir)
 fullPaths = []
 for (path, dirs, files) in os.walk(targetDir):
     for fileNameWithExtension in files:
-    	fileFullPath = path + "\\" + fileNameWithExtension    	
+    	dirToken = '/'
+    	if platform.system() == 'Windows':
+    		dirToken = '\\'
+
+    	fileFullPath = path + dirToken + fileNameWithExtension    	
         extensionPos = fileNameWithExtension.rfind('.')
         
         fileExtension = fileNameWithExtension[extensionPos:]
@@ -123,6 +128,7 @@ for (path, dirs, files) in os.walk(targetDir):
 
         component = {"fileName" : fileName, "fullPath" : path + "/" + fileName + ".hlsl"}
         fullPaths.append(component)
+
         jsonData = readJson(fileFullPath)
         if len(jsonData) == 0:
         	code += nextLine(2) + tap(4) + "if(shaderName == \"" + fileName + "\")" + nextLine(1)
@@ -182,7 +188,7 @@ for (path, dirs, files) in os.walk(targetDir):
 		        	format += "R32_"
 		        elif formatSize == '2':
 		        	format += "R32G32_"
-		        elif formatSize == '3' or element["SemanticName"] == "POSITION":
+		        elif formatSize == '3':
 		        	format += "R32G32B32_"     	
 		        elif formatSize == '4':
 		        	format += "R32G32B32A32_"
