@@ -262,9 +262,6 @@ class ParseCode:
 
 			alignedByteOffset = 4 * num + beforeLayout.alignedByteOffset
 
-			if beforeLayout.semanticName == 'POSITION':
-				alignedByteOffset -= 4
-
 			return alignedByteOffset		
 
 		def MakeInputLayout(name, variableType, index, offset, usingType):
