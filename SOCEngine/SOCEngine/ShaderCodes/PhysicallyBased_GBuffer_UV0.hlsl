@@ -2,7 +2,7 @@
 
 struct VS_INPUT
 {
-	float4 position 		: POSITION;
+	float3 position 		: POSITION;
 	float2 uv				: TEXCOORD0;
 };
 
@@ -17,7 +17,7 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( input.position, transform_worldViewProj );
+	ps.position 	= mul( float4(input.position, 1.0f), transform_worldViewProj );
 	ps.uv			= input.uv;
 
     return ps;

@@ -2,9 +2,9 @@
 
 struct VS_INPUT
 {
-	float4 position					: POSITION;
-	float2 uv						: TEXCOORD0;
+	float3 position					: POSITION;
 	float3 normal					: NORMAL;
+	float2 uv						: TEXCOORD0;
 };
 
 struct PS_SCENE_INPUT
@@ -26,10 +26,10 @@ struct PS_POSITION_ONLY_INPUT //used in writing depth buffer
 PS_SCENE_INPUT VS(VS_INPUT input)
 {
 	PS_SCENE_INPUT ps;
-	ps.positionWorld	= mul(input.position, transform_world).xyz;
-	ps.position			= mul(input.position, transform_worldViewProj);
+	ps.positionWorld	= mul(float4(input.position, 1.0f), transform_world).xyz;
+	ps.position 		= mul(float4(input.position, 1.0f), transform_worldViewProj );
 	ps.uv				= input.uv;
-	ps.normal			= mul(float4(input.normal, 0), transform_world).xyz;
+	ps.normal 			= mul(input.normal, (float3x3)transform_world);
 
 	return ps;
 }
@@ -51,8 +51,7 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 PS_POSITION_ONLY_INPUT DepthOnlyVS(VS_INPUT input)
 {
 	PS_POSITION_ONLY_INPUT ps;
-
-	ps.position = mul(input.position, transform_worldViewProj);
+	ps.position = mul(float4(input.position, 1.0f), transform_worldViewProj );
 
 	return ps;
 }

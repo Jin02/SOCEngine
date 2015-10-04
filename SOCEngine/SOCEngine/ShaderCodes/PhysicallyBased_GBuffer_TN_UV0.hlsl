@@ -2,7 +2,7 @@
 
 struct VS_INPUT
 {
-	float4 position 		: POSITION;
+	float3 position 		: POSITION;
 	float3 normal			: NORMAL;
 	float3 tangent			: TANGENT;
 	float2 uv				: TEXCOORD0;
@@ -21,7 +21,7 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( input.position, transform_worldViewProj );
+	ps.position 	= mul( float4(input.position, 1.0f), transform_worldViewProj );
 	ps.uv			= input.uv;
 
 	ps.normal 		= normalize( mul(input.normal, (float3x3)transform_world ) );
@@ -46,7 +46,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	bool hasNormalMap = HasNormalTexture();
 
 	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
-	float3 normal	= lerp(input.normal, bumpedNormal, hasNormalMap);
+	float3 normal = lerp(input.normal, bumpedNormal, hasNormalMap);
 
 	float4 specular	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 
