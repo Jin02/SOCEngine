@@ -32,6 +32,8 @@ void PhysicallyBasedMaterial::Initialize()
 {
 	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
+	SetRoughness(0.6f);
+
 	_gbufferCB = new ConstBuffer;
 	_gbufferCB->Initialize(sizeof(GBufferParam));
 }
@@ -51,7 +53,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		float metallic = 0.0f, roughness = 0.0f, emission = 0.0f;
 		GetMetallic(metallic);
 		GetRoughness(roughness);
-		GetEmission(emission);
+		GetEmission(emission);		
 
 		uint scaledMetallic		= (uint)(metallic	* 1024);
 		uint scaledRoughness	= (uint)(roughness	* 1024);
