@@ -140,7 +140,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	LightingParams lightParams;
 
-	lightParams.viewDir			= viewDir;
+	lightParams.viewDir			= -viewDir;
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
