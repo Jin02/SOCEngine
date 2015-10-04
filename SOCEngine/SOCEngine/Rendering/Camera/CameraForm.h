@@ -61,8 +61,8 @@ namespace Rendering
 			void GetViewMatrix(Math::Matrix& outMatrix) const;
 
 		protected:
-			// if mainRTSampleCount = -1, mainRTSampleCount = msaa.count
-			void Initialize(uint mainRTSampleCount = -1);
+			// if mainRTSampleCount = 0, mainRTSampleCount = msaa.count
+			void Initialize(uint mainRTSampleCount = 0);
 			void Destroy();
 
 		public:
