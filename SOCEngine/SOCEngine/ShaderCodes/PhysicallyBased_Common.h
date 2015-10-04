@@ -47,8 +47,8 @@ void Parse_Metallic_Roughness_Emission(in uint material_mre,
 									   out float roughness,
 									   out float emission)
 {
-	uint scaledMetallic		= material_mre & 0x3ff00000;
-	uint scaledRoughness	= material_mre & 0x000ffc00;
+	uint scaledMetallic		= (material_mre & 0x3ff00000) >> 20;
+	uint scaledRoughness	= (material_mre & 0x000ffc00) >> 10;
 	uint scaledEmission		= material_mre & 0x000003ff;
 
 	metallic	= (float)scaledMetallic		/ 1024.0f;
@@ -94,7 +94,7 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
-	specular_metallic.rgb	= lerp(float3(1.f, 1.f, 1.f), specular, hasSpecularMap);
+	specular_metallic.rgb	= lerp(float3(0.4f, 0.4f, 0.4f), specular, hasSpecularMap);
 
 	float3 compressedNormal = normal * 0.5f + 0.5f;
 	normal_roughness.rgb	= compressedNormal;

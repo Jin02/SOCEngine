@@ -10,7 +10,7 @@
 
 //dont use const reference
 #define SET_ACCESSOR_MATERIAL(name, type)\
-	inline void Set##name(const type& data)	{ SetVariable(#name, data);}
+	inline void Set##name(type data)	{ SetVariable(#name, data);}
 
 //dont use const reference
 #define GET_ACCESSOR_MATERIAL(name, type)\

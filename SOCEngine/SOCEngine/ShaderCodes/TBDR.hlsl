@@ -262,7 +262,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	LightingParams lightParams;
 
-	lightParams.viewDir			= viewDir;
+	lightParams.viewDir			= -viewDir;
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
