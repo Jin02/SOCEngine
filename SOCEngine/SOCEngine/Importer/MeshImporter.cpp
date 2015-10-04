@@ -142,7 +142,7 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
 	outNodes = currentNode;
 }
 
-void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjson::Value& matNode)
+void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat)
 {
 	Importer::Material material;
 
@@ -164,6 +164,9 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 
 	if(matNode.HasMember("opacity"))
 		material.opacity = matNode["opacity"].GetDouble();
+
+	if(isObjFormat)
+		material.opacity = 1.0f;
 
 	if(matNode.HasMember("shininess"))
 		material.shininess	= matNode["shininess"].GetDouble();
@@ -241,7 +244,7 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 	}
 }
 
-void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector<Importer::Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer)
+void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector<Importer::Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat)
 {
 	Document document;
 	document.Parse(buffer);
@@ -278,7 +281,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Material mat;
-			ParseMaterial(mat, nodes[i]);
+			ParseMaterial(mat, nodes[i], isObjFormat);
 			outMaterials.push_back(mat);
 		}
 	}
@@ -326,7 +329,9 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 	std::vector<Material>	materials;
 	std::vector<Node>		nodes;
 
-	if(g3dFileFormat == "g3dj")	ParseJson(meshes, materials, nodes, buffer);
+	bool isObjFormat = fileExtension == "obj";
+
+	if(g3dFileFormat == "g3dj")	ParseJson(meshes, materials, nodes, buffer, isObjFormat);
 	else						ParseBinary(meshes, materials, nodes, (void*)buffer, length-1);
 
 	delete buffer;

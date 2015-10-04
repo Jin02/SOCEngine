@@ -31,7 +31,7 @@ namespace Importer
 
 	private:
 		void ParseNode(Node& outNodes, const rapidjson::Value& node);
-		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode);
+		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
 		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode);
 		void CalculateTangents(
 			std::vector<Math::Vector3>& outTangents,
@@ -53,7 +53,7 @@ namespace Importer
 			const Node& node);
 
 	public:
-		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer);
+		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
 		void ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size);
 		Core::Object* Load(const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel);
 
