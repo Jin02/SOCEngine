@@ -5,13 +5,14 @@ using namespace Device;
 
 DirectX::DirectX(void) :
 	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
-	_renderTargetView(nullptr), _disableCulling(nullptr),
+	_renderTargetView(nullptr), _rasterizerClockwiseDisableCulling(nullptr),
 	_opaqueBlend(nullptr), _alphaToCoverageBlend(nullptr),
 	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
 	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
-	_defaultRasterizer(nullptr)
+	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
+	_rasterizerCounterClockwiseDefault(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -226,11 +227,21 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.MultisampleEnable		= false;
 		desc.AntialiasedLineEnable	= false;
 
-		if( FAILED(_device->CreateRasterizerState(&desc, &_disableCulling)) )
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerCounterClockwiseDisableCulling)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 
+		desc.FrontCounterClockwise	= false;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCulling)) )
+			ASSERT_MSG("Error!, device cant create rasterizer state");
+
+		desc.FrontCounterClockwise	= true;
 		desc.CullMode = D3D11_CULL_BACK;
-		if( FAILED(_device->CreateRasterizerState(&desc, &_defaultRasterizer)) )
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerCounterClockwiseDefault)) )
+			ASSERT_MSG("Error!, device cant create rasterizer state");
+
+		desc.FrontCounterClockwise	= false;
+		desc.CullMode = D3D11_CULL_BACK;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDefault)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
@@ -362,7 +373,7 @@ void DirectX::ClearDeviceContext() const
     FLOAT BlendFactor[4] = { 0,0,0,0 };
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
 	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(_defaultRasterizer);
+	_immediateContext->RSSetState(_rasterizerCounterClockwiseDefault);
 }
 
 Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
