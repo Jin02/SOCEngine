@@ -81,15 +81,15 @@ bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::
 
 	if( fileName.find(".") == -1)
 	{
-		const char* extension[2] = {".fx", ".hlsl"};
+		const char* format[2] = {".fx", ".hlsl"};
 		for(int i=0; i<2; ++i)
 		{
-			fullPath = folderPath+fileName+extension[i];
+			fullPath = folderPath+fileName+format[i];
 			found = (bool)PathFileExists(fullPath.c_str());
 			if(found)	break;
 		}
 	}
-	else //fileName has extension
+	else //fileName has format
 	{
 		fullPath = folderPath+fileName;
 		found = (bool)PathFileExists(fullPath.c_str());
@@ -143,8 +143,8 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 
 bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool useRecycle)
 {
-	std::string folder, fileName, extension;
-	if( Utility::String::ParseDirectory(fileFullPath, folder, fileName, extension) == false)
+	std::string folder, fileName, format;
+	if( Utility::String::ParseDirectory(fileFullPath, folder, fileName, format) == false)
 		return false;
 
 	return LoadShaderCode(outCode, folder, fileName, useRecycle);

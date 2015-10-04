@@ -23,8 +23,8 @@ TextureManager::~TextureManager()
 
 Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool hasAlpha)
 {
-	std::string folderPath, name, extension;
-	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &extension);
+	std::string folderPath, name, format;
+	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &format);
 
 	Texture::Texture2D* tex = Find(name);
 	if(tex)
@@ -63,7 +63,7 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 		SAFE_RELEASE(resource);
 
 		tex = new Texture::Texture2D(srv, texture2d, hasAlpha);
-		_hash.insert(std::make_pair(name + extension, tex));
+		_hash.insert(std::make_pair(name + format, tex));
 
 		return tex;
 	}

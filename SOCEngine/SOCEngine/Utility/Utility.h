@@ -30,24 +30,24 @@ namespace Utility
 			}
 		}
 
-		static bool ParseDirectory(const std::string& path, std::string& outFolderPath, std::string& outFileName, std::string& outFileExtension)
+		static bool ParseDirectory(const std::string& path, std::string& outFolderPath, std::string& outFileName, std::string& outFileFormat)
 		{
-			return ParseDirectory(path, &outFolderPath, &outFileName, &outFileExtension);
+			return ParseDirectory(path, &outFolderPath, &outFileName, &outFileFormat);
 		}
 
-		static bool ParseDirectory(const std::string& path, std::string* outFolderPath, std::string* outFileName, std::string* outFileExtension)
+		static bool ParseDirectory(const std::string& path, std::string* outFolderPath, std::string* outFileName, std::string* outFileFormat)
 		{
-			auto ParseNameAndExtension = [&](const std::string& fileNameWithExtension)
+			auto ParseNameAndFormat = [&](const std::string& fileNameWithFormat)
 			{
-				unsigned int extensionPos = fileNameWithExtension.find('.');
-				if( extensionPos == -1 )
+				unsigned int formatPos = fileNameWithFormat.find('.');
+				if( formatPos == -1 )
 					return false;
 
-				if(outFileExtension)
-					*outFileExtension = &fileNameWithExtension.c_str()[extensionPos+1];
+				if(outFileFormat)
+					*outFileFormat = &fileNameWithFormat.c_str()[formatPos+1];
 
 				if(outFileName)
-					*outFileName = fileNameWithExtension.substr(0, extensionPos); 
+					*outFileName = fileNameWithFormat.substr(0, formatPos); 
 
 				return true;
 			};
@@ -57,13 +57,13 @@ namespace Utility
 			{
 				fileNameStartPos = path.rfind('\\');
 				if(fileNameStartPos == -1)
-					return ParseNameAndExtension(path);
+					return ParseNameAndFormat(path);
 			}
 
 			if(outFolderPath)
 				*outFolderPath = path.substr(0, fileNameStartPos+1);
 
-			return ParseNameAndExtension( &path.c_str()[fileNameStartPos+1] );
+			return ParseNameAndFormat( &path.c_str()[fileNameStartPos+1] );
 		}
 	};
 

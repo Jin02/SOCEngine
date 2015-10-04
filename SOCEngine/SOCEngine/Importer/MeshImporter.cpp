@@ -294,8 +294,8 @@ void MeshImporter::ParseBinary(std::vector<Importer::Mesh>& outMeshes, std::vect
 
 Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool useDynamicIB, Rendering::Material::Type materialType)
 {
-	std::string fileName, fileExtension, folderDir;
-	if( String::ParseDirectory(fileDir, folderDir, fileName, fileExtension) == false )
+	std::string fileName, fileFormat, folderDir;
+	if( String::ParseDirectory(fileDir, folderDir, fileName, fileFormat) == false )
 		return nullptr;
 
 	std::ifstream g3dFile;
@@ -305,7 +305,7 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 	{
 		g3dFileFormat = supportedFileFormat[i];
 
-		std::string g3dFilePath = folderDir + fileName + "_" + fileExtension + "." + supportedFileFormat[i];
+		std::string g3dFilePath = folderDir + fileName + "_" + fileFormat + "." + supportedFileFormat[i];
 		g3dFile.open(g3dFilePath.c_str(), std::ios::in | std::ios::ate | std::ios::binary );
 
 		if(g3dFile.is_open() && g3dFile.good())
@@ -329,7 +329,7 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 	std::vector<Material>	materials;
 	std::vector<Node>		nodes;
 
-	bool isObjFormat = fileExtension == "obj";
+	bool isObjFormat = fileFormat == "obj";
 
 	if(g3dFileFormat == "g3dj")	ParseJson(meshes, materials, nodes, buffer, isObjFormat);
 	else						ParseBinary(meshes, materials, nodes, (void*)buffer, length-1);
