@@ -344,11 +344,11 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 				if(useMSAA) //on alpha blending
 					context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
 
-				context->RSSetState( dx->GetRasterizerStateDisableCulling() );
+				context->RSSetState( dx->GetRasterizerStateCCWDisableCulling() );
 		
 				RenderMeshesUsingMeshList(meshList, RenderType::AlphaMesh);
 
-				context->RSSetState( dx->GetRasterizerStateDefaultState() );
+				context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
 
 				if(useMSAA) //off alpha blending
 					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
@@ -367,7 +367,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		}
 	}
 
-	// Light Culling and Deferred DeferredShading
+	// Light Culling and Deferred Shading
 	{
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
 		ID3D11DepthStencilView* nullDSV = nullptr;
@@ -397,7 +397,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 		if(meshes.size() > 0)
 		{
-			context->RSSetState(dx->GetRasterizerStateDisableCulling());
+			context->RSSetState(dx->GetRasterizerStateCCWDisableCulling());
 			context->OMSetBlendState(dx->GetBlendStateAlpha(), blendFactor, 0xffffffff);
 
 			ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
@@ -423,7 +423,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 			RenderMeshesUsingMeshVector(meshes, RenderType::Transparency);
 
-			context->RSSetState(dx->GetRasterizerStateDefaultState());
+			context->RSSetState(dx->GetRasterizerStateCCWDefaultState());
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 			ID3D11ShaderResourceView* nullSRV = nullptr;

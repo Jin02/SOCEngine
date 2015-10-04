@@ -84,5 +84,11 @@ void BackBufferMaker::Render(
 		context->PSSetSamplers(1, 1, &pointSampler);
 	}
 
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	context->RSSetState( dx->GetRasterizerStateCWDefaultState() );
+
 	context->Draw(3, 0);
+
+	context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
