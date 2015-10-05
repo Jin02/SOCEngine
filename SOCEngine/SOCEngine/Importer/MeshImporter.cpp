@@ -70,7 +70,7 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
 		if(node.HasMember("translation"))
 		{
 			const auto& translationNode = node["translation"];
-			translation.x = translationNode[0u].GetDouble();
+			translation.x = -translationNode[0u].GetDouble();
 			translation.y = translationNode[1u].GetDouble();
 			translation.z = translationNode[2u].GetDouble();
 		}

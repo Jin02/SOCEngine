@@ -35,19 +35,16 @@ namespace Core
 
 	}
 
-	void Transform::LookAt(const Vector3& targetPosition)
+	void Transform::LookAtWorld(const Vector3& targetPosition)
 	{
 		Vector3 worldPos;
 		FetchWorldPosition(worldPos);
 
-		Vector3 dir = targetPosition - worldPos;
-		dir.Normalize();
+		Vector3 dir = (targetPosition - worldPos).Normalize();
 
 		_forward = dir;
-		_right = Vector3::Cross(Vector3::Up(), dir);
-		_up = Vector3::Cross(dir, _right);
-		_right.Normalize();
-		_up.Normalize();
+		_right = Vector3::Cross(Vector3::Up(), dir).Normalize();
+		_up = Vector3::Cross(dir, _right).Normalize();
 
 		Matrix rotationMatrix;
 		UpdateAxisToRotationMatrix(rotationMatrix, _right, _up, _forward);
@@ -63,12 +60,12 @@ namespace Core
 		++_updateCounter;
 	}
 
-	void Transform::LookAt(Transform *target)
+	void Transform::LookAtWorld(Transform *target)
 	{
 		Vector3 targetPos;
 		target->FetchWorldPosition(targetPos);
 
-		LookAt(targetPos);
+		LookAtWorld(targetPos);
 	}
 
 	void Transform::Rotate(const Vector3& eulerAngles)
@@ -105,22 +102,6 @@ namespace Core
 	{
 		_position += _right * units;
 		++_updateCounter;
-	}
-
-	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
-	{
-		Transform tf(nullptr);
-		FetchWorldTransform(tf);
-
-		Matrix::RotationQuaternion(outMatrix, tf._rotation);
-		outMatrix._41 = tf._position.x;
-		outMatrix._42 = tf._position.y;
-		outMatrix._43 = tf._position.z;
-		outMatrix._44 = 1.0f;
-
-		outMatrix._11 *= tf._scale.x;
-		outMatrix._22 *= tf._scale.y;
-		outMatrix._33 *= tf._scale.z;
 	}
 
 	void Transform::UpdatePosition(const Math::Vector3& position)
@@ -179,53 +160,7 @@ namespace Core
 
 	void Transform::UpdateDirection(const Math::Vector3& dir)
 	{
-		Vector3 worldPos;
-		FetchWorldPosition(worldPos);
-
-		Vector3 p = worldPos + dir;
-		LookAt(p);
-	}
-
-	void Transform::FetchWorldTransform(Transform& out) const
-	{
-		Vector3 p(0, 0, 0), s(1, 1, 1), e(0, 0, 0);
-		Quaternion q;
-		
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
-		{
-			Transform* tf = obj->GetTransform();
-
-			p += tf->_position;
-
-			s.x *= tf->_scale.x;
-			s.y *= tf->_scale.y;
-			s.z *= tf->_scale.z;
-
-			e += tf->_eulerAngle;
-		}
-
-		out._position = p;
-		Math::Common::EulerNormalize(out._eulerAngle, e);
-		out._scale = s;
-
-		float yaw = Math::Common::Deg2Rad(out._eulerAngle.y);
-		float pitch = Math::Common::Deg2Rad(out._eulerAngle.x);
-		float roll = Math::Common::Deg2Rad(out._eulerAngle.z);
-
-		Quaternion::RotationYawPitchRoll(out._rotation, yaw, pitch, roll);
-	}
-
-	void Transform::FetchWorldPosition(Math::Vector3& outPosition) const
-	{
-		Vector3 p(0, 0, 0);
-
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
-		{
-			Transform* tf = obj->GetTransform();
-			p += tf->_position;
-		}
-
-		outPosition = p;
+		LookAtWorld(_position + dir);
 	}
 	
 	void Transform::Billboard(const Transform& camTransform)
@@ -255,35 +190,6 @@ namespace Core
 		//_position은 그대로
 
 		++_updateCounter;
-	}
-
-	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler) const
-	{
-		Vector3 p(0, 0, 0);
-
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
-		{
-			Transform* tf = obj->GetTransform();
-			p += tf->_eulerAngle;
-		}
-
-		outEuler = p;
-	}
-
-	void Transform::FetchWorldScale(Math::Vector3& outScale) const
-	{
-		Vector3 p(1, 1, 1);
-
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
-		{
-			Transform* tf = obj->GetTransform();
-
-			p.x *= tf->_scale.x;
-			p.y *= tf->_scale.y;
-			p.z *= tf->_scale.z;
-		}
-
-		outScale = p;
 	}
 
 	void Transform::UpdateAxisToRotationMatrix(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward)
@@ -328,5 +234,141 @@ namespace Core
 		_radius		= transform._radius;
 
 		++_updateCounter;
+	}
+
+	void Transform::FetchLocalMatrix(Math::Matrix& outMatrix) const
+	{
+		Matrix& localMat = outMatrix;
+		Matrix::Identity(localMat);
+
+		localMat._11 = _right.x;
+		localMat._12 = _up.x;
+		localMat._13 = _forward.x;
+
+		localMat._21 = _right.y;
+		localMat._22 = _up.y;
+		localMat._23 = _forward.y;
+
+		localMat._31 = _right.z;
+		localMat._32 = _up.z;
+		localMat._33 = _forward.z;
+
+		localMat._11 *= _scale.x;
+		localMat._22 *= _scale.y;
+		localMat._33 *= _scale.z;
+
+		localMat._41 = _position.x;
+		localMat._42 = _position.y;
+		localMat._43 = _position.z;
+	}
+
+	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
+	{
+		std::vector<const Transform*> transforms;
+
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+			transforms.push_back(obj->GetTransform());
+
+		Matrix& worldMat = outMatrix;
+		Matrix::Identity(worldMat);
+
+		for(auto iter = transforms.rbegin(); iter != transforms.rend(); ++iter)
+		{
+			Matrix localMat;
+			(*iter)->FetchLocalMatrix(localMat);
+
+			worldMat *= localMat;
+		}
+	}
+
+	void Transform::FetchWorldPosition(Math::Vector3& outPosition) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+
+		outPosition.x = worldMat._41;
+		outPosition.y = worldMat._42;
+		outPosition.z = worldMat._43;
+	}
+
+	void Transform::FetchWorldEulerAngle(Math::Vector3& outEuler) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+
+		Vector3 worldRight	= Vector3(worldMat._11, worldMat._21, worldMat._31);
+		Vector3 normRight	= worldRight.Normalize();
+		worldMat._11 = normRight.x;	worldMat._21 = normRight.y;	worldMat._31 = normRight.z;
+
+		Vector3 worldUp	= Vector3(worldMat._12, worldMat._22, worldMat._32);
+		Vector3 normUp	= worldUp.Normalize();
+		worldMat._12 = normUp.x;	worldMat._22 = normUp.y;	worldMat._32 = normUp.z;
+
+		Vector3 worldForward = Vector3(worldMat._13, worldMat._23, worldMat._33);
+		Vector3 normForward	 = worldForward.Normalize();
+		worldMat._13 = normForward.x;	worldMat._23 = normForward.y;	worldMat._33 = normForward.z;
+
+		worldMat._41 = worldMat._42 = worldMat._43 = 0.0f;
+
+		Quaternion rotation;
+		Quaternion::RotationMatrix(rotation, worldMat);
+
+		outEuler = rotation.ToEuler();
+	}
+
+	void Transform::FetchWorldScale(Math::Vector3& outScale) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+
+		Vector3 worldRight	= Vector3(worldMat._11, worldMat._21, worldMat._31);
+		Vector3 normRight	= worldRight.Normalize();
+		outScale.x = worldRight.x / normRight.x;
+
+		Vector3 worldUp	= Vector3(worldMat._12, worldMat._22, worldMat._32);
+		Vector3 normUp	= worldUp.Normalize();
+		outScale.y = worldUp.y / normUp.y;
+
+		Vector3 worldForward = Vector3(worldMat._13, worldMat._23, worldMat._33);
+		Vector3 normForward	 = worldForward.Normalize();
+		outScale.z = worldForward.z / normForward.z;
+	}
+
+	void Transform::FetchWorldTransform(Transform& out) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+
+		Vector3& scale		= out._scale;
+		Vector3& euler		= out._eulerAngle;
+		Vector3& position	= out._position;
+		Vector3& right		= out._right;
+		Vector3& up			= out._up;
+		Vector3& forward	= out._forward;
+		Quaternion& rotation = out._rotation;
+
+		Vector3 worldRight	= Vector3(worldMat._11, worldMat._21, worldMat._31);
+		right = worldRight.Normalize();
+		scale.x = worldRight.x / right.x;
+
+		Vector3 worldUp	= Vector3(worldMat._12, worldMat._22, worldMat._32);
+		up = worldUp.Normalize();
+		scale.y = worldUp.y / up.y;
+
+		Vector3 worldForward = Vector3(worldMat._13, worldMat._23, worldMat._33);
+		forward = worldForward.Normalize();
+		scale.z = worldForward.z / forward.z;
+
+		position.x = worldMat._41;
+		position.y = worldMat._42;
+		position.z = worldMat._43;
+
+		Matrix rotMat; Matrix::Identity(rotMat);
+		rotMat._11 = right.x;	rotMat._21 = right.y;	rotMat._31 = right.z;
+		rotMat._12 = up.x;		rotMat._22 = up.y;		rotMat._32 = up.z;
+		rotMat._13 = forward.x;	rotMat._23 = forward.y;	rotMat._33 = forward.z;
+
+		Quaternion::RotationMatrix(rotation, worldMat);
+		euler = rotation.ToEuler();
 	}
 }
