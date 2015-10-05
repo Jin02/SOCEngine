@@ -167,10 +167,9 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z) + (a.w * a.w);
 	}
 
-	void Vector4::Normalize()
+	Vector4 Vector4::Normalize()
 	{
-		float v = Vector4::Legnth(*this);
-		*this = *this / v;
+		return Vector4::Normalize(*this);
 	}
 
 	void Vector4::Set(float newX, float newY, float newZ, float newW)

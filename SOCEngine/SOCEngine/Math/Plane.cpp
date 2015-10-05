@@ -19,10 +19,12 @@ Plane::~Plane()
 
 }
 
-Plane& Plane::Normalize()
+Plane Plane::Normalize()
 {
-	Normalize((*this), (*this));
-	return (*this);
+	Plane plane;
+	Plane::Normalize(plane, (*this));
+
+	return plane;
 }
 
 float Plane::DistancePoint(const Vector3& p)

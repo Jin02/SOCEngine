@@ -244,12 +244,9 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z);
 	}
 
-	Vector3& Vector3::Normalize()
-	{
-		float v = Vector3::Length(*this);
-		*this = *this / v;
-
-		return (*this);
+	Vector3 Vector3::Normalize()
+	{		
+		return Vector3::Normalize(*this);
 	}
 
 	float Vector3::Length()
