@@ -233,10 +233,15 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			
 			const auto& indicesNode = node["indices"];
 			uint indicesCount = indicesNode.Size();
-			for(uint i=0; i<indicesCount; ++i)
+			for(uint i=0; i<indicesCount; i+=3)
 			{
-				uint index = indicesNode[i].GetUint();
-				part.indices.push_back(index);
+				uint i0 = indicesNode[i+0].GetUint();
+				uint i1 = indicesNode[i+1].GetUint();
+				uint i2 = indicesNode[i+2].GetUint();
+
+				part.indices.push_back(i0);
+				part.indices.push_back(i1);
+				part.indices.push_back(i2);
 			}
 
 			outMesh.parts.push_back(part);
