@@ -70,11 +70,11 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 	context->PSSetSamplers(0, 1, &sampler);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	context->RSSetState( dx->GetRasterizerStateCWDefaultState() );
+	context->RSSetState( nullptr );
 
 	context->Draw(3, 0);
 
-	context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
+	//context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 

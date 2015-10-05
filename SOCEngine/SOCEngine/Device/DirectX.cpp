@@ -240,7 +240,6 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 
 		desc.FrontCounterClockwise	= false;
-		desc.CullMode = D3D11_CULL_BACK;
 		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDefault)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
@@ -373,7 +372,7 @@ void DirectX::ClearDeviceContext() const
     FLOAT BlendFactor[4] = { 0,0,0,0 };
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
 	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(_rasterizerCounterClockwiseDefault);
+	_immediateContext->RSSetState(nullptr);
 }
 
 Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const

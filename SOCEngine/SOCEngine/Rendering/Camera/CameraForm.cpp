@@ -23,7 +23,7 @@ CameraForm::~CameraForm(void)
 
 void CameraForm::Initialize(uint mainRTSampleCount)
 {
-	_fieldOfViewDegree	= 60.0f;
+	_fieldOfViewDegree	= 45.0f;
 	_clippingNear		= 0.1f;
 	_clippingFar		= 1000.0f;
 
