@@ -27,7 +27,7 @@ void RenderDirectionalLight(out float3 resultDiffuseColor, out float3 resultSpec
 		commonParams.lightIntensity	= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].w;
 
 		float2 lightParam = g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
-		commonParams.lightDir		= float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 	}
@@ -262,7 +262,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	LightingParams lightParams;
 
-	lightParams.viewDir			= -viewDir;
+	lightParams.viewDir			= viewDir;
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;

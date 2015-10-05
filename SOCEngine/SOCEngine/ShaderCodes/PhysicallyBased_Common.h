@@ -96,7 +96,7 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	float3 specular			= specularTex.rgb;
 	specular_metallic.rgb	= lerp(float3(0.4f, 0.4f, 0.4f), specular, hasSpecularMap);
 
-	float3 compressedNormal = normal * 0.5f + 0.5f;
+	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
 	normal_roughness.rgb	= compressedNormal;
 
 #if defined(USE_PBR_TEXTURE)
