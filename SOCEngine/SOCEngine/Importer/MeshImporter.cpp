@@ -9,6 +9,8 @@
 #include "ShaderForm.h"
 #include "BufferManager.h"
 #include "ImporterUtility.h"
+#include "BoundBox.h"
+#include <hash_set>
 
 using namespace Importer;
 using namespace Core;
@@ -22,6 +24,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering;
+using namespace Intersection;
 
 MeshImporter::MeshImporter()
 {
@@ -51,41 +54,77 @@ Core::Object* MeshImporter::Find(const std::string& key)
 	return found ? (*found) : nullptr;
 }
 
-void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
+void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node,
+							 const Math::Matrix& parentWorldMatrix,
+							 bool isSettedParentTranslation, bool isSettedParentRotation, bool isSettedParentScale)
 {
-	Quaternion rotation(0.f, 0.f, 0.f, 1.f);
+	Node::Transform<Quaternion> rotation;
 	{
-		if(node.HasMember("rotation"))
+		rotation.has = node.HasMember("rotation");
+		if(rotation.has)
 		{
 			const auto& rotationNode = node["rotation"];
-			rotation.x = rotationNode[0u].GetDouble();
-			rotation.y = rotationNode[1u].GetDouble();
-			rotation.z = rotationNode[2u].GetDouble();
-			rotation.w = rotationNode[3u].GetDouble();
+			rotation.tf.x = rotationNode[0u].GetDouble();
+			rotation.tf.y = rotationNode[1u].GetDouble();
+			rotation.tf.z = rotationNode[2u].GetDouble();
+			rotation.tf.w = rotationNode[3u].GetDouble();
 		}
+		else
+		{
+			rotation.tf = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+
+		rotation.has |= isSettedParentRotation;
 	}
 
-	Vector3 translation(0.f, 0.f, 0.f);
+	Node::Transform<Vector3> translation;
 	{
-		if(node.HasMember("translation"))
+		translation.has = node.HasMember("translation");
+		if(translation.has)
 		{
 			const auto& translationNode = node["translation"];
-			translation.x = -translationNode[0u].GetDouble();
-			translation.y = translationNode[1u].GetDouble();
-			translation.z = translationNode[2u].GetDouble();
+			translation.tf.x = translationNode[0u].GetDouble();
+			translation.tf.y = translationNode[1u].GetDouble();
+			translation.tf.z = translationNode[2u].GetDouble();
 		}
+		else
+		{
+			translation.tf = Vector3(0.0f, 0.0f, 0.0f);
+		}
+
+		translation.has |= isSettedParentTranslation;
 	}
 
-	Vector3 scale(1.0f, 1.0f, 1.0f);
+	Node::Transform<Vector3> scale;
 	{
-		if(node.HasMember("scale"))
+		scale.has = node.HasMember("scale");
+		if(scale.has)
 		{
 			const auto& scaleNode = node["scale"];
-			scale.x = scaleNode[0u].GetDouble();
-			scale.y = scaleNode[1u].GetDouble();
-			scale.z = scaleNode[2u].GetDouble();
+			scale.tf.x = scaleNode[0u].GetDouble();
+			scale.tf.y = scaleNode[1u].GetDouble();
+			scale.tf.z = scaleNode[2u].GetDouble();
 		}
+		else
+		{
+			scale.tf = Vector3(1.0f, 1.0f, 1.0f);
+		}
+
+		scale.has |= isSettedParentScale;
 	}
+
+	Matrix localMatrix, worldMatrix;
+	{
+		Transform tempTF(nullptr);
+		tempTF.UpdatePosition(translation.tf);
+		tempTF.UpdateScale(scale.tf);
+		tempTF.UpdateRotation(rotation.tf);
+
+		tempTF.FetchLocalMatrix(localMatrix);
+
+		worldMatrix = localMatrix * parentWorldMatrix;
+	}
+
 
 	std::string id = "Null";
 	{
@@ -125,6 +164,8 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
 		currentNode.scale		= scale;
 		currentNode.translation	= translation;
 		currentNode.parts		= parts;
+		currentNode.localMatrix	= localMatrix;
+		currentNode.worldMatrix	= worldMatrix;
 	}
 
 	if(node.HasMember("children"))
@@ -134,7 +175,8 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node)
 		for(uint i=0; i<size; ++i)
 		{
 			Node childNode;
-			ParseNode(childNode, childs[i]);
+			ParseNode(childNode, childs[i], worldMatrix,
+						translation.has, rotation.has, scale.has);
 			currentNode.childs.push_back(childNode);
 		}
 	}
@@ -201,48 +243,184 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 	outMaterial = material;
 }
 
-void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& meshNode)
+void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& meshNode,
+							 const NodeHashMap& nodeHashMap) //key is Node::Parts::MeshPartId
 {
-	// Setting Attributes
-	{
-		const auto& attributesNode = meshNode["attributes"];
-		uint size = attributesNode.Size();
-		for(uint i=0; i<size; ++i)
-			outMesh.attributes.push_back( attributesNode[i].GetString() );
-	}
+	uint stride		= 0;
+	bool hasNormal	= false;
 
+	const auto& attributesNode = meshNode["attributes"];
+	for(uint i=0; i<attributesNode.Size(); ++i)
+	{
+		std::string attr = attributesNode[i].GetString();
+
+		if(attr == "POSITION")		stride += sizeof(Vector3);
+		else if(attr == "NORMAL")
+		{
+			stride += sizeof(Vector3);
+			hasNormal = true;
+		}
+		else if(attr == "COLOR")	stride += sizeof(Vector4);
+		else
+		{
+			auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr) -> bool
+			{
+				return ( attr.find(getAttrStr) == 0) && ( attr.size() > getAttrStr.size() );
+			};
+			auto GetAttributeIndex = [](const std::string& attr) -> uint
+			{
+				std::string numStr = "";
+				for(auto iter = attr.rbegin(); iter != attr.rend(); ++iter)
+				{									
+					if('0' <= *iter && *iter <='9')
+						numStr.insert(numStr.begin(), *iter);
+					else break;
+				}
+
+				return atoi(numStr.c_str());
+			};
+
+			if(IsValidAttribute(attr, "TEXCOORD"))
+				stride += sizeof(Vector2);
+
+			if(IsValidAttribute(attr, "BONEWEIGHT"))
+				stride += sizeof(Vector2);
+		}
+
+		outMesh.attributes.push_back(attr);
+	}
+	
+
+	BoundBox entireBox;
 	// Setting Vertices
 	{
 		const auto& verticesNode = meshNode["vertices"];
 		uint size = verticesNode.Size();
-		for(uint i=0; i<size; ++i)
-			outMesh.vertexDatas.push_back( verticesNode[i].GetDouble() );
+
+		Vector3 bbMin(10000, 10000, 10000);
+		Vector3 bbMax(-bbMin);
+
+		uint fltCountInStride = stride / sizeof(float);
+		for(uint i=0; i<size; i+=fltCountInStride)
+		{
+			Vector3 pos( verticesNode[i + 0].GetDouble(),
+						 verticesNode[i + 2].GetDouble(),
+						-verticesNode[i + 1].GetDouble() );
+
+			outMesh.vertexDatas.push_back(pos.x);
+			outMesh.vertexDatas.push_back(pos.y);
+			outMesh.vertexDatas.push_back(pos.z);
+
+			if(bbMin.x > pos.x) bbMin.x = pos.x;
+			if(bbMin.y > pos.y) bbMin.y = pos.y;
+			if(bbMin.z > pos.z) bbMin.z = pos.z;
+
+			if(bbMax.x < pos.x) bbMax.x = pos.x;
+			if(bbMax.y < pos.y) bbMax.y = pos.y;
+			if(bbMax.z < pos.z) bbMax.z = pos.z;
+
+			if(hasNormal)	// normal의 위치는 pos의 다음 위치로 고정되어 있다. 
+							// 뭐 어짜피 위치가 변동적이지 않기 때문에, 그냥 고정으로 해도 상관없다.
+			{
+				outMesh.vertexDatas.push_back(  verticesNode[i + 3].GetDouble() ); //x
+				outMesh.vertexDatas.push_back(  verticesNode[i + 5].GetDouble() ); //y
+				outMesh.vertexDatas.push_back( -verticesNode[i + 4].GetDouble() ); //z
+			}
+
+			for(uint j = hasNormal ? 6 : 3; j < fltCountInStride; ++j)
+				outMesh.vertexDatas.push_back( verticesNode[j + i].GetDouble() );
+		}
+
+		entireBox.SetMinMax(bbMin, bbMax);
 	}
 
 	// Setting Parts
 	{
 		const auto& partsNode = meshNode["parts"];
 		uint size = partsNode.Size();
+		std::hash_set<uint> indexHashSet;
 		for(uint i=0; i<size; ++i)
 		{
 			Mesh::Part part;
 
 			const auto& node = partsNode[i];
 			part.meshPartId = node["id"].GetString();
-		//	part.type = node["type"].GetString();
 			
 			const auto& indicesNode = node["indices"];
 			uint indicesCount = indicesNode.Size();
-			for(uint i=0; i<indicesCount; i+=3)
-			{
-				uint i0 = indicesNode[i+0].GetUint();
-				uint i1 = indicesNode[i+1].GetUint();
-				uint i2 = indicesNode[i+2].GetUint();
 
-				part.indices.push_back(i0);
-				part.indices.push_back(i1);
-				part.indices.push_back(i2);
+			Vector3	botOffset(0.0f, 0.0f, 0.0f);
+			bool	isSetupTranslation = false;
+			{
+				auto findIter = nodeHashMap.find(part.meshPartId);
+				if(findIter != nodeHashMap.end())
+				{
+					isSetupTranslation = findIter->second->translation.has;
+
+					const Node* importerNode = findIter->second;
+					const Matrix& worldMat = importerNode->worldMatrix;
+					botOffset.x = worldMat._41;
+					botOffset.y = worldMat._42;
+					botOffset.z = worldMat._43;
+
+					botOffset.y += entireBox.GetMin().y;
+				}
 			}
+
+			float	radius = 0.0f;
+			Vector3	bbMin(10000, 10000, 10000);
+			Vector3	bbMax(-bbMin);
+
+			const uint lineCount	= stride / sizeof(float);
+			auto& vertices			= outMesh.vertexDatas;
+			for(uint i=0; i<indicesCount; ++i) //CW
+			{
+				uint index = indicesNode[i].GetUint();
+				uint posIdxOffsetInVertices = index * lineCount;
+
+				float& x = vertices[posIdxOffsetInVertices + 0];
+				float& y = vertices[posIdxOffsetInVertices + 1];
+				float& z = vertices[posIdxOffsetInVertices + 2];
+
+				if(isSetupTranslation)
+				{
+					auto findIter = indexHashSet.find(index);
+					if(findIter == indexHashSet.end())
+					{
+						x -= botOffset.x;
+						y -= botOffset.y;
+						z -= botOffset.z;
+
+						indexHashSet.insert(index);
+					}
+				}
+
+
+				Vector3 pos(x, y, z);
+				{
+					// Compute Radius
+					{
+						float length = pos.Length();
+						if(length > radius) radius = length;
+					}
+
+					// Compute BoundBox Min/Max
+					{
+						if(bbMin.x > pos.x) bbMin.x = pos.x;
+						if(bbMin.y > pos.y) bbMin.y = pos.y;
+						if(bbMin.z > pos.z) bbMin.z = pos.z;
+
+						if(bbMax.x < pos.x) bbMax.x = pos.x;
+						if(bbMax.y < pos.y) bbMax.y = pos.y;
+						if(bbMax.z < pos.z) bbMax.z = pos.z;
+					}
+				}
+				
+				part.indices.push_back(index);
+			}
+			part.intersection.radius		= radius;
+			part.intersection.boundBoxMin	= bbMin;
+			part.intersection.boundBoxMax	= bbMax;
 
 			outMesh.parts.push_back(part);
 		}
@@ -262,10 +440,15 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Node node;
-			ParseNode(node, nodes[i]);
+			Matrix identityMat;
+			Matrix::Identity(identityMat);
+			ParseNode(node, nodes[i], identityMat);
 			outNodes.push_back(node);
 		}
 	}
+
+	NodeHashMap nodeHashMap;
+	FetchNodeHashMap(nodeHashMap, outNodes);
 
 	ASSERT_COND_MSG(document.HasMember("meshes"), "Error, Where is Mesh?");
 	{
@@ -274,7 +457,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Mesh mesh;
-			ParseMesh(mesh, nodes[i]);
+			ParseMesh(mesh, nodes[i], nodeHashMap);
 			outMeshes.push_back(mesh);
 		}
 	}
@@ -362,6 +545,8 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 			FetchAllPartsInHashMap_Recursive(meshMaterialIdInAllParts, *iter);
 	};
 
+	IntersectionHashMap intersectionHashMap;
+
 	// Setting VB, IB
 	{
 		uint meshIterIdx = 0;
@@ -377,6 +562,8 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 				const auto& parts = meshIter->parts;
 				for(auto partsIter = parts.begin(); partsIter != parts.end(); ++partsIter)
 				{
+					intersectionHashMap.insert(std::make_pair(partsIter->meshPartId, &partsIter->intersection));
+
 					const auto& indices = partsIter->indices;
 					IndexBuffer* indexBuffer = new IndexBuffer;
 
@@ -521,10 +708,11 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 
 				// Make Vertex Buffer
 				{
-					const auto& vertices = meshIter->vertexDatas;
+					auto& vertices = meshIter->vertexDatas;
 					VertexBuffer* vertexBuffer = new VertexBuffer;
 
 					uint count = vertices.size() / (stride / 4);
+
 					vertexBuffer->Initialize(vertices.data(), stride, count, useDynamicVB, vertexBufferKey, &semantics);
 					bufferMgr->Add(meshFileName, vbChunkKey, vertexBuffer);
 				}
@@ -536,7 +724,7 @@ Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const
 	Object* root = new Object(meshFileName, nullptr);
 		
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-		MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager);
+		MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager, intersectionHashMap);
 
 	return root;
 }
@@ -693,20 +881,33 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 
 void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 								 const std::string& meshFileName,
-								 BufferManager* bufferManager, MaterialManager* materialManager)
+								 BufferManager* bufferManager, MaterialManager* materialManager,
+								 const IntersectionHashMap& intersectionHashMap)
 {
 	Object* object = new Object(node.id ,parent);
 
 	// Setting Transform
 	{
 		Transform* tf = object->GetTransform();
-		tf->UpdatePosition(node.translation);
-		tf->UpdateRotation(node.rotation);
-		tf->UpdateScale(node.scale);
+		tf->UpdatePosition(node.translation.tf);
+		tf->UpdateRotation(node.rotation.tf);
+		tf->UpdateScale(node.scale.tf);
 	}
 
 	auto AttachMeshComponent = [&](Object* object, const Node::Parts& part)
 	{
+		// Setting Intersection
+		{
+			auto findIter = intersectionHashMap.find(part.meshPartId);
+			if(findIter != intersectionHashMap.end())
+			{
+				BoundBox bb;
+				bb.SetMinMax(findIter->second->boundBoxMin, findIter->second->boundBoxMax);
+				
+				object->SetRadius(findIter->second->radius);
+				object->UpdateBoundBox(&bb);
+			}
+		}
 		IndexBuffer* indexBuffer = nullptr;
 		bool success = bufferManager->Find(&indexBuffer, meshFileName, part.meshPartId);
 		ASSERT_COND_MSG(success, "Error, Invalid mesh part id");
@@ -729,7 +930,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 
 		Rendering::Material* material = materialManager->Find(meshFileName, part.materialId);
 
-		Rendering::Mesh::Mesh* mesh = object->AddComponent<Rendering::Mesh::Mesh>();
+		Rendering::Geometry::Mesh* mesh = object->AddComponent<Rendering::Geometry::Mesh>();
 		mesh->Initialize(vertexBuffer, indexBuffer, material);
 	};
 
@@ -757,7 +958,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 
 	auto& childs = node.childs;
 	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
-		MakeHierarchy(object, *iter, meshFileName, bufferManager, materialManager);
+		MakeHierarchy(object, *iter, meshFileName, bufferManager, materialManager, intersectionHashMap);
 }
 
 void MeshImporter::CalculateTangents(
@@ -839,4 +1040,18 @@ void MeshImporter::CalculateTangents(
 #endif
 	}
 
+}
+
+void MeshImporter::FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes)
+{
+	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
+	{
+		const auto& parts = iter->parts;
+		for(auto partsIter = parts.begin(); partsIter != parts.end(); ++partsIter)
+			outNodeHashMap.insert( std::make_pair(partsIter->meshPartId, &(*iter)) );
+
+		const auto& childs = iter->childs;
+		if(childs.empty() == false)
+			FetchNodeHashMap(outNodeHashMap, childs);
+	}
 }

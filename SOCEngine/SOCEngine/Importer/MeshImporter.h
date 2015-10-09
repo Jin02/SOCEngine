@@ -21,6 +21,13 @@ namespace Importer
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_originObjects;
 
+	private:
+		//key is Node::Parts::MeshPartId
+		typedef std::hash_map<std::string, const Node*>					NodeHashMap;
+
+		//key is Node::Parts::MeshPartId
+		typedef std::hash_map<std::string, const Mesh::Intersection*>	IntersectionHashMap;
+
 	public:
 		MeshImporter();
 		~MeshImporter();
@@ -30,9 +37,10 @@ namespace Importer
 		void Destroy();
 
 	private:
-		void ParseNode(Node& outNodes, const rapidjson::Value& node);
+		void ParseNode(Node& outNodes, const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
+						bool isSettedParentTranslation = false, bool isSettedParentRotation = false, bool isSettedParentScale = false);
 		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
-		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode);
+		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 		void CalculateTangents(
 			std::vector<Math::Vector3>& outTangents,
 			const std::vector<Mesh::Part>& parts, 
@@ -43,9 +51,10 @@ namespace Importer
 
 	private:
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Material>& materials, const std::string& meshFileName);
-		void MakeHierarchy(Core::Object* parent, const Node& node, const std::string& meshFileName, Rendering::Manager::BufferManager* bufferManager, Rendering::Manager::MaterialManager* materialManager);
+		void MakeHierarchy(Core::Object* parent, const Node& node, const std::string& meshFileName, Rendering::Manager::BufferManager* bufferManager, Rendering::Manager::MaterialManager* materialManager, const IntersectionHashMap& intersectionHashMap);
 		Core::Object* BuildMesh(std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB);
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
+		void FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes);
 
 		// key is meshPartId, second value is materialId
 		void FetchAllPartsInHashMap_Recursive(
