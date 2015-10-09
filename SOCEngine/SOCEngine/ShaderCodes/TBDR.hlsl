@@ -56,13 +56,6 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 		commonParams.lightDir		= lightDir;
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-
-		//float x = distanceOfLightAndVertex / lightRadius;
-		//float k = 100.0f - commonParams.lightIntensity;
-		//float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
-
-		//resultDiffuseColor	*= falloff;
-		//resultSpecularColor	*= falloff;
 	}
 }
 
@@ -103,13 +96,6 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 		commonParams.lightDir		= lightDir;
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-
-		//float k = 100.0f - abs(spotLightParam.w);
-		//float x = distanceOfLightAndVertex / lightRadius;
-		//float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
-
-		//resultDiffuseColor	*= falloff;
-		//resultSpecularColor	*= falloff;
 	}
 }
 
@@ -120,7 +106,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float4 normal_roughness = g_tGBufferNormal_roughness.Load( globalIdx, sampleIdx );
 
 	float3 normal = normal_roughness.xyz;
-	normal *= 2; normal -= float3(1, 1, 1);
+	normal *= 2; normal -= float3(1.0f, 1.0f, 1.0f);
 
 	float roughness = normal_roughness.w;
 
@@ -140,7 +126,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	LightingParams lightParams;
 
-	lightParams.viewDir			= -viewDir;
+	lightParams.viewDir			= viewDir;
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= albedo;
