@@ -7,6 +7,7 @@
 #include "Frustum.h"
 #include "TransformPipelineParam.h"
 #include "Mesh.h"
+#include "BoundBox.h"
 
 namespace Core
 {
@@ -25,6 +26,9 @@ namespace Core
 
 		std::vector<Component*>			_components;
 
+		float							_radius;
+		Intersection::BoundBox*			_boundBox;
+
 	public:
 		Object(const std::string& name, Object* parent = NULL);
 		virtual ~Object(void);
@@ -35,10 +39,11 @@ namespace Core
 	public:
 		void Update(float delta);
 
-		bool Culling(const Rendering::Camera::Frustum *frustum);
+		void Culling(const Rendering::Camera::Frustum *frustum);
 		void UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& projMat);
 
 		bool Intersects(Intersection::Sphere &sphere);
+		void UpdateBoundBox(const Intersection::BoundBox* boundBox);
 
 	public:
 		void			AddChild(Object *child);
@@ -111,11 +116,14 @@ namespace Core
 		Object* Clone() const;
 
 	public:
-		GET_SET_ACCESSOR(Use,		bool,				_use);
-		GET_SET_ACCESSOR(Parent,	Object*,			_parent);
-		GET_ACCESSOR(Culled,		bool,				_culled);
-		GET_ACCESSOR(HasMesh,		bool,				_hasMesh);
-		GET_ACCESSOR(Name,			const std::string&,	_name);
-		GET_ACCESSOR(Transform,		Transform*,			_transform);
+		GET_SET_ACCESSOR(Use,	 bool,		_use);
+		GET_SET_ACCESSOR(Parent, Object*,	_parent);
+		GET_SET_ACCESSOR(Radius, float,		_radius);
+
+		GET_ACCESSOR(Culled,		bool,							_culled);
+		GET_ACCESSOR(HasMesh,		bool,							_hasMesh);
+		GET_ACCESSOR(Name,			const std::string&,				_name);
+		GET_ACCESSOR(Transform,		Transform*,						_transform);
+		GET_ACCESSOR(BoundBox,		const Intersection::BoundBox*,	_boundBox);
 	};
 }

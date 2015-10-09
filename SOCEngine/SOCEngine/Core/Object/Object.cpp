@@ -11,7 +11,8 @@ using namespace Core;
 #define _child _vector
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
-	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name)
+	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
+	_radius(0.0f), _boundBox(nullptr)
 {
 	_transform = new Transform( this );		
 	_root = parent ? parent->_root : this;
@@ -23,6 +24,7 @@ Object::Object(const std::string& name, Object* parent /* = NULL */) :
 Object::~Object(void)
 {
 	SAFE_DELETE(_transform);
+	SAFE_DELETE(_boundBox);
 
 	DeleteAllChild();
 	DeleteAllComponent();
@@ -63,19 +65,14 @@ bool Object::CompareIsChildOfParent(Object *parent)
 	return (parent == _parent); 
 }
 
-bool Object::Culling(const Camera::Frustum *frustum)
+void Object::Culling(const Camera::Frustum *frustum)
 {
 	Vector3 wp;
 	_transform->FetchWorldPosition(wp);
-	_culled = frustum->In(wp, _transform->GetRadius());
+	_culled = !frustum->In(wp, _radius);
 
-	if(_culled == false)
-	{
-		for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-			(*iter)->Culling(frustum);
-	}
-
-	return _culled;
+	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+		(*iter)->Culling(frustum);
 }
 
 void Object::Update(float delta)
@@ -123,7 +120,7 @@ bool Object::Intersects(Intersection::Sphere &sphere)
 {
 	Vector3 wp;
 	_transform->FetchWorldPosition(wp);
-	return sphere.Intersects(wp, _transform->GetRadius());
+	return sphere.Intersects(wp, _radius);
 }
 
 void Object::DeleteComponent(Component *component)
@@ -159,4 +156,15 @@ Object* Object::Clone() const
 		newObject->_components.push_back( (*iter)->Clone() );
 	
 	return newObject;
+}
+
+void Object::UpdateBoundBox(const Intersection::BoundBox* boundBox)
+{
+	if(boundBox == nullptr)
+	{
+		SAFE_DELETE(_boundBox);
+		return;
+	}
+
+	_boundBox = new BoundBox(*boundBox);
 }
