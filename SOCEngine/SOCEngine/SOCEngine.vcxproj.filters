@@ -369,9 +369,6 @@
     <ClInclude Include="Structure\Singleton.h">
       <Filter>Structure</Filter>
     </ClInclude>
-    <ClInclude Include="Intersection\AABB.h">
-      <Filter>Intersection</Filter>
-    </ClInclude>
     <ClInclude Include="Intersection\Cone.h">
       <Filter>Intersection</Filter>
     </ClInclude>
@@ -705,6 +702,9 @@
     <ClInclude Include="ShaderCodes\BRDF.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Intersection\BoundBox.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -745,9 +745,6 @@
     </ClCompile>
     <ClCompile Include="Core\Time\Timer.cpp">
       <Filter>Core\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="Intersection\AABB.cpp">
-      <Filter>Intersection</Filter>
     </ClCompile>
     <ClCompile Include="Intersection\Cone.cpp">
       <Filter>Intersection</Filter>
@@ -937,6 +934,9 @@
     </ClCompile>
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp">
       <Filter>External\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\BoundBox.cpp">
+      <Filter>Intersection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

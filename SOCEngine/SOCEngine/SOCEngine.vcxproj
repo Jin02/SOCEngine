@@ -55,7 +55,7 @@
     <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
-    <ClInclude Include="Intersection\AABB.h" />
+    <ClInclude Include="Intersection\BoundBox.h" />
     <ClInclude Include="Intersection\Cone.h" />
     <ClInclude Include="Intersection\Intersection.h" />
     <ClInclude Include="Intersection\Ray.h" />
@@ -195,7 +195,7 @@
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
-    <ClCompile Include="Intersection\AABB.cpp" />
+    <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
     <ClCompile Include="Intersection\Sphere.cpp" />
