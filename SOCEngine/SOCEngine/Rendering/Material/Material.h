@@ -61,7 +61,7 @@ namespace Rendering
 	protected:
 		CustomShader													_customShaders; //in forward rendering
 		bool															_hasAlpha;
-		bool															_changedAlpha;
+		float															_alpha;
 
 	public:
 		Material(const std::string& name, Type type);
@@ -134,7 +134,6 @@ namespace Rendering
 		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 		GET_ACCESSOR(Type, Type, _type);
 
-		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
 
 		GET_SET_ACCESSOR(CustomShader, const CustomShader&, _customShaders);

@@ -19,10 +19,12 @@ cbuffer Transform : register( b1 )		//Mesh
 cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 {
 	float3	material_mainColor;
-	uint	material_metallic_roughness_emission;
+	uint	material_alpha_metallic_roughness_emission;
 
-	float2 	material_uvTiling;
-	float2 	material_uvOffset;
+	float2 	material_uvTiling0;
+	float2 	material_uvOffset0;
+	float2 	material_uvTiling1;
+	float2 	material_uvOffset1;
 };
 
 Texture2D diffuseTexture			: register( t8 );
@@ -42,18 +44,23 @@ float3 NormalMapping(float3 normalMapXYZ, float3 normal, float3 tangent, float2 
 	return normalize( mul(texNormal, TBN) );
 }
 
-void Parse_Metallic_Roughness_Emission(in uint material_mre,
+void Parse_Metallic_Roughness_Emission(in uint material_amre,
 									   out float metallic,
 									   out float roughness,
 									   out float emission)
 {
-	uint scaledMetallic		= (material_mre & 0x3ff00000) >> 20;
-	uint scaledRoughness	= (material_mre & 0x000ffc00) >> 10;
-	uint scaledEmission		= material_mre & 0x000003ff;
+	uint scaledMetallic		= (material_amre & 0x00ff0000) >> 16;
+	uint scaledRoughness	= (material_amre & 0x0000ff00) >> 8;
+	uint scaledEmission		= (material_amre & 0x000000ff) >> 0;
 
-	metallic	= (float)scaledMetallic		/ 1024.0f;
-	roughness	= (float)scaledRoughness	/ 1024.0f;
-	emission	= (float)scaledEmission		/ 1024.0f;
+	metallic	= (float)scaledMetallic		/ 255.0f;
+	roughness	= (float)scaledRoughness	/ 255.0f;
+	emission	= (float)scaledEmission		/ 255.0f;
+}
+
+float ParseAlpha(in uint material_amre)
+{
+	return ( (float)((material_amre & 0xff000000) >> 24) / 255.0f );
 }
 
 bool HasDiffuseTexture()
@@ -87,7 +94,7 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	bool hasSpecularMap		= HasSpecularTexture();
 	
 	float metallic, roughness, emission;
-	Parse_Metallic_Roughness_Emission(material_metallic_roughness_emission,
+	Parse_Metallic_Roughness_Emission(material_alpha_metallic_roughness_emission,
 		metallic, roughness, emission);
 
 	float3 albedo			= diffuseTex.rgb * abs(material_mainColor);
