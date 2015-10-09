@@ -6,6 +6,7 @@
 #include "Vector3.h"
 #include "Vector2.h"
 #include "Quaternion.h"
+#include "Matrix.h"
 
 namespace Importer
 {
@@ -17,16 +18,32 @@ namespace Importer
 			std::string materialId;
 			//std::vector<uint> uvMapping;
 		};
+		template <typename Type>
+		struct Transform
+		{
+			bool has;
+			Type tf;
+			Transform() : has(false) { memset(&tf, 0, sizeof(Type)); }
+			~Transform(){}
+		};
 
-		std::string			id;
-		Math::Quaternion	rotation;
-		Math::Vector3		translation;
-		Math::Vector3		scale;
+		std::string						id;
+		Transform<Math::Quaternion>		rotation;
+		Transform<Math::Vector3>		translation;
+		Transform<Math::Vector3>		scale;
+		Math::Matrix					localMatrix;
+		Math::Matrix					worldMatrix;
 
 		std::vector<Parts>	parts;
 		std::vector<Node>	childs;
 
-		Node() : rotation(0.f, 0.f, 0.f, 1.f), translation(0.f, 0.f, 0.f), scale(1.f, 1.f, 1.f){}
+		Node() : rotation(), translation(), scale()
+		{
+			rotation.tf.w = 1.0f;
+
+			Math::Matrix::Identity(localMatrix);
+			Math::Matrix::Identity(worldMatrix);
+		}
 		~Node(){}
 	};
 
@@ -77,11 +94,24 @@ namespace Importer
 
 	struct Mesh
 	{
+		struct Intersection
+		{
+			float radius;
+			Math::Vector3 boundBoxMin, boundBoxMax;
+
+			Intersection() : radius(0.0f), boundBoxMin(0.0f, 0.0f, 0.0f), boundBoxMax(0.0f, 0.0f, 0.0f) {}
+			~Intersection() {}
+		};
+
 		struct Part
 		{
 			std::string meshPartId;
-//			std::string type;
 			std::vector<unsigned int> indices;
+
+			Intersection intersection;
+
+			Part() : intersection() {}
+			~Part(){}
 		};
 
 		std::vector<std::string>	attributes;
