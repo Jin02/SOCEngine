@@ -178,14 +178,14 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 	//struct MeshInForwardRendering
 	//{
-	//	const Mesh::Mesh*	mesh;
+	//	const Geometry::Mesh*	mesh;
 	//	const Material*		material;
 	//};
 	
 	// TBFR = Tile Based Forward Rendering.
 	// Used to render transparent meshes
 	//std::vector<MeshInForwardRendering> tbfrQueue;
-	//auto HasCustomShaderWithAddMeshToTBFRQueue = [&](const Material* material, const Mesh::Mesh* mesh)
+	//auto HasCustomShaderWithAddMeshToTBFRQueue = [&](const Material* material, const Geometry::Mesh* mesh)
 	//{
 	//	if( material->GetCustomShader().IsAllEmpty() == false )
 	//	{
@@ -203,9 +203,9 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 	
 	enum class RenderType { AlphaMesh, Opaque, Transparency, Transparency_DepthOnly };
-	auto RenderMeshWithoutIASetVB = [&](const Mesh::Mesh* mesh, RenderType renderType)
+	auto RenderMeshWithoutIASetVB = [&](const Geometry::Mesh* mesh, RenderType renderType)
 	{
-		Mesh::MeshFilter* filter = mesh->GetMeshFilter();
+		Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 
 		filter->GetIndexBuffer()->IASetBuffer(context);
 
@@ -223,7 +223,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			shaders.vs->SetInputLayoutToContext(context);
 		}
 
-		Mesh::MeshRenderer* renderer	= mesh->GetMeshRenderer();
+		Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
 		const auto& materials			= renderer->GetMaterials();
 		for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		{					
@@ -289,27 +289,36 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			bool updateVB = false;
 			for(auto iter = meshAddrSets.begin(); iter != meshAddrSets.end(); ++iter)
 			{
-				const Mesh::Mesh* mesh = reinterpret_cast<const Mesh::Mesh*>(*iter);
+				const Geometry::Mesh* mesh = reinterpret_cast<const Geometry::Mesh*>(*iter);
 
-				if(updateVB == false)
+				const Core::Object* obj = mesh->GetOwner();
+				if( (obj->GetCulled() == false) || (obj->GetUse() == false) )
 				{
-					mesh->GetMeshFilter()->GetVertexBuffer()->IASetBuffer(context);
-					updateVB = true;
-				}
+					if(updateVB == false)
+					{
+						mesh->GetMeshFilter()->GetVertexBuffer()->IASetBuffer(context);
+						updateVB = true;
+					}
 
-				RenderMeshWithoutIASetVB(mesh, renderType);
+					RenderMeshWithoutIASetVB(mesh, renderType);
+				}
 			}
 		}
 	};
-	auto RenderMeshesUsingMeshVector = [&](const std::vector<const Mesh::Mesh*>& meshes, RenderType renderType)
+	auto RenderMeshesUsingMeshVector = [&](const std::vector<const Geometry::Mesh*>& meshes, RenderType renderType)
 	{
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter)
 		{
-			const Mesh::Mesh* mesh = (*meshIter);
-			Mesh::MeshFilter* filter = mesh->GetMeshFilter();
-			filter->GetVertexBuffer()->IASetBuffer(context);
+			const Geometry::Mesh* mesh = (*meshIter);
 
-			RenderMeshWithoutIASetVB(mesh, renderType);
+			const Core::Object* obj = mesh->GetOwner();
+			if( (obj->GetCulled() == false) || (obj->GetUse() == false) )
+			{
+				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
+				filter->GetVertexBuffer()->IASetBuffer(context);
+
+				RenderMeshWithoutIASetVB(mesh, renderType);
+			}
 		}
 	};
 	
@@ -362,7 +371,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			ID3D11RenderTargetView* nullRTV = nullptr;
 			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
 			
-			const std::vector<const Mesh::Mesh*>& meshes = _transparentMeshQueue.meshes;
+			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
 			RenderMeshesUsingMeshVector(meshes, RenderType::Transparency_DepthOnly);
 		}
 	}
@@ -393,7 +402,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	// Transparency
 	if(_useTransparent)
 	{
-		const std::vector<const Mesh::Mesh*>& meshes = _transparentMeshQueue.meshes;
+		const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
 
 		if(meshes.size() > 0)
 		{
