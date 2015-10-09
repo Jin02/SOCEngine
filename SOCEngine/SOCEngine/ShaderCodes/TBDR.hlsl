@@ -45,9 +45,6 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 	float distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
-	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
-	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
-
 	if( distanceOfLightAndVertex < lightRadius )
 	{
 		LightingCommonParams commonParams;
@@ -83,9 +80,6 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 
 	float	lightCosineConeAngle		= spotLightParam.z;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
-
-	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
-	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
 
 	if( (distanceOfLightAndVertex < lightRadius) && 
 		(lightCosineConeAngle < currentCosineConeAngle) )

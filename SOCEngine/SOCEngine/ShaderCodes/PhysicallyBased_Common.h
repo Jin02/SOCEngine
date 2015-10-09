@@ -44,23 +44,22 @@ float3 NormalMapping(float3 normalMapXYZ, float3 normal, float3 tangent, float2 
 	return normalize( mul(texNormal, TBN) );
 }
 
-void Parse_Metallic_Roughness_Emission(in uint material_amre,
-									   out float metallic,
+void Parse_Metallic_Roughness_Emission(out float metallic,
 									   out float roughness,
 									   out float emission)
 {
-	uint scaledMetallic		= (material_amre & 0x00ff0000) >> 16;
-	uint scaledRoughness	= (material_amre & 0x0000ff00) >> 8;
-	uint scaledEmission		= (material_amre & 0x000000ff) >> 0;
+	uint scaledMetallic		= (material_alpha_metallic_roughness_emission & 0x00ff0000) >> 16;
+	uint scaledRoughness	= (material_alpha_metallic_roughness_emission & 0x0000ff00) >> 8;
+	uint scaledEmission		= (material_alpha_metallic_roughness_emission & 0x000000ff) >> 0;
 
 	metallic	= (float)scaledMetallic		/ 255.0f;
 	roughness	= (float)scaledRoughness	/ 255.0f;
 	emission	= (float)scaledEmission		/ 255.0f;
 }
 
-float ParseMaterialAlpha(in uint material_amre)
+float ParseMaterialAlpha()
 {
-	return ( (float)((material_amre & 0xff000000) >> 24) / 255.0f );
+	return ( (float)((material_alpha_metallic_roughness_emission & 0xff000000) >> 24) / 255.0f );
 }
 
 bool HasDiffuseTexture()
@@ -94,8 +93,7 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	bool hasSpecularMap		= HasSpecularTexture();
 	
 	float metallic, roughness, emission;
-	Parse_Metallic_Roughness_Emission(material_alpha_metallic_roughness_emission,
-		metallic, roughness, emission);
+	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
 
 	float3 albedo			= diffuseTex.rgb * abs(material_mainColor);
 	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);

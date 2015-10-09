@@ -53,13 +53,13 @@ void RenderPointLight(
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
+
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
+	float lightRadius				= lightCenterWithRadius.w;
 
 	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
 	float distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
-
-	float lightRadius				= lightCenterWithRadius.w;
 
 	if( distanceOfLightAndVertex < lightRadius )
 	{
@@ -68,26 +68,13 @@ void RenderPointLight(
 		commonParams.lightIntensity	= g_inputPointLightColorBuffer[lightingParams.lightIndex].w;
 		commonParams.lightDir		= lightDir;
 
-		float x = distanceOfLightAndVertex / lightRadius;
-		float k = 100.0f - commonParams.lightIntensity; //testing
-		float falloff = -(1.0f / k) * (1.0f - (k + 1) / (1.0f + k * x * x) );
-
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 
-		resultFrontFaceDiffuseColor		*= falloff;
-		resultFrontFaceSpecularColor	*= falloff;
-
 		lightingParams.normal = -lightingParams.normal;
 		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
-
-		resultBackFaceDiffuseColor		*= falloff;
-		resultBackFaceSpecularColor		*= falloff;
 #else
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-
-		resultDiffuseColor *= falloff;
-		resultSpecularColor *= falloff;
 #endif
 	}
 }
@@ -108,7 +95,7 @@ void RenderSpotLight(
 		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
 
 		bool isDirZMinus	= spotLightParam.w < 0;
-		spotLightDir.z		= spotLightDir.z * (1 - (2 * (uint)isDirZMinus));
+		spotLightDir.z		= spotLightDir.z * (1.0f - (float)(2.0f * (uint)isDirZMinus));
 	}
 
 	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
@@ -123,7 +110,6 @@ void RenderSpotLight(
 	float	lightCosineConeAngle		= spotLightParam.z;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
 
-
 	if( (distanceOfLightAndVertex < lightRadius) && 
 		(lightCosineConeAngle < currentCosineConeAngle) )
 	{
@@ -132,26 +118,13 @@ void RenderSpotLight(
 		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightingParams.lightIndex].w;
 		commonParams.lightDir		= lightDir;
 
-		float falloffCoef = abs(spotLightParam.w);
-		float x = distanceOfLightAndVertex / lightRadius;
-		float falloff = -(1.0f / falloffCoef) * (1.0f - (falloffCoef + 1) / (1.0f + falloffCoef * x * x) );
-
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 
-		resultFrontFaceDiffuseColor		*= falloff;
-		resultFrontFaceSpecularColor	*= falloff;
-
 		lightingParams.normal = -lightingParams.normal;
 		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
-
-		resultBackFaceDiffuseColor		*= falloff;
-		resultBackFaceSpecularColor		*= falloff;
 #else
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-
-		resultDiffuseColor *= falloff;
-		resultSpecularColor *= falloff;
 #endif
 	}
 }
@@ -166,14 +139,14 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float4 specularTex	= specularTexture.Sample(defaultSampler, uv);
 
 	float metallic, emission, roughness;
-	Parse_Metallic_Roughness_Emission(material_alpha_metallic_roughness_emission, metallic, roughness, emission);
+	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
 
 #if defined(USE_PBR_TEXTURE)
 	metallic = specularTex.a;
 	roughness = roughnessInTex;
 #endif
 
-	float3 specularColor = lerp(float3(1.f, 1.f, 1.f), specularTex.rgb, HasSpecularTexture());
+	float3 specularColor = lerp(float3(0.4f, 0.4f, 0.4f), specularTex.rgb, HasSpecularTexture());
 	float3 diffuseColor  = lerp(float3(1.f, 1.f, 1.f), diffuseTex.rgb * abs(material_mainColor), HasDiffuseTexture());
 
 	LightingParams lightParams;
@@ -285,7 +258,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 
 #if defined(RENDER_TRANSPARENCY)
 	float3	result = accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular + ( TRANSPARENCY_BACK_FACE_WEIGHT * (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) );
-	float	alpha = diffuseTex.a * opacityTexture.Sample(defaultSampler, uv).x;
+	float	alpha = diffuseTex.a * opacityTexture.Sample(defaultSampler, uv).x * ParseMaterialAlpha();
 #else
 	float3 result = accumulativeDiffuse + accumulativeSpecular;
 	float alpha = 1.0f;
