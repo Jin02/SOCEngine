@@ -23,7 +23,6 @@ namespace Core
 		Math::Vector3		_scale;
 		Math::Vector3		_eulerAngle;
 
-		float				_radius;
 		uint				_updateCounter;
 
 	public:
@@ -57,7 +56,6 @@ namespace Core
 		void UpdateTransform(const Transform& transform);
 
 	public:
-		GET_SET_ACCESSOR(Radius,		float,						_radius);
 		GET_ACCESSOR(LocalPosition,		const Math::Vector3&,		_position);
 		GET_ACCESSOR(LocalEulerAngle,	const Math::Vector3&,		_eulerAngle);
 		GET_ACCESSOR(LocalScale,		const Math::Vector3&,		_scale);

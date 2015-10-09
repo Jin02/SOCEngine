@@ -9,25 +9,13 @@ namespace Core
 	{
 		_rotation	= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 		_scale		= Vector3::One();
-		_radius		= 0.0f;
 
 		if(owner == nullptr)
 			return;
 
-		if(owner->GetParent())
-		{
-			Transform* parentTransform = owner->GetParent()->GetTransform();
-
-			_forward = parentTransform->_forward;
-			_right	 = parentTransform->_right;
-			_up	 	 = parentTransform->_up;
-		}
-		else
-		{
-			_forward = Vector3(0.0f, 0.0f, 1.0f);
-			_right	 = Vector3(1.0f, 0.0f, 0.0f);
-			_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
-		}
+		_forward = Vector3(0.0f, 0.0f, 1.0f);
+		_right	 = Vector3(1.0f, 0.0f, 0.0f);
+		_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
 	}
 
 	Transform::~Transform(void)
@@ -231,7 +219,6 @@ namespace Core
 		_rotation	= transform._rotation;
 		_scale		= transform._scale;
 		_eulerAngle	= transform._eulerAngle;
-		_radius		= transform._radius;
 
 		++_updateCounter;
 	}
@@ -264,18 +251,13 @@ namespace Core
 
 	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
 	{
-		std::vector<const Transform*> transforms;
-
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
-			transforms.push_back(obj->GetTransform());
-
 		Matrix& worldMat = outMatrix;
 		Matrix::Identity(worldMat);
 
-		for(auto iter = transforms.rbegin(); iter != transforms.rend(); ++iter)
+		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
 		{
 			Matrix localMat;
-			(*iter)->FetchLocalMatrix(localMat);
+			obj->GetTransform()->FetchLocalMatrix(localMat);
 
 			worldMat *= localMat;
 		}
