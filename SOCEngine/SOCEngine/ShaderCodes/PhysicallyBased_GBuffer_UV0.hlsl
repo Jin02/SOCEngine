@@ -30,7 +30,7 @@ GBuffer PS( VS_OUTPUT input) : SV_Target
 
 #ifdef ENABLE_ALPHA_TEST
 	float opacityMap = 1.0f - opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
-	float alpha = diffuseTex.a * opacityMap;
+	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
