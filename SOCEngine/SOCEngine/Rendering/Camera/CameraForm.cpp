@@ -143,7 +143,7 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 			{
 				RenderManager::MeshList::meshkey addr = *iter;
 
-				const Mesh::Mesh* mesh = reinterpret_cast<const Mesh::Mesh*>(addr);
+				const Geometry::Mesh* mesh = reinterpret_cast<const Geometry::Mesh*>(addr);
 				thisCamMeshes.push_back(mesh);
 			}
 		}
@@ -156,7 +156,7 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 	Math::Vector3 camPos;
 	transform->FetchWorldPosition(camPos);
 
-	auto SortingByDistance = [&](const Mesh::Mesh*& left, const Mesh::Mesh*& right) -> bool
+	auto SortingByDistance = [&](const Geometry::Mesh*& left, const Geometry::Mesh*& right) -> bool
 	{
 		float leftDistance = D3D11_FLOAT32_MAX;
 		{

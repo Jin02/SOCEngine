@@ -62,11 +62,11 @@ namespace Rendering
 
 		public:
 			bool TestInit();
-			Shader::ShaderGroup LoadDefaultSahder(Mesh::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
+			Shader::ShaderGroup LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
-			void UpdateRenderList(const Mesh::Mesh* mesh);
-			bool HasMeshInRenderList(const Mesh::Mesh* mesh, Mesh::MeshRenderer::Type type);
+			void UpdateRenderList(const Geometry::Mesh* mesh);
+			bool HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type);
 
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
@@ -74,7 +74,7 @@ namespace Rendering
 			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
 			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
 
-			void MakeDefaultSahderFileName(std::string& outFileName, Mesh::MeshRenderer::Type meshType, uint bufferFlag) const;
+			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
 		
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);

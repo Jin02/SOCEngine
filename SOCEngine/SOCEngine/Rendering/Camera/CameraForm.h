@@ -24,8 +24,8 @@ namespace Rendering
 			//enum ClearFlag { FlagSkybox, FlagSolidColor, FlagTarget, FlagDontClear };
 			struct RenderQueue
 			{
-				uint								updateCounter;
-				std::vector<const Mesh::Mesh*>		meshes;
+				uint									updateCounter;
+				std::vector<const Geometry::Mesh*>		meshes;
 
 				RenderQueue() : updateCounter(0){}
 				~RenderQueue(){}
