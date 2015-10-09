@@ -58,7 +58,7 @@ void Parse_Metallic_Roughness_Emission(in uint material_amre,
 	emission	= (float)scaledEmission		/ 255.0f;
 }
 
-float ParseAlpha(in uint material_amre)
+float ParseMaterialAlpha(in uint material_amre)
 {
 	return ( (float)((material_amre & 0xff000000) >> 24) / 255.0f );
 }
