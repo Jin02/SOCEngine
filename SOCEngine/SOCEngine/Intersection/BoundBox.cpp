@@ -1,10 +1,10 @@
-#include "AABB.h"
+#include "BoundBox.h"
 #include "Common.h"
 #include "Ray.h"
 
 namespace Intersection
 {
-	AABB::AABB() :
+	BoundBox::BoundBox() :
 		_center(0, 0, 0), _size(1, 1, 1)
 	{
 		_extents = _size / 2.0f;
@@ -13,7 +13,7 @@ namespace Intersection
 		_max =  _extents;
 	}
 
-	AABB::AABB(const Math::Vector3& worldCenter, const Math::Vector3& size) :
+	BoundBox::BoundBox(const Math::Vector3& worldCenter, const Math::Vector3& size) :
 		_center(worldCenter), _size(size)
 	{
 		_extents = size / 2.0f;
@@ -22,11 +22,11 @@ namespace Intersection
 		_max = worldCenter + _extents;
 	}
 
-	AABB::~AABB(void)
+	BoundBox::~BoundBox(void)
 	{
 	}
 
-	void AABB::SetMinMax(const Math::Vector3& min, const Math::Vector3& max)
+	void BoundBox::SetMinMax(const Math::Vector3& min, const Math::Vector3& max)
 	{
 		_center -= (min + _extents);
 
@@ -38,7 +38,7 @@ namespace Intersection
 		_center += min + _extents;
 	}
 
-	void AABB::Expand(float amount)
+	void BoundBox::Expand(float amount)
 	{
 		_size.x += amount;
 		_size.y += amount;
@@ -49,7 +49,7 @@ namespace Intersection
 		_max = _center + _extents;
 	}
 
-	void AABB::Expand(const Math::Vector3& amount)
+	void BoundBox::Expand(const Math::Vector3& amount)
 	{
 		_size += amount;
 		_extents = _size / 2.0f;
@@ -57,7 +57,7 @@ namespace Intersection
 		_max = _center + _extents;
 	}
 
-	bool AABB::Intersects(const AABB& bounds)
+	bool BoundBox::Intersects(const BoundBox& bounds)
 	{
 		Math::Vector3 realMin = _center + _min;
 		Math::Vector3 realMax = _center + _max;
@@ -71,13 +71,13 @@ namespace Intersection
 		return true;
 	}
 
-	float AABB::SqrDistance(const Math::Vector3& point)
+	float BoundBox::SqrDistance(const Math::Vector3& point)
 	{
 		Math::Vector3 v = point - _extents - _center;
 		return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
 	}
 
-	bool AABB::Contains(const Math::Vector3& point)
+	bool BoundBox::Contains(const Math::Vector3& point)
 	{
 		Math::Vector3& realMin = _center + _min;
 		Math::Vector3& realMax = _center + _max;
@@ -89,7 +89,7 @@ namespace Intersection
 		return true;
 	}
 
-	bool AABB::Intersects(const Ray& ray, Math::Vector3 *outPickPoint /*= NULL*/, float gap)
+	bool BoundBox::Intersects(const Ray& ray, Math::Vector3 *outPickPoint /*= NULL*/, float gap)
 	{
 		Math::Vector3 realMin = _center + _min;
 		Math::Vector3 realMax = _center + _max;
@@ -127,7 +127,7 @@ namespace Intersection
 		return true;
 	}
 
-	bool AABB::operator !=(const AABB &box)
+	bool BoundBox::operator !=(const BoundBox &box)
 	{
 		if( _center != _center ) return true;
 		if( _extents != _extents ) return true;
@@ -135,7 +135,7 @@ namespace Intersection
 		return false;
 	}
 
-	bool AABB::operator ==(const AABB &box)
+	bool BoundBox::operator ==(const BoundBox &box)
 	{
 		if( _center != _center ) return false;
 		if( _extents != _extents ) return false;
