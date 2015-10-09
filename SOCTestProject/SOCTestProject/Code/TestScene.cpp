@@ -8,15 +8,16 @@
 #include "ResourceManager.h"
 
 #include "MeshImporter.h"
+#include "PhysicallyBasedMaterial.h"
 
 using namespace Rendering;
 using namespace Core;
 using namespace Rendering::Camera;
+using namespace Rendering::Geometry;
 using namespace Rendering::Light;
 using namespace Rendering::Geometry;
 using namespace Resource;
 using namespace Device;
-using namespace Importer;
 using namespace Math;
 
 TestScene::TestScene(void)
@@ -35,14 +36,16 @@ void TestScene::OnInitialize()
 	camera->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 
-	MeshImporter importer;
+	Importer::MeshImporter importer;
 //	testObject = importer.Load("./Resources/Capsule/capsule.obj");
 //	testObject = importer.Load("./Resources/tt.obj");
 
-	testObject = importer.Load("./Resources/sfh/SanFranciscoHouse.fbx");
-	//Mesh::Mesh* mesh = testObject->GetComponent<Mesh>();
+	testObject = importer.Load("./Resources/Cube/Cube.obj");
+	Mesh* mesh = testObject->GetChild(0)->GetChild(0)->GetComponent<Mesh>();
+	PhysicallyBasedMaterial* material = (PhysicallyBasedMaterial*)mesh->GetMeshRenderer()->GetMaterials().front();
+	material->UpdateMainColor(Color(1.0f, 1.0f, 1.0f, 0.5f));
 
-	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 20));
+	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 //	testObject->GetTransform()->UpdatePosition(Vector3(0, -0.6f, 1.0f));
 
 	testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 0, 0));
