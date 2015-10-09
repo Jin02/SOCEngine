@@ -19,7 +19,7 @@ Plane::~Plane()
 
 }
 
-Plane Plane::Normalize()
+Plane Plane::Normalize() const
 {
 	Plane plane;
 	Plane::Normalize(plane, (*this));
@@ -27,9 +27,9 @@ Plane Plane::Normalize()
 	return plane;
 }
 
-float Plane::DistancePoint(const Vector3& p)
+float Plane::DistancePoint(const Vector3& p) const
 {
-	return GetDistancePoint((*this), p);
+	return ComputeDistanceWithPoint((*this), p);
 }
 
 void Plane::FromPoints(Plane& out, const Vector3& v1, const Vector3& v2, const Vector3& v3)
@@ -67,14 +67,14 @@ void Plane::Normalize(Plane& out, const Plane& p)
 		out = Plane(0, 0, 0, 0);
 }
 
-float Plane::GetDistancePoint(const Plane& p, const Vector3& v)
+float Plane::ComputeDistanceWithPoint(const Plane& p, const Vector3& v)
 {
-	return abs(p.a * v.x + p.b * v.y + p.c * v.z + p.d) / sqrtf(p.a*p.a+p.b*p.b+p.c*p.c);
+	return abs( DotCoord(p, v) );
 }
 
 bool Plane::SameSide(const Plane& p, const Vector3& v)
 {
-	if( GetDistancePoint(p, v) == 0.0f )
+	if( ComputeDistanceWithPoint(p, v) == 0.0f )
 		return true;
 
 	return false;
@@ -82,27 +82,28 @@ bool Plane::SameSide(const Plane& p, const Vector3& v)
 
 Plane::Direction Plane::GetSide(const Plane& p, const Vector3& v)
 {
-	float dist = GetDistancePoint(p, v);
-
-	if( dist < 0 )
+	float dist = DotCoord(p, v);
+	
+	if( dist < 0.0f )
 		return Direction::BACK;
-	else if ( dist == 0 )
-		return Direction::SAME;
 
-	return Direction::FRONT;
+	if( dist > 0.0f )
+		return Direction::FRONT;
+
+	return Direction::SAME;
 }
 
-float Plane::GetDistancePoint(const Vector3& v)
+float Plane::GetDistancePoint(const Vector3& v) const
 {
-	return GetDistancePoint(*this, v);
+	return ComputeDistanceWithPoint(*this, v);
 }
 
-bool Plane::SameSide(const Vector3& v)
+bool Plane::SameSide(const Vector3& v) const
 {
 	return SameSide(*this, v);
 }
 
-Plane::Direction Plane::GetSide(const Vector3& v)
+Plane::Direction Plane::GetSide(const Vector3& v) const
 {
 	return GetSide(*this, v);
 }

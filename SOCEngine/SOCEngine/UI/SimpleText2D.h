@@ -17,11 +17,11 @@ namespace UI
 		};
 
 	private:
-		Rendering::Mesh::MeshFilter*	_meshFilter;
-		Rendering::Material*			_material;
-		Math::Size<uint>				_screenSize;
-		bool							_isOtherMaterial;
-		uint							_maxLength;
+		Rendering::Geometry::MeshFilter*	_meshFilter;
+		Rendering::Material*				_material;
+		Math::Size<uint>					_screenSize;
+		bool								_isOtherMaterial;
+		uint								_maxLength;
 
 	public:
 		SimpleText2D(const std::string& name, Core::Object* parent = nullptr);

@@ -4,7 +4,7 @@
 #include "MeshImporter.h"
 
 using namespace Rendering::Shader;
-using namespace Rendering::Mesh;
+using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Resource;
 

@@ -3,7 +3,7 @@
 #include "Mesh.h"
 
 using namespace Rendering;
-using namespace Rendering::Mesh;
+using namespace Rendering::Geometry;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;

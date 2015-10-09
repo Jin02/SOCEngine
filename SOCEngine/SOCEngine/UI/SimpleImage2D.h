@@ -15,7 +15,7 @@ namespace UI
 		};
 
 	private:
-		Rendering::Mesh::MeshFilter*		_meshFilter;
+		Rendering::Geometry::MeshFilter*	_meshFilter;
 		Rendering::Material*				_material;
 		
 		bool								_isOtherMaterial;

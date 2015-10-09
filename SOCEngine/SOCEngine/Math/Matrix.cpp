@@ -208,6 +208,7 @@ namespace Math
 
 	void Matrix::Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
 	{
+		Matrix res;
 		for(int i=0; i<4; ++i)
 		{
 			for(int j=0; j<4; ++j)
@@ -218,9 +219,11 @@ namespace Math
 					f += lhs._m[i][k] * rhs._m[k][j];
 				}
 
-				out._m[i][j] = f;
+				res._m[i][j] = f;
 			}
 		}
+
+		out = res;
 	}
 
 	void Matrix::Identity(Matrix& out)

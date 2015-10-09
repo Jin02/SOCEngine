@@ -3,7 +3,7 @@
 //#include "TransformPipelineParam.h"
 
 using namespace Rendering::Manager;
-using namespace Rendering::Mesh;
+using namespace Rendering::Geometry;
 using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 

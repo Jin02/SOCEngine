@@ -7,7 +7,7 @@
 
 namespace Rendering
 {
-	namespace Mesh
+	namespace Geometry
 	{
 		class Mesh : public Core::Component
 		{

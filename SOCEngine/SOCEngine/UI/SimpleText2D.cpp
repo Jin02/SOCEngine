@@ -79,7 +79,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 //			std::copy(boxIndices.begin(), boxIndices.end(), indices.begin() + (i * boxIndices.size()));
 	}
 
-	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:Font", sharedVerticesKey);
+	Geometry::MeshFilter::CreateFuncArguments meshCreateArgs("UI:Font", sharedVerticesKey);
 	{
 		meshCreateArgs.vertices.data		= emptyVertices.data();
 		meshCreateArgs.vertices.count		= emptyVertices.size();
@@ -89,7 +89,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		meshCreateArgs.useDynamicVB			= true;
 	}
 
-	_meshFilter = new Mesh::MeshFilter;
+	_meshFilter = new Geometry::MeshFilter;
 	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 

@@ -12,7 +12,7 @@
 
 namespace Rendering
 {
-	namespace Mesh
+	namespace Geometry
 	{
 		typedef unsigned int Count; 
 

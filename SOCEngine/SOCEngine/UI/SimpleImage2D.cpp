@@ -54,7 +54,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		indices[3] = 1; indices[4] = 3; indices[3] = 2;
 	}
 
-	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:SimpleImage2D", sharedVerticesKey);
+	Geometry::MeshFilter::CreateFuncArguments meshCreateArgs("UI:SimpleImage2D", sharedVerticesKey);
 	{
 		meshCreateArgs.vertices.data		= rectVertex;
 		meshCreateArgs.vertices.count		= 4;
@@ -64,7 +64,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		meshCreateArgs.useDynamicVB			= true;
 	}
 
-	_meshFilter = new Mesh::MeshFilter;
+	_meshFilter = new Geometry::MeshFilter;
 	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 

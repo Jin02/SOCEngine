@@ -268,17 +268,26 @@ namespace Math
 
 	void Vector3::TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat)
 	{
-		float norm = mat._m[0][3] * v.x + mat._m[1][3] * v.y + mat._m[2][3] *v.z + mat._m[3][3];
+		Vector3 src = v;
+		float w = mat._m[0][3] * src.x + mat._m[1][3] * src.y + mat._m[2][3] * src.z + mat._m[3][3];
 
-		out.x = (mat._m[0][0] * v.x + mat._m[1][0] * v.y + mat._m[2][0] * v.z + mat._m[3][0]) / norm;
-		out.y = (mat._m[0][1] * v.x + mat._m[1][1] * v.y + mat._m[2][1] * v.z + mat._m[3][1]) / norm;
-		out.z = (mat._m[0][2] * v.x + mat._m[1][2] * v.y + mat._m[2][2] * v.z + mat._m[3][2]) / norm;
+		if(w == 0.0f)
+		{
+			out.x = out.y = out.z = 0.0f;
+			return;
+		}
+
+		out.x = (mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z + mat._m[3][0]) / w;
+		out.y = (mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z + mat._m[3][1]) / w;
+		out.z = (mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z + mat._m[3][2]) / w;
 	}
 
 	void Vector3::TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat)
 	{
-		out.x = (mat._m[0][0] * v.x + mat._m[1][0] * v.y + mat._m[2][0] * v.z);
-		out.y = (mat._m[0][1] * v.x + mat._m[1][1] * v.y + mat._m[2][1] * v.z);
-		out.z = (mat._m[0][2] * v.x + mat._m[1][2] * v.y + mat._m[2][2] * v.z);
+		Vector3 src = v;
+
+		out.x = (mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z);
+		out.y = (mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z);
+		out.z = (mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z);
 	}
 }
