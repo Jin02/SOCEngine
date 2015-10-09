@@ -13,6 +13,7 @@ using namespace Rendering;
 using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Light;
+using namespace Rendering::Geometry;
 using namespace Resource;
 using namespace Device;
 using namespace Importer;
@@ -35,13 +36,17 @@ void TestScene::OnInitialize()
 	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 
 	MeshImporter importer;
-	testObject = importer.Load("./Resources/tt.obj");
-//	testObject = importer.Load("./Resources/TurretsPack/turret_1.FBX");
+//	testObject = importer.Load("./Resources/Capsule/capsule.obj");
+//	testObject = importer.Load("./Resources/tt.obj");
 
-//	testObject->GetTransform()->UpdatePosition(Vector3(0, -0.5f, 1));
-	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 2.0f));
+	testObject = importer.Load("./Resources/sfh/SanFranciscoHouse.fbx");
+	//Mesh::Mesh* mesh = testObject->GetComponent<Mesh>();
 
-	testObject->GetTransform()->UpdateEulerAngles(Vector3(45, 35, 20));
+	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 20));
+//	testObject->GetTransform()->UpdatePosition(Vector3(0, -0.6f, 1.0f));
+
+	testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 0, 0));
+//	testObject->GetTransform()->UpdateEulerAngles(Vector3(45, 35, 20));
 	AddObject(testObject);
 
 	light = new Object("Light");
@@ -102,10 +107,10 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
-	//static float x = 0.0f;
+	static float x = 0.0f;
 
-	//x += 0.1f;
-	//testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(45, x, 0));
+	x += 0.1f;
+	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(x, 0, 0));
 }
 
 void TestScene::OnRenderPost()
