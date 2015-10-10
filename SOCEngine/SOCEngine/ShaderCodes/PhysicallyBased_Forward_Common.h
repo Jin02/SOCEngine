@@ -3,7 +3,7 @@
 #ifndef __SOC_PHYSICALLY_BASED_FORWARD_COMMON_H__
 #define __SOC_PHYSICALLY_BASED_FORWARD_COMMON_H__
 
-#define TRANSPARENCY_BACK_FACE_WEIGHT 0.8f
+#define TRANSPARENCY_BACK_FACE_WEIGHT 0.5f
 
 #include "PhysicallyBased_Common.h"
 #include "BRDF.h"
@@ -260,8 +260,10 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	accumulativeFrontFaceSpecular = saturate(accumulativeFrontFaceSpecular);
 	accumulativeBackFaceSpecular = saturate(accumulativeBackFaceSpecular);
 
-	float3	result = accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular + 
-					( TRANSPARENCY_BACK_FACE_WEIGHT * (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) );
+	float3 back		= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) * TRANSPARENCY_BACK_FACE_WEIGHT;
+	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
+
+	float3	result = front + back;
 
 	float	diffuseTexAlpha = lerp(1.0f, diffuseTex.a, HasDiffuseTexture());
 	float	alpha = diffuseTexAlpha * (1.0f - opacityTexture.Sample(defaultSampler, uv).x) * ParseMaterialAlpha();
