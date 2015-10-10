@@ -38,26 +38,26 @@ void MainCamera::OnInitialize()
 
 	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
 		"GBuffer Error : cant create albedo_emission render texture" 
 		);
 
 	_specular_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
 		"GBuffer Error : cant create _specular_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, 0),
+		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
-	EnableRenderTransparentMesh(false);
+	EnableRenderTransparentMesh(true);
 
 	_deferredShadingWithLightCulling = new TBDR::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_emission, _specular_metallic, _normal_roughness, backBufferSize);
@@ -173,7 +173,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	}
 
 	// off alpha blending
-	float blendFactor[4] = {0, };
+	float blendFactor[1] = {0, };
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 	//struct MeshInForwardRendering
@@ -235,7 +235,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			{
 				if(customShader.isDeferred == false)
 				{
-					DEBUG_LOG("Warning, Current version doesn't support custom shader(and normal forward rendering)");
+					ASSERT_MSG("Error, Current version doesn't support custom shader(and normal forward rendering)");
 					continue;
 				}
 
@@ -339,7 +339,13 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 
 		//Opaque Mesh
-		RenderMeshesUsingMeshList(renderManager->GetOpaqueMeshes(), RenderType::Opaque);
+		{
+			const auto& meshList = renderManager->GetOpaqueMeshes();
+			uint count = meshList.meshes.GetVector().size();
+
+			if(count > 0)
+				RenderMeshesUsingMeshList(meshList, RenderType::Opaque);
+		}
 
 		//Alpha Test Mesh
 		{
@@ -370,7 +376,8 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		{
 			ID3D11RenderTargetView* nullRTV = nullptr;
 			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
-			
+			context->PSSetShader(nullptr, nullptr, 0);
+
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
 			RenderMeshesUsingMeshVector(meshes, RenderType::Transparency_DepthOnly);
 		}
@@ -430,20 +437,20 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
 				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
+			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
+			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferShaderIndex::TBRParam, 1, &tbrCB);
+			context->PSSetConstantBuffers((uint)TBDR::InputConstBufferShaderIndex::TBRParam, 1, &tbrCB);
+
 			RenderMeshesUsingMeshVector(meshes, RenderType::Transparency);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-			ID3D11ShaderResourceView* nullSRV = nullptr;
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightRadiusWithCenter,		1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::PointLightColor,				1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightRadiusWithCenter,		1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightColor,					1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::SpotLightParam,					1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ, 1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightColor,			1, nullptr);
-			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,			1, nullptr);
+			const uint startIdx	= (uint)InputBufferShaderIndex::PointLightRadiusWithCenter;
+			const uint srvNum	= (uint)InputBufferShaderIndex::DirectionalLightParam - (uint)InputBufferShaderIndex::PointLightRadiusWithCenter + 1;
+
+			ID3D11ShaderResourceView* nullSRV[srvNum] = {nullptr, };
+			context->PSSetShaderResources(startIdx,	srvNum, nullSRV);
 		
 			context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 		}
