@@ -19,14 +19,23 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 						uint3 localIdx	: SV_GroupThreadID,
 						uint3 groupIdx	: SV_GroupID)
 {
-	uint pointLightCountInThisTile = 0;
-	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile);
-
 #if defined(USE_PARALLEL)
 	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES_HALF;
 #elif defined(USE_ATOMIC)
 	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES;
 #endif
+
+	if(idxInTile == 0)
+	{
+		s_lightIndexCounter	= 0;
+		s_minZ = 0x7f7fffff; //float max as uint
+		s_maxZ = 0;
+	}
+
+	uint pointLightCountInThisTile = 0;
+	LightCulling(globalIdx, localIdx, groupIdx, pointLightCountInThisTile);
+	GroupMemoryBarrierWithGroupSync();
+
 	uint tileIdx	= groupIdx.x + groupIdx.y * GetNumTilesX();
 	uint startOffset = tbrParam_maxNumOfPerLightInTile * tileIdx + 1;
 
