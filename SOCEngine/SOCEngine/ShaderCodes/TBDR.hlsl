@@ -59,19 +59,8 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 					 in LightingParams lightingParams, float3 vertexWorldPosition)
 {
-	//resultDiffuseColor = float3(0,0,0);
-	//resultSpecularColor = float3(0,0,0);
-
-	lightingParams.lightIndex = 0;
-	float4 spotLightParam	= g_inputSpotLightParamBuffer[lightingParams.lightIndex];
-	float3 spotLightDir;
-	{
-		spotLightDir.xy		= spotLightParam.xy;
-		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
-
-		bool isDirZMinus	= spotLightParam.w < 0;
-		spotLightDir.z		= lerp(spotLightDir.z, -spotLightDir.z, isDirZMinus);
-	}
+	float4 spotLightParam = g_inputSpotLightParamBuffer[lightingParams.lightIndex];
+	float3 spotLightDir = spotLightParam.xyz;
 
 	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
@@ -82,7 +71,7 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 	float	distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
-	float	lightCosineConeAngle		= spotLightParam.z;
+	float	lightCosineConeAngle		= spotLightParam.w;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
 
 	if( (distanceOfLightAndVertex < lightRadius) && 

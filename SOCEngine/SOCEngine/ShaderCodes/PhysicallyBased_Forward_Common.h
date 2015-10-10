@@ -88,15 +88,8 @@ void RenderSpotLight(
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
-	float4 spotLightParam	= g_inputSpotLightParamBuffer[lightingParams.lightIndex];
-	float3 spotLightDir;
-	{
-		spotLightDir.xy		= spotLightParam.xy;
-		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
-
-		bool isDirZMinus	= spotLightParam.w < 0;
-		spotLightDir.z		= spotLightDir.z * (1.0f - (float)(2.0f * (uint)isDirZMinus));
-	}
+	float4 spotLightParam = g_inputSpotLightParamBuffer[lightingParams.lightIndex];
+	float3 spotLightDir = spotLightParam.xyz;
 
 	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
@@ -107,7 +100,7 @@ void RenderSpotLight(
 	float	distanceOfLightAndVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
-	float	lightCosineConeAngle		= spotLightParam.z;
+	float	lightCosineConeAngle		= spotLightParam.w;
 	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
 
 	if( (distanceOfLightAndVertex < lightRadius) && 
