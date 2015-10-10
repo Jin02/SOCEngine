@@ -234,7 +234,7 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 
 	float3 fresnel0		= lightingParams.specularColor; //float3(0.4f, 0.4f, 0.4f);
 	float roughness		= lightingParams.roughness; //0.6f
-	float intensity		= commonParamas.lightIntensity;
+	float intensity		= commonParamas.lightIntensity * 2;
 
 	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
 	resultDiffuseColor = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * diffuseEnergyConservation * intensity;
