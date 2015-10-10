@@ -37,7 +37,7 @@ void TestScene::OnInitialize()
 	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 
 	Importer::MeshImporter importer;
-	testObject = importer.Load("./Resources/Capsule/capsule.obj");
+	testObject = importer.Load("./Resources/Sphere/sphere.obj");
 //	testObject = importer.Load("./Resources/tt.obj");
 
 	//testObject = importer.Load("./Resources/Cube/Cube.obj");
@@ -53,7 +53,16 @@ void TestScene::OnInitialize()
 	AddObject(testObject);
 
 	light = new Object("Light");
-	light->AddComponent<DirectionalLight>();
+
+	//light->AddComponent<PointLight>();
+	//light->SetRadius(10.0f);
+	//light->GetTransform()->UpdatePosition(Vector3(4, 4, 0));
+
+	SpotLight* sl = light->AddComponent<SpotLight>();
+	light->SetRadius(10.0f);
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	sl->SetSpotAngleDegree(5.0f);
+
 	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
 	AddObject(light);

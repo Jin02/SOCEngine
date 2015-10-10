@@ -25,7 +25,7 @@ uint GetNumOfPointLight()
 
 uint GetNumOfSpotLight()
 {
-	return (tbrParam_packedNumOfLights & 0x001FFC00) >> 10;
+	return (tbrParam_packedNumOfLights >> 10) & 0x7FF;
 }
 
 uint GetNumOfDirectionalLight()

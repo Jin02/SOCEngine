@@ -57,7 +57,7 @@ void MainCamera::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
-	EnableRenderTransparentMesh(true);
+	EnableRenderTransparentMesh(false);
 
 	_deferredShadingWithLightCulling = new TBDR::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_emission, _specular_metallic, _normal_roughness, backBufferSize);

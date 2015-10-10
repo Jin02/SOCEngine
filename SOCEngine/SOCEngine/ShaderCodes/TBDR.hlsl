@@ -59,6 +59,10 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 					 in LightingParams lightingParams, float3 vertexWorldPosition)
 {
+	//resultDiffuseColor = float3(0,0,0);
+	//resultSpecularColor = float3(0,0,0);
+
+	lightingParams.lightIndex = 0;
 	float4 spotLightParam	= g_inputSpotLightParamBuffer[lightingParams.lightIndex];
 	float3 spotLightDir;
 	{
@@ -66,7 +70,7 @@ void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularCol
 		spotLightDir.z		= sqrt(1.0f - spotLightDir.x*spotLightDir.x - spotLightDir.y*spotLightDir.y);	
 
 		bool isDirZMinus	= spotLightParam.w < 0;
-		spotLightDir.z		= spotLightDir.z * (1.0f - (float)(2.0f * (uint)isDirZMinus));
+		spotLightDir.z		= lerp(spotLightDir.z, -spotLightDir.z, isDirZMinus);
 	}
 
 	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
@@ -263,7 +267,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		accumulativeSpecular		+= specular;
 	}
 
-	uint spotLightIdx = ((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
+	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
@@ -344,25 +348,25 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 
 #if defined(DEBUG_MODE)
-	float3 debugTiles = float3(0, 0, 0);
-	int debugLightCount = s_lightIndexCounter;
-						//+ (s_lightIndexCounter - pointLightCountInThisTile)
-						//+ (int)isRenderDL * directionalLightCount;
+	//float3 debugTiles = float3(0, 0, 0);
+	//int debugLightCount = s_lightIndexCounter;
+	//					//+ (s_lightIndexCounter - pointLightCountInThisTile)
+	//					//+ (int)isRenderDL * directionalLightCount;
 
-	if(debugLightCount > 0)
-		debugTiles = float3(1, 0, 0);
-	if(debugLightCount > 1)
-		debugTiles = float3(0, 1, 0);
-	if(debugLightCount > 2)
-		debugTiles = float3(0, 0, 1);
-	if(debugLightCount > 3)
-		debugTiles = float3(0, 1, 1);
-	if(debugLightCount > 4)
-		debugTiles = float3(1, 1, 0);
-	if(debugLightCount > 5)
-		debugTiles = float3(1, 1, 1);	
+	//if(debugLightCount > 0)
+	//	debugTiles = float3(1, 0, 0);
+	//if(debugLightCount > 1)
+	//	debugTiles = float3(0, 1, 0);
+	//if(debugLightCount > 2)
+	//	debugTiles = float3(0, 0, 1);
+	//if(debugLightCount > 3)
+	//	debugTiles = float3(0, 1, 1);
+	//if(debugLightCount > 4)
+	//	debugTiles = float3(1, 1, 0);
+	//if(debugLightCount > 5)
+	//	debugTiles = float3(1, 1, 1);	
 
-	g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
+	//g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
 	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
 #endif
