@@ -10,8 +10,8 @@ using namespace Rendering::Shader;
 using namespace Resource;
 
 RenderManager::RenderManager()
+	: _opaqueMeshes(), _alphaBlendMeshes(), _transparentMeshes()
 {
-
 }
 
 RenderManager::~RenderManager()

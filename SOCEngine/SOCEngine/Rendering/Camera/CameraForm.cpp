@@ -130,7 +130,7 @@ void CameraForm::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 {
 	const RenderManager::MeshList& transparentList = renderMgr->GetTransparentMeshes();
-	if( transparentList.updateCounter > _transparentMeshQueue.updateCounter )
+	if( transparentList.updateCounter != _transparentMeshQueue.updateCounter )
 	{
 		const auto& transparentMeshAddrSet = transparentList.meshes.GetVector();
 		auto& thisCamMeshes = _transparentMeshQueue.meshes;

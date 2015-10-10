@@ -28,7 +28,7 @@ namespace Rendering
 
 				uint updateCounter;
 
-				MeshList(){}
+				MeshList() : updateCounter(0) {}
 				~MeshList(){}
 			};
 			enum class DefaultVertexInputTypeFlag : uint
