@@ -44,7 +44,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 
 #if defined(USE_PBR_TEXTURE)
 	float roughness = normalTexture.Sample(GBufferDefaultSampler, input.uv).a;
-	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
+	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic, outGBuffer.normal_roughness);
 #else
 	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic, outGBuffer.normal_roughness);
 #endif
