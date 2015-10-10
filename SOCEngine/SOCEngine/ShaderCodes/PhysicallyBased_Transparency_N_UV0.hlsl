@@ -36,7 +36,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
-	float3 normal	= input.normal;
+	float3 normal	= normalize(input.normal);
 
 #if defined(USE_PBR_TEXTURE)
 	float roughness = normalTexture.Sample(defaultSampler, input.uv).a;

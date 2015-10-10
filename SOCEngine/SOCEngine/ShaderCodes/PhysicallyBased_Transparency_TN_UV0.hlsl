@@ -44,7 +44,7 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 	bool hasNormalMap = HasNormalTexture();
 
 	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
-	float3 normal = lerp(input.normal, bumpedNormal, hasNormalMap);
+	float3 normal = lerp(normalize(input.normal), bumpedNormal, hasNormalMap);
 
 #if defined(USE_PBR_TEXTURE)
 	float roughness = normalMap.a;
