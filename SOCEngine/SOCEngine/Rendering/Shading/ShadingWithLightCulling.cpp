@@ -47,7 +47,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
 
-	// Input buffer
+	// Additional Input buffer
 	{
 		// Point Light Color
 		{
@@ -76,7 +76,7 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 			{
 				uint idx = (uint)InputBufferShaderIndex::DirectionalLightColor;
 				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorBufferSR();
-				AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
+				AddInputBufferToList(_inputDirectionalLightColorBuffer, idx, srBuffer);
 			}
 
 			// Param half / DirX, DirY
