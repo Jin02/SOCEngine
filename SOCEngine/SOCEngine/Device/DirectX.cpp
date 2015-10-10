@@ -50,7 +50,8 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	sd.BufferDesc.Height = winSize.h;
 
 	sd.BufferCount = 1;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	//sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 0;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 
@@ -173,18 +174,18 @@ void DirectX::CreateBlendStates()
 
 	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	blendDesc.RenderTarget[0] = renderTargetBlendDesc;	// albedo_emission or color
-	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_metallic
-	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc;
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;
+	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
 	if( FAILED(_device->CreateBlendState(&blendDesc, &_opaqueBlend)) )
 		ASSERT_MSG("Error!, device cant create opaque blend state");
 
-	blendDesc.AlphaToCoverageEnable = true;
+	blendDesc.AlphaToCoverageEnable				= true;
 	if( FAILED(_device->CreateBlendState(&blendDesc, &_alphaToCoverageBlend)) )
 		ASSERT_MSG("Error!, device cant create alphaToCoverage blend state");
 
-	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.AlphaToCoverageEnable				= false;
 	renderTargetBlendDesc.BlendEnable			= true;
 
 	renderTargetBlendDesc.SrcBlend				= D3D11_BLEND_SRC_ALPHA;
@@ -193,9 +194,9 @@ void DirectX::CreateBlendStates()
 	renderTargetBlendDesc.SrcBlendAlpha			= D3D11_BLEND_SRC_ALPHA;
 	renderTargetBlendDesc.DestBlendAlpha		= D3D11_BLEND_INV_SRC_ALPHA;
 
-	blendDesc.RenderTarget[0] = renderTargetBlendDesc;	// albedo_emission or color
-	blendDesc.RenderTarget[1] = renderTargetBlendDesc;	// specular_metallic
-	blendDesc.RenderTarget[2] = renderTargetBlendDesc;	// normal_roughness
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc;
+	blendDesc.RenderTarget[1] = renderTargetBlendDesc;
+	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
 	if( FAILED(_device->CreateBlendState(&blendDesc, &_alphaBlend)) )
 		ASSERT_MSG("Error!, device cant create _alphaBlend blend state");

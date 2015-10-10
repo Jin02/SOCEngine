@@ -92,7 +92,6 @@ namespace Device
 
 		GET_ACCESSOR(BlendStateOpaque,						ID3D11BlendState*,			_opaqueBlend);
 		GET_ACCESSOR(BlendStateAlphaToCoverage,				ID3D11BlendState*,			_alphaToCoverageBlend);
-		//GET_ACCESSOR(BlendStateOpaqueDepthOnly,				ID3D11BlendState*,			_opaqueBlendDepthOnly);
 		GET_ACCESSOR(BlendStateAlpha,						ID3D11BlendState*,			_alphaBlend);
 
 		GET_ACCESSOR(DepthStateDisableDepthWrite,			ID3D11DepthStencilState*,	_depthDisableDepthWrite);
