@@ -52,7 +52,7 @@ namespace Math
 		static float SqrLegnth(const Vector4& a);
 
 	public:
-		void Normalize();
+		Vector4 Normalize();
 		void Set(float newX, float newY, float newZ, float newW);
 	};
 

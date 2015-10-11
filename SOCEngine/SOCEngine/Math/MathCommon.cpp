@@ -39,8 +39,9 @@ namespace Math
 
 		int exponent = (int)((floatBit &0x7F800000) >> 23) - 127 + 15;
 		ASSERT_COND_MSG(exponent < 31, "Strange Exp");
+
 		if(exponent <= 0)
-			return 0;
+			return (unsigned short)((floatBit & 0x80000000) >> 16);
 
 		unsigned int outSign		= (floatBit & 0x80000000) >> 16;
 		unsigned int outExp			= ((unsigned int)exponent) << 10;

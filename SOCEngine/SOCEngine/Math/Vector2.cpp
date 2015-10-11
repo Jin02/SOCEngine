@@ -148,10 +148,9 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y);
 	}
 
-	void Vector2::Normalize()
+	Vector2 Vector2::Normalize()
 	{
-		float v = Vector2::Length(*this);
-		*this = *this / v;
+		return Vector2::Normalize(*this);
 	}
 
 	void Vector2::Set(float newX, float newY)

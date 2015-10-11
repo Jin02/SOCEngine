@@ -6,14 +6,13 @@
 #include <utility>
 #include <math.h>
 #include <vector>
+#include <array>
 
 namespace Importer
 {
 	class ImporterUtility
 	{
 	public:
-		//T = Tangent, B = Binormal, N = normal
-		static void ReCalculateTBN(std::vector<Math::Vector3>& outTangents, std::vector<Math::Vector3>& outBinormal, std::vector<Math::Vector3>& outNormal,
-			const Math::Vector3* vertices, unsigned int vertexCount, const Math::Vector3* normals, const Math::Vector2* texcoords, const ENGINE_INDEX_TYPE* indices, unsigned int indexCount);
+		static void CalculateTangent(Math::Vector3& outTangents, const std::array<Math::Vector3, 3>& vertex,	const std::array<Math::Vector2, 3>& uvs);
 	};
 }

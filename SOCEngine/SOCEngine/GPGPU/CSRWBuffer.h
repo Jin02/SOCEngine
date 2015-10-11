@@ -22,7 +22,7 @@ namespace GPGPU
 
 		public:
 			GET_ACCESSOR(Buffer, ID3D11Buffer*, _buffer);
-			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView*, _srv);
+			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView* const*, &_srv);
 		};
 	}
 }

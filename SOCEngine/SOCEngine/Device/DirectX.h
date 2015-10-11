@@ -32,7 +32,10 @@ namespace Device
 		D3D_FEATURE_LEVEL			_featureLevel;
 		D3D_DRIVER_TYPE				_driverType;
 
-		ID3D11RasterizerState*		_disableCulling;
+		ID3D11RasterizerState*		_rasterizerClockwiseDisableCulling;
+		ID3D11RasterizerState*		_rasterizerClockwiseDefault;
+		ID3D11RasterizerState*		_rasterizerCounterClockwiseDisableCulling;
+		ID3D11RasterizerState*		_rasterizerCounterClockwiseDefault;
 
 		ID3D11BlendState*			_opaqueBlend;
 
@@ -82,11 +85,13 @@ namespace Device
 
 		GET_ACCESSOR(BackBufferRTV,							ID3D11RenderTargetView*,	_renderTargetView);
 
-		GET_ACCESSOR(RasterizerStateDisableCulling,			ID3D11RasterizerState*,		_disableCulling);
+		GET_ACCESSOR(RasterizerStateCCWDisableCulling,		ID3D11RasterizerState*,		_rasterizerCounterClockwiseDisableCulling);
+		GET_ACCESSOR(RasterizerStateCCWDefaultState,		ID3D11RasterizerState*,		_rasterizerCounterClockwiseDefault);
+		GET_ACCESSOR(RasterizerStateCWDisableCulling,		ID3D11RasterizerState*,		_rasterizerClockwiseDisableCulling);
+		GET_ACCESSOR(RasterizerStateCWDefaultState,			ID3D11RasterizerState*,		_rasterizerClockwiseDefault);
 
 		GET_ACCESSOR(BlendStateOpaque,						ID3D11BlendState*,			_opaqueBlend);
 		GET_ACCESSOR(BlendStateAlphaToCoverage,				ID3D11BlendState*,			_alphaToCoverageBlend);
-		//GET_ACCESSOR(BlendStateOpaqueDepthOnly,				ID3D11BlendState*,			_opaqueBlendDepthOnly);
 		GET_ACCESSOR(BlendStateAlpha,						ID3D11BlendState*,			_alphaBlend);
 
 		GET_ACCESSOR(DepthStateDisableDepthWrite,			ID3D11DepthStencilState*,	_depthDisableDepthWrite);

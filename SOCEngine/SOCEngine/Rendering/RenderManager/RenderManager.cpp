@@ -3,66 +3,39 @@
 #include "Director.h"
 #include "ResourceManager.h"
 
+using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Manager;
 using namespace Rendering::Shader;
 using namespace Resource;
 
 RenderManager::RenderManager()
+	: _opaqueMeshes(), _alphaBlendMeshes(), _transparentMeshes()
 {
-
 }
 
 RenderManager::~RenderManager()
 {
 }
 
-Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
+Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 													 const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName = "";
 	if(customShaderFileName ? customShaderFileName->empty() : true)
-	{
-		std::string defaultVertexInputTypeStr = "";
-
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::N)
-		{
-			if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::TB)
-				defaultVertexInputTypeStr += "TB";
-
-			defaultVertexInputTypeStr += "N_";
-		}
-
-		if(defaultVertexInputTypeFlag & (uint)DefaultVertexInputTypeFlag::UV)
-			defaultVertexInputTypeStr += "UV";
-
-		std::string frontFileName = "";
-
-		if(meshType == MeshType::Opaque || meshType == MeshType::AlphaTest)
-			frontFileName = "PhysicallyBased_GBuffer_";
-		else if(meshType == MeshType::Transparent)
-			frontFileName = "PhysicallyBased_Transparency_";
-		else
-		{
-			ASSERT_MSG("Error, unsupported mesh type");
-		}
-
-		fileName = frontFileName + defaultVertexInputTypeStr;
-	}
+		MakeDefaultSahderFileName(fileName, meshType, defaultVertexInputTypeFlag);
 	else
-	{
 		fileName = (*customShaderFileName);
-	}
 
 	std::hash_map<uint, const Shader::ShaderGroup>* repo = nullptr;
-	std::vector<ShaderMacro>	targetShaderMacros;
+	std::vector<ShaderMacro> targetShaderMacros;
 
 	if(macros)
 		targetShaderMacros.assign(macros->begin(), macros->end());
 
-	if(meshType == MeshType::Opaque)
+	if(meshType == Geometry::MeshRenderer::Type::Opaque)
 		repo = &_gbufferShaders;
-	else if(meshType == MeshType::AlphaTest)
+	else if(meshType == Geometry::MeshRenderer::Type::AlphaBlend)
 	{
 		repo = &_gbufferShaders_alphaTest;
 
@@ -70,7 +43,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	else if(meshType == MeshType::Transparent)
+	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
 	{
 		repo = &_transparentShaders;
 
@@ -105,7 +78,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(MeshType meshType, uint def
 		shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
 		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 
-		if(meshType == MeshType::Transparent)
+		if(meshType == Geometry::MeshRenderer::Type::Transparent)
 		{
 			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
 			_transparent_depthOnly_Shaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
@@ -123,91 +96,176 @@ bool RenderManager::TestInit()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=0; i< ((uint)MeshType::AlphaTest + 1); ++i)
+	for(uint i=1; i< ((uint)Geometry::MeshRenderer::Type::AlphaBlend + 1); ++i)
 	{
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV, nullptr, &macros);
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N, nullptr, &macros);
-		LoadDefaultSahder((MeshType)i, (uint)DefaultVertexInputTypeFlag::UV | (uint)DefaultVertexInputTypeFlag::N | (uint)DefaultVertexInputTypeFlag::TB, nullptr, &macros);
+		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
+
+		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0 | 
+			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
+
+		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+			(uint)DefaultVertexInputTypeFlag::UV0 | 
+			(uint)DefaultVertexInputTypeFlag::NORMAL | 
+			(uint)DefaultVertexInputTypeFlag::TANGENT, nullptr, &macros);
 	}
 
 	return true;
 }
 
-void RenderManager::UpdateRenderList(const Mesh::Mesh* mesh, MeshType type)
+void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
 {
-	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
-	MeshList* meshList = nullptr;
+	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
 
-	if( type == MeshType::Transparent )
-		meshList = &_transparentMeshes;
-	else if( type == MeshType::Opaque )
-		meshList = &_opaqueMeshes;
-	else if( type == MeshType::AlphaTest )
-		meshList = &_alphaTestMeshes;
-	else
+	auto GetMeshList = [&](Geometry::MeshRenderer::Type renderType)
 	{
-		ASSERT_MSG("Error, unsupported mesh type");
+		MeshList* meshList = nullptr;
+
+		if( renderType == Geometry::MeshRenderer::Type::Transparent )
+			meshList = &_transparentMeshes;
+		else if( renderType == Geometry::MeshRenderer::Type::Opaque )
+			meshList = &_opaqueMeshes;
+		else if( renderType == Geometry::MeshRenderer::Type::AlphaBlend )
+			meshList = &_alphaBlendMeshes;
+		else
+			ASSERT_MSG("Error, unsupported mesh type");
+		
+		return meshList;
+	};
+
+	Geometry::MeshRenderer::Type currentType	= mesh->GetMeshRenderer()->GetCurrentRenderType();
+	Geometry::MeshRenderer::Type prevType		= mesh->GetPrevRenderType();
+
+	if(prevType == currentType)
+		return; // not changed
+
+	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
+
+	if(prevType != Geometry::MeshRenderer::Type::Unknown)
+	{
+		MeshList* prevMeshList = GetMeshList(prevType);
+
+		std::set<MeshList::meshkey>* meshSets = prevMeshList->meshes.Find(vbKey);
+		if(meshSets)
+		{
+			meshSets->erase(meshAddress);
+
+			if(meshSets->empty())
+				prevMeshList->meshes.Delete(vbKey);
+
+			++prevMeshList->updateCounter;
+		}
 	}
 
-	meshList->meshes.Delete(meshAddress);
+	if(currentType != Geometry::MeshRenderer::Type::Unknown)
+	{
+		MeshList* currentMeshList = GetMeshList(currentType);
+		std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
+		if(meshSets == nullptr)
+		{
+			std::set<MeshList::meshkey> set;
+			set.insert(meshAddress);
 
-	if(meshList->meshes.Find(meshAddress) == nullptr)
-		meshList->meshes.Add(meshAddress, mesh);
-
-	++(meshList->updateCounter);
+			currentMeshList->meshes.Add(vbKey, set);
+		}
+		else
+		{
+			meshSets->insert(meshAddress);
+		}
+		++currentMeshList->updateCounter;
+	}
 }
 
-bool RenderManager::HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type)
+bool RenderManager::HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type)
 {
-	unsigned int meshAddress = reinterpret_cast<unsigned int>(mesh);
-	const Mesh::Mesh* foundedMesh = nullptr;
+	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
+	const Geometry::Mesh* foundedMesh = nullptr;
+	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
 
-	if(type == MeshType::Transparent)
-	{
-		auto found = _transparentMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
-	else if(type == MeshType::Opaque)
-	{
-		auto found = _opaqueMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
-	else if(type == MeshType::AlphaTest)
-	{
-		auto found = _alphaTestMeshes.meshes.Find(meshAddress);
-		foundedMesh = found ? (*found) : nullptr;
-	}
+	MeshList* meshList = nullptr;
+
+	if(type == Geometry::MeshRenderer::Type::Transparent)
+		meshList = &_transparentMeshes;
+	else if(type == Geometry::MeshRenderer::Type::Opaque)
+		meshList = &_opaqueMeshes;
+	else if(type == Geometry::MeshRenderer::Type::AlphaBlend)
+		meshList = &_alphaBlendMeshes;
 	else
 	{
-		ASSERT_MSG("Error!, undefined MeshType");
+		ASSERT_MSG("Error!, undefined Geometry::MeshRenderer::Type");
+	}
+
+	std::set<MeshList::meshkey>* meshSets = meshList->meshes.Find(vbKey);
+	if(meshSets)
+	{
+		auto foundIter = meshSets->find(meshAddress);
+		foundedMesh = (foundIter != meshSets->end()) ? reinterpret_cast<Geometry::Mesh*>(*foundIter) : nullptr;
 	}
 
 	return foundedMesh != nullptr;
 }
 
 bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
-{
-	auto FindObjectFromHashMap = [](Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key)
-	{
-		auto iter = hashMap.find(key);
-		if(iter == hashMap.end())
-			return false;
-
-		outObject = iter->second;
-		return true;
-	};
-
-	return FindObjectFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
+{	
+	return FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
 bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
 {
-	auto iter = isDepthOnly ?	_transparent_depthOnly_Shaders.find(bufferFlag) : 
-								_transparentShaders.find(bufferFlag);
+	return FindShaderFromHashMap(out, isDepthOnly ? _transparent_depthOnly_Shaders : _transparentShaders, bufferFlag);
+}
 
-	if(iter == _transparentShaders.end())
+bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
+{
+	auto iter = hashMap.find(key);
+	if(iter == hashMap.end())
 		return false;
 
-	out = iter->second;
+	outObject = iter->second;
 	return true;
+}
+
+bool RenderManager::HasGBufferShader(uint bufferFlag, bool isAlphaTest) const
+{
+	ShaderGroup dummy;
+	return FindGBufferShader(dummy, bufferFlag, isAlphaTest);
+}
+
+bool RenderManager::HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const
+{
+	ShaderGroup dummy;
+	return FindTransparencyShader(dummy, bufferFlag, isDepthOnly);
+}
+
+void RenderManager::MakeDefaultSahderFileName(
+	std::string& outFileName,
+	Geometry::MeshRenderer::Type meshType, uint bufferFlag) const
+{
+	std::string defaultVertexInputTypeStr = "";
+
+	if(bufferFlag & (uint)DefaultVertexInputTypeFlag::NORMAL)
+	{
+		if(bufferFlag & (uint)DefaultVertexInputTypeFlag::TANGENT)
+			defaultVertexInputTypeStr += "T";
+
+		defaultVertexInputTypeStr += "N_";
+	}
+
+	if(bufferFlag & (uint)DefaultVertexInputTypeFlag::UV0)
+		defaultVertexInputTypeStr += "UV0";
+
+	std::string frontFileName = "";
+
+	if( meshType == Geometry::MeshRenderer::Type::Opaque || 
+		meshType == Geometry::MeshRenderer::Type::AlphaBlend )
+		frontFileName = "PhysicallyBased_GBuffer_";
+	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
+		frontFileName = "PhysicallyBased_Transparency_";
+	else
+	{
+		ASSERT_MSG("Error, unsupported mesh type");
+	}
+
+	outFileName = frontFileName + defaultVertexInputTypeStr;
 }

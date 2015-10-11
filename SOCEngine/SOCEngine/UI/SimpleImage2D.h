@@ -15,7 +15,7 @@ namespace UI
 		};
 
 	private:
-		Rendering::Mesh::MeshFilter*		_meshFilter;
+		Rendering::Geometry::MeshFilter*	_meshFilter;
 		Rendering::Material*				_material;
 		
 		bool								_isOtherMaterial;
@@ -23,7 +23,7 @@ namespace UI
 		bool								_changeSize;
 
 	public:
-		SimpleImage2D(const std::string& name, const Core::Object* parent = nullptr);
+		SimpleImage2D(const std::string& name, Core::Object* parent = nullptr);
 		virtual ~SimpleImage2D();
 
 	public:

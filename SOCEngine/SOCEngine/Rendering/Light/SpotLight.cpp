@@ -36,11 +36,11 @@ void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param
 	
 	outParam.dirX = Math::Common::FloatToHalf(transform->GetForward().x);
 	outParam.dirY = Math::Common::FloatToHalf(transform->GetForward().y);
+	outParam.dirZ = Math::Common::FloatToHalf(transform->GetForward().z);
 
 	float radian = Math::Common::Deg2Rad(_spotAngleDegree);
-
-	outParam.coneCosAngle			= Math::Common::FloatToHalf(radian);
-	outParam.falloffWithDirZSignBit = Math::Common::FloatToHalf( _falloff * (1.0f - 2.0f * (transform->GetForward().z < 0)) );
+	float cosAngle = cos(radian);
+	outParam.coneCosAngle = Math::Common::FloatToHalf(cosAngle);
 }
 
 Core::Component* SpotLight::Clone() const

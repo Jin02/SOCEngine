@@ -33,9 +33,4 @@
       <Filter>템플릿</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shader\Test.hlsl">
-      <Filter>쉐이더 파일</Filter>
-    </FxCompile>
-  </ItemGroup>
 </Project>

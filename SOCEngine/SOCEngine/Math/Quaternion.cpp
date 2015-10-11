@@ -253,9 +253,9 @@ namespace Math
 
 	void Quaternion::RotationMatrix(Quaternion& out, const Matrix& m)
 	{
-		float s, trace;
+		float s = 0.0f;
+		float trace = m._m[0][0] + m._m[1][1] + m._m[2][2] + 1.0f;
 
-		trace = m._m[0][0] + m._m[1][1] + m._m[2][2] + 1.0f;
 		if (trace > 1.0f)
 		{
 			s = 2.0f * sqrtf(trace);
@@ -329,15 +329,17 @@ namespace Math
 		out.w = cosf(angle / 2.0f);
 	}
 
-	Quaternion& Quaternion::Normalize()
+	Quaternion Quaternion::Normalize()
 	{
-		Normalize(*this, *this);
-		return (*this);
+		Quaternion q;
+		Quaternion::Normalize(q, *this);
+		return q;
 	}
-	Quaternion& Quaternion::Inverse()
+	Quaternion Quaternion::Inverse()
 	{
-		Inverse(*this, *this);
-		return (*this);
+		Quaternion q;
+		Inverse(q, *this);
+		return q;
 	}
 	Vector3 Quaternion::ToEuler()
 	{

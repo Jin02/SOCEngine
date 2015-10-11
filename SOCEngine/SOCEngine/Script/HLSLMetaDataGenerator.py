@@ -172,7 +172,7 @@ class ParseCode:
 
 		return structName
 	def ParseSemanticVariable(self, code, layoutList):
-		semancVariableNames = ["POSITION", "BINORMAL", "NORMAL", "TANGENT", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
+		#semancVariableNames = ["POSITION", "BINORMAL", "NORMAL", "TANGENT", "TEXCOORD", "SV_InstanceID", "INSTANCE"]
 		modifiedCode 		= CleanUpCode(code)
 
 		if '}' in modifiedCode:
@@ -188,48 +188,33 @@ class ParseCode:
 			return code[colonPos+1 : semiColonPos].strip()
 
 		semanticIndex 	= 0
-		semanticName 	= ""
+		semanticName 	= ParseSemanticName(modifiedCode)
 		usingType 		= "VERTEX"
 		foundNamePos 	= -1
 
-		# find semanticName
-		for name in semancVariableNames:
-			foundNamePos = modifiedCode.find(name)
-			if foundNamePos != -1:
-				semanticName = name
+		if semanticName == None:
+			return
+
+		nameLength = len(semanticName)
+
+		foundIdx = 0
+		for si in xrange(nameLength-1, 0, -1):
+			foundIdx = si
+			if not semanticName[si:nameLength].isdigit():
 				break
 
-		# find texcoord semanticIndex
-		if semanticName == "TEXCOORD":
-			for i in xrange(0,10):
-				if (semanticName+str(i)) in modifiedCode:
-					semanticName = semanticName
-					semanticIndex = i
-					break
+		hasSemanticIdx = (nameLength-1) != foundIdx
+
+		if hasSemanticIdx:
+			semanticIndex = int(semanticName[foundIdx+1:])
+			semanticName = semanticName[:foundIdx+1]
 		elif semanticName == "SV_InstanceID": # not write
 			return
-		elif semanticName == "NORMAL":
-			if "BINORMAL" in modifiedCode:
-				semanticName = "BINORMAL"
 		elif semanticName == "INSTANCE":
-			semanticName 	= ParseSemanticName(code)
-			usingType 		= "INSTANCE"
-		elif semanticName == "POSITION":
-			if "SV_POSITION" in modifiedCode:
-				semanticName = "SV_POSITION"
-				foundNamePos -= 3 # 3 is len('SV_')
+			usingType = "INSTANCE"
 
 		modifiedCode = modifiedCode[:foundNamePos]
-
-		# parse other semanticName
-		if semanticName == '':
-			semanticName = ParseSemanticName(modifiedCode)
-			if semanticName == None:
-				return
-
-		#splitCodes have ['', 'float4', 'Pos', ':', '']
 		splitCodes 		= modifiedCode.split(' ')
-
 
 		typeOfVariable 	= ''
 		nameOfVariable 	= ''		
@@ -276,9 +261,6 @@ class ParseCode:
 				num = int(numTxt)
 
 			alignedByteOffset = 4 * num + beforeLayout.alignedByteOffset
-
-			if beforeLayout.semanticName == 'POSITION':
-				alignedByteOffset -= 4
 
 			return alignedByteOffset		
 

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <FBX_SDK>C:\Program Files\Autodesk\FBX\FBX SDK\2014.1\</FBX_SDK>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(FBX_SDK)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(FBX_SDK)lib\vs2012\x86\debug;$(LibraryPath)</LibraryPath>
+    <_PropertySheetDisplayName>ExternalLib</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="FBX_SDK">
+      <Value>$(FBX_SDK)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

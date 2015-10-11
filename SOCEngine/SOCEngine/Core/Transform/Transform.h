@@ -23,7 +23,6 @@ namespace Core
 		Math::Vector3		_scale;
 		Math::Vector3		_eulerAngle;
 
-		float				_radius;
 		uint				_updateCounter;
 
 	public:
@@ -35,8 +34,8 @@ namespace Core
 		static void UpdateRotationMatrixToAxis(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward);
 
 	public:
-		void LookAt(Transform *target);
-		void LookAt(const Math::Vector3& worldPosition);
+		void LookAtWorld(Transform *target);
+		void LookAtWorld(const Math::Vector3& worldPosition);
 
 		void Rotate(const Math::Vector3& eulerAngles);
 		void Rotate(float x, float y, float z);
@@ -57,7 +56,6 @@ namespace Core
 		void UpdateTransform(const Transform& transform);
 
 	public:
-		GET_SET_ACCESSOR(Radius,		float,						_radius);
 		GET_ACCESSOR(LocalPosition,		const Math::Vector3&,		_position);
 		GET_ACCESSOR(LocalEulerAngle,	const Math::Vector3&,		_eulerAngle);
 		GET_ACCESSOR(LocalScale,		const Math::Vector3&,		_scale);
@@ -67,6 +65,7 @@ namespace Core
 		GET_ACCESSOR(Up,				const Math::Vector3&,		_up);
 		GET_ACCESSOR(Right,				const Math::Vector3&,		_right);
 
+		void FetchLocalMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldPosition(Math::Vector3& outPosition) const;
 		void FetchWorldEulerAngle(Math::Vector3& outEuler) const;

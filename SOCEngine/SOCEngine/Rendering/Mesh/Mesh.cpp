@@ -3,11 +3,13 @@
 //#include "TransformPipelineParam.h"
 
 using namespace Rendering::Manager;
-using namespace Rendering::Mesh;
+using namespace Rendering::Geometry;
+using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _transformConstBuffer(nullptr)
+	_selectMaterialIndex(0), _transformConstBuffer(nullptr),
+	_prevRenderType(MeshRenderer::Type::Unknown)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -17,32 +19,40 @@ Mesh::~Mesh()
 	OnDestroy();
 }
 
-bool Mesh::Initialize(const CreateFuncArguments& args)
+void Mesh::Initialize(const CreateFuncArguments& args)
 {
 	_filter = new MeshFilter;
-	if(_filter->CreateBuffer(args) == false)
-	{
+	if(_filter->Initialize(args) == false)
 		ASSERT_MSG("Error, filter->cratebuffer");
-		SAFE_DELETE(_filter);
-		return false;
-	}
 
 	_renderer = new MeshRenderer;
 	if(_renderer->AddMaterial(args.material) == false)
-	{
 		ASSERT_MSG("Error, renderer addmaterial");
-		return false;
-	}
 
 	_transformConstBuffer = new Buffer::ConstBuffer;
 	if(_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput)) == false)
-	{
 		ASSERT_MSG("Error, transformBuffer->Initialize");
-		return false;
-	}
 
 	ClassifyRenderMeshType();
-	return true;
+}
+
+void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, 
+					  Rendering::Buffer::IndexBuffer*& indexBuffer,
+					  Rendering::Material*& initMaterial)
+{
+	_filter = new MeshFilter;
+	if(_filter->Initialize(vertexBuffer, indexBuffer) == false)
+		ASSERT_MSG("Error, filter->cratebuffer");
+
+	_renderer = new MeshRenderer;
+	if(_renderer->AddMaterial(initMaterial) == false)
+		ASSERT_MSG("Error, cant add material in MeshRenderer");
+
+	_transformConstBuffer = new Buffer::ConstBuffer;
+	if(_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput)) == false)
+		ASSERT_MSG("Error, transformBuffer->Initialize");
+
+	ClassifyRenderMeshType();
 }
 
 void Mesh::OnInitialize()
@@ -74,14 +84,8 @@ void Mesh::OnDestroy()
 void Mesh::ClassifyRenderMeshType()
 {
 	Manager::RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
-	if(_renderer)
-	{
-		bool isTransparentMesh = _renderer->IsTransparent();
-		RenderManager::MeshType type = isTransparentMesh ? 
-			RenderManager::MeshType::Transparent : RenderManager::MeshType::Opaque;
-
-		renderMgr->UpdateRenderList(this, type);
-	}
+	renderMgr->UpdateRenderList(this);
+	_prevRenderType = _renderer->GetCurrentRenderType();
 }
 
 void Mesh::OnRenderPreview()

@@ -25,8 +25,8 @@ namespace Rendering
 			virtual ~RenderTexture();
 
 		public:
-			// if SampleCount = -1, sampleCount = msaa.count
-			bool Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags, uint sampleCount = -1);
+			// if SampleCount = 0, sampleCount = msaa.count
+			bool Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags, uint sampleCount = 0);
 			void Destroy();
 			void SetRenderTarget(ID3D11DeviceContext* context, const DepthBuffer* depthBuffer);
 			void Clear(ID3D11DeviceContext* context, const Color& color);

@@ -10,7 +10,7 @@
 
 //dont use const reference
 #define SET_ACCESSOR_MATERIAL(name, type)\
-	inline void Set##name(const type& data)	{ SetVariable(#name, data);}
+	inline void Set##name(type data)	{ SetVariable(#name, data);}
 
 //dont use const reference
 #define GET_ACCESSOR_MATERIAL(name, type)\
@@ -33,6 +33,17 @@ namespace Rendering
 			Users
 		};
 
+		struct CustomShader
+		{
+			bool isDeferred;
+			Shader::ShaderGroup shaderGroup;
+
+			CustomShader();
+			CustomShader(bool isDeferred, const Shader::ShaderGroup& shaderGroup);
+
+			~CustomShader();
+		};
+
 
 	private:
 		std::string														_name;
@@ -48,9 +59,9 @@ namespace Rendering
 		uint															_variableUpdateCounter;
 
 	protected:
-		Shader::ShaderGroup												_customShaders; //in forward rendering
+		CustomShader													_customShaders; //in forward rendering
 		bool															_hasAlpha;
-		bool															_changedAlpha;
+		float															_alpha;
 
 	public:
 		Material(const std::string& name, Type type);
@@ -123,10 +134,9 @@ namespace Rendering
 		GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 		GET_ACCESSOR(Type, Type, _type);
 
-		GET_SET_ACCESSOR(ChangedAlpha, bool, _changedAlpha);
 		GET_SET_ACCESSOR(UVTiling, const Math::Vector2&, _tiling);
 
-		GET_SET_ACCESSOR(CustomShader, const Shader::ShaderGroup&, _customShaders);
+		GET_SET_ACCESSOR(CustomShader, const CustomShader&, _customShaders);
 
 		GET_ACCESSOR(VariableUpdateCounter, uint, _variableUpdateCounter);
 

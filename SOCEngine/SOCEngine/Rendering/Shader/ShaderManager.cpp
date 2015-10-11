@@ -81,15 +81,15 @@ bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::
 
 	if( fileName.find(".") == -1)
 	{
-		const char* extension[2] = {".fx", ".hlsl"};
+		const char* format[2] = {".fx", ".hlsl"};
 		for(int i=0; i<2; ++i)
 		{
-			fullPath = folderPath+fileName+extension[i];
+			fullPath = folderPath+fileName+format[i];
 			found = (bool)PathFileExists(fullPath.c_str());
 			if(found)	break;
 		}
 	}
-	else //fileName has extension
+	else //fileName has format
 	{
 		fullPath = folderPath+fileName;
 		found = (bool)PathFileExists(fullPath.c_str());
@@ -102,7 +102,7 @@ bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::
 	return true;
 }
 
-bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool recycleCode)
+bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool useRecycle)
 {
 	// Check preview shader codes.
 	{
@@ -135,25 +135,25 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 
 	file.close();
 
-	if(recycleCode)
+	if(useRecycle)
 		_shaderCodes.insert(std::make_pair(fileName, outCode));
 
 	return true;
 }
 
-bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool recycleCode)
+bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool useRecycle)
 {
-	std::string folder, fileName, extension;
-	if( Utility::String::ParseDirectory(fileFullPath, folder, fileName, extension) == false)
+	std::string folder, fileName, format;
+	if( Utility::String::ParseDirectory(fileFullPath, folder, fileName, format) == false)
 		return false;
 
-	return LoadShaderCode(outCode, folder, fileName, recycleCode);
+	return LoadShaderCode(outCode, folder, fileName, useRecycle);
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& fileFullPath, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<ShaderMacro>* macros)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& fileFullPath, const std::string& shaderType, const std::string& mainFunc, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string code = "";
-	bool loadSuccess = LoadShaderCode(code, fileFullPath, recycleCode);
+	bool loadSuccess = LoadShaderCode(code, fileFullPath, useRecycle);
 	ASSERT_COND_MSG(loadSuccess, "Error, cant load shader code");
 
 	ID3DBlob* blob = nullptr;
@@ -167,16 +167,16 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& fileFullPath, const std::
 	return blob;
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool recycleCode, const std::vector<ShaderMacro>* macros)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string fullPath = "";
 	bool success = MakeShaderFileFullPath(fullPath, folderPath, fileName);
 	ASSERT_COND_MSG(success, "Error, invalid path");
 
-	return CreateBlob(fullPath, shaderType, mainFunc, recycleCode, macros);
+	return CreateBlob(fullPath, shaderType, mainFunc, useRecycle, macros);
 }
 
-ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool recyleCode, const std::vector<ShaderMacro>* macros)
+ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::string& command, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc, shaderType;
 
@@ -186,7 +186,7 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 		return nullptr;
 	}
 
-	return CreateBlob(folderPath, fileName, shaderType, mainFunc, recyleCode, macros);
+	return CreateBlob(folderPath, fileName, shaderType, mainFunc, useRecycle, macros);
 }
 
 bool ShaderManager::CommandValidator(const std::string& fullCommand, std::string* outFileName, std::string* outShaderType, std::string* outMainFunc)
@@ -221,7 +221,7 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
-VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc;
 
@@ -235,7 +235,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, recyleCode, macros);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "vs", mainFunc, useRecycle, macros);
 		if(blob == nullptr)
 			return nullptr;
 
@@ -244,13 +244,14 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		bool success = shader->CreateShader(vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
-		_shaders.insert(std::make_pair(VS_FULL_COMMAND(fileName, mainFunc), shader));
+		std::string key = VS_FULL_COMMAND(fileName, mainFunc);
+		_shaders.insert(std::make_pair(key, shader));
 	}
 
 	return shader;
 }
 
-PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool recyleCode, const std::vector<ShaderMacro>* macros)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc;
 
@@ -261,14 +262,15 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 	if(shader == nullptr)
 	{
-		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, recyleCode, macros);
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "ps", mainFunc, useRecycle, macros);
 		if(blob == nullptr)
 			return nullptr;
 
 		shader = new PixelShader(blob);
 		ASSERT_COND_MSG(shader->CreateShader(), "Error, Not Created PS");
 
-		_shaders.insert(std::make_pair(PS_FULL_COMMAND(fileName, mainFunc), shader));
+		std::string key = PS_FULL_COMMAND(fileName, mainFunc);
+		_shaders.insert(std::make_pair(key, shader));
 	}
 
 	return shader;

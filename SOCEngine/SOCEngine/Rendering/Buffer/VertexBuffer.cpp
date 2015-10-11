@@ -2,9 +2,10 @@
 #include "Director.h"
 
 using namespace Rendering::Buffer;
+using namespace Rendering::Shader;
 using namespace Device;
 
-VertexBuffer::VertexBuffer() : BaseBuffer()
+VertexBuffer::VertexBuffer() : BaseBuffer(), _key("")
 {
 }
 
@@ -12,13 +13,21 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferSize, unsigned int count, bool isDynamic)
-{	
-	_stride = bufferSize;
+void VertexBuffer::Initialize(
+	const void* sysMem, unsigned int bufferStrideSize, unsigned int count,
+	bool isDynamic, const std::string& key,
+	const std::vector<VertexShader::SemanticInfo>* semanticInfos)
+{
+	if(semanticInfos)
+		_semantics = (*semanticInfos);
+
+	_stride			= bufferStrideSize;
+	_vertexCount	= count;
+	_key			= key;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
-	bufferDesc.ByteWidth = bufferSize * count;
+	bufferDesc.ByteWidth = bufferStrideSize * count;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
 	bufferDesc.MiscFlags = 0;
@@ -32,8 +41,6 @@ bool VertexBuffer::Initialize( const void* sysMem, unsigned int bufferSize, unsi
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create vb");
-
-	return true;
 }
 
 void VertexBuffer::IASetBuffer(ID3D11DeviceContext* context)

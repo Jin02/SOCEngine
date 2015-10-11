@@ -7,7 +7,7 @@
 
 namespace Rendering
 {
-	namespace Mesh
+	namespace Geometry
 	{
 		class Mesh : public Core::Component
 		{
@@ -25,6 +25,7 @@ namespace Rendering
 
 			MaterialUpdateType					_updateType;
 			unsigned int						_selectMaterialIndex;
+			MeshRenderer::Type					_prevRenderType;
 
 			Core::TransformPipelineShaderInput	_prevTransformData;
 
@@ -41,7 +42,8 @@ namespace Rendering
 				~CreateFuncArguments() {}
 			};
 
-			bool Initialize(const CreateFuncArguments& args);
+			void Initialize(const CreateFuncArguments& args);
+			void Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer, Rendering::Material*& initMaterial);
 
 		private:
 			void ClassifyRenderMeshType();
@@ -61,6 +63,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 
 			GET_ACCESSOR(TransformConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
+			GET_ACCESSOR(PrevRenderType, MeshRenderer::Type, _prevRenderType);
 
 		public:
 			virtual Core::Component* Clone() const;

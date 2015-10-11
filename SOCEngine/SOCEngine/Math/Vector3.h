@@ -60,7 +60,7 @@ namespace Math
 		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
 
 	public:
-		Vector3& Normalize();
+		Vector3 Normalize();
 
 		float Length();
 		float Dot(const Vector3& v);
