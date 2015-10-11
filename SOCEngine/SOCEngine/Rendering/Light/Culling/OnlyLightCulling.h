@@ -27,6 +27,9 @@ namespace Rendering
 				const Texture::DepthBuffer* blendedDepthBuffer,
 				const std::vector<Shader::ShaderMacro>* opationalMacros = nullptr);
 			void Destroy();
+
+		public:
+			GET_ACCESSOR(LightIndexBuffer, const GPGPU::DirectCompute::CSRWBuffer*, _lightIndexBuffer);
 		};
 	}
 }

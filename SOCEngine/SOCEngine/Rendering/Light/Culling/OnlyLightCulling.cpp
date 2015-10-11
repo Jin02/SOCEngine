@@ -50,7 +50,7 @@ void OnlyLightCulling::Initialize(
 		Math::Size<unsigned int> size = CalcThreadGroupSize();
 
 		uint num = CalcMaxNumLightsInTile() * size.w * size.h;
-		_lightIndexBuffer->Initialize(DXGI_FORMAT_R16_UINT, 2, num);
+		_lightIndexBuffer->Initialize(DXGI_FORMAT_R32_UINT, 4, num);
 
 		ComputeShader::Output outputBuffer;
 		{
