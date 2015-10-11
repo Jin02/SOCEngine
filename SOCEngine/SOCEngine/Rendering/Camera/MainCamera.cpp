@@ -57,7 +57,7 @@ void MainCamera::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
-	EnableRenderTransparentMesh(false);
+	EnableRenderTransparentMesh(true);
 
 	_deferredShadingWithLightCulling = new TBDR::ShadingWithLightCulling;
 	_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, _albedo_emission, _specular_metallic, _normal_roughness, backBufferSize);
@@ -436,6 +436,10 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 				1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputBufferShaderIndex::DirectionalLightParam,
 				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
+
+			// Light Culling Buffer
+			context->PSSetShaderResources((uint)InputShaderResourceBuffer::LightCullingBuffer,
+				1, _blendedMeshLightCulling->GetLightIndexBuffer()->GetShaderResourceView());
 
 			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferShaderIndex::TBRParam, 1, &tbrCB);
