@@ -438,7 +438,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
 
 			// Light Culling Buffer
-			context->PSSetShaderResources((uint)InputShaderResourceBuffer::LightCullingBuffer,
+			context->PSSetShaderResources((uint)InputShaderResourceBufferIndex::LightIndexBuffer,
 				1, _blendedMeshLightCulling->GetLightIndexBuffer()->GetShaderResourceView());
 
 			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
