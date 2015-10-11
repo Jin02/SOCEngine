@@ -3,8 +3,6 @@
 #include "LightCullingCompareAtomicCS.h"
 #include "BRDF.h"
 
-//#define DEBUG_MODE
-
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
@@ -18,6 +16,9 @@ RWTexture2D<float4> g_tOutScreen : register( u0 );
 void RenderDirectionalLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 							in LightingParams lightingParams)
 {
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor	= float3(0, 0, 0);
+
 	float4	lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
 
@@ -36,6 +37,9 @@ void RenderDirectionalLight(out float3 resultDiffuseColor, out float3 resultSpec
 void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 					  in LightingParams lightingParams, float3 vertexWorldPosition)
 {
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor = float3(0, 0, 0);
+
 	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
 
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
@@ -57,30 +61,33 @@ void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularCo
 }
 
 void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-					 in LightingParams lightingParams, float3 vertexWorldPosition)
+					  in LightingParams lightingParams, float3 vertexWorldPosition)
 {
-	float4 spotLightParam = g_inputSpotLightParamBuffer[lightingParams.lightIndex];
-	float3 spotLightDir = spotLightParam.xyz;
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor	= float3(0, 0, 0);
 
-	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
-	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
-	float	lightRadius					= lightCenterWithRadius.w;
+	uint lightIdx = lightingParams.lightIndex;
 
-	float3	lightRealWorldPosition		= lightCenterWorldPosition - (spotLightDir * lightRadius);
-	float3	lightDir					= lightRealWorldPosition - vertexWorldPosition;
-	float	distanceOfLightAndVertex	= length(lightDir);
-	lightDir = normalize(lightDir);
+	float3 lightDir			= normalize(g_inputSpotLightParamBuffer[lightIdx].xyz);
+	float cosineConeAngle	= g_inputSpotLightParamBuffer[lightIdx].w;
 
-	float	lightCosineConeAngle		= spotLightParam.w;
-	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
+	float3 sphereCenterPos	= g_inputSpotLightTransformBuffer[lightIdx].xyz;
+	float radius			= g_inputSpotLightTransformBuffer[lightIdx].w;
 
-	if( (distanceOfLightAndVertex < lightRadius) && 
-		(lightCosineConeAngle < currentCosineConeAngle) )
+	float3 lightPos			= sphereCenterPos - (lightDir * radius);
+	float3 vtxToLight		= lightPos - vertexWorldPosition;
+	float3 vtxToLightDir	= normalize(vtxToLight);
+
+	float distanceOfLightWithVertex = length(vtxToLight);
+
+	float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
+	if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
+		(cosineConeAngle < currentCosineConeAngle) )
 	{
 		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightingParams.lightIndex].xyz;
-		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightingParams.lightIndex].w;
-		commonParams.lightDir		= lightDir;
+		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightIdx].xyz;
+		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightIdx].w;
+		commonParams.lightDir		= vtxToLightDir;
 
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 	}
@@ -134,7 +141,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= specular;
 	}
 
-	uint spotLightIdx = ((int)(depth == 0.0f) * s_lightIndexCounter) + ((int)(depth != 0.0f) * pointLightCountInThisTile);
+	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
@@ -335,36 +342,27 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 #else // off MSAA
 
-
 #if defined(DEBUG_MODE)
-	//float3 debugTiles = float3(0, 0, 0);
-	//int debugLightCount = s_lightIndexCounter;
-	//					//+ (s_lightIndexCounter - pointLightCountInThisTile)
-	//					//+ (int)isRenderDL * directionalLightCount;
+	float3 debugTiles = float3(0, 0, 0);
+	int debugLightCount = s_lightIndexCounter + (int)isRenderDL * directionalLightCount;
 
-	//if(debugLightCount > 0)
-	//	debugTiles = float3(1, 0, 0);
-	//if(debugLightCount > 1)
-	//	debugTiles = float3(0, 1, 0);
-	//if(debugLightCount > 2)
-	//	debugTiles = float3(0, 0, 1);
-	//if(debugLightCount > 3)
-	//	debugTiles = float3(0, 1, 1);
-	//if(debugLightCount > 4)
-	//	debugTiles = float3(1, 1, 0);
-	//if(debugLightCount > 5)
-	//	debugTiles = float3(1, 1, 1);	
+	if(debugLightCount > 0)
+		debugTiles = float3(1, 0, 0);
+	if(debugLightCount > 1)
+		debugTiles = float3(0, 1, 0);
+	if(debugLightCount > 2)
+		debugTiles = float3(0, 0, 1);
+	if(debugLightCount > 3)
+		debugTiles = float3(0, 1, 1);
+	if(debugLightCount > 4)
+		debugTiles = float3(1, 1, 0);
+	if(debugLightCount > 5)
+		debugTiles = float3(1, 1, 1);	
 
-	//g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
+	g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
 	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
 #endif
 
-	//uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
-	//float testPixel = (float)idxInTile / (float)(TILE_RES * TILE_RES);
-	//g_tOutScreen[globalIdx.xy] = float4(testPixel, testPixel, testPixel, 1.0f);
-
-	//albedo, normal
-	//g_tOutScreen[globalIdx.xy] = float4(normal_roughness.xyz, 1.0f);
 #endif
 }
