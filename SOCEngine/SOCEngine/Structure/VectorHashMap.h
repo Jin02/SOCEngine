@@ -78,8 +78,8 @@ namespace Structure
 			_map.clear();
 		}
 
-		GET_ACCESSOR(Vector, const std::vector<Object>&, _vector);
-		inline std::hash_map<Key, Object*>& GetHashMap() const { return _map; }
+		inline const std::vector<Object>& GetVector() const				{ return _vector; }
+		inline const std::hash_map<Key, Object*>& GetHashMap() const	{ return _map; }
 
 		GET_ACCESSOR(Size, unsigned int, _vector.size());
 	};

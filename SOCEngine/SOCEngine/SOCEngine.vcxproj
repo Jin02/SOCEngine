@@ -48,15 +48,14 @@
     <ClInclude Include="External\rapidjson\reader.h" />
     <ClInclude Include="External\rapidjson\stringbuffer.h" />
     <ClInclude Include="External\rapidjson\writer.h" />
-    <ClInclude Include="External\tiny_obj_loader.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="GPGPU\CSOutput.h" />
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
+    <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
-    <ClInclude Include="Importer\ObjImporter.h" />
-    <ClInclude Include="Intersection\AABB.h" />
+    <ClInclude Include="Intersection\BoundBox.h" />
     <ClInclude Include="Intersection\Cone.h" />
     <ClInclude Include="Intersection\Intersection.h" />
     <ClInclude Include="Intersection\Ray.h" />
@@ -119,7 +118,6 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
-    <ClInclude Include="ResourceManager\OriginObjectManager.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -191,15 +189,13 @@
     <ClCompile Include="Core\Time\Timer.cpp" />
     <ClCompile Include="Core\Transform\Transform.cpp" />
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp" />
-    <ClCompile Include="External\tiny_obj_loader.cc" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
     <ClCompile Include="GPGPU\CSOutput.cpp" />
     <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
-    <ClCompile Include="Importer\ObjImporter.cpp" />
-    <ClCompile Include="Intersection\AABB.cpp" />
+    <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
     <ClCompile Include="Intersection\Sphere.cpp" />
@@ -254,7 +250,6 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
-    <ClCompile Include="ResourceManager\OriginObjectManager.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="UI\FontLoader.cpp" />
     <ClCompile Include="UI\SimpleImage2D.cpp" />
@@ -282,37 +277,37 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">USE_COMPUTE_SHADER</PreprocessorDefinitions>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TBN_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TBN_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TN_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV.hlsl">
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
@@ -357,6 +352,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ExternalLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -364,7 +360,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Utility/rapidjson;Platform;Device;External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External/bson;External;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>

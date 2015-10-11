@@ -1,6 +1,6 @@
 #include "MeshBasicData.h"
 
-using namespace Rendering::Mesh;
+using namespace Rendering::Geometry;
 
 MeshBasicTransportData::MeshBasicTransportData()
 {

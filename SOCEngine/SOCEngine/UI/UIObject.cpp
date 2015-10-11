@@ -7,7 +7,7 @@ using namespace Rendering::Buffer;
 
 #define _child _vector
 
-UIObject::UIObject(const std::string& name, const Object* parent) 
+UIObject::UIObject(const std::string& name, Object* parent) 
 	: Object(name, parent), _transformCB(nullptr), _depth(0)
 {
 

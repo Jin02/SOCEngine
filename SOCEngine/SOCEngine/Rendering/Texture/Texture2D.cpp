@@ -54,7 +54,7 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 
 	//multisampler
 	{
-		if(sampleCount == -1)
+		if(sampleCount == 0)
 		{
 			DXGI_SWAP_CHAIN_DESC swapChainDesc;
 			dx->GetSwapChain()->GetDesc(&swapChainDesc);

@@ -7,9 +7,23 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Texture;
 
+Material::CustomShader::CustomShader() : isDeferred(false), shaderGroup()
+{
+}
+
+Material::CustomShader::CustomShader(bool isDeferred, const Shader::ShaderGroup& shaderGroup)
+{
+	this->isDeferred = isDeferred;
+	this->shaderGroup = shaderGroup;
+}
+
+Material::CustomShader::~CustomShader()
+{
+}
+
 Material::Material(const std::string& name, Type type)	
-	: _name(name), _hasAlpha(false), _changedAlpha(true),
-	_tiling(1.0f, 1.0f), _type(type), _variableUpdateCounter(0)
+	: _name(name), _hasAlpha(false), _tiling(1.0f, 1.0f), _type(type),
+	_variableUpdateCounter(0), _alpha(1.0f)
 {
 }
 

@@ -19,10 +19,12 @@ cbuffer Transform : register( b1 )		//Mesh
 cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
 {
 	float3	material_mainColor;
-	uint	material_metallic_roughness_emission;
+	uint	material_alpha_metallic_roughness_emission;
 
-	float2 	material_uvTiling;
-	float2 	material_uvOffset;
+	float2 	material_uvTiling0;
+	float2 	material_uvOffset0;
+	float2 	material_uvTiling1;
+	float2 	material_uvOffset1;
 };
 
 Texture2D diffuseTexture			: register( t8 );
@@ -30,26 +32,34 @@ Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
 Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
-float3 DecodeNormalTexture(in Texture2D tex, in float2 uv, in SamplerState samplerState)
+float3 NormalMapping(float3 normalMapXYZ, float3 normal, float3 tangent, float2 uv)
 {
-	float3 norm = tex.Sample(samplerState, uv).xyz;
-	norm *= 2.0f; norm -= float3(1.0f, 1.0f, 1.0f);
+	float3 binormal = normalize( cross(normal, tangent) );
 
-	return norm;
+	float3 texNormal = normalMapXYZ;
+	texNormal *= 2.0f; texNormal -= float3(1.0f, 1.0f, 1.0f);
+
+	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
+
+	return normalize( mul(texNormal, TBN) );
 }
 
-void Parse_Metallic_Roughness_Emission(in uint material_mre,
-									   out float metallic,
+void Parse_Metallic_Roughness_Emission(out float metallic,
 									   out float roughness,
 									   out float emission)
 {
-	uint scaledMetallic		= material_mre & 0x3ff00000;
-	uint scaledRoughness	= material_mre & 0x000ffc00;
-	uint scaledEmission		= material_mre & 0x000003ff;
+	uint scaledMetallic		= (material_alpha_metallic_roughness_emission & 0x00ff0000) >> 16;
+	uint scaledRoughness	= (material_alpha_metallic_roughness_emission & 0x0000ff00) >> 8;
+	uint scaledEmission		= (material_alpha_metallic_roughness_emission & 0x000000ff) >> 0;
 
-	metallic	= (float)scaledMetallic	/ 1024.0f;
-	roughness	= (float)scaledRoughness	/ 1024.0f;
-	emission	= (float)scaledEmission	/ 1024.0f;
+	metallic	= (float)scaledMetallic		/ 255.0f;
+	roughness	= (float)scaledRoughness	/ 255.0f;
+	emission	= (float)scaledEmission		/ 255.0f;
+}
+
+float ParseMaterialAlpha()
+{
+	return ( (float)((material_alpha_metallic_roughness_emission & 0xff000000) >> 24) / 255.0f );
 }
 
 bool HasDiffuseTexture()
@@ -83,16 +93,15 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	bool hasSpecularMap		= HasSpecularTexture();
 	
 	float metallic, roughness, emission;
-	Parse_Metallic_Roughness_Emission(material_metallic_roughness_emission,
-		metallic, roughness, emission);
+	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
 
 	float3 albedo			= diffuseTex.rgb * abs(material_mainColor);
 	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
-	specular_metallic.rgb	= lerp(float3(1.f, 1.f, 1.f), specular, hasSpecularMap);
+	specular_metallic.rgb	= lerp(float3(0.4f, 0.4f, 0.4f), specular, hasSpecularMap);
 
-	float3 compressedNormal = normal * 0.5f + 0.5f;
+	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
 	normal_roughness.rgb	= compressedNormal;
 
 #if defined(USE_PBR_TEXTURE)

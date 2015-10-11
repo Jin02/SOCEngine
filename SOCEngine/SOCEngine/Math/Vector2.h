@@ -51,7 +51,7 @@ namespace Math
 		static float SqrLength(const Vector2 &a);
 
 	public:
-		void Normalize();
+		Vector2 Normalize();
 		void Set(float newX, float newY);
 	};
 

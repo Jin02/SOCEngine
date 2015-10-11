@@ -5,7 +5,7 @@ cbuffer Transform : register( b0 )
 
 struct VS_INPUT
 {
-	float4 position 		: POSITION;
+	float3 position 		: POSITION;
 	float2 uv				: TEXCOORD0;
 };
 
@@ -22,7 +22,7 @@ PS_INPUT VS( VS_INPUT input )
 {
 	PS_INPUT ps;
 
-	ps.position 	= mul( input.position, transform_worldViewProj );
+	ps.position 	= mul( float4(input.position, 1.0f), transform_worldViewProj );
 	ps.uv			= input.uv;
 
     return ps;

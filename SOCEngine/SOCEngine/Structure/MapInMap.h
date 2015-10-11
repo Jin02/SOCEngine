@@ -10,7 +10,7 @@ namespace Structure
 	class MapInMap 
 	{
 	private:
-		std::map<Key, std::map<Key, Object>> _mim;
+		std::map<Key, std::map<Key, Object>> _map;
 
 	public:
 		MapInMap(void){}
@@ -19,21 +19,36 @@ namespace Structure
 	public:
 		bool Add(const Key& key1, const Key& key2, const Object& object)
 		{
-			if(Find(key1, key2))
-				return false;
+			bool success = false;
+			const auto& pair = std::make_pair(key2, object);
 
-			std::map<Key, Object> inMap;
-			inMap.insert(std::make_pair(key2, object));
+			std::map<Key, Object>* topMap = nullptr;
+			if(Find(&topMap, key1) == false)
+			{
+				std::map<Key, Object> inMap;
+				inMap.insert(pair);
 
-			_mim.insert(std::make_pair(key1, inMap));
-			return true;
+				_map.insert( std::make_pair(key1, inMap) );
+				success = true;
+			}
+			else
+			{
+				auto findIter = topMap->find(key2);
+				if(findIter == topMap->end())
+				{
+					success = true;
+					topMap->insert(pair);
+				}
+			}
+
+			return success;
 		}
 
 		Object* Find(const Key& key1, const Key& key2)
 		{
-			auto findIter = _mim.find(key1);
+			auto findIter = _map.find(key1);
 
-			if(findIter != _mim.end())
+			if(findIter != _map.end())
 			{
 				std::map<Key, Object>& inMap = findIter->second;
 				auto inFindIter = inMap.find(key2);
@@ -44,21 +59,21 @@ namespace Structure
 			return nullptr;
 		}
 
-		bool Find(std::map<Key, Object>& out, const Key& key1)
+		bool Find(std::map<Key, Object>** out, const Key& key1)
 		{
-			auto findIter = _mim.find(key1);
+			auto findIter = _map.find(key1);
 
-			if(findIter != _mim.end())
-				out = findIter->second;
+			if(findIter != _map.end() && out)
+				(*out) = &findIter->second;
 
-			return findIter != _mim.end();
+			return findIter != _map.end();
 		}
 
 		void Delete(const Key& key1, const Key& key2)
 		{
-			auto findIter = _mim.find(key1);
+			auto findIter = _map.find(key1);
 
-			if(findIter != _mim.end())
+			if(findIter != _map.end())
 			{
 				std::map<Key, Object>& inMap = findIter->second;
 				auto inFindIter = inMap.find(key2);
@@ -69,18 +84,18 @@ namespace Structure
 
 		void Delete(const Key& key1)
 		{
-			auto findIter = _mim.find(key1);
+			auto findIter = _map.find(key1);
 			
-			if(findIter != _mim.end())
-				_mim.erase(findIter);
+			if(findIter != _map.end())
+				_map.erase(findIter);
 		}
 
 		void DeleteAll()
 		{
-			_mim.clear();
+			_map.clear();
 		}
 
 	public:
-		inline const std::map<Key, std::map<Key, Object>>& GetMapInMap() const { return _mim; }
+		inline const std::map<Key, std::map<Key, Object>>& GetMapInMap() const { return _map; }
 	};
 }

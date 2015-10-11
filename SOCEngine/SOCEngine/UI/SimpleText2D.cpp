@@ -10,7 +10,7 @@ using namespace Rendering;
 using namespace Device;
 using namespace Resource;
 
-SimpleText2D::SimpleText2D(const std::string& name, const Core::Object* parent)
+SimpleText2D::SimpleText2D(const std::string& name, Core::Object* parent)
 	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false)
 {
 }
@@ -49,7 +49,12 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
-		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
+		Material::CustomShader customShader;
+		{
+			customShader.isDeferred = false;
+			customShader.shaderGroup = Shader::ShaderGroup(vs, ps, nullptr, nullptr);
+		}
+		_material->SetCustomShader(customShader);
 
 		const Texture::Texture2D* texture = fontLoader->GetTexture();
 		_material->SetVariable<const Texture::Texture2D*>("font", texture);
@@ -74,21 +79,18 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 //			std::copy(boxIndices.begin(), boxIndices.end(), indices.begin() + (i * boxIndices.size()));
 	}
 
-	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:Font", sharedVerticesKey);
+	Geometry::MeshFilter::CreateFuncArguments meshCreateArgs("UI:Font", sharedVerticesKey);
 	{
-		meshCreateArgs.vertex.data		= emptyVertices.data();
-		meshCreateArgs.vertex.count		= emptyVertices.size();
-		meshCreateArgs.vertex.byteWidth	= sizeof(RectVertexInfo);
+		meshCreateArgs.vertices.data		= emptyVertices.data();
+		meshCreateArgs.vertices.count		= emptyVertices.size();
+		meshCreateArgs.vertices.byteWidth	= sizeof(RectVertexInfo);
 
-		meshCreateArgs.index.data		= indices.data();
-		meshCreateArgs.index.count		= indices.size();
-		meshCreateArgs.index.byteWidth	= 0; //not use
-
-		meshCreateArgs.isDynamic		= true;
+		meshCreateArgs.indices				= &indices;
+		meshCreateArgs.useDynamicVB			= true;
 	}
 
-	_meshFilter = new Mesh::MeshFilter;
-	bool success = _meshFilter->CreateBuffer(meshCreateArgs);
+	_meshFilter = new Geometry::MeshFilter;
+	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
@@ -163,19 +165,20 @@ void SimpleText2D::UpdateText(const std::string& text)
 
 	const Device::Director* director	= Device::Director::GetInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
-	_meshFilter->UpdateVertexBufferData(dx, vertices.data(), sizeof(RectVertexInfo) * vertices.size());
+	_meshFilter->GetVertexBuffer()->UpdateVertexData(dx->GetContext(), vertices.data(), sizeof(RectVertexInfo) * vertices.size());
 }
 
 void SimpleText2D::Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	Shader::VertexShader* vs = _material->GetCustomShader().vs;
-	Shader::PixelShader* ps = _material->GetCustomShader().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().shaderGroup.vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().shaderGroup.ps;
 
-	if(_material->GetCustomShader().ableRender())
+	if(_material->GetCustomShader().shaderGroup.ableRender())
 	{		
-		_meshFilter->IASetBuffer(dx);
+		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
+		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
 
 		vs->SetShaderToContext(context);
 		vs->SetInputLayoutToContext(context);

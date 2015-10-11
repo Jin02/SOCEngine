@@ -21,8 +21,8 @@ Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all h
 #if (MSAA_SAMPLES_COUNT > 1)
 
 Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_emission	: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferNormal_roughness	: register( t9 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferSpecular_metallic	: register( t10 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferSpecular_metallic	: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferNormal_roughness	: register( t10 );
 Texture2DMS<float,	MSAA_SAMPLES_COUNT> g_tDepth					: register( t11 );
 
 #if defined(ENABLE_BLEND)
@@ -32,8 +32,8 @@ Texture2DMS<float, MSAA_SAMPLES_COUNT>	g_tBlendedDepth				: register( t12 );
 #else //Turn off MSAA
 
 Texture2D<float4>	g_tGBufferAlbedo_emission						: register( t8 );
-Texture2D<float4>	g_tGBufferNormal_roughness						: register( t9 );
-Texture2D<float4>	g_tGBufferSpecular_metallic						: register( t10 );
+Texture2D<float4>	g_tGBufferSpecular_metallic						: register( t9 );
+Texture2D<float4>	g_tGBufferNormal_roughness						: register( t10 );
 Texture2D<float>	g_tDepth										: register( t11 );
 
 #if defined(ENABLE_BLEND)

@@ -9,10 +9,10 @@ using namespace Rendering::Shader;
 PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 {
 	mainColor.r = mainColor.g = mainColor.b = 1.0f;
-	metallic_roughness_emission = 0;
+	alpha_metallic_roughness_emission = 0;
 
-	uvTiling.x = uvTiling.y = 1.0f;
-	uvOffset.x = uvOffset.y = 0.0f;
+	uvTiling0.x = uvTiling0.y = uvTiling1.x = uvTiling1.y = 1.0f;
+	uvOffset0.x = uvOffset0.y = uvOffset1.x = uvOffset1.y = 0.0f;
 }
 
 PhysicallyBasedMaterial::GBufferParam::~GBufferParam(){}
@@ -32,6 +32,8 @@ void PhysicallyBasedMaterial::Initialize()
 {
 	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
+	SetRoughness(0.5f);
+
 	_gbufferCB = new ConstBuffer;
 	_gbufferCB->Initialize(sizeof(GBufferParam));
 }
@@ -48,20 +50,24 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		GBufferParam param;
 		GetMainColor(param.mainColor);
 
-		float metallic, roughness, emission;
+		float metallic = 0.0f, roughness = 0.0f, emission = 0.0f;
 		GetMetallic(metallic);
 		GetRoughness(roughness);
-		GetEmission(emission);
+		GetEmission(emission);		
 
-		uint scaledMetallic		= (uint)(metallic	* 1024);
-		uint scaledRoughness	= (uint)(roughness	* 1024);
-		uint scaledEmission		= (uint)(emission	* 1024);
+		uint scaledMetallic		= (uint)(metallic	* 255);
+		uint scaledRoughness	= (uint)(roughness	* 255);
+		uint scaledEmission		= (uint)(emission	* 255);
+		uint scaledAlpha		= (uint)(_alpha		* 255);
 
-		param.metallic_roughness_emission =
-			(scaledMetallic << 20 ) | (scaledRoughness << 10 ) | (scaledEmission);
+		param.alpha_metallic_roughness_emission =
+			(scaledAlpha << 24 )	| (scaledMetallic << 16 ) | 
+			(scaledRoughness << 8 )	| (scaledEmission);
 
-		GetUVTiling(param.uvTiling);
-		GetUVOffset(param.uvOffset);
+		GetUVTiling0(param.uvTiling0);
+		GetUVOffset0(param.uvOffset0);
+		GetUVTiling1(param.uvTiling1);
+		GetUVOffset1(param.uvOffset1);
 
 		uint dummy = 0;
 
@@ -103,14 +109,13 @@ void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
 	SetVariable("MainColor", mainColor);
 
 	_hasAlpha = (color.a < 1.0f);
-	_changedAlpha = true;
+	_alpha = color.a;
 }
 
 void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex)
 {
 	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Diffuse, tex, ShaderForm::Usage(false, false, false, true));
 	_hasAlpha = tex->GetHasAlpha();
-	_changedAlpha = true;
 }
 
 void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture2D* tex)
@@ -128,5 +133,4 @@ void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture
 	SetTextureUseShaderSlotIndex( (uint)InputTextureShaderIndex::Opacity, tex, ShaderForm::Usage(false, false, false, true));
 
 	_hasAlpha = tex != nullptr;
-	_changedAlpha = true;
 }

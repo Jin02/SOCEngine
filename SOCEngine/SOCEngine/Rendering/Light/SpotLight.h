@@ -15,11 +15,11 @@ namespace Rendering
 			{
 				unsigned short			dirX;
 				unsigned short			dirY;
+				unsigned short			dirZ;
 
 				unsigned short			coneCosAngle;
-				unsigned short			falloffWithDirZSignBit;
 
-				Params() : coneCosAngle(0), falloffWithDirZSignBit(0), dirX(0), dirY(0) {}
+				Params() : coneCosAngle(0), dirZ(0), dirX(0), dirY(0) {}
 				~Params() {}
 			};
 

@@ -1,13 +1,15 @@
 #include "MeshFilter.h"
 #include "Director.h"
 #include "ResourceManager.h"
+#include "MeshImporter.h"
 
-using namespace Rendering::Mesh;
+using namespace Rendering::Shader;
+using namespace Rendering::Geometry;
+using namespace Rendering::Manager;
 using namespace Resource;
 
 MeshFilter::MeshFilter() 
-	:	_vertexBuffer(nullptr), _indexBuffer(nullptr),
-		_alloc(false), _vertexCount(0), _indexCount(0)
+	:	_vertexBuffer(nullptr), _indexBuffer(nullptr), _alloc(false)
 {
 }
 
@@ -20,13 +22,16 @@ MeshFilter::~MeshFilter()
 	SAFE_DELETE(_indexBuffer);
 }
 
-bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
+bool MeshFilter::Initialize(const CreateFuncArguments& args)
 {
-	_vertexCount	= args.vertex.count;
-	_indexCount		= args.index.count;
-	_bufferFlag		= args.bufferFlag;
+	ASSERT_COND_MSG(args.indices, "Error, Indices is null!");
+
+	uint vertexCount	= args.vertices.count;
+	uint indexCount		= args.indices->size();
 
 	Manager::BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
+
+	std::string vbKey = args.fileName + ":" + args.key;
 
 	// Vertex Buffer Setting
 	{
@@ -34,9 +39,8 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&vertexBuffer, args.fileName, args.key) == false )
 		{
 			vertexBuffer = new Buffer::VertexBuffer;
-			if( vertexBuffer->Initialize(args.vertex.data, args.vertex.byteWidth, _vertexCount, args.isDynamic) == false )
-				ASSERT_MSG("Error, can not create vertex buffer");
-
+			vertexBuffer->Initialize(args.vertices.data, args.vertices.byteWidth, vertexCount, args.useDynamicVB, vbKey, args.semanticInfos);
+			
 			bufferMgr->Add(args.fileName, args.key, vertexBuffer);
 		}
 
@@ -49,7 +53,7 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		if( bufferMgr->Find(&indexBuffer, args.fileName, args.key) == false )
 		{
 			indexBuffer = new Buffer::IndexBuffer;
-			if( indexBuffer->Initialize(args.index.data, sizeof(ENGINE_INDEX_TYPE) * _indexCount) == false )
+			if( indexBuffer->Initialize(*args.indices, vbKey, args.useDynamicIB) == false )
 				ASSERT_MSG("Error, can not create index buffer");
 
 			bufferMgr->Add(args.fileName, args.key, indexBuffer);
@@ -58,19 +62,60 @@ bool MeshFilter::CreateBuffer(const CreateFuncArguments& args)
 		_indexBuffer = indexBuffer;
 	}
 
+	_bufferFlag = args.semanticInfos ? ComputeBufferFlag(*args.semanticInfos) : 0;
+
 	return true;
 }
 
-void MeshFilter::IASetBuffer(const Device::DirectX* dx)
+bool MeshFilter::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer)
 {
-	ID3D11DeviceContext* context = dx->GetContext();
+	_vertexBuffer	= vertexBuffer;
+	_indexBuffer	= indexBuffer;
 
-	_vertexBuffer->IASetBuffer(context);
-	_indexBuffer->IASetBuffer(context);
+	_bufferFlag		= ComputeBufferFlag(_vertexBuffer->GetSemantics());
+
+	return true;
 }
 
-void MeshFilter::UpdateVertexBufferData(const Device::DirectX* dx, const void* data, uint size)
+uint MeshFilter::ComputeBufferFlag(
+	const std::vector<VertexShader::SemanticInfo>& semantics) const
 {
-	ID3D11DeviceContext* context = dx->GetContext();
-	_vertexBuffer->UpdateVertexData(context, data, size);
+	uint flag = 0;
+	for(auto iter = semantics.begin(); iter != semantics.end(); ++iter)
+	{
+		const auto& semantic = *iter;
+
+		if(		semantic.name == "POSITION")		continue;
+		else if(semantic.name == "TEXCOORD")
+		{
+			if(semantic.semanticIndex > 1)
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+			else
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::UV0 << semantic.semanticIndex;
+		}
+		else if(semantic.name == "NORMAL")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::NORMAL;
+		else if(semantic.name == "TANGENT")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::TANGENT;
+		else if(semantic.name == "COLOR")
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::COLOR;
+		else if(semantic.name == "BONEWEIGHT")
+		{
+			if(semantic.semanticIndex+1 >= Importer::MeshImporter::MaximumRecognizeBoneCount)
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::BONE << semantic.semanticIndex;
+			else
+				flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+		}
+		else
+		{
+			flag |= (uint)RenderManager::DefaultVertexInputTypeFlag::USERS;
+		}
+	}
+
+	if(flag & (uint)RenderManager::DefaultVertexInputTypeFlag::USERS)
+	{
+		DEBUG_LOG("Warning, You use undefined semantic in RenderManager::DefaultVertexInputTypeFlag.");
+	}
+
+	return flag;
 }

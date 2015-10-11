@@ -7,10 +7,10 @@
 
 #include <sys/timeb.h>
 #include <time.h>
-#include "VectorMap.h"
-#include <hash_map>
+#include "VectorHashMap.h"
 
 #include "ShaderMacro.h"
+#include <set>
 
 namespace Rendering
 {
@@ -19,33 +19,33 @@ namespace Rendering
 		class RenderManager
 		{
 		public:
-			enum class MeshType
-			{
-				Opaque,
-				Transparent,
-				AlphaTest
-			};
 			struct MeshList
 			{
+				typedef unsigned __int64 meshkey; //is address
+
+				//first key is vbkey.
+				Structure::VectorHashMap<std::string, std::set<meshkey>> meshes;
+
 				uint updateCounter;
 
-				//first value is just key.
-				Structure::VectorMap<unsigned int, const Mesh::Mesh*> meshes;
-
-				MeshList(){}
+				MeshList() : updateCounter(0) {}
 				~MeshList(){}
 			};
 			enum class DefaultVertexInputTypeFlag : uint
 			{
-				UV	= 1, //UV
-				N	= 2, //Normal
-				TB	= 4, //Tangent, Normal
+				UV0			= 1,
+				UV1			= 2,
+				NORMAL		= 4,
+				TANGENT		= 8,
+				COLOR		= 16,
+				BONE		= 32, //BONE ID WITH WEIGHT -> float2(id, weight).
+				USERS		= 8192
 			};
 
 		private:
 			MeshList	_transparentMeshes;
 			MeshList	_opaqueMeshes;
-			MeshList	_alphaTestMeshes;
+			MeshList	_alphaBlendMeshes;
 
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders;
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
@@ -57,21 +57,29 @@ namespace Rendering
 			RenderManager();
 			~RenderManager();
 
+		private:
+			bool FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const;
+
 		public:
 			bool TestInit();
-			Shader::ShaderGroup LoadDefaultSahder(MeshType meshType, uint defaultVertexInputTypeFlag,
+			Shader::ShaderGroup LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
-			void UpdateRenderList(const Mesh::Mesh* mesh, MeshType type);
-			bool HasMeshInRenderList(const Mesh::Mesh* mesh, MeshType type);
+			void UpdateRenderList(const Geometry::Mesh* mesh);
+			bool HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type);
 
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
 
+			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
+			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
+
+			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
+		
 		public:
-			GET_ACCESSOR(TransparentMeshes, const MeshList&, _transparentMeshes);
-			GET_ACCESSOR(OpaqueMeshes, const MeshList&, _opaqueMeshes);
-			GET_ACCESSOR(AlphaTestMeshes, const MeshList&, _alphaTestMeshes);
+			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);
+			GET_ACCESSOR(OpaqueMeshes,		const MeshList&,	_opaqueMeshes);
+			GET_ACCESSOR(AlphaTestMeshes,	const MeshList&,	_alphaBlendMeshes);
 		};
 	}
 }

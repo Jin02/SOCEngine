@@ -9,7 +9,7 @@ using namespace Rendering;
 using namespace Device;
 using namespace Resource;
 
-SimpleImage2D::SimpleImage2D(const std::string& name, const Core::Object* parent) 
+SimpleImage2D::SimpleImage2D(const std::string& name, Core::Object* parent) 
 	: UIObject(name, parent), _meshFilter(nullptr), _material(nullptr), _isOtherMaterial(false), _changeSize(false)
 {
 }
@@ -37,33 +37,35 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		Shader::PixelShader*	ps = nullptr;
 		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
 
-		_material->SetCustomShader( Shader::ShaderGroup(vs, ps, nullptr, nullptr) );
+		Material::CustomShader customShader;
+		{
+			customShader.isDeferred = false;
+			customShader.shaderGroup = Shader::ShaderGroup(vs, ps, nullptr, nullptr);
+		}
+		_material->SetCustomShader(customShader);
 	}
 
 	RectVertexInfo rectVertex[4];
 	memset(rectVertex, 0, sizeof(RectVertexInfo) * 4);
 
-	uint indices[] =
+	std::vector<uint> indices(6);
 	{
-		0, 1, 2,
-		1, 3, 2
-	};
-
-	Mesh::MeshFilter::CreateFuncArguments meshCreateArgs("UI:SimpleImage2D", sharedVerticesKey);
-	{
-		meshCreateArgs.vertex.data		= rectVertex;
-		meshCreateArgs.vertex.count		= 4;
-		meshCreateArgs.vertex.byteWidth	= sizeof(RectVertexInfo);
-
-		meshCreateArgs.index.data		= indices;
-		meshCreateArgs.index.count		= ARRAYSIZE(indices);
-		meshCreateArgs.index.byteWidth	= 0; //not use
-
-		meshCreateArgs.isDynamic		= true;
+		indices[0] = 0; indices[1] = 1; indices[2] = 2;
+		indices[3] = 1; indices[4] = 3; indices[3] = 2;
 	}
 
-	_meshFilter = new Mesh::MeshFilter;
-	bool success = _meshFilter->CreateBuffer(meshCreateArgs);
+	Geometry::MeshFilter::CreateFuncArguments meshCreateArgs("UI:SimpleImage2D", sharedVerticesKey);
+	{
+		meshCreateArgs.vertices.data		= rectVertex;
+		meshCreateArgs.vertices.count		= 4;
+		meshCreateArgs.vertices.byteWidth	= sizeof(RectVertexInfo);
+
+		meshCreateArgs.indices				= &indices;
+		meshCreateArgs.useDynamicVB			= true;
+	}
+
+	_meshFilter = new Geometry::MeshFilter;
+	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
@@ -120,16 +122,17 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 			vertices[3].uv.y		=  1.0f;
 		};
 
-		_meshFilter->UpdateVertexBufferData(dx, vertices, sizeof(RectVertexInfo) * 4);
+		_meshFilter->GetVertexBuffer()->UpdateVertexData(dx->GetContext(), vertices, sizeof(RectVertexInfo) * 4);
 		_changeSize = false;
 	}
 
-	Shader::VertexShader* vs = _material->GetCustomShader().vs;
-	Shader::PixelShader* ps = _material->GetCustomShader().ps;
+	Shader::VertexShader* vs = _material->GetCustomShader().shaderGroup.vs;
+	Shader::PixelShader* ps = _material->GetCustomShader().shaderGroup.ps;
 
-	if(_material->GetCustomShader().ableRender())
+	if(_material->GetCustomShader().shaderGroup.ableRender())
 	{		
-		_meshFilter->IASetBuffer(dx);
+		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
+		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
 
 		vs->SetShaderToContext(context);
 		vs->SetInputLayoutToContext(context);

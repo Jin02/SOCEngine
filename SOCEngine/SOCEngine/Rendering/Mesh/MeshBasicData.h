@@ -8,7 +8,7 @@
 
 namespace Rendering
 {
-	namespace Mesh
+	namespace Geometry
 	{
 		class MeshBasicTransportData
 		{

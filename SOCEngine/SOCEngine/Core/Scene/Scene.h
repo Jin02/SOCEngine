@@ -6,7 +6,6 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "MaterialManager.h"
-#include "MeshImporter.h"
 #include "BufferManager.h"
 #include "RenderManager.h"
 #include "UIManager.h"

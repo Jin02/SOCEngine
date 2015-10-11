@@ -89,10 +89,10 @@ void BufferManager::DeleteOriginVBData(const std::string& file, const std::strin
 
 void BufferManager::DeleteVertexBuffer(const std::string& file)
 {
-	std::map<std::string, VertexBuffer*> vertexBuffers;
-	if( _vertexBuffers.Find(vertexBuffers, file) )
+	std::map<std::string, VertexBuffer*>* vertexBuffers = nullptr;
+	if( _vertexBuffers.Find(&vertexBuffers, file) )
 	{
-		for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
+		for(auto iter = vertexBuffers->begin(); iter != vertexBuffers->end(); ++iter)
 			SAFE_DELETE(iter->second);
 
 		_vertexBuffers.Delete(file);
@@ -101,10 +101,10 @@ void BufferManager::DeleteVertexBuffer(const std::string& file)
 
 void BufferManager::DeleteIndexBuffer(const std::string& file)
 {
-	std::map<std::string, IndexBuffer*> indexBuffers;
-	if( _indexBuffers.Find(indexBuffers, file) )
+	std::map<std::string, IndexBuffer*>* indexBuffers = nullptr;
+	if( _indexBuffers.Find(&indexBuffers, file) )
 	{
-		for(auto iter = indexBuffers.begin(); iter != indexBuffers.end(); ++iter)
+		for(auto iter = indexBuffers->begin(); iter != indexBuffers->end(); ++iter)
 			SAFE_DELETE(iter->second);
 
 		_indexBuffers.Delete(file);
@@ -113,10 +113,10 @@ void BufferManager::DeleteIndexBuffer(const std::string& file)
 
 void BufferManager::DeleteOriginVBData(const std::string& file)
 {
-	std::map<std::string, const void*> ovbs;
-	if( _originVertexBufferDatas.Find(ovbs, file) )
+	std::map<std::string, const void*>* ovbs = nullptr;
+	if( _originVertexBufferDatas.Find(&ovbs, file) )
 	{
-		for(auto iter = ovbs.begin(); iter != ovbs.end(); ++iter)
+		for(auto iter = ovbs->begin(); iter != ovbs->end(); ++iter)
 		{
 			const void* buffer = iter->second;
 			SAFE_DELETE(buffer);
