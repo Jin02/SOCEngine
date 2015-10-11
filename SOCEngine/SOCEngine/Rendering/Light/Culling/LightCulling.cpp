@@ -100,13 +100,13 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 		// depth buffer
 		{
 			// Opaque Depth Buffer
-			idx = (uint)InputTextureShaderIndex::GBuffer_Depth;
+			idx = (uint)InputShaderResourceBufferIndex::GBuffer_Depth;
 			AddTextureToInputTextureList(idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
 			{
-				idx = (uint)InputTextureShaderIndex::GBuffer_BlendedDepth;
+				idx = (uint)InputShaderResourceBufferIndex::GBuffer_BlendedDepth;
 				AddTextureToInputTextureList(idx, blendedDepthBuffer);
 			}
 		}
