@@ -83,7 +83,9 @@ float InvertProjDepthToView(float depth)
 uint GetTileIndex(float2 screenPos)
 {
 	float tileRes = (float)TILE_RES;
-	uint tileIndex = (uint)(screenPos.x / tileRes) + ((uint)(screenPos.y / tileRes) * GetNumTilesX());
+
+	uint w = GetNumTilesX();
+	uint tileIndex = floor(screenPos.x / tileRes) + floor(screenPos.y / tileRes) * w;
 
 	return tileIndex;
 }
