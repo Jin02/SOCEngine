@@ -37,34 +37,13 @@ void TestScene::OnInitialize()
 	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 
 	Importer::MeshImporter importer;
-	testObject = importer.Load("./Resources/Sphere/sphere.obj");
-//	testObject = importer.Load("./Resources/tt.obj");
-
-	//testObject = importer.Load("./Resources/Cube/Cube.obj");
-	//Mesh* mesh = testObject->GetChild(0)->GetChild(0)->GetComponent<Mesh>();
-	//PhysicallyBasedMaterial* material = (PhysicallyBasedMaterial*)mesh->GetMeshRenderer()->GetMaterials().front();
-	//material->UpdateMainColor(Color(1.0f, 1.0f, 1.0f, 0.9f));
-
+	testObject = importer.Load("./Resources/Capsule/capsule.obj");
 	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
-//	testObject->GetTransform()->UpdatePosition(Vector3(0, -0.6f, 1.0f));
-
-	//testObject->GetTransform()->UpdateEulerAngles(Vector3(0, 90, 0));
-	//testObject->GetTransform()->UpdateEulerAngles(Vector3(45, 35, 20));
 	AddObject(testObject);
 
 	light = new Object("Light");
-
-	//light->AddComponent<PointLight>();
-	//light->SetRadius(10.0f);
-	//light->GetTransform()->UpdatePosition(Vector3(4, 4, 0));
-
-	SpotLight* sl = light->AddComponent<SpotLight>();
-	light->SetRadius(10.0f);
+	light->AddComponent<DirectionalLight>();
 	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	sl->SetSpotAngleDegree(5.0f);
-
-	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
-
 	AddObject(light);
 }
 
@@ -122,7 +101,7 @@ void TestScene::OnUpdate(float dt)
 	static float x = 0.0f;
 
 	x += 0.1f;
-	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(45, x, 20));
+	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
 }
 
 void TestScene::OnRenderPost()
