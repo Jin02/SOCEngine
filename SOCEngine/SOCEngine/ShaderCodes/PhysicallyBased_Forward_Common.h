@@ -21,6 +21,14 @@ void RenderDirectionalLight(
 #endif
 					in LightingParams lightingParams)
 {
+#if defined(RENDER_TRANSPARENCY)
+	resultFrontFaceDiffuseColor = resultFrontFaceSpecularColor = float3(0, 0, 0);
+	resultBackFaceDiffuseColor = resultBackFaceSpecularColor = float3(0, 0, 0);
+#else
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor	= float3(0, 0, 0);
+#endif
+
 	float4	lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightingParams.lightIndex];
 	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
 
@@ -52,6 +60,14 @@ void RenderPointLight(
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
+#if defined(RENDER_TRANSPARENCY)
+	resultFrontFaceDiffuseColor = resultFrontFaceSpecularColor = float3(0, 0, 0);
+	resultBackFaceDiffuseColor = resultBackFaceSpecularColor = float3(0, 0, 0);
+#else
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor	= float3(0, 0, 0);
+#endif
+
 	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
 
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
@@ -88,28 +104,36 @@ void RenderSpotLight(
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
-	float4 spotLightParam = g_inputSpotLightParamBuffer[lightingParams.lightIndex];
-	float3 spotLightDir = spotLightParam.xyz;
+#if defined(RENDER_TRANSPARENCY)
+	resultFrontFaceDiffuseColor = resultFrontFaceSpecularColor = float3(0, 0, 0);
+	resultBackFaceDiffuseColor = resultBackFaceSpecularColor = float3(0, 0, 0);
+#else
+	resultDiffuseColor	= float3(0, 0, 0);
+	resultSpecularColor	= float3(0, 0, 0);
+#endif
 
-	float4	lightCenterWithRadius		= g_inputSpotLightTransformBuffer[lightingParams.lightIndex];
-	float3	lightCenterWorldPosition	= lightCenterWithRadius.xyz;
-	float	lightRadius					= lightCenterWithRadius.w;
+	uint lightIdx = lightingParams.lightIndex;
 
-	float3	lightRealWorldPosition		= lightCenterWorldPosition - (spotLightDir * lightRadius);
-	float3	lightDir					= lightRealWorldPosition - vertexWorldPosition;
-	float	distanceOfLightAndVertex	= length(lightDir);
-	lightDir = normalize(lightDir);
+	float3 lightDir			= normalize(g_inputSpotLightParamBuffer[lightIdx].xyz);
+	float cosineConeAngle	= g_inputSpotLightParamBuffer[lightIdx].w;
 
-	float	lightCosineConeAngle		= spotLightParam.w;
-	float	currentCosineConeAngle		= dot(-lightDir, spotLightDir);
+	float3 sphereCenterPos	= g_inputSpotLightTransformBuffer[lightIdx].xyz;
+	float radius			= g_inputSpotLightTransformBuffer[lightIdx].w;
 
-	if( (distanceOfLightAndVertex < lightRadius) && 
-		(lightCosineConeAngle < currentCosineConeAngle) )
+	float3 lightPos			= sphereCenterPos - (lightDir * radius);
+	float3 vtxToLight		= lightPos - vertexWorldPosition;
+	float3 vtxToLightDir	= normalize(vtxToLight);
+
+	float distanceOfLightWithVertex = length(vtxToLight);
+
+	float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
+	if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
+		(cosineConeAngle < currentCosineConeAngle) )
 	{
 		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightingParams.lightIndex].xyz;
-		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightingParams.lightIndex].w;
-		commonParams.lightDir		= lightDir;
+		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightIdx].xyz;
+		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightIdx].w;
+		commonParams.lightDir		= vtxToLightDir;
 
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
@@ -265,7 +289,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float	alpha = 1.0f;
 #endif
 
-	return float4(result, 1.0f);
+	return float4(result, alpha);
 }
 
 #endif
