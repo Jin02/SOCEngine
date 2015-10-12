@@ -163,7 +163,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	roughness = roughnessInTex;
 #endif
 
-	float3 specularColor = lerp(float3(0.4f, 0.4f, 0.4f), specularTex.rgb, HasSpecularTexture());
+	float3 specularColor = lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, HasSpecularTexture());
 	float3 diffuseColor  = lerp(float3(1.f, 1.f, 1.f), diffuseTex.rgb * abs(material_mainColor), HasDiffuseTexture());
 
 	LightingParams lightParams;

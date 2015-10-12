@@ -295,9 +295,6 @@
     <Filter Include="Rendering\Texture\Manager">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\bson">
-      <UniqueIdentifier>{d4ca8081-4004-4bf9-a924-bea1d34e0438}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Mesh">
       <UniqueIdentifier>{85de1ee0-7e07-4f7e-8b4a-ef117da465b2}</UniqueIdentifier>
     </Filter>
@@ -309,6 +306,9 @@
     </Filter>
     <Filter Include="ShaderCodes\Mesh\Forward">
       <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectXTex">
+      <UniqueIdentifier>{7fa04a61-926a-4673-be20-b2b6f499f069}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -705,6 +705,24 @@
     <ClInclude Include="Intersection\BoundBox.h">
       <Filter>Intersection</Filter>
     </ClInclude>
+    <ClInclude Include="External\DirectXTex\DDS.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTex\DirectXTex.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTex\DirectXTexP.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTex\Filters.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTex\scoped.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectXTex\BC.h">
+      <Filter>External\DirectXTex</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -938,6 +956,57 @@
     <ClCompile Include="Intersection\BoundBox.cpp">
       <Filter>Intersection</Filter>
     </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexCompress.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexConvert.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexD3D11.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexDDS.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexFlipRotate.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexImage.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexMipmaps.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexMisc.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexNormalMaps.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexPMAlpha.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexResize.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexTGA.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexUtil.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\BC.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\BC4BC5.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectXTex\BC6HBC7.cpp">
+      <Filter>External\DirectXTex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -973,5 +1042,10 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Transparency</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="External\DirectXTex\DirectXTex.inl">
+      <Filter>External\DirectXTex</Filter>
+    </None>
   </ItemGroup>
 </Project>
