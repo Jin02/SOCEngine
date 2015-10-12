@@ -524,15 +524,17 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 
 	delete buffer;
 
-	Object* object = BuildMesh(meshes, materials, nodes, fileName, useDynamicVB, useDynamicIB);
+	Object* object = BuildMesh(meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB);
 
 	return object;
 }
 
-Core::Object* MeshImporter::BuildMesh(std::vector<Importer::Mesh>& meshes, const std::vector<Importer::Material>& materials, const std::vector<Node>& nodes, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB)
+Core::Object* MeshImporter::BuildMesh(
+	std::vector<Importer::Mesh>& meshes, const std::vector<Importer::Material>& materials, const std::vector<Node>& nodes,
+	const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB)
 {
 	std::set<std::string> normalMapMaterialKeys;
-	MakeMaterials(normalMapMaterialKeys, materials, meshFileName);
+	MakeMaterials(normalMapMaterialKeys, materials, folderDir, meshFileName);
 
 	BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
 	MaterialManager* materialManager = Director::GetInstance()->GetCurrentScene()->GetMaterialManager();
@@ -770,7 +772,8 @@ std::string MeshImporter::GetVertexBufferKey(const std::string& meshFileName, ui
 	return meshFileName + ":" + chunkKey;
 }
 
-void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Importer::Material>& materials, const std::string& meshFileName)
+void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Importer::Material>& materials,
+								 const std::string& folderDir, const std::string& meshFileName)
 {
 	const ResourceManager* resourceMgr	= ResourceManager::GetInstance();
 	const Scene* scene					= Director::GetInstance()->GetCurrentScene();
@@ -804,7 +807,7 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 				const auto& textures = impMat.textures;
 				for(auto iter = textures.begin(); iter != textures.end(); ++iter)
 				{
-					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(meshFileName + ":" + iter->fileName, false);
+					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(folderDir + "Textures/" + iter->fileName, false);
 
 					if(texture)
 					{

@@ -21,6 +21,12 @@
     <ClInclude Include="Core\Time\Timer.h" />
     <ClInclude Include="Core\Transform\Transform.h" />
     <ClInclude Include="Core\Transform\TransformPipelineParam.h" />
+    <ClInclude Include="External\DirectXTex\BC.h" />
+    <ClInclude Include="External\DirectXTex\DDS.h" />
+    <ClInclude Include="External\DirectXTex\DirectXTex.h" />
+    <ClInclude Include="External\DirectXTex\DirectXTexP.h" />
+    <ClInclude Include="External\DirectXTex\Filters.h" />
+    <ClInclude Include="External\DirectXTex\scoped.h" />
     <ClInclude Include="External\DirectXTK\DirectXHelpers.h" />
     <ClInclude Include="External\DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="External\DirectXTK\WICTextureLoader.h" />
@@ -188,6 +194,23 @@
     </ClCompile>
     <ClCompile Include="Core\Time\Timer.cpp" />
     <ClCompile Include="Core\Transform\Transform.cpp" />
+    <ClCompile Include="External\DirectXTex\BC.cpp" />
+    <ClCompile Include="External\DirectXTex\BC4BC5.cpp" />
+    <ClCompile Include="External\DirectXTex\BC6HBC7.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexCompress.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexConvert.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexD3D11.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexDDS.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexFlipRotate.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexImage.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexMipmaps.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexMisc.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexNormalMaps.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexPMAlpha.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexResize.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexTGA.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexUtil.cpp" />
+    <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp" />
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
     <ClCompile Include="GPGPU\CSOutput.cpp" />
@@ -327,6 +350,9 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">USE_COMPUTE_SHADER</PreprocessorDefinitions>
     </FxCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="External\DirectXTex\DirectXTex.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D2F8E424-3F82-4761-840D-187B4405A969}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -360,7 +386,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External/bson;External;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>

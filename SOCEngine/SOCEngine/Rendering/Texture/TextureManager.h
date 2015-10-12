@@ -22,8 +22,8 @@ namespace Rendering
 
 		public:
 			Texture::Texture2D* LoadTextureFromFile(const std::string& fileDir, bool hasAlpha);
-			Texture::Texture2D* Find(const std::string& name);
-			void Remoave(const std::string& name);
+			Texture::Texture2D* Find(const std::string& key);
+			void Remoave(const std::string& key);
 			void RemoveAll();
 		};
 	}
