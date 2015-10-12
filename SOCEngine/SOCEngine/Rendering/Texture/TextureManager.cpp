@@ -3,6 +3,7 @@
 #include "Utility.h"
 
 #include "DirectXTK/WICTextureLoader.h"
+#include "DirectXTex/DirectXTex.h"
 
 #include <locale>
 #include <codecvt>
@@ -26,26 +27,53 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 	std::string folderPath, name, format;
 	Utility::String::ParseDirectory(fileDir, &folderPath, &name, &format);
 
-	Texture::Texture2D* tex = Find(name);
-	if(tex)
-		return tex;
+	// Find texture
+	{
+		Texture::Texture2D* tex = Find(name + format);
+		if(tex)
+			return tex;
+	}
 
-	auto dx = Device::Director::GetInstance()->GetDirectX();
-	ID3D11Device* device = dx->GetDevice();
-	ID3D11DeviceContext* context = dx->GetContext();
+	const Device::DirectX*	dx		= Device::Director::GetInstance()->GetDirectX();
+	ID3D11Device*			device	= dx->GetDevice();
+	ID3D11DeviceContext*	context	= dx->GetContext();
 
-	ID3D11Texture2D* texture2d = nullptr;
-	ID3D11ShaderResourceView* srv = nullptr;
+	ID3D11ShaderResourceView*	srv			= nullptr;
+	ID3D11Resource*				resource	= nullptr;
 
-	ID3D11Resource* resource = nullptr;
+	DirectX::TexMetadata	metaData;
+	ScratchImage			image;
+
+	bool notCreatedSRV	= false;
+	HRESULT hr			= -1;
 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
 	std::wstring wFilePath = converter.from_bytes(fileDir);
-	HRESULT hr = CreateWICTextureFromFile(device, context, wFilePath.c_str(), &resource, &srv); 
+
+	if(format == "tga")	
+	{
+		hr = LoadFromTGAFile(wFilePath.c_str(), &metaData, image);
+		notCreatedSRV = true;
+	}
+	else if(format == "dds")
+	{
+		hr = LoadFromDDSFile(wFilePath.c_str(), 0u,  &metaData, image);
+		notCreatedSRV = true;
+	}
+	else
+		hr = CreateWICTextureFromFile(device, context, wFilePath.c_str(), &resource, &srv);
+
+	if(notCreatedSRV && SUCCEEDED(hr))
+	{
+		hr = CreateShaderResourceView(device, image.GetImages(), image.GetImageCount(), metaData, &srv);
+		srv->GetResource(&resource);
+	}
+	else if(notCreatedSRV)
+		ASSERT_MSG("Error, Can't load this texture");
 
 	if(SUCCEEDED(hr))
 	{
+		ID3D11Texture2D* texture2d = nullptr;
 		resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2d);
 
 		D3D11_TEXTURE2D_DESC texture2dDesc;
@@ -62,7 +90,7 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 		device->CreateShaderResourceView(texture2d, &srvDesc, &srv);
 		SAFE_RELEASE(resource);
 
-		tex = new Texture::Texture2D(srv, texture2d, hasAlpha);
+		Texture::Texture2D* tex = new Texture::Texture2D(srv, texture2d, hasAlpha);
 		_hash.insert(std::make_pair(name + format, tex));
 
 		return tex;
@@ -75,15 +103,15 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 	return nullptr;
 }
 
-Texture2D* TextureManager::Find(const std::string& name)
+Texture2D* TextureManager::Find(const std::string& key)
 {
-	auto findIter = _hash.find(name);
+	auto findIter = _hash.find(key);
 	return findIter == _hash.end() ? nullptr : findIter->second;
 }
 
-void TextureManager::Remoave(const std::string& name)
+void TextureManager::Remoave(const std::string& key)
 {
-	auto findIter = _hash.find(name);
+	auto findIter = _hash.find(key);
 
 	if(findIter != _hash.end())
 	{
