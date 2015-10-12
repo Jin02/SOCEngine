@@ -99,7 +99,7 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
-	specular_metallic.rgb	= lerp(float3(0.4f, 0.4f, 0.4f), specular, hasSpecularMap);
+	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
 
 	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
 	normal_roughness.rgb	= compressedNormal;
