@@ -169,7 +169,7 @@ namespace Rendering
 		unsigned long _b = static_cast<unsigned long>(b * 255.0f + 0.5);
 		unsigned long _a = static_cast<unsigned long>(a * 255.0f + 0.5);
 
-		return (_a << 24) | (_b << 16) | (_a << 8) | _r;
+		return (_a << 24) | (_b << 16) | (_g << 8) | _r;
 	}
 
 	void Color::Get16BitFloat4Color(std::array<unsigned short, 4>& outArray) const
