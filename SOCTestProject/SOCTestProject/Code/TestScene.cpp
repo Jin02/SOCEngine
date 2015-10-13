@@ -31,19 +31,33 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	float t1 = cos(Math::Common::Deg2Rad(179.0f));
+	float t2 = Math::Common::Rad2Deg(t1);
+
+	float t3 = cos(Math::Common::Deg2Rad(0.01f));
+	float t4 = Math::Common::Rad2Deg(t3);
+
 	camera = new Object("Default");
 	MainCamera* cam = camera->AddComponent<MainCamera>();
 	camera->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 
 	Importer::MeshImporter importer;
-	testObject = importer.Load("./Resources/Capsule/capsule.obj");
-	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+	//testObject = importer.Load("./Resources/Capsule/capsule.obj");
+	//testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+	testObject = importer.Load("./Resources/House/SanFranciscoHouse.fbx");
+	testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
+	testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 90, 0));
 	AddObject(testObject);
 
 	light = new Object("Light");
-	light->AddComponent<DirectionalLight>();
-	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	//light->AddComponent<DirectionalLight>();
+	//light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	SpotLight* pl = light->AddComponent<SpotLight>();
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, -10));
+	light->GetTransform()->LookAtWorld(Vector3(0, -5, 15));
+	pl->SetRadius(100.0f);
+	pl->SetSpotAngleDegree(15.0f);
 	AddObject(light);
 }
 
