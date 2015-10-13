@@ -14,4 +14,43 @@ struct GBuffer
 
 SamplerState GBufferDefaultSampler 	: register( s0 );
 
+
+#if defined(USE_PBR_TEXTURE)
+void MakeGBuffer(float4 diffuseTex, float4 normalWithRoughness, float4 specularTex,
+				 out float4 albedo_emission, out float4 specular_metallic, float4 normal_roughness)
+#else
+void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
+				 out float4 albedo_emission, out float4 specular_metallic, out float4 normal_roughness)
+#endif
+{
+#if defined(USE_PBR_TEXTURE)
+	float3 normal = normalWithRoughness.rgb;
+#endif
+
+	bool hasDiffuseMap		= HasDiffuseTexture();
+	bool hasSpecularMap		= HasSpecularTexture();
+	
+	float metallic, roughness, emission;
+	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
+
+	float3 albedo			= diffuseTex.rgb * abs(material_mainColor);
+	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);
+
+	float3 specular			= specularTex.rgb;
+	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
+
+	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
+	normal_roughness.rgb	= compressedNormal;
+
+#if defined(USE_PBR_TEXTURE)
+	albedo_emission.a		= diffuseTex.a;
+	specular_metallic.a 	= specularTex.a;
+	normal_roughness.a		= normalWithRoughness.a;
+#else
+	albedo_emission.a		= emission;
+	specular_metallic.a 	= metallic;
+	normal_roughness.a		= roughness;
+#endif
+}
+
 #endif

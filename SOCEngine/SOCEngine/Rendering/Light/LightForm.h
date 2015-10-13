@@ -5,6 +5,8 @@
 #include "Color.h"
 #include "Common.h"
 
+#define MAXIMUM_LUMEN 12750
+
 namespace Rendering
 {
 	namespace Light
@@ -26,6 +28,7 @@ namespace Rendering
 			LightType	_type;
 			float		_radius;
 			Color		_color;
+			uint		_lumen; //intensity
 
 		protected:
 			LightForm();
@@ -45,6 +48,13 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(Radius, float, _radius);
 			GET_SET_ACCESSOR(Color, const Color&, _color);
+
+			GET_SET_ACCESSOR(Lumen, uint, _lumen);
+
+			inline void SetIntensity(float intensity) { _lumen = (uint)((float)intensity * ((float)MAXIMUM_LUMEN / 8.0f)); }
+			GET_ACCESSOR(Intensity, float, (float)_lumen / ((float)MAXIMUM_LUMEN / 8.0f););
+
+			uint GetShderUintColor() const;
 		};
 	}
 }

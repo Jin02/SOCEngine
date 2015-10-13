@@ -3,7 +3,8 @@
 
 using namespace Rendering;
 using namespace Rendering::Light;
-
+using namespace Math;
+using namespace Core;
 
 DirectionalLight::DirectionalLight() : LightForm()
 {
@@ -21,12 +22,16 @@ bool DirectionalLight::Intersects(const Intersection::Sphere &sphere)
 
 void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
 {
-	const Core::Transform* transform = _owner->GetTransform();
-	transform->FetchWorldPosition(outTransform.worldPosition);
-	outTransform.radius = transform->GetForward().z;
+	const Transform* transform = _owner->GetTransform();
+	Transform worldTransform(nullptr);
+	transform->FetchWorldTransform(worldTransform);
+	outTransform.worldPosition = worldTransform.GetLocalPosition();
+
+	const auto& forward = worldTransform.GetForward();
+	outTransform.radius = forward.z;
 	
-	outParam.dirX = Math::Common::FloatToHalf(transform->GetForward().x);
-	outParam.dirY = Math::Common::FloatToHalf(transform->GetForward().y);
+	outParam.dirX = Math::Common::FloatToHalf(forward.x);
+	outParam.dirY = Math::Common::FloatToHalf(forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const

@@ -7,7 +7,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f)
+	: _radius(10.0f), _lumen(1500)
 {
 	_color = Color::White();
 }
@@ -22,6 +22,16 @@ void LightForm::OnInitialize()
 
 	const std::string& key = _owner->GetName();
 	scene->GetLightManager()->Add(this, key.c_str());
+}
+
+uint LightForm::GetShderUintColor() const
+{
+	uint uintColor = _color.Get32BitUintColor();
+	
+	uint packedLumen = (uint)((float)_lumen / (float)MAXIMUM_LUMEN * 255.0f);
+	uintColor = (uintColor & 0x00ffffff) | (packedLumen << 24);
+
+	return uintColor;
 }
 
 void LightForm::OnDestroy()

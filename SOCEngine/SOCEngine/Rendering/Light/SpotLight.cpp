@@ -5,6 +5,8 @@
 using namespace Intersection;
 using namespace Rendering;
 using namespace Rendering::Light;
+using namespace Math;
+using namespace Core;
 
 SpotLight::SpotLight()  : LightForm(),
 	_spotAngleDegree(0), _falloff(0)
@@ -19,31 +21,35 @@ SpotLight::~SpotLight()
 
 bool SpotLight::Intersects(const Intersection::Sphere &sphere)
 {
-	Math::Vector3 wp;
+	Vector3 wp;
 	_owner->GetTransform()->FetchWorldPosition(wp);
 
-	float degree = Math::Common::Rad2Deg(_param.coneCosAngle);
-	Cone cone(degree, _radius, _owner->GetTransform()->GetForward(), wp);
-
+	Cone cone(_spotAngleDegree, _radius, _owner->GetTransform()->GetForward(), wp);
 	return cone.Intersects(sphere);
 }
 
 void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
 {
-	const Core::Transform* transform = _owner->GetTransform();
-	transform->FetchWorldPosition(outTransform.worldPosition);
-	outTransform.radius = _radius;
-	
-	outParam.dirX = Math::Common::FloatToHalf(transform->GetForward().x);
-	outParam.dirY = Math::Common::FloatToHalf(transform->GetForward().y);
-	outParam.dirZ = Math::Common::FloatToHalf(transform->GetForward().z);
+	const Transform* transform = _owner->GetTransform();
 
-	float radian = Math::Common::Deg2Rad(_spotAngleDegree);
-	float cosAngle = cos(radian);
-	outParam.coneCosAngle = Math::Common::FloatToHalf(cosAngle);
+	Transform worldTransform(nullptr);
+	transform->FetchWorldTransform(worldTransform);
+	outTransform.worldPosition = worldTransform.GetLocalPosition();
+
+	const auto& forward = worldTransform.GetForward();
+	outTransform.radius = forward.z >= 0.0f ? _radius : -_radius;
+
+	outParam.dirX = Common::FloatToHalf(forward.x);
+	outParam.dirY = Common::FloatToHalf(forward.y);
+
+	float radian = Common::Deg2Rad(_spotAngleDegree);
+	outParam.outerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
+
+	radian = Common::Deg2Rad(_spotAngleDegree * 0.3333f);
+	outParam.innerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
 }
 
-Core::Component* SpotLight::Clone() const
+Component* SpotLight::Clone() const
 {
 	return new SpotLight(*this);
 }
