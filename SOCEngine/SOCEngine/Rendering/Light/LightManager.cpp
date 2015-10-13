@@ -147,7 +147,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		std::string key = light->GetOwner()->GetName();
 
 		LightForm::LightType lightType = light->GetType();
-		uint uintColor = light->GetColor().Get32BitUintColor();
+		uint uintColor = light->GetShderUintColor();
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
@@ -330,7 +330,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 		std::string key = light->GetOwner()->GetName();
 
 		LightForm::LightType lightType = light->GetType();
-		uint uintColor = light->GetColor().Get32BitUintColor();
+		uint uintColor = light->GetShderUintColor();
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
