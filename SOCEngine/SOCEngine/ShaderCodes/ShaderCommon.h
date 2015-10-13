@@ -8,14 +8,14 @@
 #define DEG_2_RAD(X)					PI * X / 180.0f
 
 Buffer<float4> g_inputPointLightTransformBuffer						: register( t0 ); // center, radius
-Buffer<float4> g_inputPointLightColorBuffer							: register( t1 ); // rgb, intensity
+Buffer<float4> g_inputPointLightColorBuffer							: register( t1 ); // rgb, lumen(maximum : 30,000)
 
-Buffer<float4> g_inputSpotLightTransformBuffer						: register( t2 ); // center, radius
-Buffer<float4> g_inputSpotLightColorBuffer							: register( t3 ); // rgb, intensity
-Buffer<float4> g_inputSpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, coneCosAngle,  falloffWithDirZSignBit
+Buffer<float4> g_inputSpotLightTransformBuffer						: register( t2 ); // center, radiusWithDirZSignBit
+Buffer<float4> g_inputSpotLightColorBuffer							: register( t3 ); // rgb, lumen(maximum : 30,000)
+Buffer<float4> g_inputSpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
 
 Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 ); // center, DirZ
-Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, intensity
+Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
 Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
 #if (MSAA_SAMPLES_COUNT > 1)
@@ -55,7 +55,6 @@ struct LightingParams
 struct LightingCommonParams
 {
 	float3	lightColor;
-	float	lightIntensity;
 	float3	lightDir;
 };
 
