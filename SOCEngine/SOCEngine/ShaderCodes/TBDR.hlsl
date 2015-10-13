@@ -1,7 +1,7 @@
 //EMPTY_META_DATA
 
 #include "LightCullingCompareAtomicCS.h"
-#include "BRDF.h"
+#include "DynamicLightingCommon.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
@@ -12,87 +12,6 @@ groupshared uint s_edgePackedPixelIdx[TILE_RES * TILE_RES];
 
 // Output
 RWTexture2D<float4> g_tOutScreen : register( u0 );
-
-void RenderDirectionalLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-							in LightingParams lightingParams)
-{
-	resultDiffuseColor	= float3(0, 0, 0);
-	resultSpecularColor	= float3(0, 0, 0);
-
-	float4	lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightingParams.lightIndex];
-	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
-
-	LightingCommonParams commonParams;
-	{
-		commonParams.lightColor		= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].xyz;
-		commonParams.lightIntensity	= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].w;
-
-		float2 lightParam = g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
-		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
-
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-	}
-}
-
-void RenderPointLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-					  in LightingParams lightingParams, float3 vertexWorldPosition)
-{
-	resultDiffuseColor	= float3(0, 0, 0);
-	resultSpecularColor = float3(0, 0, 0);
-
-	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightingParams.lightIndex];
-
-	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
-	float lightRadius				= lightCenterWithRadius.w;
-
-	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
-	float distanceOfLightAndVertex	= length(lightDir);
-	lightDir = normalize(lightDir);
-
-	if( distanceOfLightAndVertex < lightRadius )
-	{
-		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputPointLightColorBuffer[lightingParams.lightIndex].xyz;
-		commonParams.lightIntensity	= g_inputPointLightColorBuffer[lightingParams.lightIndex].w;
-		commonParams.lightDir		= lightDir;
-
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-	}
-}
-
-void RenderSpotLight(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-					  in LightingParams lightingParams, float3 vertexWorldPosition)
-{
-	resultDiffuseColor	= float3(0, 0, 0);
-	resultSpecularColor	= float3(0, 0, 0);
-
-	uint lightIdx = lightingParams.lightIndex;
-
-	float3 lightDir			= normalize(g_inputSpotLightParamBuffer[lightIdx].xyz);
-	float cosineConeAngle	= g_inputSpotLightParamBuffer[lightIdx].w;
-
-	float3 sphereCenterPos	= g_inputSpotLightTransformBuffer[lightIdx].xyz;
-	float radius			= g_inputSpotLightTransformBuffer[lightIdx].w;
-
-	float3 lightPos			= sphereCenterPos - (lightDir * radius);
-	float3 vtxToLight		= lightPos - vertexWorldPosition;
-	float3 vtxToLightDir	= normalize(vtxToLight);
-
-	float distanceOfLightWithVertex = length(vtxToLight);
-
-	float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
-	if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
-		(cosineConeAngle < currentCosineConeAngle) )
-	{
-		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightIdx].xyz;
-		commonParams.lightIntensity	= g_inputSpotLightColorBuffer[lightIdx].w;
-		commonParams.lightDir		= vtxToLightDir;
-
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
-	}
-}
-
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
