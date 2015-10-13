@@ -77,7 +77,7 @@ void RenderPointLight(
 		commonParams.lightColor		= g_inputPointLightColorBuffer[lightingParams.lightIndex].xyz;
 		commonParams.lightDir		= lightDir;
 
-		float lumen = g_inputPointLightColorBuffer[lightingParams.lightIndex].w * 30000.0f; //maximum lumen is 30,000
+		float lumen = g_inputPointLightColorBuffer[lightingParams.lightIndex].w * 12750.0f; //maximum lumen is 12,750f
 		float attenuation = 1.0f / (distanceOfLightAndVertex * distanceOfLightAndVertex);
 
 #if defined(RENDER_TRANSPARENCY)
@@ -148,7 +148,7 @@ void RenderSpotLight(
 		innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;
 		innerOuterAttenuation = lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
 
-		float lumen = g_inputSpotLightColorBuffer[lightIdx].w * 30000.0f; //maximum lumen is 30,000
+		float lumen = g_inputSpotLightColorBuffer[lightIdx].w * 12750.0f; //maximum lumen is 12750.0f
 
 		float plAttenuation = 1.0f / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 		float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;
