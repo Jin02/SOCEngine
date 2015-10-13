@@ -29,18 +29,24 @@ void RenderDirectionalLight(
 	LightingCommonParams commonParams;
 	{
 		commonParams.lightColor		= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].xyz;
-//		commonParams.lightIntensity	= g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].w;
 
 		float2	lightParam			= g_inputDirectionalLightParamBuffer[lightingParams.lightIndex];
 		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
+		float intensity = g_inputDirectionalLightColorBuffer[lightingParams.lightIndex].a * 10.0f;
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
+		resultFrontFaceDiffuseColor		*= intensity;
+		resultFrontFaceSpecularColor	*= intensity;
 
 		lightingParams.normal = -lightingParams.normal;
 		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);
+		resultBackFaceDiffuseColor		*= intensity;
+		resultBackFaceSpecularColor		*= intensity;
 #else
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
+		resultDiffuseColor				*= intensity;
+		resultSpecularColor				*= intensity;
 #endif
 	}	
 }

@@ -7,7 +7,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(1500)
+	: _radius(10.0f), _lumen(50)
 {
 	_color = Color::White();
 }
@@ -28,7 +28,7 @@ uint LightForm::GetShderUintColor() const
 {
 	uint uintColor = _color.Get32BitUintColor();
 	
-	uint packedLumen = (uint)((float)_lumen / (float)MAXIMUM_LUMEN * 255.0f);
+	uint packedLumen = (uint)((float)_lumen / (float)MAXIMUM_LUMEN * 255.0f + 0.5f);
 	uintColor = (uintColor & 0x00ffffff) | (packedLumen << 24);
 
 	return uintColor;

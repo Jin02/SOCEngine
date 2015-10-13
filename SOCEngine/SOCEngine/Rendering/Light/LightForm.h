@@ -51,8 +51,8 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(Lumen, uint, _lumen);
 
-			inline void SetIntensity(float intensity) { _lumen = (uint)((float)intensity * ((float)MAXIMUM_LUMEN / 8.0f)); }
-			GET_ACCESSOR(Intensity, float, (float)_lumen / ((float)MAXIMUM_LUMEN / 8.0f););
+			inline void SetIntensity(float intensity) { _lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f)); }
+			GET_ACCESSOR(Intensity, float, (float)_lumen * 5.0f / ((float)MAXIMUM_LUMEN););
 
 			uint GetShderUintColor() const;
 		};
