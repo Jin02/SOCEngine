@@ -9,7 +9,7 @@ using namespace Math;
 using namespace Core;
 
 SpotLight::SpotLight()  : LightForm(),
-	_spotAngleDegree(0), _falloff(0)
+	_spotAngleDegree(0)
 {
 	_type = LightType::Spot;
 }
@@ -52,4 +52,12 @@ void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param
 Component* SpotLight::Clone() const
 {
 	return new SpotLight(*this);
+}
+
+void SpotLight::SetSpotAngleDegree(float d)
+{
+	_spotAngleDegree = d;
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
 }

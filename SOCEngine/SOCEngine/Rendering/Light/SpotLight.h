@@ -25,9 +25,7 @@ namespace Rendering
 
 		public:
 			Params			_param;
-
 			float			_spotAngleDegree;
-			float			_falloff;
 
 		public:
 			SpotLight();
@@ -41,8 +39,8 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_SET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
-			GET_SET_ACCESSOR(Falloff, float, _falloff);
+			void SetSpotAngleDegree(float d);
+			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
 		};
 
 	}

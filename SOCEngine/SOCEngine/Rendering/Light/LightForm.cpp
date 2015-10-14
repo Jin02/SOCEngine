@@ -37,3 +37,40 @@ uint LightForm::GetShderUintColor() const
 void LightForm::OnDestroy()
 {
 }
+
+void LightForm::SetIntensity(float intensity)
+{
+	_lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f));
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
+}
+
+float LightForm::GetIntensity() const
+{
+	return (float)_lumen * 5.0f / ((float)MAXIMUM_LUMEN);
+}
+
+void LightForm::SetRadius(float r)
+{
+	_radius = r;
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
+}
+
+void LightForm::SetColor(const Color& c)
+{
+	_color = c;
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
+}
+
+void LightForm::SetLumen(uint l)
+{
+	_lumen = l;
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
+}
