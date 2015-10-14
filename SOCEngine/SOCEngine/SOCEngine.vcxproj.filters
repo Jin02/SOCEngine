@@ -310,6 +310,9 @@
     <Filter Include="External\DirectXTex">
       <UniqueIdentifier>{7fa04a61-926a-4673-be20-b2b6f499f069}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shadow">
+      <UniqueIdentifier>{a083a166-2c43-42f8-bbe5-9916c27883c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -726,6 +729,9 @@
     <ClInclude Include="ShaderCodes\DynamicLightingCommon.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1009,6 +1015,9 @@
     </ClCompile>
     <ClCompile Include="External\DirectXTex\BC6HBC7.cpp">
       <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
+      <Filter>Rendering\Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
