@@ -74,5 +74,6 @@ namespace Core
 
 		GET_ACCESSOR(UpdateCounter, uint, _updateCounter);
 		inline bool IsUpdated(uint counter) const { return _updateCounter != counter; }
+		inline void AddUpdateCounter(uint v = 1) { _updateCounter+= v; };
 	};
 }
