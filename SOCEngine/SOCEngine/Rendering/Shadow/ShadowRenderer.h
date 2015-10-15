@@ -1,8 +1,11 @@
 #pragma once
 
 #include "DepthBuffer.h"
-#include "LightForm.h"
+#include "VectorMap.h"
 
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "DirectionalLight.h"
 
 namespace Rendering
 {
@@ -28,9 +31,18 @@ namespace Rendering
 			Texture::DepthBuffer*	_directionalLightShadowMap;
 
 		private:
+			struct ShadowCastingLight
+			{
+				address lightAddress;
+				uint updateCounter;
+			};
+			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingPointLights;
+			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingSpotLights;
+			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingDirectionalLights;
 
-			NumOfShadowCastingLight		_numOfShadowCastingLight;
-			uint						_shadowMapResolution; //default 256
+
+			NumOfShadowCastingLight								_numOfShadowCastingLight;
+			uint												_shadowMapResolution; //default 256
 
 		public:
 			ShadowRenderer();
@@ -40,9 +52,19 @@ namespace Rendering
 			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);
 			void Destroy();
 
-		public:
+		private:
+			Structure::VectorMap<address, ShadowCastingLight>* GetShadowCastingLights(const Light::LightForm* light);
 
 		public:
+			void AddShadowCastingLight(const Light::LightForm* light);
+			void DeleteShadowCastingLight(const Light::LightForm* light);
+			bool HasShadowCastingLight(const Light::LightForm* light);
+
+		public:
+			void RenderSpotLightShadowMap(const Device::DirectX* dx);
+			void RenderPointLightShadowMap(const Device::DirectX* dx);
+			void RenderDirectionalLightShadowMap(const Device::DirectX* dx);
+
 			void Render(const Device::DirectX* dx);
 		};
 	}
