@@ -20,7 +20,6 @@
     </ClInclude>
     <ClInclude Include="Core\Time\Timer.h" />
     <ClInclude Include="Core\Transform\Transform.h" />
-    <ClInclude Include="Core\Transform\TransformPipelineParam.h" />
     <ClInclude Include="External\DirectXTex\BC.h" />
     <ClInclude Include="External\DirectXTex\DDS.h" />
     <ClInclude Include="External\DirectXTex\DirectXTex.h" />

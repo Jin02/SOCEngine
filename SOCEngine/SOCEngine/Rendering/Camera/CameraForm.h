@@ -17,6 +17,11 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
+			struct CamConstBufferData
+			{
+				Math::Matrix viewMat;
+				Math::Matrix viewProjMat;
+			};
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -35,8 +40,6 @@ namespace Rendering
 			Frustum*						_frustum;
 			Texture::RenderTexture*			_renderTarget;
 			RenderQueue						_transparentMeshQueue;
-			
-			Math::Matrix					_viewProjMat;
 
 		protected:
 			float							_fieldOfViewDegree;
@@ -45,6 +48,9 @@ namespace Rendering
 			ProjectionType					_projectionType;
 			float							_aspect;
 			Color							_clearColor;
+
+			Buffer::ConstBuffer*			_camConstBuffer;
+			CamConstBufferData				_prevCamConstBufferData;
 
 		public:
 			CameraForm();
@@ -66,7 +72,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			virtual void UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager) = 0;
 
 		protected:

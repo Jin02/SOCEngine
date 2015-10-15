@@ -72,7 +72,7 @@ void Scene::RenderPreview()
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->UpdateConstBuffer(_dx, _rootObjects.GetVector(), _lightManager);
+		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 }
 
 void Scene::Render()

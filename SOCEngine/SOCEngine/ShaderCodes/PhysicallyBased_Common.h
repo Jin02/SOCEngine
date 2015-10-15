@@ -9,14 +9,19 @@
 #define ALPHA_TEST_BIAS		0.5f
 #endif
 
-cbuffer Transform : register( b1 )		//Mesh
+cbuffer Transform : register( b1 )		//Object World
 {
 	matrix transform_world;
-	matrix transform_worldView;
-	matrix transform_worldViewProj;
 };
 
-cbuffer Material : register( b2 )		//PhysicallyBasedMaterial
+cbuffer Camera : register( b2 )		//Camera
+{
+	matrix camera_view;
+	matrix camera_viewProj;
+};
+
+
+cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 {
 	float3	material_mainColor;
 	uint	material_alpha_metallic_roughness_emission;

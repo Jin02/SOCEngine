@@ -19,7 +19,7 @@ namespace Core
 		//null
 	}
 
-	void Component::OnUpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform)
+	void Component::OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix)
 	{
 		//null
 	}

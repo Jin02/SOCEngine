@@ -17,8 +17,9 @@ namespace Rendering
 
 		enum class InputConstBufferShaderIndex : uint
 		{
-			Transform	= 1,
-			Material	= 2
+			World		= 1,
+			Camera		= 2,
+			Material	= 3
 		};
 
 	public:

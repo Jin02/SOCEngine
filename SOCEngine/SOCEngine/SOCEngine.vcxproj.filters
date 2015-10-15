@@ -405,9 +405,6 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Transform\TransformPipelineParam.h">
-      <Filter>Core\Transform</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\ImporterUtility.h">
       <Filter>Importer\Utility</Filter>
     </ClInclude>
