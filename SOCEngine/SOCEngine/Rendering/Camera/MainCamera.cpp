@@ -88,28 +88,50 @@ void MainCamera::OnDestroy()
 	CameraForm::Destroy();
 }
 
-void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
+void MainCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	Matrix worldMat, viewMat, projMat;
+	CamConstBufferData camConstBufferData;
+
+	Matrix	worldMat;
+	Matrix& viewMat = camConstBufferData.viewMat;
+	Matrix	projMat;
+	Matrix	viewProjMat;
 	{
 		_owner->GetTransform()->FetchWorldMatrix(worldMat);
-		CameraForm::GetViewMatrix(viewMat, worldMat);
-		GetProjectionMatrix(projMat, false);
 
-		_frustum->Make(viewMat * projMat);
+		CameraForm::GetViewMatrix(viewMat, worldMat);
 		GetProjectionMatrix(projMat, true);
-		_viewProjMat = viewMat * projMat;
+		viewProjMat = viewMat * projMat;
+
+		bool updatedVP = memcmp(&_prevCamConstBufferData, &camConstBufferData, sizeof(CamConstBufferData)) != 0;
+		if(updatedVP)
+		{
+			// Make Frustum
+			{
+				Matrix notInvProj;
+				GetProjectionMatrix(notInvProj, false);
+				_frustum->Make(camConstBufferData.viewMat * notInvProj);
+			}
+
+			_prevCamConstBufferData = camConstBufferData;
+
+			Matrix::Transpose(camConstBufferData.viewMat,		camConstBufferData.viewMat);
+			Matrix::Transpose(camConstBufferData.viewProjMat,	viewProjMat);
+
+			_camConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
+		}
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		{
 			(*iter)->Culling(_frustum);
-			(*iter)->UpdateTransformCB(viewMat, projMat);
+			(*iter)->UpdateTransformCB(dx);
 		}
 	}
 
+
 	LightCulling::TBRParam tbrParam;
 	{
-		Matrix::Transpose(tbrParam.viewMat, viewMat);
+		tbrParam.viewMat = viewMat;
 
 		Matrix invProjMat;
 		Matrix::Inverse(invProjMat, projMat);
@@ -124,7 +146,7 @@ void MainCamera::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<
 		}
 
 		Matrix invViewProj;
-		Matrix::Inverse(invViewProj, _viewProjMat);
+		Matrix::Inverse(invViewProj, viewProjMat);
 		Matrix invViewProjViewport = invViewportMat * invViewProj;
 
 		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
@@ -256,8 +278,15 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			{
 				// Setting Transform ConstBuffer
 				{
-					uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Transform;
-					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetTransformConstBuffer(), true, false, false, false);
+					uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::World;
+					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetWorldMatrixConstBuffer(), true, false, false, false);
+					constBuffers.push_back(buf);
+				}
+
+				// Camera
+				{
+					uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferShaderIndex::Camera;
+					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, _camConstBuffer, true, false, false, false);
 					constBuffers.push_back(buf);
 				}
 			}
