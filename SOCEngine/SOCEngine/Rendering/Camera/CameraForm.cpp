@@ -5,6 +5,7 @@
 
 using namespace Math;
 using namespace std;
+using namespace Rendering::Buffer;
 using namespace Rendering::Light;
 using namespace Device;
 using namespace Core;
@@ -12,7 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm() 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr)
 {
 }
 
@@ -39,12 +40,16 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
+
+	_camConstBuffer = new ConstBuffer;
+	_camConstBuffer->Initialize(sizeof(CamConstBufferData));
 }
 
 void CameraForm::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
+	SAFE_DELETE(_camConstBuffer);
 }
 
 void CameraForm::CalcAspect()
@@ -109,21 +114,40 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 	GetViewMatrix(outMatrix, worldMat);
 }
 
-void CameraForm::UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
+void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
-	Matrix projMat, viewMat;
-	GetProjectionMatrix(projMat, false);
-	GetViewMatrix(viewMat);
+	CamConstBufferData cbData;
+	{
+		Matrix& viewMat = cbData.viewMat;
+		GetViewMatrix(cbData.viewMat);
 
-	_frustum->Make(viewMat * projMat);
+		Matrix projMat;
+		GetProjectionMatrix(projMat, true);
+		cbData.viewProjMat = viewMat * projMat;
+	}
 
-	GetProjectionMatrix(projMat, true);
-	_viewProjMat = viewMat * projMat;
+	bool updatedVP = memcmp(&_prevCamConstBufferData, &cbData, sizeof(CamConstBufferData)) != 0;
+	if(updatedVP)
+	{
+		// Make Frustum
+		{
+			Matrix notInvProj;
+			GetProjectionMatrix(notInvProj, false);
+			_frustum->Make(cbData.viewMat * notInvProj);
+		}
+
+		_prevCamConstBufferData = cbData;
+
+		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
+		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
+
+		_camConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
+	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		(*iter)->Culling(_frustum);
-		(*iter)->UpdateTransformCB(viewMat, projMat);
+		(*iter)->UpdateTransformCB(dx);
 	}
 }
 
