@@ -21,7 +21,7 @@ namespace Rendering
 		public:
 			struct MeshList
 			{
-				typedef unsigned __int64 meshkey; //is address
+				typedef address meshkey;
 
 				//first key is vbkey.
 				Structure::VectorHashMap<std::string, std::set<meshkey>> meshes;
