@@ -30,6 +30,9 @@ namespace Rendering
 			Color		_color;
 			uint		_lumen; //intensity
 
+			Color		_shadowColor; //a is strength
+			bool		_useShadow;
+
 		protected:
 			LightForm();
 
@@ -58,7 +61,14 @@ namespace Rendering
 			void SetIntensity(float intensity);
 			float GetIntensity() const;
 
+			void SetShadowColor(const Color& c);
+			GET_ACCESSOR(ShadowColor, const Color&, _shadowColor);
+
+			GET_SET_ACCESSOR(UseShadow, bool, _useShadow);
+
 			uint GetShderUintColor() const;
+
+			GET_ACCESSOR(ShaderShadowUintColor, uint, _shadowColor.Get32BitUintColor());
 		};
 	}
 }

@@ -7,9 +7,10 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(500)
+	: _radius(10.0f), _lumen(500), _useShadow(false)
 {
-	_color = Color::White();
+	_color			= Color::White();
+	_shadowColor	= Color::Black();
 }
 
 LightForm::~LightForm()
@@ -71,6 +72,17 @@ void LightForm::SetLumen(uint l)
 {
 	_lumen = l;
 
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
+}
+
+void LightForm::SetShadowColor(const Color& c)
+{
+	if(_useShadow == false)
+		DEBUG_LOG("Warning, This light does not use shadow.");
+
+	_shadowColor = c;
+	
 	if(_owner)
 		_owner->GetTransform()->AddUpdateCounter();
 }
