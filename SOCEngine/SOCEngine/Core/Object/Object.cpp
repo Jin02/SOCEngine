@@ -87,33 +87,29 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& projMat)
+void Object::UpdateTransformCB(const Device::DirectX*& dx)
 {
 	if(_use == false)
 		return;
 
 	Math::Matrix worldMat;
 	_transform->FetchWorldMatrix(worldMat);
+	Matrix::Transpose(worldMat, worldMat);
 
-	TransformPipelineShaderInput transposeTransform;
-	{
-		Matrix::Transpose(transposeTransform.worldMat, worldMat);
-
-		Matrix worldView = worldMat * viewMat;
-		Matrix::Transpose(transposeTransform.worldViewMat, worldView);
-
-		Matrix worldViewProj = worldView * projMat;
-		Matrix::Transpose(transposeTransform.worldViewProjMat, worldViewProj);
-	}
+	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
+	if(changedWorldMat)
+		_prevWorldMat = worldMat;
 
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
-		(*iter)->OnUpdateTransformCB(transposeTransform);
+		if(changedWorldMat)
+			(*iter)->OnUpdateTransformCB(dx, worldMat);
+
 		(*iter)->OnRenderPreview();
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->UpdateTransformCB(viewMat, projMat);
+		(*iter)->UpdateTransformCB(dx);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)
