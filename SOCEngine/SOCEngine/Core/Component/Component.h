@@ -1,8 +1,13 @@
 #pragma once
 
-#include "TransformPipelineParam.h"
+#include "Matrix.h"
 #include "Common.h"
 #include <vector>
+
+namespace Device
+{
+	class DirectX;
+};
 
 namespace Rendering
 {
@@ -37,7 +42,7 @@ namespace Core
 	public:
 		virtual void OnInitialize() = 0;
 		virtual void OnUpdate(float deltaTime);
-		virtual void OnUpdateTransformCB(const TransformPipelineShaderInput& transpose_Transform);
+		virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix);
 		virtual void OnRenderPreview();
 		virtual void OnDestroy() = 0;
 
