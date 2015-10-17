@@ -14,6 +14,13 @@ namespace Rendering
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
 			static const uint NumOfRenderTargets = 3;
+			enum class RenderType
+			{
+				AlphaMesh,
+				Opaque,
+				Transparency,
+				DepthOnly
+			};
 
 		private:
 			bool _useTransparent;
@@ -44,6 +51,20 @@ namespace Rendering
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager);
+
+		public:
+			static void RenderMeshWithoutIASetVB(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const Geometry::Mesh* mesh, RenderType renderType,
+				const Buffer::ConstBuffer* cameraConstBuffer);
+			static void RenderMeshesUsingMeshList(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const Manager::RenderManager::MeshList& meshes,
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer);
+			static void RenderMeshesUsingMeshVector(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const std::vector<const Geometry::Mesh*>& meshes,
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
