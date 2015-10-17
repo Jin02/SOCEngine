@@ -2,6 +2,8 @@
 #include "Utility.h"
 #include "Object.h"
 
+#define USE_RENDER_WITH_UPDATE_CB
+
 using namespace Structure;
 using namespace Math;
 using namespace Core;
@@ -11,6 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Shadow;
 using namespace Rendering::Texture;
 using namespace Rendering::Light;
+using namespace Rendering::Manager;
 
 ShadowRenderer::ShadowRenderer()
 	: _pointLightShadowMap(nullptr), _spotLightShadowMap(nullptr),
@@ -94,15 +97,6 @@ void ShadowRenderer::Destroy()
 	SAFE_DELETE(_pointLightShadowMap);
 	SAFE_DELETE(_spotLightShadowMap);
 	SAFE_DELETE(_directionalLightShadowMap);
-}
-
-void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
-{
-
-}
-
-void ShadowRenderer::Render(const Device::DirectX*& dx)
-{
 }
 
 void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index)
@@ -252,7 +246,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	}
 }
 
-void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
+void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -271,23 +265,38 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
 
 	_spotLightShadowMap->Clear(context, 1.0f, 0);
 
+	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
+
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMap->GetDepthStencilView());
+	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
+
+	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
+	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
 
 	uint count = _shadowCastingSpotLights.GetSize();
 	for(uint index = 0; index < count; ++index)
 	{		
+#ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingSpotLightCB(dx, index);
-		const auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
+#endif
 	
 		viewport.TopLeftX = (float)index * _spotLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
+
+		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
+		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+
+		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
+		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+		context->RSSetState( nullptr );
 	}
 
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
+void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -306,27 +315,42 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
 
 	_pointLightShadowMap->Clear(context, 1.0f, 0);
 
+	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
+
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMap->GetDepthStencilView());
+	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
-	uint count = _shadowCastingDirectionalLights.GetSize();
+	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
+	const auto& alphaTestMeshes = renderManager->GetOpaqueMeshes();
+
+	uint count = _shadowCastingPointLights.GetSize();
 	for(uint index = 0; index < count; ++index)
 	{
-		viewport.TopLeftX = (float)index * _pointLightShadowMapResolution;
+#ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingPointLightCB(dx, index);
+#endif
+		viewport.TopLeftX = (float)index * _pointLightShadowMapResolution;
 
 		for(uint i=0; i<6; ++i)
 		{
 			viewport.TopLeftY = (float)i * _pointLightShadowMapResolution;
 			context->RSSetViewports(1, &viewport);
 
+			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
+			MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+
+			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+			context->PSSetSamplers(0, 1, &anisotropicSamplerState);
+			MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+			context->RSSetState( nullptr );
 		}
 	}
 
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx)
+void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -345,17 +369,32 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx)
 
 	_directionalLightShadowMap->Clear(context, 1.0f, 0);
 
+	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
+
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMap->GetDepthStencilView());
+	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
+
+	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
+	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
 
 	uint count = _shadowCastingDirectionalLights.GetSize();
 	for(uint index = 0; index < count; ++index)
 	{
+#ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingSpotLightCB(dx, index);
-		const auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
+#endif
 
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
+
+		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
+		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+
+		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
+		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+		context->RSSetState( nullptr );
 	}
 
 	context->RSSetViewports(1, &originViewport);
@@ -451,4 +490,37 @@ bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 
 	ASSERT_MSG("Unsupported light type.");
 	return false;
+}
+
+void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
+{
+#ifndef USE_RENDER_WITH_UPDATE_CB
+	// Spot Light
+	{
+		uint count = _shadowCastingSpotLights.GetSize();
+		for(uint index = 0; index < count; ++index)
+			UpdateShadowCastingSpotLightCB(dx, index);
+	}
+
+	// Point Light
+	{
+		uint count = _shadowCastingPointLights.GetSize();
+		for(uint index = 0; index < count; ++index)
+			UpdateShadowCastingPointLightCB(dx, index);
+	}
+
+	// Directional Light
+	{
+		uint count = _shadowCastingDirectionalLights.GetSize();
+		for(uint index = 0; index < count; ++index)
+			UpdateShadowCastingDirectionalLightCB(dx, index);
+	}
+#endif
+}
+
+void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager* renderManager)
+{
+	RenderSpotLightShadowMap(dx, renderManager);
+	RenderPointLightShadowMap(dx, renderManager);
+	RenderDirectionalLightShadowMap(dx, renderManager);
 }

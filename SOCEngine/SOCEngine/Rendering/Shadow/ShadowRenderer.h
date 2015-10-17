@@ -10,7 +10,12 @@
 #include "ConstBuffer.h"
 #include <array>
 
-#include "CameraForm.h"
+#include "MeshCamera.h"
+
+namespace Core
+{
+	class Scene;
+}
 
 namespace Rendering
 {
@@ -19,6 +24,8 @@ namespace Rendering
 		class ShadowRenderer
 		{
 		public:
+			friend class Core::Scene;
+
 			struct NumOfShadowCastingLight
 			{
 				uint pointLight;
@@ -66,28 +73,27 @@ namespace Rendering
 			ShadowRenderer();
 			~ShadowRenderer();
 
+		public:
+			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);
+			void Destroy();
+
 		private:
 			void UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index);
 			void UpdateShadowCastingPointLightCB(const Device::DirectX*& dx, uint index);
 			void UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index);
 
-		public:
-			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);
-			void Destroy();
+			void RenderSpotLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void RenderPointLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
 
 		public:
 			void AddShadowCastingLight(const Light::LightForm*& light);
 			void DeleteShadowCastingLight(const Light::LightForm*& light);
 			bool HasShadowCastingLight(const Light::LightForm*& light);
 
-		public:
-			void UpdateConstBuffer(const Device::DirectX*& dx);
-
-			void RenderSpotLightShadowMap(const Device::DirectX*& dx);
-			void RenderPointLightShadowMap(const Device::DirectX*& dx);
-			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx);
-
-			void Render(const Device::DirectX*& dx);
+		private: //friend class Scene
+			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
+			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
 		};
 	}
 }
