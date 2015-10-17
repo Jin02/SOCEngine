@@ -84,7 +84,7 @@
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
-    <ClInclude Include="Rendering\Camera\MainCamera.h" />
+    <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
@@ -239,7 +239,7 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
-    <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
+    <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
     <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
