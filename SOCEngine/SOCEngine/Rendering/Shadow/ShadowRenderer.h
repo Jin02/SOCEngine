@@ -58,15 +58,18 @@ namespace Rendering
 
 
 			NumOfShadowCastingLight								_numOfShadowCastingLight;
-			uint												_shadowMapResolution; //default 256
+			uint												_pointLightShadowMapResolution;			//default 256
+			uint												_spotLightShadowMapResolution;			//default 256
+			uint												_directionalLightShadowMapResolution;	//default 512
 
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
 
 		private:
-			void UpdateShadowCastingSpotLight(const Device::DirectX*& dx, uint index);
-			void UpdateShadowCastingPointLight(const Device::DirectX*& dx, uint index);
+			void UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index);
+			void UpdateShadowCastingPointLightCB(const Device::DirectX*& dx, uint index);
+			void UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index);
 
 		public:
 			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);

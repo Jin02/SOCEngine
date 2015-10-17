@@ -15,7 +15,9 @@ using namespace Rendering::Light;
 ShadowRenderer::ShadowRenderer()
 	: _pointLightShadowMap(nullptr), _spotLightShadowMap(nullptr),
 	_directionalLightShadowMap(nullptr), _numOfShadowCastingLight(),
-	_shadowMapResolution(256)
+	_pointLightShadowMapResolution(256),
+	_spotLightShadowMapResolution(256),
+	_directionalLightShadowMapResolution(512)
 {
 }
 
@@ -55,8 +57,8 @@ void ShadowRenderer::CreateOrResizeShadowMap(
 		SAFE_DELETE(_pointLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.pointLight * _shadowMapResolution;
-		mapSize.h = 6 * _shadowMapResolution; //point light´Â 6¸é ·»´õ¸µ
+		mapSize.w = _numOfShadowCastingLight.pointLight * _pointLightShadowMapResolution;
+		mapSize.h = 6 * _pointLightShadowMapResolution; //point light´Â 6¸é ·»´õ¸µ
 
 		_pointLightShadowMap = new DepthBuffer;
 		_pointLightShadowMap->Initialize(mapSize, true, 1);
@@ -67,8 +69,8 @@ void ShadowRenderer::CreateOrResizeShadowMap(
 		SAFE_DELETE(_spotLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.spotLight * _shadowMapResolution;
-		mapSize.h = _shadowMapResolution;
+		mapSize.w = _numOfShadowCastingLight.spotLight * _spotLightShadowMapResolution;
+		mapSize.h = _spotLightShadowMapResolution;
 
 		_spotLightShadowMap = new DepthBuffer;
 		_spotLightShadowMap->Initialize(mapSize, true, 1);
@@ -79,8 +81,8 @@ void ShadowRenderer::CreateOrResizeShadowMap(
 		SAFE_DELETE(_directionalLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.spotLight * _shadowMapResolution;
-		mapSize.h = _shadowMapResolution;
+		mapSize.w = _numOfShadowCastingLight.spotLight * _directionalLightShadowMapResolution;
+		mapSize.h = _directionalLightShadowMapResolution;
 
 		_directionalLightShadowMap = new DepthBuffer;
 		_directionalLightShadowMap->Initialize(mapSize, true, 1);
@@ -103,7 +105,7 @@ void ShadowRenderer::Render(const Device::DirectX*& dx)
 {
 }
 
-void ShadowRenderer::UpdateShadowCastingSpotLight(const Device::DirectX*& dx, uint index)
+void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -136,7 +138,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLight(const Device::DirectX*& dx, ui
 	}
 }
 
-void ShadowRenderer::UpdateShadowCastingPointLight(const Device::DirectX*& dx, uint index)
+void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx, uint index)
 {
 	Vector3 forwards[6] = 
 	{
@@ -213,6 +215,39 @@ void ShadowRenderer::UpdateShadowCastingPointLight(const Device::DirectX*& dx, u
 	}
 }
 
+void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index)
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
+	const DirectionalLight* light = reinterpret_cast<const DirectionalLight*>(shadowCastingLight.lightAddress);
+
+	CameraForm::CamConstBufferData cbData;
+	{
+		Matrix& view = cbData.viewMat;
+		light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
+		CameraForm::GetViewMatrix(view, view);
+
+		Matrix proj;
+		Matrix::OrthoLH(proj, (float)_directionalLightShadowMapResolution, (float)_directionalLightShadowMapResolution, 1.0f, 10000.0f);
+
+		Matrix& viewProj = cbData.viewProjMat;
+		viewProj = view * proj;
+	}
+
+	bool isDifferent = memcmp(&shadowCastingLight.prevConstBufferData, &cbData, sizeof(CameraForm::CamConstBufferData)) != 0;
+	if(isDifferent)
+	{
+		shadowCastingLight.prevConstBufferData = cbData;
+
+		Matrix::Transpose(cbData.viewMat,		cbData.viewMat);
+		Matrix::Transpose(cbData.viewProjMat,	cbData.viewProjMat);
+
+		ConstBuffer* camConstBuffer = shadowCastingLight.camConstBuffer;
+		camConstBuffer->UpdateSubResource(context, &cbData);
+	}
+}
+
 void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -223,8 +258,8 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
 
 	D3D11_VIEWPORT viewport;
 	{
-		viewport.Width		= (float)_shadowMapResolution;
-		viewport.Height		= (float)_shadowMapResolution;
+		viewport.Width		= (float)_spotLightShadowMapResolution;
+		viewport.Height		= (float)_spotLightShadowMapResolution;
 		viewport.MaxDepth	= 1.0f;
 		viewport.MinDepth	= 0.0f;
 		viewport.TopLeftY	= 0.0f;
@@ -235,12 +270,17 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMap->GetDepthStencilView());
 
-	auto& shadowCastingLights = _shadowCastingSpotLights.GetVector();
-
 	uint count = _shadowCastingSpotLights.GetSize();
 	for(uint index = 0; index < count; ++index)
-	{
+	{		
+		UpdateShadowCastingSpotLightCB(dx, index);
+		const auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
+	
+		viewport.TopLeftX = (float)index * _spotLightShadowMapResolution;
+		context->RSSetViewports(1, &viewport);
 	}
+
+	context->RSSetViewports(1, &originViewport);
 }
 
 void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
@@ -253,8 +293,8 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
 
 	D3D11_VIEWPORT viewport;
 	{
-		viewport.Width		= (float)_shadowMapResolution;
-		viewport.Height		= (float)_shadowMapResolution;
+		viewport.Width		= (float)_pointLightShadowMapResolution;
+		viewport.Height		= (float)_pointLightShadowMapResolution;
 		viewport.MaxDepth	= 1.0f;
 		viewport.MinDepth	= 0.0f;
 		viewport.TopLeftY	= 0.0f;
@@ -264,10 +304,57 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMap->GetDepthStencilView());
+
+	uint count = _shadowCastingDirectionalLights.GetSize();
+	for(uint index = 0; index < count; ++index)
+	{
+		viewport.TopLeftX = (float)index * _pointLightShadowMapResolution;
+		UpdateShadowCastingPointLightCB(dx, index);
+
+		for(uint i=0; i<6; ++i)
+		{
+			viewport.TopLeftY = (float)i * _pointLightShadowMapResolution;
+			context->RSSetViewports(1, &viewport);
+
+		}
+	}
+
+	context->RSSetViewports(1, &originViewport);
 }
 
 void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	uint vpNum = 1;
+	D3D11_VIEWPORT originViewport;
+	context->RSGetViewports(&vpNum, &originViewport); 
+
+	D3D11_VIEWPORT viewport;
+	{
+		viewport.Width		= (float)_directionalLightShadowMapResolution;
+		viewport.Height		= (float)_directionalLightShadowMapResolution;
+		viewport.MaxDepth	= 1.0f;
+		viewport.MinDepth	= 0.0f;
+		viewport.TopLeftY	= 0.0f;
+	}
+
+	_directionalLightShadowMap->Clear(context, 1.0f, 0);
+
+	ID3D11RenderTargetView* nullRTV = nullptr;
+	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMap->GetDepthStencilView());
+
+	uint count = _shadowCastingDirectionalLights.GetSize();
+	for(uint index = 0; index < count; ++index)
+	{
+		UpdateShadowCastingSpotLightCB(dx, index);
+		const auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
+
+		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
+		context->RSSetViewports(1, &viewport);
+	}
+
+	context->RSSetViewports(1, &originViewport);
 }
 
 void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
