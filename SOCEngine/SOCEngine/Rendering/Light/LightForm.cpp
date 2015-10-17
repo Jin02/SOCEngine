@@ -25,7 +25,7 @@ void LightForm::OnInitialize()
 	scene->GetLightManager()->Add(this, key.c_str());
 }
 
-uint LightForm::GetShderUintColor() const
+uint LightForm::Get32BitMainColor() const
 {
 	uint uintColor = _color.Get32BitUintColor();
 	
@@ -78,11 +78,16 @@ void LightForm::SetLumen(uint l)
 
 void LightForm::SetShadowColor(const Color& c)
 {
-	if(_useShadow == false)
-		DEBUG_LOG("Warning, This light does not use shadow.");
-
 	_shadowColor = c;
 	
 	if(_owner)
 		_owner->GetTransform()->AddUpdateCounter();
+}
+
+uint LightForm::Get32BitShadowColor() const
+{
+	uint uintColor = _shadowColor.Get32BitUintColor();	
+	uintColor = (_useShadow ? (uintColor & 0xff000000) : 0) | (uintColor & 0x00ffffff);
+
+	return uintColor;
 }

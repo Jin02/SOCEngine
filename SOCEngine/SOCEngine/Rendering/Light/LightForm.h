@@ -66,9 +66,8 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(UseShadow, bool, _useShadow);
 
-			uint GetShderUintColor() const;
-
-			GET_ACCESSOR(ShaderShadowUintColor, uint, _shadowColor.Get32BitUintColor());
+			uint Get32BitMainColor() const;
+			uint Get32BitShadowColor() const;
 		};
 	}
 }
