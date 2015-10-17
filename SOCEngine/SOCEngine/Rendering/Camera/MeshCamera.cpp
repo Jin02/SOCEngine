@@ -1,4 +1,4 @@
-#include "MainCamera.h"
+#include "MeshCamera.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
@@ -16,7 +16,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
 using namespace Rendering;
 
-MainCamera::MainCamera() : CameraForm(),
+MeshCamera::MeshCamera() : CameraForm(),
 	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
 	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
@@ -25,12 +25,12 @@ MainCamera::MainCamera() : CameraForm(),
 {
 }
 
-MainCamera::~MainCamera()
+MeshCamera::~MeshCamera()
 {
 	OnDestroy();
 }
 
-void MainCamera::OnInitialize()
+void MeshCamera::OnInitialize()
 {
 	CameraForm::Initialize();
 
@@ -73,7 +73,7 @@ void MainCamera::OnInitialize()
 	camMgr->Add(_owner->GetName(), thisCam);
 }
 
-void MainCamera::OnDestroy()
+void MeshCamera::OnDestroy()
 {
 	SAFE_DELETE(_albedo_emission);
 	SAFE_DELETE(_specular_metallic);
@@ -88,7 +88,7 @@ void MainCamera::OnDestroy()
 	CameraForm::Destroy();
 }
 
-void MainCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
+void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
 	CamConstBufferData camConstBufferData;
 
@@ -170,7 +170,7 @@ void MainCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	}
 }
 
-void MainCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const RenderManager* renderManager, const Geometry::Mesh* mesh, RenderType renderType, const ConstBuffer* cameraConstBuffer)
+void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const RenderManager* renderManager, const Geometry::Mesh* mesh, RenderType renderType, const ConstBuffer* cameraConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -256,7 +256,7 @@ void MainCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 	}
 }
 
-void MainCamera::RenderMeshesUsingMeshList(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::RenderManager::MeshList& meshes, RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer)
+void MeshCamera::RenderMeshesUsingMeshList(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::RenderManager::MeshList& meshes, RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -286,7 +286,7 @@ void MainCamera::RenderMeshesUsingMeshList(const Device::DirectX* dx, const Mana
 	}
 }
 
-void MainCamera::RenderMeshesUsingMeshVector(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const std::vector<const Geometry::Mesh*>& meshes, RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer)
+void MeshCamera::RenderMeshesUsingMeshVector(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const std::vector<const Geometry::Mesh*>& meshes, RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -300,12 +300,12 @@ void MainCamera::RenderMeshesUsingMeshVector(const Device::DirectX* dx, const Ma
 			Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 			filter->GetVertexBuffer()->IASetBuffer(context);
 
-			MainCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer);
+			MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer);
 		}
 	}
 }
 
-void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
 {
 	dx->ClearDeviceContext();
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -381,7 +381,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			uint count = meshes.meshes.GetVector().size();
 
 			if(count > 0)
-				MainCamera::RenderMeshesUsingMeshList(dx, renderManager, meshes, RenderType::Opaque, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, meshes, RenderType::Opaque, _camConstBuffer);
 		}
 
 		//Alpha Test Mesh
@@ -398,7 +398,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MainCamera::RenderMeshesUsingMeshList(dx, renderManager, meshes, RenderType::AlphaMesh, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, meshes, RenderType::AlphaMesh, _camConstBuffer);
 
 				context->RSSetState( nullptr );
 
@@ -416,7 +416,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MainCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::DepthOnly, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::DepthOnly, _camConstBuffer);
 		}
 	}
 
@@ -482,7 +482,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferShaderIndex::TBRParam, 1, &tbrCB);
 			context->PSSetConstantBuffers((uint)TBDR::InputConstBufferShaderIndex::TBRParam, 1, &tbrCB);
 
-			MainCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Transparency, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Transparency, _camConstBuffer);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
@@ -498,7 +498,7 @@ void MainCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	}
 }
 
-void MainCamera::EnableRenderTransparentMesh(bool enable)
+void MeshCamera::EnableRenderTransparentMesh(bool enable)
 {	
 	if(enable)
 	{
@@ -525,7 +525,7 @@ void MainCamera::EnableRenderTransparentMesh(bool enable)
 	_useTransparent = enable;
 }
 
-Core::Component* MainCamera::Clone() const
+Core::Component* MeshCamera::Clone() const
 {
 	return nullptr;
 }

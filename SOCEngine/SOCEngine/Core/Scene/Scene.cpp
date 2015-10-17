@@ -87,7 +87,7 @@ void Scene::Render()
 		ID3D11RenderTargetView* backBufferRTV = _dx->GetBackBufferRTV();
 		const RenderTexture* camRT = firstCam->GetRenderTarget();
 
-		MainCamera* mainFirstCam = dynamic_cast<MainCamera*>(firstCam);
+		MeshCamera* mainFirstCam = dynamic_cast<MeshCamera*>(firstCam);
 		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainFirstCam->GetTBRParamConstBuffer());
 	}
 

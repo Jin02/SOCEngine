@@ -11,7 +11,7 @@
 #include "UIManager.h"
 #include "LightManager.h"
 
-#include "MainCamera.h"
+#include "MeshCamera.h"
 #include "BackBufferMaker.h"
 
 namespace Core
