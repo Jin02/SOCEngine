@@ -46,7 +46,7 @@ namespace Structure
 
 			return ret;
 		}
-		Object& Get(unsigned int index)
+		inline Object& Get(unsigned int index)
 		{
 			ASSERT_COND_MSG(index < _vector.size(), "Out index");
 			return _vector[index];
