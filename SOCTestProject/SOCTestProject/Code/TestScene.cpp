@@ -31,6 +31,18 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	Vector3 w(-620, 136, 218);
+	Vector3 f(0,0,-1);
+	Vector3 u(0,1,0);
+	Transform tf0(nullptr);
+	tf0.UpdatePosition(w);
+	tf0.LookAtWorld(w + f, &u);
+
+	Matrix view;
+	tf0.FetchWorldMatrix(view);
+	CameraForm::GetViewMatrix(view, view);
+
+
 	camera = new Object("Default");
 	MainCamera* cam = camera->AddComponent<MainCamera>();
 	camera->GetTransform()->UpdateEulerAngles(Vector3(0, 270, 0));
