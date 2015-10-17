@@ -1,12 +1,12 @@
 #include "ShadowRenderer.h"
 #include "Utility.h"
-#include "CameraForm.h"
 #include "Object.h"
 
 using namespace Structure;
 using namespace Math;
 using namespace Core;
 using namespace Device;
+using namespace Rendering::Buffer;
 using namespace Rendering::Camera;
 using namespace Rendering::Shadow;
 using namespace Rendering::Texture;
@@ -94,11 +94,126 @@ void ShadowRenderer::Destroy()
 	SAFE_DELETE(_directionalLightShadowMap);
 }
 
-void ShadowRenderer::Render(const Device::DirectX* dx)
+void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
+{
+
+}
+
+void ShadowRenderer::Render(const Device::DirectX*& dx)
 {
 }
 
-void ShadowRenderer::RenderSpotLightShadowMap(const DirectX* dx)
+void ShadowRenderer::UpdateShadowCastingSpotLight(const Device::DirectX*& dx, uint index)
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
+	const SpotLight* light = reinterpret_cast<const SpotLight*>(shadowCastingLight.lightAddress);
+
+	CameraForm::CamConstBufferData cbData;
+	{
+		Matrix& view = cbData.viewMat;
+		light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
+		CameraForm::GetViewMatrix(view, view);
+
+		Matrix proj;
+		Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(light->GetSpotAngleDegree()), 1.0f, 1.0f, light->GetRadius());
+
+		Matrix& viewProj = cbData.viewProjMat;
+		viewProj = view * proj;
+	}
+
+	bool isDifferent = memcmp(&shadowCastingLight.prevConstBufferData, &cbData, sizeof(CameraForm::CamConstBufferData)) != 0;
+	if(isDifferent)
+	{
+		shadowCastingLight.prevConstBufferData = cbData;
+
+		Matrix::Transpose(cbData.viewMat,		cbData.viewMat);
+		Matrix::Transpose(cbData.viewProjMat,	cbData.viewProjMat);
+
+		ConstBuffer* camConstBuffer = shadowCastingLight.camConstBuffer;
+		camConstBuffer->UpdateSubResource(context, &cbData);
+	}
+}
+
+void ShadowRenderer::UpdateShadowCastingPointLight(const Device::DirectX*& dx, uint index)
+{
+	Vector3 forwards[6] = 
+	{
+		Vector3( 0.0f,  0.0f,  1.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
+		Vector3( 1.0f,  0.0f,  0.0f),
+		Vector3(-1.0f,  0.0f,  0.0f),
+		Vector3( 0.0f,  1.0f,  0.0f),
+		Vector3( 0.0f, -1.0f,  0.0f)
+	};
+	Vector3 ups[6] = 
+	{
+		Vector3( 0.0f,  1.0f,  0.0f),
+		Vector3( 0.0f,  1.0f,  0.0f),
+		Vector3( 0.0f,  1.0f,  0.0f),
+		Vector3( 0.0f,  1.0f,  0.0f),
+		Vector3( 0.0f,  0.0f, -1.0f),
+		Vector3( 0.0f,  0.0f,  1.0f),
+	};
+
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	auto& shadowCastingLight = _shadowCastingPointLights.Get(index);
+	const PointLight* light = reinterpret_cast<const PointLight*>(shadowCastingLight.lightAddress);
+
+	Matrix proj;
+	Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(90.0f), 1.0f, 1.0f, light->GetRadius());
+
+	auto ComputeCameraConstBufferData = [](CameraForm::CamConstBufferData& out,
+		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
+	{
+		Matrix& view = out.viewMat;
+		{
+			Transform tf0(nullptr);
+			tf0.UpdatePosition(eyePos);
+			tf0.LookAtWorld(eyePos + forward, &up);
+
+			tf0.FetchWorldMatrix(view);
+			CameraForm::GetViewMatrix(view, view);
+		}
+
+		out.viewProjMat = view * projMat;
+	};
+
+	Vector3 worldPos;
+	light->GetOwner()->GetTransform()->FetchWorldPosition(worldPos);
+
+	CameraForm::CamConstBufferData  cbData0;
+	ComputeCameraConstBufferData(cbData0, worldPos, forwards[0], ups[0], proj);
+
+	//prevConstBuffer is camConstBuffers[0]
+	bool isDifferent = memcmp(&shadowCastingLight.prevConstBufferData, &cbData0, sizeof(CameraForm::CamConstBufferData)) != 0;
+	if(isDifferent)
+	{
+		shadowCastingLight.prevConstBufferData = cbData0;
+
+		Matrix::Transpose(cbData0.viewMat,		cbData0.viewMat);
+		Matrix::Transpose(cbData0.viewProjMat,	cbData0.viewProjMat);
+
+		ConstBuffer* camConstBuffer = shadowCastingLight.camConstBuffers[0];
+		camConstBuffer->UpdateSubResource(context, &cbData0);
+
+		for(uint i=1; i<6; ++i)
+		{
+			CameraForm::CamConstBufferData cb;
+			ComputeCameraConstBufferData(cb, worldPos, forwards[i], ups[i], proj);
+
+			Matrix::Transpose(cb.viewMat,		cb.viewMat);
+			Matrix::Transpose(cb.viewProjMat,	cb.viewProjMat);
+
+			ConstBuffer* constBuffer = shadowCastingLight.camConstBuffers[i];
+			constBuffer->UpdateSubResource(context, &cb);
+		}
+	}
+}
+
+void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -120,26 +235,15 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX* dx)
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMap->GetDepthStencilView());
 
-	const auto& shadowCastingLights = _shadowCastingSpotLights.GetVector();
-	uint index = 0;
-	for(auto iter = shadowCastingLights.begin(); iter != shadowCastingLights.end(); ++iter, ++index)
+	auto& shadowCastingLights = _shadowCastingSpotLights.GetVector();
+
+	uint count = _shadowCastingSpotLights.GetSize();
+	for(uint index = 0; index < count; ++index)
 	{
-		viewport.TopLeftX = (float)(index * _shadowMapResolution);
-
-		const SpotLight* light = reinterpret_cast<const SpotLight*>(iter->lightAddress);
-
-		Matrix proj;
-		Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(light->GetSpotAngleDegree()), 1.0f, 1.0f, light->GetRadius());
-
-		Matrix view;
-		light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
-		CameraForm::GetViewMatrix(view, view);
-
-		Matrix viewProj = view * proj;
 	}
 }
 
-void ShadowRenderer::RenderPointLightShadowMap(const DirectX* dx)
+void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -160,75 +264,100 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX* dx)
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMap->GetDepthStencilView());
+}
 
-	const auto& shadowCastingLights = _shadowCastingPointLights.GetVector();
-	uint index = 0;
-	for(auto iter = shadowCastingLights.begin(); iter != shadowCastingLights.end(); ++iter, ++index)
+void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx)
+{
+}
+
+void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
+{
+	uint lightAddress = reinterpret_cast<address>(light);
+
+	LightForm::LightType lightType = light->GetType();
+	if(lightType == LightForm::LightType::Point)
 	{
-		//viewport.TopLeftX = (float)(index * _shadowMapResolution);
+		if(_shadowCastingPointLights.Find(lightAddress))
+			ASSERT_MSG("Error, Duplicated Light");
 
-		//const PointLight* light = reinterpret_cast<const PointLight*>(iter->lightAddress);
+		ShadowCastingPointLight scl;
+		scl.lightAddress	= lightAddress;
+		for(uint i=0; i<6; ++i)
+		{
+			scl.camConstBuffers[i] = new ConstBuffer;
+			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CamConstBufferData));
+		}
 
-		//Matrix proj;
-		//Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(90.0f), 1.0f, 1.0f, light->GetRadius());
-
-		//Matrix view;
-		//light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
-		//CameraForm::GetViewMatrix(view, view);
-
-		//Matrix viewProj = view * proj;
+		_shadowCastingPointLights.Add(lightAddress, scl);
 	}
+	else if( (lightType == LightForm::LightType::Spot) ||
+			 (lightType == LightForm::LightType::Directional) )
+	{
+		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
+			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
+
+		if(shadowCastingLights->Find(lightAddress))
+			ASSERT_MSG("Error, Duplicated Light");
+
+		ShadowCastingSpotDirectionalLight scl;
+		scl.lightAddress	= lightAddress;
+		scl.camConstBuffer	= new ConstBuffer;
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamConstBufferData));
+
+		shadowCastingLights->Add(lightAddress, scl);
+	}
+	else
+		ASSERT_MSG("Unsupported light type.");
 }
 
-void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX* dx)
+void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 {
-}
-
-VectorMap<address, ShadowRenderer::ShadowCastingLight>* 
-	ShadowRenderer::GetShadowCastingLights(const LightForm* light)
-{
-	Structure::VectorMap<address, ShadowCastingLight>* shadowCastingLights = nullptr;
-
-	LightForm::LightType type = light->GetType();
-	if(type == LightForm::LightType::Point)
-		shadowCastingLights = &_shadowCastingPointLights;
-	else if(type == LightForm::LightType::Spot)
-		shadowCastingLights = &_shadowCastingSpotLights;
-	else if(type == LightForm::LightType::Directional)
-		shadowCastingLights = &_shadowCastingDirectionalLights;
-
-	return shadowCastingLights;
-}
-
-void ShadowRenderer::AddShadowCastingLight(const LightForm* light)
-{
-	VectorMap<address, ShadowCastingLight>* shadowCastingLights = GetShadowCastingLights(light);
-	ASSERT_COND_MSG(shadowCastingLights, "Unsupported light type.");
-
 	uint lightAddress = reinterpret_cast<address>(light);
-	uint currentUpdateCounter = light->GetOwner()->GetTransform()->GetUpdateCounter();
 
-	ShadowCastingLight scl;
-	scl.lightAddress = lightAddress;
-	scl.updateCounter = currentUpdateCounter;
+	LightForm::LightType lightType = light->GetType();
+	if(lightType == LightForm::LightType::Point)
+	{
+		ShadowCastingPointLight* scpl = _shadowCastingPointLights.Find(lightAddress);
+		if(scpl == nullptr)
+			return;
 
-	shadowCastingLights->Add(lightAddress, scl);
+		for(uint i=0; i<6; ++i)
+			SAFE_DELETE(scpl->camConstBuffers[i]);
+	}
+	else if( (lightType == LightForm::LightType::Spot) ||
+			 (lightType == LightForm::LightType::Directional) )
+	{
+		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
+			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
+
+		ShadowCastingSpotDirectionalLight* scsdl = shadowCastingLights->Find(lightAddress);
+		if(scsdl == nullptr)
+			return;
+
+		SAFE_DELETE(scsdl->camConstBuffer);
+	}
+	else
+		ASSERT_MSG("Unsupported light type.");
 }
 
-void ShadowRenderer::DeleteShadowCastingLight(const LightForm* light)
+bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 {
-	VectorMap<address, ShadowCastingLight>* shadowCastingLights = GetShadowCastingLights(light);
-	ASSERT_COND_MSG(shadowCastingLights, "Unsupported light type.");
-
 	uint lightAddress = reinterpret_cast<address>(light);
-	shadowCastingLights->Delete(lightAddress);
-}
 
-bool ShadowRenderer::HasShadowCastingLight(const LightForm* light)
-{
-	VectorMap<address, ShadowCastingLight>* shadowCastingLights = GetShadowCastingLights(light);
-	ASSERT_COND_MSG(shadowCastingLights, "Unsupported light type.");
+	LightForm::LightType lightType = light->GetType();
+	if(lightType == LightForm::LightType::Point)
+	{
+		return _shadowCastingPointLights.Find(lightAddress) != nullptr;
+	}
+	else if( (lightType == LightForm::LightType::Spot) ||
+			 (lightType == LightForm::LightType::Directional) )
+	{
+		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
+			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
 
-	uint lightAddress = reinterpret_cast<address>(light);
-	return shadowCastingLights->Find(lightAddress) != nullptr;
+		return shadowCastingLights->Find(lightAddress) != nullptr;
+	}
+
+	ASSERT_MSG("Unsupported light type.");
+	return false;
 }

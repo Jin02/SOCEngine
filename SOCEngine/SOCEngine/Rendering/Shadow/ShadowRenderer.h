@@ -7,6 +7,11 @@
 #include "SpotLight.h"
 #include "DirectionalLight.h"
 
+#include "ConstBuffer.h"
+#include <array>
+
+#include "CameraForm.h"
+
 namespace Rendering
 {
 	namespace Shadow
@@ -31,14 +36,25 @@ namespace Rendering
 			Texture::DepthBuffer*	_directionalLightShadowMap;
 
 		private:
-			struct ShadowCastingLight
+			struct LightAddress
 			{
-				address lightAddress;
-				uint updateCounter;
+				address	lightAddress;
+				Camera::CameraForm::CamConstBufferData prevConstBufferData;
 			};
-			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingPointLights;
-			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingSpotLights;
-			Structure::VectorMap<address, ShadowCastingLight>	_shadowCastingDirectionalLights;
+
+			struct ShadowCastingPointLight : public LightAddress
+			{
+				std::array<Buffer::ConstBuffer*, 6> camConstBuffers;
+
+			};
+			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
+
+			struct ShadowCastingSpotDirectionalLight : public LightAddress
+			{
+				Buffer::ConstBuffer* camConstBuffer;
+			};
+			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingSpotLights;
+			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
 
 
 			NumOfShadowCastingLight								_numOfShadowCastingLight;
@@ -48,24 +64,27 @@ namespace Rendering
 			ShadowRenderer();
 			~ShadowRenderer();
 
+		private:
+			void UpdateShadowCastingSpotLight(const Device::DirectX*& dx, uint index);
+			void UpdateShadowCastingPointLight(const Device::DirectX*& dx, uint index);
+
 		public:
 			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);
 			void Destroy();
 
-		private:
-			Structure::VectorMap<address, ShadowCastingLight>* GetShadowCastingLights(const Light::LightForm* light);
+		public:
+			void AddShadowCastingLight(const Light::LightForm*& light);
+			void DeleteShadowCastingLight(const Light::LightForm*& light);
+			bool HasShadowCastingLight(const Light::LightForm*& light);
 
 		public:
-			void AddShadowCastingLight(const Light::LightForm* light);
-			void DeleteShadowCastingLight(const Light::LightForm* light);
-			bool HasShadowCastingLight(const Light::LightForm* light);
+			void UpdateConstBuffer(const Device::DirectX*& dx);
 
-		public:
-			void RenderSpotLightShadowMap(const Device::DirectX* dx);
-			void RenderPointLightShadowMap(const Device::DirectX* dx);
-			void RenderDirectionalLightShadowMap(const Device::DirectX* dx);
+			void RenderSpotLightShadowMap(const Device::DirectX*& dx);
+			void RenderPointLightShadowMap(const Device::DirectX*& dx);
+			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx);
 
-			void Render(const Device::DirectX* dx);
+			void Render(const Device::DirectX*& dx);
 		};
 	}
 }
