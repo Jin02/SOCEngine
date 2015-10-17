@@ -81,7 +81,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 		if(meshType == Geometry::MeshRenderer::Type::Transparent)
 		{
 			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
-			_transparent_depthOnly_Shaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+			_depthOnlyShader.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 		}
 	}
 
@@ -211,9 +211,14 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag,
 	return FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
 }
 
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const
+bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const
 {
-	return FindShaderFromHashMap(out, isDepthOnly ? _transparent_depthOnly_Shaders : _transparentShaders, bufferFlag);
+	return FindShaderFromHashMap(out, _transparentShaders, bufferFlag);
+}
+
+bool RenderManager::FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const
+{
+	return FindShaderFromHashMap(out, _depthOnlyShader, bufferFlag);
 }
 
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
@@ -232,10 +237,16 @@ bool RenderManager::HasGBufferShader(uint bufferFlag, bool isAlphaTest) const
 	return FindGBufferShader(dummy, bufferFlag, isAlphaTest);
 }
 
-bool RenderManager::HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const
+bool RenderManager::HasTransparencyShader(uint bufferFlag) const
 {
 	ShaderGroup dummy;
-	return FindTransparencyShader(dummy, bufferFlag, isDepthOnly);
+	return FindTransparencyShader(dummy, bufferFlag);
+}
+
+bool RenderManager::HasDepthOnlyShader(uint bufferFlag) const
+{
+	ShaderGroup dummy;
+	return FindDepthOnlyShader(dummy, bufferFlag);
 }
 
 void RenderManager::MakeDefaultSahderFileName(
