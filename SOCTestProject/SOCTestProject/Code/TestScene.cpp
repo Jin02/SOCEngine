@@ -31,20 +31,9 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	Vector3 w(-620, 136, 218);
-	Vector3 f(0,0,-1);
-	Vector3 u(0,1,0);
-	Transform tf0(nullptr);
-	tf0.UpdatePosition(w);
-	tf0.LookAtWorld(w + f, &u);
-
-	Matrix view;
-	tf0.FetchWorldMatrix(view);
-	CameraForm::GetViewMatrix(view, view);
-
-
+#if defined(USE_SPONZA_TEST)
 	camera = new Object("Default");
-	MainCamera* cam = camera->AddComponent<MainCamera>();
+	MeshCamera* cam = camera->AddComponent<MeshCamera>();
 	camera->GetTransform()->UpdateEulerAngles(Vector3(0, 270, 0));
 	camera->GetTransform()->UpdatePosition(Vector3(-1500, 190, -30));
 
@@ -62,6 +51,29 @@ void TestScene::OnInitialize()
 	light->GetTransform()->UpdateEulerAngles(Vector3(90, 240, 0));
 	lightCompo->SetIntensity(2.0f);
 	AddObject(light);
+#else
+	camera = new Object("Default");
+	MeshCamera* cam = camera->AddComponent<MeshCamera>();
+	camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+
+	Importer::MeshImporter importer;
+#if 0
+	testObject = importer.Load("./Resources/Capsule/capsule.obj");
+	testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+#else
+	testObject = importer.Load("./Resources/House/SanFranciscoHouse.fbx");
+	testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
+	testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
+#endif
+	AddObject(testObject);
+
+	light = new Object("Light");
+	LightForm* lightCompo = light->AddComponent<DirectionalLight>();
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	lightCompo->SetIntensity(2.0f);
+	AddObject(light);
+#endif
 }
 
 void TestScene::OnRenderPreview()
@@ -126,10 +138,12 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
-	//static float x = 0.0f;
+#ifndef USE_SPONZA_TEST
+	static float x = 0.0f;
 
-	//x += 0.1f;
-	//testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
+	x += 0.1f;
+	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
+#endif
 }
 
 void TestScene::OnRenderPost()
