@@ -37,6 +37,14 @@ uint LightForm::Get32BitMainColor() const
 
 void LightForm::OnDestroy()
 {
+	if(_useShadow)
+	{
+		Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+		Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
+
+		const LightForm* light = this;
+		shadowManager->DeleteShadowCastingLight(light);
+	}
 }
 
 void LightForm::SetIntensity(float intensity)
@@ -90,4 +98,17 @@ uint LightForm::Get32BitShadowColor() const
 	uintColor = (_useShadow ? (uintColor & 0xff000000) : 0) | (uintColor & 0x00ffffff);
 
 	return uintColor;
+}
+
+void LightForm::ActiveShadow(bool isActive)
+{
+	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
+
+	const LightForm* light = this;
+
+	if(isActive)
+		shadowManager->AddShadowCastingLight(light);
+	else
+		shadowManager->DeleteShadowCastingLight(light);
 }

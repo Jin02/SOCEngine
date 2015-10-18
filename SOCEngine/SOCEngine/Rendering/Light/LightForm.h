@@ -44,9 +44,6 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual bool Intersects(const Intersection::Sphere &sphere) = 0;
-
-		public:
 			GET_ACCESSOR(Type, const LightType, _type);		
 
 			void SetRadius(float r);
@@ -64,7 +61,8 @@ namespace Rendering
 			void SetShadowColor(const Color& c);
 			GET_ACCESSOR(ShadowColor, const Color&, _shadowColor);
 
-			GET_SET_ACCESSOR(UseShadow, bool, _useShadow);
+			void ActiveShadow(bool isActive);
+			GET_ACCESSOR(UseShadow, bool, _useShadow);
 
 			uint Get32BitMainColor() const;
 			uint Get32BitShadowColor() const;
