@@ -4,6 +4,7 @@
 #include "ShadingWithLightCulling.h"
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
+#include <functional>
 
 namespace Rendering
 {
@@ -57,14 +58,16 @@ namespace Rendering
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const Geometry::Mesh* mesh, RenderType renderType,
 				const Buffer::ConstBuffer* cameraConstBuffer);
-			static void RenderMeshesUsingMeshList(
+			static void RenderMeshesUsingSortedMeshVectorByVB(
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const Manager::RenderManager::MeshList& meshes,
-				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer);
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
 			static void RenderMeshesUsingMeshVector(
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const std::vector<const Geometry::Mesh*>& meshes,
-				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer);
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
