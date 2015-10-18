@@ -68,10 +68,14 @@ void TestScene::OnInitialize()
 	AddObject(testObject);
 
 	light = new Object("Light");
-	LightForm* lightCompo = light->AddComponent<DirectionalLight>();
 	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
-	lightCompo->SetIntensity(2.0f);
+
+	SpotLight* spotLight = light->AddComponent<SpotLight>();
+	spotLight->SetLumen(700);
+	spotLight->SetRadius(20.0f);
+	spotLight->SetSpotAngleDegree(25.0f);
+
 	AddObject(light);
 #endif
 }
