@@ -18,7 +18,8 @@ using namespace Rendering::Texture;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _backBufferMaker(nullptr)
+	_renderMgr(nullptr), _backBufferMaker(nullptr),
+	_shadowRenderer(nullptr)
 {
 	_state = State::Init;
 }

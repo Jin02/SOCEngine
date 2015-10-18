@@ -13,6 +13,7 @@
 
 #include "MeshCamera.h"
 #include "BackBufferMaker.h"
+#include "ShadowRenderer.h"
 
 namespace Core
 {
@@ -36,6 +37,8 @@ namespace Core
 		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
 
 		const Device::DirectX*					_dx;
+
+		Rendering::Shadow::ShadowRenderer*			_shadowRenderer;
 
 
 	public:
@@ -68,10 +71,11 @@ namespace Core
 		void NextState();
 		GET_ACCESSOR(State, const State, _state);
 
-		GET_ACCESSOR(CameraManager, Rendering::Manager::CameraManager*, _cameraMgr);
-		GET_ACCESSOR(RenderManager, Rendering::Manager::RenderManager*, _renderMgr);
-		GET_ACCESSOR(UIManager, UI::Manager::UIManager*, _uiManager);
-		GET_ACCESSOR(LightManager, Rendering::Manager::LightManager*, _lightManager);
-		GET_ACCESSOR(MaterialManager, Rendering::Manager::MaterialManager*, _materialMgr);
+		GET_ACCESSOR(CameraManager,		Rendering::Manager::CameraManager*,		_cameraMgr);
+		GET_ACCESSOR(RenderManager,		Rendering::Manager::RenderManager*,		_renderMgr);
+		GET_ACCESSOR(UIManager,			UI::Manager::UIManager*,				_uiManager);
+		GET_ACCESSOR(LightManager,		Rendering::Manager::LightManager*,		_lightManager);
+		GET_ACCESSOR(MaterialManager,	Rendering::Manager::MaterialManager*,	_materialMgr);
+		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
 	};
 }
