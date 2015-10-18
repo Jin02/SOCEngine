@@ -294,7 +294,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 					Vector3 worldPos;
 					obj->GetTransform()->FetchWorldPosition(worldPos);
 					Sphere sphere(worldPos, obj->GetRadius());
-					isCulled |= (*intersectFunc)(sphere);
+					isCulled |= (*intersectFunc)(sphere) == false;
 				}
 
 				if(isCulled == false)
