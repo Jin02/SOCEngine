@@ -26,17 +26,6 @@ namespace Rendering
 		public:
 			friend class Core::Scene;
 
-			struct NumOfShadowCastingLight
-			{
-				uint pointLight;
-				uint spotLight;
-				uint directionalLight;
-
-				NumOfShadowCastingLight() 
-					: pointLight(16), spotLight(16), directionalLight(4) {}
-				~NumOfShadowCastingLight(){}
-			};
-
 		private:
 			Texture::DepthBuffer*	_pointLightShadowMap;
 			Texture::DepthBuffer*	_spotLightShadowMap;
@@ -64,17 +53,25 @@ namespace Rendering
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
 
 
-			NumOfShadowCastingLight								_numOfShadowCastingLight;
-			uint												_pointLightShadowMapResolution;			//default 256
-			uint												_spotLightShadowMapResolution;			//default 256
-			uint												_directionalLightShadowMapResolution;	//default 512
+			uint	_numOfShadowCastingPointLightInAtlas;			//default 16
+			uint	_numOfShadowCastingSpotLightInAtlas;			//default 16
+			uint	_numOfShadowCastingDirectionalLightInAtlas;		//default 4
+
+			uint	_pointLightShadowMapResolution;			//default 256
+			uint	_spotLightShadowMapResolution;			//default 256
+			uint	_directionalLightShadowMapResolution;	//default 512
 
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
 
 		public:
-			void CreateOrResizeShadowMap(const NumOfShadowCastingLight& numOfShadowCastingLight);
+			void Initialize(uint numOfShadowCastingPointLight = 16, uint numOfShadowCastingSpotLight = 16, uint numOfShadowCastingDirectionalLight = 4);
+
+		public:
+			void ResizeShadowMapAtlas(
+				uint numOfShadowCastingPointLight, uint numOfShadowCastingSpotLight, uint numOfShadowCastingDirectionalLight,
+				uint pointLightShadowMapResolution, uint spotLightShadowMapResolution, uint directionalLightShadowMapResolution);
 			void Destroy();
 
 		private:

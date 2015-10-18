@@ -8,6 +8,7 @@ using namespace Structure;
 using namespace Math;
 using namespace Core;
 using namespace Device;
+using namespace Intersection;
 using namespace Rendering::Buffer;
 using namespace Rendering::Camera;
 using namespace Rendering::Shadow;
@@ -17,10 +18,13 @@ using namespace Rendering::Manager;
 
 ShadowRenderer::ShadowRenderer()
 	: _pointLightShadowMap(nullptr), _spotLightShadowMap(nullptr),
-	_directionalLightShadowMap(nullptr), _numOfShadowCastingLight(),
+	_directionalLightShadowMap(nullptr),
 	_pointLightShadowMapResolution(256),
 	_spotLightShadowMapResolution(256),
-	_directionalLightShadowMapResolution(512)
+	_directionalLightShadowMapResolution(512),
+	_numOfShadowCastingPointLightInAtlas(0),
+	_numOfShadowCastingSpotLightInAtlas(0),
+	_numOfShadowCastingDirectionalLightInAtlas(0)
 {
 }
 
@@ -29,38 +33,54 @@ ShadowRenderer::~ShadowRenderer()
 	Destroy();
 }
 
-void ShadowRenderer::CreateOrResizeShadowMap(
-	const NumOfShadowCastingLight& numOfShadowCastingLight
-	)
+void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
+								uint numOfShadowCastingSpotLight,
+								uint numOfShadowCastingDirectionalLight)
+{
+	ResizeShadowMapAtlas(	numOfShadowCastingPointLight,
+							numOfShadowCastingSpotLight,
+							numOfShadowCastingDirectionalLight,
+							256,
+							256,
+							512	);
+}
+
+void ShadowRenderer::ResizeShadowMapAtlas(
+	uint numOfShadowCastingPointLight, uint numOfShadowCastingSpotLight, uint numOfShadowCastingDirectionalLight,
+	uint pointLightShadowMapResolution, uint spotLightShadowMapResolution, uint directionalLightShadowMapResolution)
 {
 	auto Next2Squre =[](uint value) -> uint
 	{
 		return 1 << (uint)(ceil(log((uint)value) / log(2.0f)));
 	};
 
-	bool changedPLShadowMap = false;
-	bool changedSLShadowMap = false;
-	bool changedDLShadowMap = false;
+	bool changedPLShadowMap = _pointLightShadowMapResolution != pointLightShadowMapResolution;
+	bool changedSLShadowMap = _spotLightShadowMapResolution != spotLightShadowMapResolution;
+	bool changedDLShadowMap = _directionalLightShadowMapResolution != directionalLightShadowMapResolution;
 
-	if(_numOfShadowCastingLight.pointLight < numOfShadowCastingLight.pointLight)
+	if(_numOfShadowCastingPointLightInAtlas < numOfShadowCastingPointLight)
 	{
-		_numOfShadowCastingLight.pointLight = Next2Squre(numOfShadowCastingLight.pointLight);
+		_numOfShadowCastingPointLightInAtlas = Next2Squre(numOfShadowCastingPointLight);
+		changedPLShadowMap = true;
 	}
-	if(_numOfShadowCastingLight.spotLight < numOfShadowCastingLight.spotLight)
+	if(_numOfShadowCastingSpotLightInAtlas < numOfShadowCastingSpotLight)
 	{
-		_numOfShadowCastingLight.spotLight = Next2Squre(numOfShadowCastingLight.spotLight);
+		_numOfShadowCastingSpotLightInAtlas = Next2Squre(numOfShadowCastingSpotLight);
+		changedSLShadowMap = true;
 	}
-	if(_numOfShadowCastingLight.directionalLight < numOfShadowCastingLight.directionalLight)
+	if(_numOfShadowCastingDirectionalLightInAtlas < numOfShadowCastingDirectionalLight)
 	{
-		_numOfShadowCastingLight.directionalLight = Next2Squre(numOfShadowCastingLight.directionalLight);
+		_numOfShadowCastingDirectionalLightInAtlas = Next2Squre(numOfShadowCastingDirectionalLight);
+		changedDLShadowMap = true;
 	}
 
 	// Point Light Shadow Map ShadowMap
+	if(changedPLShadowMap || (_pointLightShadowMap == nullptr))
 	{
 		SAFE_DELETE(_pointLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.pointLight * _pointLightShadowMapResolution;
+		mapSize.w = _numOfShadowCastingPointLightInAtlas * _pointLightShadowMapResolution;
 		mapSize.h = 6 * _pointLightShadowMapResolution; //point light´Â 6¸é ·»´õ¸µ
 
 		_pointLightShadowMap = new DepthBuffer;
@@ -68,11 +88,12 @@ void ShadowRenderer::CreateOrResizeShadowMap(
 	}
 
 	// Spot Light
+	if(changedSLShadowMap || (_spotLightShadowMap == nullptr))
 	{
 		SAFE_DELETE(_spotLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.spotLight * _spotLightShadowMapResolution;
+		mapSize.w = _numOfShadowCastingSpotLightInAtlas * _spotLightShadowMapResolution;
 		mapSize.h = _spotLightShadowMapResolution;
 
 		_spotLightShadowMap = new DepthBuffer;
@@ -80,11 +101,12 @@ void ShadowRenderer::CreateOrResizeShadowMap(
 	}
 
 	// dl
+	if(changedDLShadowMap || (_directionalLightShadowMap == nullptr))
 	{
 		SAFE_DELETE(_directionalLightShadowMap);
 
 		Size<uint> mapSize;
-		mapSize.w = _numOfShadowCastingLight.spotLight * _directionalLightShadowMapResolution;
+		mapSize.w = _numOfShadowCastingDirectionalLightInAtlas * _directionalLightShadowMapResolution;
 		mapSize.h = _directionalLightShadowMapResolution;
 
 		_directionalLightShadowMap = new DepthBuffer;
@@ -97,6 +119,35 @@ void ShadowRenderer::Destroy()
 	SAFE_DELETE(_pointLightShadowMap);
 	SAFE_DELETE(_spotLightShadowMap);
 	SAFE_DELETE(_directionalLightShadowMap);
+
+	// DL
+	{
+		auto& lights = _shadowCastingDirectionalLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+			SAFE_DELETE(lights.Get(i).camConstBuffer);
+	}
+
+	// SL
+	{
+		auto& lights = _shadowCastingSpotLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+			SAFE_DELETE(lights.Get(i).camConstBuffer);
+	}
+
+	// PL
+	{
+		auto& lights = _shadowCastingPointLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+		{
+			for(uint j=0; j<6; ++j)
+			{
+				SAFE_DELETE(lights.Get(i).camConstBuffers[j]);
+			}
+		}
+	}
 }
 
 void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index)
@@ -280,16 +331,29 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 #ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingSpotLightCB(dx, index);
 #endif
-	
+		address lightAddress = _shadowCastingSpotLights.Get(index).lightAddress;		
+		const SpotLight* light = reinterpret_cast<const SpotLight*>(lightAddress);
+		auto IntersectLight = [&](const Sphere& sphere)
+		{
+			return light->Intersect(sphere);
+		};
+		std::function<bool(const Sphere&)> intersectFunc = IntersectLight;
+
 		viewport.TopLeftX = (float)index * _spotLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
 
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
-		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+			dx, renderManager, opaqueMeshes,
+			MeshCamera::RenderType::DepthOnly,
+			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
-		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+			dx, renderManager, alphaTestMeshes,
+			MeshCamera::RenderType::AlphaMesh,
+			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
 
@@ -330,6 +394,14 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 #ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingPointLightCB(dx, index);
 #endif
+		address lightAddress = _shadowCastingPointLights.Get(index).lightAddress;		
+		const PointLight* light = reinterpret_cast<const PointLight*>(lightAddress);
+		auto IntersectLight = [&](const Sphere& sphere)
+		{
+			return light->Intersect(sphere);
+		};
+		std::function<bool(const Sphere&)> intersectFunc = IntersectLight;
+
 		viewport.TopLeftX = (float)index * _pointLightShadowMapResolution;
 
 		for(uint i=0; i<6; ++i)
@@ -338,11 +410,17 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			context->RSSetViewports(1, &viewport);
 
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
-			MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, opaqueMeshes,
+				MeshCamera::RenderType::DepthOnly,
+				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			context->PSSetSamplers(0, 1, &anisotropicSamplerState);
-			MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, alphaTestMeshes,
+				MeshCamera::RenderType::AlphaMesh,
+				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
 	}
@@ -388,12 +466,26 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
 
+		address lightAddress = _shadowCastingDirectionalLights.Get(index).lightAddress;		
+		const DirectionalLight* light = reinterpret_cast<const DirectionalLight*>(lightAddress);
+		auto IntersectLight = [&](const Sphere& sphere)
+		{
+			return light->Intersect(sphere);
+		};
+		std::function<bool(const Sphere&)> intersectFunc = IntersectLight;
+
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
-		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::DepthOnly, camConstBuffer);
+		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+			dx, renderManager, opaqueMeshes, 
+			MeshCamera::RenderType::DepthOnly,
+			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
-		MeshCamera::RenderMeshesUsingMeshList(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::AlphaMesh, camConstBuffer);
+		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+			dx, renderManager, alphaTestMeshes,
+			MeshCamera::RenderType::AlphaMesh,
+			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
 
@@ -402,7 +494,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 
 void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 {
-	uint lightAddress = reinterpret_cast<address>(light);
+	address lightAddress = reinterpret_cast<address>(light);
 
 	LightForm::LightType lightType = light->GetType();
 	if(lightType == LightForm::LightType::Point)
@@ -438,11 +530,19 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 	}
 	else
 		ASSERT_MSG("Unsupported light type.");
+
+	uint plCount = _shadowCastingPointLights.GetSize();
+	uint slCount = _shadowCastingSpotLights.GetSize();
+	uint dlCount = _shadowCastingDirectionalLights.GetSize();
+	ResizeShadowMapAtlas(plCount, slCount, dlCount,
+		_pointLightShadowMapResolution,
+		_spotLightShadowMapResolution,
+		_directionalLightShadowMapResolution);
 }
 
 void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 {
-	uint lightAddress = reinterpret_cast<address>(light);
+	address lightAddress = reinterpret_cast<address>(light);
 
 	LightForm::LightType lightType = light->GetType();
 	if(lightType == LightForm::LightType::Point)
@@ -472,7 +572,7 @@ void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 
 bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 {
-	uint lightAddress = reinterpret_cast<address>(light);
+	address lightAddress = reinterpret_cast<address>(light);
 
 	LightForm::LightType lightType = light->GetType();
 	if(lightType == LightForm::LightType::Point)
