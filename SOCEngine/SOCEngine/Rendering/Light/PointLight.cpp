@@ -15,14 +15,13 @@ PointLight::~PointLight(void)
 {
 }
 
-bool PointLight::Intersects(const Sphere &sphere)
+bool PointLight::Intersect(const Sphere &sphere) const
 {
 	Core::Transform* tf = _owner->GetTransform();
 	Math::Vector3 wp;
 	tf->FetchWorldPosition(wp);
 
 	return Sphere::Intersects(sphere, Sphere(wp, _radius));
-	return false;
 }
 
 void PointLight::MakeLightBufferElement(LightTransformBuffer& out) const

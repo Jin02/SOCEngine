@@ -19,13 +19,21 @@ SpotLight::~SpotLight()
 
 }
 
-bool SpotLight::Intersects(const Intersection::Sphere &sphere)
+bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 {
+#if 0
 	Vector3 wp;
 	_owner->GetTransform()->FetchWorldPosition(wp);
 
 	Cone cone(_spotAngleDegree, _radius, _owner->GetTransform()->GetForward(), wp);
 	return cone.Intersects(sphere);
+#else
+	Core::Transform* tf = _owner->GetTransform();
+	Math::Vector3 wp;
+	tf->FetchWorldPosition(wp);
+
+	return Sphere::Intersects(sphere, Sphere(wp, _radius));
+#endif
 }
 
 void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
