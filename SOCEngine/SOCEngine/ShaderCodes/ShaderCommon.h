@@ -18,6 +18,10 @@ Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 );
 Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
 Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
+Buffer<float4> g_inputPointLightShadowColorBuffer					: register( t14 ); // rgb, shadow strength
+Buffer<float4> g_inputSpotLightShadowColorBuffer					: register( t15 ); // rgb, shadow strength
+Buffer<float4> g_inputDirectionalLightShadowColorBuffer				: register( t16 ); // rgb, shadow strength
+
 #if (MSAA_SAMPLES_COUNT > 1)
 
 Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_emission	: register( t8 );
@@ -41,6 +45,10 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 #endif
 
 #endif
+
+Texture2D<float>	g_pointLightShadowMapAtlas						: register( t17 );
+Texture2D<float>	g_spotLightShadowMapAtlas						: register( t18 );
+Texture2D<float>	g_directionalLightShadowMapAtlas				: register( t19 );
 
 struct LightingParams
 {
