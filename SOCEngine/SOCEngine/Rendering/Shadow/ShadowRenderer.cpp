@@ -271,10 +271,6 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	{
 		Matrix& view = cbData.viewMat;
 		light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
-		Vector3 forward = Vector3(view._13, view._23, view._33);
-		view._41 -= forward.x * 50000.0f;
-		view._42 -= forward.y * 50000.0f;
-		view._43 -= forward.z * 50000.0f;
 		CameraForm::GetViewMatrix(view, view);
 
 		Matrix proj;
