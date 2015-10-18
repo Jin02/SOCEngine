@@ -27,9 +27,9 @@ namespace Rendering
 			friend class Core::Scene;
 
 		private:
-			Texture::DepthBuffer*	_pointLightShadowMap;
-			Texture::DepthBuffer*	_spotLightShadowMap;
-			Texture::DepthBuffer*	_directionalLightShadowMap;
+			Texture::DepthBuffer*	_pointLightShadowMapAtlas;
+			Texture::DepthBuffer*	_spotLightShadowMapAtlas;
+			Texture::DepthBuffer*	_directionalLightShadowMapAtlas;
 
 		private:
 			struct LightAddress
@@ -91,6 +91,15 @@ namespace Rendering
 		private: //friend class Scene
 			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
 			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+
+		public:
+			GET_ACCESSOR(PointLightShadowMapAtlas,			const Texture::DepthBuffer*,	_pointLightShadowMapAtlas);
+			GET_ACCESSOR(SpotLightShadowMapAtlas,			const Texture::DepthBuffer*,	_spotLightShadowMapAtlas);
+			GET_ACCESSOR(DirectionalLightShadowMapAtlas,	const Texture::DepthBuffer*,	_directionalLightShadowMapAtlas);
+
+			GET_ACCESSOR(PointLightShadowMapResolution,			uint,	_pointLightShadowMapResolution);
+			GET_ACCESSOR(SpotLightShadowMapResolution,			uint,	_spotLightShadowMapResolution);
+			GET_ACCESSOR(DirectionalLightShadowMapResolution,	uint,	_directionalLightShadowMapResolution);
 		};
 	}
 }

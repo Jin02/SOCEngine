@@ -17,8 +17,8 @@ using namespace Rendering::Light;
 using namespace Rendering::Manager;
 
 ShadowRenderer::ShadowRenderer()
-	: _pointLightShadowMap(nullptr), _spotLightShadowMap(nullptr),
-	_directionalLightShadowMap(nullptr),
+	: _pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr),
+	_directionalLightShadowMapAtlas(nullptr),
 	_pointLightShadowMapResolution(256),
 	_spotLightShadowMapResolution(256),
 	_directionalLightShadowMapResolution(512),
@@ -75,50 +75,50 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 	}
 
 	// Point Light Shadow Map ShadowMap
-	if(changedPLShadowMap || (_pointLightShadowMap == nullptr))
+	if(changedPLShadowMap || (_pointLightShadowMapAtlas == nullptr))
 	{
-		SAFE_DELETE(_pointLightShadowMap);
+		SAFE_DELETE(_pointLightShadowMapAtlas);
 
 		Size<uint> mapSize;
 		mapSize.w = _numOfShadowCastingPointLightInAtlas * _pointLightShadowMapResolution;
 		mapSize.h = 6 * _pointLightShadowMapResolution; //point light´Â 6¸é ·»´õ¸µ
 
-		_pointLightShadowMap = new DepthBuffer;
-		_pointLightShadowMap->Initialize(mapSize, true, 1);
+		_pointLightShadowMapAtlas = new DepthBuffer;
+		_pointLightShadowMapAtlas->Initialize(mapSize, true, 1);
 	}
 
 	// Spot Light
-	if(changedSLShadowMap || (_spotLightShadowMap == nullptr))
+	if(changedSLShadowMap || (_spotLightShadowMapAtlas == nullptr))
 	{
-		SAFE_DELETE(_spotLightShadowMap);
+		SAFE_DELETE(_spotLightShadowMapAtlas);
 
 		Size<uint> mapSize;
 		mapSize.w = _numOfShadowCastingSpotLightInAtlas * _spotLightShadowMapResolution;
 		mapSize.h = _spotLightShadowMapResolution;
 
-		_spotLightShadowMap = new DepthBuffer;
-		_spotLightShadowMap->Initialize(mapSize, true, 1);
+		_spotLightShadowMapAtlas = new DepthBuffer;
+		_spotLightShadowMapAtlas->Initialize(mapSize, true, 1);
 	}
 
 	// dl
-	if(changedDLShadowMap || (_directionalLightShadowMap == nullptr))
+	if(changedDLShadowMap || (_directionalLightShadowMapAtlas == nullptr))
 	{
-		SAFE_DELETE(_directionalLightShadowMap);
+		SAFE_DELETE(_directionalLightShadowMapAtlas);
 
 		Size<uint> mapSize;
 		mapSize.w = _numOfShadowCastingDirectionalLightInAtlas * _directionalLightShadowMapResolution;
 		mapSize.h = _directionalLightShadowMapResolution;
 
-		_directionalLightShadowMap = new DepthBuffer;
-		_directionalLightShadowMap->Initialize(mapSize, true, 1);
+		_directionalLightShadowMapAtlas = new DepthBuffer;
+		_directionalLightShadowMapAtlas->Initialize(mapSize, true, 1);
 	}
 }
 
 void ShadowRenderer::Destroy()
 {
-	SAFE_DELETE(_pointLightShadowMap);
-	SAFE_DELETE(_spotLightShadowMap);
-	SAFE_DELETE(_directionalLightShadowMap);
+	SAFE_DELETE(_pointLightShadowMapAtlas);
+	SAFE_DELETE(_spotLightShadowMapAtlas);
+	SAFE_DELETE(_directionalLightShadowMapAtlas);
 
 	// DL
 	{
@@ -314,12 +314,12 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		viewport.TopLeftY	= 0.0f;
 	}
 
-	_spotLightShadowMap->Clear(context, 1.0f, 0);
+	_spotLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
 	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMap->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMapAtlas->GetDepthStencilView());
 	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
@@ -377,12 +377,12 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 		viewport.TopLeftY	= 0.0f;
 	}
 
-	_pointLightShadowMap->Clear(context, 1.0f, 0);
+	_pointLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
 	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMap->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
 	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
@@ -445,12 +445,12 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		viewport.TopLeftY	= 0.0f;
 	}
 
-	_directionalLightShadowMap->Clear(context, 1.0f, 0);
+	_directionalLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
 	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMap->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMapAtlas->GetDepthStencilView());
 	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
