@@ -26,12 +26,12 @@ ShadingWithLightCulling::~ShadingWithLightCulling()
 
 void ShadingWithLightCulling::Initialize(
 	const Texture::DepthBuffer* opaqueDepthBuffer,
-	const ShadowMapAtlases& shadowMapAtlases,
 	const GBuffers& geometryBuffers,
 	const Math::Size<uint>& backBufferSize,
 	bool useDebugMode)
 {
-	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
+	const auto* scene = Director::GetInstance()->GetCurrentScene();
+	Manager::LightManager* lightManager = scene->GetLightManager();
 
 	std::string filePath = "";
 	{
@@ -124,14 +124,16 @@ void ShadingWithLightCulling::Initialize(
 
 		// ShadowMap Atlas
 		{
-			uint idx = (uint)InputSRBufferSemanticIndex::PointLightShadowMapAtlas;
-			AddTextureToInputTextureList(idx, shadowMapAtlases.pointLightDepthBuffer);
+			Shadow::ShadowRenderer* shadowMgr = scene->GetShadowManager();
+
+			uint idx = (uint)InputSRBufferSemanticIndex::PointLightShadowMapAtlas;			
+			AddTextureToInputTextureList(idx, shadowMgr->GetPointLightShadowMapAtlas());
 
 			idx = (uint)InputSRBufferSemanticIndex::SpotLightShadowMapAtlas;
-			AddTextureToInputTextureList(idx, shadowMapAtlases.spotLightDepthBuffer);
+			AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightShadowMapAtlas());
 
 			idx = (uint)InputSRBufferSemanticIndex::DirectionalLightShadowMapAtlas;
-			AddTextureToInputTextureList(idx, shadowMapAtlases.directionalLightDepthBuffer);
+			AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
 		}
 	}
 

@@ -14,13 +14,6 @@ namespace Rendering
 			{
 				OutScreen = 0
 			};
-			struct ShadowMapAtlases
-			{
-				const Texture::DepthBuffer* pointLightDepthBuffer;
-				const Texture::DepthBuffer* spotLightDepthBuffer;
-				const Texture::DepthBuffer* directionalLightDepthBuffer;
-			};
-
 			struct GBuffers
 			{
 				const Texture::RenderTexture* albedo_emission;
@@ -46,7 +39,7 @@ namespace Rendering
 			virtual ~ShadingWithLightCulling();
 
 		public:
-			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const ShadowMapAtlases& shadowMapAtlases, const GBuffers& geometryBuffers, const Math::Size<uint>& backBufferSize, bool useDebugMode = false);
+			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const GBuffers& geometryBuffers, const Math::Size<uint>& backBufferSize, bool useDebugMode = false);
 			void Destory();
 
 		public:
