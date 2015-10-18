@@ -75,6 +75,7 @@ void TestScene::OnInitialize()
 	spotLight->SetLumen(700);
 	spotLight->SetRadius(20.0f);
 	spotLight->SetSpotAngleDegree(25.0f);
+	spotLight->ActiveShadow(true);
 
 	AddObject(light);
 #endif

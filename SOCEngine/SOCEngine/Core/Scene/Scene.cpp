@@ -82,6 +82,10 @@ void Scene::RenderPreview()
 
 void Scene::Render()
 {
+	_dx->ClearDeviceContext();
+	_shadowRenderer->RenderShadowMap(_dx, _renderMgr);
+
+	_dx->ClearDeviceContext();
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->Render(_dx, _renderMgr, _lightManager);

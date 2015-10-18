@@ -261,6 +261,10 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 			ps->SetShaderToContext(context);
 			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 		}
+		else
+		{
+			context->PSSetShader(nullptr, nullptr, 0);
+		}
 
 		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
 	}
@@ -352,7 +356,6 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 
 void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
 {
-	dx->ClearDeviceContext();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	//Clear
@@ -458,7 +461,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		{
 			ID3D11RenderTargetView* nullRTV = nullptr;
 			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
-			context->PSSetShader(nullptr, nullptr, 0);
+			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
 			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::DepthOnly, _camConstBuffer);

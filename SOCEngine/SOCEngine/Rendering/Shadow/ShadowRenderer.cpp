@@ -164,7 +164,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 		CameraForm::GetViewMatrix(view, view);
 
 		Matrix proj;
-		Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(light->GetSpotAngleDegree()), 1.0f, 1.0f, light->GetRadius());
+		Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(light->GetSpotAngleDegree()), 1.0f, light->GetRadius());
 
 		Matrix& viewProj = cbData.viewProjMat;
 		viewProj = view * proj;
@@ -210,7 +210,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	const PointLight* light = reinterpret_cast<const PointLight*>(shadowCastingLight.lightAddress);
 
 	Matrix proj;
-	Matrix::PerspectiveFovLH(proj, Common::Deg2Rad(90.0f), 1.0f, 1.0f, light->GetRadius());
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), 1.0f, light->GetRadius());
 
 	auto ComputeCameraConstBufferData = [](CameraForm::CamConstBufferData& out,
 		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
@@ -316,11 +316,8 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 
 	_spotLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
-	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
-
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMapAtlas->GetDepthStencilView());
-	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -349,7 +346,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
+
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
 			MeshCamera::RenderType::AlphaMesh,
@@ -379,11 +376,8 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 
 	_pointLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
-	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
-
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
-	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetOpaqueMeshes();
@@ -416,7 +410,6 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-			context->PSSetSamplers(0, 1, &anisotropicSamplerState);
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
 				MeshCamera::RenderType::AlphaMesh,
@@ -447,11 +440,8 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 
 	_directionalLightShadowMapAtlas->Clear(context, 1.0f, 0);
 
-	ID3D11SamplerState* anisotropicSamplerState = dx->GetSamplerStateAnisotropic();
-
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMapAtlas->GetDepthStencilView());
-	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -481,7 +471,6 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-		context->PSSetSamplers(0, 1, &anisotropicSamplerState);
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
 			MeshCamera::RenderType::AlphaMesh,
@@ -620,7 +609,13 @@ void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
 
 void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager* renderManager)
 {
-	RenderSpotLightShadowMap(dx, renderManager);
-	RenderPointLightShadowMap(dx, renderManager);
-	RenderDirectionalLightShadowMap(dx, renderManager);
+	ID3D11DeviceContext* context = dx->GetContext();
+	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
+
+	if(_shadowCastingSpotLights.GetSize() > 0)
+		RenderSpotLightShadowMap(dx, renderManager);
+	if(_shadowCastingPointLights.GetSize() > 0)
+		RenderPointLightShadowMap(dx, renderManager);
+	if(_shadowCastingDirectionalLights.GetSize() > 0)
+		RenderDirectionalLightShadowMap(dx, renderManager);
 }
