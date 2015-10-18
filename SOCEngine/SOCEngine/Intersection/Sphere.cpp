@@ -16,10 +16,10 @@ namespace Intersection
 		Math::Vector3 between = sphere1.center - sphere2.center;
 		float distance = between.Length();
 
-		if(distance < (sphere1.radius + sphere2.radius) )
-			return false;
+		if(distance <= (sphere1.radius + sphere2.radius) )
+			return true;
 
-		return true;
+		return false;
 	}
 
 	bool Sphere::Intersects(const Sphere &sphere)

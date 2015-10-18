@@ -9,7 +9,7 @@ using namespace Math;
 using namespace Core;
 
 SpotLight::SpotLight()  : LightForm(),
-	_spotAngleDegree(0), _falloff(0)
+	_spotAngleDegree(0)
 {
 	_type = LightType::Spot;
 }
@@ -19,13 +19,21 @@ SpotLight::~SpotLight()
 
 }
 
-bool SpotLight::Intersects(const Intersection::Sphere &sphere)
+bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 {
+#if 0
 	Vector3 wp;
 	_owner->GetTransform()->FetchWorldPosition(wp);
 
 	Cone cone(_spotAngleDegree, _radius, _owner->GetTransform()->GetForward(), wp);
 	return cone.Intersects(sphere);
+#else
+	Core::Transform* tf = _owner->GetTransform();
+	Math::Vector3 wp;
+	tf->FetchWorldPosition(wp);
+
+	return Sphere::Intersects(sphere, Sphere(wp, _radius));
+#endif
 }
 
 void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
@@ -52,4 +60,12 @@ void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param
 Component* SpotLight::Clone() const
 {
 	return new SpotLight(*this);
+}
+
+void SpotLight::SetSpotAngleDegree(float d)
+{
+	_spotAngleDegree = d;
+
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
 }

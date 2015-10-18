@@ -2,7 +2,6 @@
 
 #include "Material.h"
 #include "Structure.h"
-#include "TransformPipelineParam.h"
 
 namespace Rendering
 {

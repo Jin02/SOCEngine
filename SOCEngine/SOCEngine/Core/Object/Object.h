@@ -5,7 +5,6 @@
 #include "Transform.h"
 #include "Component.h"
 #include "Frustum.h"
-#include "TransformPipelineParam.h"
 #include "Mesh.h"
 #include "BoundBox.h"
 
@@ -29,6 +28,8 @@ namespace Core
 		float							_radius;
 		Intersection::BoundBox*			_boundBox;
 
+		Math::Matrix					_prevWorldMat;
+
 	public:
 		Object(const std::string& name, Object* parent = NULL);
 		virtual ~Object(void);
@@ -40,7 +41,7 @@ namespace Core
 		void Update(float delta);
 
 		void Culling(const Rendering::Camera::Frustum *frustum);
-		void UpdateTransformCB(const Math::Matrix& viewMat, const Math::Matrix& projMat);
+		void UpdateTransformCB(const Device::DirectX*& dx);
 
 		bool Intersects(Intersection::Sphere &sphere);
 		void UpdateBoundBox(const Intersection::BoundBox* boundBox);

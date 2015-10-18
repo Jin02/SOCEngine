@@ -10,9 +10,6 @@ namespace Core
 		_rotation	= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 		_scale		= Vector3::One();
 
-		if(owner == nullptr)
-			return;
-
 		_forward = Vector3(0.0f, 0.0f, 1.0f);
 		_right	 = Vector3(1.0f, 0.0f, 0.0f);
 		_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
@@ -23,15 +20,16 @@ namespace Core
 
 	}
 
-	void Transform::LookAtWorld(const Vector3& targetPosition)
+	void Transform::LookAtWorld(const Vector3& targetPosition, const Math::Vector3* upVec)
 	{
 		Vector3 worldPos;
 		FetchWorldPosition(worldPos);
 
 		Vector3 dir = (targetPosition - worldPos).Normalize();
+		Vector3 up = upVec ? *upVec : Vector3::Up();
 
 		_forward = dir;
-		_right = Vector3::Cross(Vector3::Up(), dir).Normalize();
+		_right = Vector3::Cross(up, dir).Normalize();
 		_up = Vector3::Cross(dir, _right).Normalize();
 
 		Matrix rotationMatrix;
@@ -48,12 +46,12 @@ namespace Core
 		++_updateCounter;
 	}
 
-	void Transform::LookAtWorld(Transform *target)
+	void Transform::LookAtWorld(const Transform *target, const Math::Vector3* up)
 	{
 		Vector3 targetPos;
 		target->FetchWorldPosition(targetPos);
 
-		LookAtWorld(targetPos);
+		LookAtWorld(targetPos, up);
 	}
 
 	void Transform::Rotate(const Vector3& eulerAngles)
@@ -252,9 +250,12 @@ namespace Core
 	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
 	{
 		Matrix& worldMat = outMatrix;
-		Matrix::Identity(worldMat);
+		FetchLocalMatrix(worldMat);
 
-		for(const Object* obj = _owner; obj != nullptr; obj = obj->GetParent())
+		if(_owner == nullptr)
+			return;
+
+		for(const Object* obj = _owner->GetParent(); obj != nullptr; obj = obj->GetParent())
 		{
 			Matrix localMat;
 			obj->GetTransform()->FetchLocalMatrix(localMat);

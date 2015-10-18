@@ -21,7 +21,7 @@ namespace Rendering
 		public:
 			struct MeshList
 			{
-				typedef unsigned __int64 meshkey; //is address
+				typedef address meshkey;
 
 				//first key is vbkey.
 				Structure::VectorHashMap<std::string, std::set<meshkey>> meshes;
@@ -51,7 +51,7 @@ namespace Rendering
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
 
 			std::hash_map<uint, const Shader::ShaderGroup>	_transparentShaders;
-			std::hash_map<uint, const Shader::ShaderGroup>	_transparent_depthOnly_Shaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_depthOnlyShader;
 
 		public:
 			RenderManager();
@@ -69,10 +69,12 @@ namespace Rendering
 			bool HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type);
 
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
-			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag, bool isDepthOnly) const;
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 
 			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
-			bool HasTransparencyShader(uint bufferFlag, bool isDepthOnly) const;
+			bool HasTransparencyShader(uint bufferFlag) const;
+			bool HasDepthOnlyShader(uint bufferFlag) const;
 
 			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
 		

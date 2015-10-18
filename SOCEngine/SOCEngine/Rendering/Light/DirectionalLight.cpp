@@ -15,7 +15,7 @@ DirectionalLight::~DirectionalLight()
 {
 }
 
-bool DirectionalLight::Intersects(const Intersection::Sphere &sphere)
+bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 {
 	return true;
 }

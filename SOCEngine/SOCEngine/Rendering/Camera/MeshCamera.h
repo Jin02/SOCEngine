@@ -4,16 +4,24 @@
 #include "ShadingWithLightCulling.h"
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
+#include <functional>
 
 namespace Rendering
 {
 	namespace Camera
 	{		
-		class MainCamera : public CameraForm
+		class MeshCamera : public CameraForm
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
 			static const uint NumOfRenderTargets = 3;
+			enum class RenderType
+			{
+				AlphaMesh,
+				Opaque,
+				Transparency,
+				DepthOnly
+			};
 
 		private:
 			bool _useTransparent;
@@ -34,16 +42,32 @@ namespace Rendering
 
 
 		public:
-			MainCamera();
-			virtual ~MainCamera(void);
+			MeshCamera();
+			virtual ~MeshCamera(void);
 		
 		public:
 			virtual void OnInitialize();
 			virtual void OnDestroy();
 
 		public:
-			virtual void UpdateConstBuffer(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager);
+
+		public:
+			static void RenderMeshWithoutIASetVB(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const Geometry::Mesh* mesh, RenderType renderType,
+				const Buffer::ConstBuffer* cameraConstBuffer);
+			static void RenderMeshesUsingSortedMeshVectorByVB(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const Manager::RenderManager::MeshList& meshes,
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
+			static void RenderMeshesUsingMeshVector(
+				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
+				const std::vector<const Geometry::Mesh*>& meshes,
+				RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
@@ -58,6 +82,6 @@ namespace Rendering
 
 	namespace Renderer
 	{
-		typedef Camera::MainCamera MainRenderer;
+		typedef Camera::MeshCamera MainRenderer;
 	}
 }

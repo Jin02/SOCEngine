@@ -29,26 +29,32 @@ namespace Rendering
 
 			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_pointLightTransformBuffer;
 			Structure::VectorHashMap<std::string, uint>											_pointLightColorBuffer;
+			Structure::VectorHashMap<std::string, uint>											_pointLightShadowColorBuffer;
 
 			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_directionalLightTransformBuffer;
 			Structure::VectorHashMap<std::string, Light::DirectionalLight::Params>				_directionalLightParamBuffer;
 			Structure::VectorHashMap<std::string, uint>											_directionalLightColorBuffer;
+			Structure::VectorHashMap<std::string, uint>											_directionalLightShadowColorBuffer;
 
 			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_spotLightTransformBuffer;
-			Structure::VectorHashMap<std::string, uint>											_spotLightColorBuffer;
 			Structure::VectorHashMap<std::string, Light::SpotLight::Params>						_spotLightParamBuffer;
+			Structure::VectorHashMap<std::string, uint>											_spotLightColorBuffer;
+			Structure::VectorHashMap<std::string, uint>											_spotLightShadowColorBuffer;
 
 
 			Buffer::ShaderResourceBuffer*	_pointLightTransformBufferSR;
 			Buffer::ShaderResourceBuffer*	_pointLightColorBufferSR;
+			Buffer::ShaderResourceBuffer*	_pointLightShadowColorBufferSR;
 
 			Buffer::ShaderResourceBuffer*	_directionalLightTransformBufferSR;
 			Buffer::ShaderResourceBuffer*	_directionalLightParamBufferSR;
 			Buffer::ShaderResourceBuffer*	_directionalLightColorBufferSR;
+			Buffer::ShaderResourceBuffer*	_directionalLightShadowColorBufferSR;
 
 			Buffer::ShaderResourceBuffer*	_spotLightTransformBufferSR;
-			Buffer::ShaderResourceBuffer*	_spotLightColorBufferSR;
 			Buffer::ShaderResourceBuffer*	_spotLightParamBufferSR;
+			Buffer::ShaderResourceBuffer*	_spotLightColorBufferSR;
+			Buffer::ShaderResourceBuffer*	_spotLightShadowColorBufferSR;
 
 			enum class BufferUpdateType : uint
 			{
@@ -83,16 +89,19 @@ namespace Rendering
 			uint GetPackedLightCount() const;
 
 		public:
-			GET_ACCESSOR(PointLightTransformBufferSR,		const Buffer::ShaderResourceBuffer*, _pointLightTransformBufferSR);
-			GET_ACCESSOR(PointLightColorBufferSR,			const Buffer::ShaderResourceBuffer*, _pointLightColorBufferSR);
+			GET_ACCESSOR(PointLightTransformBufferSR,			const Buffer::ShaderResourceBuffer*, _pointLightTransformBufferSR);
+			GET_ACCESSOR(PointLightColorBufferSR,				const Buffer::ShaderResourceBuffer*, _pointLightColorBufferSR);
+			GET_ACCESSOR(PointLightShadowColorBufferSR,			const Buffer::ShaderResourceBuffer*, _pointLightShadowColorBufferSR);
 
-			GET_ACCESSOR(DirectionalLightTransformBufferSR, const Buffer::ShaderResourceBuffer*, _directionalLightTransformBufferSR);
-			GET_ACCESSOR(DirectionalLightColorBufferSR,		const Buffer::ShaderResourceBuffer*, _directionalLightColorBufferSR);
-			GET_ACCESSOR(DirectionalLightParamBufferSR,		const Buffer::ShaderResourceBuffer*, _directionalLightParamBufferSR);
+			GET_ACCESSOR(DirectionalLightTransformBufferSR,		const Buffer::ShaderResourceBuffer*, _directionalLightTransformBufferSR);
+			GET_ACCESSOR(DirectionalLightParamBufferSR,			const Buffer::ShaderResourceBuffer*, _directionalLightParamBufferSR);
+			GET_ACCESSOR(DirectionalLightColorBufferSR,			const Buffer::ShaderResourceBuffer*, _directionalLightColorBufferSR);
+			GET_ACCESSOR(DirectionalLightShadowColorBufferSR,	const Buffer::ShaderResourceBuffer*, _directionalLightShadowColorBufferSR);
 
-			GET_ACCESSOR(SpotLightTransformBufferSR,		const Buffer::ShaderResourceBuffer*, _spotLightTransformBufferSR);
-			GET_ACCESSOR(SpotLightColorBufferSR,			const Buffer::ShaderResourceBuffer*, _spotLightColorBufferSR);
-			GET_ACCESSOR(SpotLightParamBufferSR,			const Buffer::ShaderResourceBuffer*, _spotLightParamBufferSR);
+			GET_ACCESSOR(SpotLightTransformBufferSR,			const Buffer::ShaderResourceBuffer*, _spotLightTransformBufferSR);
+			GET_ACCESSOR(SpotLightParamBufferSR,				const Buffer::ShaderResourceBuffer*, _spotLightParamBufferSR);
+			GET_ACCESSOR(SpotLightColorBufferSR,				const Buffer::ShaderResourceBuffer*, _spotLightColorBufferSR);
+			GET_ACCESSOR(SpotLightShadowColorBufferSR,			const Buffer::ShaderResourceBuffer*, _spotLightShadowColorBufferSR);
 		};
 	}
 }
