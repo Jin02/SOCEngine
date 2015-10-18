@@ -93,7 +93,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		_gbufferCB->UpdateSubResource(dx->GetContext(), &param);
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
-		uint idx = (uint)InputConstBufferShaderIndex::Material;
+		uint idx = (uint)InputConstBufferSemanticIndex::Material;
 		SetConstBufferUseShaderSlotIndex(idx, _gbufferCB, ShaderForm::Usage(false, false, false, true));
 	}
 }

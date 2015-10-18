@@ -60,7 +60,7 @@ void BackBufferMaker::Render(
 	{
 		ID3D11Buffer* cb = tbrParamConstBuffer->GetBuffer();
 		context->PSSetConstantBuffers(
-			(uint)InputConstBufferShaderIndex::TBRParam,
+			(uint)InputConstBufferSemanticIndex::TBRParam,
 			1, &cb);
 
 		context->PSSetShaderResources(
