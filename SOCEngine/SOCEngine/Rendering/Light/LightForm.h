@@ -30,6 +30,9 @@ namespace Rendering
 			Color		_color;
 			uint		_lumen; //intensity
 
+			Color		_shadowColor; //a is strength
+			bool		_useShadow;
+
 		protected:
 			LightForm();
 
@@ -41,20 +44,28 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual bool Intersects(const Intersection::Sphere &sphere) = 0;
-
-		public:
 			GET_ACCESSOR(Type, const LightType, _type);		
 
-			GET_SET_ACCESSOR(Radius, float, _radius);
-			GET_SET_ACCESSOR(Color, const Color&, _color);
+			void SetRadius(float r);
+			GET_ACCESSOR(Radius, float, _radius);
 
-			GET_SET_ACCESSOR(Lumen, uint, _lumen);
+			void SetColor(const Color& c);
+			GET_ACCESSOR(Color, const Color&, _color);
 
-			inline void SetIntensity(float intensity) { _lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f)); }
-			GET_ACCESSOR(Intensity, float, (float)_lumen * 5.0f / ((float)MAXIMUM_LUMEN););
+			void SetLumen(uint l);
+			GET_ACCESSOR(Lumen, uint, _lumen);
 
-			uint GetShderUintColor() const;
+			void SetIntensity(float intensity);
+			float GetIntensity() const;
+
+			void SetShadowColor(const Color& c);
+			GET_ACCESSOR(ShadowColor, const Color&, _shadowColor);
+
+			void ActiveShadow(bool isActive);
+			GET_ACCESSOR(UseShadow, bool, _useShadow);
+
+			uint Get32BitMainColor() const;
+			uint Get32BitShadowColor() const;
 		};
 	}
 }

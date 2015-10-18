@@ -14,7 +14,8 @@ using namespace Rendering::TBDR;
 ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
 	_inputSpotLightColorBuffer(nullptr), _inputDirectionalLightColorBuffer(nullptr),
-	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr)
+	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr),
+	_inputPointLightShadowColorBuffer(nullptr), _inputSpotLightShadowColorBuffer(nullptr), _inputDirectionalLightShadowColorBuffer(nullptr)
 {
 }
 
@@ -23,13 +24,14 @@ ShadingWithLightCulling::~ShadingWithLightCulling()
 	Destory();
 }
 
-void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepthBuffer,
-										 const Texture::RenderTexture* gbuffer_albedo_emission,  
-										 const Texture::RenderTexture* gbuffer_specular_metallic, 
-										 const Texture::RenderTexture* gbuffer_normal_roughness, 
-										 const Math::Size<uint>& backBufferSize, bool useDebugMode)
+void ShadingWithLightCulling::Initialize(
+	const Texture::DepthBuffer* opaqueDepthBuffer,
+	const GBuffers& geometryBuffers,
+	const Math::Size<uint>& backBufferSize,
+	bool useDebugMode)
 {
-	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
+	const auto* scene = Director::GetInstance()->GetCurrentScene();
+	Manager::LightManager* lightManager = scene->GetLightManager();
 
 	std::string filePath = "";
 	{
@@ -49,39 +51,51 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 
 	// Additional Input buffer
 	{
-		// Point Light Color
+		// Point Light
 		{
-			uint idx = (uint)InputBufferShaderIndex::PointLightColor;
+			uint idx = (uint)InputSRBufferSemanticIndex::PointLightColor;
 			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorBufferSR();
 			AddInputBufferToList(_inputPointLightColorBuffer, idx, srBuffer);
+
+			idx = (uint)InputSRBufferSemanticIndex::PointLightShadowColor;
+			srBuffer = lightManager->GetPointLightShadowColorBufferSR();
+			AddInputBufferToList(_inputPointLightShadowColorBuffer, idx, srBuffer);
 		}
 
-		// Spot Light Color
+		// Spot Light
 		{
-			uint idx = (uint)InputBufferShaderIndex::SpotLightColor;
+			uint idx = (uint)InputSRBufferSemanticIndex::SpotLightColor;
 			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorBufferSR();
 			AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
+
+			idx = (uint)InputSRBufferSemanticIndex::SpotLightShadowColor;
+			srBuffer = lightManager->GetSpotLightShadowColorBufferSR();
+			AddInputBufferToList(_inputSpotLightShadowColorBuffer, idx, srBuffer);
 		}
 
 		// Directional Light
 		{
 			// Center With DirZ
 			{
-				uint idx = (uint)InputBufferShaderIndex::DirectionalLightCenterWithDirZ;
+				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightCenterWithDirZ;
 				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightTransformBufferSR();
 				AddInputBufferToList(_inputDirectionalLightTransformBuffer, idx, srBuffer);
 			}
 
 			// Color
 			{
-				uint idx = (uint)InputBufferShaderIndex::DirectionalLightColor;
+				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightColor;
 				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorBufferSR();
 				AddInputBufferToList(_inputDirectionalLightColorBuffer, idx, srBuffer);
+
+				idx = (uint)InputSRBufferSemanticIndex::DirectionalLightShadowColor;
+				srBuffer = lightManager->GetDirectionalLightShadowColorBufferSR();
+				AddInputBufferToList(_inputDirectionalLightShadowColorBuffer, idx, srBuffer);
 			}
 
 			// Param half / DirX, DirY
 			{
-				uint idx = (uint)InputBufferShaderIndex::DirectionalLightParam;
+				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightParam;
 				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightParamBufferSR();
 				AddInputBufferToList(_inputDirectionalLightParamBuffer, idx, srBuffer);
 			}
@@ -92,20 +106,34 @@ void ShadingWithLightCulling::Initialize(const Texture::DepthBuffer* opaqueDepth
 	{
 		// Albedo_Emission
 		{
-			uint idx = (uint)InputShaderResourceBufferIndex::GBuffer_Albedo_Emission;
-			AddTextureToInputTextureList(idx, gbuffer_albedo_emission);
+			uint idx = (uint)InputSRBufferSemanticIndex::GBuffer_Albedo_Emission;
+			AddTextureToInputTextureList(idx, geometryBuffers.albedo_emission);
 		}
 
 		// Specular_Metallic
 		{
-			uint idx = (uint)InputShaderResourceBufferIndex::GBuffer_Specular_Metallic;
-			AddTextureToInputTextureList(idx, gbuffer_specular_metallic);
+			uint idx = (uint)InputSRBufferSemanticIndex::GBuffer_Specular_Metallic;
+			AddTextureToInputTextureList(idx, geometryBuffers.specular_metallic);
 		}
 
 		// Normal_Roughness
 		{
-			uint idx = (uint)InputShaderResourceBufferIndex::GBuffer_Normal_Roughness;
-			AddTextureToInputTextureList(idx, gbuffer_normal_roughness);
+			uint idx = (uint)InputSRBufferSemanticIndex::GBuffer_Normal_Roughness;
+			AddTextureToInputTextureList(idx, geometryBuffers.normal_roughness);
+		}
+
+		// ShadowMap Atlas
+		{
+			Shadow::ShadowRenderer* shadowMgr = scene->GetShadowManager();
+
+			uint idx = (uint)InputSRBufferSemanticIndex::PointLightShadowMapAtlas;			
+			AddTextureToInputTextureList(idx, shadowMgr->GetPointLightShadowMapAtlas());
+
+			idx = (uint)InputSRBufferSemanticIndex::SpotLightShadowMapAtlas;
+			AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightShadowMapAtlas());
+
+			idx = (uint)InputSRBufferSemanticIndex::DirectionalLightShadowMapAtlas;
+			AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
 		}
 	}
 
@@ -146,6 +174,9 @@ void ShadingWithLightCulling::Destory()
 	_inputDirectionalLightTransformBuffer	= nullptr;
 	_inputDirectionalLightColorBuffer		= nullptr;
 	_inputDirectionalLightParamBuffer		= nullptr;
+	_inputPointLightShadowColorBuffer		= nullptr;
+	_inputSpotLightShadowColorBuffer		= nullptr;
+	_inputDirectionalLightShadowColorBuffer	= nullptr;
 
 	SAFE_DELETE(_offScreen);
 	LightCulling::Destroy();

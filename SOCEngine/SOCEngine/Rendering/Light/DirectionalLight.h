@@ -24,7 +24,7 @@ namespace Rendering
 			~DirectionalLight();
 
 		public:
-			virtual bool Intersects(const Intersection::Sphere &sphere);
+			bool Intersect(const Intersection::Sphere &sphere) const;
 			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
 
 		public:

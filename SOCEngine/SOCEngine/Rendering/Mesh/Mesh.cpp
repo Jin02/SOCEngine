@@ -8,8 +8,7 @@ using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _transformConstBuffer(nullptr),
-	_prevRenderType(MeshRenderer::Type::Unknown)
+	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -29,8 +28,8 @@ void Mesh::Initialize(const CreateFuncArguments& args)
 	if(_renderer->AddMaterial(args.material) == false)
 		ASSERT_MSG("Error, renderer addmaterial");
 
-	_transformConstBuffer = new Buffer::ConstBuffer;
-	if(_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput)) == false)
+	_worldMatrixConstBuffer = new Buffer::ConstBuffer;
+	if(_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix)) == false)
 		ASSERT_MSG("Error, transformBuffer->Initialize");
 
 	ClassifyRenderMeshType();
@@ -48,8 +47,8 @@ void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer,
 	if(_renderer->AddMaterial(initMaterial) == false)
 		ASSERT_MSG("Error, cant add material in MeshRenderer");
 
-	_transformConstBuffer = new Buffer::ConstBuffer;
-	if(_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput)) == false)
+	_worldMatrixConstBuffer = new Buffer::ConstBuffer;
+	if(_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix)) == false)
 		ASSERT_MSG("Error, transformBuffer->Initialize");
 
 	ClassifyRenderMeshType();
@@ -63,22 +62,17 @@ void Mesh::OnUpdate(float deltaTime)
 {
 }
 
-void Mesh::OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform)
+void Mesh::OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix)
 {
-	if( memcmp(&transpose_Transform, &_prevTransformData, sizeof(Core::TransformPipelineShaderInput)) )
-	{
-		ID3D11DeviceContext* context = Device::Director::GetInstance()->GetDirectX()->GetContext();
-		_transformConstBuffer->UpdateSubResource(context, &transpose_Transform);
-
-		memcpy(&_prevTransformData, &transpose_Transform, sizeof(Core::TransformPipelineShaderInput));
-	}
+	ID3D11DeviceContext* context = dx->GetContext();
+	_worldMatrixConstBuffer->UpdateSubResource(context, &transposedWorldMatrix);
 }
 
 void Mesh::OnDestroy()
 {
 	SAFE_DELETE(_filter);
 	SAFE_DELETE(_renderer);
-	SAFE_DELETE(_transformConstBuffer);
+	SAFE_DELETE(_worldMatrixConstBuffer);
 }
 
 void Mesh::ClassifyRenderMeshType()
@@ -99,8 +93,8 @@ Core::Component* Mesh::Clone() const
 	{
 		newMesh->_filter = new MeshFilter(*_filter);
 		newMesh->_renderer = new MeshRenderer(*_renderer);
-		newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
-		newMesh->_transformConstBuffer->Initialize(sizeof(Core::TransformPipelineShaderInput));
+		newMesh->_worldMatrixConstBuffer = new Buffer::ConstBuffer;
+		newMesh->_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix));
 		newMesh->ClassifyRenderMeshType();
 
 		newMesh->_owner = _owner;

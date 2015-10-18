@@ -25,24 +25,22 @@ namespace Rendering
 
 		public:
 			Params			_param;
-
 			float			_spotAngleDegree;
-			float			_falloff;
 
 		public:
 			SpotLight();
 			~SpotLight();
 
 		public:
-			virtual bool Intersects(const Intersection::Sphere &sphere);
+			bool Intersect(const Intersection::Sphere &sphere) const;
 			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_SET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
-			GET_SET_ACCESSOR(Falloff, float, _falloff);
+			void SetSpotAngleDegree(float d);
+			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
 		};
 
 	}

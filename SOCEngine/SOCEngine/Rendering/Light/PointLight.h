@@ -13,7 +13,7 @@ namespace Rendering
 			~PointLight();
 
 		public:
-			virtual bool Intersects(const Intersection::Sphere &sphere);
+			bool Intersect(const Intersection::Sphere &sphere) const;
 			void MakeLightBufferElement(LightTransformBuffer& out) const;
 
 		public:

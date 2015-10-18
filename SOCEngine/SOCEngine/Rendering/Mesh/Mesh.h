@@ -21,13 +21,11 @@ namespace Rendering
 		private:
 			MeshFilter*							_filter;
 			MeshRenderer*						_renderer;
-			Buffer::ConstBuffer*				_transformConstBuffer;
+			Buffer::ConstBuffer*				_worldMatrixConstBuffer;
 
 			MaterialUpdateType					_updateType;
 			unsigned int						_selectMaterialIndex;
 			MeshRenderer::Type					_prevRenderType;
-
-			Core::TransformPipelineShaderInput	_prevTransformData;
 
 		public:
 			Mesh();
@@ -51,7 +49,7 @@ namespace Rendering
 		public:
 			virtual void OnInitialize();
 			virtual void OnUpdate(float deltaTime);
-			virtual void OnUpdateTransformCB(const Core::TransformPipelineShaderInput& transpose_Transform);
+			virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix);
 			virtual void OnRenderPreview();
 			virtual void OnDestroy();
 
@@ -62,7 +60,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
 
-			GET_ACCESSOR(TransformConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
+			GET_ACCESSOR(WorldMatrixConstBuffer, const Buffer::ConstBuffer*, _worldMatrixConstBuffer);
 			GET_ACCESSOR(PrevRenderType, MeshRenderer::Type, _prevRenderType);
 
 		public:

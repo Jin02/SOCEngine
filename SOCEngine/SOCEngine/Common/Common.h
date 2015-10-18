@@ -12,3 +12,4 @@
 #define ENGINE_INDEX_TYPE unsigned int
 
 typedef unsigned int uint;
+typedef unsigned __int64 address;

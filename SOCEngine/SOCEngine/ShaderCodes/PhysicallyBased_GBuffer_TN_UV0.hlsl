@@ -21,8 +21,8 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( float4(input.position, 1.0f), transform_worldViewProj );
-	ps.uv			= input.uv;
+	ps.position 	= mul( float4(input.position, 1.0f),	transform_world );
+	ps.position 	= mul( ps.position,						camera_viewProj );
 
 	ps.normal 		= normalize( mul(input.normal, (float3x3)transform_world ) );
 	ps.tangent 		= normalize( mul(input.tangent, (float3x3)transform_world ) );

@@ -15,10 +15,12 @@ using namespace Rendering::Shader;
 using namespace UI::Manager;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
+using namespace Rendering::Shadow;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _backBufferMaker(nullptr)
+	_renderMgr(nullptr), _backBufferMaker(nullptr),
+	_shadowRenderer(nullptr)
 {
 	_state = State::Init;
 }
@@ -47,6 +49,9 @@ void Scene::Initialize()
 	_backBufferMaker = new BackBufferMaker;
 	_backBufferMaker->Initialize(false);
 
+	_shadowRenderer = new ShadowRenderer;
+	_shadowRenderer->Initialize();
+
 	NextState();
 	OnInitialize();
 }
@@ -72,11 +77,15 @@ void Scene::RenderPreview()
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->UpdateConstBuffer(_dx, _rootObjects.GetVector(), _lightManager);
+		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 }
 
 void Scene::Render()
 {
+	_dx->ClearDeviceContext();
+	_shadowRenderer->RenderShadowMap(_dx, _renderMgr);
+
+	_dx->ClearDeviceContext();
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->Render(_dx, _renderMgr, _lightManager);
@@ -87,7 +96,7 @@ void Scene::Render()
 		ID3D11RenderTargetView* backBufferRTV = _dx->GetBackBufferRTV();
 		const RenderTexture* camRT = firstCam->GetRenderTarget();
 
-		MainCamera* mainFirstCam = dynamic_cast<MainCamera*>(firstCam);
+		MeshCamera* mainFirstCam = dynamic_cast<MeshCamera*>(firstCam);
 		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainFirstCam->GetTBRParamConstBuffer());
 	}
 
@@ -105,6 +114,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_backBufferMaker);
+	SAFE_DELETE(_shadowRenderer);
 
 	OnDestroy();
 }

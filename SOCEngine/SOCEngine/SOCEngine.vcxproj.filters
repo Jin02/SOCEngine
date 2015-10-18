@@ -280,9 +280,6 @@
     <Filter Include="Rendering\Shader\Form">
       <UniqueIdentifier>{76c609d7-2300-44b4-83e6-d5e0dd6f981c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\MainCamera">
-      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\PostProcessing\FullScreen">
       <UniqueIdentifier>{4916d140-66c0-4481-a48e-04eb03dedbf2}</UniqueIdentifier>
     </Filter>
@@ -309,6 +306,12 @@
     </Filter>
     <Filter Include="External\DirectXTex">
       <UniqueIdentifier>{7fa04a61-926a-4673-be20-b2b6f499f069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow">
+      <UniqueIdentifier>{a083a166-2c43-42f8-bbe5-9916c27883c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\MeshCamera">
+      <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -401,9 +404,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Transform\TransformPipelineParam.h">
-      <Filter>Core\Transform</Filter>
     </ClInclude>
     <ClInclude Include="Importer\ImporterUtility.h">
       <Filter>Importer\Utility</Filter>
@@ -675,9 +675,6 @@
     <ClInclude Include="Rendering\Shader\ShaderForm.h">
       <Filter>Rendering\Shader\Form</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\MainCamera.h">
-      <Filter>Rendering\Camera\MainCamera</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h">
       <Filter>Rendering\PostProcessing\FullScreen</Filter>
     </ClInclude>
@@ -725,6 +722,12 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\DynamicLightingCommon.h">
       <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\MeshCamera.h">
+      <Filter>Rendering\Camera\MeshCamera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -944,9 +947,6 @@
     <ClCompile Include="Rendering\Shader\ShaderForm.cpp">
       <Filter>Rendering\Shader\Form</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\MainCamera.cpp">
-      <Filter>Rendering\Camera\MainCamera</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp">
       <Filter>Rendering\PostProcessing\FullScreen</Filter>
     </ClCompile>
@@ -1009,6 +1009,12 @@
     </ClCompile>
     <ClCompile Include="External\DirectXTex\BC6HBC7.cpp">
       <Filter>External\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
+      <Filter>Rendering\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\MeshCamera.cpp">
+      <Filter>Rendering\Camera\MeshCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

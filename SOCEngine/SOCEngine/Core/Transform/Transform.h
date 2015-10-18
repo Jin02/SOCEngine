@@ -34,8 +34,8 @@ namespace Core
 		static void UpdateRotationMatrixToAxis(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward);
 
 	public:
-		void LookAtWorld(Transform *target);
-		void LookAtWorld(const Math::Vector3& worldPosition);
+		void LookAtWorld(const Transform *target, const Math::Vector3* up = nullptr);
+		void LookAtWorld(const Math::Vector3& worldPosition, const Math::Vector3* up = nullptr);
 
 		void Rotate(const Math::Vector3& eulerAngles);
 		void Rotate(float x, float y, float z);
@@ -74,5 +74,6 @@ namespace Core
 
 		GET_ACCESSOR(UpdateCounter, uint, _updateCounter);
 		inline bool IsUpdated(uint counter) const { return _updateCounter != counter; }
+		inline void AddUpdateCounter(uint v = 1) { _updateCounter+= v; };
 	};
 }
