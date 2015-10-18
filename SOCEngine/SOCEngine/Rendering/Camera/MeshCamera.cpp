@@ -69,15 +69,7 @@ void MeshCamera::OnInitialize()
 			gbuffer.specular_metallic	= _specular_metallic;
 		}
 
-		ShadingWithLightCulling::ShadowMapAtlases shadowMapAtlases;
-		{
-			//?????? ¾îÂ¼°Ô ÀÌ°Ç? ²ô¾Ó ±×·¯°Ô
-			shadowMapAtlases.directionalLightDepthBuffer	= nullptr;
-			shadowMapAtlases.pointLightDepthBuffer			= nullptr;
-			shadowMapAtlases.spotLightDepthBuffer			= nullptr;
-		}
-
-		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, shadowMapAtlases, gbuffer, backBufferSize);
+		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize);
 	}
 
 	_tbrParamConstBuffer = new ConstBuffer;

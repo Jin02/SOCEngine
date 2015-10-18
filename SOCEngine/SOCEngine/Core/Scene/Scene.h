@@ -28,18 +28,14 @@ namespace Core
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	
 
-		Rendering::Manager::CameraManager*			_cameraMgr;
-		Rendering::Manager::RenderManager*			_renderMgr;	
-		UI::Manager::UIManager*						_uiManager;
-		Rendering::Manager::LightManager*			_lightManager;
-		Rendering::Manager::MaterialManager*		_materialMgr;
-
-		Rendering::PostProcessing::BackBufferMaker*	_backBufferMaker;
-
-		const Device::DirectX*					_dx;
-
-		Rendering::Shadow::ShadowRenderer*			_shadowRenderer;
-
+		Rendering::Manager::CameraManager*					_cameraMgr;
+		Rendering::Manager::RenderManager*					_renderMgr;	
+		UI::Manager::UIManager*								_uiManager;
+		Rendering::Manager::LightManager*					_lightManager;
+		Rendering::Manager::MaterialManager*				_materialMgr;
+		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
+		const Device::DirectX*								_dx;
+		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
 
 	public:
 		Scene(void);

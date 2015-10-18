@@ -15,6 +15,7 @@ using namespace Rendering::Shader;
 using namespace UI::Manager;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
+using namespace Rendering::Shadow;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
@@ -47,6 +48,9 @@ void Scene::Initialize()
 
 	_backBufferMaker = new BackBufferMaker;
 	_backBufferMaker->Initialize(false);
+
+	_shadowRenderer = new ShadowRenderer;
+	_shadowRenderer->Initialize();
 
 	NextState();
 	OnInitialize();
@@ -106,6 +110,7 @@ void Scene::Destroy()
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_backBufferMaker);
+	SAFE_DELETE(_shadowRenderer);
 
 	OnDestroy();
 }
