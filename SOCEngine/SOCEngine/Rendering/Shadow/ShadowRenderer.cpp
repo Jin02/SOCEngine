@@ -450,7 +450,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	for(uint index = 0; index < count; ++index)
 	{
 #ifdef USE_RENDER_WITH_UPDATE_CB
-		UpdateShadowCastingSpotLightCB(dx, index);
+		UpdateShadowCastingDirectionalLightCB(dx, index);
 #endif
 
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
