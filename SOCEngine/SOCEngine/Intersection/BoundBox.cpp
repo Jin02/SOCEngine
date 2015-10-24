@@ -28,14 +28,16 @@ namespace Intersection
 
 	void BoundBox::SetMinMax(const Math::Vector3& min, const Math::Vector3& max)
 	{
-		_center -= (min + _extents);
-
 		_min = min;
 		_max = max;
 
-		_size    = max - min;
+		_size	= max - min;
+		_size.x	= abs(_size.x);
+		_size.y	= abs(_size.y);
+		_size.z	= abs(_size.z);
+
 		_extents = _size / 2.0f;
-		_center += min + _extents;
+		_center = (max - min) / 2.0f;
 	}
 
 	void BoundBox::Expand(float amount)
