@@ -40,8 +40,8 @@ namespace Core
 	public:
 		void Update(float delta);
 
-		void Culling(const Rendering::Camera::Frustum *frustum);
-		void UpdateTransformCB(const Device::DirectX*& dx);
+		void Culling(const Intersection::Frustum* frustum);
+		void UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax);
 
 		bool Intersects(Intersection::Sphere &sphere);
 		void UpdateBoundBox(const Intersection::BoundBox* boundBox);

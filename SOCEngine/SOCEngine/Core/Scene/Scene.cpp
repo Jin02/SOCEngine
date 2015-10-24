@@ -7,6 +7,7 @@
 using namespace Core;
 using namespace std;
 using namespace Structure;
+using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Manager;
 using namespace Rendering::PostProcessing;
@@ -52,6 +53,14 @@ void Scene::Initialize()
 	_shadowRenderer = new ShadowRenderer;
 	_shadowRenderer->Initialize();
 
+	uint value = 0xff7fffff;
+	float fltMin = (*(float*)&value);
+
+	value = 0x7f7fffff;
+	float fltMax = (*(float*)&value);
+
+	_boundBox.SetMinMax(Vector3(fltMax, fltMax, fltMax), Vector3(fltMin, fltMin, fltMin));
+
 	NextState();
 	OnInitialize();
 }
@@ -69,6 +78,15 @@ void Scene::RenderPreview()
 {
 	OnRenderPreview();
 
+	Vector3 boundBoxMin = _boundBox.GetMin();
+	Vector3 boundBoxMax = _boundBox.GetMax();
+
+	const auto& objectVector = _rootObjects.GetVector();
+	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax);
+
+	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
+
 	auto materials = _materialMgr->GetMaterials().GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		(*iter)->UpdateConstBuffer(_dx);
@@ -78,12 +96,15 @@ void Scene::RenderPreview()
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
+
+	_shadowRenderer->UpdateShadowCastingLightCB(_dx, _boundBox);
 }
 
 void Scene::Render()
 {
 	_dx->ClearDeviceContext();
-	_shadowRenderer->RenderShadowMap(_dx, _renderMgr);
+	const RenderManager* renderMgr = _renderMgr;
+	_shadowRenderer->RenderShadowMap(_dx, renderMgr, _boundBox);
 
 	_dx->ClearDeviceContext();
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
