@@ -1,7 +1,7 @@
 #include "Frustum.h"
 
-using namespace Rendering::Camera;
 using namespace Math;
+using namespace Intersection;
 
 Frustum::Frustum(float gap)
 	:_isMake(false), _gap(gap)
