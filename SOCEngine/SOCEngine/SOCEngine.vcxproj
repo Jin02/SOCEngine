@@ -62,6 +62,7 @@
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Intersection\BoundBox.h" />
     <ClInclude Include="Intersection\Cone.h" />
+    <ClInclude Include="Intersection\Frustum.h" />
     <ClInclude Include="Intersection\Intersection.h" />
     <ClInclude Include="Intersection\Ray.h" />
     <ClInclude Include="Intersection\Sphere.h" />
@@ -85,7 +86,6 @@
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
-    <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
@@ -221,6 +221,7 @@
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
+    <ClCompile Include="Intersection\Frustum.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
     <ClCompile Include="Intersection\Sphere.cpp" />
     <ClCompile Include="Math\MathCommon.cpp" />
@@ -240,7 +241,6 @@
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
-    <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />

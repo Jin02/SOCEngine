@@ -169,9 +169,6 @@
     <Filter Include="Rendering\Texture\RenderTarget">
       <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\Frustum">
-      <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
@@ -492,9 +489,6 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\Frustum.h">
-      <Filter>Rendering\Camera\Frustum</Filter>
-    </ClInclude>
     <ClInclude Include="UI\UICamera.h">
       <Filter>UI\Camera</Filter>
     </ClInclude>
@@ -729,6 +723,9 @@
     <ClInclude Include="Rendering\Camera\MeshCamera.h">
       <Filter>Rendering\Camera\MeshCamera</Filter>
     </ClInclude>
+    <ClInclude Include="Intersection\Frustum.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -872,9 +869,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\Frustum.cpp">
-      <Filter>Rendering\Camera\Frustum</Filter>
-    </ClCompile>
     <ClCompile Include="UI\UICamera.cpp">
       <Filter>UI\Camera</Filter>
     </ClCompile>
@@ -1015,6 +1009,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp">
       <Filter>Rendering\Camera\MeshCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Frustum.cpp">
+      <Filter>Intersection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
