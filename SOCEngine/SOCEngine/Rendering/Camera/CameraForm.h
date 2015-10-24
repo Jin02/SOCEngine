@@ -37,7 +37,7 @@ namespace Rendering
 			};
 
 		protected:
-			Frustum*						_frustum;
+			Intersection::Frustum*			_frustum;
 			Texture::RenderTexture*			_renderTarget;
 			RenderQueue						_transparentMeshQueue;
 

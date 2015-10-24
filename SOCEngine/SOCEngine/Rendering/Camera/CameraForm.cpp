@@ -6,6 +6,7 @@ using namespace Math;
 using namespace std;
 using namespace Rendering::Buffer;
 using namespace Rendering::Light;
+using namespace Intersection;
 using namespace Device;
 using namespace Core;
 using namespace Rendering::Camera;
@@ -144,10 +145,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-	{
 		(*iter)->Culling(_frustum);
-		(*iter)->UpdateTransformCB(dx);
-	}
 }
 
 void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
