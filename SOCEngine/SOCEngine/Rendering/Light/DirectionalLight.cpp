@@ -17,7 +17,7 @@ DirectionalLight::~DirectionalLight()
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 {
-	return true;
+	return _frustum.In(sphere.center, sphere.radius);
 }
 
 void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
