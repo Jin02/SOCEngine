@@ -11,6 +11,7 @@
 #include <array>
 
 #include "MeshCamera.h"
+#include "BoundBox.h"
 
 namespace Core
 {
@@ -77,11 +78,11 @@ namespace Rendering
 		private:
 			void UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index);
 			void UpdateShadowCastingPointLightCB(const Device::DirectX*& dx, uint index);
-			void UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index);
+			void UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index, const Intersection::BoundBox& sceneBoundBox);
 
-			void RenderSpotLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
-			void RenderPointLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
-			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void RenderSpotLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
+			void RenderPointLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
+			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager, const Intersection::BoundBox* sceneBoundBox = nullptr);
 
 		public:
 			void AddShadowCastingLight(const Light::LightForm*& light);
@@ -89,8 +90,8 @@ namespace Rendering
 			bool HasShadowCastingLight(const Light::LightForm*& light);
 
 		private: //friend class Scene
-			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
-			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void UpdateShadowCastingLightCB(const Device::DirectX*& dx, const Intersection::BoundBox& sceneBoundBox);
+			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager, const Intersection::BoundBox& sceneBoundBox);
 
 		public:
 			GET_ACCESSOR(PointLightShadowMapAtlas,			const Texture::DepthBuffer*,	_pointLightShadowMapAtlas);

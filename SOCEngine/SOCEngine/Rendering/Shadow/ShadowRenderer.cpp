@@ -260,12 +260,16 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	}
 }
 
-void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index)
+void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index, const BoundBox& sceneBoundBox)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
-	const DirectionalLight* light = reinterpret_cast<const DirectionalLight*>(shadowCastingLight.lightAddress);
+	DirectionalLight* light = reinterpret_cast<DirectionalLight*>(shadowCastingLight.lightAddress);
+
+	const float frustumMinZ		= 1.0f;
+	const float frustumMaxZ		= 10000.0f;
+	const Vector3& boundBoxSize	= sceneBoundBox.GetSize();	
 
 	CameraForm::CamConstBufferData cbData;
 	{
@@ -274,7 +278,8 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 		CameraForm::GetViewMatrix(view, view);
 
 		Matrix proj;
-		Matrix::OrthoLH(proj, (float)_directionalLightShadowMapResolution, (float)_directionalLightShadowMapResolution, 10000.0f, 1.0f);
+		Matrix::OrthoLH(proj, boundBoxSize.x / 2.0f, boundBoxSize.y / 2.0f, frustumMaxZ, frustumMinZ); //inverted
+		//boundBoxSize.z는.. Orthogonal이니, 굳이 없어도 된다.
 
 		Matrix& viewProj = cbData.viewProjMat;
 		viewProj = view * proj;
@@ -283,6 +288,13 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	bool isDifferent = memcmp(&shadowCastingLight.prevConstBufferData, &cbData, sizeof(CameraForm::CamConstBufferData)) != 0;
 	if(isDifferent)
 	{
+		//겸사 겸사 frustum도 계산
+		{
+			Matrix notInvertedProj;
+			Matrix::OrthoLH(notInvertedProj, boundBoxSize.x, boundBoxSize.y, frustumMinZ, frustumMaxZ);
+			light->ComputeFrustum(cbData.viewMat * notInvertedProj);
+		}
+
 		shadowCastingLight.prevConstBufferData = cbData;
 
 		Matrix::Transpose(cbData.viewMat,		cbData.viewMat);
@@ -293,7 +305,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	}
 }
 
-void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
+void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderManager*& renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -353,7 +365,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
+void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderManager*& renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -417,7 +429,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const RenderManager* renderManager)
+void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const RenderManager*& renderManager, const BoundBox* sceneBoundBox)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -446,7 +458,8 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	for(uint index = 0; index < count; ++index)
 	{
 #ifdef USE_RENDER_WITH_UPDATE_CB
-		UpdateShadowCastingDirectionalLightCB(dx, index);
+		BoundBox box = sceneBoundBox ? (*sceneBoundBox) : BoundBox();
+		UpdateShadowCastingDirectionalLightCB(dx, index, box);
 #endif
 
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
@@ -577,7 +590,7 @@ bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 	return false;
 }
 
-void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
+void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx, const BoundBox& sceneBoundBox)
 {
 #ifndef USE_RENDER_WITH_UPDATE_CB
 	// Spot Light
@@ -598,12 +611,12 @@ void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
 	{
 		uint count = _shadowCastingDirectionalLights.GetSize();
 		for(uint index = 0; index < count; ++index)
-			UpdateShadowCastingDirectionalLightCB(dx, index);
+			UpdateShadowCastingDirectionalLightCB(dx, index, sceneBoundBox);
 	}
 #endif
 }
 
-void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager* renderManager)
+void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager*& renderManager, const BoundBox& sceneBoundBox)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 	context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
@@ -613,5 +626,5 @@ void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderMan
 	if(_shadowCastingPointLights.GetSize() > 0)
 		RenderPointLightShadowMap(dx, renderManager);
 	if(_shadowCastingDirectionalLights.GetSize() > 0)
-		RenderDirectionalLightShadowMap(dx, renderManager);
+		RenderDirectionalLightShadowMap(dx, renderManager, &sceneBoundBox);
 }
