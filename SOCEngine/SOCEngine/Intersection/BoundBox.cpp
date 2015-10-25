@@ -37,7 +37,7 @@ namespace Intersection
 		_size.z	= abs(_size.z);
 
 		_extents = _size / 2.0f;
-		_center = (max - min) / 2.0f;
+		_center = (max + min) / 2.0f;
 	}
 
 	void BoundBox::Expand(float amount)

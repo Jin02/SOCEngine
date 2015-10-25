@@ -94,18 +94,21 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 
 	Math::Matrix worldMat;
 	_transform->FetchWorldMatrix(worldMat);
+
+	if(_hasMesh)
+	{
+		Vector3 minPos = Vector3(worldMat._41 - _radius, worldMat._42 - _radius, worldMat._43 - _radius);
+		Vector3 maxPos = Vector3(worldMat._41 + _radius, worldMat._42 + _radius, worldMat._43 + _radius);
+
+		if(refWorldPosMin.x > minPos.x) refWorldPosMin.x = minPos.x;
+		if(refWorldPosMin.y > minPos.y) refWorldPosMin.y = minPos.y;
+		if(refWorldPosMin.z > minPos.z) refWorldPosMin.z = minPos.z;
+
+		if(refWorldPosMax.x < maxPos.x) refWorldPosMax.x = maxPos.x;
+		if(refWorldPosMax.y < maxPos.y) refWorldPosMax.y = maxPos.y;
+		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
+	}
 	Matrix::Transpose(worldMat, worldMat);
-
-	Vector3 minPos = Vector3(worldMat._41 - _radius, worldMat._42 - _radius, worldMat._43 - _radius);
-	Vector3 maxPos = Vector3(worldMat._41 + _radius, worldMat._42 + _radius, worldMat._43 + _radius);
-
-	if(refWorldPosMin.x > minPos.x) refWorldPosMin.x = minPos.x;
-	if(refWorldPosMin.y > minPos.y) refWorldPosMin.y = minPos.y;
-	if(refWorldPosMin.z > minPos.z) refWorldPosMin.z = minPos.z;
-
-	if(refWorldPosMax.x < maxPos.x) refWorldPosMax.x = maxPos.x;
-	if(refWorldPosMax.y < maxPos.y) refWorldPosMax.y = maxPos.y;
-	if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 
 	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
