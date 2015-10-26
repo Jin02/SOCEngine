@@ -269,17 +269,24 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 
 	const float frustumMinZ		= 1.0f;
 	const float frustumMaxZ		= 10000.0f;
-	const Vector3& boundBoxSize	= sceneBoundBox.GetSize();	
+	const float orthogonalWH	= sceneBoundBox.GetSize().Length();
 
 	CameraForm::CamConstBufferData cbData;
 	{
 		Matrix& view = cbData.viewMat;
 		light->GetOwner()->GetTransform()->FetchWorldMatrix(view);
+
+		Vector3 forward = Vector3(view._13, view._23, view._33).Normalize();
+		const Vector3& sceneCenter = sceneBoundBox.GetCenter();
+
+		view._41 = sceneCenter.x - (forward.x * frustumMaxZ / 2.0f);
+		view._42 = sceneCenter.y - (forward.y * frustumMaxZ / 2.0f);
+		view._43 = sceneCenter.z - (forward.z * frustumMaxZ / 2.0f);
+
 		CameraForm::GetViewMatrix(view, view);
 
 		Matrix proj;
-		Matrix::OrthoLH(proj, boundBoxSize.x / 2.0f, boundBoxSize.y / 2.0f, frustumMaxZ, frustumMinZ); //inverted
-		//boundBoxSize.z는.. Orthogonal이니, 굳이 없어도 된다.
+		Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, frustumMaxZ, frustumMinZ); //inverted
 
 		Matrix& viewProj = cbData.viewProjMat;
 		viewProj = view * proj;
@@ -291,7 +298,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 		//겸사 겸사 frustum도 계산
 		{
 			Matrix notInvertedProj;
-			Matrix::OrthoLH(notInvertedProj, boundBoxSize.x, boundBoxSize.y, frustumMinZ, frustumMaxZ);
+			Matrix::OrthoLH(notInvertedProj, orthogonalWH, orthogonalWH, frustumMinZ, frustumMaxZ);
 			light->ComputeFrustum(cbData.viewMat * notInvertedProj);
 		}
 

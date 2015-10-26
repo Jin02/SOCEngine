@@ -97,8 +97,13 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 
 	if(_hasMesh)
 	{
-		Vector3 minPos = Vector3(worldMat._41 - _radius, worldMat._42 - _radius, worldMat._43 - _radius);
-		Vector3 maxPos = Vector3(worldMat._41 + _radius, worldMat._42 + _radius, worldMat._43 + _radius);
+		const Vector3& extents		= _boundBox->GetExtents();
+		const Vector3& boxCenter	= _boundBox->GetCenter(); 
+
+		Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
+		
+		Vector3 minPos = worldPos - extents;
+		Vector3 maxPos = worldPos + extents;
 
 		if(refWorldPosMin.x > minPos.x) refWorldPosMin.x = minPos.x;
 		if(refWorldPosMin.y > minPos.y) refWorldPosMin.y = minPos.y;

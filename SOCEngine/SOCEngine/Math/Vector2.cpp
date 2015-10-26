@@ -148,7 +148,7 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y);
 	}
 
-	Vector2 Vector2::Normalize()
+	Vector2 Vector2::Normalize() const
 	{
 		return Vector2::Normalize(*this);
 	}
