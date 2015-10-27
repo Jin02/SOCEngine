@@ -66,6 +66,7 @@ namespace Rendering
 
 			uint Get32BitMainColor() const;
 			uint Get32BitShadowColor() const;
+			ushort FetchShadowCastingLightIndex() const;
 		};
 	}
 }

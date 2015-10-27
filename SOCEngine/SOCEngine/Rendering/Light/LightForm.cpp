@@ -35,6 +35,15 @@ uint LightForm::Get32BitMainColor() const
 	return uintColor;
 }
 
+ushort LightForm::FetchShadowCastingLightIndex() const
+{
+	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
+
+	const LightForm* thisLight = this;
+	return shadowManager->FetchShadowCastingLightIndex(thisLight);
+}
+
 void LightForm::OnDestroy()
 {
 	if(_useShadow)
