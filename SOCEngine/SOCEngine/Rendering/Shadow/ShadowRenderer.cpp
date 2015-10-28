@@ -635,3 +635,24 @@ void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderMan
 	if(_shadowCastingDirectionalLights.GetSize() > 0)
 		RenderDirectionalLightShadowMap(dx, renderManager, &sceneBoundBox);
 }
+
+ushort ShadowRenderer::FetchShadowCastingLightIndex(const LightForm*& light)
+{
+	address lightAddress = reinterpret_cast<address>(light);
+	LightForm::LightType type = light->GetType();
+
+	uint index = -1;
+
+	if(type == LightForm::LightType::Point)
+		_shadowCastingPointLights.Find(lightAddress, &index);
+	else if(type == LightForm::LightType::Spot)
+		_shadowCastingSpotLights.Find(lightAddress, &index);
+	else if(type == LightForm::LightType::Directional)
+		_shadowCastingDirectionalLights.Find(lightAddress, &index);
+	else
+	{
+		DEBUG_LOG("Warning, Can not found shadow casting light index.");
+	}
+
+	return (ushort)index;
+}
