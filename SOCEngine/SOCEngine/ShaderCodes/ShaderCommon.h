@@ -46,9 +46,13 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 #endif
 
-Texture2D<float>	g_pointLightShadowMapAtlas						: register( t17 );
-Texture2D<float>	g_spotLightShadowMapAtlas						: register( t18 );
-Texture2D<float>	g_directionalLightShadowMapAtlas				: register( t19 );
+Texture2D<float>	g_inputPointLightShadowMapAtlas					: register( t17 );
+Texture2D<float>	g_inputSpotLightShadowMapAtlas					: register( t18 );
+Texture2D<float>	g_inputDirectionalLightShadowMapAtlas			: register( t19 );
+
+Buffer<uint>		g_inputPointLightShadowIndexBuffer				: register( t20 );
+Buffer<uint>		g_inputSpotLightShadowIndexBuffer				: register( t21 );
+Buffer<uint>		g_inputDirectionalLightShadowIndexBuffer		: register( t22 );
 
 struct LightingParams
 {

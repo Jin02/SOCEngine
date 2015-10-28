@@ -25,7 +25,10 @@ namespace Rendering
 			DirectionalLightShadowColor		= 16,
 			PointLightShadowMapAtlas		= 17,
 			SpotLightShadowMapAtlas			= 18,
-			DirectionalLightShadowMapAtlas	= 19
+			DirectionalLightShadowMapAtlas	= 19,
+			PointLightShadowIndex			= 20,
+			SpotLightShadowIndex			= 21,
+			DirectionalLightShadowIndex		= 22,
 		};
 
 		enum class InputConstBufferSemanticIndex : unsigned int
