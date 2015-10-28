@@ -48,6 +48,13 @@ void RenderDirectionalLight(
 		resultDiffuseColor				*= intensity;
 		resultSpecularColor				*= intensity;
 #endif
+
+		uint shadowIndex = g_inputDirectionalLightShadowIndexBuffer[lightingParams.lightIndex].x - 1;
+		if(shadowIndex != -1)
+		{
+			float4 shadowColorWithStrength = g_inputDirectionalLightShadowColorBuffer[lightingParams.lightIndex];
+
+		}
 	}	
 }
 
@@ -101,6 +108,13 @@ void RenderPointLight(
 		resultDiffuseColor	*= attenuation;
 		resultSpecularColor	*= attenuation;
 #endif
+
+		uint shadowIndex = g_inputPointLightShadowIndexBuffer[lightingParams.lightIndex].x - 1;
+		if(shadowIndex != -1)
+		{
+			float4 shadowColorWithStrength = g_inputPointLightShadowColorBuffer[lightingParams.lightIndex];
+
+		}
 	}
 }
 
@@ -174,6 +188,13 @@ void RenderSpotLight(
 		resultDiffuseColor	*= totalAttenTerm;
 		resultSpecularColor	*= totalAttenTerm;
 #endif
+
+		uint shadowIndex = g_inputSpotLightShadowIndexBuffer[lightingParams.lightIndex].x - 1;
+		if(shadowIndex != -1)
+		{
+			float4 shadowColorWithStrength = g_inputSpotLightShadowColorBuffer[lightingParams.lightIndex];
+
+		}
 	}
 }
 
