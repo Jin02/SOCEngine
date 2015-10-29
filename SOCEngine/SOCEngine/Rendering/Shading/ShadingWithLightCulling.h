@@ -26,9 +26,18 @@ namespace Rendering
 
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
+
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
+
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
+
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
 
 		public:
 			ShadingWithLightCulling();
