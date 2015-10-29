@@ -20,15 +20,12 @@ namespace Rendering
 			GBuffer_Depth					= 11,
 			GBuffer_BlendedDepth			= 12,
 			LightIndexBuffer				= 13,
-			PointLightShadowColor			= 14,
-			SpotLightShadowColor			= 15,
-			DirectionalLightShadowColor		= 16,
+			PointLightShadowParam			= 14,
+			SpotLightShadowParam			= 15,
+			DirectionalLightShadowParam		= 16,
 			PointLightShadowMapAtlas		= 17,
 			SpotLightShadowMapAtlas			= 18,
 			DirectionalLightShadowMapAtlas	= 19,
-			PointLightShadowIndex			= 20,
-			SpotLightShadowIndex			= 21,
-			DirectionalLightShadowIndex		= 22,
 		};
 
 		enum class InputConstBufferSemanticIndex : unsigned int

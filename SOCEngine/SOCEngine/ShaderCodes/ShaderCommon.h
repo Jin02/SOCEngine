@@ -18,10 +18,6 @@ Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 );
 Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
 Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
-Buffer<float4> g_inputPointLightShadowColorBuffer					: register( t14 ); // rgb, shadow strength
-Buffer<float4> g_inputSpotLightShadowColorBuffer					: register( t15 ); // rgb, shadow strength
-Buffer<float4> g_inputDirectionalLightShadowColorBuffer				: register( t16 ); // rgb, shadow strength
-
 #if (MSAA_SAMPLES_COUNT > 1)
 
 Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_emission	: register( t8 );
@@ -46,13 +42,25 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 #endif
 
+struct ShadowParam
+{
+	half3	color;
+	half	strength;
+	half	bias;
+	uint	index;
+
+	half	dummy;
+};
+
+//Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
+
+StructuredBuffer<ShadowParam>	g_inputPointLightShadowParams		: register( t14 );
+StructuredBuffer<ShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
+StructuredBuffer<ShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
+
 Texture2D<float>	g_inputPointLightShadowMapAtlas					: register( t17 );
 Texture2D<float>	g_inputSpotLightShadowMapAtlas					: register( t18 );
 Texture2D<float>	g_inputDirectionalLightShadowMapAtlas			: register( t19 );
-
-Buffer<uint>		g_inputPointLightShadowIndexBuffer				: register( t20 );
-Buffer<uint>		g_inputSpotLightShadowIndexBuffer				: register( t21 );
-Buffer<uint>		g_inputDirectionalLightShadowIndexBuffer		: register( t22 );
 
 struct LightingParams
 {
