@@ -42,25 +42,35 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 #endif
 
-struct ShadowParam
+struct Directional_Spot_LightShadowParam
 {
-	half3	color;
-	half	strength;
 	half	bias;
-	uint	index;
+	half	index;	// as short
 
-	half	dummy;
+	matrix	viewProjMat;
+};
+
+struct PointLightShadowParam
+{
+	half	bias;
+	half	index;	// as short
+
+	matrix	viewProjMat[6];
 };
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
 
-StructuredBuffer<ShadowParam>	g_inputPointLightShadowParams		: register( t14 );
-StructuredBuffer<ShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
-StructuredBuffer<ShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
+StructuredBuffer<PointLightShadowParam>				g_inputPointLightShadowParams		: register( t14 );
+StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
+StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
 
 Texture2D<float>	g_inputPointLightShadowMapAtlas					: register( t17 );
 Texture2D<float>	g_inputSpotLightShadowMapAtlas					: register( t18 );
 Texture2D<float>	g_inputDirectionalLightShadowMapAtlas			: register( t19 );
+
+Buffer<float4> g_inputPointLightShadowColors						: register( t20 );
+Buffer<float4> g_inputSpotLightShadowColors							: register( t21 );
+Buffer<float4> g_inputDirectionalLightShadowColors					: register( t22 );
 
 struct LightingParams
 {
