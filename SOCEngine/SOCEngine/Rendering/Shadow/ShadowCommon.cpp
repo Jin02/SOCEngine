@@ -21,10 +21,6 @@ ShadowCommon::~ShadowCommon()
 void ShadowCommon::MakeParam(CommonParam& outParam) const
 {
 	CommonParam param;
-	param.r			= Common::FloatToHalf(_color.r);
-	param.g			= Common::FloatToHalf(_color.g);
-	param.b			= Common::FloatToHalf(_color.b);
-	param.strength	= Common::FloatToHalf(_color.a);
 
 	param.bias		= Common::FloatToHalf(_bias);
 	param.index		= Common::FloatToHalf( (float)FetchShadowCastingLightIndex() );

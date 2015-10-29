@@ -18,10 +18,8 @@ namespace Rendering
 		public:
 			struct CommonParam
 			{
-				ushort	r, g, b, strength;
 				ushort	bias;
-				uint	index;
-				ushort dummy;
+				ushort	index;
 			};
 
 		private:
@@ -41,6 +39,7 @@ namespace Rendering
 		public:
 			ushort FetchShadowCastingLightIndex() const;
 			GET_SET_ACCESSOR(Bias, float, _bias);
+			GET_SET_ACCESSOR(Color, const Color&, _color);
 		};
 	}
 }
