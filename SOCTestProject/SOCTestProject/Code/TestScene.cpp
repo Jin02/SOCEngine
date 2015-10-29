@@ -47,8 +47,11 @@ void TestScene::OnInitialize()
 
 	light = new Object("Light");
 	LightForm* lightCompo = light->AddComponent<DirectionalLight>();
-	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	light->GetTransform()->UpdateEulerAngles(Vector3(90, 240, 0));
+
+	Vector3 dir = light->GetTransform()->GetForward();
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0) + (dir * 3000.0f));
+
 	lightCompo->SetIntensity(2.0f);
 	AddObject(light);
 #else
@@ -68,13 +71,16 @@ void TestScene::OnInitialize()
 	AddObject(testObject);
 
 	light = new Object("Light");
-	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	light->GetTransform()->UpdateEulerAngles(Vector3(0, 240, 0));
 
-	SpotLight* spotLight = light->AddComponent<SpotLight>();
-	spotLight->SetLumen(700);
-	spotLight->SetRadius(20.0f);
-	spotLight->SetSpotAngleDegree(25.0f);
+	Vector3 dir = light->GetTransform()->GetForward();
+	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+
+	DirectionalLight* spotLight = light->AddComponent<DirectionalLight>();
+	//spotLight->SetLumen(700);
+	//spotLight->SetRadius(20.0f);
+	//spotLight->SetSpotAngleDegree(25.0f);
+	spotLight->SetIntensity(2.0f);
 	spotLight->ActiveShadow(true);
 
 	AddObject(light);
@@ -143,12 +149,12 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
-#ifndef USE_SPONZA_TEST
-	static float x = 0.0f;
-
-	x += 0.1f;
-	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
-#endif
+//#ifndef USE_SPONZA_TEST
+//	static float x = 0.0f;
+//
+//	x += 0.1f;
+//	testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
+//#endif
 }
 
 void TestScene::OnRenderPost()
