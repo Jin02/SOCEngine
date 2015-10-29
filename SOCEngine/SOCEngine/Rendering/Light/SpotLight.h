@@ -32,6 +32,9 @@ namespace Rendering
 			~SpotLight();
 
 		public:
+			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
+
+		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
 			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
 

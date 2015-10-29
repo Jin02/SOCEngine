@@ -3,6 +3,9 @@
 #include "LightForm.h"
 #include "Frustum.h"
 
+#define DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z		1.0f
+#define DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z		10000.0f
+
 namespace Rendering
 {
 	namespace Light
@@ -28,8 +31,9 @@ namespace Rendering
 			~DirectionalLight();
 
 		public:
-			inline void ComputeFrustum(const Math::Matrix& viewProjMat) { _frustum.Make(viewProjMat); }
+			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
 
+		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
 			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
 

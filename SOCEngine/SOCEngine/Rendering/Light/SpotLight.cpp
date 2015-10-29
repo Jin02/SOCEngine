@@ -1,9 +1,11 @@
 #include "SpotLight.h"
 #include "Object.h"
 #include "MathCommon.h"
+#include "CameraForm.h"
 
 using namespace Intersection;
 using namespace Rendering;
+using namespace Rendering::Camera;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
@@ -17,6 +19,19 @@ SpotLight::SpotLight()  : LightForm(),
 SpotLight::~SpotLight()
 {
 
+}
+
+void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
+{
+	Matrix& view = _viewMat;
+	_owner->GetTransform()->FetchWorldMatrix(view);
+	CameraForm::GetViewMatrix(view, view);
+
+	Matrix proj;
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, 1.0f);
+
+	Matrix& viewProj = _viewProjMat;
+	viewProj = view * proj;
 }
 
 bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
