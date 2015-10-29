@@ -14,9 +14,7 @@ using namespace Rendering::TBDR;
 ShadingWithLightCulling::ShadingWithLightCulling() : 
 	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
 	_inputSpotLightColorBuffer(nullptr), _inputDirectionalLightColorBuffer(nullptr),
-	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr),
-	_inputPointLightShadowColorBuffer(nullptr), _inputSpotLightShadowColorBuffer(nullptr), _inputDirectionalLightShadowColorBuffer(nullptr),
-	_inputPointLightShadowIndexBuffer(nullptr), _inputSpotLightShadowIndexBuffer(nullptr), _inputDirectionalLightShadowIndexBuffer(nullptr)
+	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr)
 {
 
 }
@@ -58,14 +56,6 @@ void ShadingWithLightCulling::Initialize(
 			uint idx = (uint)InputSRBufferSemanticIndex::PointLightColor;
 			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorBufferSR();
 			AddInputBufferToList(_inputPointLightColorBuffer, idx, srBuffer);
-
-			idx = (uint)InputSRBufferSemanticIndex::PointLightShadowColor;
-			srBuffer = lightManager->GetPointLightShadowColorBufferSR();
-			AddInputBufferToList(_inputPointLightShadowColorBuffer, idx, srBuffer);
-
-			idx = (uint)InputSRBufferSemanticIndex::PointLightShadowIndex;
-			srBuffer = lightManager->GetPointLightShadowIndexBufferSR();
-			AddInputBufferToList(_inputPointLightShadowIndexBuffer, idx, srBuffer);
 		}
 
 		// Spot Light
@@ -73,14 +63,6 @@ void ShadingWithLightCulling::Initialize(
 			uint idx = (uint)InputSRBufferSemanticIndex::SpotLightColor;
 			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorBufferSR();
 			AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
-
-			idx = (uint)InputSRBufferSemanticIndex::SpotLightShadowColor;
-			srBuffer = lightManager->GetSpotLightShadowColorBufferSR();
-			AddInputBufferToList(_inputSpotLightShadowColorBuffer, idx, srBuffer);
-
-			idx = (uint)InputSRBufferSemanticIndex::SpotLightShadowIndex;
-			srBuffer = lightManager->GetSpotLightShadowIndexBufferSR();
-			AddInputBufferToList(_inputSpotLightShadowIndexBuffer, idx, srBuffer);
 		}
 
 		// Directional Light
@@ -97,18 +79,6 @@ void ShadingWithLightCulling::Initialize(
 				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightColor;
 				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorBufferSR();
 				AddInputBufferToList(_inputDirectionalLightColorBuffer, idx, srBuffer);
-			}
-
-
-			// Shadow
-			{
-				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightShadowColor;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightShadowColorBufferSR();
-				AddInputBufferToList(_inputDirectionalLightShadowColorBuffer, idx, srBuffer);
-
-				idx = (uint)InputSRBufferSemanticIndex::DirectionalLightShadowIndex;
-				srBuffer = lightManager->GetDirectionalLightShadowIndexBufferSR();
-				AddInputBufferToList(_inputDirectionalLightShadowIndexBuffer, idx, srBuffer);
 			}
 
 			// Param half / DirX, DirY
@@ -192,12 +162,6 @@ void ShadingWithLightCulling::Destory()
 	_inputDirectionalLightTransformBuffer	= nullptr;
 	_inputDirectionalLightColorBuffer		= nullptr;
 	_inputDirectionalLightParamBuffer		= nullptr;
-	_inputPointLightShadowColorBuffer		= nullptr;
-	_inputSpotLightShadowColorBuffer		= nullptr;
-	_inputDirectionalLightShadowColorBuffer	= nullptr;
-	_inputPointLightShadowIndexBuffer		= nullptr;
-	_inputSpotLightShadowIndexBuffer		= nullptr;
-	_inputDirectionalLightShadowIndexBuffer	= nullptr;
 
 	SAFE_DELETE(_offScreen);
 	LightCulling::Destroy();
