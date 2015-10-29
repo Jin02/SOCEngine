@@ -73,6 +73,7 @@ namespace Rendering
 			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&,	_viewProjMat);
 
 			GET_ACCESSOR(UseShadow, bool, _shadow != nullptr);
+			GET_ACCESSOR(ShadowColor, const Color&, _shadow->GetColor());
 		};
 	}
 }
