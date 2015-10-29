@@ -5,6 +5,7 @@
 using namespace Intersection;
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
@@ -16,6 +17,11 @@ PointLight::PointLight() : LightForm()
 
 PointLight::~PointLight(void)
 {
+}
+
+void PointLight::CreateLightShadow()
+{
+	_shadow = new PointLightShadow(this);
 }
 
 bool PointLight::Intersect(const Sphere &sphere) const

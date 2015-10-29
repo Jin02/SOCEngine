@@ -6,6 +6,7 @@
 using namespace Intersection;
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
@@ -19,6 +20,11 @@ SpotLight::SpotLight()  : LightForm(),
 SpotLight::~SpotLight()
 {
 
+}
+
+void SpotLight::CreateLightShadow()
+{
+	_shadow = new SpotLightShadow(this);
 }
 
 void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)

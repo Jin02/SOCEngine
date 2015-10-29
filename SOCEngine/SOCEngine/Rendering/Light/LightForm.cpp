@@ -8,7 +8,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(500), _useShadow(false)
+	: _radius(10.0f), _lumen(500), _shadow(nullptr)
 {
 	_color			= Color::White();
 }
@@ -37,13 +37,15 @@ uint LightForm::Get32BitMainColor() const
 
 void LightForm::OnDestroy()
 {
-	if(_useShadow)
+	if(_shadow)
 	{
 		Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
 		Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
 
 		const LightForm* light = this;
 		shadowManager->DeleteShadowCastingLight(light);
+
+		SAFE_DELETE(_shadow);
 	}
 }
 
@@ -92,9 +94,13 @@ void LightForm::ActiveShadow(bool isActive)
 	const LightForm* light = this;
 
 	if(isActive)
+	{
 		shadowManager->AddShadowCastingLight(light);
+		CreateLightShadow();
+	}
 	else
+	{
 		shadowManager->DeleteShadowCastingLight(light);
-
-	_useShadow = isActive;
+		SAFE_DELETE(_shadow);
+	}
 }

@@ -27,15 +27,15 @@ namespace Rendering
 			};
 
 		protected:
-			LightType		_type;
-			float			_radius;
-			Color			_color;
-			uint			_lumen; //intensity
+			Math::Matrix			_viewMat;
+			Math::Matrix			_viewProjMat;
 
-			bool			_useShadow;
+			Color					_color;
+			LightType				_type;
+			float					_radius;
+			uint					_lumen; //intensity
 
-			Math::Matrix	_viewMat;
-			Math::Matrix	_viewProjMat;
+			Shadow::ShadowCommon*	_shadow;
 
 		protected:
 			LightForm();
@@ -49,6 +49,7 @@ namespace Rendering
 
 		public:
 			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox) = 0;
+			virtual void CreateLightShadow() = 0;
 			void ActiveShadow(bool isActive);
 
 		public:
@@ -68,8 +69,10 @@ namespace Rendering
 
 			uint Get32BitMainColor() const;
 
-			GET_ACCESSOR(ViewMatrix,			const Math::Matrix&, _viewMat);
-			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&, _viewProjMat);
+			GET_ACCESSOR(ViewMatrix,			const Math::Matrix&,	_viewMat);
+			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&,	_viewProjMat);
+
+			GET_ACCESSOR(UseShadow, bool, _shadow != nullptr);
 		};
 	}
 }

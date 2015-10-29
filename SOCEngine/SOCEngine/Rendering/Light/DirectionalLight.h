@@ -2,6 +2,7 @@
 
 #include "LightForm.h"
 #include "Frustum.h"
+#include "DirectionalLightShadow.h"
 
 #define DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z		1.0f
 #define DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z		10000.0f
@@ -24,14 +25,16 @@ namespace Rendering
 			};
 
 		private:
-			Intersection::Frustum		_frustum;
+			Intersection::Frustum				_frustum;
+			Shadow::DirectionalLightShadow*		_shadow;
 
 		public:
 			DirectionalLight();
-			~DirectionalLight();
+			virtual ~DirectionalLight();
 
 		public:
 			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
+			virtual void CreateLightShadow();
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
@@ -42,6 +45,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(Frustum, const Intersection::Frustum&, _frustum);
+			GET_ACCESSOR(Shadow, const Shadow::DirectionalLightShadow*, static_cast<const Shadow::DirectionalLightShadow*>(_shadow));
 		};
 	}
 }

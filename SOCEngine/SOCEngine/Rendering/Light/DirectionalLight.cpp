@@ -4,6 +4,7 @@
 
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
@@ -15,6 +16,11 @@ DirectionalLight::DirectionalLight() : LightForm()
 
 DirectionalLight::~DirectionalLight()
 {
+}
+
+void DirectionalLight::CreateLightShadow()
+{
+	_shadow = new DirectionalLightShadow(this);
 }
 
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
