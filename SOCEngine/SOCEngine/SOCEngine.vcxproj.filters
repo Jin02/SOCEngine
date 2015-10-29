@@ -310,6 +310,21 @@
     <Filter Include="Rendering\Camera\MeshCamera">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shadow\Lights">
+      <UniqueIdentifier>{fabde663-207d-477e-890b-c88927bae3ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Common">
+      <UniqueIdentifier>{32d455bd-e841-473a-9a78-b729fdb75e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Point">
+      <UniqueIdentifier>{850340ff-7360-48c4-b501-6b2797da6c97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Spot">
+      <UniqueIdentifier>{e2940c66-18d0-4bdb-9b71-a347a670fe83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Directional">
+      <UniqueIdentifier>{48e82b62-2502-4c74-aa22-d1e25aacb9ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -726,6 +741,18 @@
     <ClInclude Include="Intersection\Frustum.h">
       <Filter>Intersection</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowCommon.h">
+      <Filter>Rendering\Shadow\Lights\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Spot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1012,6 +1039,18 @@
     </ClCompile>
     <ClCompile Include="Intersection\Frustum.cpp">
       <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp">
+      <Filter>Rendering\Shadow\Lights\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
