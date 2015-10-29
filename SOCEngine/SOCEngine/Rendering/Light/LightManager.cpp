@@ -15,15 +15,12 @@ using namespace Rendering::Buffer;
 LightManager::LightManager(void) 
 	:	
 	_pointLightTransformBufferSR(nullptr), _pointLightColorBufferSR(nullptr),
-	_pointLightShadowColorBufferSR(nullptr), _pointLightShadowIndexBufferSR(nullptr),
 
 	_directionalLightTransformBufferSR(nullptr), _directionalLightParamBufferSR(nullptr), 
-	_directionalLightColorBufferSR(nullptr), _directionalLightShadowColorBufferSR(nullptr),
-	_directionalLightShadowIndexBufferSR(nullptr),
+	_directionalLightColorBufferSR(nullptr),
 
 	_spotLightTransformBufferSR(nullptr), _spotLightColorBufferSR(nullptr),
-	_spotLightParamBufferSR(nullptr), _spotLightShadowColorBufferSR(nullptr),
-	_spotLightShadowIndexBufferSR(nullptr)
+	_spotLightParamBufferSR(nullptr)
 {
 	_pointLightBufferUpdateType			= BufferUpdateType::Overall;
 	_spotLightBufferUpdateType			= BufferUpdateType::Overall;
@@ -52,18 +49,6 @@ void LightManager::InitializeAllShaderResourceBuffer()
 			4, POINT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			dummyData, true, D3D11_USAGE_DYNAMIC);
-
-		_pointLightShadowColorBufferSR = new ShaderResourceBuffer;
-		_pointLightShadowColorBufferSR->Initialize(
-			4, POINT_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
-
-		_pointLightShadowIndexBufferSR = new ShaderResourceBuffer;
-		_pointLightShadowIndexBufferSR->Initialize(
-			2, POINT_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R16_UINT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
 	}
 
 	// Directional Light Buffer
@@ -86,18 +71,6 @@ void LightManager::InitializeAllShaderResourceBuffer()
 			4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			dummyData, true, D3D11_USAGE_DYNAMIC);
-
-		_directionalLightShadowColorBufferSR= new ShaderResourceBuffer;
-		_directionalLightShadowColorBufferSR->Initialize(
-			4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
-
-		_directionalLightShadowIndexBufferSR= new ShaderResourceBuffer;
-		_directionalLightShadowIndexBufferSR->Initialize(
-			2, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R16_UINT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
 	}
 
 	// Spot Light
@@ -119,18 +92,16 @@ void LightManager::InitializeAllShaderResourceBuffer()
 			sizeof(SpotLight::Params), SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R16G16B16A16_FLOAT,
 			dummyData, true, D3D11_USAGE_DYNAMIC);
+	}
+}
 
-		_spotLightShadowColorBufferSR		= new ShaderResourceBuffer;
-		_spotLightShadowColorBufferSR->Initialize(
-			4, SPOT_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
-
-		_spotLightShadowIndexBufferSR		= new ShaderResourceBuffer;
-		_spotLightShadowIndexBufferSR->Initialize(
-			2, SPOT_LIGHT_BUFFER_MAX_NUM,
-			DXGI_FORMAT_R16_UINT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+void LightManager::ComputeAllLightViewProj(const Intersection::BoundBox& sceneBoundBox)
+{
+	const auto& lights = _lights.GetVector();
+	for(auto iter = lights.begin(); iter != lights.end(); ++iter)
+	{
+		LightForm* light = iter->light;
+		light->ComputeViewProjMatrix(sceneBoundBox);
 	}
 }
 
@@ -138,23 +109,17 @@ void LightManager::DestroyAllShaderReourceBuffer()
 {
 	SAFE_DELETE(_pointLightTransformBufferSR);
 	SAFE_DELETE(_pointLightColorBufferSR);
-	SAFE_DELETE(_pointLightShadowColorBufferSR);
-	SAFE_DELETE(_pointLightShadowIndexBufferSR);
 
 	SAFE_DELETE(_directionalLightTransformBufferSR);
 	SAFE_DELETE(_directionalLightParamBufferSR);
 	SAFE_DELETE(_directionalLightColorBufferSR);
-	SAFE_DELETE(_directionalLightShadowColorBufferSR);
-	SAFE_DELETE(_directionalLightShadowIndexBufferSR);
 
 	SAFE_DELETE(_spotLightTransformBufferSR);
 	SAFE_DELETE(_spotLightColorBufferSR);
 	SAFE_DELETE(_spotLightParamBufferSR);
-	SAFE_DELETE(_spotLightShadowColorBufferSR);
-	SAFE_DELETE(_spotLightShadowIndexBufferSR);
 }
 
-void LightManager::Add(const LightForm* light, const char* key)
+void LightManager::Add(LightForm* light, const char* key)
 {
 	std::string searchKey = key ? key : light->GetOwner()->GetName();
 
@@ -197,8 +162,6 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
-		uint uintShadowColor = light->Get32BitShadowColor();
-		ushort shadowIndex = light->FetchShadowCastingLightIndex() + 1;
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
@@ -213,16 +176,12 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				_directionalLightTransformBuffer.Add(key, transformElem);
 				_directionalLightParamBuffer.Add(key, param);
 				_directionalLightColorBuffer.Add(key, uintColor);
-				_directionalLightShadowColorBuffer.Add(key, uintShadowColor);
-				_directionalLightShadowIndexBuffer.Add(key, shadowIndex);
 			}
 			else
 			{
 				(*transform) = transformElem;
 				(*_directionalLightParamBuffer.Find(key))		= param;
 				(*_directionalLightColorBuffer.Find(key))		= uintColor;
-				(*_directionalLightShadowColorBuffer.Find(key))	= uintShadowColor;
-				(*_directionalLightShadowIndexBuffer.Find(key)) = shadowIndex;
 			}
 
 			isUpdatedDL = true;
@@ -237,15 +196,11 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			{
 				_pointLightTransformBuffer.Add(key, transformElem);
 				_pointLightColorBuffer.Add(key, uintColor);
-				_pointLightShadowColorBuffer.Add(key, uintShadowColor);
-				_pointLightShadowIndexBuffer.Add(key, shadowIndex);
 			}
 			else
 			{
 				(*transform) = transformElem;
 				(*_pointLightColorBuffer.Find(key))			= uintColor;
-				(*_pointLightShadowColorBuffer.Find(key))	= uintShadowColor;
-				(*_pointLightShadowIndexBuffer.Find(key))	= shadowIndex;
 			}
 
 			isUpdatedPL = true;
@@ -262,16 +217,12 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				_spotLightTransformBuffer.Add(key, transformElem);
 				_spotLightParamBuffer.Add(key, param);
 				_spotLightColorBuffer.Add(key, uintColor);
-				_spotLightShadowColorBuffer.Add(key, uintShadowColor);
-				_spotLightShadowIndexBuffer.Add(key, shadowIndex);
 			}
 			else
 			{
 				(*transform) = transformElem;
 				(*_spotLightParamBuffer.Find(key))			= param;
 				(*_spotLightColorBuffer.Find(key))			= uintColor;
-				(*_spotLightShadowColorBuffer.Find(key))	= uintShadowColor;
-				(*_spotLightShadowIndexBuffer.Find(key))	= shadowIndex;
 			}
 
 			isUpdatedSL = true;
@@ -299,15 +250,6 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			const void* data = _directionalLightParamBuffer.GetVector().data();
 			_directionalLightParamBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(DirectionalLight::Params));
 		}		
-
-		// Shadow
-		{
-			const void* data = _directionalLightShadowColorBuffer.GetVector().data();
-			_directionalLightShadowColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 4);
-
-			data = _directionalLightShadowIndexBuffer.GetVector().data();
-			_directionalLightShadowIndexBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 2);
-		}
 	}
 
 	if(isUpdatedPL)
@@ -324,15 +266,6 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		{
 			const void* data = _pointLightColorBuffer.GetVector().data();
 			_pointLightColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 4);
-		}
-
-		// Shadow
-		{
-			const void* data = _pointLightShadowColorBuffer.GetVector().data();
-			_pointLightShadowColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 4);
-
-			data = _pointLightShadowIndexBuffer.GetVector().data();
-			_pointLightShadowIndexBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 2);
 		}
 	}
 
@@ -357,16 +290,6 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			const void* data = _spotLightParamBuffer.GetVector().data();
 			_spotLightParamBufferSR->UpdateResourceUsingMapUnMap(context, data, count * sizeof(SpotLight::Params));
 		}
-
-		// Shadow
-		{
-			const void* data = _spotLightShadowColorBuffer.GetVector().data();
-			_spotLightShadowColorBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 4);
-
-			data = _spotLightShadowIndexBuffer.GetVector().data();
-			_spotLightShadowIndexBufferSR->UpdateResourceUsingMapUnMap(context, data, count * 2);
-		}
-
 	}
 }
 
@@ -415,8 +338,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
-		uint uintShadowColor = light->Get32BitShadowColor();
-		ushort shadowIndex = light->FetchShadowCastingLightIndex() + 1;
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
@@ -434,8 +355,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				_directionalLightTransformBuffer.Add(key, transformElem);
 				_directionalLightParamBuffer.Add(key, param);
 				_directionalLightColorBuffer.Add(key, uintColor);
-				_directionalLightShadowColorBuffer.Add(key, uintShadowColor);
-				_directionalLightShadowIndexBuffer.Add(key, shadowIndex);
 
 				lightIdx = _directionalLightColorBuffer.GetSize() - 1;
 			}
@@ -444,8 +363,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				(*transform) = transformElem;
 				(*_directionalLightParamBuffer.Find(key))		= param;
 				(*_directionalLightColorBuffer.Find(key))		= uintColor;
-				(*_directionalLightShadowColorBuffer.Find(key))	= uintShadowColor;
-				(*_directionalLightShadowIndexBuffer.Find(key)) = shadowIndex;
 			}
 
 			if(_directionalLightBufferUpdateType == BufferUpdateType::Selective)
@@ -458,12 +375,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 				data = _directionalLightTransformBuffer.GetVector().data() + lightIdx;
 				UpdateSRBuffer(context, _directionalLightTransformBufferSR, data, sizeof(LightForm::LightTransformBuffer), lightIdx, lightIdx);
-
-				data = _directionalLightShadowColorBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _directionalLightShadowColorBufferSR, data, 4, lightIdx, lightIdx);
-
-				data = _directionalLightShadowIndexBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _directionalLightShadowIndexBufferSR, data, 2, lightIdx, lightIdx);
 			}
 
 			CalcStartEndIdx(dlChangeStartIdx, dlChangeEndIdx, lightIdx);
@@ -482,8 +393,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			{
 				_pointLightTransformBuffer.Add(key, transformElem);
 				_pointLightColorBuffer.Add(key, uintColor);
-				_pointLightShadowColorBuffer.Add(key, uintShadowColor);
-				_pointLightShadowIndexBuffer.Add(key, shadowIndex);
 
 				lightIdx = _pointLightColorBuffer.GetSize() - 1;
 			}
@@ -491,8 +400,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			{
 				(*transform) = transformElem;
 				(*_pointLightColorBuffer.Find(key))			= uintColor;
-				(*_pointLightShadowColorBuffer.Find(key))	= uintShadowColor;
-				(*_pointLightShadowIndexBuffer.Find(key))	= shadowIndex;
 			}
 
 			if(_pointLightBufferUpdateType == BufferUpdateType::Selective)
@@ -502,12 +409,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 				data = _pointLightTransformBuffer.GetVector().data() + lightIdx;
 				UpdateSRBuffer(context, _pointLightTransformBufferSR, data, sizeof(LightForm::LightTransformBuffer), lightIdx, lightIdx);
-
-				data = _pointLightShadowColorBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _pointLightShadowColorBufferSR, data, 4, lightIdx, lightIdx);
-
-				data = _pointLightShadowIndexBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _pointLightShadowIndexBufferSR, data, 2, lightIdx, lightIdx);
 			}
 
 			CalcStartEndIdx(plChangeStartIdx, plChangeEndIdx, lightIdx);
@@ -529,8 +430,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				_spotLightTransformBuffer.Add(key, transformElem);
 				_spotLightParamBuffer.Add(key, param);
 				_spotLightColorBuffer.Add(key, uintColor);
-				_spotLightShadowColorBuffer.Add(key, uintShadowColor);
-				_spotLightShadowIndexBuffer.Add(key, shadowIndex);
 
 				lightIdx = _spotLightColorBuffer.GetSize() - 1;
 			}
@@ -539,8 +438,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				(*transform) = transformElem;
 				(*_spotLightParamBuffer.Find(key)) = param;
 				(*_spotLightColorBuffer.Find(key)) = uintColor;
-				(*_spotLightShadowColorBuffer.Find(key)) = uintShadowColor;
-				(*_spotLightShadowIndexBuffer.Find(key)) = shadowIndex;
 			}
 
 			if(_spotLightBufferUpdateType == BufferUpdateType::Selective)
@@ -553,12 +450,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 				data = _spotLightTransformBuffer.GetVector().data() + lightIdx;
 				UpdateSRBuffer(context, _spotLightTransformBufferSR, data, sizeof(LightForm::LightTransformBuffer), lightIdx, lightIdx);
-
-				data = _spotLightShadowColorBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _spotLightShadowColorBufferSR, data, 4, lightIdx, lightIdx);
-
-				data = _spotLightShadowIndexBuffer.GetVector().data() + lightIdx;
-				UpdateSRBuffer(context, _spotLightShadowIndexBufferSR, data, 2, lightIdx, lightIdx);
 			}
 
 			CalcStartEndIdx(slChangeStartIdx, slChangeEndIdx, lightIdx);
@@ -585,16 +476,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				_directionalLightTransformBuffer.GetVector().data(),
 				sizeof(LightForm::LightTransformBuffer),
 				dlChangeStartIdx, dlChangeEndIdx);
-
-			UpdateSRBuffer(context, _directionalLightShadowColorBufferSR,
-				_directionalLightShadowColorBuffer.GetVector().data(),
-				4, 
-				dlChangeStartIdx, dlChangeEndIdx);
-
-			UpdateSRBuffer(context, _directionalLightShadowIndexBufferSR,
-				_directionalLightShadowIndexBuffer.GetVector().data(),
-				2, 
-				dlChangeStartIdx, dlChangeEndIdx);
 	}
 
 	if(_pointLightBufferUpdateType == BufferUpdateType::Overall &&
@@ -608,16 +489,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 		UpdateSRBuffer(context, _pointLightColorBufferSR,
 			_pointLightColorBuffer.GetVector().data(),
 			4, 
-			plChangeStartIdx, plChangeEndIdx);
-
-		UpdateSRBuffer(context, _pointLightShadowColorBufferSR,
-			_pointLightShadowColorBuffer.GetVector().data(),
-			4, 
-			plChangeStartIdx, plChangeEndIdx);
-
-		UpdateSRBuffer(context, _pointLightShadowIndexBufferSR,
-			_pointLightShadowIndexBuffer.GetVector().data(),
-			2, 
 			plChangeStartIdx, plChangeEndIdx);
 	}
 
@@ -637,16 +508,6 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 		UpdateSRBuffer(context, _spotLightTransformBufferSR, 
 			_spotLightTransformBuffer.GetVector().data(),
 			sizeof(LightForm::LightTransformBuffer),
-			slChangeStartIdx, slChangeEndIdx);
-
-		UpdateSRBuffer(context, _spotLightShadowColorBufferSR,
-			_spotLightShadowColorBuffer.GetVector().data(),
-			4, 
-			slChangeStartIdx, slChangeEndIdx);
-
-		UpdateSRBuffer(context, _spotLightShadowIndexBufferSR,
-			_spotLightShadowIndexBuffer.GetVector().data(),
-			2, 
 			slChangeStartIdx, slChangeEndIdx);
 	}
 
@@ -679,26 +540,17 @@ void LightManager::Delete(const std::string& key)
 		_directionalLightTransformBuffer.Delete(key);
 		_directionalLightParamBuffer.Delete(key);
 		_directionalLightColorBuffer.Delete(key);
-
-		_directionalLightShadowColorBuffer.Delete(key);
-		_directionalLightShadowIndexBuffer.Delete(key);
 	}
 	else if(type == LightForm::LightType::Point)
 	{
 		_pointLightTransformBuffer.Delete(key);
 		_pointLightColorBuffer.Delete(key);
-
-		_pointLightShadowColorBuffer.Delete(key);
-		_pointLightShadowIndexBuffer.Delete(key);
 	}
 	else if(type == LightForm::LightType::Spot)
 	{
 		_spotLightTransformBuffer.Delete(key);
 		_spotLightColorBuffer.Delete(key);
 		_spotLightParamBuffer.Delete(key);
-
-		_spotLightShadowColorBuffer.Delete(key);
-		_spotLightShadowIndexBuffer.Delete(key);
 	}
 
 	_lights.Delete(key);
@@ -709,19 +561,13 @@ void LightManager::DeleteAll()
 	_spotLightTransformBuffer.DeleteAll();
 	_spotLightColorBuffer.DeleteAll();
 	_spotLightParamBuffer.DeleteAll();
-	_spotLightShadowColorBuffer.DeleteAll();
-	_spotLightShadowIndexBuffer.DeleteAll();
 
 	_pointLightTransformBuffer.DeleteAll();
 	_pointLightColorBuffer.DeleteAll();
-	_pointLightShadowColorBuffer.DeleteAll();
-	_pointLightShadowIndexBuffer.DeleteAll();
 	
 	_directionalLightColorBuffer.DeleteAll();
 	_directionalLightParamBuffer.DeleteAll();
 	_directionalLightTransformBuffer.DeleteAll();
-	_directionalLightShadowColorBuffer.DeleteAll();
-	_directionalLightShadowIndexBuffer.DeleteAll();
 
 	_lights.DeleteAll();
 }
