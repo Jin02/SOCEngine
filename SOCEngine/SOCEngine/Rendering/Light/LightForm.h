@@ -4,6 +4,8 @@
 #include "Component.h"
 #include "Color.h"
 #include "Common.h"
+#include "ShadowCommon.h"
+#include "BoundBox.h"
 
 #define MAXIMUM_LUMEN 12750
 
@@ -25,13 +27,15 @@ namespace Rendering
 			};
 
 		protected:
-			LightType	_type;
-			float		_radius;
-			Color		_color;
-			uint		_lumen; //intensity
+			LightType		_type;
+			float			_radius;
+			Color			_color;
+			uint			_lumen; //intensity
 
-			Color		_shadowColor; //a is strength
-			bool		_useShadow;
+			bool			_useShadow;
+
+			Math::Matrix	_viewMat;
+			Math::Matrix	_viewProjMat;
 
 		protected:
 			LightForm();
@@ -42,6 +46,10 @@ namespace Rendering
 		public:
 			virtual void OnInitialize();
 			virtual void OnDestroy();
+
+		public:
+			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox) = 0;
+			void ActiveShadow(bool isActive);
 
 		public:
 			GET_ACCESSOR(Type, const LightType, _type);		
@@ -58,15 +66,10 @@ namespace Rendering
 			void SetIntensity(float intensity);
 			float GetIntensity() const;
 
-			void SetShadowColor(const Color& c);
-			GET_ACCESSOR(ShadowColor, const Color&, _shadowColor);
-
-			void ActiveShadow(bool isActive);
-			GET_ACCESSOR(UseShadow, bool, _useShadow);
-
 			uint Get32BitMainColor() const;
-			uint Get32BitShadowColor() const;
-			ushort FetchShadowCastingLightIndex() const;
+
+			GET_ACCESSOR(ViewMatrix,			const Math::Matrix&, _viewMat);
+			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&, _viewProjMat);
 		};
 	}
 }

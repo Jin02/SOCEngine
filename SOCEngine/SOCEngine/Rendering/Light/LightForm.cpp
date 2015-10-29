@@ -3,6 +3,7 @@
 
 #include "Director.h"
 
+using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Light;
 
@@ -10,7 +11,6 @@ LightForm::LightForm()
 	: _radius(10.0f), _lumen(500), _useShadow(false)
 {
 	_color			= Color::White();
-	_shadowColor	= Color::Black();
 }
 
 LightForm::~LightForm()
@@ -33,15 +33,6 @@ uint LightForm::Get32BitMainColor() const
 	uintColor = (uintColor & 0x00ffffff) | (packedLumen << 24);
 
 	return uintColor;
-}
-
-ushort LightForm::FetchShadowCastingLightIndex() const
-{
-	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
-	Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
-
-	const LightForm* thisLight = this;
-	return shadowManager->FetchShadowCastingLightIndex(thisLight);
 }
 
 void LightForm::OnDestroy()
@@ -93,22 +84,6 @@ void LightForm::SetLumen(uint l)
 		_owner->GetTransform()->AddUpdateCounter();
 }
 
-void LightForm::SetShadowColor(const Color& c)
-{
-	_shadowColor = c;
-	
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
-}
-
-uint LightForm::Get32BitShadowColor() const
-{
-	uint uintColor = _shadowColor.Get32BitUintColor();	
-	uintColor = (_useShadow ? (uintColor & 0xff000000) : 0) | (uintColor & 0x00ffffff);
-
-	return uintColor;
-}
-
 void LightForm::ActiveShadow(bool isActive)
 {
 	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
@@ -120,4 +95,6 @@ void LightForm::ActiveShadow(bool isActive)
 		shadowManager->AddShadowCastingLight(light);
 	else
 		shadowManager->DeleteShadowCastingLight(light);
+
+	_useShadow = isActive;
 }
