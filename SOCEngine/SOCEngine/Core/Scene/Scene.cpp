@@ -91,20 +91,21 @@ void Scene::RenderPreview()
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		(*iter)->UpdateConstBuffer(_dx);
 
+	_lightManager->ComputeAllLightViewProj(_boundBox);
 	_lightManager->UpdateBuffer(_dx);
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 
-	_shadowRenderer->UpdateShadowCastingLightCB(_dx, _boundBox);
+	_shadowRenderer->UpdateShadowCastingLightCB(_dx);
 }
 
 void Scene::Render()
 {
 	_dx->ClearDeviceContext();
 	const RenderManager* renderMgr = _renderMgr;
-	_shadowRenderer->RenderShadowMap(_dx, renderMgr, _boundBox);
+	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
 
 	_dx->ClearDeviceContext();
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
