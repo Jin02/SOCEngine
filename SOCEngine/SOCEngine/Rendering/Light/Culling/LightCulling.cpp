@@ -85,16 +85,16 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	{
 		// Point Light Transform
 		uint idx = (uint)InputSRBufferSemanticIndex::PointLightRadiusWithCenter;
-		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformBufferSR();
+		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformSRBuffer();
 		AddInputBufferToList(_inputPointLightTransformBuffer, idx, srBuffer);
 		
 		// Spot Light Transform
 		idx = (uint)InputSRBufferSemanticIndex::SpotLightRadiusWithCenter;
-		srBuffer = lightManager->GetSpotLightTransformBufferSR();
+		srBuffer = lightManager->GetSpotLightTransformSRBuffer();
 		AddInputBufferToList(_inputSpotLightTransformBuffer, idx, srBuffer);
 
 		idx = (uint)InputSRBufferSemanticIndex::SpotLightParam;
-		srBuffer = lightManager->GetSpotLightParamBufferSR();
+		srBuffer = lightManager->GetSpotLightParamSRBuffer();
 		AddInputBufferToList(_inputSpotLightParamBuffer, idx, srBuffer);
 
 		// depth buffer

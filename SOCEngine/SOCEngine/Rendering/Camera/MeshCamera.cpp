@@ -527,21 +527,21 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
 				
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::PointLightRadiusWithCenter, 
-				1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetPointLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::PointLightColor, 
-				1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetPointLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightRadiusWithCenter, 
-				1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightColor, 
-				1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightParam,
-				1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightParamSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightCenterWithDirZ,
-				1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightColor,
-				1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightParam,
-				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightParamSRBuffer()->GetShaderResourceView());
 
 			// Light Culling Buffer
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::LightIndexBuffer,

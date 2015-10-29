@@ -54,14 +54,14 @@ void ShadingWithLightCulling::Initialize(
 		// Point Light
 		{
 			uint idx = (uint)InputSRBufferSemanticIndex::PointLightColor;
-			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorBufferSR();
+			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorSRBuffer();
 			AddInputBufferToList(_inputPointLightColorBuffer, idx, srBuffer);
 		}
 
 		// Spot Light
 		{
 			uint idx = (uint)InputSRBufferSemanticIndex::SpotLightColor;
-			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorBufferSR();
+			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorSRBuffer();
 			AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
 		}
 
@@ -70,21 +70,21 @@ void ShadingWithLightCulling::Initialize(
 			// Center With DirZ
 			{
 				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightCenterWithDirZ;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightTransformBufferSR();
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightTransformSRBuffer();
 				AddInputBufferToList(_inputDirectionalLightTransformBuffer, idx, srBuffer);
 			}
 
 			// Color
 			{
 				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightColor;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorBufferSR();
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorSRBuffer();
 				AddInputBufferToList(_inputDirectionalLightColorBuffer, idx, srBuffer);
 			}
 
 			// Param half / DirX, DirY
 			{
 				uint idx = (uint)InputSRBufferSemanticIndex::DirectionalLightParam;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightParamBufferSR();
+				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightParamSRBuffer();
 				AddInputBufferToList(_inputDirectionalLightParamBuffer, idx, srBuffer);
 			}
 		}
