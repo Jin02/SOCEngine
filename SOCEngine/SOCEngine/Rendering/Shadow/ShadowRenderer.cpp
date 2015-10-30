@@ -25,7 +25,8 @@ ShadowRenderer::ShadowRenderer()
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
-	_pointLightShadowBlurSize(2.5f)
+	_pointLightShadowBlurSize(2.5f),
+	_shadowGlobalParamCB(nullptr)
 {
 }
 
@@ -44,6 +45,9 @@ void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
 							256,
 							256,
 							512	);
+
+	_shadowGlobalParamCB = new ConstBuffer;
+	_shadowGlobalParamCB->Initialize(sizeof(ShadowGlobalParam));
 }
 
 void ShadowRenderer::ResizeShadowMapAtlas(
@@ -117,6 +121,8 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 void ShadowRenderer::Destroy()
 {
+	SAFE_DELETE(_shadowGlobalParamCB);
+
 	SAFE_DELETE(_pointLightShadowMapAtlas);
 	SAFE_DELETE(_spotLightShadowMapAtlas);
 	SAFE_DELETE(_directionalLightShadowMapAtlas);
@@ -523,7 +529,7 @@ bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 	return false;
 }
 
-void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
+void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
 {
 #ifndef USE_RENDER_WITH_UPDATE_CB
 	// Spot Light
@@ -547,6 +553,16 @@ void ShadowRenderer::UpdateShadowCastingLightCB(const Device::DirectX*& dx)
 			UpdateShadowCastingDirectionalLightCB(dx, index);
 	}
 #endif
+
+	ShadowGlobalParam param;
+	MakeShadowGlobalParam(param);
+	bool isDifferent = memcmp(&param, &_prevShadowGlobalParam, sizeof(ShadowGlobalParam)) != 0;
+
+	if(isDifferent)
+	{
+		_prevShadowGlobalParam = param;
+		_shadowGlobalParamCB->UpdateSubResource(dx->GetContext(), &param);
+	}
 }
 
 void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager*& renderManager)
@@ -599,4 +615,6 @@ void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 	float plMapRes = (float)_pointLightShadowMapResolution;
 	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
 	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
+
+	outParam.dummy = 0.0f;
 }

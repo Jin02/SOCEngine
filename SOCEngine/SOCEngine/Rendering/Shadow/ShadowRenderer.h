@@ -37,6 +37,10 @@ namespace Rendering
 			};
 
 		private:
+			Buffer::ConstBuffer*	_shadowGlobalParamCB;
+			ShadowGlobalParam		_prevShadowGlobalParam;
+
+		private:
 			Texture::DepthBuffer*	_pointLightShadowMapAtlas;
 			Texture::DepthBuffer*	_spotLightShadowMapAtlas;
 			Texture::DepthBuffer*	_directionalLightShadowMapAtlas;
@@ -103,7 +107,7 @@ namespace Rendering
 			void MakeShadowGlobalParam(ShadowGlobalParam& outParam) const;
 
 		private: //friend class Scene
-			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
+			void UpdateConstBuffer(const Device::DirectX*& dx);
 			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
 
 		public:
@@ -116,6 +120,7 @@ namespace Rendering
 			GET_ACCESSOR(DirectionalLightShadowMapResolution,	uint,	_directionalLightShadowMapResolution);
 
 			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
+			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
 		};
 	}
 }

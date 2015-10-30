@@ -98,7 +98,7 @@ void Scene::RenderPreview()
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 
-	_shadowRenderer->UpdateShadowCastingLightCB(_dx);
+	_shadowRenderer->UpdateConstBuffer(_dx);
 }
 
 void Scene::Render()
