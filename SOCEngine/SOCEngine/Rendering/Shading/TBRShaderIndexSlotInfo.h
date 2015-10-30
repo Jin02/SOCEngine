@@ -33,10 +33,11 @@ namespace Rendering
 
 		enum class InputConstBufferSemanticIndex : unsigned int
 		{
-			TBRParam						= 0
+			TBRParam						= 0,
 		//	World							= 1, -> PhysicallyBasedMaterial
 		//	Camera							= 2, -> PhysicallyBasedMaterial
 		//	PhysicallyBasedMaterial			= 3, -> PhysicallyBasedMaterial
+			ShadowGlobalParam				= 4
 		};
 	}
 }
