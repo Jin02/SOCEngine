@@ -101,4 +101,13 @@ cbuffer TBRParam : register( b0 )
 	float4	tbrParam_cameraWorldPosition;
 };
 
+cbuffer ShadowGlobalParam : register( b4 )
+{	
+	uint	shadowGlobalParam_packedNumOfShadowCastingLights;
+	float	shadowGlobalParam_pointLightTexelOffset;
+	float	shadowGlobalParam_pointLightUnderscanScale;
+
+	float	dummy;
+};
+
 #endif
