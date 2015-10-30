@@ -18,19 +18,19 @@ groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
 #endif
 
-uint GetNumOfPointLight()
+uint GetNumOfPointLight(uint packedNumOfLights)
 {
-	return tbrParam_packedNumOfLights >> 21;
+	return packedNumOfLights >> 21;
 }
 
-uint GetNumOfSpotLight()
+uint GetNumOfSpotLight(uint packedNumOfLights)
 {
-	return (tbrParam_packedNumOfLights >> 10) & 0x7FF;
+	return (packedNumOfLights >> 10) & 0x7FF;
 }
 
-uint GetNumOfDirectionalLight()
+uint GetNumOfDirectionalLight(uint packedNumOfLights)
 {
-	return tbrParam_packedNumOfLights & 0x000003FF;
+	return packedNumOfLights & 0x000003FF;
 }
 
 uint GetNumTilesX()

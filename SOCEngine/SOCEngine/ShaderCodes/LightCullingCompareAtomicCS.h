@@ -122,7 +122,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	float minZ = asfloat(s_minZ);
 	float maxZ = asfloat(s_maxZ);
 
-	uint pointLightCount = GetNumOfPointLight();
+	uint pointLightCount = GetNumOfPointLight(tbrParam_packedNumOfLights);
     for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
     {
 		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
@@ -150,7 +150,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	outPointLightCountInTile = s_lightIndexCounter;
 	uint pointLightCountInTile = s_lightIndexCounter;
 
-	uint spotLightCount = GetNumOfSpotLight();
+	uint spotLightCount = GetNumOfSpotLight(tbrParam_packedNumOfLights);
 	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=THREAD_COUNT)
 	{
 		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];
