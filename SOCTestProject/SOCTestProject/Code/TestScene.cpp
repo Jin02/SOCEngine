@@ -51,15 +51,12 @@ void TestScene::OnInitialize()
 	{
 		static int idx = 0;
 		Core::Object* light = new Object("Light" + std::to_string(idx++));
-		PointLight* pl = light->AddComponent<PointLight>();
-
-		Vector3 dir = light->GetTransform()->GetForward();
 		light->GetTransform()->UpdatePosition(Vector3(x, y, z));
-
-		pl->SetLumen(700);
-		pl->SetRadius(50.0f);
-
 		AddObject(light);
+
+		PointLight* pl = light->AddComponent<PointLight>();
+		pl->SetLumen(700);
+		pl->SetRadius(500.0f);
 	};
 	auto AddPointLightVec3 = [&](const Vector3& worldPos)
 	{
