@@ -169,9 +169,6 @@
     <Filter Include="Rendering\Texture\RenderTarget">
       <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Camera\Frustum">
-      <UniqueIdentifier>{7c0ae70f-f613-4462-83a2-0f044eef0bbe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
@@ -312,6 +309,21 @@
     </Filter>
     <Filter Include="Rendering\Camera\MeshCamera">
       <UniqueIdentifier>{cffe85ab-ef84-402f-9f7d-eaf5a0137aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights">
+      <UniqueIdentifier>{fabde663-207d-477e-890b-c88927bae3ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Common">
+      <UniqueIdentifier>{32d455bd-e841-473a-9a78-b729fdb75e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Point">
+      <UniqueIdentifier>{850340ff-7360-48c4-b501-6b2797da6c97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Spot">
+      <UniqueIdentifier>{e2940c66-18d0-4bdb-9b71-a347a670fe83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Lights\Directional">
+      <UniqueIdentifier>{48e82b62-2502-4c74-aa22-d1e25aacb9ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -491,9 +503,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\Frustum.h">
-      <Filter>Rendering\Camera\Frustum</Filter>
     </ClInclude>
     <ClInclude Include="UI\UICamera.h">
       <Filter>UI\Camera</Filter>
@@ -729,6 +738,21 @@
     <ClInclude Include="Rendering\Camera\MeshCamera.h">
       <Filter>Rendering\Camera\MeshCamera</Filter>
     </ClInclude>
+    <ClInclude Include="Intersection\Frustum.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowCommon.h">
+      <Filter>Rendering\Shadow\Lights\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
+      <Filter>Rendering\Shadow\Lights\Spot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -872,9 +896,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\Frustum.cpp">
-      <Filter>Rendering\Camera\Frustum</Filter>
-    </ClCompile>
     <ClCompile Include="UI\UICamera.cpp">
       <Filter>UI\Camera</Filter>
     </ClCompile>
@@ -1015,6 +1036,21 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp">
       <Filter>Rendering\Camera\MeshCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Frustum.cpp">
+      <Filter>Intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp">
+      <Filter>Rendering\Shadow\Lights\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
+      <Filter>Rendering\Shadow\Lights\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

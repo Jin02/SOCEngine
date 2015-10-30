@@ -3,6 +3,7 @@
 #include "LightForm.h"
 #include "Cone.h"
 #include "Vector2.h"
+#include "SpotLightShadow.h"
 
 namespace Rendering
 {
@@ -29,7 +30,11 @@ namespace Rendering
 
 		public:
 			SpotLight();
-			~SpotLight();
+			virtual ~SpotLight();
+
+		public:
+			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
+			virtual void CreateLightShadow(const std::function<void()>& addUpdateCounter);
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
@@ -41,7 +46,7 @@ namespace Rendering
 		public:
 			void SetSpotAngleDegree(float d);
 			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
+			GET_ACCESSOR(Shadow, const Shadow::SpotLightShadow*, static_cast<const Shadow::SpotLightShadow*>(_shadow) );
 		};
-
 	}
 }

@@ -85,16 +85,16 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	{
 		// Point Light Transform
 		uint idx = (uint)InputSRBufferSemanticIndex::PointLightRadiusWithCenter;
-		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformBufferSR();
+		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformSRBuffer();
 		AddInputBufferToList(_inputPointLightTransformBuffer, idx, srBuffer);
 		
 		// Spot Light Transform
 		idx = (uint)InputSRBufferSemanticIndex::SpotLightRadiusWithCenter;
-		srBuffer = lightManager->GetSpotLightTransformBufferSR();
+		srBuffer = lightManager->GetSpotLightTransformSRBuffer();
 		AddInputBufferToList(_inputSpotLightTransformBuffer, idx, srBuffer);
 
 		idx = (uint)InputSRBufferSemanticIndex::SpotLightParam;
-		srBuffer = lightManager->GetSpotLightParamBufferSR();
+		srBuffer = lightManager->GetSpotLightParamSRBuffer();
 		AddInputBufferToList(_inputSpotLightParamBuffer, idx, srBuffer);
 
 		// depth buffer
@@ -131,23 +131,25 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
-							const Buffer::ConstBuffer* tbrConstBuffer)
+							const Buffer::ConstBuffer* tbrConstBuffer,
+							const std::vector<ComputeShader::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
+	std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
+
 	if(tbrConstBuffer)
 	{
-		std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
-		{
-			ComputeShader::InputConstBuffer icb;
+		ComputeShader::InputConstBuffer icb;
 
-			icb.buffer = tbrConstBuffer;
-			icb.idx = (uint)InputConstBufferSemanticIndex::TBRParam;
-			inputConstBuffers.push_back(icb);
-		}
-
-		_computeShader->SetInputConstBuffers(inputConstBuffers);
+		icb.buffer = tbrConstBuffer;
+		icb.idx = (uint)InputConstBufferSemanticIndex::TBRParam;
+		inputConstBuffers.push_back(icb);
 	}
+	if(additionalConstBuffers)
+		inputConstBuffers.insert(inputConstBuffers.end(), additionalConstBuffers->begin(), additionalConstBuffers->end());
+
+	_computeShader->SetInputConstBuffers(inputConstBuffers);
 	_computeShader->Dispatch(context);
 }
 

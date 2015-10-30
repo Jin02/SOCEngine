@@ -8,7 +8,7 @@ using namespace Device;
 using namespace Math;
 using namespace Rendering::Manager;
 
-UICamera::UICamera() : CameraForm(), _depthBuffer(nullptr)
+UICamera::UICamera() : CameraForm(Usage::UI), _depthBuffer(nullptr)
 {
 }
 
@@ -48,7 +48,7 @@ void UICamera::Update(float delta)
 		iter->Update(delta);
 }
 
-void UICamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
+void UICamera::Render(const Device::DirectX* dx)
 {
 	const Device::Director* director	= Device::Director::GetInstance();
 	Core::Scene* scene					= director->GetCurrentScene();

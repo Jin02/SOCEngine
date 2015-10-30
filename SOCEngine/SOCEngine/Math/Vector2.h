@@ -11,9 +11,7 @@ namespace Math
 
 	public:
 		Vector2(void);
-
 		Vector2(float x, float y);
-
 		~Vector2(void);
 
 	public:
@@ -51,7 +49,7 @@ namespace Math
 		static float SqrLength(const Vector2 &a);
 
 	public:
-		Vector2 Normalize();
+		Vector2 Normalize() const;
 		void Set(float newX, float newY);
 	};
 

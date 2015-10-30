@@ -3,14 +3,14 @@
 
 #include "Director.h"
 
+using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(500), _useShadow(false)
+	: _radius(10.0f), _lumen(500), _shadow(nullptr)
 {
 	_color			= Color::White();
-	_shadowColor	= Color::Black();
 }
 
 LightForm::~LightForm()
@@ -37,22 +37,22 @@ uint LightForm::Get32BitMainColor() const
 
 void LightForm::OnDestroy()
 {
-	if(_useShadow)
+	if(_shadow)
 	{
 		Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
 		Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
 
 		const LightForm* light = this;
 		shadowManager->DeleteShadowCastingLight(light);
+
+		SAFE_DELETE(_shadow);
 	}
 }
 
 void LightForm::SetIntensity(float intensity)
 {
 	_lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f));
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 float LightForm::GetIntensity() const
@@ -63,41 +63,19 @@ float LightForm::GetIntensity() const
 void LightForm::SetRadius(float r)
 {
 	_radius = r;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::SetColor(const Color& c)
 {
 	_color = c;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::SetLumen(uint l)
 {
 	_lumen = l;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
-}
-
-void LightForm::SetShadowColor(const Color& c)
-{
-	_shadowColor = c;
-	
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
-}
-
-uint LightForm::Get32BitShadowColor() const
-{
-	uint uintColor = _shadowColor.Get32BitUintColor();	
-	uintColor = (_useShadow ? (uintColor & 0xff000000) : 0) | (uintColor & 0x00ffffff);
-
-	return uintColor;
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::ActiveShadow(bool isActive)
@@ -108,7 +86,24 @@ void LightForm::ActiveShadow(bool isActive)
 	const LightForm* light = this;
 
 	if(isActive)
+	{
 		shadowManager->AddShadowCastingLight(light);
+
+		auto AddCounter = [&]()
+		{
+			AddOwnerUpdateCounter();
+		};
+		CreateLightShadow(AddCounter);
+	}
 	else
+	{
 		shadowManager->DeleteShadowCastingLight(light);
+		SAFE_DELETE(_shadow);
+	}
+}
+
+void LightForm::AddOwnerUpdateCounter()
+{
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
 }

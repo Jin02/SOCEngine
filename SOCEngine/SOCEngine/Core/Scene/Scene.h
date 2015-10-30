@@ -23,7 +23,8 @@ namespace Core
 		enum class State{ Init = 0, Loop, End, Num };
 
 	private:
-		State _state;
+		State							_state;
+		Intersection::BoundBox			_boundBox;
 
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	

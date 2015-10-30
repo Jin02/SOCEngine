@@ -194,7 +194,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		accumulativeSpecular		+= specular;
 	}
 
-	uint directionalLightCount = GetNumOfDirectionalLight();
+	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
 	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{

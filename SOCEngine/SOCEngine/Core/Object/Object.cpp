@@ -65,7 +65,7 @@ bool Object::CompareIsChildOfParent(Object *parent)
 	return (parent == _parent); 
 }
 
-void Object::Culling(const Camera::Frustum *frustum)
+void Object::Culling(const Intersection::Frustum *frustum)
 {
 	Vector3 wp;
 	_transform->FetchWorldPosition(wp);
@@ -87,13 +87,32 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::UpdateTransformCB(const Device::DirectX*& dx)
+void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax)
 {
 	if(_use == false)
 		return;
 
 	Math::Matrix worldMat;
 	_transform->FetchWorldMatrix(worldMat);
+
+	if(_hasMesh)
+	{
+		const Vector3& extents		= _boundBox->GetExtents();
+		const Vector3& boxCenter	= _boundBox->GetCenter(); 
+
+		Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
+		
+		Vector3 minPos = worldPos - extents;
+		Vector3 maxPos = worldPos + extents;
+
+		if(refWorldPosMin.x > minPos.x) refWorldPosMin.x = minPos.x;
+		if(refWorldPosMin.y > minPos.y) refWorldPosMin.y = minPos.y;
+		if(refWorldPosMin.z > minPos.z) refWorldPosMin.z = minPos.z;
+
+		if(refWorldPosMax.x < maxPos.x) refWorldPosMax.x = maxPos.x;
+		if(refWorldPosMax.y < maxPos.y) refWorldPosMax.y = maxPos.y;
+		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
+	}
 	Matrix::Transpose(worldMat, worldMat);
 
 	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
@@ -109,7 +128,7 @@ void Object::UpdateTransformCB(const Device::DirectX*& dx)
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->UpdateTransformCB(dx);
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(dx, refWorldPosMin, refWorldPosMax);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)

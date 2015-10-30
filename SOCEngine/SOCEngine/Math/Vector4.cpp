@@ -156,7 +156,7 @@ namespace Math
 		return sqrtf((a.x * a.x) + (a.y + a.y) + (a.z * a.z) + (a.w * a.w));
 	}
 
-	Vector4 Vector4::Normalize(Vector4& value)
+	Vector4 Vector4::Normalize(const Vector4& value)
 	{
 		float v = Vector4::Legnth(value);
 		return value / v;
@@ -167,7 +167,7 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z) + (a.w * a.w);
 	}
 
-	Vector4 Vector4::Normalize()
+	Vector4 Vector4::Normalize() const
 	{
 		return Vector4::Normalize(*this);
 	}

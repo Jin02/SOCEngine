@@ -48,11 +48,11 @@ namespace Math
 		static Vector4 Min(const Vector4& a, const Vector4& b);
 		static Vector4 Max(const Vector4& a, const Vector4& b);
 		static float Legnth(const Vector4& a);
-		static Vector4 Normalize(Vector4& value);
+		static Vector4 Normalize(const Vector4& value);
 		static float SqrLegnth(const Vector4& a);
 
 	public:
-		Vector4 Normalize();
+		Vector4 Normalize() const;
 		void Set(float newX, float newY, float newZ, float newW);
 	};
 

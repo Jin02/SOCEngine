@@ -6,13 +6,14 @@ using namespace Math;
 using namespace std;
 using namespace Rendering::Buffer;
 using namespace Rendering::Light;
+using namespace Intersection;
 using namespace Device;
 using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
-CameraForm::CameraForm() 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr)
+CameraForm::CameraForm(Usage usage) 
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr), _usage(usage)
 {
 }
 
@@ -144,10 +145,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-	{
 		(*iter)->Culling(_frustum);
-		(*iter)->UpdateTransformCB(dx);
-	}
 }
 
 void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
@@ -203,7 +201,8 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 
 void CameraForm::_Clone(CameraForm* newCam) const
 {
-	(*newCam) = (*this);
+	memcpy(newCam, this, sizeof(CameraForm));
+
 	newCam->_frustum		= new Frustum(0.0f);
 	newCam->_renderTarget	= new Texture::RenderTexture;
 	{

@@ -26,13 +26,18 @@ namespace Rendering
 
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
+
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
 
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
+
+			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
 
 		public:
 			ShadingWithLightCulling();
@@ -41,6 +46,8 @@ namespace Rendering
 		public:
 			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const GBuffers& geometryBuffers, const Math::Size<uint>& backBufferSize, bool useDebugMode = false);
 			void Destory();
+
+			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
 
 		public:
 			GET_ACCESSOR(OffScreen, const GPGPU::DirectCompute::CSRWTexture*, _offScreen);
