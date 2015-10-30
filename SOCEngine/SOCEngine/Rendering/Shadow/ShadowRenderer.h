@@ -47,21 +47,20 @@ namespace Rendering
 				address	lightAddress;
 				Math::Matrix prevViewProjMat;
 			};
-
 			struct ShadowCastingPointLight : public LightAddress
 			{
 				std::array<Buffer::ConstBuffer*, 6> camConstBuffers;
 
 			};
-			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
-
 			struct ShadowCastingSpotDirectionalLight : public LightAddress
 			{
 				Buffer::ConstBuffer* camConstBuffer;
 			};
+
+		private:
+			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingSpotLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
-
 
 			uint	_numOfShadowCastingPointLightInAtlas;			//default 16
 			uint	_numOfShadowCastingSpotLightInAtlas;			//default 16
@@ -71,7 +70,7 @@ namespace Rendering
 			uint	_spotLightShadowMapResolution;					//default 256
 			uint	_directionalLightShadowMapResolution;			//default 512
 
-			float	_pointLightShadowBlurSize;
+			float	_pointLightShadowBlurSize;						//default 2.5f
 
 		public:
 			ShadowRenderer();
