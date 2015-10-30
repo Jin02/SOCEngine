@@ -17,7 +17,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
 using namespace Rendering;
 
-MeshCamera::MeshCamera() : CameraForm(),
+MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
 	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
@@ -375,7 +375,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -501,7 +501,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		ID3D11SamplerState* nullSampler = nullptr;
 		context->PSSetSamplers(0, 1, &nullSampler);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
