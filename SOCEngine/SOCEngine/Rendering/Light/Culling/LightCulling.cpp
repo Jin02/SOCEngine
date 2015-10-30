@@ -131,23 +131,25 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
-							const Buffer::ConstBuffer* tbrConstBuffer)
+							const Buffer::ConstBuffer* tbrConstBuffer,
+							const std::vector<ComputeShader::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
+	std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
+
 	if(tbrConstBuffer)
 	{
-		std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
-		{
-			ComputeShader::InputConstBuffer icb;
+		ComputeShader::InputConstBuffer icb;
 
-			icb.buffer = tbrConstBuffer;
-			icb.idx = (uint)InputConstBufferSemanticIndex::TBRParam;
-			inputConstBuffers.push_back(icb);
-		}
-
-		_computeShader->SetInputConstBuffers(inputConstBuffers);
+		icb.buffer = tbrConstBuffer;
+		icb.idx = (uint)InputConstBufferSemanticIndex::TBRParam;
+		inputConstBuffers.push_back(icb);
 	}
+	if(additionalConstBuffers)
+		inputConstBuffers.insert(inputConstBuffers.end(), additionalConstBuffers->begin(), additionalConstBuffers->end());
+
+	_computeShader->SetInputConstBuffers(inputConstBuffers);
 	_computeShader->Dispatch(context);
 }
 
