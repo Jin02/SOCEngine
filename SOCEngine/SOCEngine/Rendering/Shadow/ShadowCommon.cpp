@@ -10,7 +10,7 @@ using namespace Core;
 using namespace Rendering;
 
 ShadowCommon::ShadowCommon(const LightForm* owner, const std::function<void()>& ownerUpdateCounter) 
-	: _owner(owner), _bias(0.0001f), _ownerAddUpdateCounter(ownerUpdateCounter)
+	: _owner(owner), _bias(0.001f), _ownerAddUpdateCounter(ownerUpdateCounter)
 {
 	_color = Color::Black();
 }
