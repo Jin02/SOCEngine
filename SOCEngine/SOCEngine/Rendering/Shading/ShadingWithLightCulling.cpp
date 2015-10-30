@@ -203,3 +203,20 @@ void ShadingWithLightCulling::Destory()
 	SAFE_DELETE(_offScreen);
 	LightCulling::Destroy();
 }
+
+void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
+									   const Buffer::ConstBuffer* tbrConstBuffer,
+									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer)
+{
+	std::vector<ComputeShader::InputConstBuffer> additionalConstBuffers;
+	if(shadowGlobalParamConstBuffer)
+	{
+		ComputeShader::InputConstBuffer icb;
+		icb.buffer	= shadowGlobalParamConstBuffer;
+		icb.idx		= (uint)InputConstBufferSemanticIndex::ShadowGlobalParam;
+
+		additionalConstBuffers.push_back(icb);
+	}
+
+	LightCulling::Dispatch(dx, tbrConstBuffer, &additionalConstBuffers);
+}
