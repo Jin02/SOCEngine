@@ -40,15 +40,22 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 	float orthogonalWH	= sceneBoundBox.GetSize().Length();
 
 	Matrix proj;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z); //inverted
-
+#else
+	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
+#endif
 	Matrix& viewProj = _viewProjMat;
 	viewProj = view * proj;
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	//°â»ç°â»ç Frustumµµ °è»ê
 	Matrix notInvertedProj;
 	Matrix::OrthoLH(notInvertedProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
 	_frustum.Make(view * notInvertedProj);
+#else
+	_frustum.Make(viewProj);
+#endif
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const

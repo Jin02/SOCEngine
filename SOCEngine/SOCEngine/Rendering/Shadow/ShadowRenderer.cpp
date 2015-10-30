@@ -3,6 +3,7 @@
 #include "Object.h"
 
 #define USE_RENDER_WITH_UPDATE_CB
+//#define USE_SHADOW_INVERTED_DEPTH
 
 using namespace Structure;
 using namespace Math;
@@ -262,7 +263,11 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		viewport.TopLeftY	= 0.0f;
 	}
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	_spotLightShadowMapAtlas->Clear(context, 0.0f, 0);
+#else
+	_spotLightShadowMapAtlas->Clear(context, 1.0f, 0);
+#endif
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMapAtlas->GetDepthStencilView());
@@ -322,7 +327,11 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 		viewport.TopLeftY	= 0.0f;
 	}
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	_pointLightShadowMapAtlas->Clear(context, 0.0f, 0);
+#else
+	_pointLightShadowMapAtlas->Clear(context, 1.0f, 0);
+#endif
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
@@ -386,7 +395,11 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		viewport.TopLeftY	= 0.0f;
 	}
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	_directionalLightShadowMapAtlas->Clear(context, 0.0f, 0);
+#else
+	_directionalLightShadowMapAtlas->Clear(context, 1.0f, 0);
+#endif
 
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMapAtlas->GetDepthStencilView());
@@ -568,7 +581,11 @@ void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
 void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderManager*& renderManager)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 	context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
+#else
+	context->OMSetDepthStencilState(dx->GetDepthStateLess(), 0);
+#endif
 
 	if(_shadowCastingSpotLights.GetSize() > 0)
 		RenderSpotLightShadowMap(dx, renderManager);
