@@ -15,7 +15,7 @@ namespace Rendering
 			};
 
 		public:
-			SpotLightShadow(const Light::LightForm* owner);
+			SpotLightShadow(const Light::LightForm* owner, const std::function<void()>& ownerUpdateCounter);
 			~SpotLightShadow();
 
 		public:

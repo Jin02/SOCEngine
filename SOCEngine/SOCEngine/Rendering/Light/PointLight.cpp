@@ -19,9 +19,9 @@ PointLight::~PointLight(void)
 {
 }
 
-void PointLight::CreateLightShadow()
+void PointLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
 {
-	_shadow = new PointLightShadow(this);
+	_shadow = new PointLightShadow(this, addUpdateCounter);
 }
 
 bool PointLight::Intersect(const Sphere &sphere) const

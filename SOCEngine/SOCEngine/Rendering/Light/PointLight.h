@@ -22,7 +22,7 @@ namespace Rendering
 
 		public:
 			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
-			virtual void CreateLightShadow();
+			virtual void CreateLightShadow(const std::function<void()>& addUpdateCounter);
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;

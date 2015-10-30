@@ -18,9 +18,9 @@ DirectionalLight::~DirectionalLight()
 {
 }
 
-void DirectionalLight::CreateLightShadow()
+void DirectionalLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
 {
-	_shadow = new DirectionalLightShadow(this);
+	_shadow = new DirectionalLightShadow(this, addUpdateCounter);
 }
 
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)

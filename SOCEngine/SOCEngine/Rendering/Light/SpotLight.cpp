@@ -22,9 +22,9 @@ SpotLight::~SpotLight()
 
 }
 
-void SpotLight::CreateLightShadow()
+void SpotLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
 {
-	_shadow = new SpotLightShadow(this);
+	_shadow = new SpotLightShadow(this, addUpdateCounter);
 }
 
 void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)

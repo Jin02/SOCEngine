@@ -52,9 +52,7 @@ void LightForm::OnDestroy()
 void LightForm::SetIntensity(float intensity)
 {
 	_lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f));
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 float LightForm::GetIntensity() const
@@ -65,25 +63,19 @@ float LightForm::GetIntensity() const
 void LightForm::SetRadius(float r)
 {
 	_radius = r;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::SetColor(const Color& c)
 {
 	_color = c;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::SetLumen(uint l)
 {
 	_lumen = l;
-
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	AddOwnerUpdateCounter();
 }
 
 void LightForm::ActiveShadow(bool isActive)
@@ -96,11 +88,22 @@ void LightForm::ActiveShadow(bool isActive)
 	if(isActive)
 	{
 		shadowManager->AddShadowCastingLight(light);
-		CreateLightShadow();
+
+		auto AddCounter = [&]()
+		{
+			AddOwnerUpdateCounter();
+		};
+		CreateLightShadow(AddCounter);
 	}
 	else
 	{
 		shadowManager->DeleteShadowCastingLight(light);
 		SAFE_DELETE(_shadow);
 	}
+}
+
+void LightForm::AddOwnerUpdateCounter()
+{
+	if(_owner)
+		_owner->GetTransform()->AddUpdateCounter();
 }

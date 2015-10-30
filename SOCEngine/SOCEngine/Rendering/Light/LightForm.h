@@ -6,6 +6,7 @@
 #include "Common.h"
 #include "ShadowCommon.h"
 #include "BoundBox.h"
+#include <functional>
 
 #define MAXIMUM_LUMEN 12750
 
@@ -16,6 +17,8 @@ namespace Rendering
 		class LightForm : public Core::Component
 		{
 		public:
+			friend class Shadow::ShadowCommon;
+
 			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
 			enum class LightType : uint { Directional = 0, Point, Spot };
 			struct LightTransformBuffer
@@ -49,8 +52,11 @@ namespace Rendering
 
 		public:
 			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox) = 0;
-			virtual void CreateLightShadow() = 0;
+			virtual void CreateLightShadow(const std::function<void()>& addUpdateCounter) = 0;
 			void ActiveShadow(bool isActive);
+
+		private:
+			void AddOwnerUpdateCounter();
 
 		public:
 			GET_ACCESSOR(Type, const LightType, _type);		

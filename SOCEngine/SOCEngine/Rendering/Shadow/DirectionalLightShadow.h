@@ -15,7 +15,7 @@ namespace Rendering
 			};
 
 		public:
-			DirectionalLightShadow(const Light::LightForm* owner);
+			DirectionalLightShadow(const Light::LightForm* owner, const std::function<void()>& ownerUpdateCounter);
 			~DirectionalLightShadow();
 
 		public:

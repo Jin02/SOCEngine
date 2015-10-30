@@ -4,8 +4,9 @@
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 
-DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner)
-	: ShadowCommon(owner)
+DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner,
+											   const std::function<void()>& ownerUpdateCounter)
+	: ShadowCommon(owner, ownerUpdateCounter)
 {
 }
 
