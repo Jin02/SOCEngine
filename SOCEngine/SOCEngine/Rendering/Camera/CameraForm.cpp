@@ -12,8 +12,8 @@ using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
-CameraForm::CameraForm() 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr)
+CameraForm::CameraForm(Usage usage) 
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr), _usage(usage)
 {
 }
 
@@ -201,7 +201,8 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 
 void CameraForm::_Clone(CameraForm* newCam) const
 {
-	(*newCam) = (*this);
+	memcpy(newCam, this, sizeof(CameraForm));
+
 	newCam->_frustum		= new Frustum(0.0f);
 	newCam->_renderTarget	= new Texture::RenderTexture;
 	{

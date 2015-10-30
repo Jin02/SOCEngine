@@ -36,6 +36,9 @@ namespace Rendering
 				~RenderQueue(){}
 			};
 
+		private:
+			const Usage _usage;
+
 		protected:
 			Intersection::Frustum*			_frustum;
 			Texture::RenderTexture*			_renderTarget;
@@ -53,7 +56,7 @@ namespace Rendering
 			CamConstBufferData				_prevCamConstBufferData;
 
 		public:
-			CameraForm();
+			CameraForm(Usage usage);
 			virtual ~CameraForm(void);
 
 		protected:
@@ -73,7 +76,6 @@ namespace Rendering
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-			virtual void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager) = 0;
 
 		protected:
 			void _Clone(CameraForm* newCam) const;
@@ -85,6 +87,8 @@ namespace Rendering
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
+
+			GET_ACCESSOR(Usage, const Usage, _usage);
 		};
 	}
 }
