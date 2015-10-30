@@ -24,7 +24,8 @@ ShadowRenderer::ShadowRenderer()
 	_directionalLightShadowMapResolution(512),
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
-	_numOfShadowCastingDirectionalLightInAtlas(0)
+	_numOfShadowCastingDirectionalLightInAtlas(0),
+	_pointLightShadowBlurSize(2.5f)
 {
 }
 
@@ -580,4 +581,22 @@ ushort ShadowRenderer::FetchShadowCastingLightIndex(const LightForm*& light)
 	}
 
 	return (ushort)index;
+}
+
+uint ShadowRenderer::GetPackedShadowCastingLightCount() const
+{
+	uint directionalLightCount	= _shadowCastingDirectionalLights.GetSize()	& 0x3FF;
+	uint pointLightCount		= _shadowCastingPointLights.GetSize()		& 0x7FF;
+	uint spotLightCount			= _shadowCastingSpotLights.GetSize()		& 0x7FF;
+
+	return (pointLightCount << 21) | (spotLightCount << 10) | directionalLightCount;	
+}
+
+void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
+{
+	outParam.packedNumOfShadowCastingLights = GetPackedShadowCastingLightCount();
+
+	float plMapRes = (float)_pointLightShadowMapResolution;
+	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
+	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
 }

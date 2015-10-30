@@ -26,6 +26,15 @@ namespace Rendering
 		{
 		public:
 			friend class Core::Scene;
+			struct ShadowGlobalParam
+			{
+				uint	packedNumOfShadowCastingLights;
+
+				float	pointLightTexelOffset;
+				float	pointLightUnderscanScale;
+
+				float	dummy;
+			};
 
 		private:
 			Texture::DepthBuffer*	_pointLightShadowMapAtlas;
@@ -62,6 +71,8 @@ namespace Rendering
 			uint	_spotLightShadowMapResolution;					//default 256
 			uint	_directionalLightShadowMapResolution;			//default 512
 
+			float	_pointLightShadowBlurSize;
+
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
@@ -89,6 +100,8 @@ namespace Rendering
 			void DeleteShadowCastingLight(const Light::LightForm*& light);
 			bool HasShadowCastingLight(const Light::LightForm*& light);
 			ushort FetchShadowCastingLightIndex(const Light::LightForm*& light);
+			uint GetPackedShadowCastingLightCount() const;
+			void MakeShadowGlobalParam(ShadowGlobalParam& outParam) const;
 
 		private: //friend class Scene
 			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
@@ -102,6 +115,8 @@ namespace Rendering
 			GET_ACCESSOR(PointLightShadowMapResolution,			uint,	_pointLightShadowMapResolution);
 			GET_ACCESSOR(SpotLightShadowMapResolution,			uint,	_spotLightShadowMapResolution);
 			GET_ACCESSOR(DirectionalLightShadowMapResolution,	uint,	_directionalLightShadowMapResolution);
+
+			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
 		};
 	}
 }
