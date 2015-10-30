@@ -7,14 +7,19 @@ using namespace Math;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
 using namespace Core;
+using namespace Rendering;
 
-ShadowCommon::ShadowCommon(const LightForm* owner) 
-	: _owner(owner), _bias(0.5f)
+ShadowCommon::ShadowCommon(const LightForm* owner, const std::function<void()>& ownerUpdateCounter) 
+	: _owner(owner), _bias(0.0001f), _ownerAddUpdateCounter(ownerUpdateCounter)
 {
 	_color = Color::Black();
 }
 
 ShadowCommon::~ShadowCommon()
+{
+}
+
+void ShadowCommon::Initialize()
 {
 }
 
@@ -35,4 +40,16 @@ ushort ShadowCommon::FetchShadowCastingLightIndex() const
 
 	const LightForm* owner = _owner;
 	return shadowManager->FetchShadowCastingLightIndex(owner);
+}
+
+void ShadowCommon::SetBias(float bias)
+{
+	_bias = bias;
+	_ownerAddUpdateCounter();
+}
+
+void ShadowCommon::SetColor(const Color& color)
+{
+	_color = color;
+	_ownerAddUpdateCounter();
 }

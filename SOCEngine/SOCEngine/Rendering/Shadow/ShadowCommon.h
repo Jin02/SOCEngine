@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "Color.h"
 #include "Matrix.h"
+#include <functional>
 
 namespace Rendering
 {
@@ -23,6 +24,9 @@ namespace Rendering
 			};
 
 		private:
+			std::function<void()>		_ownerAddUpdateCounter;
+
+		private:
 			Color						_color; //a is strength
 			float						_bias;
 
@@ -30,16 +34,21 @@ namespace Rendering
 			const Light::LightForm*		_owner;
 
 		public:
-			ShadowCommon(const Light::LightForm* owner);
+			ShadowCommon(const Light::LightForm* owner, const std::function<void()>& ownerUpdateCounter);
 			~ShadowCommon();
 
 		protected:
 			void MakeParam(CommonParam& outParam) const;
 
 		public:
+			void Initialize();
 			ushort FetchShadowCastingLightIndex() const;
-			GET_SET_ACCESSOR(Bias, float, _bias);
-			GET_SET_ACCESSOR(Color, const Color&, _color);
+
+			void SetBias(float bias);
+			GET_ACCESSOR(Bias, float, _bias);
+
+			void SetColor(const Color& color);
+			GET_ACCESSOR(Color, const Color&, _color);
 		};
 	}
 }
