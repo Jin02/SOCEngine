@@ -11,6 +11,7 @@
 #include <array>
 
 #include "MeshCamera.h"
+#include "BoundBox.h"
 
 namespace Core
 {
@@ -25,6 +26,19 @@ namespace Rendering
 		{
 		public:
 			friend class Core::Scene;
+			struct ShadowGlobalParam
+			{
+				uint	packedNumOfShadowCastingLights;
+
+				float	pointLightTexelOffset;
+				float	pointLightUnderscanScale;
+
+				float	dummy;
+			};
+
+		private:
+			Buffer::ConstBuffer*	_shadowGlobalParamCB;
+			ShadowGlobalParam		_prevShadowGlobalParam;
 
 		private:
 			Texture::DepthBuffer*	_pointLightShadowMapAtlas;
@@ -35,31 +49,32 @@ namespace Rendering
 			struct LightAddress
 			{
 				address	lightAddress;
-				Camera::CameraForm::CamConstBufferData prevConstBufferData;
+				Math::Matrix prevViewProjMat;
 			};
-
 			struct ShadowCastingPointLight : public LightAddress
 			{
 				std::array<Buffer::ConstBuffer*, 6> camConstBuffers;
 
 			};
-			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
-
 			struct ShadowCastingSpotDirectionalLight : public LightAddress
 			{
 				Buffer::ConstBuffer* camConstBuffer;
 			};
+
+		private:
+			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingSpotLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
-
 
 			uint	_numOfShadowCastingPointLightInAtlas;			//default 16
 			uint	_numOfShadowCastingSpotLightInAtlas;			//default 16
 			uint	_numOfShadowCastingDirectionalLightInAtlas;		//default 4
 
-			uint	_pointLightShadowMapResolution;			//default 256
-			uint	_spotLightShadowMapResolution;			//default 256
-			uint	_directionalLightShadowMapResolution;	//default 512
+			uint	_pointLightShadowMapResolution;					//default 256
+			uint	_spotLightShadowMapResolution;					//default 256
+			uint	_directionalLightShadowMapResolution;			//default 512
+
+			float	_pointLightShadowBlurSize;						//default 2.5f
 
 		public:
 			ShadowRenderer();
@@ -79,18 +94,21 @@ namespace Rendering
 			void UpdateShadowCastingPointLightCB(const Device::DirectX*& dx, uint index);
 			void UpdateShadowCastingDirectionalLightCB(const Device::DirectX*& dx, uint index);
 
-			void RenderSpotLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
-			void RenderPointLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
-			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void RenderSpotLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
+			void RenderPointLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
+			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
 
 		public:
 			void AddShadowCastingLight(const Light::LightForm*& light);
 			void DeleteShadowCastingLight(const Light::LightForm*& light);
 			bool HasShadowCastingLight(const Light::LightForm*& light);
+			ushort FetchShadowCastingLightIndex(const Light::LightForm*& light);
+			uint GetPackedShadowCastingLightCount() const;
+			void MakeShadowGlobalParam(ShadowGlobalParam& outParam) const;
 
 		private: //friend class Scene
-			void UpdateShadowCastingLightCB(const Device::DirectX*& dx);
-			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager* renderManager);
+			void UpdateConstBuffer(const Device::DirectX*& dx);
+			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
 
 		public:
 			GET_ACCESSOR(PointLightShadowMapAtlas,			const Texture::DepthBuffer*,	_pointLightShadowMapAtlas);
@@ -100,6 +118,9 @@ namespace Rendering
 			GET_ACCESSOR(PointLightShadowMapResolution,			uint,	_pointLightShadowMapResolution);
 			GET_ACCESSOR(SpotLightShadowMapResolution,			uint,	_spotLightShadowMapResolution);
 			GET_ACCESSOR(DirectionalLightShadowMapResolution,	uint,	_directionalLightShadowMapResolution);
+
+			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
+			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
 		};
 	}
 }

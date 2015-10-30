@@ -113,7 +113,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 #endif
 	}
 
-	uint directionalLightCount = GetNumOfDirectionalLight();
+	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
 	for(uint directionalLightIdx=0; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;

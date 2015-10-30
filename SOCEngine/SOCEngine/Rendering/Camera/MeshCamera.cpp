@@ -17,7 +17,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
 using namespace Rendering;
 
-MeshCamera::MeshCamera() : CameraForm(),
+MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
 	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
@@ -132,10 +132,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		}
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-		{
 			(*iter)->Culling(_frustum);
-			(*iter)->UpdateTransformCB(dx);
-		}
 	}
 
 
@@ -274,7 +271,8 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
 	const Buffer::ConstBuffer* cameraConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
+	const Frustum* customFrustum)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -293,12 +291,23 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			if(obj->GetUse())
 			{
 				bool isCulled = obj->GetCulled(); //In Mesh Camera
-				if(intersectFunc)
+				if(intersectFunc || customFrustum)
 				{
 					Vector3 worldPos;
 					obj->GetTransform()->FetchWorldPosition(worldPos);
-					Sphere sphere(worldPos, obj->GetRadius());
-					isCulled |= (*intersectFunc)(sphere) == false;
+
+					float radius = obj->GetRadius();
+
+					if(intersectFunc)
+					{
+						Sphere sphere(worldPos, radius);
+						isCulled |= (*intersectFunc)(sphere) == false;
+					}
+					else if(customFrustum)
+					{
+						if(customFrustum->GetIsComputed())
+							isCulled |= (customFrustum->In(worldPos, radius) == false);
+					}
 				}
 
 				if(isCulled == false)
@@ -320,7 +329,8 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
 	RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
+	const Frustum* customFrustum)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -332,12 +342,23 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 		if(obj->GetUse())
 		{
 			bool isCulled = obj->GetCulled(); //In Mesh Camera
-			if(intersectFunc)
+			if(intersectFunc || customFrustum)
 			{
 				Vector3 worldPos;
 				obj->GetTransform()->FetchWorldPosition(worldPos);
-				Sphere sphere(worldPos, obj->GetRadius());
-				isCulled |= (*intersectFunc)(sphere);
+
+				float radius = obj->GetRadius();
+
+				if(intersectFunc)
+				{
+					Sphere sphere(worldPos, radius);
+					isCulled |= (*intersectFunc)(sphere) == false;
+				}
+				else if(customFrustum)
+				{
+					if(customFrustum->GetIsComputed())
+						isCulled |= (customFrustum->In(worldPos, radius) == false);
+				}
 			}
 
 			// VB기준으로 정렬되어 있지 않기 때문에,
@@ -354,7 +375,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -480,7 +501,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		ID3D11SamplerState* nullSampler = nullptr;
 		context->PSSetSamplers(0, 1, &nullSampler);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
@@ -506,21 +527,21 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
 				
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::PointLightRadiusWithCenter, 
-				1, lightManager->GetPointLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetPointLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::PointLightColor, 
-				1, lightManager->GetPointLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetPointLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightRadiusWithCenter, 
-				1, lightManager->GetSpotLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightColor, 
-				1, lightManager->GetSpotLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::SpotLightParam,
-				1, lightManager->GetSpotLightParamBufferSR()->GetShaderResourceView());
+				1, lightManager->GetSpotLightParamSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightCenterWithDirZ,
-				1, lightManager->GetDirectionalLightTransformBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightTransformSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightColor,
-				1, lightManager->GetDirectionalLightColorBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightColorSRBuffer()->GetShaderResourceView());
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::DirectionalLightParam,
-				1, lightManager->GetDirectionalLightParamBufferSR()->GetShaderResourceView());
+				1, lightManager->GetDirectionalLightParamSRBuffer()->GetShaderResourceView());
 
 			// Light Culling Buffer
 			context->PSSetShaderResources((uint)InputSRBufferSemanticIndex::LightIndexBuffer,

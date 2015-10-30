@@ -74,7 +74,8 @@ namespace Rendering
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
-				const Buffer::ConstBuffer* tbrConstBuffer);
+				const Buffer::ConstBuffer* tbrConstBuffer,
+				const std::vector<GPGPU::DirectCompute::ComputeShader::InputConstBuffer>* additionalConstBuffers = nullptr);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;

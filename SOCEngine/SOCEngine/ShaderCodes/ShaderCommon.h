@@ -18,10 +18,6 @@ Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 );
 Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
 Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
-Buffer<float4> g_inputPointLightShadowColorBuffer					: register( t14 ); // rgb, shadow strength
-Buffer<float4> g_inputSpotLightShadowColorBuffer					: register( t15 ); // rgb, shadow strength
-Buffer<float4> g_inputDirectionalLightShadowColorBuffer				: register( t16 ); // rgb, shadow strength
-
 #if (MSAA_SAMPLES_COUNT > 1)
 
 Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_emission	: register( t8 );
@@ -46,9 +42,35 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 #endif
 
-Texture2D<float>	g_pointLightShadowMapAtlas						: register( t17 );
-Texture2D<float>	g_spotLightShadowMapAtlas						: register( t18 );
-Texture2D<float>	g_directionalLightShadowMapAtlas				: register( t19 );
+struct Directional_Spot_LightShadowParam
+{
+	half	bias;
+	half	index;	// as short
+
+	matrix	viewProjMat;
+};
+
+struct PointLightShadowParam
+{
+	half	bias;
+	half	index;	// as short
+
+	matrix	viewProjMat[6];
+};
+
+//Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
+
+StructuredBuffer<PointLightShadowParam>				g_inputPointLightShadowParams		: register( t14 );
+StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
+StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
+
+Texture2D<float>	g_inputPointLightShadowMapAtlas					: register( t17 );
+Texture2D<float>	g_inputSpotLightShadowMapAtlas					: register( t18 );
+Texture2D<float>	g_inputDirectionalLightShadowMapAtlas			: register( t19 );
+
+Buffer<float4> g_inputPointLightShadowColors						: register( t20 );
+Buffer<float4> g_inputSpotLightShadowColors							: register( t21 );
+Buffer<float4> g_inputDirectionalLightShadowColors					: register( t22 );
 
 struct LightingParams
 {
@@ -77,6 +99,15 @@ cbuffer TBRParam : register( b0 )
 	uint	tbrParam_maxNumOfPerLightInTile;
 	
 	float4	tbrParam_cameraWorldPosition;
+};
+
+cbuffer ShadowGlobalParam : register( b4 )
+{	
+	uint	shadowGlobalParam_packedNumOfShadowCastingLights;
+	float	shadowGlobalParam_pointLightTexelOffset;
+	float	shadowGlobalParam_pointLightUnderscanScale;
+
+	float	dummy;
 };
 
 #endif

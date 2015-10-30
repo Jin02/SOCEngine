@@ -62,6 +62,7 @@
     <ClInclude Include="Importer\MeshImporter.h" />
     <ClInclude Include="Intersection\BoundBox.h" />
     <ClInclude Include="Intersection\Cone.h" />
+    <ClInclude Include="Intersection\Frustum.h" />
     <ClInclude Include="Intersection\Intersection.h" />
     <ClInclude Include="Intersection\Ray.h" />
     <ClInclude Include="Intersection\Sphere.h" />
@@ -85,7 +86,6 @@
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
-    <ClInclude Include="Rendering\Camera\Frustum.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
@@ -119,7 +119,11 @@
     <ClInclude Include="Rendering\Shading\OffScreen.h" />
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
     <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h" />
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h" />
+    <ClInclude Include="Rendering\Shadow\PointLightShadow.h" />
+    <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h" />
+    <ClInclude Include="Rendering\Shadow\SpotLightShadow.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
@@ -221,6 +225,7 @@
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
+    <ClCompile Include="Intersection\Frustum.cpp" />
     <ClCompile Include="Intersection\Ray.cpp" />
     <ClCompile Include="Intersection\Sphere.cpp" />
     <ClCompile Include="Math\MathCommon.cpp" />
@@ -240,7 +245,6 @@
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
-    <ClCompile Include="Rendering\Camera\Frustum.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />
@@ -270,7 +274,11 @@
     <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
     <ClCompile Include="Rendering\Shading\OffScreen.cpp" />
     <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp" />
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp" />
+    <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp" />
+    <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp" />
+    <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />

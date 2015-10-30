@@ -244,17 +244,17 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z);
 	}
 
-	Vector3 Vector3::Normalize()
+	Vector3 Vector3::Normalize() const
 	{		
 		return Vector3::Normalize(*this);
 	}
 
-	float Vector3::Length()
+	float Vector3::Length() const
 	{
 		return Vector3::Length((*this));
 	}
 
-	float Vector3::Dot(const Vector3& v)
+	float Vector3::Dot(const Vector3& v) const
 	{
 		return Vector3::Dot((*this), v);
 	}

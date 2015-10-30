@@ -21,10 +21,12 @@ void ShaderResourceBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format,
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
 
-	desc.Usage				= usage;
-	desc.ByteWidth			= stride * num;
-	desc.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags		= useMapWriteNoOverWrite ? D3D11_CPU_ACCESS_WRITE : 0;
+	desc.Usage					= usage;
+	desc.ByteWidth				= stride * num;
+	desc.BindFlags				= D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags			= useMapWriteNoOverWrite ? D3D11_CPU_ACCESS_WRITE : 0;
+	desc.StructureByteStride	= stride;
+	desc.MiscFlags				= (format == DXGI_FORMAT_UNKNOWN) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = sysMem;

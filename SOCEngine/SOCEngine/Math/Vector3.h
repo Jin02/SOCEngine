@@ -60,10 +60,10 @@ namespace Math
 		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
 
 	public:
-		Vector3 Normalize();
+		Vector3 Normalize() const;
 
-		float Length();
-		float Dot(const Vector3& v);
+		float Length() const;
+		float Dot(const Vector3& v) const;
 		void Set(float newX, float newY, float newZ);
 	};
 }
