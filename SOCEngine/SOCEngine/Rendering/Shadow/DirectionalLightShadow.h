@@ -12,6 +12,9 @@ namespace Rendering
 			struct Param : public ShadowCommon::CommonParam
 			{
 				Math::Matrix	viewProjMat;
+
+				Param() : ShadowCommon::CommonParam() {}
+				~Param() {}
 			};
 
 		public:

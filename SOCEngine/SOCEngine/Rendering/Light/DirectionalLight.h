@@ -26,7 +26,6 @@ namespace Rendering
 
 		private:
 			Intersection::Frustum				_frustum;
-			Shadow::DirectionalLightShadow*		_shadow;
 
 		public:
 			DirectionalLight();

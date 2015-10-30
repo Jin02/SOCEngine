@@ -5,6 +5,8 @@
 #include "Matrix.h"
 #include <functional>
 
+#define USE_SHADOW_INVERTED_DEPTH
+
 namespace Rendering
 {
 	namespace Light
@@ -21,6 +23,9 @@ namespace Rendering
 			{
 				ushort	bias;
 				ushort	index;
+
+				CommonParam() : index(0), bias(0) {}
+				~CommonParam() {}
 			};
 
 		private:

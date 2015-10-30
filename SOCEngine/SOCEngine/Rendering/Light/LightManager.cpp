@@ -215,7 +215,9 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
-		uint uintShadowColor = light->GetUseShadow() ? light->GetShadowColor().Get32BitUintColor() : 0;
+
+		bool useShadow = light->GetUseShadow();
+		uint uintShadowColor = useShadow ? light->GetShadowColor().Get32BitUintColor() : 0;
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
@@ -226,7 +228,8 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			dl->MakeLightBufferElement(transformElem, param);
 
 			DirectionalLightShadow::Param shadowParam;
-			dl->GetShadow()->MakeParam(shadowParam);
+			if( useShadow )
+				dl->GetShadow()->MakeParam(shadowParam);
 
 			LightForm::LightTransformBuffer* transform = _directionalLightTransformBuffer.Find(key);
 			if( transform == nullptr ) //하나만 검색해도 됨
@@ -234,6 +237,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				_directionalLightTransformBuffer.Add(key, transformElem);
 				_directionalLightParamBuffer.Add(key, param);
 				_directionalLightColorBuffer.Add(key, uintColor);
+
 				_directionalLightShadowParamBuffer.Add(key, shadowParam);
 				_directionalLightShadowColorBuffer.Add(key, uintShadowColor);
 			}
@@ -242,6 +246,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				(*transform) = transformElem;
 				(*_directionalLightParamBuffer.Find(key))			= param;
 				(*_directionalLightColorBuffer.Find(key))			= uintColor;
+
 				(*_directionalLightShadowParamBuffer.Find(key))		= shadowParam;
 				(*_directionalLightShadowColorBuffer.Find(key))		= uintShadowColor;
 			}
@@ -256,13 +261,15 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			pl->MakeLightBufferElement(transformElem);
 
 			PointLightShadow::Param shadowParam;
-			pl->GetShadow()->MakeParam(shadowParam);
+			if( useShadow )
+				pl->GetShadow()->MakeParam(shadowParam);
 
 			LightForm::LightTransformBuffer* transform = _pointLightTransformBuffer.Find(key);
 			if( transform == nullptr)
 			{
 				_pointLightTransformBuffer.Add(key, transformElem);
 				_pointLightColorBuffer.Add(key, uintColor);
+
 				_pointLightShadowParamBuffer.Add(key, shadowParam);
 				_pointLightShadowColorBuffer.Add(key, uintShadowColor);
 			}
@@ -270,6 +277,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			{
 				(*transform) = transformElem;
 				(*_pointLightColorBuffer.Find(key))			= uintColor;
+
 				(*_pointLightShadowParamBuffer.Find(key))	= shadowParam;
 				(*_pointLightShadowColorBuffer.Find(key))	= uintShadowColor;
 			}
@@ -285,7 +293,8 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 			sl->MakeLightBufferElement(transformElem, param);
 
 			SpotLightShadow::Param shadowParam;
-			sl->GetShadow()->MakeParam(shadowParam);
+			if( useShadow )
+				sl->GetShadow()->MakeParam(shadowParam);
 
 			LightForm::LightTransformBuffer* transform = _spotLightTransformBuffer.Find(key);
 			if( transform == nullptr )
@@ -293,6 +302,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				_spotLightTransformBuffer.Add(key, transformElem);
 				_spotLightParamBuffer.Add(key, param);
 				_spotLightColorBuffer.Add(key, uintColor);
+
 				_spotLightShadowParamBuffer.Add(key, shadowParam);
 				_spotLightShadowColorBuffer.Add(key, uintShadowColor);
 			}
@@ -301,6 +311,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 				(*transform) = transformElem;
 				(*_spotLightParamBuffer.Find(key))			= param;
 				(*_spotLightColorBuffer.Find(key))			= uintColor;
+
 				(*_spotLightShadowParamBuffer.Find(key))	= shadowParam;
 				(*_spotLightShadowColorBuffer.Find(key))	= uintShadowColor;
 			}
@@ -447,7 +458,8 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
 
-		uint uintShadowColor = light->GetUseShadow() ? light->GetShadowColor().Get32BitUintColor() : 0;
+		bool useShadow = light->GetUseShadow();
+		uint uintShadowColor = useShadow ? light->GetShadowColor().Get32BitUintColor() : 0;
 
 		if(lightType == LightForm::LightType::Directional)
 		{			
@@ -458,7 +470,8 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			dl->MakeLightBufferElement(transformElem, param);
 
 			DirectionalLightShadow::Param shadowParam;
-			dl->GetShadow()->MakeParam(shadowParam);
+			if(useShadow)
+				dl->GetShadow()->MakeParam(shadowParam);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _directionalLightTransformBuffer.Find(key, &lightIdx);
@@ -467,6 +480,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				_directionalLightTransformBuffer.Add(key, transformElem);
 				_directionalLightParamBuffer.Add(key, param);
 				_directionalLightColorBuffer.Add(key, uintColor);
+
 				_directionalLightShadowParamBuffer.Add(key, shadowParam);
 				_directionalLightShadowColorBuffer.Add(key, uintShadowColor);
 
@@ -477,6 +491,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 				(*transform) = transformElem;
 				(*_directionalLightParamBuffer.Find(key))			= param;
 				(*_directionalLightColorBuffer.Find(key))			= uintColor;
+
 				(*_directionalLightShadowParamBuffer.Find(key))		= shadowParam;
 				(*_directionalLightShadowColorBuffer.Find(key))		= uintShadowColor;
 			}
@@ -510,7 +525,8 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			pl->MakeLightBufferElement(transformElem);
 
 			PointLightShadow::Param shadowParam;
-			pl->GetShadow()->MakeParam(shadowParam);
+			if( useShadow )
+				pl->GetShadow()->MakeParam(shadowParam);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _pointLightTransformBuffer.Find(key, &lightIdx);
@@ -559,7 +575,8 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			sl->MakeLightBufferElement(transformElem, param);
 
 			SpotLightShadow::Param shadowParam;
-			sl->GetShadow()->MakeParam(shadowParam);
+			if( useShadow )
+				sl->GetShadow()->MakeParam(shadowParam);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _spotLightTransformBuffer.Find(key, &lightIdx);
