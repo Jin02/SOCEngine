@@ -110,8 +110,12 @@ void Scene::Render()
 	_dx->ClearDeviceContext();
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->Render(_dx, _renderMgr, _lightManager);
-
+	{
+		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, _shadowRenderer->GetShadowGlobalParamConstBuffer());
+		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
+			dynamic_cast<UICamera*>(*iter)->Render(_dx);
+	}
 	CameraForm* firstCam = _cameraMgr->GetFirstCamera();
 	if(firstCam)
 	{
