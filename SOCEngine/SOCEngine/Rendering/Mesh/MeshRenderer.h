@@ -15,7 +15,8 @@ namespace Rendering
 				Unknown,
 				Opaque,
 				Transparent,
-				AlphaBlend
+				AlphaBlend,
+				OnlyAlphaTestWithDiffuse
 			};
 
 		private:
