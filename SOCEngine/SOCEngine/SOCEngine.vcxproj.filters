@@ -295,12 +295,6 @@
     <Filter Include="ShaderCodes\Mesh\GBuffer">
       <UniqueIdentifier>{88135b69-cc45-4b5e-bf31-e2b4d4387614}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\Mesh\Transparency">
-      <UniqueIdentifier>{7573495d-744c-4d79-987e-a4d8c95cbec0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\Mesh\Forward">
-      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External\DirectXTex">
       <UniqueIdentifier>{7fa04a61-926a-4673-be20-b2b6f499f069}</UniqueIdentifier>
     </Filter>
@@ -324,6 +318,12 @@
     </Filter>
     <Filter Include="Rendering\Shadow\Lights\Directional">
       <UniqueIdentifier>{48e82b62-2502-4c74-aa22-d1e25aacb9ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\Common">
+      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\Forward">
+      <UniqueIdentifier>{28b67952-e491-4f4b-a70b-59b3aeb30dd7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -655,7 +655,7 @@
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
-      <Filter>ShaderCodes\Mesh\Forward</Filter>
+      <Filter>ShaderCodes\Mesh\Common</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
@@ -1078,14 +1078,14 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_N_UV0.hlsl">
-      <Filter>ShaderCodes\Mesh\Transparency</Filter>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_TN_UV0.hlsl">
-      <Filter>ShaderCodes\Mesh\Transparency</Filter>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Transparency_UV0.hlsl">
-      <Filter>ShaderCodes\Mesh\Transparency</Filter>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
