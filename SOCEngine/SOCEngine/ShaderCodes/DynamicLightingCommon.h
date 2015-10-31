@@ -74,17 +74,17 @@ void RenderPointLight(
 	float lightRadius				= lightCenterWithRadius.w;
 
 	float3 lightDir					= lightCenterWorldPosition - vertexWorldPosition;
-	float distanceOfLightAndVertex	= length(lightDir);
+	float distanceOfLightWithVertex = length(lightDir);
 	lightDir = normalize(lightDir);
 
-	if( distanceOfLightAndVertex < lightRadius )
+	if( distanceOfLightWithVertex < lightRadius )
 	{
 		LightingCommonParams commonParams;
 		commonParams.lightColor		= g_inputPointLightColorBuffer[lightingParams.lightIndex].xyz;
 		commonParams.lightDir		= lightDir;
 
 		float lumen = g_inputPointLightColorBuffer[lightingParams.lightIndex].w * 12750.0f; //maximum lumen is 12,750f
-		float attenuation = 1.0f / (distanceOfLightAndVertex * distanceOfLightAndVertex);
+		float attenuation = 1.0f / (distanceOfLightWithVertex * distanceOfLightWithVertex) * lumen;
 
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);

@@ -11,6 +11,8 @@ private:
 	Core::Object* _testObject;
 	Core::Object* _camera;
 
+	Core::Object* _light;
+
 public:
 	TestScene(void);
 	~TestScene(void);
