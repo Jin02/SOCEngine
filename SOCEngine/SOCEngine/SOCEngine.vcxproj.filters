@@ -319,9 +319,6 @@
     <Filter Include="Rendering\Shadow\Lights\Directional">
       <UniqueIdentifier>{48e82b62-2502-4c74-aa22-d1e25aacb9ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\Mesh\Common">
-      <UniqueIdentifier>{e9bd2020-ac13-4f9a-8a21-79b3ad016ba5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Mesh\Forward">
       <UniqueIdentifier>{28b67952-e491-4f4b-a70b-59b3aeb30dd7}</UniqueIdentifier>
     </Filter>
@@ -654,9 +651,6 @@
     <ClInclude Include="ShaderCodes\ShaderCommon.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
-      <Filter>ShaderCodes\Mesh\Common</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </ClInclude>
@@ -752,6 +746,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
       <Filter>Rendering\Shadow\Lights\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
+      <Filter>ShaderCodes\Mesh\Forward</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
