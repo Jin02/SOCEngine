@@ -17,10 +17,11 @@ namespace Rendering
 			static const uint NumOfRenderTargets = 3;
 			enum class RenderType
 			{
-				AlphaMesh,
-				Opaque,
-				Transparency,
-				DepthOnly
+				GBuffer_AlphaBlend,
+				Forward_AlphaTest,
+				GBuffer_Opaque,
+				Forward_Transparency,
+				Forward_DepthOnly
 			};
 
 		private:
