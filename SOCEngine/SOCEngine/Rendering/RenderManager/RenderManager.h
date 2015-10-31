@@ -50,8 +50,9 @@ namespace Rendering
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders;
 			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
 
-			std::hash_map<uint, const Shader::ShaderGroup>	_transparentShaders;
-			std::hash_map<uint, const Shader::ShaderGroup>	_depthOnlyShader;
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_transparentShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_depthOnlyShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_onlyAlphaTestWithDiffuseShaders;
 
 		public:
 			RenderManager();
@@ -71,10 +72,12 @@ namespace Rendering
 			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 			bool FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 
 			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
 			bool HasTransparencyShader(uint bufferFlag) const;
 			bool HasDepthOnlyShader(uint bufferFlag) const;
+			bool HasDepthOnlyShaderOnlyAlphaTestWithDiffuseShader(uint bufferFlag) const;
 
 			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
 		
