@@ -295,15 +295,17 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
-			MeshCamera::RenderType::DepthOnly,
+			MeshCamera::RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
+
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::AlphaMesh,
+			MeshCamera::RenderType::Forward_AlphaTest,
 			camConstBuffer, &intersectFunc);
+
 		context->RSSetState( nullptr );
 	}
 
@@ -363,13 +365,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
-				MeshCamera::RenderType::DepthOnly,
+				MeshCamera::RenderType::Forward_DepthOnly,
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
-				MeshCamera::RenderType::AlphaMesh,
+				MeshCamera::RenderType::Forward_AlphaTest,
 				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
@@ -428,13 +430,13 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
-			MeshCamera::RenderType::DepthOnly,
+			MeshCamera::RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::AlphaMesh,
+			MeshCamera::RenderType::Forward_AlphaTest,
 			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
