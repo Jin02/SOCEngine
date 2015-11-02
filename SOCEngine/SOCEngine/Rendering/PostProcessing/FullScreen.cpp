@@ -67,7 +67,9 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 	
 	_pixelShader->SetShaderToContext(context);
 	_pixelShader->UpdateResources(context, nullptr, &_inputPSTextures, nullptr);
-	context->PSSetSamplers(0, 1, &sampler);
+	context->PSSetSamplers(
+		(uint)Rendering::TBDR::InputSamplerStateSemanticIndex::DefaultSamplerState,
+		1, &sampler);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	context->RSSetState( nullptr );

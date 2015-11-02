@@ -76,12 +76,12 @@ void BackBufferMaker::Render(
 	}
 
 	ID3D11SamplerState* linerSampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers(0, 1, &linerSampler);
+	context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &linerSampler);
 
 	if(_useUI)
 	{
 		ID3D11SamplerState* pointSampler = dx->GetSamplerStatePoint();
-		context->PSSetSamplers(1, 1, &pointSampler);
+		context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::UISamplerState, 1, &pointSampler);
 	}
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
