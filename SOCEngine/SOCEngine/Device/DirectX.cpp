@@ -12,7 +12,7 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr)
+	_rasterizerCounterClockwiseDefault(nullptr), _shadowSamplerComparisonState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -290,26 +290,36 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 
 	//sampler
 	{
-		D3D11_SAMPLER_DESC sampDesc;
-		ZeroMemory( &sampDesc, sizeof(sampDesc) );
-		sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampDesc.MaxAnisotropy = 16;
-		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		sampDesc.MinLOD = -D3D11_FLOAT32_MAX;
-		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		D3D11_SAMPLER_DESC desc;
+		memset(&desc, 0, sizeof(D3D11_SAMPLER_DESC));
 
-		HRESULT hr = _device ->CreateSamplerState( &sampDesc, &_anisotropicSamplerState );
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.MaxAnisotropy = 16;
+		desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		desc.MinLOD = -D3D11_FLOAT32_MAX;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		HRESULT hr = _device ->CreateSamplerState( &desc, &_anisotropicSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		hr = _device ->CreateSamplerState( &sampDesc, &_linearSamplerState );
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		hr = _device ->CreateSamplerState( &desc, &_linearSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-		hr = _device ->CreateSamplerState( &sampDesc, &_pointSamplerState );
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		hr = _device ->CreateSamplerState( &desc, &_pointSamplerState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+
+		desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.MaxAnisotropy = 1;
+		hr = _device->CreateSamplerState( &desc, &_shadowSamplerComparisonState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 	}
 
