@@ -3,7 +3,6 @@
 #include "Object.h"
 
 #define USE_RENDER_WITH_UPDATE_CB
-//#define USE_SHADOW_INVERTED_DEPTH
 
 using namespace Structure;
 using namespace Math;
@@ -636,4 +635,13 @@ void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
 
 	outParam.dummy = 0.0f;
+}
+
+bool ShadowRenderer::IsWorking() const
+{
+	bool has =	_shadowCastingPointLights.GetSize() > 0 ||
+				_shadowCastingSpotLights.GetSize() > 0 ||
+				_shadowCastingDirectionalLights.GetSize() > 0;
+
+	return has;
 }

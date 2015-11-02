@@ -121,6 +121,8 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
 			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
+
+			bool IsWorking() const;
 		};
 	}
 }
