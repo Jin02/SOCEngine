@@ -52,10 +52,10 @@ void TestScene::OnInitialize()
 	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
 	Vector3 dir = _light->GetTransform()->GetForward();
-	_light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	_light->GetTransform()->UpdatePosition(Vector3(0, 5, 5));
 
 	PointLight* spotLight = _light->AddComponent<PointLight>();
-	spotLight->SetLumen(700);
+	spotLight->SetLumen(350);
 	spotLight->SetRadius(20.0f);
 //	spotLight->SetSpotAngleDegree(25.0f);
 
@@ -103,6 +103,10 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
+	Transform* tf = _testObject->GetTransform();
+
+	Vector3 euler = tf->GetLocalEulerAngle();
+	tf->UpdateEulerAngles(euler + Vector3(0, 0.5f, 0));
 }
 
 void TestScene::OnRenderPost()
