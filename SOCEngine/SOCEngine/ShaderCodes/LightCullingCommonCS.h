@@ -18,21 +18,6 @@ groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
 
 #endif
 
-uint GetNumOfPointLight(uint packedNumOfLights)
-{
-	return packedNumOfLights >> 21;
-}
-
-uint GetNumOfSpotLight(uint packedNumOfLights)
-{
-	return (packedNumOfLights >> 10) & 0x7FF;
-}
-
-uint GetNumOfDirectionalLight(uint packedNumOfLights)
-{
-	return packedNumOfLights & 0x000003FF;
-}
-
 uint GetNumTilesX()
 {
 	return (uint)((tbrParam_viewPortSize.x + TILE_RES - 1) / (float)TILE_RES);
@@ -48,23 +33,6 @@ float4 ProjToView( float4 p )
     p = mul( p, tbrParam_invProjMat );
     p /= p.w;
     return p;
-}
-
-float4 CreatePlaneNormal( float4 b, float4 c )
-{
-    float4 n;
-    //b.xyz - a.xyz, c.xyz - a.xyz이다.
-    //여기서, a는 원점이다. 즉, ab는 원점에서 해당 타일의 꼭짓점까지 떨어진 방향을 뜻한다.
-    n.xyz = normalize(cross( b.xyz, c.xyz ));
-    n.w = 0;
-
-    return n;
-}
-
-bool InFrustum( float4 p, float4 frusutmNormal, float r )
-{
-	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
-	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
 }
 
 float InvertProjDepthToView(float depth)
