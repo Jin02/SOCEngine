@@ -431,7 +431,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 		
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers(0, 1, &samplerState);
+	context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &samplerState);
 
 	//GBuffer
 	{
@@ -493,6 +493,13 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 	// Light Culling and Deferred Shading
 	{
+		bool useShadow = shadowGlobalParamCB != nullptr;
+		if(useShadow)
+		{
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerComparisonState();
+			context->CSSetSamplers((uint)InputSamplerStateSemanticIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+		}
+
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
 		ID3D11DepthStencilView* nullDSV = nullptr;
 		context->OMSetRenderTargets(NumOfRenderTargets, nullRTVs, nullDSV);
@@ -501,12 +508,15 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->VSSetShader(nullptr, nullptr, 0);
 		context->PSSetShader(nullptr, nullptr, 0);
 		ID3D11SamplerState* nullSampler = nullptr;
-		context->PSSetSamplers(0, 1, &nullSampler);
+		context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &nullSampler);
 
 		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+
+		if(useShadow)
+			context->CSSetSamplers((uint)InputSamplerStateSemanticIndex::ShadowComprisonSamplerState, 1, &nullSampler);
 	}
 
 	// Main RT
