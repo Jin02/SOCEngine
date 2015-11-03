@@ -8,7 +8,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(500), _shadow(nullptr)
+	: _radius(10.0f), _lumen(500), _shadow(nullptr), _projNear(0.1f)
 {
 	_color			= Color::White();
 }

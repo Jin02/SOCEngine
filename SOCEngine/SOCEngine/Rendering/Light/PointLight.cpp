@@ -65,13 +65,11 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 		Vector3( 0.0f,  0.0f,  1.0f),
 	};
 
-	const float minZ = 0.01f;
-
 	Matrix proj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, minZ);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, _projNear);
 #else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), minZ, _radius);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _projNear, _radius);
 #endif
 
 	auto ComputeViewProj = [](Matrix& outView, Matrix& viewProj,

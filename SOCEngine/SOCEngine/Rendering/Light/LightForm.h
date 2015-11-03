@@ -37,6 +37,7 @@ namespace Rendering
 			LightType				_type;
 			float					_radius;
 			uint					_lumen; //intensity
+			float					_projNear;
 
 			Shadow::ShadowCommon*	_shadow;
 
@@ -80,6 +81,8 @@ namespace Rendering
 
 			GET_ACCESSOR(UseShadow, bool, _shadow != nullptr);
 			GET_ACCESSOR(ShadowColor, const Color&, _shadow->GetColor());
+
+			GET_SET_ACCESSOR(ProjectionNear, float, _projNear);
 		};
 	}
 }
