@@ -96,13 +96,15 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
+		_prevViewProj = viewProj;
+
 		LightForm::_viewMat = view;
 		LightForm::_viewProjMat = viewProj;
 
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
-			ComputeCameraConstBufferData(_viewMat[matIdx], _viewProjMat[matIdx], worldPos, forwards[i], ups[i], proj);
+			ComputeCameraConstBufferData(_viewMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj);
 		}
 	}
 }
@@ -112,7 +114,7 @@ void PointLight::GetViewMatrices(std::array<Math::Matrix, 6>& out) const
 	out[0] = LightForm::_viewMat;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewMat[i-1];
+		out[i] = _viewMatOffsetOne[i-1];
 }
 
 void PointLight::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const
@@ -120,5 +122,5 @@ void PointLight::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) con
 	out[0] = LightForm::_viewProjMat;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewProjMat[i-1];
+		out[i] = _viewProjMatOffsetOne[i-1];
 }

@@ -338,7 +338,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-	const auto& alphaTestMeshes = renderManager->GetOpaqueMeshes();
+	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
 
 	uint count = _shadowCastingPointLights.GetSize();
 	for(uint index = 0; index < count; ++index)
