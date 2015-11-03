@@ -617,18 +617,18 @@ ushort ShadowRenderer::FetchShadowCastingLightIndex(const LightForm*& light)
 	return (ushort)index;
 }
 
-uint ShadowRenderer::GetPackedShadowCastingLightCount() const
+uint ShadowRenderer::GetPackedShadowAtlasCapacity() const
 {
-	uint directionalLightCount	= _shadowCastingDirectionalLights.GetSize()	& 0x3FF;
-	uint pointLightCount		= _shadowCastingPointLights.GetSize()		& 0x7FF;
-	uint spotLightCount			= _shadowCastingSpotLights.GetSize()		& 0x7FF;
+	uint d	= _numOfShadowCastingDirectionalLightInAtlas	& 0x3FF;
+	uint p	= _numOfShadowCastingPointLightInAtlas			& 0x7FF;
+	uint s	= _numOfShadowCastingSpotLightInAtlas			& 0x7FF;
 
-	return (pointLightCount << 21) | (spotLightCount << 10) | directionalLightCount;	
+	return (p << 21) | (s << 10) | d;
 }
 
 void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 {
-	outParam.packedNumOfShadowCastingLights = GetPackedShadowCastingLightCount();
+	outParam.packedNumOfShadowAtlasCapacity = GetPackedShadowAtlasCapacity();
 
 	float plMapRes = (float)_pointLightShadowMapResolution;
 	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
