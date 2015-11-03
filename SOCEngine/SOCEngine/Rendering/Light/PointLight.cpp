@@ -65,14 +65,16 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 		Vector3( 0.0f,  0.0f,  1.0f),
 	};
 
+	const float minZ = 0.01f;
+
 	Matrix proj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, 1.0f);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, minZ);
 #else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), 1.0f, _radius);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), minZ, _radius);
 #endif
 
-	auto ComputeCameraConstBufferData = [](Matrix& outView, Matrix& viewProj,
+	auto ComputeViewProj = [](Matrix& outView, Matrix& viewProj,
 		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
 	{
 		Matrix& view = outView;
@@ -92,7 +94,7 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 	_owner->GetTransform()->FetchWorldPosition(worldPos);
 
 	Matrix view, viewProj;
-	ComputeCameraConstBufferData(view, viewProj, worldPos, forwards[0], ups[0], proj);
+	ComputeViewProj(view, viewProj, worldPos, forwards[0], ups[0], proj);
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
@@ -104,7 +106,7 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
-			ComputeCameraConstBufferData(_viewMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj);
+			ComputeViewProj(_viewMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj);
 		}
 	}
 }
