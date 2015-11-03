@@ -57,7 +57,7 @@ void TestScene::OnInitialize()
 	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
 	Vector3 dir = _light->GetTransform()->GetForward();
-	_light->GetTransform()->UpdatePosition(Vector3(0.6, 0.5, 2.5));
+	_light->GetTransform()->UpdatePosition(Vector3(-0.4, 0.3, 2.5));
 
 	PointLight* spotLight = _light->AddComponent<PointLight>();
 //	spotLight->SetIntensity(1);
