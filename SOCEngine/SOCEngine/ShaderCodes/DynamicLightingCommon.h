@@ -78,10 +78,10 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 uint ComputeFaceIndex(float3 dir)
 {
-	// ¹¹, º°°Ç ¾ø°í
-	// PointLight::ComputeViewProjMatrix¿¡¼­ »ç¿ëµÇ´Â forwards, ups ÀÌ°Å ÀÎµ¦½º Á¤ÇÏ´Â ÇÔ¼öÀÌ´Ù.
-	// ´ëÃ¼ ¹º ¹æ½ÄÀ¸·Î °è»êÇÏ´ÂÁö ±Ã±İÇÏ´Ù¸é, 0, 0, 1ÀÌ³ª 1, 0, 0 Á÷Á¢ ¸Ó¸®¼Ó¿¡ ³Ö¾î¼­ °è»êÇÏ¸éµÈ´Ù.
-	// ±×·³ PointLight::ComputeViewProjMatrix¿¡¼­ »ç¿ë ÁßÀÎ ÀÎµ¦½º¿Í µ¿ÀÏÇÏ°Ô ¶á´Ù.
+	// ë­, ë³„ê±´ ì—†ê³ 
+	// PointLight::ComputeViewProjMatrixì—ì„œ ì‚¬ìš©ë˜ëŠ” forwards, ups ì´ê±° ì¸ë±ìŠ¤ ì •í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+	// ëŒ€ì²´ ë­” ë°©ì‹ìœ¼ë¡œ ê³„ì‚°í•˜ëŠ”ì§€ ê¶ê¸ˆí•˜ë‹¤ë©´, 0, 0, 1ì´ë‚˜ 1, 0, 0 ì§ì ‘ ë¨¸ë¦¬ì†ì— ë„£ì–´ì„œ ê³„ì‚°í•˜ë©´ëœë‹¤.
+	// ê·¸ëŸ¼ PointLight::ComputeViewProjMatrixì—ì„œ ì‚¬ìš© ì¤‘ì¸ ì¸ë±ìŠ¤ì™€ ë™ì¼í•˜ê²Œ ëœ¬ë‹¤.
 
 	uint res = 0;
 
@@ -231,8 +231,8 @@ void RenderPointLight(
 #else
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 
-		resultDiffuseColor	*= attenuation / 10.0f;
-		resultSpecularColor	*= attenuation / 10.0f;
+		resultDiffuseColor	*= attenuation;
+		resultSpecularColor	*= attenuation;
 
 		uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index;
 		if(shadowIndex != 0) //isShadow == true
