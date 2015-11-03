@@ -45,12 +45,14 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 	}
 	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
 	{
-		repo = &_transparentShaders;
+		repo = &_forward_transparentShaders;
 
 		ShaderMacro useTransparencyMacro;
 		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
 		targetShaderMacros.push_back(useTransparencyMacro);
 	}
+	else if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
+		repo = &_forward_onlyAlphaTestWithDiffuseShaders;
 	else
 	{
 		ASSERT_MSG("Error, not supported mesh type");
@@ -75,13 +77,17 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 
 	ShaderGroup shader;
 	{
-		shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
+		if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
+			shader = LoadShader(fileName, "VS", "OnlyAlpaTestWithDiffusePS", &targetShaderMacros, resourceManager->GetShaderManager());
+		else
+			shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
+
 		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 
 		if(meshType == Geometry::MeshRenderer::Type::Transparent)
 		{
 			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
-			_depthOnlyShader.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+			_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 		}
 	}
 
@@ -96,7 +102,7 @@ bool RenderManager::TestInit()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=1; i< ((uint)Geometry::MeshRenderer::Type::AlphaBlend + 1); ++i)
+	for(uint i=1; i< ((uint)Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse + 1); ++i)
 	{
 		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
 			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
@@ -213,12 +219,17 @@ bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag,
 
 bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const
 {
-	return FindShaderFromHashMap(out, _transparentShaders, bufferFlag);
+	return FindShaderFromHashMap(out, _forward_transparentShaders, bufferFlag);
 }
 
 bool RenderManager::FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const
 {
-	return FindShaderFromHashMap(out, _depthOnlyShader, bufferFlag);
+	return FindShaderFromHashMap(out, _forward_depthOnlyShaders, bufferFlag);
+}
+
+bool RenderManager::FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const
+{
+	return FindShaderFromHashMap(out, _forward_onlyAlphaTestWithDiffuseShaders, bufferFlag);
 }
 
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
@@ -249,6 +260,12 @@ bool RenderManager::HasDepthOnlyShader(uint bufferFlag) const
 	return FindDepthOnlyShader(dummy, bufferFlag);
 }
 
+bool RenderManager::HasDepthOnlyShaderOnlyAlphaTestWithDiffuseShader(uint bufferFlag) const
+{
+	ShaderGroup dummy;
+	return FindOnlyAlphaTestWithDiffuseShader(dummy, bufferFlag);
+}
+
 void RenderManager::MakeDefaultSahderFileName(
 	std::string& outFileName,
 	Geometry::MeshRenderer::Type meshType, uint bufferFlag) const
@@ -271,8 +288,9 @@ void RenderManager::MakeDefaultSahderFileName(
 	if( meshType == Geometry::MeshRenderer::Type::Opaque || 
 		meshType == Geometry::MeshRenderer::Type::AlphaBlend )
 		frontFileName = "PhysicallyBased_GBuffer_";
-	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
-		frontFileName = "PhysicallyBased_Transparency_";
+	else if(meshType == Geometry::MeshRenderer::Type::Transparent ||
+			meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
+		frontFileName = "PhysicallyBased_Forward_";
 	else
 	{
 		ASSERT_MSG("Error, unsupported mesh type");

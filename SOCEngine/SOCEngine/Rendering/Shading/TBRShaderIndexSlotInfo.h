@@ -39,5 +39,12 @@ namespace Rendering
 		//	PhysicallyBasedMaterial			= 3, -> PhysicallyBasedMaterial
 			ShadowGlobalParam				= 4
 		};
+
+		enum class InputSamplerStateSemanticIndex : unsigned int
+		{
+			DefaultSamplerState				= 0,
+			UISamplerState					= 1,
+			ShadowComprisonSamplerState		= 2,
+		};
 	}
 }

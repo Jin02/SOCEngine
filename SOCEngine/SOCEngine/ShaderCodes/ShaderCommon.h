@@ -44,18 +44,18 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 struct Directional_Spot_LightShadowParam
 {
-	half	bias;
-	half	index;	// as short
+	float		bias;
+	uint		index;
 
-	matrix	viewProjMat;
+	matrix		viewProjMat;
 };
 
 struct PointLightShadowParam
 {
-	half	bias;
-	half	index;	// as short
+	float		bias;
+	uint		index;
 
-	matrix	viewProjMat[6];
+	matrix		viewProjMat[6];
 };
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
@@ -103,11 +103,44 @@ cbuffer TBRParam : register( b0 )
 
 cbuffer ShadowGlobalParam : register( b4 )
 {	
-	uint	shadowGlobalParam_packedNumOfShadowCastingLights;
+	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
 	float	shadowGlobalParam_pointLightTexelOffset;
 	float	shadowGlobalParam_pointLightUnderscanScale;
 
 	float	dummy;
 };
+
+
+uint GetNumOfPointLight(uint packedNumOfLights)
+{
+	return packedNumOfLights >> 21;
+}
+
+uint GetNumOfSpotLight(uint packedNumOfLights)
+{
+	return (packedNumOfLights >> 10) & 0x7FF;
+}
+
+uint GetNumOfDirectionalLight(uint packedNumOfLights)
+{
+	return packedNumOfLights & 0x000003FF;
+}
+
+float4 CreatePlaneNormal( float4 b, float4 c )
+{
+    float4 n;
+    //b.xyz - a.xyz, c.xyz - a.xyz이다.
+    //여기서, a는 원점이다. 즉, ab는 원점에서 해당 타일의 꼭짓점까지 떨어진 방향을 뜻한다.
+    n.xyz = normalize(cross( b.xyz, c.xyz ));
+    n.w = 0;
+
+    return n;
+}
+
+bool InFrustum( float4 p, float4 frusutmNormal, float r )
+{
+	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
+	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
+}
 
 #endif

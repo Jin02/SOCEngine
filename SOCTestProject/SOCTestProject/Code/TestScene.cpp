@@ -20,7 +20,7 @@ using namespace Resource;
 using namespace Device;
 using namespace Math;
 
-#define USE_SPONZA_TEST
+#define USE_CITY
 
 TestScene::TestScene(void)
 {
@@ -33,69 +33,40 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-#if defined(USE_SPONZA_TEST)
-	_camera = new Object("Default");
-	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
-	_camera->GetTransform()->UpdateEulerAngles(Vector3(0, 270, 0));
-
-	Vector3 camPos = Vector3(-1500, 190, -30);
-	_camera->GetTransform()->UpdatePosition(camPos);
-
-	Importer::MeshImporter importer;
-	_testObject = importer.Load("./Resources/Sponza/sponzafbx.fbx");
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
-	AddObject(_testObject);
-
-	auto AddPointLight = [&](float x, float y, float z)
-	{
-		static int idx = 0;
-		Core::Object* light = new Object("Light" + std::to_string(idx++));
-		light->GetTransform()->UpdatePosition(Vector3(x, y, z));
-		AddObject(light);
-
-		PointLight* pl = light->AddComponent<PointLight>();
-		pl->SetLumen(700);
-		pl->SetRadius(500.0f);
-	};
-	auto AddPointLightVec3 = [&](const Vector3& worldPos)
-	{
-		AddPointLight(worldPos.x, worldPos.y, worldPos.z);
-	};
-
-	AddPointLightVec3(camPos);
-
-#else
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	cam->SetFieldOfViewDegree(60.0f);
 
 	Importer::MeshImporter importer;
 #if 0
 	_testObject = importer.Load("./Resources/Capsule/capsule.obj");
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 #else
-	_testObject = importer.Load("./Resources/House/SanFranciscoHouse.fbx");
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
+	//_testObject = importer.Load("./Resources/House/SanFranciscoHouse.fbx");
+	//_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
+
+	_testObject = importer.Load("./Resources/CornellBox/box.obj");
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 180.0f, 180));
 #endif
 	AddObject(_testObject);
 
-	Core::Object* light = new Object("Light");
-	light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	_light = new Object("Light");
+	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
-	Vector3 dir = light->GetTransform()->GetForward();
-	light->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	Vector3 dir = _light->GetTransform()->GetForward();
+	_light->GetTransform()->UpdatePosition(Vector3(-0.4, 0.3, 2.5));
 
-	DirectionalLight* spotLight = light->AddComponent<DirectionalLight>();
-	//spotLight->SetLumen(700);
-	//spotLight->SetRadius(20.0f);
-	//spotLight->SetSpotAngleDegree(25.0f);
-	spotLight->SetIntensity(2.0f);
+	PointLight* spotLight = _light->AddComponent<PointLight>();
+//	spotLight->SetIntensity(1);
+	spotLight->SetLumen(50);
+	spotLight->SetRadius(5);
 	spotLight->ActiveShadow(true);
+//	spotLight->SetSpotAngleDegree(25.0f);
 
-	AddObject(light);
-#endif
+	AddObject(_light);
 }
 
 void TestScene::OnRenderPreview()
@@ -104,47 +75,74 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
+	Transform* control = _light->GetTransform();
+	float value = 1;
+
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(0, 10, 0));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(0, 0.1f, 0));
 	}
 	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(-10, 0, 0));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(-0.1f, 0, 0));
 	}
 	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(0, -10, 0));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(0, -0.1f, 0));
 	}
 	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(10, 0, 0));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(0.1f, 0, 0));
 	}
 
 	if(keyboard.states['T'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(0, 0, 10));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(0, 0, 0.1f));
 	}
 	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 pos = _camera->GetTransform()->GetLocalPosition();
-		_camera->GetTransform()->UpdatePosition(pos + Vector3(0, 0, -10));
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(0, 0, -0.1f));
 	}
+
+	if(keyboard.states['U'] == Win32::Keyboard::Type::Up)
+	{
+		Vector3 e = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(e + Vector3(5, 0, 0));
+	}
+	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
+	{
+		Vector3 e = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(e + Vector3(-5, 0, 0));
+	}
+	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
+	{
+		Vector3 e = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(e + Vector3(0, 5, 0));
+	}
+	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
+	{
+		Vector3 e = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(e + Vector3(0, -5, 0));
+	}
+
+
 }
 
 void TestScene::OnUpdate(float dt)
 {
-//#ifndef USE_SPONZA_TEST
-//	static float x = 0.0f;
-//
-//	x += 0.1f;
-//	_testObject->GetTransform()->UpdateEulerAngles(Math::Vector3(90, x, 0));
-//#endif
+	//Transform* tf = _testObject->GetTransform();
+
+	//Vector3 euler = tf->GetLocalEulerAngle();
+	//tf->UpdateEulerAngles(euler + Vector3(0, 0.5f, 0));
+
+	//Vector3 pos = tf->GetLocalPosition();
+	//tf->UpdatePosition(pos - Vector3(0, 0.2f, 0));
 }
 
 void TestScene::OnRenderPost()

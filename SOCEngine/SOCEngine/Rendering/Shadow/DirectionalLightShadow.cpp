@@ -19,4 +19,5 @@ void DirectionalLightShadow::MakeParam(Param& outParam) const
 	ShadowCommon::MakeParam(outParam);
 
 	outParam.viewProjMat = _owner->GetViewProjectionMatrix();
+	Math::Matrix::Transpose(outParam.viewProjMat, outParam.viewProjMat);
 }

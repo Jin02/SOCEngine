@@ -5,7 +5,7 @@
 #include "Matrix.h"
 #include <functional>
 
-#define USE_SHADOW_INVERTED_DEPTH
+//#define USE_SHADOW_INVERTED_DEPTH
 
 namespace Rendering
 {
@@ -21,8 +21,8 @@ namespace Rendering
 		public:
 			struct CommonParam
 			{
-				ushort	bias;
-				ushort	index;
+				float	bias;
+				uint	index;
 
 				CommonParam() : index(0), bias(0) {}
 				~CommonParam() {}

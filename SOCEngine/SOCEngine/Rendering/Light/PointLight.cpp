@@ -67,12 +67,12 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 
 	Matrix proj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, 1.0f);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, _projNear);
 #else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), 1.0f, _radius);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _projNear, _radius);
 #endif
 
-	auto ComputeCameraConstBufferData = [](Matrix& outView, Matrix& viewProj,
+	auto ComputeViewProj = [](Matrix& outView, Matrix& viewProj,
 		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
 	{
 		Matrix& view = outView;
@@ -92,17 +92,19 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 	_owner->GetTransform()->FetchWorldPosition(worldPos);
 
 	Matrix view, viewProj;
-	ComputeCameraConstBufferData(view, viewProj, worldPos, forwards[0], ups[0], proj);
+	ComputeViewProj(view, viewProj, worldPos, forwards[0], ups[0], proj);
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
+		_prevViewProj = viewProj;
+
 		LightForm::_viewMat = view;
 		LightForm::_viewProjMat = viewProj;
 
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
-			ComputeCameraConstBufferData(_viewMat[matIdx], _viewProjMat[matIdx], worldPos, forwards[i], ups[i], proj);
+			ComputeViewProj(_viewMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj);
 		}
 	}
 }
@@ -112,7 +114,7 @@ void PointLight::GetViewMatrices(std::array<Math::Matrix, 6>& out) const
 	out[0] = LightForm::_viewMat;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewMat[i-1];
+		out[i] = _viewMatOffsetOne[i-1];
 }
 
 void PointLight::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const
@@ -120,5 +122,5 @@ void PointLight::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) con
 	out[0] = LightForm::_viewProjMat;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewProjMat[i-1];
+		out[i] = _viewProjMatOffsetOne[i-1];
 }

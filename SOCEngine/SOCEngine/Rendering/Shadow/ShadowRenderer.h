@@ -28,7 +28,7 @@ namespace Rendering
 			friend class Core::Scene;
 			struct ShadowGlobalParam
 			{
-				uint	packedNumOfShadowCastingLights;
+				uint	packedNumOfShadowAtlasCapacity;
 
 				float	pointLightTexelOffset;
 				float	pointLightUnderscanScale;
@@ -103,7 +103,7 @@ namespace Rendering
 			void DeleteShadowCastingLight(const Light::LightForm*& light);
 			bool HasShadowCastingLight(const Light::LightForm*& light);
 			ushort FetchShadowCastingLightIndex(const Light::LightForm*& light);
-			uint GetPackedShadowCastingLightCount() const;
+			uint GetPackedShadowAtlasCapacity() const;
 			void MakeShadowGlobalParam(ShadowGlobalParam& outParam) const;
 
 		private: //friend class Scene
@@ -121,6 +121,8 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
 			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
+
+			bool IsWorking() const;
 		};
 	}
 }

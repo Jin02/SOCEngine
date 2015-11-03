@@ -11,8 +11,8 @@ namespace Rendering
 		class PointLight : public LightForm
 		{
 		private:
-			Math::Matrix	_viewMat[5];		// another viewMat was placed in LightForm.
-			Math::Matrix	_viewProjMat[5];	// another viewProjMat was placed in LightForm.
+			Math::Matrix	_viewMatOffsetOne[5];		// another viewMat was placed in LightForm.
+			Math::Matrix	_viewProjMatOffsetOne[5];	// another viewProjMat was placed in LightForm.
 
 			Math::Matrix	_prevViewProj;
 
