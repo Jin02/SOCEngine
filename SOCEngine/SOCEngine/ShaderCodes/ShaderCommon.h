@@ -44,16 +44,16 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 struct Directional_Spot_LightShadowParam
 {
-	half	bias;
-	half	index;	// as short
+	float	bias;
+	uint	index;	// as short
 
 	matrix	viewProjMat;
 };
 
 struct PointLightShadowParam
 {
-	half	bias;
-	half	index;	// as short
+	float	bias;
+	uint	index;	// as short
 
 	matrix	viewProjMat[6];
 };
