@@ -44,18 +44,18 @@ Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
 
 struct Directional_Spot_LightShadowParam
 {
-	float	bias;
-	uint	index;	// as short
+	float		bias;
+	uint		index;
 
-	matrix	viewProjMat;
+	matrix		viewProjMat;
 };
 
 struct PointLightShadowParam
 {
-	float	bias;
-	uint	index;	// as short
+	float		bias;
+	uint		index;
 
-	matrix	viewProjMat[6];
+	matrix		viewProjMat[6];
 };
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
@@ -103,7 +103,7 @@ cbuffer TBRParam : register( b0 )
 
 cbuffer ShadowGlobalParam : register( b4 )
 {	
-	uint	shadowGlobalParam_packedNumOfShadowCastingLights;
+	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
 	float	shadowGlobalParam_pointLightTexelOffset;
 	float	shadowGlobalParam_pointLightUnderscanScale;
 
