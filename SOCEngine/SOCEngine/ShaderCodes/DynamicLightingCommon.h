@@ -6,7 +6,7 @@
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
-#define SHADOW_KERNEL_LEVEL		0
+#define SHADOW_KERNEL_LEVEL		4
 #define SHADOW_KERNEL_WIDTH		2 * SHADOW_KERNEL_LEVEL + 1
 
 SamplerComparisonState shadowSamplerCmpState	:	register( s2 );
@@ -37,13 +37,18 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 	uint shadowIndex = (uint)g_inputSpotLightShadowParams[lightIndex].index - 1;
 	shadowUV.x += shadowIndex;
 
-	uint lightCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowCastingLights);
+	uint lightCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputSpotLightShadowParams[lightIndex].bias;
 	float depth = shadowUV.z - bias;
+	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
 
-	return Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth).xxx;
+	float3 shadowColor = g_inputSpotLightShadowColors[lightIndex].rgb;
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+
+	float shadowStrength = g_inputSpotLightShadowColors[lightIndex].a;
+	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
 }
 
 float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
@@ -57,13 +62,18 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	uint shadowIndex = (uint)g_inputDirectionalLightShadowParams[lightIndex].index - 1;
 	shadowUV.x += shadowIndex;
 
-	uint lightCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowCastingLights);
+	uint lightCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputDirectionalLightShadowParams[lightIndex].bias;
 	float depth = shadowUV.z - bias;
+	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
 
-	return Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth).xxx;
+	float3 shadowColor = g_inputDirectionalLightShadowColors[lightIndex].rgb;
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+
+	float shadowStrength = g_inputDirectionalLightShadowColors[lightIndex].a;
+	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
 }
 
 uint ComputeFaceIndex(float3 dir)
@@ -85,7 +95,7 @@ uint ComputeFaceIndex(float3 dir)
 	return res;
 }
 
-float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir)
+float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir, float shadowDistanceTerm)
 {
 	uint faceIndex = ComputeFaceIndex(-lightDir);
 
@@ -95,8 +105,8 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x = (shadowUV.x / 2.0f) + 0.5f;
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	shadowUV.xy *= 1.0f;//shadowGlobalParam_pointLightTexelOffset;
-	shadowUV.xy += 0.0f;//(shadowGlobalParam_pointLightUnderscanScale).xx;
+	shadowUV.xy *= (shadowGlobalParam_pointLightTexelOffset).xx;
+	shadowUV.xy += (shadowGlobalParam_pointLightUnderscanScale).xx;
 
 	shadowUV.y += (float)faceIndex;
 	shadowUV.y *= rcp(6); //1.0f / 6.0f;
@@ -104,13 +114,18 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index - 1;
 	shadowUV.x += shadowIndex;
 
-	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowCastingLights);
+	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - bias;
+	float depth = shadowUV.z - lerp(10.0f, 1.0f, saturate(2.5f * shadowDistanceTerm)) * bias;
+	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 
-	return Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth).xxx;
+	float3 shadowColor = g_inputPointLightShadowColors[lightIndex].rgb;
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+
+	float shadowStrength = g_inputPointLightShadowColors[lightIndex].a;
+	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
 }
 
 void RenderDirectionalLight(
@@ -216,13 +231,13 @@ void RenderPointLight(
 #else
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
 
-		resultDiffuseColor	*= attenuation;
-		resultSpecularColor	*= attenuation;
+		resultDiffuseColor	*= attenuation / 10.0f;
+		resultSpecularColor	*= attenuation / 10.0f;
 
 		uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index;
 		if(shadowIndex != 0) //isShadow == true
 		{
-			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir);
+			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
 
 			resultDiffuseColor	*= shadowColor;
 			resultSpecularColor	*= shadowColor;
