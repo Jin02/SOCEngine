@@ -21,8 +21,8 @@ namespace Rendering
 		public:
 			struct CommonParam
 			{
-				ushort	bias;
-				ushort	index;
+				float	bias;
+				uint	index;
 
 				CommonParam() : index(0), bias(0) {}
 				~CommonParam() {}
