@@ -25,7 +25,7 @@ ShadowRenderer::ShadowRenderer()
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
-	_pointLightShadowBlurSize(2.5f),
+	_pointLightShadowBlurSize(8.0f),
 	_shadowGlobalParamCB(nullptr)
 {
 }
