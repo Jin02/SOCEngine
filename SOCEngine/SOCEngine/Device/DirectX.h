@@ -54,6 +54,7 @@ namespace Device
 		ID3D11SamplerState*			_anisotropicSamplerState;
 		ID3D11SamplerState*			_linearSamplerState;
 		ID3D11SamplerState*			_pointSamplerState;
+		ID3D11SamplerState*			_shadowSamplerComparisonState;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
 		Math::Size<uint>			_backBufferSize;
@@ -104,6 +105,7 @@ namespace Device
 		GET_ACCESSOR(SamplerStateAnisotropic,				ID3D11SamplerState*,		_anisotropicSamplerState);
 		GET_ACCESSOR(SamplerStateLinear,					ID3D11SamplerState*,		_linearSamplerState);
 		GET_ACCESSOR(SamplerStatePoint,						ID3D11SamplerState*,		_pointSamplerState);
+		GET_ACCESSOR(ShadowSamplerComparisonState,			ID3D11SamplerState*,		_shadowSamplerComparisonState);
 
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;

@@ -3,7 +3,6 @@
 #include "Object.h"
 
 #define USE_RENDER_WITH_UPDATE_CB
-//#define USE_SHADOW_INVERTED_DEPTH
 
 using namespace Structure;
 using namespace Math;
@@ -26,7 +25,7 @@ ShadowRenderer::ShadowRenderer()
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
-	_pointLightShadowBlurSize(2.5f),
+	_pointLightShadowBlurSize(8.0f),
 	_shadowGlobalParamCB(nullptr)
 {
 }
@@ -295,15 +294,17 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
-			MeshCamera::RenderType::DepthOnly,
+			MeshCamera::RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
+
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::AlphaMesh,
+			MeshCamera::RenderType::Forward_AlphaTest,
 			camConstBuffer, &intersectFunc);
+
 		context->RSSetState( nullptr );
 	}
 
@@ -337,7 +338,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-	const auto& alphaTestMeshes = renderManager->GetOpaqueMeshes();
+	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
 
 	uint count = _shadowCastingPointLights.GetSize();
 	for(uint index = 0; index < count; ++index)
@@ -363,13 +364,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
-				MeshCamera::RenderType::DepthOnly,
+				MeshCamera::RenderType::Forward_DepthOnly,
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
-				MeshCamera::RenderType::AlphaMesh,
+				MeshCamera::RenderType::Forward_AlphaTest,
 				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
@@ -428,13 +429,13 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
-			MeshCamera::RenderType::DepthOnly,
+			MeshCamera::RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::AlphaMesh,
+			MeshCamera::RenderType::Forward_AlphaTest,
 			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
@@ -616,22 +617,31 @@ ushort ShadowRenderer::FetchShadowCastingLightIndex(const LightForm*& light)
 	return (ushort)index;
 }
 
-uint ShadowRenderer::GetPackedShadowCastingLightCount() const
+uint ShadowRenderer::GetPackedShadowAtlasCapacity() const
 {
-	uint directionalLightCount	= _shadowCastingDirectionalLights.GetSize()	& 0x3FF;
-	uint pointLightCount		= _shadowCastingPointLights.GetSize()		& 0x7FF;
-	uint spotLightCount			= _shadowCastingSpotLights.GetSize()		& 0x7FF;
+	uint d	= _numOfShadowCastingDirectionalLightInAtlas	& 0x3FF;
+	uint p	= _numOfShadowCastingPointLightInAtlas			& 0x7FF;
+	uint s	= _numOfShadowCastingSpotLightInAtlas			& 0x7FF;
 
-	return (pointLightCount << 21) | (spotLightCount << 10) | directionalLightCount;	
+	return (p << 21) | (s << 10) | d;
 }
 
 void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 {
-	outParam.packedNumOfShadowCastingLights = GetPackedShadowCastingLightCount();
+	outParam.packedNumOfShadowAtlasCapacity = GetPackedShadowAtlasCapacity();
 
 	float plMapRes = (float)_pointLightShadowMapResolution;
 	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
 	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
 
 	outParam.dummy = 0.0f;
+}
+
+bool ShadowRenderer::IsWorking() const
+{
+	bool has =	_shadowCastingPointLights.GetSize() > 0 ||
+				_shadowCastingSpotLights.GetSize() > 0 ||
+				_shadowCastingDirectionalLights.GetSize() > 0;
+
+	return has;
 }

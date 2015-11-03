@@ -20,4 +20,7 @@ void PointLightShadow::MakeParam(Param& outParam) const
 
 	const PointLight* light = dynamic_cast<const PointLight*>(_owner);
 	light->GetViewProjectionMatrices(outParam.viewProjMat);
+
+	for(uint i=0; i<6; ++i)
+		Math::Matrix::Transpose(outParam.viewProjMat[i], outParam.viewProjMat[i]);
 }

@@ -185,12 +185,14 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 	filter->GetIndexBuffer()->IASetBuffer(context);
 
 	ShaderGroup shaders;
-	if(renderType == RenderType::Opaque || renderType == RenderType::AlphaMesh)
-		renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::AlphaMesh);
-	else if(renderType == RenderType::Transparency)
+	if(renderType == RenderType::GBuffer_Opaque || renderType == RenderType::GBuffer_AlphaBlend)
+		renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::GBuffer_AlphaBlend);
+	else if(renderType == RenderType::Forward_Transparency)
 		renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::DepthOnly)
+	else if(renderType == RenderType::Forward_DepthOnly)
 		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
+	else if(renderType == RenderType::Forward_AlphaTest)
+		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
 
 	VertexShader* vs = shaders.vs;
 
@@ -251,7 +253,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 
 		vs->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 
-		if(ps && (renderType != RenderType::DepthOnly) )
+		if(ps && (renderType != RenderType::Forward_DepthOnly) )
 		{
 			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
 
@@ -429,7 +431,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 		
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers(0, 1, &samplerState);
+	context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &samplerState);
 
 	//GBuffer
 	{
@@ -450,7 +452,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			uint count = meshes.meshes.GetVector().size();
 
 			if(count > 0)
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::Opaque, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camConstBuffer);
 		}
 
 		//Alpha Test Mesh
@@ -467,7 +469,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::AlphaMesh, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camConstBuffer);
 
 				context->RSSetState( nullptr );
 
@@ -485,12 +487,19 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::DepthOnly, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_DepthOnly, _camConstBuffer);
 		}
 	}
 
 	// Light Culling and Deferred Shading
 	{
+		bool useShadow = shadowGlobalParamCB != nullptr;
+		if(useShadow)
+		{
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerComparisonState();
+			context->CSSetSamplers((uint)InputSamplerStateSemanticIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+		}
+
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
 		ID3D11DepthStencilView* nullDSV = nullptr;
 		context->OMSetRenderTargets(NumOfRenderTargets, nullRTVs, nullDSV);
@@ -499,12 +508,15 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->VSSetShader(nullptr, nullptr, 0);
 		context->PSSetShader(nullptr, nullptr, 0);
 		ID3D11SamplerState* nullSampler = nullptr;
-		context->PSSetSamplers(0, 1, &nullSampler);
+		context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &nullSampler);
 
 		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+
+		if(useShadow)
+			context->CSSetSamplers((uint)InputSamplerStateSemanticIndex::ShadowComprisonSamplerState, 1, &nullSampler);
 	}
 
 	// Main RT
@@ -551,7 +563,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferSemanticIndex::TBRParam, 1, &tbrCB);
 			context->PSSetConstantBuffers((uint)TBDR::InputConstBufferSemanticIndex::TBRParam, 1, &tbrCB);
 
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Transparency, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camConstBuffer);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);

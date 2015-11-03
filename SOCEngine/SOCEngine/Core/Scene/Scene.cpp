@@ -86,6 +86,7 @@ void Scene::RenderPreview()
 		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax);
 
 	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
+	_shadowRenderer->UpdateConstBuffer(_dx);
 
 	auto materials = _materialMgr->GetMaterials().GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
@@ -97,8 +98,6 @@ void Scene::RenderPreview()
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
-
-	_shadowRenderer->UpdateConstBuffer(_dx);
 }
 
 void Scene::Render()
@@ -112,7 +111,10 @@ void Scene::Render()
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, _shadowRenderer->GetShadowGlobalParamConstBuffer());
+		{
+			const Buffer::ConstBuffer* shadowCB = _shadowRenderer->IsWorking() ? _shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB);
+		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}

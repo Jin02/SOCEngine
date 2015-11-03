@@ -35,9 +35,9 @@ void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBo
 
 	Matrix proj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, 1.0f);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, _projNear);
 #else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), 1.0f, _radius);
+	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _projNear, _radius);
 #endif
 
 	Matrix& viewProj = _viewProjMat;

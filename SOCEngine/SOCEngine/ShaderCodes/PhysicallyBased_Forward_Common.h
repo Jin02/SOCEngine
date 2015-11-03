@@ -125,7 +125,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 		RenderDirectionalLight(
 			frontFaceDiffuseColor, frontFaceSpecularColor,
 			backFaceDiffuseColor, backFaceSpecularColor,
-			lightParams);
+			lightParams, vtxWorldPos);
 
 		accumulativeFrontFaceDiffuse	+= frontFaceDiffuseColor;
 		accumulativeFrontFaceSpecular	+= frontFaceSpecularColor;
@@ -133,7 +133,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
-		RenderDirectionalLight(diffuse, specular, lightParams);
+		RenderDirectionalLight(diffuse, specular, lightParams, vtxWorldPos);
 
 		accumulativeDiffuse		+= diffuse;
 		accumulativeSpecular	+= specular;

@@ -1,5 +1,6 @@
 #include "UICamera.h"
 #include "Director.h"
+#include "TBRShaderIndexSlotInfo.h"
 
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
@@ -62,7 +63,9 @@ void UICamera::Render(const Device::DirectX* dx)
 	_renderTarget->Clear(context, _clearColor);
 
 	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers(0, 1, &sampler);
+	context->PSSetSamplers(
+		(uint)Rendering::TBDR::InputSamplerStateSemanticIndex::DefaultSamplerState,
+		1, &sampler);
 
 	Math::Matrix viewProjMat;
 	{
@@ -86,7 +89,9 @@ void UICamera::Render(const Device::DirectX* dx)
 	}
 
 	ID3D11SamplerState* nullSampler = nullptr;
-	context->PSSetSamplers(0, 1, &nullSampler);
+	context->PSSetSamplers(
+		(uint)Rendering::TBDR::InputSamplerStateSemanticIndex::DefaultSamplerState,
+		1, &nullSampler);
 }
 
 Core::Component* UICamera::Clone() const 

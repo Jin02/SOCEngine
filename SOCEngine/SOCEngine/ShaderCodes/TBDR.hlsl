@@ -201,7 +201,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		lightParams.lightIndex = directionalLightIdx;
 
 		float3 diffuse, specular;
-		RenderDirectionalLight(diffuse, specular, lightParams);
+		RenderDirectionalLight(diffuse, specular, lightParams, worldPosition.xyz);
 
 		accumulativeDiffuse			+= diffuse;
 		accumulativeSpecular		+= specular;
