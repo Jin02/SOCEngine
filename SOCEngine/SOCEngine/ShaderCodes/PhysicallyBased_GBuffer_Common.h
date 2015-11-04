@@ -33,8 +33,9 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	float metallic, roughness, emission;
 	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
 
-	float3 albedo			= diffuseTex.rgb * abs(material_mainColor);
-	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f), albedo, hasDiffuseMap);
+	float3 mainColor		= abs(material_mainColor);
+	float3 albedo			= diffuseTex.rgb * mainColor;
+	albedo_emission.rgb		= lerp(float3(1.f, 1.f, 1.f) * mainColor, albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
 	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
