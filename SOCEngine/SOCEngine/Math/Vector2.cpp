@@ -40,8 +40,8 @@ namespace Math
 
 	bool Vector2::operator == (const Vector2 b) const
 	{
-		bool x = abs(this->x - b.x) < EPSILON;
-		bool y = abs(this->y - b.y) < EPSILON;
+		bool x = abs(this->x - b.x) < FLT_EPSILON;
+		bool y = abs(this->y - b.y) < FLT_EPSILON;
 
 		return x & y;
 	}

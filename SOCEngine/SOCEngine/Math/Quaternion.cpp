@@ -62,10 +62,10 @@ namespace Math
 	{
 		Quaternion q = (*this) - a;
 
-		if( abs(q.x) < EPSILON &&
-			abs(q.y) < EPSILON &&
-			abs(q.z) < EPSILON && 
-			abs(q.w) < EPSILON)
+		if( abs(q.x) < FLT_EPSILON &&
+			abs(q.y) < FLT_EPSILON &&
+			abs(q.z) < FLT_EPSILON && 
+			abs(q.w) < FLT_EPSILON)
 			return true;
 
 		return false;
@@ -143,7 +143,7 @@ namespace Math
 
 		float diff = (from.x * to.x) + (from.y * to.y) + (from.z * to.z) + (from.w * to.w);
 
-		if( (1.0f - fabs(diff)) > EPSILON )
+		if( (1.0f - fabs(diff)) > FLT_EPSILON )
 		{
 			float theta = acos( fabs(diff) );
 			float oneOverSinTheta = 1.0f / sin(theta);
@@ -199,7 +199,7 @@ namespace Math
 		{ 
 			int sign = TEST > 0 ? 1 : TEST == 0 ? 0 : -1;
 			yaw  = sign * 2 * (float)atan2(q.x, q.w); 
-			pitch = sign * PI / 2.0f; 
+			pitch = sign * MATH_PI / 2.0f; 
 			roll = 0; 
 		}
 		else

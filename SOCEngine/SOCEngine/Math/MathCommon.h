@@ -5,8 +5,7 @@
 
 namespace Math
 {
-#define PI 3.141592654f
-#define EPSILON FLT_EPSILON
+#define MATH_PI 3.141592654f
 	
 	class Vector3;
 

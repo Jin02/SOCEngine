@@ -51,9 +51,9 @@ namespace Math
 
 	bool Vector3::operator == (const Vector3& b) const
 	{
-		bool x = abs(this->x - b.x) < EPSILON;
-		bool y = abs(this->y - b.y) < EPSILON;
-		bool z = abs(this->z - b.z) < EPSILON;
+		bool x = abs(this->x - b.x) < FLT_EPSILON;
+		bool y = abs(this->y - b.y) < FLT_EPSILON;
+		bool z = abs(this->z - b.z) < FLT_EPSILON;
 
 		return x & y & z;
 	}

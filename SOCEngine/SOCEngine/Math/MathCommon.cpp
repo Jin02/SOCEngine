@@ -6,12 +6,12 @@ namespace Math
 {
 	float Common::Rad2Deg(float a)
 	{
-		return 180.0f / PI * a;
+		return 180.0f / MATH_PI * a;
 	}
 
 	float Common::Deg2Rad(float a)
 	{
-		return PI / 180.0f * a;
+		return MATH_PI / 180.0f * a;
 	}
 
 	void Common::EulerNormalize(Vector3& out, const Vector3& eulerAngles)

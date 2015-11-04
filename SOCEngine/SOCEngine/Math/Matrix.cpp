@@ -26,7 +26,7 @@ namespace Math
 			{
 				float f = abs( _m[i][j] - mat._m[i][j] );
 
-				if( f > EPSILON )
+				if( f > FLT_EPSILON )
 					return true;
 			}
 
