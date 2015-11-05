@@ -66,22 +66,22 @@ namespace Rendering
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingSpotLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
 
-			uint	_numOfShadowCastingPointLightInAtlas;			//default 16
-			uint	_numOfShadowCastingSpotLightInAtlas;			//default 16
-			uint	_numOfShadowCastingDirectionalLightInAtlas;		//default 4
+			uint	_numOfShadowCastingPointLightInAtlas;			//default 1
+			uint	_numOfShadowCastingSpotLightInAtlas;			//default 1
+			uint	_numOfShadowCastingDirectionalLightInAtlas;		//default 1
 
-			uint	_pointLightShadowMapResolution;					//default 256
-			uint	_spotLightShadowMapResolution;					//default 256
-			uint	_directionalLightShadowMapResolution;			//default 512
+			uint	_pointLightShadowMapResolution;					//default 1024
+			uint	_spotLightShadowMapResolution;					//default 1024
+			uint	_directionalLightShadowMapResolution;			//default 2048
 
-			float	_pointLightShadowBlurSize;						//default 2.5f
+			float	_pointLightShadowBlurSize;						//default 4.25
 
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
 
 		public:
-			void Initialize(uint numOfShadowCastingPointLight = 16, uint numOfShadowCastingSpotLight = 16, uint numOfShadowCastingDirectionalLight = 4);
+			void Initialize(uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
 
 		public:
 			void ResizeShadowMapAtlas(

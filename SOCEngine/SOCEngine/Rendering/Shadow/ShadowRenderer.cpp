@@ -19,13 +19,13 @@ using namespace Rendering::Manager;
 ShadowRenderer::ShadowRenderer()
 	: _pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr),
 	_directionalLightShadowMapAtlas(nullptr),
-	_pointLightShadowMapResolution(256),
-	_spotLightShadowMapResolution(256),
-	_directionalLightShadowMapResolution(512),
+	_pointLightShadowMapResolution(1024),
+	_spotLightShadowMapResolution(1024),
+	_directionalLightShadowMapResolution(2048),
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
-	_pointLightShadowBlurSize(8.0f),
+	_pointLightShadowBlurSize(4.25f),
 	_shadowGlobalParamCB(nullptr)
 {
 }
@@ -42,9 +42,7 @@ void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
 	ResizeShadowMapAtlas(	numOfShadowCastingPointLight,
 							numOfShadowCastingSpotLight,
 							numOfShadowCastingDirectionalLight,
-							256,
-							256,
-							512	);
+							-1, -1, -1 );
 
 	_shadowGlobalParamCB = new ConstBuffer;
 	_shadowGlobalParamCB->Initialize(sizeof(ShadowGlobalParam));
