@@ -58,9 +58,10 @@ namespace Math
 		static float SqrLegnth(const Vector3& a);
 		static void TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat);
 		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
+		static void FromRotationMatrix(Vector3& out, const Matrix& rotMat);
 
 	public:
-		Vector3 Normalize() const;
+		Vector3 Normalized() const;
 
 		float Length() const;
 		float Dot(const Vector3& v) const;

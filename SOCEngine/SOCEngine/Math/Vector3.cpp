@@ -244,7 +244,7 @@ namespace Math
 		return (a.x * a.x) + (a.y + a.y) + (a.z * a.z);
 	}
 
-	Vector3 Vector3::Normalize() const
+	Vector3 Vector3::Normalized() const
 	{		
 		return Vector3::Normalize(*this);
 	}
@@ -289,5 +289,69 @@ namespace Math
 		out.x = (mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z);
 		out.y = (mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z);
 		out.z = (mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z);
+	}
+
+	//http://www.gamedev.net/topic/643623-how-do-i-get-the-euler-angle-from-a-matrix/
+	void Vector3::FromRotationMatrix(Vector3& out, const Matrix& matrix)
+	{
+		Vector3 dotx = Vector3(matrix._11, matrix._12, matrix._13);
+		Vector3 doty = Vector3(matrix._21, matrix._22, matrix._23);
+		Vector3 dotz = Vector3(matrix._31, matrix._32, matrix._33);
+
+		float x = Vector3::Dot(dotx, dotx);
+
+		auto Approximately =[](float a, float b) -> bool
+		{
+			return abs(a - b) < FLT_EPSILON;
+		};
+
+		if(Approximately(x, 1.0f)==false)
+		{
+			float invx = 1.0f/sqrt(x);
+			dotx = dotx*invx;
+		}
+
+		float y = Vector3::Dot(doty,doty);
+		if(Approximately(y, 1.0f)==false)
+		{
+			float invy = 1.0f/sqrt(y);
+			doty = doty*invy;
+		}
+
+		float z = Vector3::Dot(dotz,dotz);
+		if(Approximately(z,1.0f)==false)
+		{
+			float invz = 1.0f/sqrt(z);
+			dotz = dotz*invz;
+		}
+
+		float thetaX=0;
+		float thetaY=0;
+		float thetaZ=0;
+		if(dotz.y < 1.0f)
+		{
+			if(dotz.y > -1.0f)
+			{
+				thetaX = asin(-dotz.y);
+				thetaY = atan2(dotz.x, dotz.z);
+				thetaZ = atan2(dotx.y, doty.y);
+			}
+			else
+			{
+				thetaX = MATH_PI*0.5f;
+				thetaY = -atan2(-doty.x, dotx.x);
+				thetaZ = 0;
+			}
+		}
+		else
+		{
+			thetaX = -MATH_PI * 0.5f;
+			thetaY = atan2(-doty.x, dotx.x);
+			thetaZ =0;
+		}   
+
+		out.x = thetaX;
+		out.y = thetaY;
+		out.z = thetaZ;
 	}
 }
