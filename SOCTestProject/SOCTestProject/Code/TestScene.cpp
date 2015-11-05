@@ -50,6 +50,7 @@ void TestScene::OnInitialize()
 	_testObject = importer.Load("./Resources/CornellBox/box.obj");
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 180.0f, 180));
+	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
 #endif
 	AddObject(_testObject);
 
@@ -57,12 +58,12 @@ void TestScene::OnInitialize()
 	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
 
 	Vector3 dir = _light->GetTransform()->GetForward();
-	_light->GetTransform()->UpdatePosition(Vector3(-0.4, 0.3, 2.5));
+	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
 
 	PointLight* spotLight = _light->AddComponent<PointLight>();
 //	spotLight->SetIntensity(1);
-	spotLight->SetLumen(50);
-	spotLight->SetRadius(5);
+	spotLight->SetLumen(150);
+	spotLight->SetRadius(20);
 	spotLight->ActiveShadow(true);
 //	spotLight->SetSpotAngleDegree(25.0f);
 
