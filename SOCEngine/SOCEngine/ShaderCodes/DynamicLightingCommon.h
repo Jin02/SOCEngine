@@ -105,7 +105,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x = (shadowUV.x / 2.0f) + 0.5f;
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	shadowUV.xy *= (shadowGlobalParam_pointLightTexelOffset).xx;
+	shadowUV.xy *= shadowGlobalParam_pointLightTexelOffset.xx;
 	shadowUV.xy += (shadowGlobalParam_pointLightUnderscanScale).xx;
 
 	shadowUV.y += (float)faceIndex;
@@ -118,7 +118,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - lerp(10.0f, 1.0f, saturate(2.5f * shadowDistanceTerm)) * bias;
+	float depth = shadowUV.z - lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputPointLightShadowColors[lightIndex].rgb;
