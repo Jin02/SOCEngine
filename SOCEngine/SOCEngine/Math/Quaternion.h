@@ -36,18 +36,16 @@ namespace Math
 		static void Dot(float& out, const Quaternion& a, const Quaternion& b);
 		static void Slerp(Quaternion& out, const Quaternion& from, const Quaternion& to, float t);
 		static void Lerp(Quaternion& out, const Quaternion& from, const Quaternion& to, float t);
-		static void ToEuler(Vector3& out, const Quaternion& q);
 		static void FromEuler(Quaternion& out, const Vector3& v);
 
-		static void RotationMatrix(Quaternion& out, const Matrix& m);
-		static void RotationAxis(Quaternion& out, const Vector3& axis, float angle);
-		static void RotationYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll);
+		static void FromRotationMatrix(Quaternion& out, const Matrix& m);
+		static void FromAxis(Quaternion& out, const Vector3& axis, float angle);
+		static void FromYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll);
 
 	public:
-		void Set(float x,  float y, float z, float w);
-		Quaternion Normalize();
-		Quaternion Inverse();
-		Vector3 ToEuler();
+		void Set(float x, float y, float z, float w);
+		Quaternion Normalized();
+		Quaternion Inversed();
 		void FromEuler(const Vector3& v);
 	};
 
