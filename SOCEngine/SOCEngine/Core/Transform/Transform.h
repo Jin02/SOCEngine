@@ -30,8 +30,8 @@ namespace Core
 		~Transform(void);
 
 	public:
-		static void UpdateAxisToRotationMatrix(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward);
-		static void UpdateRotationMatrixToAxis(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward);
+		static void FetchMatrixFromAxises(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward);
+		static void FetchAxisesFromRotationMatrix(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward);
 
 	public:
 		void LookAtWorld(const Transform *target, const Math::Vector3* up = nullptr);
@@ -49,8 +49,8 @@ namespace Core
 
 	public:
 		void UpdatePosition(const Math::Vector3& position);		
-		void UpdateRotation(const Math::Quaternion& quaternion, bool updateAxis = true);				
-		void UpdateEulerAngles(const Math::Vector3& euler, bool updateAxis = true);
+		void UpdateRotation(const Math::Quaternion& quaternion);				
+		void UpdateEulerAngles(const Math::Vector3& euler);
 		void UpdateScale(const Math::Vector3& scale);
 		void UpdateDirection(const Math::Vector3& dir);
 		void UpdateTransform(const Transform& transform);
@@ -68,8 +68,6 @@ namespace Core
 		void FetchLocalMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldPosition(Math::Vector3& outPosition) const;
-		void FetchWorldEulerAngle(Math::Vector3& outEuler) const;
-		void FetchWorldScale(Math::Vector3& outScale) const;
 		void FetchWorldTransform(Transform& out) const;
 
 		GET_ACCESSOR(UpdateCounter, uint, _updateCounter);
