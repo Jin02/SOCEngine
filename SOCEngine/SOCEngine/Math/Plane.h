@@ -19,7 +19,7 @@ namespace Math
 		~Plane();
 
 	public:
-		Plane		Normalize() const;
+		Plane		Normalized() const;
 		float		DistancePoint(const Vector3& p) const;
 		float		GetDistancePoint(const Vector3& v) const;
 		bool		SameSide(const Vector3& v) const;

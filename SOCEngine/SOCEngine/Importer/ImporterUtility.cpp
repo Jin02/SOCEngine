@@ -30,5 +30,5 @@ void ImporterUtility::CalculateTangent(Math::Vector3& outTangents,
 		tangent.z = (uv_31.y * vtx_21.z - uv_21.y * vtx_31.z) * r;
 	}
 	
-	outTangents = tangent.Normalize();
+	outTangents = tangent.Normalized();
 }

@@ -19,7 +19,7 @@ Plane::~Plane()
 
 }
 
-Plane Plane::Normalize() const
+Plane Plane::Normalized() const
 {
 	Plane plane;
 	Plane::Normalize(plane, (*this));

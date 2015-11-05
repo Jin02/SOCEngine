@@ -28,7 +28,7 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 	Matrix& view = _viewMat;
 	_owner->GetTransform()->FetchWorldMatrix(view);
 
-	Vector3 forward = Vector3(view._13, view._23, view._33).Normalize();
+	Vector3 forward = Vector3(view._13, view._23, view._33).Normalized();
 	const Vector3& sceneCenter = sceneBoundBox.GetCenter();
 
 	view._41 = sceneCenter.x - (forward.x * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
