@@ -13,6 +13,7 @@ ShadowCommon::ShadowCommon(const LightForm* owner, const std::function<void()>& 
 	: _owner(owner), _bias(0.001f), _ownerAddUpdateCounter(ownerUpdateCounter)
 {
 	_color = Color::Black();
+	_color.a = 0.5f;
 }
 
 ShadowCommon::~ShadowCommon()
