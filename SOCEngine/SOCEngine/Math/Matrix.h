@@ -35,10 +35,10 @@ namespace Math
 		const Vector4 operator* (const Vector4& v) const;
 
 	public:
-		static void RotationQuaternion(Matrix& out, const Quaternion& q);
+		static void RotateUsingQuaternion(Matrix& out, const Quaternion& q);
 		static void PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf);
 		static void OrthoLH(Matrix& out, float w, float h, float zn, float zf);
-		static void RotationAxis(Matrix& out, const Vector3& v, float angle);
+		static void RotateUsingAxis(Matrix& out, const Vector3& v, float angle);
 
 	public:
 		void Set( float _11, float _12, float _13, float _14,

@@ -312,7 +312,7 @@ namespace Math
 				out._m[i][j] *= det;
 	}
 
-	void Matrix::RotationQuaternion(Matrix& out, const Quaternion& q)
+	void Matrix::RotateUsingQuaternion(Matrix& out, const Quaternion& q)
 	{
 		Identity(out);
 
@@ -354,7 +354,7 @@ namespace Math
 		out._m[3][2] = zn / (zn - zf);
 	}
 
-	void Matrix::RotationAxis(Matrix& out, const Vector3& v, float angle)
+	void Matrix::RotateUsingAxis(Matrix& out, const Vector3& v, float angle)
 	{
 		Vector3 nv = Vector3::Normalize(v);
 		float sangle, cangle, cdiff;
