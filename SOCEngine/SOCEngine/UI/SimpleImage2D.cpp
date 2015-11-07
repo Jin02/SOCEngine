@@ -35,7 +35,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
 
 		Material::CustomShader customShader;
 		{
@@ -134,10 +134,10 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 		_meshFilter->GetVertexBuffer()->IASetBuffer(context);
 		_meshFilter->GetIndexBuffer()->IASetBuffer(context);
 
-		vs->SetShaderToContext(context);
-		vs->SetInputLayoutToContext(context);
+		vs->BindShaderToContext(context);
+		vs->BindInputLayoutToContext(context);
 
-		ps->SetShaderToContext(context);
+		ps->BindShaderToContext(context);
 
 		std::vector<Shader::ShaderForm::InputConstBuffer> constBuffers;
 		{
@@ -151,8 +151,8 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 			textures.push_back(Shader::ShaderForm::InputTexture(0, tex, false, false, false, true));
 		}
 
-		vs->UpdateResources(context, &constBuffers, nullptr, nullptr);
-		ps->UpdateResources(context, nullptr, &textures, nullptr);
+		vs->BindResourcesToContext(context, &constBuffers, nullptr, nullptr);
+		ps->BindResourcesToContext(context, nullptr, &textures, nullptr);
 		context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
 	}
 }

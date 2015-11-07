@@ -22,10 +22,11 @@ namespace Rendering
 		class ShaderForm
 		{
 		public:
-			enum Type
+			enum class Type
 			{
 				Invalid,
 				Vertex,
+				Geometry,
 				Pixel
 			};
 
@@ -35,7 +36,7 @@ namespace Rendering
 
 		public:
 			ShaderForm(ID3DBlob* blob);
-			virtual ~ShaderForm(void);
+			~ShaderForm(void);
 
 		public:
 			struct Usage

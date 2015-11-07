@@ -1,6 +1,7 @@
 #include "ShaderManager.h"
 #include "Utility.h"
 #include <Shlwapi.h>
+#include "Director.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -10,6 +11,7 @@ using namespace Utility;
 
 #define VS_FULL_COMMAND(fileName, mainFunc) fileName + ":vs:" + mainFunc
 #define PS_FULL_COMMAND(fileName, mainFunc) fileName + ":ps:" + mainFunc
+#define GS_FULL_COMMAND(fileName, mainFunc) fileName + ":gs:" + mainFunc
 
 ShaderManager::ShaderManager()
 {
@@ -241,7 +243,8 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 		shader = new VertexShader(blob);
 
-		bool success = shader->CreateShader(vertexDeclations);		
+		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		bool success = shader->Create(dx, vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
 		std::string key = VS_FULL_COMMAND(fileName, mainFunc);
@@ -267,7 +270,10 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new PixelShader(blob);
-		ASSERT_COND_MSG(shader->CreateShader(), "Error, Not Created PS");
+
+		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		ID3D11Device* device = dx->GetDevice();
+		ASSERT_COND_MSG(shader->Create(device), "Error, Not Created PS");
 
 		std::string key = PS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
@@ -320,13 +326,13 @@ ShaderForm* ShaderManager::FindShader(const std::string& fileName, const std::st
 VertexShader* ShaderManager::FindVertexShader(const std::string& fileName, const std::string& mainFunc)
 {
 	auto findIter = _shaders.find(VS_FULL_COMMAND(fileName, mainFunc));
-	return findIter == _shaders.end() ? nullptr : dynamic_cast<VertexShader*>(findIter->second);
+	return findIter == _shaders.end() ? nullptr : static_cast<VertexShader*>(findIter->second);
 }
 
 PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const std::string& mainFunc)
 {
 	auto findIter = _shaders.find(PS_FULL_COMMAND(fileName, mainFunc));
-	return findIter == _shaders.end() ? nullptr : dynamic_cast<PixelShader*>(findIter->second);
+	return findIter == _shaders.end() ? nullptr : static_cast<PixelShader*>(findIter->second);
 }
 
 void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::ShaderForm* shader)
@@ -351,4 +357,38 @@ std::string ShaderManager::MakePartlyCommand(const std::string& shaderName, cons
 std::string ShaderManager::MakeFullCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType)
 {
 	return shaderName + ":" + shaderType + ":" + shaderMainFuncName;
+}
+
+GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros)
+{
+	std::string fileName, mainFunc;
+
+	if(CommandValidator(partlyCommand, "gs", &fileName, &mainFunc) == false)
+		return nullptr;
+
+	GeometryShader* shader = FindGeometryShader(fileName, mainFunc);
+
+	if(shader == nullptr)
+	{
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "gs", mainFunc, useRecycle, macros);
+		if(blob == nullptr)
+			return nullptr;
+
+		shader = new GeometryShader(blob);
+
+		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		ID3D11Device* device = dx->GetDevice();
+		ASSERT_COND_MSG(shader->Create(device), "Error, Can't create GS");
+
+		std::string key = GS_FULL_COMMAND(fileName, mainFunc);
+		_shaders.insert(std::make_pair(key, shader));
+	}
+
+	return shader;
+}
+
+GeometryShader*	ShaderManager::FindGeometryShader(const std::string& fileName, const std::string& mainFunc)
+{
+	auto findIter = _shaders.find(GS_FULL_COMMAND(fileName, mainFunc));
+	return findIter == _shaders.end() ? nullptr : static_cast<GeometryShader*>(findIter->second);
 }
