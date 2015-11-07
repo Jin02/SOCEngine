@@ -35,7 +35,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
 
 		Material::CustomShader customShader;
 		{

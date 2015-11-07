@@ -47,7 +47,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 
 		Shader::VertexShader*	vs = nullptr;
 		Shader::PixelShader*	ps = nullptr;
-		factory.LoadShader("SimpleUIImage2D", "VS", "PS", nullptr, &vs, &ps);
+		factory.LoadShader("SimpleUIImage2D", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
 
 		Material::CustomShader customShader;
 		{

@@ -13,6 +13,7 @@ namespace Rendering
 			{
 				bool loadVS;
 				bool loadPS;
+				bool loadGS;
 				bool isOnlyHasPath;
 			};
 
@@ -31,10 +32,11 @@ namespace Rendering
 
 		public:
 			LoadShaderResult LoadShader(const std::string& shaderName,
-				const std::string& mainVSFuncName, const std::string& mainPSFuncName,
+				const std::string& mainVSFuncName, const std::string& mainPSFuncName, const std::string& mainGSFuncName,
 				const std::vector<Shader::ShaderMacro>* macros,
-				Shader::VertexShader** outVertexShader,
-				Shader::PixelShader** outPixelShader)
+				Shader::VertexShader**		outVertexShader,
+				Shader::PixelShader**		outPixelShader,
+				Shader::GeometryShader**	outGeometryShader)
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
@@ -72,15 +74,23 @@ namespace Rendering
 				if(mainPSFuncName.empty() == false)
 					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, macros);
 
+				Shader::GeometryShader* gs = nullptr;
+				if(mainPSFuncName.empty() == false)
+					gs = _shaderMgr->LoadGeometryShader(folderPath, baseCommand + mainGSFuncName, true, macros);
+
 				if(outVertexShader)
 					(*outVertexShader) = vs;
 	
 				if(outPixelShader)
 					(*outPixelShader) = ps;
 
+				if(outGeometryShader)
+					(*outGeometryShader) = gs;
+
 				LoadShaderResult result;
 				result.loadVS = vs != nullptr;
 				result.loadPS = ps != nullptr;
+				result.loadGS = gs != nullptr;
 				result.isOnlyHasPath = isOnlyHasPath;
 
 				return result;

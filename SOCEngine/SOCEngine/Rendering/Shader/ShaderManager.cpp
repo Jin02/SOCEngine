@@ -11,6 +11,7 @@ using namespace Utility;
 
 #define VS_FULL_COMMAND(fileName, mainFunc) fileName + ":vs:" + mainFunc
 #define PS_FULL_COMMAND(fileName, mainFunc) fileName + ":ps:" + mainFunc
+#define GS_FULL_COMMAND(fileName, mainFunc) fileName + ":gs:" + mainFunc
 
 ShaderManager::ShaderManager()
 {
@@ -356,4 +357,38 @@ std::string ShaderManager::MakePartlyCommand(const std::string& shaderName, cons
 std::string ShaderManager::MakeFullCommand(const std::string& shaderName, const std::string& shaderMainFuncName, const std::string& shaderType)
 {
 	return shaderName + ":" + shaderType + ":" + shaderMainFuncName;
+}
+
+GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros)
+{
+	std::string fileName, mainFunc;
+
+	if(CommandValidator(partlyCommand, "gs", &fileName, &mainFunc) == false)
+		return nullptr;
+
+	GeometryShader* shader = FindGeometryShader(fileName, mainFunc);
+
+	if(shader == nullptr)
+	{
+		ID3DBlob* blob = CreateBlob(folderPath, fileName, "gs", mainFunc, useRecycle, macros);
+		if(blob == nullptr)
+			return nullptr;
+
+		shader = new GeometryShader(blob);
+
+		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		ID3D11Device* device = dx->GetDevice();
+		ASSERT_COND_MSG(shader->Create(device), "Error, Can't create GS");
+
+		std::string key = GS_FULL_COMMAND(fileName, mainFunc);
+		_shaders.insert(std::make_pair(key, shader));
+	}
+
+	return shader;
+}
+
+GeometryShader*	ShaderManager::FindGeometryShader(const std::string& fileName, const std::string& mainFunc)
+{
+	auto findIter = _shaders.find(GS_FULL_COMMAND(fileName, mainFunc));
+	return findIter == _shaders.end() ? nullptr : static_cast<GeometryShader*>(findIter->second);
 }

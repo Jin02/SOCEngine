@@ -64,29 +64,32 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-	auto LoadShader = [](const std::string& fileName, const std::string& vsMainName, const std::string& psMainName, const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr)
+	auto LoadShader = [](
+		const std::string& fileName,
+		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
+		const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr) -> ShaderGroup
 	{
 		Factory::EngineFactory shaderLoader(shaderMgr);
 
 		ShaderGroup shaders;
-		shaderLoader.LoadShader(fileName, vsMainName, psMainName, macros, &shaders.vs, &shaders.ps);
+		shaderLoader.LoadShader(fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);
 
-		ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
+		ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load shader");
 		return shaders;
 	};
 
 	ShaderGroup shader;
 	{
 		if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
-			shader = LoadShader(fileName, "VS", "OnlyAlpaTestWithDiffusePS", &targetShaderMacros, resourceManager->GetShaderManager());
+			shader = LoadShader(fileName, "VS", "OnlyAlpaTestWithDiffusePS", "", &targetShaderMacros, resourceManager->GetShaderManager());
 		else
-			shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
+			shader = LoadShader(fileName, "VS", "PS", "", &targetShaderMacros, resourceManager->GetShaderManager());
 
 		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 
 		if(meshType == Geometry::MeshRenderer::Type::Transparent)
 		{
-			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
+			shader = LoadShader(fileName, "DepthOnlyVS", "", "", &targetShaderMacros, resourceManager->GetShaderManager());
 			_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 		}
 	}
