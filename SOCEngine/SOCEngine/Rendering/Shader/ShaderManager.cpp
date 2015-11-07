@@ -241,7 +241,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 		shader = new VertexShader(blob);
 
-		bool success = shader->CreateShader(vertexDeclations);		
+		bool success = shader->Create(vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
 		std::string key = VS_FULL_COMMAND(fileName, mainFunc);
@@ -267,7 +267,7 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 			return nullptr;
 
 		shader = new PixelShader(blob);
-		ASSERT_COND_MSG(shader->CreateShader(), "Error, Not Created PS");
+		ASSERT_COND_MSG(shader->Create(), "Error, Not Created PS");
 
 		std::string key = PS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));

@@ -1,5 +1,4 @@
 #include "PixelShader.h"
-#include "Director.h"
 
 using namespace Rendering::Shader;
 
@@ -13,12 +12,10 @@ PixelShader::~PixelShader(void)
 	SAFE_RELEASE(_shader);
 }
 
-bool PixelShader::CreateShader()
+bool PixelShader::Create(ID3D11Device* device)
 {
 	if(_blob == nullptr)
 		return false;
-
-	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
 
 	HRESULT hr = device->CreatePixelShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader);
 	_blob->Release();
@@ -29,12 +26,12 @@ bool PixelShader::CreateShader()
 	return true;
 }
 
-void PixelShader::SetShaderToContext(ID3D11DeviceContext* context)
+void PixelShader::BindShaderToContext(ID3D11DeviceContext* context)
 {
 	context->PSSetShader(_shader, nullptr, 0);
 }
 
-void PixelShader::UpdateResources(
+void PixelShader::BindResourcesToContext(
 	ID3D11DeviceContext* context,
 	const std::vector<InputConstBuffer>* constBuffers,
 	const std::vector<InputTexture>* textures,

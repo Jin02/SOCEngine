@@ -198,8 +198,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 
 	if(vs)
 	{
-		shaders.vs->SetShaderToContext(context);
-		shaders.vs->SetInputLayoutToContext(context);
+		shaders.vs->BindShaderToContext(context);
+		shaders.vs->BindInputLayoutToContext(context);
 	}
 
 	Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
@@ -226,8 +226,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 			VertexShader* vs = shaderGroup.vs;
 			ASSERT_COND_MSG(vs, "VS is null");
 			{
-				vs->SetShaderToContext(context);
-				vs->SetInputLayoutToContext(context);
+				vs->BindShaderToContext(context);
+				vs->BindInputLayoutToContext(context);
 			}
 		}
 
@@ -251,14 +251,14 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		const auto& textures	= material->GetTextures();
 		const auto& srBuffers	= material->GetShaderResourceBuffers();
 
-		vs->UpdateResources(context, &constBuffers, &textures, &srBuffers);
+		vs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
 		if(ps && (renderType != RenderType::Forward_DepthOnly) )
 		{
-			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
+			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
-			ps->SetShaderToContext(context);
-			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
+			ps->BindShaderToContext(context);
+			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 		else
 		{

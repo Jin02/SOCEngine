@@ -13,13 +13,13 @@ namespace Rendering
 
 		public:
 			PixelShader(ID3DBlob* blob);
-			virtual ~PixelShader(void);
+			~PixelShader(void);
 
 		public:
-			bool CreateShader();
+			bool Create(ID3D11Device* device);
 			
-			void SetShaderToContext(ID3D11DeviceContext* context);
-			void UpdateResources(ID3D11DeviceContext* context, 
+			void BindShaderToContext(ID3D11DeviceContext* context);
+			void BindResourcesToContext(ID3D11DeviceContext* context, 
 				const std::vector<InputConstBuffer>*			constBuffers, 
 				const std::vector<InputTexture>*				textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);

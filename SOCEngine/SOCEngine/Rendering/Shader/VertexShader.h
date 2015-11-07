@@ -26,23 +26,23 @@ namespace Rendering
 
 		public:
 			VertexShader(ID3DBlob* blob);
-			virtual ~VertexShader(void);
+			~VertexShader(void);
 
 		public:
 			GET_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
 
 		public:
-			bool CreateShader(const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			bool Create(const Device::DirectX* dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
 			void Clear(ID3D11DeviceContext* context,
 				const std::vector<InputConstBuffer>*			constBuffers, 
 				const std::vector<InputTexture>*				textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);
 
 		public:
-			void SetShaderToContext(ID3D11DeviceContext* context);
-			void SetInputLayoutToContext(ID3D11DeviceContext* context);
+			void BindShaderToContext(ID3D11DeviceContext* context);
+			void BindInputLayoutToContext(ID3D11DeviceContext* context);
 
-			void UpdateResources(ID3D11DeviceContext* context,
+			void BindResourcesToContext(ID3D11DeviceContext* context,
 				const std::vector<InputConstBuffer>*			constBuffers, 
 				const std::vector<InputTexture>*				textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);
