@@ -322,6 +322,12 @@
     <Filter Include="ShaderCodes\Mesh\Forward">
       <UniqueIdentifier>{28b67952-e491-4f4b-a70b-59b3aeb30dd7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Texture\2D">
+      <UniqueIdentifier>{72b1e4ce-4715-471a-bb17-73f085bb39e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\3D">
+      <UniqueIdentifier>{c51e7192-d4a6-4e3f-b061-bd0c1e25c5f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -630,9 +636,6 @@
     <ClInclude Include="GPGPU\CSRWTexture.h">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\Texture2D.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="GPGPU\CSOutput.h">
       <Filter>GPGPU\DirectCompute\Output</Filter>
     </ClInclude>
@@ -749,6 +752,12 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture2D.h">
+      <Filter>Rendering\Texture\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture3D.h">
+      <Filter>Rendering\Texture\3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -941,9 +950,6 @@
     <ClCompile Include="GPGPU\CSRWTexture.cpp">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="GPGPU\CSOutput.cpp">
       <Filter>GPGPU\DirectCompute\Output</Filter>
     </ClCompile>
@@ -1048,6 +1054,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <Filter>Rendering\Shadow\Lights\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
+      <Filter>Rendering\Texture\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture3D.cpp">
+      <Filter>Rendering\Texture\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
