@@ -101,6 +101,17 @@ cbuffer TBRParam : register( b0 )
 	float4	tbrParam_cameraWorldPosition;
 };
 
+cbuffer Transform : register( b1 )		//Object World
+{
+	matrix transform_world;
+};
+
+cbuffer Camera : register( b2 )		//Camera
+{
+	matrix camera_view;
+	matrix camera_viewProj;
+};
+
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
