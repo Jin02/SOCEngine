@@ -328,6 +328,15 @@
     <Filter Include="Rendering\Texture\3D">
       <UniqueIdentifier>{c51e7192-d4a6-4e3f-b061-bd0c1e25c5f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI">
+      <UniqueIdentifier>{4647d23c-888a-4437-8494-0c5590f10ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\GI">
+      <UniqueIdentifier>{458642cf-7258-4b53-badc-db83cde099ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\GI\Voxelization">
+      <UniqueIdentifier>{760adfc1-f8db-4f1e-9bb7-8bc52b68c99d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -759,6 +768,12 @@
     <ClInclude Include="Rendering\Texture\Texture3D.h">
       <Filter>Rendering\Texture\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Voxelization_Common.h">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1061,6 +1076,9 @@
     <ClCompile Include="Rendering\Texture\Texture3D.cpp">
       <Filter>Rendering\Texture\3D</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\GI\Voxelization.cpp">
+      <Filter>Rendering\GI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1095,6 +1113,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
