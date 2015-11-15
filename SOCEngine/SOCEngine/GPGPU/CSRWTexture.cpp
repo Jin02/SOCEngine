@@ -5,7 +5,7 @@ using namespace GPGPU::DirectCompute;
 using namespace Rendering::Texture;
 
 
-CSRWTexture::CSRWTexture() : CSOutput(), _renderTexture(nullptr)
+CSRWTexture::CSRWTexture() : UnorderedAccessView(), _renderTexture(nullptr)
 {
 }
 
@@ -22,11 +22,11 @@ void CSRWTexture::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, u
 	_renderTexture->Initialize(size, format, bindFlag, 1);
 
 	// create uav
-	CSOutput::Initialize(format, size.w * size.h, _renderTexture->GetTexture(), CSOutput::Type::Texture);
+	UnorderedAccessView::Initialize(format, size.w * size.h, _renderTexture->GetTexture(), UnorderedAccessView::Type::Texture);
 }
 
 void CSRWTexture::Destroy()
 {
 	SAFE_DELETE(_renderTexture);
-	CSOutput::Destroy();
+	UnorderedAccessView::Destroy();
 }

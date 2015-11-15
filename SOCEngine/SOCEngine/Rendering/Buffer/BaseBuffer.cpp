@@ -10,7 +10,7 @@ BaseBuffer::BaseBuffer() : _buffer(nullptr)
 
 BaseBuffer::~BaseBuffer()
 {
-	SAFE_RELEASE(_buffer);
+	Destory();
 }
 
 void BaseBuffer::UpdateSubResource(ID3D11DeviceContext* context, const void* data)
@@ -37,4 +37,9 @@ void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const
 	memcpy(mem, data, size);
 
 	context->Unmap(_buffer, 0);
+}
+
+void BaseBuffer::Destory()
+{
+	SAFE_RELEASE(_buffer);
 }

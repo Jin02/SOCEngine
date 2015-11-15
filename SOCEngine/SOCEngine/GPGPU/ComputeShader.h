@@ -36,7 +36,7 @@ namespace GPGPU
 			struct Output
 			{
 				unsigned int idx;
-				CSOutput* output;
+				Rendering::Shader::UnorderedAccessView* output;
 				Output() : idx(0), output(nullptr){}
 				~Output(){}
 			};

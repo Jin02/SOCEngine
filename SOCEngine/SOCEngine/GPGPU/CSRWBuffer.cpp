@@ -4,7 +4,7 @@
 using namespace Device;
 using namespace GPGPU::DirectCompute;
 
-CSRWBuffer::CSRWBuffer() : CSOutput(), 
+CSRWBuffer::CSRWBuffer() : UnorderedAccessView(), 
 	_buffer(nullptr), _srv(nullptr)
 {
 }
@@ -45,12 +45,12 @@ void CSRWBuffer::Initialize(DXGI_FORMAT format, uint stride, uint num)
 		ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. does not create srv");
 	}
 
-	CSOutput::Initialize(format, num, _buffer, CSOutput::Type::Buffer);	
+	UnorderedAccessView::Initialize(format, num, _buffer, UnorderedAccessView::Type::Buffer);	
 }
 
 void CSRWBuffer::Destroy()
 {
-	CSOutput::Destroy();
+	UnorderedAccessView::Destroy();
 
 	SAFE_RELEASE(_srv);
 	SAFE_RELEASE(_buffer);

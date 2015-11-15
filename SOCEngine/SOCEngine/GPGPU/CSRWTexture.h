@@ -1,13 +1,13 @@
 #pragma once
 
 #include "RenderTexture.h"
-#include "CSOutput.h"
+#include "UnorderedAccessView.h"
 
 namespace GPGPU
 {
 	namespace DirectCompute
 	{
-		class CSRWTexture : public CSOutput
+		class CSRWTexture : public Rendering::Shader::UnorderedAccessView
 		{
 		private:
 			Rendering::Texture::RenderTexture*		_renderTexture;

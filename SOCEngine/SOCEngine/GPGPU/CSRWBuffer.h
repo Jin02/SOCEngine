@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CSOutput.h"
+#include "UnorderedAccessView.h"
 
 namespace GPGPU
 {
 	namespace DirectCompute
 	{
-		class CSRWBuffer : public CSOutput
+		class CSRWBuffer : public Rendering::Shader::UnorderedAccessView
 		{
 		private:
 			ID3D11Buffer*				_buffer;
