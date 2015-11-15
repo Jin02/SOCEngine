@@ -58,28 +58,44 @@ void CameraForm::CalcAspect()
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
 }
 
+void CameraForm::GetPerspectiveMatrix(Math::Matrix &outMatrix, bool isInverted) const
+{
+	float fovRadian = Math::Common::Deg2Rad(_fieldOfViewDegree);
+
+	float clippingNear	= _clippingNear;
+	float clippingFar	= _clippingFar;
+
+	if(isInverted)
+	{
+		clippingNear	= _clippingFar;
+		clippingFar		= _clippingNear;
+	}
+
+	Matrix::PerspectiveFovLH(outMatrix, _aspect, fovRadian, clippingNear, clippingFar);
+}
+
+void CameraForm::GetOrthogonalMatrix(Math::Matrix &outMatrix, bool isInverted, const Math::Size<uint>* customWH) const
+{
+	const Size<uint>& wh = customWH ? (*customWH) : Device::Director::GetInstance()->GetBackBufferSize();
+
+	float clippingNear	= _clippingNear;
+	float clippingFar	= _clippingFar;
+
+	if(isInverted)
+	{
+		clippingNear	= _clippingFar;
+		clippingFar		= _clippingNear;
+	}
+
+	Matrix::OrthoLH(outMatrix, (float)(wh.w), (float)(wh.h), clippingNear, clippingFar);
+}
+
 void CameraForm::GetProjectionMatrix(Math::Matrix& outMatrix, bool isInverted) const
 {
 	if(_projectionType == ProjectionType::Perspective)
-	{
-		float fovRadian = Math::Common::Deg2Rad(_fieldOfViewDegree);
-
-		float clippingNear	= _clippingNear;
-		float clippingFar	= _clippingFar;
-
-		if(isInverted)
-		{
-			clippingNear	= _clippingFar;
-			clippingFar		= _clippingNear;
-		}
-
-		Matrix::PerspectiveFovLH(outMatrix, _aspect, fovRadian, clippingNear, clippingFar);
-	}
+		GetPerspectiveMatrix(outMatrix, isInverted);
 	else if(_projectionType == ProjectionType::Orthographic)
-	{
-		const Size<unsigned int>& backBufferSize = Device::Director::GetInstance()->GetBackBufferSize();
-		Matrix::OrthoLH(outMatrix, (float)(backBufferSize.w), (float)(backBufferSize.h), _clippingNear, _clippingFar);
-	}
+		GetOrthogonalMatrix(outMatrix, isInverted);
 }
 
 void CameraForm::GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix)
