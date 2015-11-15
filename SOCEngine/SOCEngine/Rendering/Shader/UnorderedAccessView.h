@@ -2,11 +2,11 @@
 
 #include "DirectX.h"
 
-namespace GPGPU
+namespace Rendering
 {
-	namespace DirectCompute
+	namespace Shader
 	{
-		class CSOutput
+		class UnorderedAccessView
 		{
 		public:
 			enum class Type
@@ -19,8 +19,8 @@ namespace GPGPU
 			ID3D11UnorderedAccessView*		_uav;
 
 		public:
-			CSOutput();
-			virtual ~CSOutput();
+			UnorderedAccessView();
+			virtual ~UnorderedAccessView();
 
 		public:
 			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, Type type);

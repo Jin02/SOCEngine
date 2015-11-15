@@ -1,18 +1,18 @@
-#include "CSOutput.h"
+#include "UnorderedAccessView.h"
 #include "Director.h"
 
-using namespace GPGPU::DirectCompute;
+using namespace Rendering::Shader;
 
-CSOutput::CSOutput() : _uav(nullptr)
+UnorderedAccessView::UnorderedAccessView() : _uav(nullptr)
 {
 }
 
-CSOutput::~CSOutput()
+UnorderedAccessView::~UnorderedAccessView()
 {
 	Destroy();
 }
 
-void CSOutput::Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, Type type)
+void UnorderedAccessView::Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, Type type)
 {
 	D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
@@ -34,7 +34,7 @@ void CSOutput::Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, Cant create UAV");
 }
 
-void CSOutput::Destroy()
+void UnorderedAccessView::Destroy()
 {
 	SAFE_RELEASE(_uav);
 }
