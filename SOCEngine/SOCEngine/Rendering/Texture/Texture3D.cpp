@@ -3,7 +3,7 @@
 
 using namespace Rendering::Texture;
 
-Texture3D::Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex, bool hasAlpha) 
+Texture3D::Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex) 
 	: _srv(srv), _texture(tex)
 {
 }

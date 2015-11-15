@@ -16,12 +16,12 @@ namespace Rendering
 			ID3D11ShaderResourceView*	_srv;
 
 		public:
-			Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex, bool hasAlpha);
+			Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex);
 			virtual ~Texture3D();
 
 		protected:
 			// if SampleCount = 0, sampleCount = msaa.count
-			void Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int sampleCount);
+			void Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int mipLevels);
 
 		public:
 			// w, h, depth
