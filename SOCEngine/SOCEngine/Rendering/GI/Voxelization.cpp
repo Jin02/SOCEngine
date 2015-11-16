@@ -7,6 +7,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::GI;
 using namespace Rendering::Texture;
 using namespace Rendering::Camera;
+using namespace Rendering::Shader;
 
 Voxelization::Voxelization()
 	: _viewProjAxisesConstBuffer(nullptr), _infoConstBuffer(nullptr),
@@ -72,6 +73,17 @@ void Voxelization::Destroy()
 
 void Voxelization::Clear(Device::DirectX* dx)
 {
+	ID3D11DeviceContext* context = dx->GetContext();
+	float clearValues[4] = {0.0f, };
+
+	for(uint i=0; i<_numOfCascades; ++i)
+	{
+		const UnorderedAccessView* uav = _voxelColorMaps[i]->GetUnorderedAccessView();
+		context->ClearUnorderedAccessViewFloat(uav->GetView(), clearValues);
+
+		uav = _voxelNormalMaps[i]->GetUnorderedAccessView();
+		context->ClearUnorderedAccessViewFloat(uav->GetView(), clearValues);
+	}
 }
 
 void Voxelization::Voxelize(Device::DirectX* dx, const MeshCamera* camera)
