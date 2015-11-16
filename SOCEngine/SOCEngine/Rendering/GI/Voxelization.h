@@ -55,8 +55,8 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void Clear(Device::DirectX* dx);
-			void Voxelize(Device::DirectX* dx, const Camera::MeshCamera* camera);
+			void Clear(const Device::DirectX*& dx);
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager);
 
 		public:
 			void UpdateInitVoxelizationInfo(const Info& info);

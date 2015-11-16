@@ -8,6 +8,7 @@ using namespace Rendering::GI;
 using namespace Rendering::Texture;
 using namespace Rendering::Camera;
 using namespace Rendering::Shader;
+using namespace Rendering::Manager;
 
 Voxelization::Voxelization()
 	: _viewProjAxisesConstBuffer(nullptr), _infoConstBuffer(nullptr),
@@ -71,7 +72,7 @@ void Voxelization::Destroy()
 	_viewProjAxisesConstBuffer->Destory();
 }
 
-void Voxelization::Clear(Device::DirectX* dx)
+void Voxelization::Clear(const Device::DirectX*& dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 	float clearValues[4] = {0.0f, };
@@ -86,7 +87,7 @@ void Voxelization::Clear(Device::DirectX* dx)
 	}
 }
 
-void Voxelization::Voxelize(Device::DirectX* dx, const MeshCamera* camera)
+void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager)
 {
 	Math::Matrix camWorldMat;
 	{
@@ -107,11 +108,39 @@ void Voxelization::Voxelize(Device::DirectX* dx, const MeshCamera* camera)
 		_changedInitVoxelizationInfo = false;
 	}
 
+	Clear(dx);
 	Vector3 camWorldPos(camWorldMat._41, camWorldMat._42, camWorldMat._43);
 
 	float cameraNear = camera->GetNear();
 	float cameraFar  = camera->GetFar();
 	ID3D11DeviceContext* context = dx->GetContext();
+
+	D3D11_VIEWPORT originViewport;
+	{
+		uint vpNum = 1;
+		context->RSGetViewports(&vpNum, &originViewport);
+	}
+	ID3D11RasterizerState* originRSState = nullptr;
+	context->RSGetState(&originRSState);
+
+	ID3D11DepthStencilState* originDepthState = nullptr;
+	uint originDepthStateRef = 0;
+	context->OMGetDepthStencilState(&originDepthState, &originDepthStateRef);
+
+	D3D11_VIEWPORT viewport;
+	{
+		viewport.TopLeftX	= 0.0f;
+		viewport.TopLeftY	= 0.0f;
+		viewport.MinDepth	= 0.0f;
+		viewport.MaxDepth	= 1.0f;
+		viewport.Width		= (float)_initVoxelizationInfo.dimension;
+		viewport.Height		= (float)_initVoxelizationInfo.dimension;
+	}
+	context->RSSetViewports(1, &viewport);
+	context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
+	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
+	float blendFactor[1] = {0, };
+	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 	for(uint currentCascade=0; currentCascade<_numOfCascades; ++currentCascade)
 	{
@@ -172,8 +201,17 @@ void Voxelization::Voxelize(Device::DirectX* dx, const MeshCamera* camera)
 
 		// Render Voxel
 		{
+			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr);
+
+			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::Voxelization, nullptr);
 		}
 	}
+
+	context->RSSetViewports(1, &originViewport);
+	context->RSSetState(originRSState);
+	context->OMSetDepthStencilState(originDepthState, originDepthStateRef);
 }
 
 void Voxelization::UpdateInitVoxelizationInfo(const Info& info)
