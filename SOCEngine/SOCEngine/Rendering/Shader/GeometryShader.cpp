@@ -27,6 +27,11 @@ bool GeometryShader::Create(ID3D11Device* device)
 	return true;
 }
 
+void GeometryShader::BindShaderToContext(ID3D11DeviceContext* context)
+{
+	context->GSSetShader(_shader, nullptr, 0);
+}
+
 void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 								   const std::vector<InputConstBuffer>* constBuffers,
 								   const std::vector<InputTexture>* textures,
