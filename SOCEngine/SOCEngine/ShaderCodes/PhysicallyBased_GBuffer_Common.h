@@ -3,6 +3,7 @@
 #ifndef __SOC_PHYSICALLY_BASED_GBUFFER_COMMON_H__
 #define __SOC_PHYSICALLY_BASED_GBUFFER_COMMON_H__
 
+#include "ShaderCommon.h"
 #include "PhysicallyBased_Common.h"
 
 struct GBuffer
