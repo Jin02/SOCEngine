@@ -193,13 +193,11 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
 	else if(renderType == RenderType::Forward_AlphaTest)
 		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
-
-	VertexShader* vs = shaders.vs;
-
-	if(vs)
+	else if(renderType == RenderType::Voxelization)
+		renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
+	else
 	{
-		shaders.vs->BindShaderToContext(context);
-		shaders.vs->BindInputLayoutToContext(context);
+		ASSERT_MSG("Error, Unsupported renderType");
 	}
 
 	Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
@@ -209,6 +207,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		Material* material = (*iter);
 		const Material::CustomShader& customShader = material->GetCustomShader();
 		PixelShader* ps = shaders.ps;
+		VertexShader* vs = shaders.vs;
+		GeometryShader* gs = shaders.gs;
 
 		if(customShader.shaderGroup.IsAllEmpty() == false)
 		{
@@ -220,15 +220,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 
 			const ShaderGroup& shaderGroup = customShader.shaderGroup;
 			ps = shaderGroup.ps;
-			//	gs = shaderGroup.gs;
-			//	hs = shaderGroup.hs;
-
-			VertexShader* vs = shaderGroup.vs;
-			ASSERT_COND_MSG(vs, "VS is null");
-			{
-				vs->BindShaderToContext(context);
-				vs->BindInputLayoutToContext(context);
-			}
+			vs = shaderGroup.vs;
+			gs = shaderGroup.gs;
 		}
 
 		std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
@@ -241,6 +234,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 			}
 
 			// Camera
+			if(cameraConstBuffer)
 			{
 				uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferSemanticIndex::Camera;
 				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, cameraConstBuffer, true, false, false, false);
@@ -251,18 +245,24 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		const auto& textures	= material->GetTextures();
 		const auto& srBuffers	= material->GetShaderResourceBuffers();
 
+		vs->BindShaderToContext(context);
+		vs->BindInputLayoutToContext(context);
 		vs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
 		if(ps && (renderType != RenderType::Forward_DepthOnly) )
 		{
-			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
-
 			ps->BindShaderToContext(context);
 			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 		else
 		{
 			context->PSSetShader(nullptr, nullptr, 0);
+		}
+
+		if(gs)
+		{
+			gs->BindShaderToContext(context);
+			gs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 
 		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
