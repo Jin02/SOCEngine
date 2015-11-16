@@ -155,8 +155,11 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& file
 ID3DBlob* ShaderManager::CreateBlob(const std::string& fileFullPath, const std::string& shaderType, const std::string& mainFunc, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string code = "";
-	bool loadSuccess = LoadShaderCode(code, fileFullPath, useRecycle);
-	ASSERT_COND_MSG(loadSuccess, "Error, cant load shader code");
+	if(LoadShaderCode(code, fileFullPath, useRecycle) == false)
+	{
+		DEBUG_LOG("Error, cant load shader code");
+		return nullptr;
+	}
 
 	ID3DBlob* blob = nullptr;
 	if( Compile(&blob, fileFullPath, code, shaderType+"_5_0", mainFunc, macros) == false )
@@ -173,7 +176,12 @@ ID3DBlob* ShaderManager::CreateBlob(const std::string& folderPath, const std::st
 {
 	std::string fullPath = "";
 	bool success = MakeShaderFileFullPath(fullPath, folderPath, fileName);
-	ASSERT_COND_MSG(success, "Error, invalid path");
+	if(success == false)
+	{
+		std::string log = "Warning, "; log += fileName + " does not exist.";
+		DEBUG_LOG(log.c_str());
+		return nullptr;
+	}
 
 	return CreateBlob(fullPath, shaderType, mainFunc, useRecycle, macros);
 }

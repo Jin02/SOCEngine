@@ -36,7 +36,7 @@ void Scene::Initialize()
 	_cameraMgr		= new CameraManager;
 
 	_renderMgr		= new RenderManager;
-	_renderMgr->TestInit();
+	_renderMgr->Initialize();
 
 	_uiManager		= new UIManager;
 
