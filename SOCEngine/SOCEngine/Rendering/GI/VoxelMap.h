@@ -19,6 +19,9 @@ namespace Rendering
 		public:
 			void Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format);
 			void Destroy();
+
+		public:
+			GET_ACCESSOR(UnorderedAccessView, const Shader::UnorderedAccessView*, _uav);
 		};
 	}
 }
