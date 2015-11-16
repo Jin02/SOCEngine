@@ -66,7 +66,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		auto output = iter->output;
 		if(output)
 		{
-			ID3D11UnorderedAccessView* uav = output->GetUnorderedAccessView();
+			ID3D11UnorderedAccessView* uav = output->GetView();
 			context->CSSetUnorderedAccessViews(iter->idx, 1, &uav, nullptr);
 		}
 	}

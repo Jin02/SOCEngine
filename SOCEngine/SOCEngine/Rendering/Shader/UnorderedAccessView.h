@@ -27,7 +27,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(UnorderedAccessView, ID3D11UnorderedAccessView*, _uav);
+			GET_ACCESSOR(View, ID3D11UnorderedAccessView*, _uav);
 		};
 	}
 }
