@@ -21,7 +21,8 @@ namespace Rendering
 				Forward_AlphaTest,
 				GBuffer_Opaque,
 				Forward_Transparency,
-				Forward_DepthOnly
+				Forward_DepthOnly,
+				Voxelization
 			};
 
 		private:

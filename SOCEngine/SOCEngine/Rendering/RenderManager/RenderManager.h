@@ -54,6 +54,8 @@ namespace Rendering
 			std::hash_map<uint, const Shader::ShaderGroup>	_forward_depthOnlyShaders;
 			std::hash_map<uint, const Shader::ShaderGroup>	_forward_onlyAlphaTestWithDiffuseShaders;
 
+			std::hash_map<uint, const Shader::ShaderGroup>	_voxelizationShaders;
+
 		public:
 			RenderManager();
 			~RenderManager();
@@ -62,7 +64,7 @@ namespace Rendering
 			bool FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const;
 
 		public:
-			bool TestInit();
+			void Initialize();
 			Shader::ShaderGroup LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
