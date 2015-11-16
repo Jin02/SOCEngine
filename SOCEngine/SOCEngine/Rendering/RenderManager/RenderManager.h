@@ -75,6 +75,7 @@ namespace Rendering
 			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 			bool FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 			bool FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 
 			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
 			bool HasTransparencyShader(uint bufferFlag) const;

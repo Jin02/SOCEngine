@@ -243,6 +243,11 @@ bool RenderManager::FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out,
 	return FindShaderFromHashMap(out, _forward_onlyAlphaTestWithDiffuseShaders, bufferFlag);
 }
 
+bool RenderManager::FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const
+{
+	return FindShaderFromHashMap(out, _voxelizationShaders, bufferFlag);
+}
+
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
 {
 	auto iter = hashMap.find(key);
