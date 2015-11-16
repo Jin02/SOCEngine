@@ -337,6 +337,15 @@
     <Filter Include="ShaderCodes\GI\Voxelization">
       <UniqueIdentifier>{760adfc1-f8db-4f1e-9bb7-8bc52b68c99d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI\Voxel">
+      <UniqueIdentifier>{549cee6d-9f90-49f7-b2b6-b251a5f894b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxel\VoxelMap">
+      <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\UnorderedAccessView">
+      <UniqueIdentifier>{493ad510-745b-465d-bb84-9ec9c7d3eae2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -645,9 +654,6 @@
     <ClInclude Include="GPGPU\CSRWTexture.h">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\CSOutput.h">
-      <Filter>GPGPU\DirectCompute\Output</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
@@ -768,11 +774,17 @@
     <ClInclude Include="Rendering\Texture\Texture3D.h">
       <Filter>Rendering\Texture\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\Voxelization.h">
-      <Filter>Rendering\GI</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <Filter>Rendering\GI\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelMap.h">
+      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\UnorderedAccessView.h">
+      <Filter>Rendering\Shader\UnorderedAccessView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -965,9 +977,6 @@
     <ClCompile Include="GPGPU\CSRWTexture.cpp">
       <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSOutput.cpp">
-      <Filter>GPGPU\DirectCompute\Output</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
     </ClCompile>
@@ -1077,7 +1086,13 @@
       <Filter>Rendering\Texture\3D</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\Voxelization.cpp">
-      <Filter>Rendering\GI</Filter>
+      <Filter>Rendering\GI\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
+      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\UnorderedAccessView.cpp">
+      <Filter>Rendering\Shader\UnorderedAccessView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,6 @@
     <ClInclude Include="External\rapidjson\stringbuffer.h" />
     <ClInclude Include="External\rapidjson\writer.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
-    <ClInclude Include="GPGPU\CSOutput.h" />
     <ClInclude Include="GPGPU\CSRWBuffer.h" />
     <ClInclude Include="GPGPU\CSRWTexture.h" />
     <ClInclude Include="Importer\G3djDataTypes.h" />
@@ -88,6 +87,7 @@
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GI\Voxelization.h" />
+    <ClInclude Include="Rendering\GI\VoxelMap.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
@@ -116,6 +116,7 @@
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shader\UnorderedAccessView.h" />
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
     <ClInclude Include="Rendering\Shading\OffScreen.h" />
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
@@ -227,7 +228,6 @@
     <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp" />
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
-    <ClCompile Include="GPGPU\CSOutput.cpp" />
     <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
     <ClCompile Include="GPGPU\CSRWTexture.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
@@ -256,6 +256,7 @@
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\GI\Voxelization.cpp" />
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp" />
@@ -281,6 +282,7 @@
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Shader\UnorderedAccessView.cpp" />
     <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
     <ClCompile Include="Rendering\Shading\OffScreen.cpp" />
     <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp" />
