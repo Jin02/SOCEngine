@@ -64,7 +64,7 @@ void UICamera::Render(const Device::DirectX* dx)
 
 	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
 	context->PSSetSamplers(
-		(uint)Rendering::TBDR::InputSamplerStateSemanticIndex::DefaultSamplerState,
+		(uint)Rendering::TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState,
 		1, &sampler);
 
 	Math::Matrix viewProjMat;
@@ -90,7 +90,7 @@ void UICamera::Render(const Device::DirectX* dx)
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers(
-		(uint)Rendering::TBDR::InputSamplerStateSemanticIndex::DefaultSamplerState,
+		(uint)Rendering::TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState,
 		1, &nullSampler);
 }
 

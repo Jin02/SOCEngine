@@ -4,7 +4,7 @@ namespace Rendering
 {
 	namespace TBDR
 	{
-		enum class InputSRBufferSemanticIndex : unsigned int
+		enum class InputSRBufferBindSlotIndex : unsigned int
 		{
 			PointLightRadiusWithCenter		= 0,
 			PointLightColor					= 1,
@@ -31,7 +31,7 @@ namespace Rendering
 			DirectionalLightShadowColor		= 22,
 		};
 
-		enum class InputConstBufferSemanticIndex : unsigned int
+		enum class InputConstBufferBindSlotIndex : unsigned int
 		{
 			TBRParam						= 0,
 		//	World							= 1, -> PhysicallyBasedMaterial
@@ -40,7 +40,7 @@ namespace Rendering
 			ShadowGlobalParam				= 4
 		};
 
-		enum class InputSamplerStateSemanticIndex : unsigned int
+		enum class InputSamplerStateBindSlotIndex : unsigned int
 		{
 			DefaultSamplerState				= 0,
 			UISamplerState					= 1,

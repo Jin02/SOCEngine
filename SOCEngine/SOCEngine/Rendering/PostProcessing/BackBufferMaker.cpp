@@ -60,7 +60,7 @@ void BackBufferMaker::Render(
 	{
 		ID3D11Buffer* cb = tbrParamConstBuffer->GetBuffer();
 		context->PSSetConstantBuffers(
-			(uint)InputConstBufferSemanticIndex::TBRParam,
+			(uint)InputConstBufferBindSlotIndex::TBRParam,
 			1, &cb);
 
 		context->PSSetShaderResources(
@@ -76,12 +76,12 @@ void BackBufferMaker::Render(
 	}
 
 	ID3D11SamplerState* linerSampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::DefaultSamplerState, 1, &linerSampler);
+	context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &linerSampler);
 
 	if(_useUI)
 	{
 		ID3D11SamplerState* pointSampler = dx->GetSamplerStatePoint();
-		context->PSSetSamplers((uint)InputSamplerStateSemanticIndex::UISamplerState, 1, &pointSampler);
+		context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::UISamplerState, 1, &pointSampler);
 	}
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);

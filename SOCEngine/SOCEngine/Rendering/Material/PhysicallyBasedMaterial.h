@@ -15,7 +15,7 @@ namespace Rendering
 			Opacity		= 11
 		};
 
-		enum class InputConstBufferSemanticIndex : uint
+		enum class InputConstBufferBindSlotIndex : uint
 		{
 			World		= 1,
 			Camera		= 2,
