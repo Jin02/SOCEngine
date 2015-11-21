@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VoxelMap.h"
+#include "AnisotropicVoxelMap.h"
 #include <functional>
 #include "Vector3.h"
 #include "ConstBuffer.h"
@@ -33,8 +33,8 @@ namespace Rendering
 			};
 
 		private:
-			std::vector<VoxelMap*>	_voxelColorMaps;
-			std::vector<VoxelMap*>	_voxelNormalMaps;
+			std::vector<AnisotropicVoxelMap*>	_voxelColorMaps;
+			std::vector<AnisotropicVoxelMap*>	_voxelNormalMaps;
 
 			Buffer::ConstBuffer*	_infoConstBuffer;
 			Buffer::ConstBuffer*	_viewProjAxisesConstBuffer;

@@ -35,15 +35,15 @@ void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
 	ASSERT_COND_MSG(cascades != 0, "Error, voxelization cascade num is zero.");
 	_numOfCascades = cascades;
 
-	Size<uint> mathSize = Size<uint>(dimension, dimension);
+	const uint mipmapLevels = 1;
 
 	for(uint i=0; i<cascades; ++i)
 	{
-		VoxelMap* voxelColorMap = new VoxelMap;
-		voxelColorMap->Initialize(mathSize, dimension, DXGI_FORMAT_R8G8B8A8_UNORM);
+		AnisotropicVoxelMap* voxelColorMap = new AnisotropicVoxelMap;
+		voxelColorMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
 
-		VoxelMap* voxelNormalMap = new VoxelMap;
-		voxelNormalMap->Initialize(mathSize, dimension, DXGI_FORMAT_R8G8B8A8_UNORM);
+		AnisotropicVoxelMap* voxelNormalMap = new AnisotropicVoxelMap;
+		voxelNormalMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
 
 		_voxelColorMaps.push_back(voxelColorMap);
 		_voxelNormalMaps.push_back(voxelNormalMap);
