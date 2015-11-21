@@ -38,7 +38,7 @@ void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
 	for(uint i=0; i<cascades; ++i)
 	{
 		AnisotropicVoxelMap* voxelMap = new AnisotropicVoxelMap;
-		voxelMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
+		voxelMap->Initialize(dimension, DXGI_FORMAT_R32G32_UINT, mipmapLevels);
 
 		_voxelMaps.push_back(voxelMap);
 	}
