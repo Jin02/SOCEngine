@@ -31,7 +31,11 @@ namespace Rendering
 		public:
 			void Initialize(uint sideLength, DXGI_FORMAT format, uint mipmapLevels);
 			void Destroy();
-			void BindUAVsToContext(const Device::DirectX* dx);
+
+			void BindUAVsToPixelShader(const Device::DirectX* dx, const uint bindSlotOffset);
+			void UnbindUAVs(const Device::DirectX* dx, const uint bindSlotOffset);
+
+			void Clear(const Device::DirectX* dx);
 
 		public:
 			GET_ACCESSOR(SideLength, uint, _sideLength);
