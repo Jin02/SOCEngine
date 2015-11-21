@@ -1,3 +1,4 @@
+#include "TBRShaderIndexSlotInfo.h"
 #include "Voxelization.h"
 #include "Object.h"
 
@@ -20,11 +21,8 @@ Voxelization::~Voxelization()
 {
 	Destroy();
 
-	for(auto& iter : _voxelColorMaps)	SAFE_DELETE(iter);
-	_voxelColorMaps.clear();
-
-	for(auto& iter : _voxelNormalMaps)	SAFE_DELETE(iter);
-	_voxelNormalMaps.clear();
+	for(auto& iter : _voxelMaps)	SAFE_DELETE(iter);
+	_voxelMaps.clear();
 
 	SAFE_DELETE(_infoConstBuffer);
 	SAFE_DELETE(_viewProjAxisesConstBuffer);
@@ -39,14 +37,10 @@ void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
 
 	for(uint i=0; i<cascades; ++i)
 	{
-		AnisotropicVoxelMap* voxelColorMap = new AnisotropicVoxelMap;
-		voxelColorMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
+		AnisotropicVoxelMap* voxelMap = new AnisotropicVoxelMap;
+		voxelMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
 
-		AnisotropicVoxelMap* voxelNormalMap = new AnisotropicVoxelMap;
-		voxelNormalMap->Initialize(dimension, DXGI_FORMAT_R8G8B8A8_UNORM, mipmapLevels);
-
-		_voxelColorMaps.push_back(voxelColorMap);
-		_voxelNormalMaps.push_back(voxelNormalMap);
+		_voxelMaps.push_back(voxelMap);
 	}
 
 	_infoConstBuffer = new ConstBuffer;
@@ -65,8 +59,7 @@ void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
 
 void Voxelization::Destroy()
 {
-	for(auto& iter : _voxelColorMaps)	iter->Destroy();
-	for(auto& iter : _voxelNormalMaps)	iter->Destroy();
+	for(auto& iter : _voxelMaps)	iter->Destroy();
 
 	_infoConstBuffer->Destory();
 	_viewProjAxisesConstBuffer->Destory();
@@ -74,17 +67,8 @@ void Voxelization::Destroy()
 
 void Voxelization::Clear(const Device::DirectX*& dx)
 {
-	ID3D11DeviceContext* context = dx->GetContext();
-	float clearValues[4] = {0.0f, };
-
 	for(uint i=0; i<_numOfCascades; ++i)
-	{
-		const UnorderedAccessView* uav = _voxelColorMaps[i]->GetUnorderedAccessView();
-		context->ClearUnorderedAccessViewFloat(uav->GetView(), clearValues);
-
-		uav = _voxelNormalMaps[i]->GetUnorderedAccessView();
-		context->ClearUnorderedAccessViewFloat(uav->GetView(), clearValues);
-	}
+		_voxelMaps[i]->Clear(dx);
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager)
@@ -141,6 +125,9 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
 	float blendFactor[1] = {0, };
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+
+	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
+	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
 
 	for(uint currentCascade=0; currentCascade<_numOfCascades; ++currentCascade)
 	{
@@ -201,6 +188,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 
 		// Render Voxel
 		{
+			_voxelMaps[currentCascade]->BindUAVsToPixelShader(dx, (uint)UAVBindSlotIndex::AnisotropicVoxelMap_StartOffset);
+
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr);
 
@@ -209,6 +198,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		}
 	}
 
+	_voxelMaps[0]->UnbindUAVs(dx, (uint)UAVBindSlotIndex::AnisotropicVoxelMap_StartOffset);
+
+	ID3D11SamplerState* nullSampler = nullptr;
+	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
 	context->RSSetViewports(1, &originViewport);
 	context->RSSetState(originRSState);
 	context->OMSetDepthStencilState(originDepthState, originDepthStateRef);

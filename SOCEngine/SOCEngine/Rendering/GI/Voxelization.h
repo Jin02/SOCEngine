@@ -32,9 +32,19 @@ namespace Rendering
 				Math::Matrix viewProjZ;
 			};
 
+			enum class UAVBindSlotIndex : uint
+			{
+				AnisotropicVoxelMap_PosX = 0,
+				AnisotropicVoxelMap_NegX = 1,
+				AnisotropicVoxelMap_PosY = 2,
+				AnisotropicVoxelMap_NegY = 3,
+				AnisotropicVoxelMap_PosZ = 4,
+				AnisotropicVoxelMap_NegZ = 5,
+				AnisotropicVoxelMap_StartOffset = AnisotropicVoxelMap_PosX
+			};
+
 		private:
-			std::vector<AnisotropicVoxelMap*>	_voxelColorMaps;
-			std::vector<AnisotropicVoxelMap*>	_voxelNormalMaps;
+			std::vector<AnisotropicVoxelMap*>	_voxelMaps;
 
 			Buffer::ConstBuffer*	_infoConstBuffer;
 			Buffer::ConstBuffer*	_viewProjAxisesConstBuffer;
