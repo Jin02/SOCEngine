@@ -142,8 +142,9 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 				float scale = (float)(uscale * uscale);
 				currentVoxelizeInfo.voxelizeSize	= _initVoxelizationInfo.voxelizeSize * scale;
 				currentVoxelizeInfo.voxelSize		= currentVoxelizeInfo.voxelizeSize / (float)currentVoxelizeInfo.dimension;
+
+				currentVoxelizeInfo.dummy = 0;
 			}
-			_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
 
 			float worldSize = currentVoxelizeInfo.voxelizeSize;
 
@@ -154,7 +155,12 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 			float cascadeScale = (float)currentCascade + 1.0f;
 
 			float offset = (worldSize / (float)(currentCascade + 1)) / 2.0f;
-			Vector3 bbMin = (camWorldPos - Vector3(offset, offset, offset)) * Vector3(cascadeScale, cascadeScale, cascadeScale);
+			Vector3 worldMinPos = camWorldPos - Vector3(offset, offset, offset);
+			currentVoxelizeInfo.voxelizeMinPos = worldMinPos;
+
+			_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
+			
+			Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
 			Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
 			Vector3 bbMid = (bbMin + bbMax) / 2.0f;
 

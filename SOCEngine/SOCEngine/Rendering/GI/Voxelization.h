@@ -21,8 +21,10 @@ namespace Rendering
 
 			struct InfoCBData : public Info
 			{
-				float voxelSize;
-				uint  currentCascade;
+				Math::Vector3	voxelizeMinPos;
+				float			voxelSize;
+				uint			currentCascade;
+				float			dummy;
 			};
 
 			struct ViewProjAxisesCBData
