@@ -118,12 +118,12 @@ void PS( GS_OUTPUT input )
 		-normal.z
 	};
 
-	voxelIdx.x += (float)voxelization_currentCascade * voxelization_demension;
+	voxelIdx.y += (float)voxelization_currentCascade * voxelization_demension;
 
 	[unroll]
 	for(uint faceIndex=0; faceIndex<6; ++faceIndex)
 	{
-		voxelIdx.y += (float)faceIndex * voxelization_demension;
+		voxelIdx.x += (float)faceIndex * voxelization_demension;
 
 		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha), false);
 		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f), true);
