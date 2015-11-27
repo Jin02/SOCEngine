@@ -17,7 +17,7 @@ namespace Rendering
 			virtual ~VoxelMap();
 
 		public:
-			void Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format);
+			void Initialize(uint width, uint height, uint depth, DXGI_FORMAT format);
 			void Destroy();
 
 		public:
