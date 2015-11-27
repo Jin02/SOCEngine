@@ -28,12 +28,14 @@ cbuffer Voxelization_Info_CB : register( b6 )
 
 SamplerState defaultSampler			: register( s0 );
 
-RWTexture3D<uint3> OutAnistropicVoxelTexturePosX	: register( u0 );
-RWTexture3D<uint3> OutAnistropicVoxelTextureNegX	: register( u1 );
-RWTexture3D<uint3> OutAnistropicVoxelTexturePosY	: register( u2 );
-RWTexture3D<uint3> OutAnistropicVoxelTextureNegY	: register( u3 );
-RWTexture3D<uint3> OutAnistropicVoxelTexturePosZ	: register( u4 );
-RWTexture3D<uint3> OutAnistropicVoxelTextureNegZ	: register( u5 );
+RWTexture3D<uint3> OutAnistropicVoxelTexture	: register( u0 );
+
+//RWTexture3D<uint3> OutAnistropicVoxelTexturePosX	: register( u0 );
+//RWTexture3D<uint3> OutAnistropicVoxelTextureNegX	: register( u1 );
+//RWTexture3D<uint3> OutAnistropicVoxelTexturePosY	: register( u2 );
+//RWTexture3D<uint3> OutAnistropicVoxelTextureNegY	: register( u3 );
+//RWTexture3D<uint3> OutAnistropicVoxelTexturePosZ	: register( u4 );
+//RWTexture3D<uint3> OutAnistropicVoxelTextureNegZ	: register( u5 );
 
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 

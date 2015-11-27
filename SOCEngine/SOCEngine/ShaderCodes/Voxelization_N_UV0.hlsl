@@ -109,6 +109,28 @@ void PS( GS_OUTPUT input )
 	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
 	int3 voxelIdx		= ((int3)voxelCoord) * voxelization_demension;
 
+	float anisotropicNormals[6] = {
+		 normal.x,
+		-normal.x,
+		 normal.y,
+		-normal.y,
+		 normal.z,
+		-normal.z
+	};
+
+	voxelIdx.x += (float)voxelization_currentCascade * voxelization_demension;
+
+	[unroll]
+	for(uint faceIndex=0; faceIndex<6; ++faceIndex)
+	{
+		voxelIdx.y += (float)faceIndex * voxelization_demension;
+
+		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha), false);
+		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f), true);
+		StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexture, voxelIdx, max(anisotropicNormals[faceIndex], 0.0f));
+	}
+
+/*
 	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(albedo.xyz * max( normal.x, 0.0f), alpha), false);
 	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(albedo.xyz * max(-normal.x, 0.0f), alpha), false);
 	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(albedo.xyz * max( normal.y, 0.0f), alpha), false);
@@ -129,4 +151,5 @@ void PS( GS_OUTPUT input )
 	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegY, voxelIdx, max(-normal.y, 0.0f));
 	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosZ, voxelIdx, max( normal.z, 0.0f));
 	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegZ, voxelIdx, max(-normal.z, 0.0f));
+*/
 }
