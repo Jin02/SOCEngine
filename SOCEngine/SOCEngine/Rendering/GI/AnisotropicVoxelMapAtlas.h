@@ -6,7 +6,7 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class AnisotropicVoxelMap
+		class AnisotropicVoxelMapAtlas
 		{
 		public:
 			enum class Direction : uint
@@ -18,24 +18,22 @@ namespace Rendering
 			};
 
 		private:
-			VoxelMap*	_voxelMaps[(uint)Direction::Num];
+			VoxelMap*	_voxelMapAtlas;
 
 		private:
 			uint _sideLength;
 			uint _mipmapLevels;
 
 		public:
-			AnisotropicVoxelMap();
-			~AnisotropicVoxelMap();
+			AnisotropicVoxelMapAtlas();
+			~AnisotropicVoxelMapAtlas();
 
 		public:
-			void Initialize(uint sideLength, DXGI_FORMAT format, uint mipmapLevels);
+			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapLevels);
 			void Destroy();
 
 			void BindUAVsToPixelShader(const Device::DirectX* dx, const uint bindSlotOffset);
 			void UnbindUAVs(const Device::DirectX* dx, const uint bindSlotOffset);
-
-			void Clear(const Device::DirectX* dx);
 
 		public:
 			GET_ACCESSOR(SideLength, uint, _sideLength);

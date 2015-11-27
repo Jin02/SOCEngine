@@ -786,7 +786,7 @@
     <ClInclude Include="Rendering\Shader\UnorderedAccessView.h">
       <Filter>Rendering\Shader\UnorderedAccessView</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\AnisotropicVoxelMap.h">
+    <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1097,7 +1097,7 @@
     <ClCompile Include="Rendering\Shader\UnorderedAccessView.cpp">
       <Filter>Rendering\Shader\UnorderedAccessView</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\AnisotropicVoxelMap.cpp">
+    <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClCompile>
   </ItemGroup>
