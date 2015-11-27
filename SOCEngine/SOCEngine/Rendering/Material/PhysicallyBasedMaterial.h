@@ -29,6 +29,8 @@ namespace Rendering
 			MainColor		mainColor;
 			uint			alpha_metallic_roughness_emission;
 
+			Color			emissionColor;;
+
 			Math::Vector2	uvTiling0;
 			Math::Vector2	uvOffset0;
 
@@ -64,6 +66,8 @@ namespace Rendering
 
 	public:
 		GET_ACCESSOR_MATERIAL(MainColor,		GBufferParam::MainColor);
+
+		GET_SET_ACCESSOR_MATERIAL(EmissionColor,Color);
 		GET_SET_ACCESSOR_MATERIAL(Metallic,		float);
 		GET_SET_ACCESSOR_MATERIAL(Roughness,	float);
 		GET_SET_ACCESSOR_MATERIAL(Emission,		float);

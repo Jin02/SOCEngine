@@ -13,6 +13,8 @@ PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 
 	uvTiling0.x = uvTiling0.y = uvTiling1.x = uvTiling1.y = 1.0f;
 	uvOffset0.x = uvOffset0.y = uvOffset1.x = uvOffset1.y = 0.0f;
+
+	emissionColor.r = emissionColor.g = emissionColor.b = emissionColor.a = 0.0f;
 }
 
 PhysicallyBasedMaterial::GBufferParam::~GBufferParam(){}

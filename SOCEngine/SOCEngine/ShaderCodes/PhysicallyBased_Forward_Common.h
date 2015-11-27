@@ -32,8 +32,9 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 
 	float3 specularColor = lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, HasSpecularTexture());
 
-	float3 mainColor = abs(material_mainColor);
-	float3 diffuseColor  = lerp(float3(1.f, 1.f, 1.f) * mainColor, diffuseTex.rgb * mainColor, HasDiffuseTexture());
+	float3 emissionColor	= material_emissionColor.rgb;
+	float3 mainColor		= abs(material_mainColor);
+	float3 diffuseColor		= lerp(mainColor + emissionColor, diffuseTex.rgb * mainColor + emissionColor, HasDiffuseTexture());
 
 	LightingParams lightParams;
 
