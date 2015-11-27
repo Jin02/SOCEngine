@@ -98,15 +98,35 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 	outputStream.RestartStrip();
 }
 
-#if defined(VOXELIZATION_DEBUG_MODE)
-float4 PS( GS_OUTPUT input ) : SV_Target
-#else
 void PS( GS_OUTPUT input )
-#endif
 {
-	float4 albedo = diffuseTexture.Sample(defaultSampler, input.uv);
+	float4 albedo		= diffuseTexture.Sample(defaultSampler, input.uv);
+	float opacityMap	= 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
+	float alpha			= albedo.a * opacityMap * ParseMaterialAlpha();
+
+	float3 normal		= normalize(input.normal);
 	
-#if defined(VOXELIZATION_DEBUG_MODE)
-	return albedo;
-#endif
+	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
+	int3 voxelIdx		= ((int3)voxelCoord) * voxelization_demension;
+
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(albedo.xyz * max( normal.x, 0.0f), alpha), false);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(albedo.xyz * max(-normal.x, 0.0f), alpha), false);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(albedo.xyz * max( normal.y, 0.0f), alpha), false);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(albedo.xyz * max(-normal.y, 0.0f), alpha), false);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(albedo.xyz * max( normal.z, 0.0f), alpha), false);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(albedo.xyz * max(-normal.z, 0.0f), alpha), false);
+
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(material_emissionColor.rgb * max( normal.x, 0.0f), 1.0f), true);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(material_emissionColor.rgb * max(-normal.x, 0.0f), 1.0f), true);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(material_emissionColor.rgb * max( normal.y, 0.0f), 1.0f), true);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(material_emissionColor.rgb * max(-normal.y, 0.0f), 1.0f), true);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(material_emissionColor.rgb * max( normal.z, 0.0f), 1.0f), true);
+	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(material_emissionColor.rgb * max(-normal.z, 0.0f), 1.0f), true);
+
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosX, voxelIdx, max( normal.x, 0.0f));
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegX, voxelIdx, max(-normal.x, 0.0f));
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosY, voxelIdx, max( normal.y, 0.0f));
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegY, voxelIdx, max(-normal.y, 0.0f));
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosZ, voxelIdx, max( normal.z, 0.0f));
+	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegZ, voxelIdx, max(-normal.z, 0.0f));
 }

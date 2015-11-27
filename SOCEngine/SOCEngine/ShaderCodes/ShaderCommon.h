@@ -154,4 +154,28 @@ bool InFrustum( float4 p, float4 frusutmNormal, float r )
 	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
 }
 
+uint Float4ToUint(float4 value)
+{
+	value *= 255.0f;
+
+	uint4 ret;
+	ret.x = (uint(value.x) & 0x000000FF);
+	ret.y = (uint(value.y) & 0x000000FF) << 8;
+	ret.z = (uint(value.z) & 0x000000FF) << 16;
+	ret.w = (uint(value.w) & 0x000000FF) << 24;
+
+	return ret.w | ret.z | ret.y | ret.x;
+}
+
+float4 UintToFloat4(uint value)
+{
+	float4 ret;
+	ret.x = float( value & 0x000000FF);
+	ret.y = float((value & 0x0000FF00) >> 8);
+	ret.z = float((value & 0x00FF0000) >> 16);
+	ret.w = float((value & 0xFF000000) >> 24);
+
+	return (ret / 255.0f);
+}
+
 #endif
