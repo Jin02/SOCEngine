@@ -1,10 +1,11 @@
 #pragma once
 
-#include "AnisotropicVoxelMap.h"
+#include "AnisotropicVoxelMapAtlas.h"
 #include <functional>
 #include "Vector3.h"
 #include "ConstBuffer.h"
 #include "MeshCamera.h"
+#include "ComputeShader.h"
 
 namespace Rendering
 {
@@ -34,19 +35,13 @@ namespace Rendering
 				Math::Matrix viewProjZ;
 			};
 
-			enum class UAVBindSlotIndex : uint
+			enum class BindIndex : uint
 			{
-				AnisotropicVoxelMap_PosX = 0,
-				AnisotropicVoxelMap_NegX = 1,
-				AnisotropicVoxelMap_PosY = 2,
-				AnisotropicVoxelMap_NegY = 3,
-				AnisotropicVoxelMap_PosZ = 4,
-				AnisotropicVoxelMap_NegZ = 5,
-				AnisotropicVoxelMap_StartOffset = AnisotropicVoxelMap_PosX
+				InOutVoxelMap	= 0,
 			};
 
 		private:
-			std::vector<AnisotropicVoxelMap*>	_voxelMaps;
+			std::vector<AnisotropicVoxelMapAtlas*>	_voxelMapAtlas;
 
 			Buffer::ConstBuffer*	_infoConstBuffer;
 			Buffer::ConstBuffer*	_viewProjAxisesConstBuffer;
@@ -56,7 +51,10 @@ namespace Rendering
 
 			Math::Matrix			_prevViewMat;
 
-			uint					_numOfCascades;
+			uint					_maxNumOfCascade;
+
+		private:
+			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
 		public:
 			Voxelization();

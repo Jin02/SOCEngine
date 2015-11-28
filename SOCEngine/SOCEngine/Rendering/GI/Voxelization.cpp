@@ -1,7 +1,10 @@
 #include "TBRShaderIndexSlotInfo.h"
 #include "Voxelization.h"
 #include "Object.h"
+#include "ResourceManager.h"
+#include "EngineShaderFactory.hpp"
 
+using namespace Resource;
 using namespace Core;
 using namespace Math;
 using namespace Rendering::Buffer;
@@ -10,10 +13,12 @@ using namespace Rendering::Texture;
 using namespace Rendering::Camera;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
+using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
 	: _viewProjAxisesConstBuffer(nullptr), _infoConstBuffer(nullptr),
-	_numOfCascades(0), _changedInitVoxelizationInfo(false)
+	_maxNumOfCascade(0), _changedInitVoxelizationInfo(false),
+	_clearVoxelMapCS(nullptr)
 {
 }
 
@@ -21,26 +26,32 @@ Voxelization::~Voxelization()
 {
 	Destroy();
 
-	for(auto& iter : _voxelMaps)	SAFE_DELETE(iter);
-	_voxelMaps.clear();
+	for(auto& iter : _voxelMapAtlas)	SAFE_DELETE(iter);
+	_voxelMapAtlas.clear();
 
 	SAFE_DELETE(_infoConstBuffer);
 	SAFE_DELETE(_viewProjAxisesConstBuffer);
+	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
+void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dimension)
 {
-	ASSERT_COND_MSG(cascades != 0, "Error, voxelization cascade num is zero.");
-	_numOfCascades = cascades;
+	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
+	_maxNumOfCascade = maxNumOfCascade;
 
-	const uint mipmapLevels = 1;
-
-	for(uint i=0; i<cascades; ++i)
+	auto Log2 = [](float v) -> float
 	{
-		AnisotropicVoxelMap* voxelMap = new AnisotropicVoxelMap;
-		voxelMap->Initialize(dimension, DXGI_FORMAT_R32G32_UINT, mipmapLevels);
+		return log(v) / log(2.0f);
+	};
 
-		_voxelMaps.push_back(voxelMap);
+	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
+	
+	for(uint i=0; i<maxNumOfCascade; ++i)
+	{
+		AnisotropicVoxelMapAtlas* atlas = new AnisotropicVoxelMapAtlas;
+		atlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32G32B32_UINT, mipmapLevels, (uint)BindIndex::InOutVoxelMap);
+
+		_voxelMapAtlas.push_back(atlas);
 	}
 
 	_infoConstBuffer = new ConstBuffer;
@@ -55,11 +66,58 @@ void Voxelization::Initialize(uint cascades, float minWorldSize, uint dimension)
 		info.voxelizeSize = minWorldSize;
 	}
 	UpdateInitVoxelizationInfo(info);
+
+	std::string filePath = "";
+	{
+		Factory::EngineFactory pathFind(nullptr);
+		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMap");
+
+		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+	}
+
+	ShaderManager* shaderMgr = ResourceManager::GetInstance()->GetShaderManager();
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "ClearVoxelMapCS", false, nullptr);
+
+	ComputeShader::ThreadGroup threadGroup;
+	{
+		auto ComputeThreadGroupSideLength = [](uint sideLength)
+		{
+			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
+		};
+		
+		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)AnisotropicVoxelMapAtlas::Direction::Num);
+		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
+		threadGroup.z = ComputeThreadGroupSideLength(dimension);
+	}
+
+	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
+	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+
+	std::vector<ComputeShader::InputTexture> inputTextures;
+	{
+		ComputeShader::InputTexture inputTexture;
+		inputTexture.idx = (uint)BindIndex::InOutVoxelMap;
+		inputTexture.texture = nullptr;
+
+		inputTextures.push_back(inputTexture);
+	}
+
+	std::vector<ComputeShader::Output> outputs;
+	{
+		ComputeShader::Output output;
+		output.idx = (uint)BindIndex::InOutVoxelMap;
+		output.output = nullptr;
+
+		outputs.push_back(output);
+	}
+
+	_clearVoxelMapCS->SetInputTextures(inputTextures);
+	_clearVoxelMapCS->SetOutputs(outputs);
 }
 
 void Voxelization::Destroy()
 {
-	for(auto& iter : _voxelMaps)	iter->Destroy();
+	for(auto& iter : _voxelMapAtlas)	iter->Destroy();
 
 	_infoConstBuffer->Destory();
 	_viewProjAxisesConstBuffer->Destory();
@@ -67,8 +125,7 @@ void Voxelization::Destroy()
 
 void Voxelization::Clear(const Device::DirectX*& dx)
 {
-	for(uint i=0; i<_numOfCascades; ++i)
-		_voxelMaps[i]->Clear(dx);
+
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager)
@@ -129,7 +186,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
 	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
 
-	for(uint currentCascade=0; currentCascade<_numOfCascades; ++currentCascade)
+	// 어짜피, 모든 복셀맵이 같은 인덱스를 공유하고 있으므로 하나만 해도된다.
+	_voxelMapAtlas[0]->BindUAVsToPixelShader(dx);
+
+	for(uint currentCascade=0; currentCascade<_maxNumOfCascade; ++currentCascade)
 	{
 		// Compute & Update Const Buffers
 		{
@@ -194,8 +254,6 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 
 		// Render Voxel
 		{
-			_voxelMaps[currentCascade]->BindUAVsToPixelShader(dx, (uint)UAVBindSlotIndex::AnisotropicVoxelMap_StartOffset);
-
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr);
 
@@ -204,7 +262,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		}
 	}
 
-	_voxelMaps[0]->UnbindUAVs(dx, (uint)UAVBindSlotIndex::AnisotropicVoxelMap_StartOffset);
+	// 어짜피, 모든 복셀맵이 같은 인덱스를 공유하고 있으므로 하나만 해도된다.
+	_voxelMapAtlas[0]->UnbindUAVs(dx);
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
