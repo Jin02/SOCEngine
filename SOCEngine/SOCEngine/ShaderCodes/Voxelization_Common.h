@@ -28,7 +28,7 @@ cbuffer Voxelization_Info_CB : register( b6 )
 
 SamplerState defaultSampler			: register( s0 );
 
-RWTexture3D<uint3> OutAnistropicVoxelTexture	: register( u0 );
+RWTexture3D<int3> OutAnistropicVoxelTexture	: register( u0 );
 
 //RWTexture3D<uint3> OutAnistropicVoxelTexturePosX	: register( u0 );
 //RWTexture3D<uint3> OutAnistropicVoxelTextureNegX	: register( u1 );
@@ -40,7 +40,7 @@ RWTexture3D<uint3> OutAnistropicVoxelTexture	: register( u0 );
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
 //if isEmission is not, input value to emission
-void StoreVoxelMapAtomicColorMax(RWTexture3D<uint3> voxelMap, int3 idx, float4 value, uniform bool isEmission)
+void StoreVoxelMapAtomicColorMax(RWTexture3D<int3> voxelMap, int3 idx, float4 value, uniform bool isEmission)
 {
 	uint newValue = Float4ToUint(value);
 	uint prevStoredValue = 0;
@@ -70,7 +70,7 @@ void StoreVoxelMapAtomicColorMax(RWTexture3D<uint3> voxelMap, int3 idx, float4 v
 	}while(true);
 }
 
-void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<uint3> voxelMap, int3 idx, float value)
+void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<int3> voxelMap, int3 idx, float value)
 {
 	uint newValue = asuint(value);
 	uint prevStoredValue = 0;
