@@ -23,17 +23,18 @@ namespace Rendering
 		private:
 			uint _sideLength;
 			uint _mipmapLevels;
+			uint _uavBindIndex;
 
 		public:
 			AnisotropicVoxelMapAtlas();
 			~AnisotropicVoxelMapAtlas();
 
 		public:
-			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapLevels);
+			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapLevels, uint uavBindIndex);
 			void Destroy();
 
-			void BindUAVsToPixelShader(const Device::DirectX* dx, const uint bindSlotOffset);
-			void UnbindUAVs(const Device::DirectX* dx, const uint bindSlotOffset);
+			void BindUAVsToPixelShader(const Device::DirectX* dx);
+			void UnbindUAVs(const Device::DirectX* dx);
 
 		public:
 			GET_ACCESSOR(SideLength, uint, _sideLength);
