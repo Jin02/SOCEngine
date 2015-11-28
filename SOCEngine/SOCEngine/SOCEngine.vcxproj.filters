@@ -346,6 +346,9 @@
     <Filter Include="Rendering\Shader\UnorderedAccessView">
       <UniqueIdentifier>{493ad510-745b-465d-bb84-9ec9c7d3eae2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Texture\Form">
+      <UniqueIdentifier>{d6b6f0e5-caea-4c0b-a103-9d461d5e9445}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1136,6 +1139,9 @@
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
