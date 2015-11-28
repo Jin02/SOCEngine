@@ -120,7 +120,6 @@ void PS( GS_OUTPUT input )
 
 	voxelIdx.y += (float)voxelization_currentCascade * voxelization_demension;
 
-	[unroll]
 	for(int faceIndex=0; faceIndex<6; ++faceIndex)
 	{
 		voxelIdx.x += (float)faceIndex * voxelization_demension;
