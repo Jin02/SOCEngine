@@ -62,8 +62,8 @@ void OnlyLightCulling::Initialize(
 
 		ComputeShader::Output outputBuffer;
 		{
-			outputBuffer.idx	= (uint)OutputBufferShaderIndex::LightIndexBuffer;
-			outputBuffer.output	= _uav;
+			outputBuffer.bindIndex	= (uint)OutputBufferShaderIndex::LightIndexBuffer;
+			outputBuffer.output		= _uav;
 		}
 
 		std::vector<ComputeShader::Output> outputs;

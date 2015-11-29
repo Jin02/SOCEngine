@@ -93,11 +93,11 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 
-	std::vector<ComputeShader::InputTexture> inputTextures;
+	std::vector<ShaderForm::InputTexture> inputTextures;
 	{
-		ComputeShader::InputTexture inputTexture;
-		inputTexture.idx = (uint)BindIndex::InOutVoxelMap;
-		inputTexture.texture = nullptr;
+		ShaderForm::InputTexture inputTexture;
+		inputTexture.bindIndex	= (uint)BindIndex::InOutVoxelMap;
+		inputTexture.texture	= nullptr;
 
 		inputTextures.push_back(inputTexture);
 	}
@@ -105,8 +105,8 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ComputeShader::Output> outputs;
 	{
 		ComputeShader::Output output;
-		output.idx = (uint)BindIndex::InOutVoxelMap;
-		output.output = nullptr;
+		output.bindIndex	= (uint)BindIndex::InOutVoxelMap;
+		output.output		= nullptr;
 
 		outputs.push_back(output);
 	}

@@ -173,8 +173,8 @@ void ShadingWithLightCulling::Initialize(
 
 		ComputeShader::Output output;
 		{
-			output.idx		= (uint)OutputBufferShaderIndex::OutScreen;
-			output.output	= _offScreen->GetUnorderedAccessView();
+			output.bindIndex	= (uint)OutputBufferShaderIndex::OutScreen;
+			output.output		= _offScreen->GetUnorderedAccessView();
 		}
 
 		std::vector<ComputeShader::Output> outputs;
@@ -209,12 +209,12 @@ void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
 									   const Buffer::ConstBuffer* tbrConstBuffer,
 									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer)
 {
-	std::vector<ComputeShader::InputConstBuffer> additionalConstBuffers;
+	std::vector<ShaderForm::InputConstBuffer> additionalConstBuffers;
 	if(shadowGlobalParamConstBuffer)
 	{
-		ComputeShader::InputConstBuffer icb;
-		icb.buffer	= shadowGlobalParamConstBuffer;
-		icb.idx		= (uint)InputConstBufferBindSlotIndex::ShadowGlobalParam;
+		ShaderForm::InputConstBuffer icb;
+		icb.buffer		= shadowGlobalParamConstBuffer;
+		icb.bindIndex	= (uint)InputConstBufferBindSlotIndex::ShadowGlobalParam;
 
 		additionalConstBuffers.push_back(icb);
 	}

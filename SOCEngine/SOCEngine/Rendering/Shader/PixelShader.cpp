@@ -43,7 +43,7 @@ void PixelShader::BindResourcesToContext(
 		{
 			ID3D11Buffer* buffer = (*iter).buffer->GetBuffer();
 			if(buffer && iter->usePS)
-				context->PSSetConstantBuffers( (*iter).semanticIndex, 1, &buffer );
+				context->PSSetConstantBuffers( (*iter).bindIndex, 1, &buffer );
 		}
 	}
 
@@ -53,7 +53,7 @@ void PixelShader::BindResourcesToContext(
 		{
 			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->usePS)
-				context->PSSetShaderResources( iter->semanticIndex, 1, &srv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 
@@ -63,7 +63,7 @@ void PixelShader::BindResourcesToContext(
 		{
 			auto srv = iter->srBuffer->GetShaderResourceView();
 			if(srv && iter->usePS)
-				context->PSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->PSSetShaderResources( iter->bindIndex, 1, srv );
 		}
 	}
 }
@@ -81,7 +81,7 @@ void PixelShader::Clear(
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -92,7 +92,7 @@ void PixelShader::Clear(
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -103,7 +103,7 @@ void PixelShader::Clear(
 		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetConstantBuffers( iter->semanticIndex, 1, &nullBuffer );
+				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
 }

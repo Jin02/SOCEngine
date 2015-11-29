@@ -28,12 +28,12 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const ShaderResourceBuffer*& buffer)
+void LightCulling::AddInputBufferToList(ShaderForm::InputShaderResourceBuffer*& outBuffer, uint idx, const ShaderResourceBuffer*& buffer)
 {
-	ComputeShader::InputShaderResourceBuffer inputBuffer;
+	ShaderForm::InputShaderResourceBuffer inputBuffer;
 	{
-		inputBuffer.idx			= idx;
-		inputBuffer.buffer		= buffer;
+		inputBuffer.bindIndex	= idx;
+		inputBuffer.srBuffer	= buffer;
 	}
 
 	_inputBuffers.push_back(inputBuffer);
@@ -42,9 +42,9 @@ void LightCulling::AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::Inp
 
 void LightCulling::AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture)
 {
-	ComputeShader::InputTexture inputTex;
+	ShaderForm::InputTexture inputTex;
 	{
-		inputTex.idx		= idx;
+		inputTex.bindIndex	= idx;
 		inputTex.texture	= texture;
 	}
 
@@ -132,18 +132,18 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
 							const Buffer::ConstBuffer* tbrConstBuffer,
-							const std::vector<ComputeShader::InputConstBuffer>* additionalConstBuffers)
+							const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	std::vector<ComputeShader::InputConstBuffer> inputConstBuffers;
+	std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
 
 	if(tbrConstBuffer)
 	{
-		ComputeShader::InputConstBuffer icb;
+		ShaderForm::InputConstBuffer icb;
 
-		icb.buffer = tbrConstBuffer;
-		icb.idx = (uint)InputConstBufferBindSlotIndex::TBRParam;
+		icb.buffer		= tbrConstBuffer;
+		icb.bindIndex	= (uint)InputConstBufferBindSlotIndex::TBRParam;
 		inputConstBuffers.push_back(icb);
 	}
 	if(additionalConstBuffers)

@@ -40,7 +40,7 @@ const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int
 {	
 	for(unsigned int i=0; i<_textures.size(); ++i)
 	{		
-		if(_textures[i].semanticIndex == shaderSlotIndex)
+		if(_textures[i].bindIndex == shaderSlotIndex)
 		{
 			outArrayIndex = i;
 			return _textures[i].texture;
@@ -109,7 +109,7 @@ const Buffer::ConstBuffer* Material::FindConstBuffer(unsigned int& outArrayIndex
 {
 	for(unsigned int i=0; i<_constBuffers.size(); ++i)
 	{		
-		if(_constBuffers[i].semanticIndex == shaderSlotIndex)
+		if(_constBuffers[i].bindIndex == shaderSlotIndex)
 		{
 			outArrayIndex = i;
 			return dynamic_cast<const Buffer::ConstBuffer*>(_constBuffers[i].buffer);
@@ -124,7 +124,7 @@ const ShaderResourceBuffer* Material::FindShaderResourceBuffer(unsigned int& out
 {
 	for(unsigned int i=0; i<_srBuffers.size(); ++i)
 	{		
-		if(_srBuffers[i].semanticIndex == shaderSlotIndex)
+		if(_srBuffers[i].bindIndex == shaderSlotIndex)
 		{
 			outArrayIndex = i;
 			return dynamic_cast<const ShaderResourceBuffer*>(_srBuffers[i].srBuffer);

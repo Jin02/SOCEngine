@@ -22,22 +22,22 @@ namespace Rendering
 			};
 
 		private:
-			Rendering::Texture::RenderTexture*					_offScreen;
+			Rendering::Texture::RenderTexture*				_offScreen;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
 
 		public:
 			ShadingWithLightCulling();
