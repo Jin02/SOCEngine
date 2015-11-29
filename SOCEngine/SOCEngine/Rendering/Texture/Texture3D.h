@@ -2,34 +2,30 @@
 
 #include <d3d11.h>
 #include "Color.h"
-#include "Size.h"
-#include <tuple>
+#include "Vector3.h"
+#include "TextureForm.h"
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class Texture3D
+		class Texture3D : public TextureForm
 		{
 		protected:
-			ID3D11Texture3D*			_texture;
-			ID3D11ShaderResourceView*	_srv;
+			ID3D11Texture3D*	_texture;
+			Math::Vector3		_size;
 
 		public:
-			Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex);
+			Texture3D();
 			virtual ~Texture3D();
 
 		protected:
-			// if SampleCount = 0, sampleCount = msaa.count
-			void Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int mipLevels);
-
-		public:
-			// w, h, depth
-			std::tuple<Math::Size<uint>, uint> FetchSize() const;
+			void Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, uint bindFlags, uint mipLevels);
+			void Destory();
 
 		public:
 			GET_ACCESSOR(Texture, ID3D11Texture3D*, _texture);
-			GET_ACCESSOR(ShaderResourceView, ID3D11ShaderResourceView* const*, &_srv);
+			GET_ACCESSOR(Size, const Math::Vector3&, _size);
 		};
 	}
 }
