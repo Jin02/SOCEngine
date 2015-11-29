@@ -38,18 +38,18 @@ void AnisotropicVoxelMapAtlas::Destroy()
 
 void AnisotropicVoxelMapAtlas::BindUAVsToPixelShader(const Device::DirectX* dx)
 {
-	ID3D11DeviceContext* context	= dx->GetContext();
-	const uint initCounts[1]		= {0xFFFFFFFFu};		
-	ID3D11UnorderedAccessView* view	= _voxelMapAtlas->GetUnorderedAccessView()->GetView();
+	//ID3D11DeviceContext* context	= dx->GetContext();
+	//const uint initCounts[1]		= {0xFFFFFFFFu};		
+	//ID3D11UnorderedAccessView* view	= _voxelMapAtlas->GetUnorderedAccessView()->GetView();
 
-	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
+	//context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
 }
 
 void AnisotropicVoxelMapAtlas::UnbindUAVs(const Device::DirectX* dx)
 {
-	ID3D11DeviceContext* context = dx->GetContext();
-	const uint initCounts[1] = {0xFFFFFFFFu};		
-	ID3D11UnorderedAccessView* view = nullptr;
+	//ID3D11DeviceContext* context = dx->GetContext();
+	//const uint initCounts[1] = {0xFFFFFFFFu};		
+	//ID3D11UnorderedAccessView* view = nullptr;
 
-	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
+	//context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
 }

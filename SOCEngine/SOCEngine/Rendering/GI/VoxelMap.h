@@ -10,7 +10,7 @@ namespace Rendering
 		class VoxelMap : public Texture::Texture3D
 		{
 		private:
-			Shader::UnorderedAccessView*	_uav;
+			//View::UnorderedAccessView*	_uav;
 
 		public:
 			VoxelMap();
@@ -21,7 +21,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(UnorderedAccessView, const Shader::UnorderedAccessView*, _uav);
+			//GET_ACCESSOR(UnorderedAccessView, const View::UnorderedAccessView*, _uav);
 		};
 	}
 }
