@@ -5,13 +5,12 @@ using namespace Rendering::Texture;
 using namespace Rendering::View;
 
 Texture2D::Texture2D()
-	: _hasAlpha(false), _texture(nullptr),
-	_srv(nullptr), _uav(nullptr)
+	: TextureForm(Type::Tex2D), _hasAlpha(false), _texture(nullptr), _size(0, 0)
 {
 }
 
 Texture2D::Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha)
-	: _texture(tex), _hasAlpha(hasAlpha), _uav(nullptr)
+	: TextureForm(Type::Tex2D), _texture(tex), _hasAlpha(hasAlpha), _size(0, 0)
 {
 	_srv = new ShaderResourceView(srv);
 }
@@ -26,6 +25,9 @@ Texture2D::~Texture2D()
 
 void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bindFlags, uint sampleCount, uint mipLevels)
 {
+	_size.w = width;
+	_size.h = height;
+
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
@@ -99,13 +101,20 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bin
 	}
 }
 
-Math::Size<uint> Texture2D::FetchSize() const
+const Math::Size<uint>& Texture2D::FetchSize()
 {
+	if( (_size.w != 0) && (_size.h != 0) )
+		return _size;
+
 	D3D11_TEXTURE2D_DESC desc;
 	if(_texture)
 	{
 		_texture->GetDesc(&desc);
-		return Math::Size<uint>(desc.Width, desc.Height);
+
+		_size.w = desc.Width;
+		_size.h = desc.Height;
+
+		return _size;
 	}
 
 	ID3D11Resource* res = nullptr;
@@ -114,18 +123,18 @@ Math::Size<uint> Texture2D::FetchSize() const
     ID3D11Texture2D* texture2d = nullptr;
     HRESULT hr = res->QueryInterface(&texture2d);
 
-	Math::Size<uint> size;
     if( SUCCEEDED(hr) )
     {
 		texture2d->GetDesc(&desc);
-		size.w = desc.Width;
-		size.h = desc.Height;
+
+		_size.w = desc.Width;
+		_size.h = desc.Height;
 	}
 
 	SAFE_RELEASE(texture2d);
     SAFE_RELEASE(res);
 
-	return size;
+	return _size;
 }
 
 void Texture2D::Destroy()

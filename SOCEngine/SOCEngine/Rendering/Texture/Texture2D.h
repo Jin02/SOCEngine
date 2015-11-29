@@ -3,22 +3,19 @@
 #include <d3d11.h>
 #include "Color.h"
 #include "Size.h"
-#include "ShaderResourceView.h"
-#include "UnorderedAccessView.h"
+#include "TextureForm.h"
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class Texture2D
+		class Texture2D : public TextureForm
 		{
 		protected:
 			ID3D11Texture2D*			_texture;
-
-			View::ShaderResourceView*	_srv;
-			View::UnorderedAccessView*	_uav;
-
 			bool						_hasAlpha;
+
+			Math::Size<uint>			_size;
 
 		public:
 			Texture2D();
@@ -31,14 +28,13 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			Math::Size<uint> FetchSize() const;
+			const Math::Size<uint>& FetchSize();
 
 		public:
 			GET_ACCESSOR(Texture, ID3D11Texture2D*, _texture);
 			GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
 
-			GET_ACCESSOR(ShaderResourceView,	const View::ShaderResourceView*,	_srv);
-			GET_ACCESSOR(UnorderedAccessView,	const View::UnorderedAccessView*,	_uav);
+			GET_ACCESSOR(Size, const Math::Size<uint>&, _size);
 		};
 	}
 }
