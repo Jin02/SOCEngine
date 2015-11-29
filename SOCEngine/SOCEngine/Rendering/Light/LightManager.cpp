@@ -49,25 +49,25 @@ void LightManager::InitializeAllShaderResourceBuffer()
 		_pointLightTransformSRBuffer->Initialize(
 			sizeof(LightForm::LightTransformBuffer), POINT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_pointLightColorSRBuffer = new ShaderResourceBuffer;
 		_pointLightColorSRBuffer->Initialize(
 			4, POINT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_pointLightShadowParamSRBuffer		= new ShaderResourceBuffer;
 		_pointLightShadowParamSRBuffer->Initialize(
 			sizeof(PointLightShadow::Param), POINT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_UNKNOWN,
-			dummyShadowParam, true, D3D11_USAGE_DYNAMIC);
+			dummyShadowParam, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_pointLightShadowColorSRBuffer = new ShaderResourceBuffer;
 		_pointLightShadowColorSRBuffer->Initialize(
 			4, POINT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 	}
 
 	// Directional Light Buffer
@@ -77,31 +77,31 @@ void LightManager::InitializeAllShaderResourceBuffer()
 			sizeof(LightForm::LightTransformBuffer), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R32G32B32A32_FLOAT,
 		//	_directionalLightTransformBuffer.GetVector().data());
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_directionalLightParamSRBuffer		= new ShaderResourceBuffer;
 		_directionalLightParamSRBuffer->Initialize(
 			sizeof(DirectionalLight::Params), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R16G16_FLOAT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_directionalLightColorSRBuffer		= new ShaderResourceBuffer;
 		_directionalLightColorSRBuffer->Initialize(
 			4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_directionalLightShadowParamSRBuffer		= new ShaderResourceBuffer;
 		_directionalLightShadowParamSRBuffer->Initialize(
 			sizeof(DirectionalLightShadow::Param), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_UNKNOWN,
-			dummyShadowParam, true, D3D11_USAGE_DYNAMIC);
+			dummyShadowParam, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_directionalLightShadowColorSRBuffer = new ShaderResourceBuffer;
 		_directionalLightShadowColorSRBuffer->Initialize(
 			4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 	}
 
 	// Spot Light
@@ -110,31 +110,31 @@ void LightManager::InitializeAllShaderResourceBuffer()
 		_spotLightTransformSRBuffer->Initialize(
 			sizeof(LightForm::LightTransformBuffer), SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_spotLightColorSRBuffer				= new ShaderResourceBuffer;
 		_spotLightColorSRBuffer->Initialize(
 			4, SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_spotLightParamSRBuffer				= new ShaderResourceBuffer;	
 		_spotLightParamSRBuffer->Initialize(
 			sizeof(SpotLight::Params), SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R16G16B16A16_FLOAT,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_spotLightShadowParamSRBuffer		= new ShaderResourceBuffer;
 		_spotLightShadowParamSRBuffer->Initialize(
 			sizeof(SpotLightShadow::Param), SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_UNKNOWN,
-			dummyShadowParam, true, D3D11_USAGE_DYNAMIC);
+			dummyShadowParam, true, 0, D3D11_USAGE_DYNAMIC);
 
 		_spotLightShadowColorSRBuffer = new ShaderResourceBuffer;
 		_spotLightShadowColorSRBuffer->Initialize(
 			4, SPOT_LIGHT_BUFFER_MAX_NUM,
 			DXGI_FORMAT_R8G8B8A8_UNORM,
-			dummyData, true, D3D11_USAGE_DYNAMIC);
+			dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 	}
 }
 

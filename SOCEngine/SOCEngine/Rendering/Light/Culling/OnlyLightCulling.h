@@ -1,6 +1,8 @@
 #pragma once
 
 #include "LightCulling.h"
+#include "ShaderResourceBuffer.h"
+#include "UnorderedAccessView.h"
 
 namespace Rendering
 {
@@ -15,7 +17,8 @@ namespace Rendering
 			};
 
 		private:
-			GPGPU::DirectCompute::CSRWBuffer*		_lightIndexBuffer;
+			Buffer::ShaderResourceBuffer*	_shaderResourceBuffer;
+			View::UnorderedAccessView*		_uav;
 
 		public:
 			OnlyLightCulling();
@@ -29,7 +32,8 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(LightIndexBuffer, const GPGPU::DirectCompute::CSRWBuffer*, _lightIndexBuffer);
+			GET_ACCESSOR(LightIndexSRBuffer,	const Buffer::ShaderResourceBuffer*,	_shaderResourceBuffer);
+			GET_ACCESSOR(LightIndexUAV,			const View::UnorderedAccessView*,		_uav);
 		};
 	}
 }

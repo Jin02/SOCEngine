@@ -76,7 +76,7 @@ void MeshCamera::OnInitialize()
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
 
 	_offScreen = new OffScreen;
-	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen()->GetRenderTexture());
+	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
 
 	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
 	CameraForm* thisCam = this;
@@ -557,7 +557,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 			// Light Culling Buffer
 			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::LightIndexBuffer,
-				1, _blendedMeshLightCulling->GetLightIndexBuffer()->GetShaderResourceView());
+				1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
 
 			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);

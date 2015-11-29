@@ -3,7 +3,6 @@
 #include "ShaderForm.h"
 #include "ShaderResourceBuffer.h"
 #include "Texture2D.h"
-#include "CSRWBuffer.h"
 
 namespace GPGPU
 {
@@ -36,7 +35,7 @@ namespace GPGPU
 			struct Output
 			{
 				unsigned int idx;
-				Rendering::Shader::UnorderedAccessView* output;
+				const Rendering::View::UnorderedAccessView* output;
 				Output() : idx(0), output(nullptr){}
 				~Output(){}
 			};

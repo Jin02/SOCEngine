@@ -51,9 +51,9 @@ void PixelShader::BindResourcesToContext(
 	{
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
-			auto srv = iter->texture->GetShaderResourceView();
+			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->usePS)
-				context->PSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->PSSetShaderResources( iter->semanticIndex, 1, &srv );
 		}
 	}
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LightCulling.h"
-#include "CSRWTexture.h"
+#include "RenderTexture.h"
 
 namespace Rendering
 {
@@ -22,7 +22,7 @@ namespace Rendering
 			};
 
 		private:
-			GPGPU::DirectCompute::CSRWTexture*					_offScreen;
+			Rendering::Texture::RenderTexture*					_offScreen;
 
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
 			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
@@ -50,7 +50,7 @@ namespace Rendering
 			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
 
 		public:
-			GET_ACCESSOR(OffScreen, const GPGPU::DirectCompute::CSRWTexture*, _offScreen);
+			GET_ACCESSOR(OffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
 		};
 	}
 }

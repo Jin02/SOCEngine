@@ -8,6 +8,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
+using namespace Rendering::Texture;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::TBDR;
 
@@ -167,13 +168,13 @@ void ShadingWithLightCulling::Initialize(
 			}
 		}
 
-		_offScreen = new CSRWTexture;
-		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
+		_offScreen = new RenderTexture;
+		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
 
 		ComputeShader::Output output;
 		{
 			output.idx		= (uint)OutputBufferShaderIndex::OutScreen;
-			output.output	= _offScreen;
+			output.output	= _offScreen->GetUnorderedAccessView();
 		}
 
 		std::vector<ComputeShader::Output> outputs;

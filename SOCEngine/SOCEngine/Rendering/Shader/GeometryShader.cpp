@@ -51,9 +51,9 @@ void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 	{
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
-			auto srv = iter->texture->GetShaderResourceView();
+			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->useGS)
-				context->GSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->GSSetShaderResources( iter->semanticIndex, 1, &srv );
 		}
 	}
 

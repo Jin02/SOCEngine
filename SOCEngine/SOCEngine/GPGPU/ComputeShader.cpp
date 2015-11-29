@@ -56,8 +56,8 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		auto texture = iter->texture;
 		if(texture)
 		{
-			auto srv = texture->GetShaderResourceView();
-			context->CSSetShaderResources(iter->idx, 1, srv);
+			auto srv = texture->GetShaderResourceView()->GetView();
+			context->CSSetShaderResources(iter->idx, 1, &srv);
 		}
 	}
 

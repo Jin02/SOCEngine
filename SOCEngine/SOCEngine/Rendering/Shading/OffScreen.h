@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FullScreen.h"
-#include "CSRWTexture.h"
 
 namespace Rendering
 {

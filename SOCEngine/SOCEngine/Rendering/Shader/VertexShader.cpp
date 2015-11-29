@@ -91,9 +91,9 @@ void VertexShader::BindResourcesToContext(
 	{
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
-			auto srv = iter->texture->GetShaderResourceView();
+			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->VSSetShaderResources( iter->semanticIndex, 1, &srv );
 		}
 	}
 

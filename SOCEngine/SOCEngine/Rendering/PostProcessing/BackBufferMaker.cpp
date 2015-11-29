@@ -63,15 +63,17 @@ void BackBufferMaker::Render(
 			(uint)InputConstBufferBindSlotIndex::TBRParam,
 			1, &cb);
 
+		ID3D11ShaderResourceView* srv = renderScene->GetShaderResourceView()->GetView();
 		context->PSSetShaderResources(
 			(uint)InputTextureShaderIndex::RenderScene, 
-			1, renderScene->GetShaderResourceView());
+			1, &srv);
 
 		if(_useUI)
 		{
+			srv = uiScene->GetShaderResourceView()->GetView();
 			context->PSSetShaderResources(
 			(uint)InputTextureShaderIndex::UIScene, 
-			1, uiScene->GetShaderResourceView());
+			1, &srv);
 		}
 	}
 
