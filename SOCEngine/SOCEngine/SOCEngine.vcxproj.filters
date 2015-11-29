@@ -166,9 +166,6 @@
     <Filter Include="Rendering\Texture\DepthBuffer">
       <UniqueIdentifier>{c23368c8-5248-4b98-b28e-11cdd0464c96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\RenderTarget">
-      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
@@ -336,6 +333,12 @@
     </Filter>
     <Filter Include="Rendering\View">
       <UniqueIdentifier>{ba3e0d02-2ba3-47b2-9cda-88bfcf2971da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Form">
+      <UniqueIdentifier>{135e4c06-a80b-4ca5-ada3-58ccb515a777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\RenderTexture">
+      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -508,7 +511,7 @@
       <Filter>Rendering\Texture\DepthBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\RenderTexture.h">
-      <Filter>Rendering\Texture\RenderTarget</Filter>
+      <Filter>Rendering\Texture\RenderTexture</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\TextureManager.h">
       <Filter>Rendering\Texture\Manager</Filter>
@@ -777,6 +780,9 @@
     <ClInclude Include="Rendering\View\ShaderResourceView.h">
       <Filter>Rendering\View</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureForm.h">
+      <Filter>Rendering\Texture\Form</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -912,7 +918,7 @@
       <Filter>Rendering\Texture\DepthBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
-      <Filter>Rendering\Texture\RenderTarget</Filter>
+      <Filter>Rendering\Texture\RenderTexture</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureManager.cpp">
       <Filter>Rendering\Texture\Manager</Filter>
@@ -1084,6 +1090,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp">
       <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureForm.cpp">
+      <Filter>Rendering\Texture\Form</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

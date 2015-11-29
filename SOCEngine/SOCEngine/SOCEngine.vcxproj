@@ -128,6 +128,7 @@
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\Texture3D.h" />
+    <ClInclude Include="Rendering\Texture\TextureForm.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
+    <ClCompile Include="Rendering\Texture\TextureForm.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
