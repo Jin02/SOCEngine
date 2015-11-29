@@ -235,15 +235,6 @@
     <Filter Include="ShaderCodes\UI">
       <UniqueIdentifier>{6809cf50-2eae-4027-9b0a-25acc6f06b09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output">
-      <UniqueIdentifier>{1f177282-58da-4cea-82e8-50f71419e581}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output\RWTexture">
-      <UniqueIdentifier>{15f70036-b82d-49da-9f90-3112156c70ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output\RWBuffer">
-      <UniqueIdentifier>{773d7581-f22f-483c-8459-d9623f173f01}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Buffer\ShaderResource">
       <UniqueIdentifier>{8dd9a6a6-33d6-4f65-920c-3801c361ef8e}</UniqueIdentifier>
     </Filter>
@@ -343,11 +334,8 @@
     <Filter Include="Rendering\GI\Voxel\VoxelMap">
       <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Shader\UnorderedAccessView">
-      <UniqueIdentifier>{493ad510-745b-465d-bb84-9ec9c7d3eae2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Texture\Form">
-      <UniqueIdentifier>{d6b6f0e5-caea-4c0b-a103-9d461d5e9445}</UniqueIdentifier>
+    <Filter Include="Rendering\View">
+      <UniqueIdentifier>{ba3e0d02-2ba3-47b2-9cda-88bfcf2971da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -654,14 +642,8 @@
     <ClInclude Include="Rendering\Shader\ShaderMacro.h">
       <Filter>Rendering\Shader\Macro</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\CSRWTexture.h">
-      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSRWBuffer.h">
-      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h">
       <Filter>Structure</Filter>
@@ -786,11 +768,14 @@
     <ClInclude Include="Rendering\GI\VoxelMap.h">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\UnorderedAccessView.h">
-      <Filter>Rendering\Shader\UnorderedAccessView</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\UnorderedAccessView.h">
+      <Filter>Rendering\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\ShaderResourceView.h">
+      <Filter>Rendering\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -980,14 +965,8 @@
     <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
       <Filter>Rendering\Shader\Macro</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSRWTexture.cpp">
-      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSRWBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
@@ -1097,11 +1076,14 @@
     <ClCompile Include="Rendering\GI\VoxelMap.cpp">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shader\UnorderedAccessView.cpp">
-      <Filter>Rendering\Shader\UnorderedAccessView</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\UnorderedAccessView.cpp">
+      <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\ShaderResourceView.cpp">
+      <Filter>Rendering\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1138,10 +1120,10 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_Template.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
