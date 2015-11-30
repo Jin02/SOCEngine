@@ -768,9 +768,6 @@
     <ClInclude Include="Rendering\GI\Voxelization.h">
       <Filter>Rendering\GI\Voxel</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\VoxelMap.h">
-      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClInclude>
@@ -1078,9 +1075,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\Voxelization.cpp">
       <Filter>Rendering\GI\Voxel</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
-      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
       <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
