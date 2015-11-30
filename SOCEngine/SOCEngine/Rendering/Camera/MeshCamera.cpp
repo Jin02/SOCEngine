@@ -273,8 +273,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
 	const Buffer::ConstBuffer* cameraConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const Frustum* customFrustum)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -293,23 +292,13 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			if(obj->GetUse())
 			{
 				bool isCulled = obj->GetCulled(); //In Mesh Camera
-				if(intersectFunc || customFrustum)
+				if(intersectFunc)
 				{
 					Vector3 worldPos;
 					obj->GetTransform()->FetchWorldPosition(worldPos);
 
-					float radius = obj->GetRadius();
-
-					if(intersectFunc)
-					{
-						Sphere sphere(worldPos, radius);
-						isCulled |= (*intersectFunc)(sphere) == false;
-					}
-					else if(customFrustum)
-					{
-						if(customFrustum->GetIsComputed())
-							isCulled |= (customFrustum->In(worldPos, radius) == false);
-					}
+					Sphere sphere(worldPos, obj->GetRadius());
+					isCulled |= (*intersectFunc)(sphere) == false;
 				}
 
 				if(isCulled == false)
@@ -331,8 +320,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
 	RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const Frustum* customFrustum)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -344,23 +332,13 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 		if(obj->GetUse())
 		{
 			bool isCulled = obj->GetCulled(); //In Mesh Camera
-			if(intersectFunc || customFrustum)
+			if(intersectFunc)
 			{
 				Vector3 worldPos;
 				obj->GetTransform()->FetchWorldPosition(worldPos);
 
-				float radius = obj->GetRadius();
-
-				if(intersectFunc)
-				{
-					Sphere sphere(worldPos, radius);
-					isCulled |= (*intersectFunc)(sphere) == false;
-				}
-				else if(customFrustum)
-				{
-					if(customFrustum->GetIsComputed())
-						isCulled |= (customFrustum->In(worldPos, radius) == false);
-				}
+				Sphere sphere(worldPos, obj->GetRadius());
+				isCulled |= (*intersectFunc)(sphere) == false;
 			}
 
 			// VB기준으로 정렬되어 있지 않기 때문에,
