@@ -3,7 +3,6 @@
 #include "ShaderForm.h"
 #include "ShaderResourceBuffer.h"
 #include "Texture2D.h"
-#include "CSRWBuffer.h"
 
 namespace GPGPU
 {
@@ -12,32 +11,11 @@ namespace GPGPU
 		class ComputeShader : public Rendering::Shader::ShaderForm
 		{
 		public:
-			struct InputShaderResourceBuffer
-			{
-				unsigned int idx;
-				const Rendering::Buffer::ShaderResourceBuffer* buffer;
-				InputShaderResourceBuffer() : idx(0), buffer(nullptr){}
-				~InputShaderResourceBuffer(){}
-			};
-			struct InputConstBuffer
-			{
-				uint idx;
-				const Rendering::Buffer::ConstBuffer* buffer;
-				InputConstBuffer() : idx(0), buffer(nullptr) {}
-				~InputConstBuffer() {}
-			};
-			struct InputTexture
-			{
-				unsigned int idx;
-				const Rendering::Texture::Texture2D* texture;
-				InputTexture() : idx(0), texture(nullptr){}
-				~InputTexture(){}
-			};
 			struct Output
 			{
-				unsigned int idx;
-				Rendering::Shader::UnorderedAccessView* output;
-				Output() : idx(0), output(nullptr){}
+				unsigned int bindIndex;
+				const Rendering::View::UnorderedAccessView* output;
+				Output() : bindIndex(-1), output(nullptr){}
 				~Output(){}
 			};
 			struct ThreadGroup

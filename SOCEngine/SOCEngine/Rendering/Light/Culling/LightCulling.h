@@ -38,17 +38,17 @@ namespace Rendering
 			};
 
 		private:
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer>		_inputBuffers;
-			std::vector<GPGPU::DirectCompute::ComputeShader::InputTexture>					_inputTextures;
-			std::vector<GPGPU::DirectCompute::ComputeShader::Output>						_outputs;
+			std::vector<Shader::ShaderForm::InputShaderResourceBuffer>		_inputBuffers;
+			std::vector<Shader::ShaderForm::InputTexture>					_inputTextures;
+			std::vector<GPGPU::DirectCompute::ComputeShader::Output>		_outputs;
 
-			GPGPU::DirectCompute::ComputeShader*											_computeShader;
+			GPGPU::DirectCompute::ComputeShader*							_computeShader;
 
-			bool																			_useBlendedMeshCulling;
+			bool															_useBlendedMeshCulling;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
 
 		public:
 			LightCulling();
@@ -69,13 +69,13 @@ namespace Rendering
 			inline void SetOuputBuferToCS(const std::vector<GPGPU::DirectCompute::ComputeShader::Output>&  outputs) { _computeShader->SetOutputs(outputs); }
 
 		protected:
-			void AddInputBufferToList(GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
+			void AddInputBufferToList(Shader::ShaderForm::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
 			void AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture);
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
 				const Buffer::ConstBuffer* tbrConstBuffer,
-				const std::vector<GPGPU::DirectCompute::ComputeShader::InputConstBuffer>* additionalConstBuffers = nullptr);
+				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers = nullptr);
 
 		public:
 			const Math::Size<unsigned int> CalcThreadGroupSize() const;

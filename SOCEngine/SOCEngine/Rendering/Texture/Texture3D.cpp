@@ -2,20 +2,24 @@
 #include "Director.h"
 
 using namespace Rendering::Texture;
+using namespace Rendering::View;
 
-Texture3D::Texture3D(ID3D11ShaderResourceView* srv, ID3D11Texture3D* tex) 
-	: _srv(srv), _texture(tex)
+Texture3D::Texture3D()
+	: TextureForm(Type::Tex3D), _texture(nullptr), _size(0, 0, 0)
 {
 }
 
 Texture3D::~Texture3D()
 {
-	SAFE_RELEASE(_srv);
-	SAFE_RELEASE(_texture);
+	Destory();
 }
 
-void Texture3D::Initialize(const Math::Size<unsigned int>& size, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int mipLevels)
+void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int mipLevels)
 {
+	_size.x = (float)width;
+	_size.y = (float)height;
+	_size.z = (float)depth;
+
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
@@ -23,8 +27,8 @@ void Texture3D::Initialize(const Math::Size<unsigned int>& size, uint depth, DXG
 	memset(&textureDesc, 0, sizeof(D3D11_TEXTURE3D_DESC));
 
 	// Setup the render target texture description.
-	textureDesc.Width			= size.w;
-	textureDesc.Height			= size.h;
+	textureDesc.Width			= width;
+	textureDesc.Height			= height;
 	textureDesc.Depth			= depth;
 
 	textureDesc.MipLevels		= mipLevels;
@@ -43,38 +47,20 @@ void Texture3D::Initialize(const Math::Size<unsigned int>& size, uint depth, DXG
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
+		_srv = new ShaderResourceView;
+		_srv->Initialize(_texture, format, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
+	}
 
-		srdesc.Format = format;
-		srdesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-		srdesc.Texture3D.MostDetailedMip = 0;
-		srdesc.Texture3D.MipLevels = mipLevels;
-
-		HRESULT hr = device->CreateShaderResourceView(_texture, &srdesc, &_srv);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
+	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		_uav = new UnorderedAccessView;
+		_uav->Initialize(format, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D);
 	}
 }
 
-std::tuple<Math::Size<uint>, uint> Texture3D::FetchSize() const
+void Texture3D::Destory()
 {
-	D3D11_TEXTURE3D_DESC desc;
-	if(_texture)
-	{
-		_texture->GetDesc(&desc);
-		return std::make_tuple(Math::Size<uint>(desc.Width, desc.Height), desc.Depth);
-	}
+	TextureForm::Destroy();
 
-	ID3D11Resource* res = nullptr;
-	_srv->GetResource(&res);
-
-    ID3D11Texture3D* texture2d = nullptr;
-    HRESULT hr = res->QueryInterface(&texture2d);
-
-    if( SUCCEEDED(hr) )
-		texture2d->GetDesc(&desc);
-
-	SAFE_RELEASE(texture2d);
-    SAFE_RELEASE(res);
-
-	return std::make_tuple(Math::Size<uint>(desc.Width, desc.Height), desc.Depth);;
+	SAFE_RELEASE(_texture);
 }

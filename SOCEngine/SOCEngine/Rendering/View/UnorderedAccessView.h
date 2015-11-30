@@ -4,17 +4,10 @@
 
 namespace Rendering
 {
-	namespace Shader
+	namespace View
 	{
 		class UnorderedAccessView
 		{
-		public:
-			enum class Type
-			{
-				Buffer,
-				Texture
-			};
-
 		private:
 			ID3D11UnorderedAccessView*		_uav;
 
@@ -23,7 +16,7 @@ namespace Rendering
 			virtual ~UnorderedAccessView();
 
 		public:
-			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, Type type);
+			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, D3D11_UAV_DIMENSION viewDimension);
 			void Destroy();
 
 		public:

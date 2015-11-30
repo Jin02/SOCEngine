@@ -42,6 +42,8 @@ namespace Rendering
 			struct Usage
 			{
 				bool useVS, usePS, useGS, useHS;
+
+				Usage();
 				Usage(bool useVS, bool useGS, bool useHS, bool usePS);
 				~Usage(){}
 
@@ -50,33 +52,36 @@ namespace Rendering
 
 			struct InputConstBuffer : public Usage
 			{
-				uint semanticIndex;
+				uint bindIndex;
 				const Rendering::Buffer::ConstBuffer* buffer;
 
-				InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
-				InputConstBuffer(uint semanticIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage);
+				InputConstBuffer();
+				InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage);
 
 				~InputConstBuffer(){}
 			};
 
 			struct InputTexture : public Usage
 			{
-				uint semanticIndex;
-				const Texture::Texture2D* texture;
+				uint bindIndex;
+				const Texture::TextureForm* texture;
 
-				InputTexture(uint semanticIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS);
-				InputTexture(uint semanticIndex, const Texture::Texture2D* texture, Usage usage);
+				InputTexture();
+				InputTexture(uint bindIndex, const Texture::TextureForm* texture, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputTexture(uint bindIndex, const Texture::TextureForm* texture, Usage usage);
 
 				~InputTexture(){}
 			};
 
 			struct InputShaderResourceBuffer : public Usage
 			{
-				uint semanticIndex;
+				uint bindIndex;
 				const Buffer::ShaderResourceBuffer* srBuffer;
 
-				InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
-				InputShaderResourceBuffer(uint semanticIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
+				InputShaderResourceBuffer();
+				InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
 				~InputShaderResourceBuffer(){}
 			};
 

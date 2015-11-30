@@ -43,7 +43,7 @@ void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 		{
 			ID3D11Buffer* buffer = (*iter).buffer->GetBuffer();
 			if(buffer && iter->useGS)
-				context->GSSetConstantBuffers( (*iter).semanticIndex, 1, &buffer );
+				context->GSSetConstantBuffers( (*iter).bindIndex, 1, &buffer );
 		}
 	}
 
@@ -51,9 +51,9 @@ void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 	{
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
-			auto srv = iter->texture->GetShaderResourceView();
+			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->useGS)
-				context->GSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->GSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 
@@ -63,7 +63,7 @@ void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 		{
 			auto srv = iter->srBuffer->GetShaderResourceView();
 			if(srv && iter->useGS)
-				context->GSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->GSSetShaderResources( iter->bindIndex, 1, srv );
 		}
 	}
 }
@@ -80,7 +80,7 @@ void GeometryShader::Clear(ID3D11DeviceContext* context,
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
 			if(iter->useGS)
-				context->GSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->GSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -91,7 +91,7 @@ void GeometryShader::Clear(ID3D11DeviceContext* context,
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
 			if(iter->useGS)
-				context->GSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->GSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -102,7 +102,7 @@ void GeometryShader::Clear(ID3D11DeviceContext* context,
 		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
 			if(iter->useGS)
-				context->GSSetConstantBuffers( iter->semanticIndex, 1, &nullBuffer );
+				context->GSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
 }

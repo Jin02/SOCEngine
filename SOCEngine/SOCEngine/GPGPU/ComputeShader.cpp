@@ -35,11 +35,11 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 	context->CSSetShader(_shader, nullptr, 0);
 	for(auto iter = _inputSRBuffers.begin(); iter != _inputSRBuffers.end(); ++iter)
 	{
-		auto buffer = iter->buffer;
+		auto buffer = iter->srBuffer;
 		if(buffer)
 		{
 			auto srv = buffer->GetShaderResourceView();
-			context->CSSetShaderResources(iter->idx, 1, srv);
+			context->CSSetShaderResources(iter->bindIndex, 1, srv);
 		}
 	}
 	for(auto iter = _inputConstBuffers.begin(); iter != _inputConstBuffers.end(); ++iter)
@@ -48,7 +48,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		if(cb)
 		{
 			auto buffer = cb->GetBuffer();
-			context->CSSetConstantBuffers(iter->idx, 1, &buffer);
+			context->CSSetConstantBuffers(iter->bindIndex, 1, &buffer);
 		}
 	}
 	for(auto iter = _inputTextures.begin(); iter != _inputTextures.end(); ++iter)
@@ -56,8 +56,8 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		auto texture = iter->texture;
 		if(texture)
 		{
-			auto srv = texture->GetShaderResourceView();
-			context->CSSetShaderResources(iter->idx, 1, srv);
+			auto srv = texture->GetShaderResourceView()->GetView();
+			context->CSSetShaderResources(iter->bindIndex, 1, &srv);
 		}
 	}
 
@@ -67,7 +67,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 		if(output)
 		{
 			ID3D11UnorderedAccessView* uav = output->GetView();
-			context->CSSetUnorderedAccessViews(iter->idx, 1, &uav, nullptr);
+			context->CSSetUnorderedAccessViews(iter->bindIndex, 1, &uav, nullptr);
 		}
 	}
 
@@ -76,16 +76,16 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	{
 		for(auto iter = _inputSRBuffers.begin(); iter != _inputSRBuffers.end(); ++iter)
-			context->CSSetShaderResources(iter->idx, 1, &nullSRV);
+			context->CSSetShaderResources(iter->bindIndex, 1, &nullSRV);
 
 		for(auto iter = _inputTextures.begin(); iter != _inputTextures.end(); ++iter)
-			context->CSSetShaderResources(iter->idx, 1, &nullSRV);
+			context->CSSetShaderResources(iter->bindIndex, 1, &nullSRV);
 	}
 
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
 	{
 		for(auto iter = _outputs.begin(); iter != _outputs.end(); ++iter)
-			context->CSSetUnorderedAccessViews(iter->idx, 1, &nullUAV, nullptr);
+			context->CSSetUnorderedAccessViews(iter->bindIndex, 1, &nullUAV, nullptr);
 	}
 	context->CSSetShader(nullptr, nullptr, 0);
 }

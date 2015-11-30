@@ -83,7 +83,7 @@ void VertexShader::BindResourcesToContext(
 		{
 			ID3D11Buffer* buffer = (*iter).buffer->GetBuffer();
 			if(buffer && iter->useVS)
-				context->VSSetConstantBuffers( (*iter).semanticIndex, 1, &buffer );
+				context->VSSetConstantBuffers( (*iter).bindIndex, 1, &buffer );
 		}
 	}
 
@@ -91,9 +91,9 @@ void VertexShader::BindResourcesToContext(
 	{
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
-			auto srv = iter->texture->GetShaderResourceView();
+			auto srv = iter->texture->GetShaderResourceView()->GetView();
 			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 
@@ -103,7 +103,7 @@ void VertexShader::BindResourcesToContext(
 		{
 			auto srv = iter->srBuffer->GetShaderResourceView();
 			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, srv );
+				context->VSSetShaderResources( iter->bindIndex, 1, srv );
 		}
 	}
 }
@@ -121,7 +121,7 @@ void VertexShader::Clear(
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
 			if(iter->useVS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -132,7 +132,7 @@ void VertexShader::Clear(
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
 			if(iter->useVS)
-				context->VSSetShaderResources( iter->semanticIndex, 1, &nullSrv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -143,7 +143,7 @@ void VertexShader::Clear(
 		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
 			if(iter->useVS)
-				context->VSSetConstantBuffers( iter->semanticIndex, 1, &nullBuffer );
+				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
 }

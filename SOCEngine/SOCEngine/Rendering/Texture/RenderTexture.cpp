@@ -19,7 +19,7 @@ bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | optionalBindFlags;
 	
-	Texture2D::Initialize(size, format, bindFlags, sampleCount);
+	Texture2D::Initialize(size.w, size.h, format, bindFlags, sampleCount, 1);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));

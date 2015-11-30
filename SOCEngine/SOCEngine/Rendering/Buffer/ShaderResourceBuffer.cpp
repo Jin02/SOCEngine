@@ -15,26 +15,30 @@ ShaderResourceBuffer::~ShaderResourceBuffer()
 	SAFE_RELEASE(_buffer);
 }
 
-void ShaderResourceBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format,
-									  const void* sysMem, bool useMapWriteNoOverWrite, D3D11_USAGE usage)
+void ShaderResourceBuffer::Initialize(
+	uint stride, uint num, DXGI_FORMAT format,
+	const void* sysMem, bool useMapWriteNoOverWrite,
+	uint optionalBindFlag, D3D11_USAGE usage)
 {
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
 
 	desc.Usage					= usage;
 	desc.ByteWidth				= stride * num;
-	desc.BindFlags				= D3D11_BIND_SHADER_RESOURCE;
+	desc.BindFlags				= D3D11_BIND_SHADER_RESOURCE | optionalBindFlag;
 	desc.CPUAccessFlags			= useMapWriteNoOverWrite ? D3D11_CPU_ACCESS_WRITE : 0;
 	desc.StructureByteStride	= stride;
+//	desc.StructureByteStride	= optionalBindFlag & D3D11_BIND_UNORDERED_ACCESS ? 0 : stride;
 	desc.MiscFlags				= (format == DXGI_FORMAT_UNKNOWN) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = sysMem;
 
 	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&desc, &data, &_buffer);
+	HRESULT hr = sysMem ? device->CreateBuffer(&desc, &data, &_buffer)
+						: device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. does not create constant buffer");
+	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format = format;
