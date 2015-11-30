@@ -13,12 +13,14 @@ using namespace Rendering::Texture;
 using namespace Rendering::Camera;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
+using namespace Rendering::View;
 using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
 	: _viewProjAxisesConstBuffer(nullptr), _infoConstBuffer(nullptr),
-	_maxNumOfCascade(0), _changedInitVoxelizationInfo(false),
-	_clearVoxelMapCS(nullptr)
+	_maxNumOfCascade(0),
+	_clearVoxelMapCS(nullptr), 
+	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr)
 {
 }
 
@@ -26,8 +28,9 @@ Voxelization::~Voxelization()
 {
 	Destroy();
 
-	for(auto& iter : _voxelMapAtlas)	SAFE_DELETE(iter);
-	_voxelMapAtlas.clear();
+	SAFE_DELETE(_voxelAlbedoMapAtlas);
+	SAFE_DELETE(_voxelNormalMapAtlas);
+	SAFE_DELETE(_voxelEmissionMapAtlas);
 
 	SAFE_DELETE(_infoConstBuffer);
 	SAFE_DELETE(_viewProjAxisesConstBuffer);
@@ -46,13 +49,14 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
-	for(uint i=0; i<maxNumOfCascade; ++i)
-	{
-		AnisotropicVoxelMapAtlas* atlas = new AnisotropicVoxelMapAtlas;
-		atlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32G32B32_UINT, mipmapLevels, (uint)BindIndex::InOutVoxelMap);
+	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
-		_voxelMapAtlas.push_back(atlas);
-	}
+	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+
+	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_infoConstBuffer = new ConstBuffer;
 	_infoConstBuffer->Initialize(sizeof(Info));
@@ -96,8 +100,12 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ShaderForm::InputTexture> inputTextures;
 	{
 		ShaderForm::InputTexture inputTexture;
-		inputTexture.bindIndex	= (uint)BindIndex::InOutVoxelMap;
-		inputTexture.texture	= nullptr;
+		inputTexture.bindIndex	= (uint)BindIndex::Albedo;
+		inputTexture.texture	= _voxelAlbedoMapAtlas;
+		inputTexture.bindIndex	= (uint)BindIndex::Normal;
+		inputTexture.texture	= _voxelNormalMapAtlas;
+		inputTexture.bindIndex	= (uint)BindIndex::Emission;
+		inputTexture.texture	= _voxelEmissionMapAtlas;
 
 		inputTextures.push_back(inputTexture);
 	}
@@ -105,8 +113,12 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ComputeShader::Output> outputs;
 	{
 		ComputeShader::Output output;
-		output.bindIndex	= (uint)BindIndex::InOutVoxelMap;
-		output.output		= nullptr;
+		output.bindIndex	= (uint)BindIndex::Albedo;
+		output.output		= _voxelAlbedoMapAtlas->GetMipmapUAV(0);
+		output.bindIndex	= (uint)BindIndex::Normal;
+		output.output		= _voxelNormalMapAtlas->GetMipmapUAV(0);
+		output.bindIndex	= (uint)BindIndex::Emission;
+		output.output		= _voxelEmissionMapAtlas->GetMipmapUAV(0);
 
 		outputs.push_back(output);
 	}
@@ -117,18 +129,20 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 
 void Voxelization::Destroy()
 {
-	for(auto& iter : _voxelMapAtlas)	iter->Destroy();
+	_voxelAlbedoMapAtlas->Destory();
+	_voxelNormalMapAtlas->Destory();
+	_voxelEmissionMapAtlas->Destory();
 
 	_infoConstBuffer->Destory();
 	_viewProjAxisesConstBuffer->Destory();
 }
 
-void Voxelization::Clear(const Device::DirectX*& dx)
+void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 {
-
+	_clearVoxelMapCS->Dispatch(dx->GetContext());
 }
 
-void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager)
+void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager, bool onlyStaticMesh)
 {
 	Math::Matrix camWorldMat;
 	{
@@ -136,31 +150,25 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		camTf->FetchWorldMatrix(camWorldMat);
 	}
 
-	//Check Duplicated Work.
+	if(onlyStaticMesh)
 	{
 		Matrix viewMat;
 		CameraForm::GetViewMatrix(viewMat, camWorldMat);
 		
-		bool isDifferentViewMat = memcmp(&_prevViewMat, &viewMat, sizeof(Matrix)) != 0;
-		if((isDifferentViewMat || _changedInitVoxelizationInfo) == false)
+		bool isDifferentViewMat = memcmp(&_prevStaticMeshVoxelizeViewMat, &viewMat, sizeof(Matrix)) != 0;
+		if(isDifferentViewMat == false)
 			return;
 
-		_prevViewMat = viewMat;
-		_changedInitVoxelizationInfo = false;
+		_prevStaticMeshVoxelizeViewMat = viewMat;
 	}
 
-	Clear(dx);
+	ClearZeroVoxelMap(dx);
 	Vector3 camWorldPos(camWorldMat._41, camWorldMat._42, camWorldMat._43);
 
 	float cameraNear = camera->GetNear();
 	float cameraFar  = camera->GetFar();
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	D3D11_VIEWPORT originViewport;
-	{
-		uint vpNum = 1;
-		context->RSGetViewports(&vpNum, &originViewport);
-	}
 	ID3D11RasterizerState* originRSState = nullptr;
 	context->RSGetState(&originRSState);
 
@@ -168,6 +176,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	uint originDepthStateRef = 0;
 	context->OMGetDepthStencilState(&originDepthState, &originDepthStateRef);
 
+	context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
+	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
+	float blendFactor[1] = {0, };
+	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 	D3D11_VIEWPORT viewport;
 	{
 		viewport.TopLeftX	= 0.0f;
@@ -178,78 +190,89 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		viewport.Height		= (float)_initVoxelizationInfo.dimension;
 	}
 	context->RSSetViewports(1, &viewport);
-	context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
-	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
-	float blendFactor[1] = {0, };
-	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
 	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
 
-	// 어짜피, 모든 복셀맵이 같은 인덱스를 공유하고 있으므로 하나만 해도된다.
-	_voxelMapAtlas[0]->BindUAVsToPixelShader(dx);
+	D3D11_VIEWPORT originViewport;
+	{
+		uint vpNum = 1;
+		context->RSGetViewports(&vpNum, &originViewport);
+	}
+
+	ID3D11UnorderedAccessView* uavs [] =
+	{
+		_voxelAlbedoMapAtlas->GetMipmapUAV(0)->GetView(),
+		_voxelNormalMapAtlas->GetMipmapUAV(0)->GetView(),
+		_voxelEmissionMapAtlas->GetMipmapUAV(0)->GetView()
+	};
+	
+	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
 	for(uint currentCascade=0; currentCascade<_maxNumOfCascade; ++currentCascade)
 	{
 		// Compute & Update Const Buffers
 		{
-			InfoCBData currentVoxelizeInfo;
-			{
-				currentVoxelizeInfo.currentCascade	= currentCascade;
-				currentVoxelizeInfo.dimension		= _initVoxelizationInfo.dimension;
-
-				uint uscale = currentCascade + 1;
-				float scale = (float)(uscale * uscale);
-				currentVoxelizeInfo.voxelizeSize	= _initVoxelizationInfo.voxelizeSize * scale;
-				currentVoxelizeInfo.voxelSize		= currentVoxelizeInfo.voxelizeSize / (float)currentVoxelizeInfo.dimension;
-
-				currentVoxelizeInfo.dummy = 0;
-			}
-
-			float worldSize = currentVoxelizeInfo.voxelizeSize;
-
-			Matrix orthoProjMat;
-			Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, cameraNear, cameraFar);
-
-			float halfWorldSize = worldSize / 2.0f;
-			float cascadeScale = (float)currentCascade + 1.0f;
-
+			float worldSize = _initVoxelizationInfo.voxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
 			float offset = (worldSize / (float)(currentCascade + 1)) / 2.0f;
 			Vector3 worldMinPos = camWorldPos - Vector3(offset, offset, offset);
-			currentVoxelizeInfo.voxelizeMinPos = worldMinPos;
 
-			_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
-			
-			Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
-			Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
-			Vector3 bbMid = (bbMin + bbMax) / 2.0f;
-
-			auto LookAtView = [](
-				Matrix& outViewMat,
-				const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
-				)
+			// Update Voxelize Info CB
 			{
-				Transform tf(nullptr);
-				tf.UpdatePosition(worldPos);
-				tf.LookAtWorld(targetPos, &up);
+				InfoCBData currentVoxelizeInfo;
+				{
+					currentVoxelizeInfo.currentCascade	= currentCascade;
+					currentVoxelizeInfo.dimension		= _initVoxelizationInfo.dimension;
 
-				Matrix worldMat;
-				tf.FetchWorldMatrix(worldMat);
+					currentVoxelizeInfo.voxelizeSize	= worldSize;
+					currentVoxelizeInfo.voxelSize		= worldSize / (float)currentVoxelizeInfo.dimension;
 
-				CameraForm::GetViewMatrix(outViewMat, worldMat);
-			};
+					currentVoxelizeInfo.voxelizeMinPos	= worldMinPos;
+					currentVoxelizeInfo.dummy = 0;
+				}
+				
+				_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
+			}
 
-			Matrix viewAxisX, viewAxisY, viewAxisZ;
-			LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
-			LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
-			LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
+			// Update View Proj ConstBuffer
+			{
+				Matrix orthoProjMat;
+				Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, cameraNear, cameraFar);
 
-			ViewProjAxisesCBData viewProjAxises;
-			viewProjAxises.viewProjX = viewAxisX * orthoProjMat;
-			viewProjAxises.viewProjY = viewAxisY * orthoProjMat;
-			viewProjAxises.viewProjZ = viewAxisZ * orthoProjMat;
+				float halfWorldSize = worldSize / 2.0f;
+				float cascadeScale = (float)(currentCascade + 1);
 
-			_viewProjAxisesConstBuffer->UpdateSubResource(context, &viewProjAxises);
+				Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
+				Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
+				Vector3 bbMid = (bbMin + bbMax) / 2.0f;
+
+				auto LookAtView = [](
+					Matrix& outViewMat,
+					const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
+					)
+				{
+					Transform tf(nullptr);
+					tf.UpdatePosition(worldPos);
+					tf.LookAtWorld(targetPos, &up);
+
+					Matrix worldMat;
+					tf.FetchWorldMatrix(worldMat);
+
+					CameraForm::GetViewMatrix(outViewMat, worldMat);
+				};
+
+				Matrix viewAxisX, viewAxisY, viewAxisZ;
+				LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
+				LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
+				LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
+
+				ViewProjAxisesCBData viewProjAxises;
+				viewProjAxises.viewProjX = viewAxisX * orthoProjMat;
+				viewProjAxises.viewProjY = viewAxisY * orthoProjMat;
+				viewProjAxises.viewProjZ = viewAxisZ * orthoProjMat;
+
+				_viewProjAxisesConstBuffer->UpdateSubResource(context, &viewProjAxises);
+			}
 		}
 
 		// Render Voxel
@@ -262,13 +285,13 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		}
 	}
 
-	// 어짜피, 모든 복셀맵이 같은 인덱스를 공유하고 있으므로 하나만 해도된다.
-	_voxelMapAtlas[0]->UnbindUAVs(dx);
+	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr};
+	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
-	context->RSSetViewports(1, &originViewport);
 	context->RSSetState(originRSState);
+	context->RSSetViewports(1, &originViewport);
 	context->OMSetDepthStencilState(originDepthState, originDepthStateRef);
 }
 
@@ -280,6 +303,4 @@ void Voxelization::UpdateInitVoxelizationInfo(const Info& info)
 	initInfo.voxelizeSize	= info.voxelizeSize;
 	initInfo.dimension		= info.dimension;
 	initInfo.voxelSize		= info.voxelizeSize / (float)info.dimension;
-
-	_changedInitVoxelizationInfo = true;
 }

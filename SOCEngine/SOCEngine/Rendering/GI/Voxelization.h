@@ -37,19 +37,22 @@ namespace Rendering
 
 			enum class BindIndex : uint
 			{
-				InOutVoxelMap	= 0,
+				Albedo		= 0,
+				Normal		= 1,
+				Emission	= 2
 			};
 
 		private:
-			std::vector<AnisotropicVoxelMapAtlas*>	_voxelMapAtlas;
+			AnisotropicVoxelMapAtlas*	_voxelAlbedoMapAtlas;
+			AnisotropicVoxelMapAtlas*	_voxelNormalMapAtlas;
+			AnisotropicVoxelMapAtlas*	_voxelEmissionMapAtlas;
 
 			Buffer::ConstBuffer*	_infoConstBuffer;
 			Buffer::ConstBuffer*	_viewProjAxisesConstBuffer;
 
 			InfoCBData				_initVoxelizationInfo;
-			bool					_changedInitVoxelizationInfo;
 
-			Math::Matrix			_prevViewMat;
+			Math::Matrix			_prevStaticMeshVoxelizeViewMat;
 
 			uint					_maxNumOfCascade;
 
@@ -65,8 +68,8 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			void Clear(const Device::DirectX*& dx);
-			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager);
+			void ClearZeroVoxelMap(const Device::DirectX*& dx);
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, bool onlyStaticMesh);
 
 		public:
 			void UpdateInitVoxelizationInfo(const Info& info);
