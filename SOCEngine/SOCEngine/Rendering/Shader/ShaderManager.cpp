@@ -78,7 +78,7 @@ bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath,
 
 bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::string& folderPath, const std::string& fileName)
 {
-	bool found = false;
+	BOOL found = FALSE;
 	std::string fullPath = "";
 
 	if( fileName.find(".") == -1)
@@ -87,17 +87,17 @@ bool ShaderManager::MakeShaderFileFullPath(std::string& outFullPath, const std::
 		for(int i=0; i<2; ++i)
 		{
 			fullPath = folderPath+fileName+format[i];
-			found = (bool)PathFileExists(fullPath.c_str());
+			found = PathFileExists(fullPath.c_str());
 			if(found)	break;
 		}
 	}
 	else //fileName has format
 	{
 		fullPath = folderPath+fileName;
-		found = (bool)PathFileExists(fullPath.c_str());
+		found = PathFileExists(fullPath.c_str());
 	}
 
-	if(found == false)
+	if(found == FALSE)
 		return false;
 
 	outFullPath = fullPath;
