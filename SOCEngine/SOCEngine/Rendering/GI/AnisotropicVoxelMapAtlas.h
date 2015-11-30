@@ -20,7 +20,6 @@ namespace Rendering
 		private:
 			uint _sideLength;
 			uint _mipmapCount;
-			uint _uavBindIndex;
 
 			std::vector<View::UnorderedAccessView*>	_mipmapUAVs;
 
@@ -29,11 +28,13 @@ namespace Rendering
 			~AnisotropicVoxelMapAtlas();
 
 		public:
-			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapCount, uint uavBindIndex);
+			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapCount);
 			void Destroy();
 
-			void BindUAVsToPixelShader(const Device::DirectX* dx);
-			void UnbindUAVs(const Device::DirectX* dx);
+			//void BindUAVToPixelShader(const Device::DirectX* dx, uint mipLevel, uint bindIndex);
+			//void UnbindUAVToPixelShader(const Device::DirectX* dx, uint bindIndex);
+
+			inline const View::UnorderedAccessView* GetMipmapUAV(uint index) const { return (index == 0) ? _uav : _mipmapUAVs[index - 1]; }
 
 		public:
 			GET_ACCESSOR(SideLength,	uint,	_sideLength);

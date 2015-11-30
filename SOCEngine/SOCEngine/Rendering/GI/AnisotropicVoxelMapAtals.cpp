@@ -9,7 +9,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::View;
 
 AnisotropicVoxelMapAtlas::AnisotropicVoxelMapAtlas()
-	: Texture3D(), _uavBindIndex(-1)
+	: Texture3D()
 {
 }
 
@@ -19,11 +19,10 @@ AnisotropicVoxelMapAtlas::~AnisotropicVoxelMapAtlas()
 }
 
 void AnisotropicVoxelMapAtlas::Initialize(
-	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapCount, uint uavBindIndex)
+	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapCount)
 {
 	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	_uavBindIndex	= uavBindIndex;
 	_sideLength		= sideLength;
 	_mipmapCount	= mipmapCount;
 
@@ -47,20 +46,20 @@ void AnisotropicVoxelMapAtlas::Initialize(
 	}
 }
 
-void AnisotropicVoxelMapAtlas::BindUAVsToPixelShader(const Device::DirectX* dx)
-{
-	ID3D11DeviceContext* context	= dx->GetContext();
-	const uint initCounts[1]		= {0xFFFFFFFFu};		
-	ID3D11UnorderedAccessView* view	= _uav->GetView();
-
-	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
-}
-
-void AnisotropicVoxelMapAtlas::UnbindUAVs(const Device::DirectX* dx)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-	const uint initCounts[1] = {0xFFFFFFFFu};		
-	ID3D11UnorderedAccessView* view = nullptr;
-
-	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, _uavBindIndex, 1, &view, initCounts);
-}
+//void AnisotropicVoxelMapAtlas::BindUAVToPixelShader(const Device::DirectX* dx, uint mipLevel, uint bindIndex)
+//{
+//	ID3D11DeviceContext* context	= dx->GetContext();
+//	const uint initCounts[1]		= {0xFFFFFFFFu};
+//	ID3D11UnorderedAccessView* view	= (mipLevel == 0) ? _uav->GetView() : _mipmapUAVs[mipLevel - 1]->GetView();
+//
+//	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, bindIndex, 1, &view, initCounts);
+//}
+//
+//void AnisotropicVoxelMapAtlas::UnbindUAVToPixelShader(const Device::DirectX* dx, uint bindIndex)
+//{
+//	ID3D11DeviceContext* context = dx->GetContext();
+//	const uint initCounts[1] = {0xFFFFFFFFu};
+//	ID3D11UnorderedAccessView* view = nullptr;
+//
+//	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, bindIndex, 1, &view, initCounts);
+//}
