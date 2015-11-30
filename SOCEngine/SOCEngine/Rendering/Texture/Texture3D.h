@@ -19,7 +19,7 @@ namespace Rendering
 			Texture3D();
 			virtual ~Texture3D();
 
-		protected:
+		public:
 			void Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, uint bindFlags, uint mipLevels);
 			void Destory();
 

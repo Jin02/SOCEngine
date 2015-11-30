@@ -14,7 +14,7 @@ Texture3D::~Texture3D()
 	Destory();
 }
 
-void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, unsigned int bindFlags, unsigned int mipLevels)
+void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, uint bindFlags, uint mipLevels)
 {
 	_size.x = (float)width;
 	_size.y = (float)height;
@@ -54,7 +54,7 @@ void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT form
 	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
 	{
 		_uav = new UnorderedAccessView;
-		_uav->Initialize(format, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D);
+		_uav->Initialize(format, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, depth);
 	}
 }
 
