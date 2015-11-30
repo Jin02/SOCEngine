@@ -803,6 +803,7 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 			{
 				PhysicallyBasedMaterial* pbm = dynamic_cast<PhysicallyBasedMaterial*>(material);
 				pbm->UpdateMainColor(Color(impMat.diffuse[0], impMat.diffuse[1], impMat.diffuse[2], impMat.opacity));
+				pbm->SetEmissionColor(Color(impMat.emissive[0], impMat.emissive[1], impMat.emissive[2], 0.0f));
 
 				const auto& textures = impMat.textures;
 				for(auto iter = textures.begin(); iter != textures.end(); ++iter)

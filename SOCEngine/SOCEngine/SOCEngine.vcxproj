@@ -54,9 +54,6 @@
     <ClInclude Include="External\rapidjson\stringbuffer.h" />
     <ClInclude Include="External\rapidjson\writer.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
-    <ClInclude Include="GPGPU\CSOutput.h" />
-    <ClInclude Include="GPGPU\CSRWBuffer.h" />
-    <ClInclude Include="GPGPU\CSRWTexture.h" />
     <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h" />
@@ -87,6 +84,8 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
+    <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h" />
+    <ClInclude Include="Rendering\GI\Voxelization.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
@@ -127,7 +126,11 @@
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
+    <ClInclude Include="Rendering\Texture\Texture3D.h" />
+    <ClInclude Include="Rendering\Texture\TextureForm.h" />
     <ClInclude Include="Rendering\Texture\TextureManager.h" />
+    <ClInclude Include="Rendering\View\ShaderResourceView.h" />
+    <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -135,6 +138,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </ClInclude>
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -170,6 +179,7 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\FullScreenShader.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
+    <ClInclude Include="ShaderCodes\Voxelization_Common.h" />
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\FontLoader.h" />
@@ -190,6 +200,12 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Component\Component.cpp" />
@@ -218,9 +234,6 @@
     <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp" />
     <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
-    <ClCompile Include="GPGPU\CSOutput.cpp" />
-    <ClCompile Include="GPGPU\CSRWBuffer.cpp" />
-    <ClCompile Include="GPGPU\CSRWTexture.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
     <ClCompile Include="Intersection\BoundBox.cpp" />
@@ -246,6 +259,8 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
+    <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp" />
+    <ClCompile Include="Rendering\GI\Voxelization.cpp" />
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp" />
@@ -282,7 +297,11 @@
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
+    <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
+    <ClCompile Include="Rendering\Texture\TextureForm.cpp" />
     <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
+    <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
+    <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
     <ClCompile Include="UI\FontLoader.cpp" />
     <ClCompile Include="UI\SimpleImage2D.cpp" />
@@ -396,7 +415,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Shadow;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>

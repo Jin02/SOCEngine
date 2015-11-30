@@ -53,6 +53,8 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 	}
 	else if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
 		repo = &_forward_onlyAlphaTestWithDiffuseShaders;
+	else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
+		repo = &_voxelizationShaders;
 	else
 	{
 		ASSERT_MSG("Error, not supported mesh type");
@@ -64,37 +66,46 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 
-	auto LoadShader = [](const std::string& fileName, const std::string& vsMainName, const std::string& psMainName, const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr)
+	auto LoadShader = [](
+		const std::string& fileName,
+		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
+		const std::vector<ShaderMacro>* macros, ShaderManager* shaderMgr) -> ShaderGroup
 	{
 		Factory::EngineFactory shaderLoader(shaderMgr);
 
 		ShaderGroup shaders;
-		shaderLoader.LoadShader(fileName, vsMainName, psMainName, macros, &shaders.vs, &shaders.ps);
+		shaderLoader.LoadShader(fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);
 
-		ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load physically based material shader");
+		//ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load shader");
 		return shaders;
 	};
 
 	ShaderGroup shader;
 	{
+		std::string vsMainFunc = "VS", psMainFunc ="PS", gsMainFunc = "";
+
 		if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
-			shader = LoadShader(fileName, "VS", "OnlyAlpaTestWithDiffusePS", &targetShaderMacros, resourceManager->GetShaderManager());
-		else
-			shader = LoadShader(fileName, "VS", "PS", &targetShaderMacros, resourceManager->GetShaderManager());
+			psMainFunc = "OnlyAlpaTestWithDiffusePS";
+		else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
+			gsMainFunc = "GS";
 
-		repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
-
-		if(meshType == Geometry::MeshRenderer::Type::Transparent)
+		shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros, resourceManager->GetShaderManager());
+		if(shader.IsAllEmpty() == false)
 		{
-			shader = LoadShader(fileName, "DepthOnlyVS", "", &targetShaderMacros, resourceManager->GetShaderManager());
-			_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+			repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+
+			if(meshType == Geometry::MeshRenderer::Type::Transparent)
+			{
+				shader = LoadShader(fileName, "DepthOnlyVS", "", "", &targetShaderMacros, resourceManager->GetShaderManager());
+				_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+			}
 		}
 	}
 
 	return shader;
 }
 
-bool RenderManager::TestInit()
+void RenderManager::Initialize()
 {
 	std::vector<ShaderMacro> macros;
 	{
@@ -102,7 +113,7 @@ bool RenderManager::TestInit()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=1; i< ((uint)Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse + 1); ++i)
+	for(uint i=0; i< ((uint)Geometry::MeshRenderer::Type::MAX); ++i)
 	{
 		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
 			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
@@ -117,7 +128,7 @@ bool RenderManager::TestInit()
 			(uint)DefaultVertexInputTypeFlag::TANGENT, nullptr, &macros);
 	}
 
-	return true;
+	DEBUG_LOG("Done Loading Shaders!")
 }
 
 void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
@@ -232,6 +243,11 @@ bool RenderManager::FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out,
 	return FindShaderFromHashMap(out, _forward_onlyAlphaTestWithDiffuseShaders, bufferFlag);
 }
 
+bool RenderManager::FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const
+{
+	return FindShaderFromHashMap(out, _voxelizationShaders, bufferFlag);
+}
+
 bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
 {
 	auto iter = hashMap.find(key);
@@ -291,6 +307,8 @@ void RenderManager::MakeDefaultSahderFileName(
 	else if(meshType == Geometry::MeshRenderer::Type::Transparent ||
 			meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
 		frontFileName = "PhysicallyBased_Forward_";
+	else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
+		frontFileName = "Voxelization_";
 	else
 	{
 		ASSERT_MSG("Error, unsupported mesh type");

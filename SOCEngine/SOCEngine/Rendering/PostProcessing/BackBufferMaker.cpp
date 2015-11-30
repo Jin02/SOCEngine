@@ -51,27 +51,29 @@ void BackBufferMaker::Render(
 	uint offset = 0;
 	ID3D11Buffer* nullBuffer[] = {nullptr};
 
-	_vertexShader->SetShaderToContext(context);
-	_vertexShader->SetInputLayoutToContext(context);
+	_vertexShader->BindShaderToContext(context);
+	_vertexShader->BindInputLayoutToContext(context);
 	
-	_pixelShader->SetShaderToContext(context);
+	_pixelShader->BindShaderToContext(context);
 
-	//_pixelShader->UpdateResources(context, nullptr, &_inputPSTextures, nullptr);
+	//_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
 	{
 		ID3D11Buffer* cb = tbrParamConstBuffer->GetBuffer();
 		context->PSSetConstantBuffers(
 			(uint)InputConstBufferBindSlotIndex::TBRParam,
 			1, &cb);
 
+		ID3D11ShaderResourceView* srv = renderScene->GetShaderResourceView()->GetView();
 		context->PSSetShaderResources(
 			(uint)InputTextureShaderIndex::RenderScene, 
-			1, renderScene->GetShaderResourceView());
+			1, &srv);
 
 		if(_useUI)
 		{
+			srv = uiScene->GetShaderResourceView()->GetView();
 			context->PSSetShaderResources(
 			(uint)InputTextureShaderIndex::UIScene, 
-			1, uiScene->GetShaderResourceView());
+			1, &srv);
 		}
 	}
 

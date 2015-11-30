@@ -62,11 +62,11 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 	ID3D11Buffer* nullBuffer[] = {nullptr};
 
 
-	_vertexShader->SetShaderToContext(context);
-	_vertexShader->SetInputLayoutToContext(context);
+	_vertexShader->BindShaderToContext(context);
+	_vertexShader->BindInputLayoutToContext(context);
 	
-	_pixelShader->SetShaderToContext(context);
-	_pixelShader->UpdateResources(context, nullptr, &_inputPSTextures, nullptr);
+	_pixelShader->BindShaderToContext(context);
+	_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
 	context->PSSetSamplers(
 		(uint)Rendering::TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState,
 		1, &sampler);

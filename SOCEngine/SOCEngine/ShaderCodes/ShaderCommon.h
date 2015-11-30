@@ -101,6 +101,17 @@ cbuffer TBRParam : register( b0 )
 	float4	tbrParam_cameraWorldPosition;
 };
 
+cbuffer Transform : register( b1 )		//Object World
+{
+	matrix transform_world;
+};
+
+cbuffer Camera : register( b2 )		//Camera
+{
+	matrix camera_view;
+	matrix camera_viewProj;
+};
+
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
@@ -141,6 +152,30 @@ bool InFrustum( float4 p, float4 frusutmNormal, float r )
 {
 	//여기서 뒤에 + frusutmNormal.w 해야하지만, 이 값은 0이라 더할 필요 없음
 	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
+}
+
+uint Float4ToUint(float4 value)
+{
+	value *= 255.0f;
+
+	uint4 ret;
+	ret.x = (uint(value.x) & 0x000000FF);
+	ret.y = (uint(value.y) & 0x000000FF) << 8;
+	ret.z = (uint(value.z) & 0x000000FF) << 16;
+	ret.w = (uint(value.w) & 0x000000FF) << 24;
+
+	return ret.w | ret.z | ret.y | ret.x;
+}
+
+float4 UintToFloat4(uint value)
+{
+	float4 ret;
+	ret.x = float( value & 0x000000FF);
+	ret.y = float((value & 0x0000FF00) >> 8);
+	ret.z = float((value & 0x00FF0000) >> 16);
+	ret.w = float((value & 0xFF000000) >> 24);
+
+	return (ret / 255.0f);
 }
 
 #endif

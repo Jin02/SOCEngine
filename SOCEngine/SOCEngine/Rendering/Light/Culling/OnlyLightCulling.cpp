@@ -7,13 +7,18 @@ using namespace Rendering::Texture;
 using namespace Rendering::Factory;
 using namespace Rendering;
 using namespace Rendering::Shader;
+using namespace Rendering::Buffer;
+using namespace Rendering::View;
 
-OnlyLightCulling::OnlyLightCulling() : LightCulling(), _lightIndexBuffer(nullptr)
+OnlyLightCulling::OnlyLightCulling()
+	: LightCulling(), _shaderResourceBuffer(nullptr), _uav(nullptr)
 {
 }
 
 OnlyLightCulling::~OnlyLightCulling()
 {
+	SAFE_DELETE(_shaderResourceBuffer);
+	SAFE_DELETE(_uav);
 }
 
 void OnlyLightCulling::Initialize(
@@ -46,16 +51,19 @@ void OnlyLightCulling::Initialize(
 
 	// Ouput Buffer Setting
 	{
-		_lightIndexBuffer = new CSRWBuffer;
 		Math::Size<unsigned int> size = CalcThreadGroupSize();
-
 		uint num = CalcMaxNumLightsInTile() * size.w * size.h;
-		_lightIndexBuffer->Initialize(DXGI_FORMAT_R32_UINT, 4, num);
+
+		_shaderResourceBuffer = new ShaderResourceBuffer;
+		_shaderResourceBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+
+		_uav = new UnorderedAccessView;
+		_uav->Initialize(DXGI_FORMAT_R32_UINT, num, _shaderResourceBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
 
 		ComputeShader::Output outputBuffer;
 		{
-			outputBuffer.idx	= (uint)OutputBufferShaderIndex::LightIndexBuffer;
-			outputBuffer.output	= _lightIndexBuffer;
+			outputBuffer.bindIndex	= (uint)OutputBufferShaderIndex::LightIndexBuffer;
+			outputBuffer.output		= _uav;
 		}
 
 		std::vector<ComputeShader::Output> outputs;
@@ -69,7 +77,8 @@ void OnlyLightCulling::Initialize(
 
 void OnlyLightCulling::Destroy()
 {
-	SAFE_DELETE(_lightIndexBuffer);
-
 	LightCulling::Destroy();
+
+	_shaderResourceBuffer->Destory();
+	_uav->Destroy();
 }

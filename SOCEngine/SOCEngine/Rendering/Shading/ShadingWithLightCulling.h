@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LightCulling.h"
-#include "CSRWTexture.h"
+#include "RenderTexture.h"
 
 namespace Rendering
 {
@@ -22,22 +22,22 @@ namespace Rendering
 			};
 
 		private:
-			GPGPU::DirectCompute::CSRWTexture*					_offScreen;
+			Rendering::Texture::RenderTexture*				_offScreen;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
 
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
-			GPGPU::DirectCompute::ComputeShader::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
+			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
 
 		public:
 			ShadingWithLightCulling();
@@ -50,7 +50,7 @@ namespace Rendering
 			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
 
 		public:
-			GET_ACCESSOR(OffScreen, const GPGPU::DirectCompute::CSRWTexture*, _offScreen);
+			GET_ACCESSOR(OffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
 		};
 	}
 }

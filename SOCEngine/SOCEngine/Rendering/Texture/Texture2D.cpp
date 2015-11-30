@@ -2,20 +2,32 @@
 #include "Director.h"
 
 using namespace Rendering::Texture;
+using namespace Rendering::View;
 
-Texture2D::Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha) 
-	: _srv(srv), _hasAlpha(false), _texture(tex)
+Texture2D::Texture2D()
+	: TextureForm(Type::Tex2D), _hasAlpha(false), _texture(nullptr), _size(0, 0)
 {
+}
+
+Texture2D::Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha)
+	: TextureForm(Type::Tex2D), _texture(tex), _hasAlpha(hasAlpha), _size(0, 0)
+{
+	_srv = new ShaderResourceView(srv);
 }
 
 Texture2D::~Texture2D()
 {
-	SAFE_RELEASE(_srv);
-	SAFE_RELEASE(_texture);
+	Destroy();
+
+	SAFE_DELETE(_srv);
+	SAFE_DELETE(_uav);
 }
 
-void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, unsigned int bindFlags, unsigned int sampleCount)
+void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bindFlags, uint sampleCount, uint mipLevels)
 {
+	_size.w = width;
+	_size.h = height;
+
 	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
@@ -23,10 +35,10 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 	memset(&textureDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
 
 	// Setup the render target texture description.
-	textureDesc.Width = size.w;
-	textureDesc.Height = size.h;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
+	textureDesc.Width		= width;
+	textureDesc.Height		= height;
+	textureDesc.MipLevels	= mipLevels;
+	textureDesc.ArraySize	= 1;
 	auto GetDepthBufferTexDesc = [](DXGI_FORMAT foramt)
 	{
 		switch( foramt )
@@ -50,7 +62,7 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = bindFlags;
 	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
+	textureDesc.MiscFlags = mipLevels > 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 
 	//multisampler
 	{
@@ -78,51 +90,57 @@ void Texture2D::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT for
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
+		_srv = new ShaderResourceView;
+		_srv->Initialize(_texture, format, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
+	}
 
-		if( format == DXGI_FORMAT_D32_FLOAT )
-			srdesc.Format = DXGI_FORMAT_R32_FLOAT;
-		else if( format == DXGI_FORMAT_D16_UNORM)
-			srdesc.Format = DXGI_FORMAT_R16_FLOAT;
-		else if( format == DXGI_FORMAT_D24_UNORM_S8_UINT )
-			srdesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-		else
-			srdesc.Format = format;
-
-		srdesc.ViewDimension = (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
-		srdesc.Texture2D.MostDetailedMip = 0;
-		srdesc.Texture2D.MipLevels = 1;
-
-		HRESULT hr = device->CreateShaderResourceView(_texture, &srdesc, &_srv);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
+	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		_uav = new UnorderedAccessView;
+		_uav->Initialize(format, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
 	}
 }
 
-Math::Size<uint> Texture2D::FetchSize() const
+const Math::Size<uint>& Texture2D::FetchSize()
 {
+	if( (_size.w != 0) && (_size.h != 0) )
+		return _size;
+
 	D3D11_TEXTURE2D_DESC desc;
 	if(_texture)
 	{
 		_texture->GetDesc(&desc);
-		return Math::Size<uint>(desc.Width, desc.Height);
+
+		_size.w = desc.Width;
+		_size.h = desc.Height;
+
+		return _size;
 	}
 
 	ID3D11Resource* res = nullptr;
-	_srv->GetResource(&res);
+	_srv->GetView()->GetResource(&res);
 
     ID3D11Texture2D* texture2d = nullptr;
     HRESULT hr = res->QueryInterface(&texture2d);
 
-	Math::Size<uint> size;
     if( SUCCEEDED(hr) )
     {
 		texture2d->GetDesc(&desc);
-		size.w = desc.Width;
-		size.h = desc.Height;
+
+		_size.w = desc.Width;
+		_size.h = desc.Height;
 	}
 
 	SAFE_RELEASE(texture2d);
     SAFE_RELEASE(res);
 
-	return size;
+	return _size;
+}
+
+void Texture2D::Destroy()
+{
+	SAFE_RELEASE(_texture);
+
+	_srv->Destory();
+	_uav->Destroy();
 }

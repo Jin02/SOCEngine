@@ -76,7 +76,7 @@ void MeshCamera::OnInitialize()
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
 
 	_offScreen = new OffScreen;
-	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen()->GetRenderTexture());
+	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
 
 	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
 	CameraForm* thisCam = this;
@@ -177,7 +177,11 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	}
 }
 
-void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const RenderManager* renderManager, const Geometry::Mesh* mesh, RenderType renderType, const ConstBuffer* cameraConstBuffer)
+void MeshCamera::RenderMeshWithoutIASetVB(
+	const Device::DirectX* dx, const RenderManager* renderManager,
+	const Geometry::Mesh* mesh, RenderType renderType, 
+	const ConstBuffer* cameraConstBuffer,
+	const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -193,13 +197,11 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
 	else if(renderType == RenderType::Forward_AlphaTest)
 		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
-
-	VertexShader* vs = shaders.vs;
-
-	if(vs)
+	else if(renderType == RenderType::Voxelization)
+		renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
+	else
 	{
-		shaders.vs->SetShaderToContext(context);
-		shaders.vs->SetInputLayoutToContext(context);
+		ASSERT_MSG("Error, Unsupported renderType");
 	}
 
 	Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
@@ -209,6 +211,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 		Material* material = (*iter);
 		const Material::CustomShader& customShader = material->GetCustomShader();
 		PixelShader* ps = shaders.ps;
+		VertexShader* vs = shaders.vs;
+		GeometryShader* gs = shaders.gs;
 
 		if(customShader.shaderGroup.IsAllEmpty() == false)
 		{
@@ -220,15 +224,8 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 
 			const ShaderGroup& shaderGroup = customShader.shaderGroup;
 			ps = shaderGroup.ps;
-			//	gs = shaderGroup.gs;
-			//	hs = shaderGroup.hs;
-
-			VertexShader* vs = shaderGroup.vs;
-			ASSERT_COND_MSG(vs, "VS is null");
-			{
-				vs->SetShaderToContext(context);
-				vs->SetInputLayoutToContext(context);
-			}
+			vs = shaderGroup.vs;
+			gs = shaderGroup.gs;
 		}
 
 		std::vector<ShaderForm::InputConstBuffer> constBuffers = material->GetConstBuffers();
@@ -241,6 +238,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 			}
 
 			// Camera
+			if(cameraConstBuffer)
 			{
 				uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferBindSlotIndex::Camera;
 				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, cameraConstBuffer, true, false, false, false);
@@ -248,21 +246,30 @@ void MeshCamera::RenderMeshWithoutIASetVB(const Device::DirectX* dx, const Rende
 			}
 		}
 
+		if(additionalConstBuffers)
+			constBuffers.insert(constBuffers.end(), additionalConstBuffers->begin(), additionalConstBuffers->end());
+
 		const auto& textures	= material->GetTextures();
 		const auto& srBuffers	= material->GetShaderResourceBuffers();
 
-		vs->UpdateResources(context, &constBuffers, &textures, &srBuffers);
+		vs->BindShaderToContext(context);
+		vs->BindInputLayoutToContext(context);
+		vs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
 		if(ps && (renderType != RenderType::Forward_DepthOnly) )
 		{
-			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
-
-			ps->SetShaderToContext(context);
-			ps->UpdateResources(context, &constBuffers, &textures, &srBuffers);
+			ps->BindShaderToContext(context);
+			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 		else
 		{
 			context->PSSetShader(nullptr, nullptr, 0);
+		}
+
+		if(gs)
+		{
+			gs->BindShaderToContext(context);
+			gs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 
 		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
@@ -274,7 +281,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
 	const Buffer::ConstBuffer* cameraConstBuffer,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const Frustum* customFrustum)
+	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -293,23 +300,13 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			if(obj->GetUse())
 			{
 				bool isCulled = obj->GetCulled(); //In Mesh Camera
-				if(intersectFunc || customFrustum)
+				if(intersectFunc)
 				{
 					Vector3 worldPos;
 					obj->GetTransform()->FetchWorldPosition(worldPos);
 
-					float radius = obj->GetRadius();
-
-					if(intersectFunc)
-					{
-						Sphere sphere(worldPos, radius);
-						isCulled |= (*intersectFunc)(sphere) == false;
-					}
-					else if(customFrustum)
-					{
-						if(customFrustum->GetIsComputed())
-							isCulled |= (customFrustum->In(worldPos, radius) == false);
-					}
+					Sphere sphere(worldPos, obj->GetRadius());
+					isCulled |= (*intersectFunc)(sphere) == false;
 				}
 
 				if(isCulled == false)
@@ -320,7 +317,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
 				}
 			}
 		}
@@ -332,7 +329,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	const std::vector<const Geometry::Mesh*>& meshes, 
 	RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const Frustum* customFrustum)
+	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -344,23 +341,13 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 		if(obj->GetUse())
 		{
 			bool isCulled = obj->GetCulled(); //In Mesh Camera
-			if(intersectFunc || customFrustum)
+			if(intersectFunc)
 			{
 				Vector3 worldPos;
 				obj->GetTransform()->FetchWorldPosition(worldPos);
 
-				float radius = obj->GetRadius();
-
-				if(intersectFunc)
-				{
-					Sphere sphere(worldPos, radius);
-					isCulled |= (*intersectFunc)(sphere) == false;
-				}
-				else if(customFrustum)
-				{
-					if(customFrustum->GetIsComputed())
-						isCulled |= (customFrustum->In(worldPos, radius) == false);
-				}
+				Sphere sphere(worldPos, obj->GetRadius());
+				isCulled |= (*intersectFunc)(sphere) == false;
 			}
 
 			// VB기준으로 정렬되어 있지 않기 때문에,
@@ -371,7 +358,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
 			}
 		}
 	}
@@ -557,7 +544,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 			// Light Culling Buffer
 			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::LightIndexBuffer,
-				1, _blendedMeshLightCulling->GetLightIndexBuffer()->GetShaderResourceView());
+				1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
 
 			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);

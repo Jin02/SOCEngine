@@ -75,6 +75,7 @@ namespace Utility
 #if defined(_DEBUG)
 			std::string outputLog = "SOCEngine | ";
 			outputLog += log;
+			outputLog += "\n";
 
 			OutputDebugString(outputLog.c_str());
 #endif

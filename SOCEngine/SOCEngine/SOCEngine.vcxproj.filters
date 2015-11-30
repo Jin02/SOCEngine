@@ -166,9 +166,6 @@
     <Filter Include="Rendering\Texture\DepthBuffer">
       <UniqueIdentifier>{c23368c8-5248-4b98-b28e-11cdd0464c96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\RenderTarget">
-      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{698483fd-551f-49f5-945d-9e0e6a752d39}</UniqueIdentifier>
     </Filter>
@@ -234,15 +231,6 @@
     </Filter>
     <Filter Include="ShaderCodes\UI">
       <UniqueIdentifier>{6809cf50-2eae-4027-9b0a-25acc6f06b09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output">
-      <UniqueIdentifier>{1f177282-58da-4cea-82e8-50f71419e581}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output\RWTexture">
-      <UniqueIdentifier>{15f70036-b82d-49da-9f90-3112156c70ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GPGPU\DirectCompute\Output\RWBuffer">
-      <UniqueIdentifier>{773d7581-f22f-483c-8459-d9623f173f01}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Buffer\ShaderResource">
       <UniqueIdentifier>{8dd9a6a6-33d6-4f65-920c-3801c361ef8e}</UniqueIdentifier>
@@ -321,6 +309,36 @@
     </Filter>
     <Filter Include="ShaderCodes\Mesh\Forward">
       <UniqueIdentifier>{28b67952-e491-4f4b-a70b-59b3aeb30dd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\2D">
+      <UniqueIdentifier>{72b1e4ce-4715-471a-bb17-73f085bb39e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\3D">
+      <UniqueIdentifier>{c51e7192-d4a6-4e3f-b061-bd0c1e25c5f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI">
+      <UniqueIdentifier>{4647d23c-888a-4437-8494-0c5590f10ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\GI">
+      <UniqueIdentifier>{458642cf-7258-4b53-badc-db83cde099ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\GI\Voxelization">
+      <UniqueIdentifier>{760adfc1-f8db-4f1e-9bb7-8bc52b68c99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxel">
+      <UniqueIdentifier>{549cee6d-9f90-49f7-b2b6-b251a5f894b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxel\VoxelMap">
+      <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\View">
+      <UniqueIdentifier>{ba3e0d02-2ba3-47b2-9cda-88bfcf2971da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Form">
+      <UniqueIdentifier>{135e4c06-a80b-4ca5-ada3-58ccb515a777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\RenderTexture">
+      <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -493,7 +511,7 @@
       <Filter>Rendering\Texture\DepthBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\RenderTexture.h">
-      <Filter>Rendering\Texture\RenderTarget</Filter>
+      <Filter>Rendering\Texture\RenderTexture</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Texture\TextureManager.h">
       <Filter>Rendering\Texture\Manager</Filter>
@@ -627,20 +645,8 @@
     <ClInclude Include="Rendering\Shader\ShaderMacro.h">
       <Filter>Rendering\Shader\Macro</Filter>
     </ClInclude>
-    <ClInclude Include="GPGPU\CSRWTexture.h">
-      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Texture\Texture2D.h">
-      <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSOutput.h">
-      <Filter>GPGPU\DirectCompute\Output</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\CSRWBuffer.h">
-      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h">
       <Filter>Structure</Filter>
@@ -749,6 +755,30 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture2D.h">
+      <Filter>Rendering\Texture\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture3D.h">
+      <Filter>Rendering\Texture\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Voxelization_Common.h">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <Filter>Rendering\GI\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
+      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\UnorderedAccessView.h">
+      <Filter>Rendering\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\ShaderResourceView.h">
+      <Filter>Rendering\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureForm.h">
+      <Filter>Rendering\Texture\Form</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -885,7 +915,7 @@
       <Filter>Rendering\Texture\DepthBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
-      <Filter>Rendering\Texture\RenderTarget</Filter>
+      <Filter>Rendering\Texture\RenderTexture</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureManager.cpp">
       <Filter>Rendering\Texture\Manager</Filter>
@@ -938,20 +968,8 @@
     <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
       <Filter>Rendering\Shader\Macro</Filter>
     </ClCompile>
-    <ClCompile Include="GPGPU\CSRWTexture.cpp">
-      <Filter>GPGPU\DirectCompute\Output\RWTexture</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
-      <Filter>Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSOutput.cpp">
-      <Filter>GPGPU\DirectCompute\Output</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\CSRWBuffer.cpp">
-      <Filter>GPGPU\DirectCompute\Output\RWBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
@@ -1049,6 +1067,27 @@
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <Filter>Rendering\Shadow\Lights\Spot</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
+      <Filter>Rendering\Texture\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture3D.cpp">
+      <Filter>Rendering\Texture\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\Voxelization.cpp">
+      <Filter>Rendering\GI\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
+      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\UnorderedAccessView.cpp">
+      <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\ShaderResourceView.cpp">
+      <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureForm.cpp">
+      <Filter>Rendering\Texture\Form</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1083,6 +1122,12 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

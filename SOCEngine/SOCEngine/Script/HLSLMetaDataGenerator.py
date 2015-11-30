@@ -71,6 +71,9 @@ class ParseCode:
 			if splitCodeCount > 1:
 				modifiedCode += '\n'
 
+			start	= 0
+			end		= 0
+
 			#remove /* */
 			def RemoveGlobalComment(code):
 				while 1: 

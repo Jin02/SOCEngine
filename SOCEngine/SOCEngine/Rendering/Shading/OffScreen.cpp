@@ -5,7 +5,6 @@ using namespace Rendering::TBDR;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Shader;
 using namespace Rendering::Texture;
-using namespace GPGPU::DirectCompute;
 
 OffScreen::OffScreen()
 	: FullScreen()
