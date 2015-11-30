@@ -7,5 +7,7 @@ void ClearVoxelMapCS(	uint3 globalIdx : SV_DispatchThreadID,
 						uint3 localIdx	: SV_GroupThreadID,
 						uint3 groupIdx	: SV_GroupID)
 {
-	OutAnistropicVoxelTexture[globalIdx] = uint3(0, 0, 0);
+	OutAnistropicVoxelAlbedoTexture[globalIdx]		= 0;
+	OutAnistropicVoxelNormalTexture[globalIdx]		= 0;
+	OutAnistropicVoxelEmissionTexture[globalIdx]	= 0;
 }

@@ -200,7 +200,7 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_Template.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>

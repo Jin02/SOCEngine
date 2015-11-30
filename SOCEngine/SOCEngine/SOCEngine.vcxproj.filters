@@ -1126,7 +1126,7 @@
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_Template.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>

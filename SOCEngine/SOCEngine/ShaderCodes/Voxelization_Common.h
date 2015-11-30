@@ -28,7 +28,9 @@ cbuffer Voxelization_Info_CB : register( b6 )
 
 SamplerState defaultSampler			: register( s0 );
 
-RWTexture3D<int3> OutAnistropicVoxelTexture	: register( u0 );
+RWTexture3D<uint> OutAnistropicVoxelAlbedoTexture	: register( u0 );
+RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
+RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
 
 //RWTexture3D<uint3> OutAnistropicVoxelTexturePosX	: register( u0 );
 //RWTexture3D<uint3> OutAnistropicVoxelTextureNegX	: register( u1 );
@@ -40,7 +42,7 @@ RWTexture3D<int3> OutAnistropicVoxelTexture	: register( u0 );
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
 //if isEmission is not, input value to emission
-void StoreVoxelMapAtomicColorMax(RWTexture3D<int3> voxelMap, int3 idx, float4 value, uniform bool isEmission)
+void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
 {
 	uint newValue = Float4ToUint(value);
 	uint prevStoredValue = 0;
@@ -49,14 +51,7 @@ void StoreVoxelMapAtomicColorMax(RWTexture3D<int3> voxelMap, int3 idx, float4 va
 	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
 	[allow_uav_condition]do
 	{
-		if(isEmission)
-		{
-			InterlockedCompareExchange(voxelMap[idx].z, prevStoredValue, newValue, currentStoredValue);
-		}
-		else // albedo
-		{
-			InterlockedCompareExchange(voxelMap[idx].x, prevStoredValue, newValue, currentStoredValue);
-		}
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 
 		if(prevStoredValue == currentStoredValue)
 			break;
@@ -70,7 +65,7 @@ void StoreVoxelMapAtomicColorMax(RWTexture3D<int3> voxelMap, int3 idx, float4 va
 	}while(true);
 }
 
-void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<int3> voxelMap, int3 idx, float value)
+void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<uint> voxelMap, int3 idx, float value)
 {
 	uint newValue = asuint(value);
 	uint prevStoredValue = 0;
@@ -79,7 +74,7 @@ void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<int3> voxelMap, int3 idx, 
 	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
 	[allow_uav_condition]do
 	{
-		InterlockedCompareExchange(voxelMap[idx].y, prevStoredValue, newValue, currentStoredValue);
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 		if(prevStoredValue == currentStoredValue)
 			break;
 

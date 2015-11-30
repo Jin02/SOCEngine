@@ -19,7 +19,7 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT output;
 
-	output.worldPos 	= mul( float4(input.position, 1.0f),	transform_world ).xyz;
+	output.worldPos 	= mul( float4(input.position, 1.0f), transform_world ).xyz;
 	output.uv			= input.uv;
 	output.normal 		= mul(input.normal, (float3x3)transform_world);
  
@@ -124,9 +124,9 @@ void PS( GS_OUTPUT input )
 	{
 		voxelIdx.x += (float)faceIndex * voxelization_demension;
 
-		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha), false);
-		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f), true);
-		StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexture, voxelIdx, max(anisotropicNormals[faceIndex], 0.0f));
+		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelNormalTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));
+		StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelEmissionTexture, voxelIdx, max(anisotropicNormals[faceIndex], 0.0f));
 	}
 
 /*
