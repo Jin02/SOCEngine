@@ -100,11 +100,11 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ShaderForm::InputTexture> inputTextures;
 	{
 		ShaderForm::InputTexture inputTexture;
-		inputTexture.bindIndex	= (uint)BindIndex::Albedo;
+		inputTexture.bindIndex	= (uint)BindIndex::AlbedoUAV;
 		inputTexture.texture	= _voxelAlbedoMapAtlas;
-		inputTexture.bindIndex	= (uint)BindIndex::Normal;
+		inputTexture.bindIndex	= (uint)BindIndex::NormalUAV;
 		inputTexture.texture	= _voxelNormalMapAtlas;
-		inputTexture.bindIndex	= (uint)BindIndex::Emission;
+		inputTexture.bindIndex	= (uint)BindIndex::EmissionUAV;
 		inputTexture.texture	= _voxelEmissionMapAtlas;
 
 		inputTextures.push_back(inputTexture);
@@ -113,11 +113,11 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ComputeShader::Output> outputs;
 	{
 		ComputeShader::Output output;
-		output.bindIndex	= (uint)BindIndex::Albedo;
+		output.bindIndex	= (uint)BindIndex::AlbedoUAV;
 		output.output		= _voxelAlbedoMapAtlas->GetMipmapUAV(0);
-		output.bindIndex	= (uint)BindIndex::Normal;
+		output.bindIndex	= (uint)BindIndex::NormalUAV;
 		output.output		= _voxelNormalMapAtlas->GetMipmapUAV(0);
-		output.bindIndex	= (uint)BindIndex::Emission;
+		output.bindIndex	= (uint)BindIndex::EmissionUAV;
 		output.output		= _voxelEmissionMapAtlas->GetMipmapUAV(0);
 
 		outputs.push_back(output);
@@ -125,6 +125,9 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 
 	_clearVoxelMapCS->SetInputTextures(inputTextures);
 	_clearVoxelMapCS->SetOutputs(outputs);
+
+	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)BindIndex::InfoCB, _infoConstBuffer, false, true, false, true));
+	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)BindIndex::ViewProjAxisesCB, _viewProjAxisesConstBuffer, false, true, false, true));
 }
 
 void Voxelization::Destroy()
@@ -135,6 +138,8 @@ void Voxelization::Destroy()
 
 	_infoConstBuffer->Destory();
 	_viewProjAxisesConstBuffer->Destory();
+
+	_inputConstBuffers.clear();
 }
 
 void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
@@ -278,10 +283,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 		// Render Voxel
 		{
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_inputConstBuffers);
 
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::Voxelization, nullptr);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_inputConstBuffers);
 		}
 	}
 

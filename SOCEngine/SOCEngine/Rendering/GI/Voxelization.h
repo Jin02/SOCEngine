@@ -37,24 +37,28 @@ namespace Rendering
 
 			enum class BindIndex : uint
 			{
-				Albedo		= 0,
-				Normal		= 1,
-				Emission	= 2
+				AlbedoUAV			= 0,
+				NormalUAV			= 1,
+				EmissionUAV			= 2,
+				InfoCB				= 0,
+				ViewProjAxisesCB	= 1
 			};
 
 		private:
-			AnisotropicVoxelMapAtlas*	_voxelAlbedoMapAtlas;
-			AnisotropicVoxelMapAtlas*	_voxelNormalMapAtlas;
-			AnisotropicVoxelMapAtlas*	_voxelEmissionMapAtlas;
+			AnisotropicVoxelMapAtlas*							_voxelAlbedoMapAtlas;
+			AnisotropicVoxelMapAtlas*							_voxelNormalMapAtlas;
+			AnisotropicVoxelMapAtlas*							_voxelEmissionMapAtlas;
 
-			Buffer::ConstBuffer*	_infoConstBuffer;
-			Buffer::ConstBuffer*	_viewProjAxisesConstBuffer;
+			Buffer::ConstBuffer*								_infoConstBuffer;
+			Buffer::ConstBuffer*								_viewProjAxisesConstBuffer;
 
-			InfoCBData				_initVoxelizationInfo;
+			InfoCBData											_initVoxelizationInfo;
 
-			Math::Matrix			_prevStaticMeshVoxelizeViewMat;
+			Math::Matrix										_prevStaticMeshVoxelizeViewMat;
 
-			uint					_maxNumOfCascade;
+			uint												_maxNumOfCascade;
+
+			std::vector<Shader::ShaderForm::InputConstBuffer>	_inputConstBuffers;
 
 		private:
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
