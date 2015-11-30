@@ -65,11 +65,11 @@ namespace Rendering
 			struct InputTexture : public Usage
 			{
 				uint bindIndex;
-				const Texture::Texture2D* texture;
+				const Texture::TextureForm* texture;
 
 				InputTexture();
-				InputTexture(uint bindIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS);
-				InputTexture(uint bindIndex, const Texture::Texture2D* texture, Usage usage);
+				InputTexture(uint bindIndex, const Texture::TextureForm* texture, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputTexture(uint bindIndex, const Texture::TextureForm* texture, Usage usage);
 
 				~InputTexture(){}
 			};

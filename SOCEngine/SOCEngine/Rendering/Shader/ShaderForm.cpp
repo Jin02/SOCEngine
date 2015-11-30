@@ -56,14 +56,14 @@ ShaderForm::InputTexture::InputTexture()
 {
 }
 
-ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::Texture2D* texture, bool useVS, bool useGS, bool useHS, bool usePS)
+ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::TextureForm* texture, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
 	this->bindIndex = bindIndex;
 	this->texture = texture;
 }
 
-ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::Texture2D* texture, Usage usage)
+ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::TextureForm* texture, Usage usage)
 	: Usage(usage)
 {
 	this->bindIndex = bindIndex;

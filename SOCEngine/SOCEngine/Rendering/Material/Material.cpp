@@ -43,7 +43,7 @@ const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int
 		if(_textures[i].bindIndex == shaderSlotIndex)
 		{
 			outArrayIndex = i;
-			return _textures[i].texture;
+			return dynamic_cast<const Texture2D*>(_textures[i].texture);
 		}
 	}
 
