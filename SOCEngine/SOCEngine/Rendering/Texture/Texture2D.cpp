@@ -23,7 +23,7 @@ Texture2D::~Texture2D()
 	SAFE_DELETE(_uav);
 }
 
-void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bindFlags, uint sampleCount, uint mipLevels)
+void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels)
 {
 	_size.w = width;
 	_size.h = height;
@@ -55,7 +55,7 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bin
 	};
 
 	DXGI_FORMAT texFormat = (bindFlags & D3D11_BIND_DEPTH_STENCIL) ?  
-							GetDepthBufferTexDesc(format) : format;
+							GetDepthBufferTexDesc(srvFormat) : srvFormat;
 	ASSERT_COND_MSG(texFormat != DXGI_FORMAT_UNKNOWN, "Error, cant support this format");
 
 	textureDesc.Format = texFormat;
@@ -91,13 +91,13 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT format, uint bin
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, format, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
+		_srv->Initialize(_texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
 	}
 
 	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
 	{
 		_uav = new UnorderedAccessView;
-		_uav->Initialize(format, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
+		_uav->Initialize(uavFormat, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
 	}
 }
 
