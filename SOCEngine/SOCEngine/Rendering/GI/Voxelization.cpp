@@ -50,13 +50,13 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_infoConstBuffer = new ConstBuffer;
 	_infoConstBuffer->Initialize(sizeof(Info));
