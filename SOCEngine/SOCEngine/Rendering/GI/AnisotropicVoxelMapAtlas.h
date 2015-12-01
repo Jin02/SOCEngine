@@ -28,7 +28,7 @@ namespace Rendering
 			~AnisotropicVoxelMapAtlas();
 
 		public:
-			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT format, uint mipmapCount);
+			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount);
 			void Destroy();
 
 			//void BindUAVToPixelShader(const Device::DirectX* dx, uint mipLevel, uint bindIndex);
