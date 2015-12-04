@@ -118,7 +118,7 @@ cbuffer ShadowGlobalParam : register( b4 )
 	float	shadowGlobalParam_pointLightTexelOffset;
 	float	shadowGlobalParam_pointLightUnderscanScale;
 
-	float	dummy;
+	uint	shadowGlobalParam_packedPowerOfTwoShadowAtlasSize;
 };
 
 

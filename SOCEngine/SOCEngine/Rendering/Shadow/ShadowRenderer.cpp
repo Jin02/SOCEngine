@@ -632,7 +632,21 @@ void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
 	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
 
-	outParam.dummy = 0.0f;
+	auto Log2 = [](float f) -> float
+	{
+		return log(f) / log(2.0f);
+	};
+
+	uint plShadowMapPower = (uint)Log2((float)_pointLightShadowMapResolution);
+	plShadowMapPower &= 0x7FF;
+
+	uint slShadowMapPower = (uint)Log2((float)_spotLightShadowMapResolution);
+	slShadowMapPower &= 0x7FF;
+
+	uint dlShadowMapPower = (uint)Log2((float)_directionalLightShadowMapResolution);
+	dlShadowMapPower &= 0x3FF;
+
+	outParam.packedPowerOfTwoShadowAtlasSize = (plShadowMapPower << 21) | (slShadowMapPower << 10) | dlShadowMapPower;
 }
 
 bool ShadowRenderer::IsWorking() const

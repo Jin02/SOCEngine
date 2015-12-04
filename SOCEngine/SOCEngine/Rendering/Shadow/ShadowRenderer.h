@@ -33,7 +33,7 @@ namespace Rendering
 				float	pointLightTexelOffset;
 				float	pointLightUnderscanScale;
 
-				float	dummy;
+				uint	packedPowerOfTwoShadowAtlasSize;
 			};
 
 		private:
