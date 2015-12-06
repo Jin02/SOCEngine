@@ -72,6 +72,10 @@ Buffer<float4> g_inputPointLightShadowColors						: register( t20 );
 Buffer<float4> g_inputSpotLightShadowColors							: register( t21 );
 Buffer<float4> g_inputDirectionalLightShadowColors					: register( t22 );
 
+Buffer<uint> g_inputPointLightShadowIndexToLightIndex				: register( t23 );
+Buffer<uint> g_inputSpotLightShadowIndexToLightIndex				: register( t24 );
+Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex			: register( t25 );
+
 struct LightingParams
 {
 	uint	lightIndex;
