@@ -89,8 +89,9 @@ void LightForm::ActiveShadow(bool isActive)
 
 	if(isActive)
 	{
-		shadowManager->AddShadowCastingLight(light);
-
+		const Manager::LightManager* lm = scene->GetLightManager();
+		shadowManager->AddShadowCastingLight(light, lm->GetLightIndexInEachLights(light));
+		
 		auto AddCounter = [&]()
 		{
 			AddOwnerUpdateCounter();
