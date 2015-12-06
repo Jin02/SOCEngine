@@ -784,10 +784,26 @@ void LightManager::DeleteAll()
 	_lights.DeleteAll();
 }
 
-bool LightManager::Has(LightForm*& light)
+bool LightManager::Has(LightForm*& light) const
 {
 	address key = reinterpret_cast<address>(light);
-	return _lights.Find(key) != nullptr;
+	return _lights.Has(key);
+}
+
+uint LightManager::GetLightIndexInEachLights(const LightForm*& inputLight) const
+{
+	address key = reinterpret_cast<address>(inputLight);
+
+	const Light::LightForm* light		= _lights.Find(key)->light;
+	Light::LightForm::LightType type	= light->GetType();
+
+	uint res = -1;
+
+	if(type == LightForm::LightType::Directional)	_directionalLightColorBuffer.Find(key, &res);
+	else if(type == LightForm::LightType::Point)	_pointLightColorBuffer.Find(key, &res);
+	else if(type == LightForm::LightType::Spot)		_spotLightColorBuffer.Find(key, &res);
+
+	return res;
 }
 
 uint LightManager::GetPackedLightCount() const

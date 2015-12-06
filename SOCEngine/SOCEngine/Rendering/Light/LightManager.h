@@ -91,7 +91,8 @@ namespace Rendering
 			void UpdateBuffer(const Device::DirectX* dx);
 			void ComputeAllLightViewProj(const Intersection::BoundBox& sceneBoundBox);
 
-			bool Has(Light::LightForm*& light);
+			bool Has(Light::LightForm*& light) const;
+			uint GetLightIndexInEachLights(const Light::LightForm*& light) const;
 
 			void Delete(const Light::LightForm*& light);
 			void DeleteAll();
