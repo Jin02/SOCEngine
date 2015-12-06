@@ -25,26 +25,26 @@ namespace Rendering
 					: light(_light), prevTransformUpdateCounter(updateCounter) {}
 				~Lights(){}
 			};
-			Structure::VectorHashMap<std::string, Lights>	_lights;
 
-			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_pointLightTransformBuffer;
-			Structure::VectorHashMap<std::string, uint>											_pointLightColorBuffer;
+			Structure::VectorHashMap<address, Lights>	_lights;
+			Structure::VectorHashMap<address, Light::LightForm::LightTransformBuffer>		_pointLightTransformBuffer;
+			Structure::VectorHashMap<address, uint>											_pointLightColorBuffer;
 
-			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_directionalLightTransformBuffer;
-			Structure::VectorHashMap<std::string, Light::DirectionalLight::Params>				_directionalLightParamBuffer;
-			Structure::VectorHashMap<std::string, uint>											_directionalLightColorBuffer;
+			Structure::VectorHashMap<address, Light::LightForm::LightTransformBuffer>		_directionalLightTransformBuffer;
+			Structure::VectorHashMap<address, Light::DirectionalLight::Params>				_directionalLightParamBuffer;
+			Structure::VectorHashMap<address, uint>											_directionalLightColorBuffer;
 
-			Structure::VectorHashMap<std::string, Light::LightForm::LightTransformBuffer>		_spotLightTransformBuffer;
-			Structure::VectorHashMap<std::string, Light::SpotLight::Params>						_spotLightParamBuffer;
-			Structure::VectorHashMap<std::string, uint>											_spotLightColorBuffer;
+			Structure::VectorHashMap<address, Light::LightForm::LightTransformBuffer>		_spotLightTransformBuffer;
+			Structure::VectorHashMap<address, Light::SpotLight::Params>						_spotLightParamBuffer;
+			Structure::VectorHashMap<address, uint>											_spotLightColorBuffer;
 
-			Structure::VectorHashMap<std::string, Shadow::PointLightShadow::Param>				_pointLightShadowParamBuffer;
-			Structure::VectorHashMap<std::string, Shadow::SpotLightShadow::Param>				_spotLightShadowParamBuffer;
-			Structure::VectorHashMap<std::string, Shadow::DirectionalLightShadow::Param>		_directionalLightShadowParamBuffer;
+			Structure::VectorHashMap<address, Shadow::PointLightShadow::Param>				_pointLightShadowParamBuffer;
+			Structure::VectorHashMap<address, Shadow::SpotLightShadow::Param>				_spotLightShadowParamBuffer;
+			Structure::VectorHashMap<address, Shadow::DirectionalLightShadow::Param>		_directionalLightShadowParamBuffer;
 
-			Structure::VectorHashMap<std::string, uint>											_pointLightShadowColorBuffer;
-			Structure::VectorHashMap<std::string, uint>											_spotLightShadowColorBuffer;
-			Structure::VectorHashMap<std::string, uint>											_directionalLightShadowColorBuffer;
+			Structure::VectorHashMap<address, uint>											_pointLightShadowColorBuffer;
+			Structure::VectorHashMap<address, uint>											_spotLightShadowColorBuffer;
+			Structure::VectorHashMap<address, uint>											_directionalLightShadowColorBuffer;
 
 			Buffer::ShaderResourceBuffer*	_pointLightTransformSRBuffer;
 			Buffer::ShaderResourceBuffer*	_pointLightColorSRBuffer;
@@ -87,13 +87,13 @@ namespace Rendering
 			void InitializeAllShaderResourceBuffer();
 			void DestroyAllShaderReourceBuffer();
 
-			void Add(Light::LightForm* light, const char* key = nullptr);
+			void Add(Light::LightForm*& light);
 			void UpdateBuffer(const Device::DirectX* dx);
 			void ComputeAllLightViewProj(const Intersection::BoundBox& sceneBoundBox);
 
-			bool HasKey(const std::string& key);
+			bool Has(Light::LightForm*& light);
 
-			void Delete(const std::string& key);
+			void Delete(const Light::LightForm*& light);
 			void DeleteAll();
 
 			uint GetPackedLightCount() const;

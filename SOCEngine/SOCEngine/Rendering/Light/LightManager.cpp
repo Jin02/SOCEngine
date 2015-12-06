@@ -170,11 +170,11 @@ void LightManager::DestroyAllShaderReourceBuffer()
 	SAFE_DELETE(_spotLightShadowColorSRBuffer);
 }
 
-void LightManager::Add(LightForm* light, const char* key)
+void LightManager::Add(LightForm*& light)
 {
-	std::string searchKey = key ? key : light->GetOwner()->GetName();
+	address searchKey = reinterpret_cast<address>(light);
 
-	bool found = HasKey(searchKey);
+	bool found = Has(light);
 	ASSERT_COND_MSG(found == false, "Already has Key");
 
 	uint counter = -1;
@@ -211,7 +211,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 		
 		prevTransformUpdateCounter = currentUpdateCounter;
 
-		std::string key = light->GetOwner()->GetName();
+		address key = reinterpret_cast<address>(light);
 
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
@@ -453,7 +453,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 			continue;
 		prevTransformUpdateCounter = currentUpdateCounter;
 
-		std::string key = light->GetOwner()->GetName();
+		address key = reinterpret_cast<address>(light);
 
 		LightForm::LightType lightType = light->GetType();
 		uint uintColor = light->Get32BitMainColor();
@@ -725,8 +725,10 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 	}
 }
 
-void LightManager::Delete(const std::string& key)
+void LightManager::Delete(const LightForm*& inputLight)
 {
+	address key = reinterpret_cast<address>(inputLight);
+
 	const Light::LightForm* light = _lights.Find(key)->light;
 	Light::LightForm::LightType type = light->GetType();
 
@@ -782,8 +784,9 @@ void LightManager::DeleteAll()
 	_lights.DeleteAll();
 }
 
-bool LightManager::HasKey(const std::string& key)
+bool LightManager::Has(LightForm*& light)
 {
+	address key = reinterpret_cast<address>(light);
 	return _lights.Find(key) != nullptr;
 }
 
