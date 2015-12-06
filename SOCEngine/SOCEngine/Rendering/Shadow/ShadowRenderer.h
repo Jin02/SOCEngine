@@ -76,6 +76,17 @@ namespace Rendering
 
 			float	_pointLightShadowBlurSize;						//default 4.25
 
+			Structure::VectorMap<address, uint>	_pointLightShadowIdxToLightIdxBuffer;
+			Structure::VectorMap<address, uint>	_spotLightShadowIdxToLightIdxBuffer;
+			Structure::VectorMap<address, uint>	_directionalLightShadowIdxToLightIdxBuffer;
+
+			Buffer::ShaderResourceBuffer*	_directionalLightShadowIdxToLightIdxSRBuffer;
+			Buffer::ShaderResourceBuffer*	_spotLightShadowIdxToLightIdxSRBuffer;
+			Buffer::ShaderResourceBuffer*	_pointLightShadowIdxToLightIdxSRBuffer;
+
+			uint	_updateConter;
+			uint	_prevUpdateCounter;
+
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
@@ -99,7 +110,7 @@ namespace Rendering
 			void RenderDirectionalLightShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
 
 		public:
-			void AddShadowCastingLight(const Light::LightForm*& light);
+			void AddShadowCastingLight(const Light::LightForm*& light, uint lightIndexInEachLights);
 			void DeleteShadowCastingLight(const Light::LightForm*& light);
 			bool HasShadowCastingLight(const Light::LightForm*& light);
 			ushort FetchShadowCastingLightIndex(const Light::LightForm*& light);
@@ -108,6 +119,7 @@ namespace Rendering
 
 		private: //friend class Scene
 			void UpdateConstBuffer(const Device::DirectX*& dx);
+			void UpdateShadowIndexToLightIndexBuffer(const Device::DirectX*& dx);
 			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
 
 		public:
@@ -121,6 +133,10 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
 			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
+
+			GET_ACCESSOR(PointLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _pointLightShadowIdxToLightIdxSRBuffer);
+			GET_ACCESSOR(SpotLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _spotLightShadowIdxToLightIdxSRBuffer);
+			GET_ACCESSOR(DirectionalLightShadowIndexToLightIndexSRBuffer,	const Buffer::ShaderResourceBuffer*, _directionalLightShadowIdxToLightIdxSRBuffer);
 
 			bool IsWorking() const;
 		};

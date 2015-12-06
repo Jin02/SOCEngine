@@ -26,7 +26,9 @@ ShadowRenderer::ShadowRenderer()
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
 	_pointLightShadowBlurSize(4.25f),
-	_shadowGlobalParamCB(nullptr)
+	_shadowGlobalParamCB(nullptr),
+	_directionalLightShadowIdxToLightIdxSRBuffer(nullptr), _pointLightShadowIdxToLightIdxSRBuffer(nullptr), _spotLightShadowIdxToLightIdxSRBuffer(nullptr),
+	_updateConter(0), _prevUpdateCounter(0xffffffff)
 {
 }
 
@@ -46,6 +48,26 @@ void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
 
 	_shadowGlobalParamCB = new ConstBuffer;
 	_shadowGlobalParamCB->Initialize(sizeof(ShadowGlobalParam));
+
+	const __int32 dummyData[POINT_LIGHT_BUFFER_MAX_NUM * 4] = {0, };
+
+	_pointLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
+	_pointLightShadowIdxToLightIdxSRBuffer->Initialize(
+		4, POINT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32_UINT,
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+	
+	_directionalLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
+	_directionalLightShadowIdxToLightIdxSRBuffer->Initialize(
+		4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32_UINT,
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_spotLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
+	_spotLightShadowIdxToLightIdxSRBuffer->Initialize(
+		4, SPOT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32_UINT,
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 }
 
 void ShadowRenderer::ResizeShadowMapAtlas(
@@ -153,6 +175,14 @@ void ShadowRenderer::Destroy()
 			}
 		}
 	}
+
+	_directionalLightShadowIdxToLightIdxBuffer.DeleteAll();
+	_pointLightShadowIdxToLightIdxBuffer.DeleteAll();
+	_spotLightShadowIdxToLightIdxBuffer.DeleteAll();
+
+	SAFE_DELETE(_directionalLightShadowIdxToLightIdxSRBuffer);
+	SAFE_DELETE(_pointLightShadowIdxToLightIdxSRBuffer);
+	SAFE_DELETE(_spotLightShadowIdxToLightIdxSRBuffer);
 }
 
 void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index)
@@ -441,7 +471,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
+void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIndexInEachLights)
 {
 	address lightAddress = reinterpret_cast<address>(light);
 
@@ -460,6 +490,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
+		_pointLightShadowIdxToLightIdxBuffer.Add(lightAddress, lightIndexInEachLights);
 	}
 	else if( (lightType == LightForm::LightType::Spot) ||
 			 (lightType == LightForm::LightType::Directional) )
@@ -476,6 +507,11 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamConstBufferData));
 
 		shadowCastingLights->Add(lightAddress, scl);
+
+		Structure::VectorMap<address, uint>* shadowIdxTolightIdxBuffer =
+			(lightType == LightForm::LightType::Spot) ? &_spotLightShadowIdxToLightIdxBuffer : &_directionalLightShadowIdxToLightIdxBuffer;
+
+		shadowIdxTolightIdxBuffer->Add(lightAddress, lightIndexInEachLights);
 	}
 	else
 		ASSERT_MSG("Unsupported light type.");
@@ -487,6 +523,8 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		_pointLightShadowMapResolution,
 		_spotLightShadowMapResolution,
 		_directionalLightShadowMapResolution);
+
+	++_updateConter;
 }
 
 void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
@@ -502,6 +540,9 @@ void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 
 		for(uint i=0; i<6; ++i)
 			SAFE_DELETE(scpl->camConstBuffers[i]);
+
+		_shadowCastingPointLights.Delete(lightAddress);
+		_pointLightShadowIdxToLightIdxBuffer.Delete(lightAddress);
 	}
 	else if( (lightType == LightForm::LightType::Spot) ||
 			 (lightType == LightForm::LightType::Directional) )
@@ -514,9 +555,15 @@ void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 			return;
 
 		SAFE_DELETE(scsdl->camConstBuffer);
+		shadowCastingLights->Delete(lightAddress);
+
+		auto shadowIdxToLightIdxBuffer = (lightType == LightForm::LightType::Spot) ? &_spotLightShadowIdxToLightIdxBuffer : &_directionalLightShadowIdxToLightIdxBuffer;
+		shadowIdxToLightIdxBuffer->Delete(lightAddress);
 	}
 	else
 		ASSERT_MSG("Unsupported light type.");
+
+	++_updateConter;
 }
 
 bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
@@ -656,4 +703,27 @@ bool ShadowRenderer::IsWorking() const
 				_shadowCastingDirectionalLights.GetSize() > 0;
 
 	return has;
+}
+
+void ShadowRenderer::UpdateShadowIndexToLightIndexBuffer(const Device::DirectX*& dx)
+{
+	if( _prevUpdateCounter == _updateConter )
+		return;
+	
+	_prevUpdateCounter = _updateConter;
+
+
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	uint count = _pointLightShadowIdxToLightIdxBuffer.GetSize();
+	const void* data = _pointLightShadowIdxToLightIdxBuffer.GetVector().data();
+	_pointLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
+
+	count = _spotLightShadowIdxToLightIdxBuffer.GetSize();
+	data = _spotLightShadowIdxToLightIdxBuffer.GetVector().data();
+	_spotLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
+
+	count = _directionalLightShadowIdxToLightIdxBuffer.GetSize();
+	data = _directionalLightShadowIdxToLightIdxBuffer.GetVector().data();
+	_directionalLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
 }
