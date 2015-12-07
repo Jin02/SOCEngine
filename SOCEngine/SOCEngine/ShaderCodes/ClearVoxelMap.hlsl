@@ -1,5 +1,7 @@
 //EMPTY_META_DATA
 
+#define VOXELIZATION
+
 #include "Voxelization_Common.h"
 
 [numthreads(8, 8, 8)]
