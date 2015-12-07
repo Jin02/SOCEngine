@@ -340,6 +340,9 @@
     <Filter Include="Rendering\Texture\RenderTexture">
       <UniqueIdentifier>{6fa92e23-53e2-4d85-841c-f8aa7918404d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\GI\Injection">
+      <UniqueIdentifier>{ab0df45f-e663-4d93-ab6b-cbde48b9c2c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -780,6 +783,9 @@
     <ClInclude Include="Rendering\Texture\TextureForm.h">
       <Filter>Rendering\Texture\Form</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\Injection_Common.h">
+      <Filter>ShaderCodes\GI\Injection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1128,6 +1134,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
+      <Filter>ShaderCodes\GI\Injection</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
