@@ -483,7 +483,11 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		bool useShadow = shadowGlobalParamCB != nullptr;
 		if(useShadow)
 		{
-			ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerComparisonState();
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+			ID3D11SamplerState* shadowSamplerState = dx->GetGreaterEqualSamplerComparisonState();
+#else
+			ID3D11SamplerState* shadowSamplerState = dx->GetLessEqualSamplerComparisonState();
+#endif
 			context->CSSetSamplers((uint)InputSamplerStateBindSlotIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
 		}
 

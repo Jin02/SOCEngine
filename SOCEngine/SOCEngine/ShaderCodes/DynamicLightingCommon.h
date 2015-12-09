@@ -6,6 +6,7 @@
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
+#define USE_SHADOW_INVERTED_DEPTH
 #define SHADOW_KERNEL_LEVEL		4
 #define SHADOW_KERNEL_WIDTH		2 * SHADOW_KERNEL_LEVEL + 1
 
@@ -18,7 +19,7 @@ float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 	{
 		for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-			shadow += atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv, depth, int2(i, j)).x;
+			shadow += (atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv, depth, int2(i, j)).x);
 		}
 	}
 
@@ -118,7 +119,14 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
+
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputPointLightShadowColors[lightIndex].rgb;

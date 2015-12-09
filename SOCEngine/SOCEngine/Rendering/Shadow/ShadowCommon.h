@@ -5,7 +5,7 @@
 #include "Matrix.h"
 #include <functional>
 
-//#define USE_SHADOW_INVERTED_DEPTH
+#define USE_SHADOW_INVERTED_DEPTH
 
 namespace Rendering
 {
