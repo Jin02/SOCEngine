@@ -18,7 +18,7 @@ Texture3D<float4>	AnistropicVoxelEmissionTexture		: register( t14 );
 
 RWTexture3D<uint> OutAnistropicVoxelColorTexture	: register( u0 );
 
-float3 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float3 dir, uint cascade)
+float4 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float3 dir, uint cascade)
 {
 	uint3 idx = voxelIdx;
 	idx.y += cascade * voxelization_dimension;
@@ -36,7 +36,7 @@ float3 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float
 		anisotropicVoxelTexture.Load(int4(idx.x + (voxelization_dimension * 5), idx.yz, 0));
 
 	dir = abs(dir);
-	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ)).rgb;
+	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 }
 
 float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, float3 dir, uint cascade)

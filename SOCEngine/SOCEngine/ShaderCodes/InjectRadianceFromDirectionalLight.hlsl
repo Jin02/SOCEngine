@@ -36,14 +36,14 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];
 	float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-	float3 albedo	= GetColor(AnistropicVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float4 albedo	= GetColor(AnistropicVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
 	float3 normal	= GetNormal(AnistropicVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float3 emission	= GetColor(AnistropicVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float4 emission	= GetColor(AnistropicVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
 
 	float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
-	float3 lambert		= albedo * dot(normal, lightDir);
+	float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 	float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
-	float4 outputColor	= float4(lambert * lightColor * intensity, 1.0f);
+	float4 outputColor	= float4(lambert * lightColor * intensity, albedo.a);
 
 //	outputColor.rgb *= RenderDirectionalLightShadow(lightIndex, voxelCenterPos);
 
