@@ -42,7 +42,13 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputSpotLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		bias;
 	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputSpotLightShadowColors[lightIndex].rgb;
@@ -67,7 +73,13 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputDirectionalLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		bias;
 	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputDirectionalLightShadowColors[lightIndex].rgb;
