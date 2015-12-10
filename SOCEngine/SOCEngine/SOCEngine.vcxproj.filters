@@ -1144,6 +1144,12 @@
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <Filter>ShaderCodes\Light\Culling</Filter>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
+      <Filter>ShaderCodes\GI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
+      <Filter>ShaderCodes\GI\Injection</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTex\DirectXTex.inl">
