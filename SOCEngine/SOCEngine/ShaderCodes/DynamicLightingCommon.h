@@ -18,7 +18,7 @@ float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 	{
 		for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-			shadow += atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv, depth, int2(i, j)).x;
+			shadow += (atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv, depth, int2(i, j)).x);
 		}
 	}
 
@@ -41,7 +41,13 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputSpotLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		bias;
 	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputSpotLightShadowColors[lightIndex].rgb;
@@ -66,7 +72,13 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputDirectionalLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		bias;
 	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputDirectionalLightShadowColors[lightIndex].rgb;
@@ -118,7 +130,14 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
 	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
-	float depth = shadowUV.z - lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
+	float depth = shadowUV.z
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+		+
+#else
+		-
+#endif
+		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
+
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 shadowColor = g_inputPointLightShadowColors[lightIndex].rgb;
@@ -265,18 +284,19 @@ void RenderSpotLight(
 
 	uint lightIndex = lightingParams.lightIndex;
 
-	float3 lightPos	= g_inputSpotLightTransformBuffer[lightIndex].xyz;
-	float radius	= g_inputSpotLightTransformBuffer[lightIndex].w;
+	float4 lightCenterPosWithRadius = g_inputSpotLightTransformBuffer[lightIndex];
+	float3 lightPos	= lightCenterPosWithRadius.xyz;
+	float radiusWithMinusZDirBit = lightCenterPosWithRadius.w;
 
 	float4 spotParam = g_inputSpotLightParamBuffer[lightIndex];
 	float3 lightDir = float3(spotParam.x, spotParam.y, 0.0f);
 	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y);
-	lightDir.z = lerp(-lightDir.z, lightDir.z, radius >= 0.0f);
+	lightDir.z = lerp(-lightDir.z, lightDir.z, radiusWithMinusZDirBit >= 0.0f);
 
-	radius = abs(radius);
+	float radius = abs(radiusWithMinusZDirBit);
 
-	float outerCosineConeAngle	= g_inputSpotLightParamBuffer[lightIndex].z;
-	float innerCosineConeAngle	= g_inputSpotLightParamBuffer[lightIndex].w;
+	float outerCosineConeAngle	= spotParam.z;
+	float innerCosineConeAngle	= spotParam.w;
 
 	float3 vtxToLight		= lightPos - vertexWorldPosition;
 	float3 vtxToLightDir	= normalize(vtxToLight);

@@ -22,7 +22,9 @@ void LightForm::OnInitialize()
 	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
 
 	const std::string& key = _owner->GetName();
-	scene->GetLightManager()->Add(this, key.c_str());
+
+	LightForm* thisLight = this;
+	scene->GetLightManager()->Add(thisLight);
 }
 
 uint LightForm::Get32BitMainColor() const
@@ -87,8 +89,9 @@ void LightForm::ActiveShadow(bool isActive)
 
 	if(isActive)
 	{
-		shadowManager->AddShadowCastingLight(light);
-
+		const Manager::LightManager* lm = scene->GetLightManager();
+		shadowManager->AddShadowCastingLight(light, lm->GetLightIndexInEachLights(light));
+		
 		auto AddCounter = [&]()
 		{
 			AddOwnerUpdateCounter();

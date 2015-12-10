@@ -1,5 +1,7 @@
 //EMPTY_META_DATA
 
+#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
+
 #include "Voxelization_Common.h"
 
 [numthreads(8, 8, 8)]
