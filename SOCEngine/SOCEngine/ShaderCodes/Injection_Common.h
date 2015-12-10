@@ -7,6 +7,8 @@
 #include "PhysicallyBased_Common.h"
 #include "Voxelization_Common.h"
 
+#ifdef USE_SHADOW_INVERTED_DEPTH
+
 cbuffer Injection_Info_CB : register(b7)
 {
 	matrix injection_volumeProj;
@@ -82,5 +84,7 @@ float3 GetVoxelCenterPos(uint3 voxelIdx)
 	
 	return voxelCenter;
 }
+
+#endif
 
 #endif

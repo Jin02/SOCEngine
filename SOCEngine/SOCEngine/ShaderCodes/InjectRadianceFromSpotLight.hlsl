@@ -2,6 +2,8 @@
 
 #include "Injection_Common.h"
 
+#ifdef USE_SHADOW_INVERTED_DEPTH
+
 [numthreads(16, 16, 1)]
 void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID, 
 								uint3 localIdx	: SV_GroupThreadID,
@@ -98,3 +100,5 @@ void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 		}
 	}
 }
+
+#endif
