@@ -12,9 +12,22 @@ cbuffer Injection_Info_CB : register(b7)
 	matrix injection_volumeProj;
 };
 
-Texture3D<float4>	AnistropicVoxelAlbedoTexture		: register( t12 );
-Texture3D<float>	AnistropicVoxelNormalTexture		: register( t13 );
-Texture3D<float4>	AnistropicVoxelEmissionTexture		: register( t14 );
+Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t26 );
+Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t27 );
+Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t28 );
+
+struct DSLightInvVPVMat
+{
+	matrix invMat;
+};
+struct PLightInvVPVMat
+{
+	matrix invMat[6];
+};
+
+StructuredBuffer<DSLightInvVPVMat>	g_inputDirectionalLightShadowInvVPVMatBuffer	: register( t29 );
+StructuredBuffer<PLightInvVPVMat>	g_inputPointLightShadowInvVPVMatBuffer			: register( t30 );
+StructuredBuffer<DSLightInvVPVMat>	g_inputSpotLightShadowInvVPVMatBuffer			: register( t31 );
 
 RWTexture3D<uint> OutAnistropicVoxelColorTexture	: register( u0 );
 
