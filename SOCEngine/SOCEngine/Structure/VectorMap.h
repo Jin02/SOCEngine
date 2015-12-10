@@ -46,6 +46,28 @@ namespace Structure
 
 			return ret;
 		}
+
+		const Object* Find(const Key& key, uint* outIdx = nullptr) const
+		{
+			std::map<Key, uint>::const_iterator iter = _map.find(key);
+
+			const Object* ret = nullptr;
+			if(iter != _map.end())
+			{
+				ret = &_vector[iter->second];
+
+				if(outIdx)
+					(*outIdx) = iter->second;
+			}
+
+			return ret;
+		}
+
+		bool Has(const Key& key) const
+		{
+			return _map.find(key) != _map.end();
+		}
+
 		inline Object& Get(unsigned int index)
 		{
 			ASSERT_COND_MSG(index < _vector.size(), "Out index");

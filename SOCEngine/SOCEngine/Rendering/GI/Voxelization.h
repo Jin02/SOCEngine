@@ -74,6 +74,8 @@ namespace Rendering
 		public:
 			void ClearZeroVoxelMap(const Device::DirectX*& dx);
 			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, bool onlyStaticMesh);
+			void ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos) const;
+			void ComputeBound(Math::Vector3* outMin, Math::Vector3* outMid, Math::Vector3* outMax, float* outWorldSize, Math::Vector3* outVoxelizeMinPos, uint currentCascade, const Math::Vector3& camWorldPos) const;
 
 		public:
 			void UpdateInitVoxelizationInfo(const Info& info);

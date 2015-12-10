@@ -12,7 +12,7 @@ RWBuffer<uint> g_outPerLightIndicesInTile : register(u0);
 #elif defined(USE_ATOMIC)
 #include "LightCullingCompareAtomicCS.h"
 
-[numthreads(TILE_RES, TILE_RES, 1)]
+[numthreads(LIGHT_CULLING_TILE_RES, LIGHT_CULLING_TILE_RES, 1)]
 #endif
 
 void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID, 
@@ -22,7 +22,7 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 #if defined(USE_PARALLEL)
 	uint localTileIdx	= localIdx.x + localIdx.y * TILE_RES_HALF;
 #elif defined(USE_ATOMIC)
-	uint localTileIdx	= localIdx.x + localIdx.y * TILE_RES;
+	uint localTileIdx	= localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 #endif
 
 	if(localTileIdx == 0)

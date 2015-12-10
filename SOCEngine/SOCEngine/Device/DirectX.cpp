@@ -12,7 +12,7 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _shadowSamplerComparisonState(nullptr)
+	_rasterizerCounterClockwiseDefault(nullptr), _lessEqualComparisonState(nullptr), _greaterEqualComparisonState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -319,8 +319,12 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		desc.MaxAnisotropy = 1;
-		hr = _device->CreateSamplerState( &desc, &_shadowSamplerComparisonState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+		hr = _device->CreateSamplerState( &desc, &_lessEqualComparisonState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _lessEqualComparisonState state");
+
+		desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
+		hr = _device->CreateSamplerState( &desc, &_greaterEqualComparisonState );
+		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _greaterEqualComparisonState state");
 	}
 
 	return true;
