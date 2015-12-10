@@ -18,7 +18,7 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 		(((uint)g_inputDirectionalLightShadowParams[lightIndex].index - 1) != shadowIndex) )
 		return;
 
-	float2 shadowMapPos	= float2(globalIdx.x % perShadowMapRes, globalIdx.y % perShadowMapRes);
+	float2 shadowMapPos	= float2(globalIdx.x % perShadowMapRes, globalIdx.y);
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
 	float depth = g_inputDirectionalLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
@@ -36,16 +36,19 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];
 	float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-	float4 albedo	= GetColor(AnistropicVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float3 normal	= GetNormal(AnistropicVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float4 emission	= GetColor(AnistropicVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float4 albedo	= GetColor(g_inputAnistropicVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float3 normal	= GetNormal(g_inputAnistropicVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float4 emission	= GetColor(g_inputAnistropicVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
 
 	float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
 	float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 	float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
-	float4 outputColor	= float4(lambert * lightColor * intensity, albedo.a);
+	float3 radiosity	= lambert * lightColor * intensity;
 
-//	outputColor.rgb *= RenderDirectionalLightShadow(lightIndex, voxelCenterPos);
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].invMat );
+	worldPos /= worldPos.w;
+
+	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
 
 	float anisotropicNormals[6] = {
 		 normal.x,
@@ -58,9 +61,13 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 
 	voxelIdx.y += (float)voxelization_currentCascade * voxelization_dimension;
 
-	for(int faceIndex=0; faceIndex<6; ++faceIndex)
+	if(any(radiosity > 0.0f))
 	{
-		voxelIdx.x += (float)faceIndex * voxelization_dimension;
-		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(outputColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), outputColor.a));
+		float alpha = albedo.a;
+		for(int faceIndex=0; faceIndex<6; ++faceIndex)
+		{
+			voxelIdx.x += (float)faceIndex * voxelization_dimension;
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+		}
 	}
 }
