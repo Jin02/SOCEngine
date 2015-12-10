@@ -285,18 +285,19 @@ void RenderSpotLight(
 
 	uint lightIndex = lightingParams.lightIndex;
 
-	float3 lightPos	= g_inputSpotLightTransformBuffer[lightIndex].xyz;
-	float radius	= g_inputSpotLightTransformBuffer[lightIndex].w;
+	float4 lightCenterPosWithRadius = g_inputSpotLightTransformBuffer[lightIndex];
+	float3 lightPos	= lightCenterPosWithRadius.xyz;
+	float radiusWithMinusZDirBit = lightCenterPosWithRadius.w;
 
 	float4 spotParam = g_inputSpotLightParamBuffer[lightIndex];
 	float3 lightDir = float3(spotParam.x, spotParam.y, 0.0f);
 	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y);
-	lightDir.z = lerp(-lightDir.z, lightDir.z, radius >= 0.0f);
+	lightDir.z = lerp(-lightDir.z, lightDir.z, radiusWithMinusZDirBit >= 0.0f);
 
-	radius = abs(radius);
+	float radius = abs(radiusWithMinusZDirBit);
 
-	float outerCosineConeAngle	= g_inputSpotLightParamBuffer[lightIndex].z;
-	float innerCosineConeAngle	= g_inputSpotLightParamBuffer[lightIndex].w;
+	float outerCosineConeAngle	= spotParam.z;
+	float innerCosineConeAngle	= spotParam.w;
 
 	float3 vtxToLight		= lightPos - vertexWorldPosition;
 	float3 vtxToLightDir	= normalize(vtxToLight);
