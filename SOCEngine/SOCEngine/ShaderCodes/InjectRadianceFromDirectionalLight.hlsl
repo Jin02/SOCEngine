@@ -51,6 +51,7 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	worldPos /= worldPos.w;
 
 	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
+	radiosity += emission.rgb;
 
 	float anisotropicNormals[6] = {
 		 normal.x,
@@ -61,14 +62,14 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 		-normal.z
 	};
 
-	voxelIdx.y += (float)voxelization_currentCascade * voxelization_dimension;
+	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
 
 	if(any(radiosity > 0.0f))
 	{
 		float alpha = albedo.a;
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += (float)faceIndex * voxelization_dimension;
+			voxelIdx.x += faceIndex * voxelization_dimension;
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
 		}
 	}

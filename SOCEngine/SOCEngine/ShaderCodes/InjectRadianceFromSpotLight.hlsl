@@ -76,8 +76,11 @@ void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 		float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;
 
 		float3 lightColor = lightColorWithLm.rgb;
-		float3 lambert = (albedo.rgb * totalAttenTerm) * lightColor * RenderSpotLightShadow(lightIndex, worldPos.xyz);
+		float3 lambert = albedo.rgb * saturate(dot(normal, lightDir));
+
+		radiosity = (lambert * totalAttenTerm) * lightColor * RenderSpotLightShadow(lightIndex, worldPos.xyz);
 	}
+	radiosity += emission.rgb;
 
 	float anisotropicNormals[6] = {
 		 normal.x,
@@ -88,14 +91,14 @@ void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 		-normal.z
 	};
 
-	voxelIdx.y += (float)voxelization_currentCascade * voxelization_dimension;
+	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
 
 	if(any(radiosity > 0.0f))
 	{
 		float alpha = albedo.a;
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += (float)faceIndex * voxelization_dimension;
+			voxelIdx.x += faceIndex * voxelization_dimension;
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
 		}
 	}
