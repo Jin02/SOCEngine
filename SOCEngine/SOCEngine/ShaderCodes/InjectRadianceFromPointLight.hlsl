@@ -37,7 +37,7 @@ void InjectRadiancePointLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 	float3 lightCenterWorldPos = lightCenterWithRadius.xyz;
 	float lightRadius = lightCenterWithRadius.a;
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].invMat );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].invMat[faceIndex] );
 	worldPos /= worldPos.w;
 
 	float3 lightDir = lightCenterWorldPos - worldPos.xyz;
