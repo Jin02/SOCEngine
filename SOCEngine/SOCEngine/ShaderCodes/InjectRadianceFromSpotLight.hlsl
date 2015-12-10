@@ -2,7 +2,7 @@
 
 #include "Injection_Common.h"
 
-[numthreads(8, 8, 8)]
+[numthreads(16, 16, 1)]
 void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID, 
 								uint3 localIdx	: SV_GroupThreadID,
 								uint3 groupIdx	: SV_GroupID)
