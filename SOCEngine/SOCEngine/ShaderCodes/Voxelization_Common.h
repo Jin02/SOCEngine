@@ -6,7 +6,8 @@
 #include "DynamicLightingCommon.h"
 #include "PhysicallyBased_Common.h"
 
-#define USE_VOXELICATION_BLOATING_POS
+#define USE_VOXELIZATION_BLOATING_POS
+#define VOXELIZATION_BLOATING_RATIO 5.0f
 
 cbuffer Voxelization_ViewProjAxis_CB : register( b5 )
 {
@@ -28,20 +29,12 @@ cbuffer Voxelization_Info_CB : register( b6 )
 
 SamplerState defaultSampler			: register( s0 );
 
-#if defined(VOXELIZATION)
+#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
 RWTexture3D<uint> OutAnistropicVoxelAlbedoTexture	: register( u0 );
 RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
 RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
 #endif
 
-//RWTexture3D<uint3> OutAnistropicVoxelTexturePosX	: register( u0 );
-//RWTexture3D<uint3> OutAnistropicVoxelTextureNegX	: register( u1 );
-//RWTexture3D<uint3> OutAnistropicVoxelTexturePosY	: register( u2 );
-//RWTexture3D<uint3> OutAnistropicVoxelTextureNegY	: register( u3 );
-//RWTexture3D<uint3> OutAnistropicVoxelTexturePosZ	: register( u4 );
-//RWTexture3D<uint3> OutAnistropicVoxelTextureNegZ	: register( u5 );
-
-#define VOXELIZATION_BLOATING_RATIO 5.0f
 
 //if isEmission is not, input value to emission
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)

@@ -792,6 +792,7 @@
     <ClInclude Include="ShaderCodes\BRDF.h">
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
+    <ClInclude Include="GlobalDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

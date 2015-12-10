@@ -3,6 +3,8 @@
 #ifndef __SOC_SHADER_COMMON_H__
 #define __SOC_SHADER_COMMON_H__
 
+#include "../GlobalDefine.h"
+
 #define PI								3.141592654f
 #define FLOAT_MAX						3.402823466e+38F
 #define DEG_2_RAD(X)					PI * X / 180.0f

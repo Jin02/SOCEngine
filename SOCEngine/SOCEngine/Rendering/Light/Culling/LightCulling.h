@@ -10,9 +10,7 @@
 #include "LightManager.h"
 
 #include "TBRShaderIndexSlotInfo.h"
-
-#define LIGHT_CULLING_TILE_RESOLUTION						16
-#define LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE 				256
+#include "GlobalDefine.h"
 
 namespace Rendering
 {

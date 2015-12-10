@@ -125,7 +125,7 @@ void LightCulling::SetInputsToCS()
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
-	const uint key = LIGHT_CULLING_TILE_RESOLUTION;
+	const uint key = LIGHT_CULLING_TILE_RES;
 
 	return ( LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - ( key * ( size.h / 120 ) ) );
 }
@@ -169,7 +169,7 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 {
 	auto CalcThreadLength = [](unsigned int size)
 	{
-		return (unsigned int)((size + LIGHT_CULLING_TILE_RESOLUTION - 1) / (float)LIGHT_CULLING_TILE_RESOLUTION);
+		return (unsigned int)((size + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 	};
 
 	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();

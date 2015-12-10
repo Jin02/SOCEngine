@@ -1,6 +1,6 @@
 //EMPTY_META_DATA
 
-#define VOXELIZATION
+#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
 
 #include "Voxelization_Common.h"
 

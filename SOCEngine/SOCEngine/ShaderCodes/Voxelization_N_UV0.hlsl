@@ -1,4 +1,4 @@
-#define VOXELIZATION
+#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
 
 #include "Voxelization_Common.h"
 
@@ -67,7 +67,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		viewProjMat = voxelization_vp_axisZ;
 
 
-#if defined(USE_VOXELICATION_BLOATING_POS)
+#if defined(USE_VOXELIZATION_BLOATING_POS)
 	float3 centerPos = (worldPos0 + worldPos1 + worldPos2) / 3.0f;
 	worldPos0 += normalize(worldPos0 - centerPos) * VOXELIZATION_BLOATING_RATIO;
 	worldPos1 += normalize(worldPos1 - centerPos) * VOXELIZATION_BLOATING_RATIO;
@@ -130,27 +130,4 @@ void PS( GS_OUTPUT input )
 		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));
 		StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelNormalTexture, voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 	}
-
-/*
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(albedo.xyz * max( normal.x, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(albedo.xyz * max(-normal.x, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(albedo.xyz * max( normal.y, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(albedo.xyz * max(-normal.y, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(albedo.xyz * max( normal.z, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(albedo.xyz * max(-normal.z, 0.0f), alpha), false);
-
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(material_emissionColor.rgb * max( normal.x, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(material_emissionColor.rgb * max(-normal.x, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(material_emissionColor.rgb * max( normal.y, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(material_emissionColor.rgb * max(-normal.y, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(material_emissionColor.rgb * max( normal.z, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(material_emissionColor.rgb * max(-normal.z, 0.0f), 1.0f), true);
-
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosX, voxelIdx, max( normal.x, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegX, voxelIdx, max(-normal.x, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosY, voxelIdx, max( normal.y, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegY, voxelIdx, max(-normal.y, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosZ, voxelIdx, max( normal.z, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegZ, voxelIdx, max(-normal.z, 0.0f));
-*/
 }

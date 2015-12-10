@@ -6,7 +6,7 @@
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
-groupshared uint s_edgePackedPixelIdx[TILE_RES * TILE_RES];
+groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TILE_RES];
 
 #endif
 
@@ -94,14 +94,14 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 groupshared bool isRenderDL;
 #endif
 
-[numthreads(TILE_RES, TILE_RES, 1)]
+[numthreads(LIGHT_CULLING_TILE_RES, LIGHT_CULLING_TILE_RES, 1)]
 void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID, 
 								uint3 localIdx	: SV_GroupThreadID,
 								uint3 groupIdx	: SV_GroupID)
 {
 	uint pointLightCountInThisTile = 0;
 
-	uint idxInTile = localIdx.x + localIdx.y * TILE_RES;
+	uint idxInTile = localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 	if(idxInTile == 0)
 	{
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA

@@ -6,7 +6,6 @@
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
-#define USE_SHADOW_INVERTED_DEPTH
 #define SHADOW_KERNEL_LEVEL		4
 #define SHADOW_KERNEL_WIDTH		2 * SHADOW_KERNEL_LEVEL + 1
 
