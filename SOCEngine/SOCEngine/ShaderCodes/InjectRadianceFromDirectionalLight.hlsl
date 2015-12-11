@@ -4,7 +4,7 @@
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
-[numthreads(16, 16, 1)]
+[numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, 1)]
 void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID, 
 										uint3 localIdx	: SV_GroupThreadID,
 										uint3 groupIdx	: SV_GroupID)
@@ -53,26 +53,7 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
 	radiosity += emission.rgb;
 
-	float anisotropicNormals[6] = {
-		 normal.x,
-		-normal.x,
-		 normal.y,
-		-normal.y,
-		 normal.z,
-		-normal.z
-	};
-
-	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
-
-	if(any(radiosity > 0.0f))
-	{
-		float alpha = albedo.a;
-		for(int faceIndex=0; faceIndex<6; ++faceIndex)
-		{
-			voxelIdx.x += faceIndex * voxelization_dimension;
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
-		}
-	}
+	StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
 }
 
 #endif

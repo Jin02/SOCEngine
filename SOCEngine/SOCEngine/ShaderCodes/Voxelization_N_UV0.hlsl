@@ -111,6 +111,7 @@ void PS( GS_OUTPUT input )
 	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
 	int3 voxelIdx		= int3(voxelCoord) * voxelization_dimension;
 
+#ifdef USE_SHADOW_INVERTED_DEPTH
 	float anisotropicNormals[6] = {
 		 normal.x,
 		-normal.x,
@@ -120,7 +121,6 @@ void PS( GS_OUTPUT input )
 		-normal.z
 	};
 
-#ifdef USE_SHADOW_INVERTED_DEPTH
 	if(all(0 <= voxelIdx) && all(voxelIdx < voxelization_dimension))
 	{
 		voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
@@ -224,16 +224,6 @@ void PS( GS_OUTPUT input )
 		}
 	}
 
-	if(all(0 <= voxelIdx) && all(voxelIdx < voxelization_dimension))
-	{
-		voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
-
-		for(int faceIndex=0; faceIndex<6; ++faceIndex)
-		{
-			voxelIdx.x += faceIndex * voxelization_dimension;
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(radiosity.rgb * max(anisotropicNormals[faceIndex], 0.0f), alpha));
-		}
-	}
-
+	StoreRadiosity(radiosity, alpha, normal, voxelIdx);
 #endif
 }

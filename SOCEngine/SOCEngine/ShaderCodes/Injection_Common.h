@@ -74,15 +74,27 @@ float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, flo
 	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
 }
 
-float3 GetVoxelCenterPos(uint3 voxelIdx)
+void StoreRadiosity(float3 radiosity, float alpha, float3 normal, float3 voxelIdx)
 {
-	float3 voxelCenter;
+	float anisotropicNormals[6] = {
+		 normal.x,
+		-normal.x,
+		 normal.y,
+		-normal.y,
+		 normal.z,
+		-normal.z
+	};
 
-	voxelCenter.x = voxelIdx.x * voxelization_voxelSize + voxelization_voxelSize * 0.5f + voxelization_minPos.x;
-	voxelCenter.y = voxelIdx.y * voxelization_voxelSize + voxelization_voxelSize * 0.5f + voxelization_minPos.y;
-	voxelCenter.z = voxelIdx.z * voxelization_voxelSize + voxelization_voxelSize * 0.5f + voxelization_minPos.z;
-	
-	return voxelCenter;
+	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
+
+	if(any(radiosity > 0.0f))
+	{
+		for(int faceIndex=0; faceIndex<6; ++faceIndex)
+		{
+			voxelIdx.x += faceIndex * voxelization_dimension;
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+		}
+	}
 }
 
 #endif
