@@ -74,7 +74,7 @@ float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, flo
 	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
 }
 
-void StoreRadiosity(float3 radiosity, float alpha, float3 normal, float3 voxelIdx)
+void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx)
 {
 	float anisotropicNormals[6] = {
 		 normal.x,
