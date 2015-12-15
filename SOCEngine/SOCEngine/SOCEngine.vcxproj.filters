@@ -349,6 +349,9 @@
     <Filter Include="ShaderCodes\Material">
       <UniqueIdentifier>{9686e886-aa0a-4938-9a90-b1d89d9b7043}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\GI\Mipmap">
+      <UniqueIdentifier>{c35e51b1-b524-4464-a88c-1a006aa68334}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1150,6 +1153,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
       <Filter>ShaderCodes\GI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
+      <Filter>ShaderCodes\GI\Mipmap</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
