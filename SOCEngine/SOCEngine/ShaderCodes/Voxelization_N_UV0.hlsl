@@ -109,7 +109,10 @@ void PS( GS_OUTPUT input )
 	float3 normal		= normalize(input.normal);
 	
 	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
-	int3 voxelIdx		= int3(voxelCoord) * voxelization_dimension;
+	int3 voxelIdx		= int3(voxelCoord * voxelization_dimension);
+
+	if( any(voxelIdx < 0) || any(voxelization_dimension < voxelIdx) )
+		discard;
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
 	float anisotropicNormals[6] = {
