@@ -352,6 +352,9 @@
     <Filter Include="ShaderCodes\GI\Mipmap">
       <UniqueIdentifier>{c35e51b1-b524-4464-a88c-1a006aa68334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\GI\VoxelConeTracing">
+      <UniqueIdentifier>{6ed013a4-960b-4c44-81f3-b8eeae387843}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1156,6 +1159,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
       <Filter>ShaderCodes\GI\Mipmap</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
+      <Filter>ShaderCodes\GI\VoxelConeTracing</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
