@@ -9,10 +9,10 @@
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
-cbuffer Injection_Info_CB : register(b7)
-{
-	matrix injection_volumeProj;
-};
+//cbuffer Injection_Info_CB : register(b7)
+//{
+//	matrix injection_volumeProj;
+//};
 
 Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t26 );
 Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t27 );
