@@ -26,21 +26,27 @@ void InjectRadiancePointLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 
 	float depth = g_inputPointLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 screenSpaceCoord = float4( shadowMapUV.x * 2.0f - 1.0f,
-									-(shadowMapUV.y * 2.0f - 1.0f),
-									depth, 1.0f );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].invMat[faceIndex] );
+	worldPos /= worldPos.w;
 
-	float4 voxelSpaceCoord = mul(screenSpaceCoord, injection_volumeProj);
-	voxelSpaceCoord /= voxelSpaceCoord.w;
-	voxelSpaceCoord.xyz = voxelSpaceCoord.xyz * 0.5f + 0.5f;
-	uint3 voxelIdx = uint3(voxelSpaceCoord.xyz * voxelization_dimension);
+	float3 voxelSpaceCoord = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
+	int3 voxelIdx = int3(voxelSpaceCoord * voxelization_dimension);
+
+	if( any(voxelIdx < 0) || any(voxelization_dimension < voxelIdx) )
+		return;
+
+	//float4 screenSpaceCoord = float4( shadowMapUV.x * 2.0f - 1.0f,
+	//								-(shadowMapUV.y * 2.0f - 1.0f),
+	//								depth, 1.0f );
+
+	//float4 voxelSpaceCoord = mul(screenSpaceCoord, injection_volumeProj);
+	//voxelSpaceCoord /= voxelSpaceCoord.w;
+	//voxelSpaceCoord.xyz = voxelSpaceCoord.xyz * 0.5f + 0.5f;
+	//uint3 voxelIdx = uint3(voxelSpaceCoord.xyz * voxelization_dimension);
 
 	float4 lightCenterWithRadius = g_inputPointLightTransformBuffer[lightIndex];
 	float3 lightCenterWorldPos = lightCenterWithRadius.xyz;
 	float lightRadius = lightCenterWithRadius.a;
-
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].invMat[faceIndex] );
-	worldPos /= worldPos.w;
 
 	float3 lightDir = lightCenterWorldPos - worldPos.xyz;
 	float distanceOfLightWithVertex = length(lightDir);
