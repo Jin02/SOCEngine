@@ -39,16 +39,16 @@ float4 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float
 	idx.y += cascade * voxelization_dimension;
 
 	float4 colorAxisX = (dir.x > 0.0f) ? 
-		anisotropicVoxelTexture.Load(int4(idx.x + 0, idx.yz, 0)) :
-		anisotropicVoxelTexture.Load(int4(idx.x + 1, idx.yz, 0));
+		anisotropicVoxelTexture.Load(int4(idx.x + (0 * voxelization_dimension), idx.yz, 0)) :
+		anisotropicVoxelTexture.Load(int4(idx.x + (1 * voxelization_dimension), idx.yz, 0));
 
 	float4 colorAxisY = (dir.y > 0.0f) ?
-		anisotropicVoxelTexture.Load(int4(idx.x + 2, idx.yz, 0)) :
-		anisotropicVoxelTexture.Load(int4(idx.x + 3, idx.yz, 0));
+		anisotropicVoxelTexture.Load(int4(idx.x + (2 * voxelization_dimension), idx.yz, 0)) :
+		anisotropicVoxelTexture.Load(int4(idx.x + (3 * voxelization_dimension), idx.yz, 0));
 	
 	float4 colorAxisZ = (dir.z > 0.0f) ?
-		anisotropicVoxelTexture.Load(int4(idx.x + 4, idx.yz, 0)) :
-		anisotropicVoxelTexture.Load(int4(idx.x + 5, idx.yz, 0));
+		anisotropicVoxelTexture.Load(int4(idx.x + (4 * voxelization_dimension), idx.yz, 0)) :
+		anisotropicVoxelTexture.Load(int4(idx.x + (5 * voxelization_dimension), idx.yz, 0));
 
 	dir = abs(dir);
 	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
@@ -60,16 +60,16 @@ float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, flo
 	idx.y += cascade * voxelization_dimension;
 
 	float normalAxisX = (dir.x > 0.0f) ? 
-		anisotropicVoxelNormalMap.Load(int4(idx.x + 0, idx.yz, 0)) :
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + 1, idx.yz, 0));
+		anisotropicVoxelNormalMap.Load(int4(idx.x + (0 * voxelization_dimension), idx.yz, 0)) :
+	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (1 * voxelization_dimension), idx.yz, 0));
 
 	float normalAxisY = (dir.y > 0.0f) ?
-		anisotropicVoxelNormalMap.Load(int4(idx.x + 2, idx.yz, 0))	:
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + 3, idx.yz, 0));
+		anisotropicVoxelNormalMap.Load(int4(idx.x + (2 * voxelization_dimension), idx.yz, 0))	:
+	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (3 * voxelization_dimension), idx.yz, 0));
 	
 	float normalAxisZ = (dir.z > 0.0f) ?
-		anisotropicVoxelNormalMap.Load(int4(idx.x + 4, idx.yz, 0))	:
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + 5, idx.yz, 0));
+		anisotropicVoxelNormalMap.Load(int4(idx.x + (4 * voxelization_dimension), idx.yz, 0))	:
+	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (5 * voxelization_dimension), idx.yz, 0));
 
 	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
 }
@@ -85,16 +85,14 @@ void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx
 		-normal.z
 	};
 
-	voxelIdx.x *= 6; //faceIdx
 	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
 
 	if(any(radiosity > 0.0f))
 	{
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += faceIndex;
+			voxelIdx.x += (faceIndex * voxelization_dimension);
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
-			//OutAnistropicVoxelColorTexture[voxelIdx] = float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha);
 		}
 	}
 }

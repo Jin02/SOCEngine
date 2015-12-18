@@ -126,12 +126,11 @@ void PS( GS_OUTPUT input )
 
 	if(all(0 <= voxelIdx) && all(voxelIdx < voxelization_dimension))
 	{
-		voxelIdx.x *= 6; //faceIdx
 		voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
 
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += faceIndex;
+			voxelIdx.x += (faceIndex * voxelization_dimension);
 
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha));
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));

@@ -32,7 +32,7 @@ uint AlphaBledningAnisotropicVoxelMap
 
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uint faceIndex)
 {
-	voxelIdx.x += faceIndex;
+	voxelIdx.x += (faceIndex * voxelization_dimension);
 	return UintToFloat4(g_inputVoxelMap[voxelIdx]);
 }
 
@@ -42,7 +42,6 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 								 uint3 groupIdx	 : SV_GroupID)
 {
 	uint3 scaledGlobaIdx = globalIdx * 2;
-	scaledGlobaIdx.x *= 6; //faceIdx
 
 	uint3 sampleIdx[8] =
 	{
@@ -50,10 +49,10 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 		( scaledGlobaIdx + uint3(0, 0, 1) ),
 		( scaledGlobaIdx + uint3(0, 1, 0) ),
 		( scaledGlobaIdx + uint3(0, 1, 1) ),
-		( scaledGlobaIdx + uint3(6, 0, 0) ),
-		( scaledGlobaIdx + uint3(6, 0, 1) ),
-		( scaledGlobaIdx + uint3(6, 1, 0) ),
-		( scaledGlobaIdx + uint3(6, 1, 1) )
+		( scaledGlobaIdx + uint3(1, 0, 0) ),
+		( scaledGlobaIdx + uint3(1, 0, 1) ),
+		( scaledGlobaIdx + uint3(1, 1, 0) ),
+		( scaledGlobaIdx + uint3(1, 1, 1) ) 
 	};
 
 	uint posx = AlphaBledningAnisotropicVoxelMap(
@@ -86,10 +85,10 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 		GetColorFromVoxelMap(sampleIdx[0], 5), GetColorFromVoxelMap(sampleIdx[2], 5), GetColorFromVoxelMap(sampleIdx[4], 5), GetColorFromVoxelMap(sampleIdx[6], 5)	//Backs
 	);
 
-	g_outputMipMap[uint3(globalIdx.x++, globalIdx.yz)]	= posx;
-	g_outputMipMap[uint3(globalIdx.x++, globalIdx.yz)]	= negx;
-	g_outputMipMap[uint3(globalIdx.x++, globalIdx.yz)]	= posy;
-	g_outputMipMap[uint3(globalIdx.x++, globalIdx.yz)]	= negy;
-	g_outputMipMap[uint3(globalIdx.x++, globalIdx.yz)]	= posz;
-	g_outputMipMap[uint3(globalIdx.x, globalIdx.yz)]	= negz;
+	g_outputMipMap[uint3(globalIdx.x,									globalIdx.yz)]	= posx;
+	g_outputMipMap[uint3(globalIdx.x + (1 * voxelization_dimension),	globalIdx.yz)]	= negx;
+	g_outputMipMap[uint3(globalIdx.x + (2 * voxelization_dimension),	globalIdx.yz)]	= posy;
+	g_outputMipMap[uint3(globalIdx.x + (3 * voxelization_dimension),	globalIdx.yz)]	= negy;
+	g_outputMipMap[uint3(globalIdx.x + (4 * voxelization_dimension),	globalIdx.yz)]	= posz;
+	g_outputMipMap[uint3(globalIdx.x + (5 * voxelization_dimension),	globalIdx.yz)]	= negz;
 }
