@@ -124,7 +124,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.y *= rcp(6); //1.0f / 6.0f;
 
 	uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index - 1;
-	shadowUV.x += shadowIndex;
+	shadowUV.x += (float)shadowIndex;
 
 	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);

@@ -12,14 +12,11 @@ RWTexture3D<uint> g_outputMipMap		: register(u1);
 
 float4 AlphaBlending(float4 front, float4 back)
 {
-// Pre-Multiplied Alpha Belnding?
 	float3 blending = front.rgb + back.rgb * (1.0f - front.a);
 
-//	걍 평균만 구함
+	//알파는 블랜딩 시키지 않음.
 	float alpha = (front.a + back.a) / 2.0f;
-//	float t = 1.0f;
 
-//	return float4(blending * alpha, alpha * t);
 	return float4(blending * alpha, alpha);
 }
 
