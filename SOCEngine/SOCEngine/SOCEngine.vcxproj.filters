@@ -799,6 +799,15 @@
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
+    <ClInclude Include="ShaderCodes\GBufferCommon.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\MonteCarlo.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\AlphaBlending.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

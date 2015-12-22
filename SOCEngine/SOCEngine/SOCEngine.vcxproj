@@ -133,6 +133,7 @@
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="ShaderCodes\AlphaBlending.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -152,6 +153,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <ClInclude Include="ShaderCodes\DynamicLightingCommon.h" />
+    <ClInclude Include="ShaderCodes\GBufferCommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h" />
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -161,6 +163,7 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h" />
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h" />
+    <ClInclude Include="ShaderCodes\MonteCarlo.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
