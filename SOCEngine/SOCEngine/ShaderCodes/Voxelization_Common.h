@@ -35,6 +35,10 @@ RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
 RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
 #endif
 
+int3 GetVoxelIndex(float3 worldPos)
+{
+	return int3( (worldPos - voxelization_minPos) / voxelization_voxelSize );
+}
 
 //if isEmission is not, input value to emission
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
