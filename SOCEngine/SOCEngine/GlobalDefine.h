@@ -11,4 +11,9 @@
 #define MIPMAPPING_TILE_RES_HALF					8
 #define VOXEL_CONE_TRACING_TILE_RES					16
 
+
+// Math
+#define PI											3.141592654f
+#define FLOAT_MAX									3.402823466e+38F
+
 #endif
