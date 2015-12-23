@@ -35,6 +35,18 @@ static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Sp
 	float3(-0.823639f, 0.5f, 0.267617f)
 };
 
+// 이것도 위의 링크 참고
+static const float ConeWeights[MAXIMUM_CONE_COUNT] =
+{
+	PI / 4.0f,		//45 degree
+	3 * PI / 20.0f,	//27 degree
+	3 * PI / 20.0f,	//27 degree
+	3 * PI / 20.0f,	//27 degree
+	3 * PI / 20.0f,	//27 degree
+	3 * PI / 20.0f,	//27 degree
+};
+
+
 float3 GetAnisotropicVoxelUV(float3 worldPos, uniform uint faceIdx, uint cascade)
 {
 //	float3 uv = (worldPos - gi_worldMinPos) / gi_worldSize;
@@ -122,9 +134,16 @@ float ComputeVoxelSize(uint cascade)
 	return worldSize / (float)gi_voxelDimension;
 }
 
-float4 VoxelConeTracing(float3 worldPos, float3 dir, float halfConeAngle, float roughness,
-						uniform float minMipLevel, uniform float occlusionBais, uniform uint maxStep, uniform bool useOnlyDistanceMip)
+float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float halfConeAngle, uniform float minMipLevel)
 {
+	float3 viewDir		= normalize(tbrParam_cameraWorldPos - worldPos);
+	float3 reflectDir	= reflect(-viewDir, worldNormal);
+
+	// reflect dir은 roughness가 0일때만 정확하다.
+	// 그래서 그냥 roughness가 1로 갈수록 노멀쪽으로 값을 옮김
+	// ndc2015 모두를 위한 물리 기반 렌더링의 이론과 활용, p69 참고
+	float3 dir			= lerp(worldNormal, reflectDir, roughness);
+
 	// w or a is occlusion
 	float4 accumColor	= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -134,7 +153,7 @@ float4 VoxelConeTracing(float3 worldPos, float3 dir, float halfConeAngle, float 
 	float3 bbMin, bbMax;
 	ComputeVoxelizationBound(bbMin, bbMax, gi_maxCascade-1);
 
-	for(uint i=0; i<maxStep; ++i)
+	for(uint i=0; i<512; ++i)
 	{
 		uint cascade = ComputeCascade(samplePos);
 		
@@ -145,21 +164,13 @@ float4 VoxelConeTracing(float3 worldPos, float3 dir, float halfConeAngle, float 
 
 		float oneVoxelSize = ComputeVoxelSize(cascade);
 
-		float mipLevel = 0;
 		float distanceMip = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle);
-
-		if(useOnlyDistanceMip)
-		{
-			mipLevel = distanceMip + minMipLevel;
-		}
-		else
-		{
-			float roughnessMip = roughnessMip = ComputeRoughnessLOD(roughness);
-			mipLevel = (roughnessMip + distanceMip) * 0.5f + minMipLevel; //고쳐야함
-		}
+		float roughnessMip = roughnessMip = ComputeRoughnessLOD(roughness);
+		float mipLevel = min(roughnessMip, distanceMip) + minMipLevel; //고쳐야함
 	
 		float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
-		accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);
+		accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);	//정확하지 않음
+		//ao 처리는 어디로? 감쇠 처리는?
 
 		if(accumColor.a >= occlusionBais)
 			break;
@@ -171,16 +182,52 @@ float4 VoxelConeTracing(float3 worldPos, float3 dir, float halfConeAngle, float 
 	return accumColor;
 }
 
-float4 SpecularVCT(float3 worldPos)
+float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel)
 {
-}
+	float3 up = worldNormal.y > 0.95f ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f); //정확하지 않음
+	float3 right = cross(up, worldNormal);
+	up = cross(worldNormal, right);
 
-float4 DiffuseVCT(float3 worldPos, uniform float minMipLevel)
-{
-	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 accumColor = float4(0.0f, 0.0f, 0.0f, 0.0f); //w is occlusion
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
+		// 정확하지 않음
+		float3 dir = normalize( worldNormal + (ConeDirLS[coneIdx].x * right) + (ConeDirLS[coneIdx].z * up) );
+
+		// w or a is occlusion
+		float4 accumColor	= float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+		float currLength	= gi_initVoxelSize * CONE_TRACING_BIAS;
+		float3 samplePos	= worldPos + (dir * currLength);
+
+		float3 bbMin, bbMax;
+		ComputeVoxelizationBound(bbMin, bbMax, gi_maxCascade-1);
+
+		float4 accumDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		for(uint i=0; i<64; ++i)
+		{
+			uint cascade = ComputeCascade(samplePos);
+
+			if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
+				samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
+				samplePos.z < bbMin.z || samplePos.x >= bbMax.x )
+				break;
+
+			float oneVoxelSize = ComputeVoxelSize(cascade);
+			float mipLevel = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle);
+
+			float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
+			//accumDiffuse는 어디로?	//정확하지 않음
+			//ao 처리는 어디로? 감쇠 처리는?
+
+			currLength += oneVoxelSize * CONE_TRACING_NEXT_STEP_RATIO;//pow(2.0f, mipLevel) * 0.5f;
+			samplePos = worldPos + (dir * currLength);
+		}
+
+		accumColor += accumDiffuse * ConeWeights[coneIdx];
 	}
+
+	return accumColor;
 }
 
 [numthreads(VOXEL_CONE_TRACING_TILE_RES, VOXEL_CONE_TRACING_TILE_RES, 1)]
