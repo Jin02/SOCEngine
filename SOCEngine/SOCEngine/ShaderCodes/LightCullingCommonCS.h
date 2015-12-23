@@ -6,26 +6,23 @@
 #include "ShaderCommon.h"
 
 #define EDGE_DETECTION_COMPARE_DISTANCE			10.0f
-#define LIGHT_MAX_COUNT_IN_TILE 				256
-
-#define TILE_RES 								16
-#define TILE_RES_HALF							(TILE_RES / 2)
+#define TILE_RES_HALF							(LIGHT_CULLING_TILE_RES / 2)
 
 #if defined(USE_COMPUTE_SHADER)
 
 groupshared uint	s_lightIndexCounter;
-groupshared uint	s_lightIdx[LIGHT_MAX_COUNT_IN_TILE];
+groupshared uint	s_lightIdx[LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE];
 
 #endif
 
 uint GetNumTilesX()
 {
-	return (uint)((tbrParam_viewPortSize.x + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((tbrParam_viewPortSize.x + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 }
 
 uint GetNumTilesY()
 {
-	return (uint)((tbrParam_viewPortSize.y + TILE_RES - 1) / (float)TILE_RES);
+	return (uint)((tbrParam_viewPortSize.y + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 }
 
 float4 ProjToView( float4 p )
@@ -50,7 +47,7 @@ float InvertProjDepthToView(float depth)
 
 uint GetTileIndex(float2 screenPos)
 {
-	float tileRes = (float)TILE_RES;
+	float tileRes = (float)LIGHT_CULLING_TILE_RES;
 
 	uint w = GetNumTilesX();
 	uint tileIndex = floor(screenPos.x / tileRes) + floor(screenPos.y / tileRes) * w;

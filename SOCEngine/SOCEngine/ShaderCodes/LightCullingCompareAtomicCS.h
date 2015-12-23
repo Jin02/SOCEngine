@@ -5,7 +5,7 @@
 
 #include "LightCullingCommonCS.h"
 
-#define THREAD_COUNT TILE_RES * TILE_RES
+#define THREAD_COUNT LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TILE_RES
 
 groupshared uint s_minZ;
 groupshared uint s_maxZ;
@@ -79,16 +79,16 @@ bool LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out uint outPointLightCountInTile)
 #endif
 {
-	uint idxInTile	= localIdx.x + localIdx.y * TILE_RES;
+	uint idxInTile	= localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 	
 	float4 frustumPlaneNormal[4];
 	{
-		float2 tl =					float2(	(float)(TILE_RES * groupIdx.x),
-											(float)(TILE_RES * groupIdx.y));
-		float2 br =					float2(	(float)(TILE_RES * (groupIdx.x + 1)), 
-											(float)(TILE_RES * (groupIdx.y + 1)));
-		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
-											(float)(TILE_RES * GetNumTilesY()) );
+		float2 tl =					float2(	(float)(LIGHT_CULLING_TILE_RES * groupIdx.x),
+											(float)(LIGHT_CULLING_TILE_RES * groupIdx.y));
+		float2 br =					float2(	(float)(LIGHT_CULLING_TILE_RES * (groupIdx.x + 1)), 
+											(float)(LIGHT_CULLING_TILE_RES * (groupIdx.y + 1)));
+		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
+											(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
 											//스크린 픽셀 사이즈라 생각해도 좋고,
 											//현재 돌아가는 전체 가로x세로 스레드 수?
 

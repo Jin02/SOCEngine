@@ -50,13 +50,13 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_infoConstBuffer = new ConstBuffer;
 	_infoConstBuffer->Initialize(sizeof(Info));
@@ -218,9 +218,12 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	{
 		// Compute & Update Const Buffers
 		{
-			float worldSize = _initVoxelizationInfo.voxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
-			float offset = (worldSize / (float)(currentCascade + 1)) / 2.0f;
-			Vector3 worldMinPos = camWorldPos - Vector3(offset, offset, offset);
+			// Compute Voxelize Bound
+			float worldSize;
+			Vector3 bbMin, bbMax, bbMid, worldMinPos;
+			{
+				ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, &worldMinPos, currentCascade, camWorldPos);
+			}
 
 			// Update Voxelize Info CB
 			{
@@ -243,13 +246,6 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 			{
 				Matrix orthoProjMat;
 				Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, cameraNear, cameraFar);
-
-				float halfWorldSize = worldSize / 2.0f;
-				float cascadeScale = (float)(currentCascade + 1);
-
-				Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
-				Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
-				Vector3 bbMid = (bbMin + bbMax) / 2.0f;
 
 				auto LookAtView = [](
 					Matrix& outViewMat,
@@ -308,4 +304,53 @@ void Voxelization::UpdateInitVoxelizationInfo(const Info& info)
 	initInfo.voxelizeSize	= info.voxelizeSize;
 	initInfo.dimension		= info.dimension;
 	initInfo.voxelSize		= info.voxelizeSize / (float)info.dimension;
+}
+
+void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos) const
+{
+	memset(&outMat, 0, sizeof(Math::Matrix));
+
+	float worldSize = 0.0f;
+	Vector3 centerPos;
+	ComputeBound(nullptr, &centerPos, nullptr, &worldSize, nullptr, currentCascade, camWorldPos);
+
+	ASSERT_COND_MSG(worldSize != 0.0f, "Error, Voxelize Size is zero");
+
+	outMat._11 = 2.0f / worldSize;
+	outMat._22 = 2.0f / worldSize;
+	outMat._33 = 2.0f / worldSize;
+
+	outMat._41 = 0.0f;
+	outMat._42 = 0.0f;
+	outMat._43 = 0.0f;
+	outMat._44 = 1.0f;
+}
+
+void Voxelization::ComputeBound(
+	Math::Vector3* outMin,
+	Math::Vector3* outMid,
+	Math::Vector3* outMax,
+	float* outWorldSize,
+	Math::Vector3* outVoxelizeMinPos,
+	uint currentCascade,
+	const Math::Vector3& camWorldPos) const
+{
+	float worldSize		= _initVoxelizationInfo.voxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
+	float offset		= (worldSize / (float)(currentCascade + 1)) / 2.0f;
+	Vector3 worldMinPos	= camWorldPos - Vector3(offset, offset, offset);
+
+	float halfWorldSize	= worldSize / 2.0f;
+	float cascadeScale	= (float)(currentCascade + 1);
+
+	Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
+	Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
+	Vector3 bbMid = (bbMin + bbMax) / 2.0f;
+
+	if(outMin)			(*outMin) = bbMin;
+	if(outMid)			(*outMid) = bbMid;
+	if(outMax)			(*outMax) = bbMax;
+	if(outWorldSize)	(*outWorldSize) = worldSize;
+	
+	if(outVoxelizeMinPos)
+		(*outVoxelizeMinPos) = worldMinPos;
 }

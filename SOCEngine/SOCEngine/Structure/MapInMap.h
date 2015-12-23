@@ -82,6 +82,41 @@ namespace Structure
 			}
 		}
 
+		const Object* Find(const Key& key1, const Key& key2) const
+		{
+			auto findIter = _map.find(key1);
+
+			if(findIter != _map.end())
+			{
+				const std::map<Key, Object>& inMap = findIter->second;
+				auto inFindIter = inMap.find(key2);
+				if(inFindIter != inMap.end())
+					return &inFindIter->second;
+			}
+
+			return nullptr;
+		}
+
+		bool Find(const std::map<Key, Object>** out, const Key& key1) const
+		{
+			auto findIter = _map.find(key1);
+
+			if(findIter != _map.end() && out)
+				(*out) = &findIter->second;
+
+			return findIter != _map.end();
+		}
+
+		bool Has(const Key& key1, const Key& key2) const
+		{
+			return Find(key1, key2) != nullptr;
+		}
+
+		bool Has(const Key& key1) const
+		{
+			return Find(nullptr, key1);
+		}
+
 		void Delete(const Key& key1)
 		{
 			auto findIter = _map.find(key1);

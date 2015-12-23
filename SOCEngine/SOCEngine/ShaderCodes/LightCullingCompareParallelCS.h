@@ -11,7 +11,7 @@ groupshared float	s_depthMaxDatas[TILE_RES_HALF * TILE_RES_HALF];
 groupshared float	s_depthMinDatas[TILE_RES_HALF * TILE_RES_HALF];
 
 #if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
-groupshared bool	s_isDetectedEdge[TILE_RES * TILE_RES];
+groupshared bool	s_isDetectedEdge[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TILE_RES];
 #endif
 
 #if (MSAA_SAMPLES_COUNT > 1) && defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
@@ -93,12 +93,12 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	ioCornerMinMax.min_br = min(minDepth_br, ioCornerMinMax.min_br); 	ioCornerMinMax.max_br = max(maxDepth_br, ioCornerMinMax.max_br);
 #else // Edge 체크, MSAA는 밖에서 처리함
 	uint2 localIdx = halfLocalIdx * 2;
-	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
+	uint idxInOriginTile = localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 
-	s_isDetectedEdge[idxInOriginTile]					= (maxDepth_tl - minDepth_tl) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + 1]				= (maxDepth_tr - minDepth_tr) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (maxDepth_bl - minDepth_bl) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (maxDepth_br - minDepth_br) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile]								= (maxDepth_tl - minDepth_tl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + 1]							= (maxDepth_tr - minDepth_tr) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + LIGHT_CULLING_TILE_RES]		= (maxDepth_bl - minDepth_bl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + LIGHT_CULLING_TILE_RES + 1]	= (maxDepth_br - minDepth_br) > EDGE_DETECTION_VALUE;
 #endif
 
 #endif
@@ -163,12 +163,12 @@ void ClacMinMaxWithCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, u
 
 #if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 	uint2 localIdx = halfLocalIdx * 2;
-	uint idxInOriginTile = localIdx.x + localIdx.y * TILE_RES;
+	uint idxInOriginTile = localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 
-	s_isDetectedEdge[idxInOriginTile]					= (cornerMinMax.max_tl - cornerMinMax.min_tl) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + 1]				= (cornerMinMax.max_tr - cornerMinMax.min_tr) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + TILE_RES]		= (cornerMinMax.max_bl - cornerMinMax.min_bl) > EDGE_DETECTION_VALUE;
-	s_isDetectedEdge[idxInOriginTile + TILE_RES + 1]	= (cornerMinMax.max_br - cornerMinMax.min_br) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile]								= (cornerMinMax.max_tl - cornerMinMax.min_tl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + 1]							= (cornerMinMax.max_tr - cornerMinMax.min_tr) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + LIGHT_CULLING_TILE_RES]		= (cornerMinMax.max_bl - cornerMinMax.min_bl) > EDGE_DETECTION_VALUE;
+	s_isDetectedEdge[idxInOriginTile + LIGHT_CULLING_TILE_RES + 1]	= (cornerMinMax.max_br - cornerMinMax.min_br) > EDGE_DETECTION_VALUE;
 #endif
 
 #else // Non-MSAA
@@ -192,12 +192,12 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 
 	float4 frustumPlaneNormal[4];
 	{
-		uint2 tl =					uint2(	TILE_RES * groupIdx.x,
-											TILE_RES * groupIdx.y);
-		uint2 br =					uint2(	TILE_RES * (groupIdx.x + 1), 
-											TILE_RES * (groupIdx.y + 1));
-		float2 totalThreadLength =	float2(	(float)(TILE_RES * GetNumTilesX()),
-											(float)(TILE_RES * GetNumTilesY()) );
+		uint2 tl =					uint2(	LIGHT_CULLING_TILE_RES * groupIdx.x,
+											LIGHT_CULLING_TILE_RES * groupIdx.y);
+		uint2 br =					uint2(	LIGHT_CULLING_TILE_RES * (groupIdx.x + 1), 
+											LIGHT_CULLING_TILE_RES * (groupIdx.y + 1));
+		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
+											(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
 											//스크린 픽셀 사이즈라 생각해도 좋고,
 											//현재 돌아가는 전체 가로x세로 스레드 수?
 		float4 frustum[4];

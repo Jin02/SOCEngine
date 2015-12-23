@@ -3,8 +3,8 @@
 #ifndef __SOC_SHADER_COMMON_H__
 #define __SOC_SHADER_COMMON_H__
 
-#define PI								3.141592654f
-#define FLOAT_MAX						3.402823466e+38F
+#include "../GlobalDefine.h"
+
 #define DEG_2_RAD(X)					PI * X / 180.0f
 
 Buffer<float4> g_inputPointLightTransformBuffer						: register( t0 ); // center, radius
@@ -72,6 +72,10 @@ Buffer<float4> g_inputPointLightShadowColors						: register( t20 );
 Buffer<float4> g_inputSpotLightShadowColors							: register( t21 );
 Buffer<float4> g_inputDirectionalLightShadowColors					: register( t22 );
 
+Buffer<uint> g_inputPointLightShadowIndexToLightIndex				: register( t23 );
+Buffer<uint> g_inputSpotLightShadowIndexToLightIndex				: register( t24 );
+Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex			: register( t25 );
+
 struct LightingParams
 {
 	uint	lightIndex;
@@ -117,8 +121,10 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
 	float	shadowGlobalParam_pointLightTexelOffset;
 	float	shadowGlobalParam_pointLightUnderscanScale;
-
-	float	dummy;
+	uint	shadowGlobalParam_packedPowerOfTwoShadowAtlasSize;
+	
+	uint	shadowGlobalParam_packedNumOfShadows;
+	uint3	shadowGlobalParam_dummy;
 };
 
 

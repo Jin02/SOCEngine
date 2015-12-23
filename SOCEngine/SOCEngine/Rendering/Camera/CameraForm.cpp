@@ -37,7 +37,7 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 
@@ -226,6 +226,6 @@ void CameraForm::_Clone(CameraForm* newCam) const
 
 		D3D11_TEXTURE2D_DESC desc;
 		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		
-		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
+		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
 	}
 }

@@ -15,16 +15,16 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT format, uint optionalBindFlags, uint sampleCount)
+bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount)
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | optionalBindFlags;
 	
-	Texture2D::Initialize(size.w, size.h, format, bindFlags, sampleCount, 1);
+	Texture2D::Initialize(size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, 1);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 
-	renderTargetViewDesc.Format = format;
+	renderTargetViewDesc.Format = rtvFormat;
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	_texture->GetDesc(&texDesc);

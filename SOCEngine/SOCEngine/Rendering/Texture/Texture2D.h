@@ -24,7 +24,7 @@ namespace Rendering
 
 		protected:
 			// if SampleCount = 0, sampleCount = msaa.count
-			void Initialize(uint width, uint height, DXGI_FORMAT format, uint bindFlags, uint sampleCount, uint mipLevels);
+			void Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
 			void Destroy();
 
 		public:

@@ -14,7 +14,7 @@ Texture3D::~Texture3D()
 	Destory();
 }
 
-void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT format, uint bindFlags, uint mipLevels)
+void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint mipLevels)
 {
 	_size.x = (float)width;
 	_size.y = (float)height;
@@ -34,7 +34,7 @@ void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT form
 	textureDesc.MipLevels		= mipLevels;
 	textureDesc.MiscFlags		= mipLevels > 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 
-	textureDesc.Format			= format;
+	textureDesc.Format			= srvFormat;
 	textureDesc.Usage			= D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags		= bindFlags;
 	textureDesc.CPUAccessFlags	= 0;
@@ -48,13 +48,13 @@ void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT form
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, format, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
+		_srv->Initialize(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
 	}
 
 	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
 	{
 		_uav = new UnorderedAccessView;
-		_uav->Initialize(format, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, depth);
+		_uav->Initialize(uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, depth);
 	}
 }
 

@@ -1,3 +1,5 @@
+#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
+
 #include "Voxelization_Common.h"
 
 struct VS_INPUT
@@ -65,7 +67,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		viewProjMat = voxelization_vp_axisZ;
 
 
-#if defined(USE_VOXELICATION_BLOATING_POS)
+#if defined(USE_VOXELIZATION_BLOATING_POS)
 	float3 centerPos = (worldPos0 + worldPos1 + worldPos2) / 3.0f;
 	worldPos0 += normalize(worldPos0 - centerPos) * VOXELIZATION_BLOATING_RATIO;
 	worldPos1 += normalize(worldPos1 - centerPos) * VOXELIZATION_BLOATING_RATIO;
@@ -107,8 +109,12 @@ void PS( GS_OUTPUT input )
 	float3 normal		= normalize(input.normal);
 	
 	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
-	int3 voxelIdx		= ((int3)voxelCoord) * voxelization_demension;
+	int3 voxelIdx		= int3(voxelCoord * voxelization_dimension);
 
+	if( any(voxelIdx < 0) || any(voxelization_dimension < voxelIdx) )
+		discard;
+
+#ifdef USE_SHADOW_INVERTED_DEPTH
 	float anisotropicNormals[6] = {
 		 normal.x,
 		-normal.x,
@@ -118,37 +124,109 @@ void PS( GS_OUTPUT input )
 		-normal.z
 	};
 
-	voxelIdx.y += (float)voxelization_currentCascade * voxelization_demension;
-
-	for(int faceIndex=0; faceIndex<6; ++faceIndex)
+	if(all(0 <= voxelIdx) && all(voxelIdx < voxelization_dimension))
 	{
-		voxelIdx.x += (float)faceIndex * voxelization_demension;
+		voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
 
-		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha));
-		StoreVoxelMapAtomicColorMax(OutAnistropicVoxelNormalTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));
-		StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelEmissionTexture, voxelIdx, max(anisotropicNormals[faceIndex], 0.0f));
+		for(int faceIndex=0; faceIndex<6; ++faceIndex)
+		{
+			voxelIdx.x += (faceIndex * voxelization_dimension);
+
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));
+			StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelNormalTexture, voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
+		}
+	}
+#else
+	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
+
+	uint dlShadowCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadows);
+	for(uint dlShadowIdx=0; dlShadowIdx<dlShadowCount; ++dlShadowIdx)
+	{
+		uint lightIndex = g_inputDirectionalLightShadowIndexToLightIndex[dlShadowIdx];
+
+		float4 lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
+		float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];
+		float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+
+		float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
+		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
+		float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
+
+		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, input.worldPos);
+		radiosity += material_emissionColor.rgb;
 	}
 
-/*
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(albedo.xyz * max( normal.x, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(albedo.xyz * max(-normal.x, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(albedo.xyz * max( normal.y, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(albedo.xyz * max(-normal.y, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(albedo.xyz * max( normal.z, 0.0f), alpha), false);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(albedo.xyz * max(-normal.z, 0.0f), alpha), false);
+	uint plShadowCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadows);
+	for(uint plShadowIdx=0; plShadowIdx<plShadowCount; ++plShadowIdx)
+	{
+		uint lightIndex = g_inputPointLightShadowIndexToLightIndex[plShadowIdx];
 
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosX, voxelIdx, float4(material_emissionColor.rgb * max( normal.x, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegX, voxelIdx, float4(material_emissionColor.rgb * max(-normal.x, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosY, voxelIdx, float4(material_emissionColor.rgb * max( normal.y, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegY, voxelIdx, float4(material_emissionColor.rgb * max(-normal.y, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTexturePosZ, voxelIdx, float4(material_emissionColor.rgb * max( normal.z, 0.0f), 1.0f), true);
-	StoreVoxelMapAtomicColorMax(OutAnistropicVoxelTextureNegZ, voxelIdx, float4(material_emissionColor.rgb * max(-normal.z, 0.0f), 1.0f), true);
+		float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightIndex];
+		float3 lightCenterWorldPos		= lightCenterWithRadius.xyz;
+		float lightRadius				= lightCenterWithRadius.a;
+		float3 lightDir					= lightCenterWorldPos - input.worldPos;
+		float distanceOfLightWithVertex	= length(lightDir);
 
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosX, voxelIdx, max( normal.x, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegX, voxelIdx, max(-normal.x, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosY, voxelIdx, max( normal.y, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegY, voxelIdx, max(-normal.y, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTexturePosZ, voxelIdx, max( normal.z, 0.0f));
-	StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelTextureNegZ, voxelIdx, max(-normal.z, 0.0f));
-*/
+		if(distanceOfLightWithVertex < lightRadius)
+		{
+			float4 lightColorWithLm = g_inputPointLightColorBuffer[lightIndex];
+
+			float3 lightColor	= lightColorWithLm.rgb;
+			float lumen			= lightColorWithLm.a * 12750.0f; //maximum lumen is 12,750f
+			float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
+			float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
+
+			radiosity += lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, input.worldPos, lightDir, distanceOfLightWithVertex / lightRadius);
+			radiosity += material_emissionColor.rgb;
+		}
+	}
+
+	uint slShadowCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadows);
+	for(uint slShadowIdx=0; slShadowIdx<slShadowCount; ++slShadowIdx)
+	{
+		uint lightIndex = g_inputSpotLightShadowIndexToLightIndex[slShadowIdx];
+
+		float4 lightCenterWithRadius = g_inputSpotLightTransformBuffer[lightIndex];
+		float3 lightCenterWorldPos = lightCenterWithRadius.xyz;
+		float radiusWithMinusZDirBit = lightCenterWithRadius.a;
+		float radius = abs(radiusWithMinusZDirBit);
+		
+		float4 spotParam = g_inputSpotLightParamBuffer[lightIndex];
+
+		float3 lightDir = float3(spotParam.x, spotParam.y, 0.0f);
+		lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y);
+		lightDir.z = lerp(-lightDir.z, lightDir.z, radiusWithMinusZDirBit >= 0.0f);
+
+		float outerCosineConeAngle	= spotParam.z;
+		float innerCosineConeAngle	= spotParam.w;
+		
+		float3 vtxToLight = lightCenterWorldPos - input.worldPos;
+		float distanceOfLightWithVertex = length(vtxToLight);
+		float3 vtxToLightDir = normalize(vtxToLight);
+		float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
+
+		if( (distanceOfLightWithVertex < (radius * 1.5f)) && (outerCosineConeAngle < currentCosineConeAngle) )
+		{
+			float innerOuterAttenuation = saturate( (currentCosineConeAngle - outerCosineConeAngle) / (innerCosineConeAngle - outerCosineConeAngle));
+			innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;
+			innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;
+			innerOuterAttenuation = lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
+
+			float4 lightColorWithLm = g_inputPointLightColorBuffer[lightIndex];
+			float lumen = lightColorWithLm.w * 12750.0f; //maximum lumen is 12750.0f
+
+			float plAttenuation = 1.0f / (distanceOfLightWithVertex * distanceOfLightWithVertex);
+			float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;
+
+			float3 lightColor = lightColorWithLm.rgb;
+			float3 lambert = albedo.rgb * saturate(dot(normal, lightDir));
+
+			radiosity += lambert * totalAttenTerm * lightColor * RenderSpotLightShadow(lightIndex, input.worldPos);
+			radiosity += material_emissionColor.rgb;
+		}
+	}
+
+	StoreRadiosity(radiosity, alpha, normal, voxelIdx);
+#endif
 }

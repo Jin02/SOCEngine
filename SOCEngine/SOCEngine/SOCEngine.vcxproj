@@ -53,6 +53,7 @@
     <ClInclude Include="External\rapidjson\reader.h" />
     <ClInclude Include="External\rapidjson\stringbuffer.h" />
     <ClInclude Include="External\rapidjson\writer.h" />
+    <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\ImporterUtility.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="ShaderCodes\AlphaBlending.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -151,6 +153,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <ClInclude Include="ShaderCodes\DynamicLightingCommon.h" />
+    <ClInclude Include="ShaderCodes\GBufferCommon.h" />
+    <ClInclude Include="ShaderCodes\Injection_Common.h" />
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -159,6 +163,7 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h" />
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h" />
+    <ClInclude Include="ShaderCodes\MonteCarlo.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -200,6 +205,37 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
+    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -415,7 +451,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;./;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
   </PropertyGroup>

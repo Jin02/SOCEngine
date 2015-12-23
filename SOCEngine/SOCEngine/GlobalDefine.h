@@ -1,0 +1,19 @@
+#ifndef __SOC_GLOBAL_DEFINE_H__
+#define __SOC_GLOBAL_DEFINE_H__
+
+#define USE_VOXELIZATION_WITH_INJECTION
+#define USE_SHADOW_INVERTED_DEPTH
+//#define USE_UI
+
+#define LIGHT_CULLING_TILE_RES						16
+#define LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE 		256
+#define INJECTION_TILE_RES							16
+#define MIPMAPPING_TILE_RES_HALF					8
+#define VOXEL_CONE_TRACING_TILE_RES					16
+
+
+// Math
+#define PI											3.141592654f
+#define FLOAT_MAX									3.402823466e+38F
+
+#endif
