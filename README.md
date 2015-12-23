@@ -5,6 +5,9 @@ Simple 3D real-time rendering engine
 
 Required : python 2.7.x, VS2012, FBXSDK2014.1
 
+-----------
+
+Rendering: TBDR, MSAA(only 4x), Microfacet BRDF, Dynamic Lighting, Transparency, Model load using fbx-conv(obj, fbx, dae, etc..), Shadow Mapping.
+
 ![Test_Image](http://i.imgur.com/lCluQ1q.png)
-![FirstShadow](http://i.imgur.com/EHCsSZY.png)
-![SecondShadow](http://i.imgur.com/MWZWgeK.png)
+![ShadowTest](http://i.imgur.com/KczmdCc.png)
