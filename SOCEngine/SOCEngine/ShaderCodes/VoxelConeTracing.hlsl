@@ -22,6 +22,7 @@ RWTexture2D<uint> g_outputIndirectMap	: register(u?);
 #define CONE_TRACING_NEXT_STEP_RATIO	0.3333f
 #define SPECULAR_OCCLUSION				0.95f
 #define DIFFUSE_OCCLUSION				0.95f
+#define DIFFUSE_AO_K					8.0f
 
 // 콘의 각도에 관련한 데이터 값은 아래 글 참고했음.
 // http://simonstechblog.blogspot.kr/2013/01/implementing-voxel-cone-tracing.html
@@ -169,10 +170,9 @@ float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 		float mipLevel = min(roughnessMip, distanceMip) + minMipLevel; //고쳐야함
 	
 		float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
-		accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);	//정확하지 않음
-		//ao 처리는 어디로? 감쇠 처리는?
+		accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);
 
-		if(accumColor.a >= occlusionBais)
+		if(accumColor.a >= SPECULAR_OCCLUSION)
 			break;
 
 		currLength += oneVoxelSize * CONE_TRACING_NEXT_STEP_RATIO;//pow(2.0f, mipLevel) * 0.5f;
@@ -184,25 +184,28 @@ float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 
 float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel)
 {
-	float3 up = worldNormal.y > 0.95f ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f); //정확하지 않음
+	float3 up = (worldNormal.y > 0.95f) ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f);
 	float3 right = cross(up, worldNormal);
 	up = cross(worldNormal, right);
 
 	float4 accumColor = float4(0.0f, 0.0f, 0.0f, 0.0f); //w is occlusion
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
-		// 정확하지 않음
+		// worldNormal을 기준으로 Cone Dir Local Space 만큼 방향을 시프트 처리
+		// 별거 없는데 공식 이해가 안가면 직접 그려보면서 이해하는걸 추천 -_-
 		float3 dir = normalize( worldNormal + (ConeDirLS[coneIdx].x * right) + (ConeDirLS[coneIdx].z * up) );
 
 		// w or a is occlusion
 		float4 accumColor	= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-		float currLength	= gi_initVoxelSize * CONE_TRACING_BIAS;
-		float3 samplePos	= worldPos + (dir * currLength);
-
+		float currLength	= 0//gi_initVoxelSize * CONE_TRACING_BIAS;
+		float3 samplePos	= 0;//worldPos + (dir * currLength);
+		float oneVoxelSize	= gi_initVoxelSize;// * CONE_TRACING_BIAS;
+		
 		float3 bbMin, bbMax;
 		ComputeVoxelizationBound(bbMin, bbMax, gi_maxCascade-1);
 
+		float radiusRatio = sin(ConeWeights[coneIdx] * 0.5f);
 		float4 accumDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		for(uint i=0; i<64; ++i)
 		{
@@ -213,15 +216,28 @@ float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 				samplePos.z < bbMin.z || samplePos.x >= bbMax.x )
 				break;
 
-			float oneVoxelSize = ComputeVoxelSize(cascade);
+			float lastLength = currLength;
+			currLength += oneVoxelSize * CONE_TRACING_NEXT_STEP_RATIO;//pow(2.0f, mipLevel) * 0.5f;
+			samplePos = worldPos + (dir * currLength);
+
+			oneVoxelSize = ComputeVoxelSize(cascade);
 			float mipLevel = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle);
 
 			float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
-			//accumDiffuse는 어디로?	//정확하지 않음
-			//ao 처리는 어디로? 감쇠 처리는?
 
-			currLength += oneVoxelSize * CONE_TRACING_NEXT_STEP_RATIO;//pow(2.0f, mipLevel) * 0.5f;
-			samplePos = worldPos + (dir * currLength);
+			// Interactive Indirect Illumination Using Voxel Cone Tracing by Cyril Crassin 논문 참고.
+			// 작은 스텝상에서 사용되는 방법? 거의 diffuse라고 보면 될듯?
+			float currentRadius = radiusRatio * currentLength;	// cascade라 너무 들쭉날쭉 해질 것 같아서
+																// 현재 voxel 크기 대신 이 값을 사용.
+			float deltaLengthRatio = (currLength - lastLength) / currentRadius;
+			sampleColor.a = 1.0f - pow(1.0f - sampleColor.a, deltaLengthRatio);
+			accumDiffuse = PremultipliedAlphaBlending(accumDiffuse, sampleColor);
+
+			// Cyril 논문에 있는 AO쪽 공식 참고함
+			accumDiffuse.a += sampleColor.a * (1.0f / (1.0f + DIFFUSE_AO_K * currentLength));
+
+			if(accumDiffuse.a >= DIFFUSE_OCCLUSION)
+				break;
 		}
 
 		accumColor += accumDiffuse * ConeWeights[coneIdx];
