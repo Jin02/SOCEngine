@@ -14,8 +14,9 @@ cbuffer GIInfoCB : register( b7 )
 	float	gi_initWorldSize;
 }
 
-Texture3D<float4> g_inputVoxelTexture	: register(t?);
-RWTexture2D<uint> g_outputIndirectMap	: register(u?);
+Texture3D<float4> g_inputVoxelTexture		: register(t?);
+Texture3D<float4> g_inputDirectColorTexture	: register(t?);
+RWTexture2D<float4> g_outputIndirectMap		: register(u?);
 
 #define MAXIMUM_CONE_COUNT				6
 #define CONE_TRACING_BIAS				2.5f
@@ -94,23 +95,9 @@ uint ComputeCascade(float3 worldPos)
 	return (dist >= halfWorldSize) ? ceil( log2(dist/halfWorldSize) ) : 0;
 }
 
-// Unreal4의 ReflectionEnvironmentShared.usf에 있는
-// ComputeReflectionCaptureMipFromRoughness 이거임
-float ComputeRoughnessLOD(float roughness)
+float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAngleRadian)
 {
-#define REFLECTION_CAPTURE_ROUGHEST_MIP 1.0f
-#define REFLECTION_CAPTURE_ROUGHNESS_MIP_SCALE 1.2f
-
-	float levelFrom1x1 = REFLECTION_CAPTURE_ROUGHEST_MIP - REFLECTION_CAPTURE_ROUGHNESS_MIP_SCALE * log2(roughness);
-
-	const float HardcodedNumCaptureArrayMips = 7;
-	float mip = HardcodedNumCaptureArrayMips - 1 - LevelFrom1x1;
-	return (mip < 0) ? 0 : mip;
-}
-
-float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAngle)
-{
-	float mip = log2(currLength / oneVoxelSize * tan(halfConeAngle));
+	float mip = log2(currLength / oneVoxelSize * tan(halfConeAngleRadian));
 	return (mip < 0) ? 0 : mip;
 }
 
@@ -135,7 +122,7 @@ float ComputeVoxelSize(uint cascade)
 	return worldSize / (float)gi_voxelDimension;
 }
 
-float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float halfConeAngle, uniform float minMipLevel)
+float3 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float halfConeAngle, uniform float minMipLevel)
 {
 	float3 viewDir		= normalize(tbrParam_cameraWorldPos - worldPos);
 	float3 reflectDir	= reflect(-viewDir, worldNormal);
@@ -164,11 +151,8 @@ float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 			break;
 
 		float oneVoxelSize = ComputeVoxelSize(cascade);
+		float mipLevel = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle) + minMipLevel; //정확하진 않을듯. 임시용
 
-		float distanceMip = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle);
-		float roughnessMip = roughnessMip = ComputeRoughnessLOD(roughness);
-		float mipLevel = min(roughnessMip, distanceMip) + minMipLevel; //고쳐야함
-	
 		float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 		accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);
 
@@ -179,10 +163,10 @@ float4 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 		samplePos = worldPos + (dir * currLength);
 	}
 
-	return accumColor;
+	return accumColor.xyz;
 }
 
-float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel)
+float3 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel)
 {
 	float3 up = (worldNormal.y > 0.95f) ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f);
 	float3 right = cross(up, worldNormal);
@@ -205,7 +189,8 @@ float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 		float3 bbMin, bbMax;
 		ComputeVoxelizationBound(bbMin, bbMax, gi_maxCascade-1);
 
-		float radiusRatio = sin(ConeWeights[coneIdx] * 0.5f);
+		float halfConeAngleRad = ConeWeights[coneIdx] * 0.5f;
+		float radiusRatio = tan(halfConeAngleRad);
 		float4 accumDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		for(uint i=0; i<64; ++i)
 		{
@@ -221,14 +206,14 @@ float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 			samplePos = worldPos + (dir * currLength);
 
 			oneVoxelSize = ComputeVoxelSize(cascade);
-			float mipLevel = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle);
+			float mipLevel = ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngleRad);
 
 			float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 
 			// Interactive Indirect Illumination Using Voxel Cone Tracing by Cyril Crassin 논문 참고.
 			// 작은 스텝상에서 사용되는 방법? 거의 diffuse라고 보면 될듯?
-			float currentRadius = radiusRatio * currentLength;	// cascade라 너무 들쭉날쭉 해질 것 같아서
-																// 현재 voxel 크기 대신 이 값을 사용.
+			float currentRadius = radiusRatio * currentLength;	// cascade라 결과 값이 너무 차이가 커서
+																// 현재 voxel 크기 대신 반지름 값을 사용.
 			float deltaLengthRatio = (currLength - lastLength) / currentRadius;
 			sampleColor.a = 1.0f - pow(1.0f - sampleColor.a, deltaLengthRatio);
 			accumDiffuse = PremultipliedAlphaBlending(accumDiffuse, sampleColor);
@@ -243,7 +228,7 @@ float4 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 		accumColor += accumDiffuse * ConeWeights[coneIdx];
 	}
 
-	return accumColor;
+	return accumColor.xyz;
 }
 
 [numthreads(VOXEL_CONE_TRACING_TILE_RES, VOXEL_CONE_TRACING_TILE_RES, 1)]
@@ -253,4 +238,50 @@ void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID,
 {
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy);
+
+	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.worldNormal, 0.0f);
+
+	float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
+																		 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
+																		 // 나중에 해결 방안을 찾으면 고쳐야한다.
+	//const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
+	//const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
+	//float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
+	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.worldNormal, surface.roughness, halfConeAngle, 0.0f);
+
+	//surface.metallic = 0.3f; //임시
+
+#if (MSAA_SAMPLES_COUNT > 1) // MSAA only 4x
+	uint2 scaledGlobalIdx = globalIdx.xy * 2;
+
+	uint2 texIndex[4] =
+	{
+		globalIdx.xy + uint2(0, 0),
+		globalIdx.xy + uint2(0, 1),
+		globalIdx.xy + uint2(1, 0),
+		globalIdx.xy + uint2(1, 1)
+	};
+
+	[unroll] for(uint i=0; i<4; ++i)
+	{
+		float4 directColor = g_inputDirectColorTexture.Load(texIndex[i], 0);
+		float4 baseColor = directColor * (1.0f - surface.metallic);
+
+		// Metallic 값을 이용해서 대충 섞는다.
+		float4 indirectDiffuse = baseColor + diffuseVCT * directColor * surface.metallic;
+		float4 indirectSpecular = baseColor + specularVCT * directColor * surface.metallic;
+
+		g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+	}
+
+#else
+	float4 directColor = g_inputDirectColorTexture.Load(globalIdx.xy, 0);
+	float4 baseColor = directColor * (1.0f - surface.metallic);
+
+	// Metallic 값을 이용해서 대충 섞는다.
+	float4 indirectDiffuse = baseColor + diffuseVCT * directColor * surface.metallic;
+	float4 indirectSpecular = baseColor + specularVCT * directColor * surface.metallic;
+
+	g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+#endif
 }
