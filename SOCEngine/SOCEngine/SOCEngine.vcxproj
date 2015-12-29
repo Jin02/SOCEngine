@@ -117,8 +117,8 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
     <ClInclude Include="Rendering\Shading\OffScreen.h" />
+    <ClInclude Include="Rendering\Shading\BindIndexInfo.h" />
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
-    <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h" />
     <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h" />
     <ClInclude Include="Rendering\Shadow\PointLightShadow.h" />
     <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
@@ -238,6 +238,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -245,7 +248,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_TEMP.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>

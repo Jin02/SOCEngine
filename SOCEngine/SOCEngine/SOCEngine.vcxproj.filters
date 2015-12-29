@@ -693,9 +693,6 @@
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h">
       <Filter>ShaderCodes\Light\Culling\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h">
-      <Filter>Rendering\Shading</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderForm.h">
       <Filter>Rendering\Shader\Form</Filter>
     </ClInclude>
@@ -807,6 +804,9 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\AlphaBlending.h">
       <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shading\BindIndexInfo.h">
+      <Filter>Rendering\Shading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1151,9 +1151,6 @@
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
-      <Filter>ShaderCodes\GI\Voxelization</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
       <Filter>ShaderCodes\GI\Injection</Filter>
     </FxCompile>
@@ -1171,6 +1168,12 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
       <Filter>ShaderCodes\GI\VoxelConeTracing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
+      <Filter>ShaderCodes\Light</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_TEMP.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
