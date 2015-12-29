@@ -110,10 +110,10 @@ cbuffer Transform : register( b1 )		//Object World
 	matrix transform_world;
 };
 
-cbuffer CameraCommon : register( b2 )
+cbuffer CameraMat : register( b2 )
 {
-	matrix	cameraCommon_view;
-	matrix	cameraCommon_viewProj;
+	matrix	cameraMat_view;
+	matrix	cameraMat_viewProj;
 };
 
 // b3Àº Material
