@@ -45,6 +45,10 @@ namespace Rendering
 			Texture::DepthBuffer*	_spotLightShadowMapAtlas;
 			Texture::DepthBuffer*	_directionalLightShadowMapAtlas;
 
+			Texture::RenderTexture*	_pointLightMomentShadowMapAtlas;
+			Texture::RenderTexture*	_spotLightMomentShadowMapAtlas;
+			Texture::RenderTexture*	_directionalLightMomentShadowMapAtlas;
+
 		private:
 			struct LightAddress
 			{
@@ -87,12 +91,14 @@ namespace Rendering
 			uint	_updateConter;
 			uint	_prevUpdateCounter;
 
+			bool	_useVSM;
+
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
 
 		public:
-			void Initialize(uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
+			void Initialize(bool useVSM, uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
 
 		public:
 			void ResizeShadowMapAtlas(

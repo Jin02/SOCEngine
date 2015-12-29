@@ -16,12 +16,12 @@ using namespace Rendering::Texture;
 using namespace Rendering::Light;
 using namespace Rendering::Manager;
 
-ShadowRenderer::ShadowRenderer()
-	: _pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr),
-	_directionalLightShadowMapAtlas(nullptr),
-	_pointLightShadowMapResolution(1024),
-	_spotLightShadowMapResolution(1024),
-	_directionalLightShadowMapResolution(2048),
+ShadowRenderer::ShadowRenderer() :
+	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
+	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr), _useVSM(false),
+	_pointLightShadowMapResolution(512),
+	_spotLightShadowMapResolution(512),
+	_directionalLightShadowMapResolution(512),
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
@@ -37,10 +37,13 @@ ShadowRenderer::~ShadowRenderer()
 	Destroy();
 }
 
-void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
+void ShadowRenderer::Initialize(bool useVSM,
+								uint numOfShadowCastingPointLight,
 								uint numOfShadowCastingSpotLight,
 								uint numOfShadowCastingDirectionalLight)
 {
+	_useVSM = useVSM;
+
 	ResizeShadowMapAtlas(	numOfShadowCastingPointLight,
 							numOfShadowCastingSpotLight,
 							numOfShadowCastingDirectionalLight,
@@ -110,6 +113,12 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 		_pointLightShadowMapAtlas = new DepthBuffer;
 		_pointLightShadowMapAtlas->Initialize(mapSize, true, 1);
+
+		if(_useVSM)
+		{
+			_pointLightMomentShadowMapAtlas = new RenderTexture;
+			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+		}
 	}
 
 	// Spot Light
@@ -123,6 +132,12 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 		_spotLightShadowMapAtlas = new DepthBuffer;
 		_spotLightShadowMapAtlas->Initialize(mapSize, true, 1);
+
+		if(_useVSM)
+		{
+			_spotLightMomentShadowMapAtlas = new RenderTexture;
+			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+		}
 	}
 
 	// dl
@@ -136,6 +151,12 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 		_directionalLightShadowMapAtlas = new DepthBuffer;
 		_directionalLightShadowMapAtlas->Initialize(mapSize, true, 1);
+
+		if(_useVSM)
+		{
+			_directionalLightMomentShadowMapAtlas = new RenderTexture;
+			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+		}
 	}
 }
 
@@ -146,6 +167,10 @@ void ShadowRenderer::Destroy()
 	SAFE_DELETE(_pointLightShadowMapAtlas);
 	SAFE_DELETE(_spotLightShadowMapAtlas);
 	SAFE_DELETE(_directionalLightShadowMapAtlas);
+
+	SAFE_DELETE(_pointLightMomentShadowMapAtlas);
+	SAFE_DELETE(_spotLightMomentShadowMapAtlas);
+	SAFE_DELETE(_directionalLightMomentShadowMapAtlas);
 
 	// DL
 	{
@@ -192,10 +217,10 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 	auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
 	const SpotLight* light = reinterpret_cast<const SpotLight*>(shadowCastingLight.lightAddress);
 
-	CameraForm::CamConstBufferData cbData;
+	CameraForm::CommonCBData cbData;
 	{
-		cbData.viewMat = light->GetViewMatrix();
-		cbData.viewProjMat = light->GetViewProjectionMatrix();
+		cbData.viewMat		= light->GetViewMatrix();
+		cbData.viewProjMat	= light->GetViewProjectionMatrix();
 	}
 
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &cbData.viewProjMat, sizeof(Matrix)) != 0;
@@ -232,10 +257,10 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 
 		for(uint i=0; i<6; ++i)
 		{
-			CameraForm::CamConstBufferData cb;
+			CameraForm::CommonCBData cb;
 			{
-				cb.viewMat = viewMatrices[i];
-				cb.viewProjMat = viewProjMatrices[i];
+				cb.viewMat		= viewMatrices[i];
+				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
 			Matrix::Transpose(cb.viewMat,		cb.viewMat);
@@ -254,7 +279,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
 	DirectionalLight* light = reinterpret_cast<DirectionalLight*>(shadowCastingLight.lightAddress);
 
-	CameraForm::CamConstBufferData cbData;
+	CameraForm::CommonCBData cbData;
 	{
 		cbData.viewMat = light->GetViewMatrix();
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
@@ -486,7 +511,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 		for(uint i=0; i<6; ++i)
 		{
 			scl.camConstBuffers[i] = new ConstBuffer;
-			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CamConstBufferData));
+			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CommonCBData));
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
@@ -504,7 +529,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 		ShadowCastingSpotDirectionalLight scl;
 		scl.lightAddress	= lightAddress;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamConstBufferData));
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CommonCBData));
 
 		shadowCastingLights->Add(lightAddress, scl);
 
