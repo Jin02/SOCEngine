@@ -21,6 +21,11 @@ namespace Rendering
 			{
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
+
+				float nearZ;
+				float farZ;
+
+				Math::Vector2 dummy;
 			};
 
 		public:

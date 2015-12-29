@@ -140,6 +140,11 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
 		cbData.viewProjMat = viewMat * projMat;
+
+		cbData.nearZ	= _clippingNear;
+		cbData.farZ		= _clippingFar;
+
+		memset(&cbData.dummy, 0, sizeof(cbData.dummy));
 	}
 
 	bool updatedVP = memcmp(&_prevCamConstBufferData, &cbData, sizeof(CamConstBufferData)) != 0;
