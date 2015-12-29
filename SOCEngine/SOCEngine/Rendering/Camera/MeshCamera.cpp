@@ -113,7 +113,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		GetProjectionMatrix(projMat, true);
 		viewProjMat = viewMat * projMat;
 
-		bool updatedVP = memcmp(&_prevCamConstBufferData, &camConstBufferData, sizeof(CommonCBData)) != 0;
+		bool updatedVP = memcmp(&_prevCommonCBData, &camConstBufferData, sizeof(CommonCBData)) != 0;
 		if(updatedVP)
 		{
 			// Make Frustum
@@ -123,7 +123,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 				_frustum->Make(camConstBufferData.viewMat * notInvProj);
 			}
 
-			_prevCamConstBufferData = camConstBufferData;
+			_prevCommonCBData = camConstBufferData;
 
 			Matrix::Transpose(camConstBufferData.viewMat,		camConstBufferData.viewMat);
 			Matrix::Transpose(camConstBufferData.viewProjMat,	viewProjMat);
@@ -135,6 +135,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			(*iter)->Culling(_frustum);
 	}
 
+	UpdateOptionCBData(dx);
 
 	LightCulling::TBRParam tbrParam;
 	{

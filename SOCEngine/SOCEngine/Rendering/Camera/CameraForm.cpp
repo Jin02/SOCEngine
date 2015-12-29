@@ -13,7 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _commonConstBuffer(nullptr), _usage(usage)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _commonConstBuffer(nullptr), _usage(usage), _optionConstBuffer(nullptr)
 {
 }
 
@@ -43,6 +43,9 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 
 	_commonConstBuffer = new ConstBuffer;
 	_commonConstBuffer->Initialize(sizeof(CommonCBData));
+
+	_optionConstBuffer = new ConstBuffer;
+	_optionConstBuffer->Initialize(sizeof(OptionCBData));
 }
 
 void CameraForm::Destroy()
@@ -142,7 +145,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool updatedVP = memcmp(&_prevCamConstBufferData, &cbData, sizeof(CommonCBData)) != 0;
+	bool updatedVP = memcmp(&_prevCommonCBData, &cbData, sizeof(CommonCBData)) != 0;
 	if(updatedVP)
 	{
 		// Make Frustum
@@ -152,13 +155,15 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			_frustum->Make(cbData.viewMat * notInvProj);
 		}
 
-		_prevCamConstBufferData = cbData;
+		_prevCommonCBData = cbData;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
 
 		_commonConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
 	}
+
+	UpdateOptionCBData(dx);
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		(*iter)->Culling(_frustum);
@@ -227,5 +232,23 @@ void CameraForm::_Clone(CameraForm* newCam) const
 		D3D11_TEXTURE2D_DESC desc;
 		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		
 		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
+	}
+}
+
+void CameraForm::UpdateOptionCBData(const Device::DirectX* dx)
+{
+	OptionCBData optionCBData;
+	{
+		optionCBData.nearZ		= _clippingNear;
+		optionCBData.farZ		= _clippingFar;
+		optionCBData.fov		= Math::Common::Deg2Rad(_fieldOfViewDegree);
+		optionCBData.dummy		= 0;
+	}
+
+	bool updatedOption = memcmp(&_prevOptionCBData, &optionCBData, sizeof(OptionCBData)) != 0;
+	if(updatedOption)
+	{
+		_optionConstBuffer->UpdateSubResource(dx->GetContext(), &optionCBData);
+		_prevOptionCBData = optionCBData;
 	}
 }
