@@ -26,7 +26,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 	float4 posWorld = mul(float4(input.position, 1.0f), transform_world);
 	ps.positionWorld = posWorld.xyz;
 
-	ps.position = mul(posWorld, camera_viewProj);
+	ps.position = mul(posWorld, cameraCommon_viewProj);
 
 	ps.uv = input.uv;
 
@@ -62,7 +62,7 @@ PS_POSITION_ONLY_INPUT DepthOnlyVS(VS_INPUT input)
 	PS_POSITION_ONLY_INPUT ps;
 
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position			= mul(posWorld,						camera_viewProj);
+	ps.position			= mul(posWorld,						cameraCommon_viewProj);
 
 	return ps;
 }

@@ -42,7 +42,7 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	//_clearFlag = ClearFlag::FlagSolidColor;
 
 	_camConstBuffer = new ConstBuffer;
-	_camConstBuffer->Initialize(sizeof(CamConstBufferData));
+	_camConstBuffer->Initialize(sizeof(CommonCBData));
 }
 
 void CameraForm::Destroy()
@@ -132,7 +132,7 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
-	CamConstBufferData cbData;
+	CommonCBData cbData;
 	{
 		Matrix& viewMat = cbData.viewMat;
 		GetViewMatrix(cbData.viewMat);
@@ -142,7 +142,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool updatedVP = memcmp(&_prevCamConstBufferData, &cbData, sizeof(CamConstBufferData)) != 0;
+	bool updatedVP = memcmp(&_prevCamConstBufferData, &cbData, sizeof(CommonCBData)) != 0;
 	if(updatedVP)
 	{
 		// Make Frustum

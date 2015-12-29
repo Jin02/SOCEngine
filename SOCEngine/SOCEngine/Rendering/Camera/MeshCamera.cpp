@@ -100,7 +100,7 @@ void MeshCamera::OnDestroy()
 
 void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	CamConstBufferData camConstBufferData;
+	CommonCBData camConstBufferData;
 
 	Matrix	worldMat;
 	Matrix& viewMat = camConstBufferData.viewMat;
@@ -113,7 +113,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		GetProjectionMatrix(projMat, true);
 		viewProjMat = viewMat * projMat;
 
-		bool updatedVP = memcmp(&_prevCamConstBufferData, &camConstBufferData, sizeof(CamConstBufferData)) != 0;
+		bool updatedVP = memcmp(&_prevCamConstBufferData, &camConstBufferData, sizeof(CommonCBData)) != 0;
 		if(updatedVP)
 		{
 			// Make Frustum
