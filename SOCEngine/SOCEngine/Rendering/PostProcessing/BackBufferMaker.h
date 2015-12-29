@@ -9,7 +9,7 @@ namespace Rendering
 		class BackBufferMaker : public FullScreen
 		{
 		public:
-			enum class InputTextureShaderIndex : uint
+			enum class TextureBindIndex : uint
 			{
 				RenderScene	= 0,
 				UIScene		= 1

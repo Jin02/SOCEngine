@@ -850,18 +850,18 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 
 					if(iter->type == Material::Texture::Type::Diffuse)
 					{
-						const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Diffuse;
+						const uint shaderSlotIndex = (uint)TextureBindIndex::DiffuseTex;
 						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
 					}
 					else if( (iter->type == Material::Texture::Type::Normal) )
 					{
-						const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Normal;
+						const uint shaderSlotIndex = (uint)TextureBindIndex::NormalTex;
 						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
 						outNormalMapMaterialKeys.insert(materialName);
 					}
 					else if(iter->type == Material::Texture::Type::Specular)
 					{
-						const uint shaderSlotIndex = (uint)PhysicallyBasedMaterial::InputTextureShaderIndex::Specular;
+						const uint shaderSlotIndex = (uint)TextureBindIndex::SpecularTex;
 						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
 					}
 					else
