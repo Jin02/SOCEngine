@@ -9,22 +9,14 @@
 #define USE_VOXELIZATION_BLOATING_POS
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
-cbuffer Voxelization_ViewProjAxis_CB : register( b5 )
+cbuffer Voxelization_Info_CB : register( b5 )
 {
 	matrix	voxelization_vp_axisX;
 	matrix	voxelization_vp_axisY;
 	matrix	voxelization_vp_axisZ;
-};
 
-cbuffer Voxelization_Info_CB : register( b6 )
-{
-	float	voxelization_voxelizeSize;
-	float	voxelization_dimension;
 	float3	voxelization_minPos;
-
-	float	voxelization_voxelSize;
 	uint	voxelization_currentCascade;
-	float	voxelization_dummy;
 };
 
 SamplerState defaultSampler			: register( s0 );

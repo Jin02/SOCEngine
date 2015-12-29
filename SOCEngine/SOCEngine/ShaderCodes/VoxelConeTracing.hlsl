@@ -4,7 +4,7 @@
 #include "Voxelization_Common.h"
 #include "AlphaBlending.h"
 
-cbuffer GIInfoCB : register( b7 )
+cbuffer GIInfoCB : register( b6 )
 {
 	uint	gi_maxCascade;
 	uint	gi_voxelDimension;

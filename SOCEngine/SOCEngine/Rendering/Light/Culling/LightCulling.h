@@ -9,7 +9,7 @@
 #include "Lightform.h"
 #include "LightManager.h"
 
-#include "TBRShaderIndexSlotInfo.h"
+#include "BindIndexInfo.h"
 #include "GlobalDefine.h"
 
 namespace Rendering

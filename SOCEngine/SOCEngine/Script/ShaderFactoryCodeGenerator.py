@@ -129,6 +129,7 @@ for (path, dirs, files) in os.walk(targetDir):
         component = {"fileName" : fileName, "fullPath" : path + "/" + fileName + ".hlsl"}
         fullPaths.append(component)
 
+        print "Conveeeerting : " + fileName
         jsonData = readJson(fileFullPath)
         if len(jsonData) == 0:
         	code += nextLine(2) + tap(4) + "if(shaderName == \"" + fileName + "\")" + nextLine(1)

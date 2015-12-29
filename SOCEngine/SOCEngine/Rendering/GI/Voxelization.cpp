@@ -1,4 +1,4 @@
-#include "TBRShaderIndexSlotInfo.h"
+#include "BindIndexInfo.h"
 #include "Voxelization.h"
 #include "Object.h"
 #include "ResourceManager.h"
@@ -197,7 +197,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	context->RSSetViewports(1, &viewport);
 
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
 
 	D3D11_VIEWPORT originViewport;
 	{
@@ -290,7 +290,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
 
 	ID3D11SamplerState* nullSampler = nullptr;
-	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
 	context->RSSetState(originRSState);
 	context->RSSetViewports(1, &originViewport);
 	context->OMSetDepthStencilState(originDepthState, originDepthStateRef);

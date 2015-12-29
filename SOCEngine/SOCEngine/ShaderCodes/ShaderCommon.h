@@ -110,11 +110,13 @@ cbuffer Transform : register( b1 )		//Object World
 	matrix transform_world;
 };
 
-cbuffer Camera : register( b2 )		//Camera
+cbuffer CameraCommon : register( b2 )
 {
-	matrix camera_view;
-	matrix camera_viewProj;
+	matrix	cameraCommon_view;
+	matrix	cameraCommon_viewProj;
 };
+
+// b3은 Material
 
 cbuffer ShadowGlobalParam : register( b4 )
 {	
@@ -127,6 +129,16 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint3	shadowGlobalParam_dummy;
 };
 
+// b5, b6, b7 은 GI 관련
+
+cbuffer CameraOption : register( b8 )
+{
+	float cameraOption_nearZ;
+	float cameraOption_farZ;
+	float cameraOption_fov;
+
+	float cameraOption_dummy;
+};
 
 uint GetNumOfPointLight(uint packedNumOfLights)
 {
