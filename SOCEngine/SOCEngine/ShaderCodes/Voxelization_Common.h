@@ -5,6 +5,7 @@
 
 #include "DynamicLightingCommon.h"
 #include "PhysicallyBased_Common.h"
+#include "GICommon.h"
 
 #define USE_VOXELIZATION_BLOATING_POS
 #define VOXELIZATION_BLOATING_RATIO 5.0f
@@ -17,6 +18,9 @@ cbuffer Voxelization_Info_CB : register( b5 )
 
 	float3	voxelization_minPos;
 	uint	voxelization_currentCascade;
+
+	float3	voxelization_voxelizeSize;
+	float	voxelization_voxelSize;
 };
 
 SamplerState defaultSampler			: register( s0 );
@@ -27,12 +31,6 @@ RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
 RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
 #endif
 
-int3 GetVoxelIndex(float3 worldPos)
-{
-	return int3( (worldPos - voxelization_minPos) / voxelization_voxelSize );
-}
-
-//if isEmission is not, input value to emission
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
 {
 	uint newValue = Float4ToUint(value);
