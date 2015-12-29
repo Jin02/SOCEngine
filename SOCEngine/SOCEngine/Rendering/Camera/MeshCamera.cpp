@@ -128,7 +128,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			Matrix::Transpose(camConstBufferData.viewMat,		camConstBufferData.viewMat);
 			Matrix::Transpose(camConstBufferData.viewProjMat,	viewProjMat);
 
-			_camConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
+			_commonConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
 		}
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
@@ -180,7 +180,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 void MeshCamera::RenderMeshWithoutIASetVB(
 	const Device::DirectX* dx, const RenderManager* renderManager,
 	const Geometry::Mesh* mesh, RenderType renderType, 
-	const ConstBuffer* cameraConstBuffer,
+	const ConstBuffer* cameraCommonCB,
 	const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -238,10 +238,10 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 			}
 
 			// Camera
-			if(cameraConstBuffer)
+			if(cameraCommonCB)
 			{
 				uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferBindSlotIndex::Camera;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, cameraConstBuffer, true, false, false, false);
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, cameraCommonCB, true, false, false, false);
 				constBuffers.push_back(buf);
 			}
 		}
@@ -279,7 +279,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
-	const Buffer::ConstBuffer* cameraConstBuffer,
+	const Buffer::ConstBuffer* cameraCommonCB,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
 	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
@@ -317,7 +317,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraCommonCB, additionalConstBuffers);
 				}
 			}
 		}
@@ -327,7 +327,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
-	RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+	RenderType renderType, const Buffer::ConstBuffer* cameraCommonCB,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
 	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
@@ -358,7 +358,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraCommonCB, additionalConstBuffers);
 			}
 		}
 	}
@@ -439,7 +439,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			uint count = meshes.meshes.GetVector().size();
 
 			if(count > 0)
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _commonConstBuffer);
 		}
 
 		//Alpha Test Mesh
@@ -456,7 +456,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _commonConstBuffer);
 
 				context->RSSetState( nullptr );
 
@@ -474,7 +474,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_DepthOnly, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_DepthOnly, _commonConstBuffer);
 		}
 	}
 
@@ -554,7 +554,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);
 			context->PSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);
 
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _commonConstBuffer);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);

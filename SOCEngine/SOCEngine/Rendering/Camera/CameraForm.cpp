@@ -13,7 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camConstBuffer(nullptr), _usage(usage)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _commonConstBuffer(nullptr), _usage(usage)
 {
 }
 
@@ -41,15 +41,15 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 
-	_camConstBuffer = new ConstBuffer;
-	_camConstBuffer->Initialize(sizeof(CommonCBData));
+	_commonConstBuffer = new ConstBuffer;
+	_commonConstBuffer->Initialize(sizeof(CommonCBData));
 }
 
 void CameraForm::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
-	SAFE_DELETE(_camConstBuffer);
+	SAFE_DELETE(_commonConstBuffer);
 }
 
 void CameraForm::CalcAspect()
@@ -157,7 +157,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
 
-		_camConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
+		_commonConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)

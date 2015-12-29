@@ -22,6 +22,14 @@ namespace Rendering
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
 			};
+			struct OptionCBData
+			{
+				float nearZ;
+				float farZ;
+				float fov;
+
+				float dummy;
+			};
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -52,8 +60,8 @@ namespace Rendering
 			float							_aspect;
 			Color							_clearColor;
 
-			Buffer::ConstBuffer*			_camConstBuffer;
-			CommonCBData				_prevCamConstBufferData;
+			Buffer::ConstBuffer*			_commonConstBuffer;
+			CommonCBData					_prevCamConstBufferData;
 
 		public:
 			CameraForm(Usage usage);
