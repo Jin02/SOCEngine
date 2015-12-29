@@ -48,11 +48,11 @@ void RenderTexture::Destroy()
 	SAFE_RELEASE(_texture);
 	SAFE_RELEASE(_renderTargetView);
 }
-
-void RenderTexture::SetRenderTarget(ID3D11DeviceContext* context, const DepthBuffer* depthBuffer)
-{
-	context->OMSetRenderTargets(1, &_renderTargetView, depthBuffer->GetDepthStencilView());
-}
+//
+//void RenderTexture::SetRenderTarget(ID3D11DeviceContext* context, const DepthBuffer* depthBuffer)
+//{
+//	context->OMSetRenderTargets(1, &_renderTargetView, depthBuffer->GetDepthStencilView());
+//}
 
 void RenderTexture::Clear(ID3D11DeviceContext* context, const Rendering::Color& color)
 {
