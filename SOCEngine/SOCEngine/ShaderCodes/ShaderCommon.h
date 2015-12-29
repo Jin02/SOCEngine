@@ -114,10 +114,6 @@ cbuffer Camera : register( b2 )		//Camera
 {
 	matrix	camera_view;
 	matrix	camera_viewProj;
-	float	camera_nearZ;
-	float	camera_farZ;
-//	float	camera_fov;
-	float2	camera_dummy;
 };
 
 cbuffer ShadowGlobalParam : register( b4 )

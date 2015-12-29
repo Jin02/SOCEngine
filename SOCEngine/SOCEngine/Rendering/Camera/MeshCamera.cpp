@@ -131,14 +131,6 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			_camConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
 		}
 
-		// Update near far and dummy
-		{
-			camConstBufferData.nearZ	= _clippingNear;
-			camConstBufferData.farZ		= _clippingFar;
-
-			memset(&camConstBufferData.dummy, 0, sizeof(camConstBufferData.dummy));
-		}
-
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 			(*iter)->Culling(_frustum);
 	}
