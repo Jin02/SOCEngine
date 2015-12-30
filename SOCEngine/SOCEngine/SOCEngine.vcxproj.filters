@@ -355,6 +355,9 @@
     <Filter Include="Rendering\GI\Voxelization\VoxelMap">
       <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\Mesh\Forward\Optional">
+      <UniqueIdentifier>{564367f1-bf44-44c4-9bbd-7e172dc0c697}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -814,6 +817,9 @@
     <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h">
       <Filter>Rendering\GI</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1180,6 +1186,15 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyDepth_Forward.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MomentDepth_Forward.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

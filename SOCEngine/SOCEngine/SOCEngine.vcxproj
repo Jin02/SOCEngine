@@ -169,6 +169,7 @@
     <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h" />
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h" />
     <ClInclude Include="ShaderCodes\MonteCarlo.h" />
+    <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -212,6 +213,15 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
+    <FxCompile Include="ShaderCodes\MomentDepth_Forward.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyDepth_Forward.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
