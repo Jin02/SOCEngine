@@ -247,7 +247,7 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 float ComputeRoughnessLOD(float roughness, uint mipCount)
 {
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
-	float mip = (float)mipCount - 1 - LevelFrom1x1;
+	float mip = (float)mipCount - 1 - levelFrom1x1;
 
 	return (mip < 0) ? 0 : mip;
 }
