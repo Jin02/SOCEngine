@@ -316,12 +316,6 @@
     <Filter Include="ShaderCodes\GI\Voxelization">
       <UniqueIdentifier>{760adfc1-f8db-4f1e-9bb7-8bc52b68c99d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\GI\Voxel">
-      <UniqueIdentifier>{549cee6d-9f90-49f7-b2b6-b251a5f894b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Voxel\VoxelMap">
-      <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\View">
       <UniqueIdentifier>{ba3e0d02-2ba3-47b2-9cda-88bfcf2971da}</UniqueIdentifier>
     </Filter>
@@ -354,6 +348,12 @@
     </Filter>
     <Filter Include="ShaderCodes\GI\VoxelConeTracing">
       <UniqueIdentifier>{6ed013a4-960b-4c44-81f3-b8eeae387843}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxelization">
+      <UniqueIdentifier>{549cee6d-9f90-49f7-b2b6-b251a5f894b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxelization\VoxelMap">
+      <UniqueIdentifier>{4cd1dcb1-a913-4b3e-b882-24c10aa846ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -769,10 +769,10 @@
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\Voxelization.h">
-      <Filter>Rendering\GI\Voxel</Filter>
+      <Filter>Rendering\GI\Voxelization</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
-      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\View\UnorderedAccessView.h">
       <Filter>Rendering\View</Filter>
@@ -807,6 +807,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shading\BindIndexInfo.h">
       <Filter>Rendering\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\GICommon.h">
+      <Filter>ShaderCodes\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h">
+      <Filter>Rendering\GI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1102,10 +1108,10 @@
       <Filter>Rendering\Texture\3D</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\Voxelization.cpp">
-      <Filter>Rendering\GI\Voxel</Filter>
+      <Filter>Rendering\GI\Voxelization</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
-      <Filter>Rendering\GI\Voxel\VoxelMap</Filter>
+      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp">
       <Filter>Rendering\View</Filter>
@@ -1172,7 +1178,7 @@
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <Filter>ShaderCodes\Light</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_TEMP.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>

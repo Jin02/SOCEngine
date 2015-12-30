@@ -86,6 +86,7 @@
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h" />
+    <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h" />
     <ClInclude Include="Rendering\GI\Voxelization.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
@@ -145,7 +146,7 @@
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -155,6 +156,7 @@
     </FxCompile>
     <ClInclude Include="ShaderCodes\DynamicLightingCommon.h" />
     <ClInclude Include="ShaderCodes\GBufferCommon.h" />
+    <ClInclude Include="ShaderCodes\GICommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -188,7 +190,7 @@
     <ClInclude Include="ShaderCodes\FullScreenShader.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
@@ -248,12 +250,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0_TEMP.hlsl">
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
