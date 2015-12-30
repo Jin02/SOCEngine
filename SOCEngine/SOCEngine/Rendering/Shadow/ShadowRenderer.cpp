@@ -217,7 +217,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 	auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
 	const SpotLight* light = reinterpret_cast<const SpotLight*>(shadowCastingLight.lightAddress);
 
-	CameraForm::CommonCBData cbData;
+	CameraForm::CamMatCBData cbData;
 	{
 		cbData.viewMat		= light->GetViewMatrix();
 		cbData.viewProjMat	= light->GetViewProjectionMatrix();
@@ -257,7 +257,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 
 		for(uint i=0; i<6; ++i)
 		{
-			CameraForm::CommonCBData cb;
+			CameraForm::CamMatCBData cb;
 			{
 				cb.viewMat		= viewMatrices[i];
 				cb.viewProjMat	= viewProjMatrices[i];
@@ -279,7 +279,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
 	DirectionalLight* light = reinterpret_cast<DirectionalLight*>(shadowCastingLight.lightAddress);
 
-	CameraForm::CommonCBData cbData;
+	CameraForm::CamMatCBData cbData;
 	{
 		cbData.viewMat = light->GetViewMatrix();
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
@@ -511,7 +511,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 		for(uint i=0; i<6; ++i)
 		{
 			scl.camConstBuffers[i] = new ConstBuffer;
-			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CommonCBData));
+			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CamMatCBData));
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
@@ -529,7 +529,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 		ShadowCastingSpotDirectionalLight scl;
 		scl.lightAddress	= lightAddress;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CommonCBData));
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamMatCBData));
 
 		shadowCastingLights->Add(lightAddress, scl);
 
