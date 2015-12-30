@@ -1,4 +1,4 @@
-//NOT_CREATE_META_DATA
+//USED_FOR_INCLUDE
 
 struct PS_POSITION_ONLY_INPUT //used in writing depth buffer
 {

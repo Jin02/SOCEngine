@@ -1,4 +1,4 @@
-//NOT_CREATE_META_DATA
+//USED_FOR_INCLUDE
 
 float4 OnlyAlpaTestWithDiffusePS( PS_SCENE_INPUT input ) : SV_TARGET
 { 
