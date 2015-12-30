@@ -1,7 +1,7 @@
 //EMPTY_META_DATA
 
 #include "LightCullingCompareAtomicCS.h"
-#include "DynamicLightingCommon.h"
+#include "DynamicLighting.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 

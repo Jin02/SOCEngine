@@ -789,9 +789,6 @@
     <ClInclude Include="ShaderCodes\Injection_Common.h">
       <Filter>ShaderCodes\GI\Injection</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\DynamicLightingCommon.h">
-      <Filter>ShaderCodes\Light</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
@@ -819,6 +816,12 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Shadow.h">
+      <Filter>ShaderCodes\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\DynamicLighting.h">
+      <Filter>ShaderCodes\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1187,13 +1190,13 @@
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\OnlyDepth_Forward.hlsl">
-      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\MomentDepth_Forward.hlsl">
-      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
+      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </FxCompile>
   </ItemGroup>

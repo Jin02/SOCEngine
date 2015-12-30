@@ -3,7 +3,7 @@
 #ifndef __SOC_INJECTION_COMMON_H__
 #define __SOC_INJECTION_COMMON_H__
 
-#include "DynamicLightingCommon.h"
+#include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
 #include "Voxelization_Common.h"
 
