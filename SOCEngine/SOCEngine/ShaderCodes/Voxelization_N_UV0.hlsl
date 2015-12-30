@@ -107,7 +107,7 @@ void PS( GS_OUTPUT input )
 	float alpha			= albedo.a * opacityMap * ParseMaterialAlpha();
 
 	float3 normal		= normalize(input.normal);
-	int dimension		= int(gi_voxelDimension);
+	int dimension		= int(GetDimension());
 	
 	int3 voxelIdx		= int3( (input.worldPos - voxelization_minPos) / voxelization_voxelSize );
 
