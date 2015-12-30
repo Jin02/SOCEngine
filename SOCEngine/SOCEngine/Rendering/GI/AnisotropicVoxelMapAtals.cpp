@@ -45,21 +45,3 @@ void AnisotropicVoxelMapAtlas::Initialize(
 		_mipmapUAVs.push_back(uav);
 	}
 }
-
-//void AnisotropicVoxelMapAtlas::BindUAVToPixelShader(const Device::DirectX* dx, uint mipLevel, uint bindIndex)
-//{
-//	ID3D11DeviceContext* context	= dx->GetContext();
-//	const uint initCounts[1]		= {0xFFFFFFFFu};
-//	ID3D11UnorderedAccessView* view	= (mipLevel == 0) ? _uav->GetView() : _mipmapUAVs[mipLevel - 1]->GetView();
-//
-//	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, bindIndex, 1, &view, initCounts);
-//}
-//
-//void AnisotropicVoxelMapAtlas::UnbindUAVToPixelShader(const Device::DirectX* dx, uint bindIndex)
-//{
-//	ID3D11DeviceContext* context = dx->GetContext();
-//	const uint initCounts[1] = {0xFFFFFFFFu};
-//	ID3D11UnorderedAccessView* view = nullptr;
-//
-//	context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, bindIndex, 1, &view, initCounts);
-//}
