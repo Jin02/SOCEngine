@@ -5,12 +5,13 @@
 
 cbuffer GIInfoCB : register( b6 )
 {
-	uint	gi_maxCascade;
-	uint	gi_voxelDimension;
-	float	gi_initVoxelSize;
+	// High 16 bit is cascade
+	// Low bits is voxel dimension
+	uint	gi_maxCascadeWithVoxelDimensionPowOf2;
 
-	float3	gi_initWorldMinPos;
+	float	gi_initVoxelSize;
 	float	gi_initWorldSize;
+	float	gi_maxMipLevel;
 }
 
 uint ComputeCascade(float3 worldPos)
@@ -41,10 +42,17 @@ void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cas
 	outBBMax = outBBMin + worldSize.xxx;
 }
 
+float GetDimension()
+{
+	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
+}
+
 float ComputeVoxelSize(uint cascade)
 {
 	float worldSize = GetVoxelizeSize(cascade);
-	return worldSize / (float)gi_voxelDimension;
+	float dimension = GetDimension();
+
+	return worldSize / dimension;
 }
 
 #endif
