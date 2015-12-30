@@ -28,6 +28,7 @@ float2 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 	float dx = ddx(depth);
 	float dy = ddy(depth);
 
+	// Adjusting moments (this is sort of bias per pixel) using partial derivative
 	moment.y += 0.25f * (dx * dx + dy * dy);
 
 	return moment;
