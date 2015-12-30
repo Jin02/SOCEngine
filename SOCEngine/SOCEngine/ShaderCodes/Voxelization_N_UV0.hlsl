@@ -48,10 +48,10 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 	float3 normal1 = input[1].normal;
 	float3 normal2 = input[2].normal;
 
-	float3 faceNormal = normalize( cross( (worldPos0 - worldPos1), (worldPos0 - worldPos2) ) );
-	float3 vertexNormal = normalize(normal0 + normal1 + normal2);
+	float3 faceNormal	= normalize( cross( (worldPos0 - worldPos1), (worldPos0 - worldPos2) ) );
+	float3 vertexNormal	= normalize(normal0 + normal1 + normal2);
 
-	faceNormal = lerp(faceNormal, -faceNormal, dot(faceNormal, vertexNormal) < 0.0f);
+	faceNormal = (dot(faceNormal, vertexNormal) < 0.0f) ? faceNormal : -faceNormal;
 
 	float3 axis; //주축 선정
 	axis.x = abs( dot(float3(1, 0, 0), faceNormal) );
@@ -107,11 +107,11 @@ void PS( GS_OUTPUT input )
 	float alpha			= albedo.a * opacityMap * ParseMaterialAlpha();
 
 	float3 normal		= normalize(input.normal);
+	int dimension		= int(GetDimension());
 	
-	float3 voxelCoord	= (input.worldPos - voxelization_minPos) / voxelization_voxelizeSize;
-	int3 voxelIdx		= int3(voxelCoord * voxelization_dimension);
+	int3 voxelIdx		= int3( (input.worldPos - voxelization_minPos) / voxelization_voxelSize );
 
-	if( any(voxelIdx < 0) || any(voxelization_dimension < voxelIdx) )
+	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		discard;
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
@@ -124,17 +124,23 @@ void PS( GS_OUTPUT input )
 		-normal.z
 	};
 
-	if(all(0 <= voxelIdx) && all(voxelIdx < voxelization_dimension))
+	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
-		voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
+		voxelIdx.y += voxelization_currentCascade * dimension;
 
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += (faceIndex * voxelization_dimension);
+			voxelIdx.x += (faceIndex * dimension);
+			
+			float storeRatio = max(anisotropicNormals[faceIndex], 0.0f);
 
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture, voxelIdx, float4(albedo.xyz * max(anisotropicNormals[faceIndex], 0.0f), alpha));
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture, voxelIdx, float4(material_emissionColor.xyz * max(anisotropicNormals[faceIndex], 0.0f), 1.0f));
-			StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelNormalTexture, voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
+			float3 outAlbedo = albedo.xyz * storeRatio;
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture,			voxelIdx, float4(outAlbedo, alpha));
+
+			float3 outEmission = material_emissionColor.xyz * storeRatio;
+			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture,			voxelIdx, float4(outEmission, 1.0f));
+
+			StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 		}
 	}
 #else

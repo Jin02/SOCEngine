@@ -13,7 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _commonConstBuffer(nullptr), _usage(usage), _optionConstBuffer(nullptr)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage), _optionConstBuffer(nullptr)
 {
 }
 
@@ -41,8 +41,8 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 
-	_commonConstBuffer = new ConstBuffer;
-	_commonConstBuffer->Initialize(sizeof(CommonCBData));
+	_camMatConstBuffer = new ConstBuffer;
+	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
 
 	_optionConstBuffer = new ConstBuffer;
 	_optionConstBuffer->Initialize(sizeof(OptionCBData));
@@ -52,7 +52,7 @@ void CameraForm::Destroy()
 {
 	SAFE_DELETE(_frustum);
 	SAFE_DELETE(_renderTarget);
-	SAFE_DELETE(_commonConstBuffer);
+	SAFE_DELETE(_camMatConstBuffer);
 }
 
 void CameraForm::CalcAspect()
@@ -135,7 +135,7 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
-	CommonCBData cbData;
+	CamMatCBData cbData;
 	{
 		Matrix& viewMat = cbData.viewMat;
 		GetViewMatrix(cbData.viewMat);
@@ -145,7 +145,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool updatedVP = memcmp(&_prevCommonCBData, &cbData, sizeof(CommonCBData)) != 0;
+	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CamMatCBData)) != 0;
 	if(updatedVP)
 	{
 		// Make Frustum
@@ -155,12 +155,12 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			_frustum->Make(cbData.viewMat * notInvProj);
 		}
 
-		_prevCommonCBData = cbData;
+		_prevCamMatCBData = cbData;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
 
-		_commonConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
+		_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
 	}
 
 	UpdateOptionCBData(dx);

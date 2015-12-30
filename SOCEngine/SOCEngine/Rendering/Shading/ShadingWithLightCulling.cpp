@@ -173,7 +173,7 @@ void ShadingWithLightCulling::Initialize(
 
 		ComputeShader::Output output;
 		{
-			output.bindIndex	= (uint)OutputBufferShaderIndex::OutScreen;
+			output.bindIndex	= (uint)UAVBindIndex::TBDR_OutScreen;
 			output.output		= _offScreen->GetUnorderedAccessView();
 		}
 
