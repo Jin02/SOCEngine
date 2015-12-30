@@ -211,9 +211,9 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 	{					
 		Material* material = (*iter);
 		const Material::CustomShader& customShader = material->GetCustomShader();
-		PixelShader* ps = shaders.ps;
-		VertexShader* vs = shaders.vs;
-		GeometryShader* gs = shaders.gs;
+		PixelShader* ps		= shaders.ps;
+		VertexShader* vs	= shaders.vs;
+		GeometryShader* gs	= shaders.gs;
 
 		if(customShader.shaderGroup.IsAllEmpty() == false)
 		{

@@ -3,16 +3,7 @@
 #include "GBufferCommon.h"
 #include "Voxelization_Common.h"
 #include "AlphaBlending.h"
-
-cbuffer GIInfoCB : register( b6 )
-{
-	uint	gi_maxCascade;
-	uint	gi_voxelDimension;
-	float	gi_initVoxelSize;
-
-	float3	gi_initWorldMinPos;
-	float	gi_initWorldSize;
-}
+#include "GICommon.h"
 
 Texture3D<float4> g_inputVoxelTexture		: register(t?);
 Texture3D<float4> g_inputDirectColorTexture	: register(t?);
@@ -82,44 +73,10 @@ float4 SampleAnisotropicVoxelTex
 	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 }
 
-uint ComputeCascade(float3 worldPos)
-{
-	//x, y, z 축 중에 가장 큰걸 고름
-	float	dist = max(	abs(worldPos.x - tbrParam_cameraWorldPosition.x),
-						abs(worldPos.y - tbrParam_cameraWorldPosition.y));
-			dist = max(	dist,
-						abs(worldPos.z - tbrParam_cameraWorldPosition.z) );
-
-	float halfWorldSize = gi_initWorldSize / 2.0f;
-
-	return (dist >= halfWorldSize) ? ceil( log2(dist/halfWorldSize) ) : 0;
-}
-
 float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAngleRadian)
 {
 	float mip = log2(currLength / oneVoxelSize * tan(halfConeAngleRadian));
 	return (mip < 0) ? 0 : mip;
-}
-
-float GetVoxelizeSize(uint cascade)
-{
-	return gi_initWorldSize * ( (float)((cascade+1) * (cascade+1)) );
-}
-
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade)
-{
-	float worldSize		= GetVoxelizeSize(cascade);
-	float offset		= (worldSize / (float)(cascade+1)) / 2.0f;
-	float3 worldMinPos	= tbrParam_cameraWorldPos - offset.xxx;
-
-	outBBMin = worldMinPos * float(cascade + 1).xxx;
-	outBBMax = outBBMin + worldSize.xxx;
-}
-
-float ComputeVoxelSize(uint cascade)
-{
-	float worldSize = GetVoxelizeSize(cascade);
-	return worldSize / (float)gi_voxelDimension;
 }
 
 float3 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float halfConeAngle, uniform float minMipLevel)
