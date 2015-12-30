@@ -10,10 +10,6 @@ namespace Rendering
 		class ShadingWithLightCulling : public Light::LightCulling
 		{
 		public:
-			enum class OutputBufferShaderIndex : unsigned int
-			{
-				OutScreen = 0
-			};
 			struct GBuffers
 			{
 				const Texture::RenderTexture* albedo_emission;

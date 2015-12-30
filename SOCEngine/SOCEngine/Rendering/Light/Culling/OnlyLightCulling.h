@@ -10,12 +10,6 @@ namespace Rendering
 	{
 		class OnlyLightCulling : public LightCulling
 		{
-		public:
-			enum class OutputBufferShaderIndex : unsigned int
-			{
-				LightIndexBuffer = 0
-			};
-
 		private:
 			Buffer::ShaderResourceBuffer*	_shaderResourceBuffer;
 			View::UnorderedAccessView*		_uav;

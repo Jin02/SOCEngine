@@ -57,4 +57,15 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 	};
+
+	enum class UAVBindIndex : unsigned int
+	{
+		TBDR_OutScreen					= 0,
+		
+		Lightculling_LightIndexBuffer	= 0,
+
+		VoxelMap_Albedo					= 0,
+		VoxelMap_Normal					= 1,
+		VoxelMap_Emission				= 2,
+	};
 }
