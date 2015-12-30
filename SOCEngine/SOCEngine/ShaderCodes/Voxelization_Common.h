@@ -19,8 +19,9 @@ cbuffer Voxelization_Info_CB : register( b5 )
 	float3	voxelization_minPos;
 	uint	voxelization_currentCascade;
 
-	float3	voxelization_voxelizeSize;
+	float	voxelization_voxelizeSize;
 	float	voxelization_voxelSize;
+	float2	voxelization_dummy;
 };
 
 SamplerState defaultSampler			: register( s0 );
