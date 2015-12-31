@@ -13,6 +13,8 @@
 #include "MeshCamera.h"
 #include "BoundBox.h"
 
+#include "RenderTypes.h"
+
 namespace Core
 {
 	class Scene;
