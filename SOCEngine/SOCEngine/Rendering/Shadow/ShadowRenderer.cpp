@@ -117,7 +117,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_pointLightMomentShadowMapAtlas = new RenderTexture;
-			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 
@@ -136,7 +136,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_spotLightMomentShadowMapAtlas = new RenderTexture;
-			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 
@@ -155,7 +155,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_directionalLightMomentShadowMapAtlas = new RenderTexture;
-			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 }
@@ -347,7 +347,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
-			MeshCamera::RenderType::Forward_DepthOnly,
+			RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
 
 
@@ -355,7 +355,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::Forward_AlphaTest,
+			RenderType::Forward_AlphaTestWithDiffuse,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( nullptr );
@@ -417,13 +417,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
-				MeshCamera::RenderType::Forward_DepthOnly,
+				RenderType::Forward_DepthOnly,
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
-				MeshCamera::RenderType::Forward_AlphaTest,
+				RenderType::Forward_AlphaTestWithDiffuse,
 				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
@@ -482,13 +482,13 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
-			MeshCamera::RenderType::Forward_DepthOnly,
+			RenderType::Forward_DepthOnly,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::Forward_AlphaTest,
+			RenderType::Forward_AlphaTestWithDiffuse,
 			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
