@@ -15,8 +15,10 @@ namespace Rendering
 				Opaque,
 				Transparent,
 				AlphaBlend,
+				OnlyAlphaTestWithDiffuse,
+				Voxelization,
 				Unknown,
-				MAX
+				MAX = Unknown
 			};
 
 		private:

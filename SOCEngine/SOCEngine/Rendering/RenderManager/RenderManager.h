@@ -11,7 +11,6 @@
 
 #include "ShaderMacro.h"
 #include <set>
-#include "RenderTypes.h"
 
 namespace Rendering
 {
@@ -48,7 +47,14 @@ namespace Rendering
 			MeshList	_opaqueMeshes;
 			MeshList	_alphaBlendMeshes;
 
-			std::hash_map<uint, std::hash_map<uint, const Shader::ShaderGroup>> _renderShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_gbufferShaders_alphaTest;
+
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_transparentShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_depthOnlyShaders;
+			std::hash_map<uint, const Shader::ShaderGroup>	_forward_onlyAlphaTestWithDiffuseShaders;
+
+			std::hash_map<uint, const Shader::ShaderGroup>	_voxelizationShaders;
 
 		public:
 			RenderManager();
@@ -59,16 +65,24 @@ namespace Rendering
 
 		public:
 			void Initialize();
-			Shader::ShaderGroup LoadDefaultSahder(RenderType renderType, uint defaultVertexInputTypeFlag,
+			Shader::ShaderGroup LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
 			void UpdateRenderList(const Geometry::Mesh* mesh);
 			bool HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type);
 
-			bool FindShader(Shader::ShaderGroup& out, uint bufferFlag, RenderType renderType) const;
-			bool HasShader(uint bufferFlag, RenderType renderType) const;
+			bool FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const;
+			bool FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const;
+			bool FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const;
 
-			void MakeDefaultSahderFileName(std::string& outFileName, RenderType renderType, uint bufferFlag) const;
+			bool HasGBufferShader(uint bufferFlag, bool isAlphaTest) const;
+			bool HasTransparencyShader(uint bufferFlag) const;
+			bool HasDepthOnlyShader(uint bufferFlag) const;
+			bool HasDepthOnlyShaderOnlyAlphaTestWithDiffuseShader(uint bufferFlag) const;
+
+			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
 		
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);

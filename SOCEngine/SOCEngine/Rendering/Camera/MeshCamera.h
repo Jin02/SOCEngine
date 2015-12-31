@@ -5,7 +5,6 @@
 #include "OnlyLightCulling.h"
 #include "OffScreen.h"
 #include <functional>
-#include "RenderTypes.h"
 
 namespace Rendering
 {
@@ -16,6 +15,15 @@ namespace Rendering
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
 			static const uint NumOfRenderTargets = 3;
+			enum class RenderType
+			{
+				GBuffer_AlphaBlend,
+				Forward_AlphaTest,
+				GBuffer_Opaque,
+				Forward_Transparency,
+				Forward_DepthOnly,
+				Voxelization
+			};
 
 		private:
 			bool _useTransparent;
