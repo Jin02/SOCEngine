@@ -196,7 +196,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag());
 	else if(renderType == RenderType::Forward_DepthOnly)
 		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Forward_AlphaTest)
+	else if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
 		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
 	else if(renderType == RenderType::Voxelization)
 		renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
