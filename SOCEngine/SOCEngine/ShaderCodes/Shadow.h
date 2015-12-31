@@ -1,3 +1,5 @@
+//EMPTY_META_DATA
+
 #ifndef __SOC_SHADOW_H__
 #define __SOC_SHADOW_H__
 
@@ -6,21 +8,8 @@
 #define SHADOW_KERNEL_LEVEL		4
 #define SHADOW_KERNEL_WIDTH		2 * SHADOW_KERNEL_LEVEL + 1
 
-float ChebyshevUpperBound(float2 moments, float t)
-{
-	float p = (t <= moments.x);
-
-	float variance = moments.y - (moments.x * moments.x);
-	variance = max(variance, 0.00002f);
-
-	// d가 0이하로 들어가면 노이즈가 생김
-	float d = max(t - moments.x, 0.0f);
-	float pMax = variance / (variance + d * d);
-
-	return max(p, pMax);
-}
-
 SamplerComparisonState shadowSamplerCmpState	:	register( s2 );
+SamplerState shadowSamplerState					:	register( s3 );
 
 float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 {
@@ -36,6 +25,41 @@ float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
 	return shadow;
 }
+
+float ChebyshevUpperBound(float2 moments, float t)
+{
+	float p = (t <= moments.x);
+
+	float variance = moments.y - (moments.x * moments.x);
+	variance = max(variance, 0.00002f);
+
+	// d가 0이하로 들어가면 노이즈가 생김
+	float d = max(t - moments.x, 0.0f);
+	float pMax = variance / (variance + d * d);
+
+	return max(p, pMax);
+}
+
+//float VarianceShadow(
+//	Texture2D<float> shadowMapAtlas,
+//	Texture2D<float> momentShadowMapAtlas,
+//	float2 uv, float depth)
+//{
+//	float shadow = 0.0f;
+//	for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
+//	{
+//		for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
+//		{
+//			float mx = shadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+//			float my = momentShadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+//
+//			shadow += ChebyshevUpperBound(float2(mx, my), depth);
+//		}
+//	}
+//
+//	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
+//	return shadow;
+//}
 
 float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
@@ -59,7 +83,11 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 		-
 #endif
 		bias;
+#if defined(USE_VSM)
+	float shadow = saturate( VarianceShadow(g_inputSpotLightShadowMapAtlas, g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
+#else
 	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
+#endif
 
 	float3 shadowColor = g_inputSpotLightShadowColors[lightIndex].rgb;
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
@@ -90,8 +118,11 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 		-
 #endif
 		bias;
+#if defined(USE_VSM)
+	float shadow = saturate( VarianceShadow(g_inputDirectionalLightShadowMapAtlas, g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
+#else
 	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
-
+#endif
 	float3 shadowColor = g_inputDirectionalLightShadowColors[lightIndex].rgb;
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
@@ -149,7 +180,11 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 #endif
 		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
+#if defined(USE_VSM)
+	float shadow = saturate( VarianceShadow(g_inputPointLightShadowMapAtlas, g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
+#else
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
+#endif
 
 	float3 shadowColor = g_inputPointLightShadowColors[lightIndex].rgb;
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);

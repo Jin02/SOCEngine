@@ -76,6 +76,10 @@ Buffer<uint> g_inputPointLightShadowIndexToLightIndex				: register( t23 );
 Buffer<uint> g_inputSpotLightShadowIndexToLightIndex				: register( t24 );
 Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex			: register( t25 );
 
+Texture2D<float>	g_inputPointLightMomentShadowMapAtlas			: register( t26 );
+Texture2D<float>	g_inputSpotLightMomentShadowMapAtlas			: register( t27 );
+Texture2D<float>	g_inputDirectionalLightMomentShadowMapAtlas		: register( t28 );
+
 struct LightingParams
 {
 	uint	lightIndex;
