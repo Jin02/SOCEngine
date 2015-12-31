@@ -106,6 +106,7 @@
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
+    <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\HullShader.h" />

@@ -823,6 +823,9 @@
     <ClInclude Include="ShaderCodes\DynamicLighting.h">
       <Filter>ShaderCodes\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\RenderManager\RenderTypes.h">
+      <Filter>Rendering\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
