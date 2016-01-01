@@ -35,7 +35,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 
 	repo = &(_renderShaders[(uint)renderType]);
 
-	if(renderType == RenderType::GBuffer_AlphaBlend)
+	if(renderType == RenderType::GBuffer_AlphaBlend || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
 	{
 		ShaderMacro alphaTestMacro;
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
@@ -81,7 +81,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 			vsMainFunc = "DepthOnlyVS";
 			psMainFunc = "";
 		}
-		else if(renderType == RenderType::Forward_MomentDepth)
+		else if(renderType == RenderType::Forward_MomentDepth || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
 		{
 			vsMainFunc = "MomentDepthVS";
 			psMainFunc = "MomentDepthPS";
@@ -255,6 +255,7 @@ void RenderManager::MakeDefaultSahderFileName(std::string& outFileName, RenderTy
 	case RenderType::Forward_OnlyDepth:
 	case RenderType::Forward_Transparency:
 	case RenderType::Forward_MomentDepth:
+	case RenderType::Forward_MomentDepthWithAlphaTest:
 		frontFileName = "PhysicallyBased_Forward_";
 		break;
 	case RenderType::GBuffer_AlphaBlend:

@@ -29,6 +29,14 @@ float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 	// Adjusting moments (this is sort of bias per pixel) using partial derivative
 	moment.y += 0.25f * (dx * dx + dy * dy);
 
+#if defined(ENABLE_ALPHA_TEST)
+	float4 diffuseTex = diffuseTexture.Sample(defaultSampler, input.uv);
+	float opacityMap = 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
+	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
+	if(alpha < ALPHA_TEST_BIAS)
+		discard;
+#endif
+
 	// x는 이미 다른곳에서 기록 중
 	return moment.y;
 }
