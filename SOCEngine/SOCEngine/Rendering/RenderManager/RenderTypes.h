@@ -4,12 +4,12 @@ namespace Rendering
 {
 	enum class RenderType
 	{
-		GBuffer_AlphaBlend				= 0,
-		GBuffer_Opaque					= 1,
-		Forward_AlphaTestWithDiffuse	= 2,
-		Forward_Transparency			= 3,
-		Forward_DepthOnly				= 4,
-		Voxelization					= 5,
+		GBuffer_Opaque					= 0,
+		Forward_Transparency			= 1,
+		GBuffer_AlphaBlend				= 2,
+		Forward_AlphaTestWithDiffuse	= 3,
+		Voxelization					= 4,
+		Forward_DepthOnly				= 5,
 		MAX_NUM
 	};
 }

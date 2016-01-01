@@ -33,31 +33,19 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 	if(macros)
 		targetShaderMacros.assign(macros->begin(), macros->end());
 
-	if(meshType == Geometry::MeshRenderer::Type::Opaque)
-		repo = &_gbufferShaders;
-	else if(meshType == Geometry::MeshRenderer::Type::AlphaBlend)
-	{
-		repo = &_gbufferShaders_alphaTest;
+	repo = &(_renderShaders[(uint)meshType]);
 
+	if(meshType == Geometry::MeshRenderer::Type::AlphaBlend)
+	{
 		ShaderMacro alphaTestMacro;
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
+	if(meshType == Geometry::MeshRenderer::Type::Transparent)
 	{
-		repo = &_forward_transparentShaders;
-
 		ShaderMacro useTransparencyMacro;
 		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
 		targetShaderMacros.push_back(useTransparencyMacro);
-	}
-	else if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
-		repo = &_forward_onlyAlphaTestWithDiffuseShaders;
-	else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
-		repo = &_voxelizationShaders;
-	else
-	{
-		ASSERT_MSG("Error, not supported mesh type");
 	}
 
 	auto iter = repo->find(defaultVertexInputTypeFlag);
@@ -97,7 +85,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 			if(meshType == Geometry::MeshRenderer::Type::Transparent)
 			{
 				shader = LoadShader(fileName, "DepthOnlyVS", "", "", &targetShaderMacros, resourceManager->GetShaderManager());
-				_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
+				_renderShaders[5].insert(std::make_pair(defaultVertexInputTypeFlag, shader));
 			}
 		}
 	}
@@ -115,14 +103,15 @@ void RenderManager::Initialize()
 
 	for(uint i=0; i< ((uint)Geometry::MeshRenderer::Type::MAX); ++i)
 	{
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+		auto type = (Geometry::MeshRenderer::Type)i;
+		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
 
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
 
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL | 
 			(uint)DefaultVertexInputTypeFlag::TANGENT, nullptr, &macros);
@@ -223,63 +212,22 @@ bool RenderManager::HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::Me
 	return foundedMesh != nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
-{	
-	return FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
-}
-
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const
+bool RenderManager::FindShader(Shader::ShaderGroup& out, uint bufferFlag, RenderType renderType) const
 {
-	return FindShaderFromHashMap(out, _forward_transparentShaders, bufferFlag);
-}
+	const auto& hashMap = _renderShaders[(uint)renderType];
 
-bool RenderManager::FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _forward_depthOnlyShaders, bufferFlag);
-}
-
-bool RenderManager::FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _forward_onlyAlphaTestWithDiffuseShaders, bufferFlag);
-}
-
-bool RenderManager::FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _voxelizationShaders, bufferFlag);
-}
-
-bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
-{
-	auto iter = hashMap.find(key);
+	auto iter = hashMap.find(bufferFlag);
 	if(iter == hashMap.end())
 		return false;
 
-	outObject = iter->second;
+	out = iter->second;
 	return true;
 }
 
-bool RenderManager::HasGBufferShader(uint bufferFlag, bool isAlphaTest) const
+bool RenderManager::HasShader(uint bufferFlag, RenderType renderType) const
 {
 	ShaderGroup dummy;
-	return FindGBufferShader(dummy, bufferFlag, isAlphaTest);
-}
-
-bool RenderManager::HasTransparencyShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindTransparencyShader(dummy, bufferFlag);
-}
-
-bool RenderManager::HasDepthOnlyShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindDepthOnlyShader(dummy, bufferFlag);
-}
-
-bool RenderManager::HasDepthOnlyShaderOnlyAlphaTestWithDiffuseShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindOnlyAlphaTestWithDiffuseShader(dummy, bufferFlag);
+	return FindShader(dummy, bufferFlag, renderType);
 }
 
 void RenderManager::MakeDefaultSahderFileName(

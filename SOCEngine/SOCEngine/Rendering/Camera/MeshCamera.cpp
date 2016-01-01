@@ -190,20 +190,22 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 	filter->GetIndexBuffer()->IASetBuffer(context);
 
 	ShaderGroup shaders;
-	if(renderType == RenderType::GBuffer_Opaque || renderType == RenderType::GBuffer_AlphaBlend)
-		renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::GBuffer_AlphaBlend);
-	else if(renderType == RenderType::Forward_Transparency)
-		renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Forward_DepthOnly)
-		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
-		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Voxelization)
-		renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
-	else
-	{
+	//if(renderType == RenderType::GBuffer_Opaque || renderType == RenderType::GBuffer_AlphaBlend)
+	//	renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::GBuffer_AlphaBlend);
+	//else if(renderType == RenderType::Forward_Transparency)
+	//	renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag());
+	//else if(renderType == RenderType::Forward_DepthOnly)
+	//	renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
+	//else if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
+	//	renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
+	//else if(renderType == RenderType::Voxelization)
+	//	renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
+	//else
+	//{
+	//	ASSERT_MSG("Error, Unsupported renderType");
+	//}
+	if(renderManager->FindShader(shaders, filter->GetBufferFlag(), renderType) == false)
 		ASSERT_MSG("Error, Unsupported renderType");
-	}
 
 	Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
 	const auto& materials				= renderer->GetMaterials();
