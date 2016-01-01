@@ -146,6 +146,12 @@ namespace Rendering
 			GET_ACCESSOR(SpotLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _spotLightShadowIdxToLightIdxSRBuffer);
 			GET_ACCESSOR(DirectionalLightShadowIndexToLightIndexSRBuffer,	const Buffer::ShaderResourceBuffer*, _directionalLightShadowIdxToLightIdxSRBuffer);
 
+			GET_ACCESSOR(PointLightMomentShadowMapAtlas,		const Texture::RenderTexture*,	_pointLightMomentShadowMapAtlas);
+			GET_ACCESSOR(SpotLightMomentShadowMapAtlas,			const Texture::RenderTexture*,	_spotLightMomentShadowMapAtlas);
+			GET_ACCESSOR(DirectionalLightMomentShadowMapAtlas,	const Texture::RenderTexture*,	_directionalLightMomentShadowMapAtlas);
+
+			GET_ACCESSOR(UseVSM, bool, _useVSM);
+
 			bool IsWorking() const;
 		};
 	}

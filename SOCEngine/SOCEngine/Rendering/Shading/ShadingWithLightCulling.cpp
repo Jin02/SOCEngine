@@ -153,6 +153,18 @@ void ShadingWithLightCulling::Initialize(
 
 			idx = (uint)TextureBindIndex::DirectionalLightShadowMapAtlas;
 			AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
+
+			if(shadowMgr->GetUseVSM())
+			{
+				idx = (uint)TextureBindIndex::PointLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetPointLightShadowMapAtlas());
+
+				idx = (uint)TextureBindIndex::SpotLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightShadowMapAtlas());
+
+				idx = (uint)TextureBindIndex::DirectionalLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
+			}
 		}
 	}
 
