@@ -40,26 +40,26 @@ float ChebyshevUpperBound(float2 moments, float t)
 	return max(p, pMax);
 }
 
-//float VarianceShadow(
-//	Texture2D<float> shadowMapAtlas,
-//	Texture2D<float> momentShadowMapAtlas,
-//	float2 uv, float depth)
-//{
-//	float shadow = 0.0f;
-//	for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
-//	{
-//		for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
-//		{
-//			float mx = shadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
-//			float my = momentShadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
-//
-//			shadow += ChebyshevUpperBound(float2(mx, my), depth);
-//		}
-//	}
-//
-//	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
-//	return shadow;
-//}
+float VarianceShadow(
+	Texture2D<float> shadowMapAtlas,
+	Texture2D<float> momentShadowMapAtlas,
+	float2 uv, float depth)
+{
+	float shadow = 0.0f;
+	for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
+	{
+		for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
+		{
+			float mx = shadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+			float my = momentShadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+
+			shadow += ChebyshevUpperBound(float2(mx, my), depth);
+		}
+	}
+
+	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
+	return shadow;
+}
 
 float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
