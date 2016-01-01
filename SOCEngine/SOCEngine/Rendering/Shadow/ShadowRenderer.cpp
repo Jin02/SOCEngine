@@ -327,13 +327,13 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 
 	if(_useVSM)
 	{
-		rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
+		rtv = _spotLightMomentShadowMapAtlas->GetRenderTargetView();
 
 		opaqueRenderType		= RenderType::Forward_MomentDepth;
 		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
 	}
 
-	context->OMSetRenderTargets(1, &rtv, _directionalLightShadowMapAtlas->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &rtv, _spotLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -404,13 +404,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 
 	if(_useVSM)
 	{
-		rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
+		rtv = _pointLightMomentShadowMapAtlas->GetRenderTargetView();
 
 		opaqueRenderType		= RenderType::Forward_MomentDepth;
 		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
 	}
 
-	context->OMSetRenderTargets(1, &rtv, _directionalLightShadowMapAtlas->GetDepthStencilView());
+	context->OMSetRenderTargets(1, &rtv, _pointLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
