@@ -2,14 +2,15 @@
 
 namespace Rendering
 {
-	enum class RenderType
+	enum class RenderType : unsigned int
 	{
-		GBuffer_Opaque					= 0,
-		GBuffer_AlphaBlend				= 1,
-		Forward_Transparency			= 2,
-		Forward_DepthOnly				= 3,
-		Forward_AlphaTestWithDiffuse	= 4,
-		Voxelization					= 5,
+		GBuffer_Opaque					,
+		GBuffer_AlphaBlend				,
+		Forward_Transparency			,
+		Forward_OnlyDepth				,
+		Forward_AlphaTestWithDiffuse	,
+		Forward_MomentDepth				,
+		Voxelization					,
 		MAX_NUM
 	};
 }

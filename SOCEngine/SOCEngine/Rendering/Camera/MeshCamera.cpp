@@ -246,7 +246,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		vs->BindInputLayoutToContext(context);
 		vs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
-		if(ps && (renderType != RenderType::Forward_DepthOnly) )
+		if(ps && (renderType != RenderType::Forward_OnlyDepth) )
 		{
 			ps->BindShaderToContext(context);
 			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
@@ -464,7 +464,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_DepthOnly, _camMatConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer);
 		}
 	}
 

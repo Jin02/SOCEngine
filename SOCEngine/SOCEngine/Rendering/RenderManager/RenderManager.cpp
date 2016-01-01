@@ -41,7 +41,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	if(renderType == RenderType::Forward_Transparency)// || renderType == RenderType::Forward_DepthOnly)
+	if(renderType == RenderType::Forward_Transparency)// || renderType == RenderType::Forward_OnlyDepth)
 	{
 		ShaderMacro useTransparencyMacro;
 		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
@@ -76,10 +76,15 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 			psMainFunc = "OnlyAlpaTestWithDiffusePS";
 		else if(renderType == RenderType::Voxelization)
 			gsMainFunc = "GS";
-		else if(renderType == RenderType::Forward_DepthOnly)
+		else if(renderType == RenderType::Forward_OnlyDepth)
 		{
 			vsMainFunc = "DepthOnlyVS";
 			psMainFunc = "";
+		}
+		else if(renderType == RenderType::Forward_MomentDepth)
+		{
+			vsMainFunc = "MomentDepthVS";
+			psMainFunc = "MomentDepthPS";
 		}
 
 		shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros, resourceManager->GetShaderManager());
@@ -247,8 +252,9 @@ void RenderManager::MakeDefaultSahderFileName(std::string& outFileName, RenderTy
 	switch(renderType)
 	{
 	case RenderType::Forward_AlphaTestWithDiffuse:
-	case RenderType::Forward_DepthOnly:
+	case RenderType::Forward_OnlyDepth:
 	case RenderType::Forward_Transparency:
+	case RenderType::Forward_MomentDepth:
 		frontFileName = "PhysicallyBased_Forward_";
 		break;
 	case RenderType::GBuffer_AlphaBlend:

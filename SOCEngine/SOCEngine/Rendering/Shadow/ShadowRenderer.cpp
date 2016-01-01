@@ -347,7 +347,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
-			RenderType::Forward_DepthOnly,
+			RenderType::Forward_OnlyDepth,
 			camConstBuffer, &intersectFunc);
 
 
@@ -417,7 +417,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
-				RenderType::Forward_DepthOnly,
+				RenderType::Forward_OnlyDepth,
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
@@ -482,7 +482,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
-			RenderType::Forward_DepthOnly,
+			RenderType::Forward_OnlyDepth,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
