@@ -51,7 +51,7 @@ void Scene::Initialize()
 	_backBufferMaker->Initialize(false);
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize(false);
+	_shadowRenderer->Initialize(true);
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
