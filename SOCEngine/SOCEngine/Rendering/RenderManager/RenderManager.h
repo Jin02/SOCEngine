@@ -57,7 +57,7 @@ namespace Rendering
 
 		public:
 			void Initialize();
-			Shader::ShaderGroup LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
+			Shader::ShaderGroup LoadDefaultSahder(RenderType renderType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
 			void UpdateRenderList(const Geometry::Mesh* mesh);
@@ -66,7 +66,7 @@ namespace Rendering
 			bool FindShader(Shader::ShaderGroup& out, uint bufferFlag, RenderType renderType) const;
 			bool HasShader(uint bufferFlag, RenderType renderType) const;
 
-			void MakeDefaultSahderFileName(std::string& outFileName, Geometry::MeshRenderer::Type meshType, uint bufferFlag) const;
+			void MakeDefaultSahderFileName(std::string& outFileName, RenderType renderType, uint bufferFlag) const;
 		
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);
