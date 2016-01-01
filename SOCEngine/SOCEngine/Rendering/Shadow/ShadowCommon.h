@@ -5,6 +5,8 @@
 #include "Matrix.h"
 #include <functional>
 
+#include "GlobalDefine.h"
+
 namespace Rendering
 {
 	namespace Light
