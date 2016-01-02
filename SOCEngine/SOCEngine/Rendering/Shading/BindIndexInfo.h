@@ -59,7 +59,7 @@ namespace Rendering
 		DefaultSamplerState				= 0,
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
-		ShadowSamplerState				= 3,
+		VSMShadowSamplerState			= 3,
 	};
 
 	enum class UAVBindIndex : unsigned int

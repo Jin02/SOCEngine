@@ -113,7 +113,7 @@ void Scene::Render()
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
 			const Buffer::ConstBuffer* shadowCB = _shadowRenderer->IsWorking() ? _shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB);
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetUseVSM());
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);

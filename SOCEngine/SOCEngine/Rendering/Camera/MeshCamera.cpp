@@ -354,7 +354,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool useVSM)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -479,6 +479,11 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			ID3D11SamplerState* shadowSamplerState = dx->GetLessEqualSamplerComparisonState();
 #endif
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+			if(useVSM)
+			{
+				ID3D11SamplerState* linearSamplerState = dx->GetSamplerStateLinear();
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &linearSamplerState);
+			}
 		}
 
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
@@ -497,7 +502,12 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 
 		if(useShadow)
+		{
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSampler);
+
+			if(useVSM)
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &nullSampler);
+		}
 	}
 
 	// Main RT
