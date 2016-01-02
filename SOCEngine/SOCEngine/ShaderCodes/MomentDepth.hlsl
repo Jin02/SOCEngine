@@ -17,7 +17,11 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 	return ps;
 }
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+float2 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
+#else
 float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
+#endif
 {
 	float depth = input.depth;
 
@@ -37,6 +41,10 @@ float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 		discard;
 #endif
 
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+	return moment;
+#else
 	// x는 이미 다른곳에서 기록 중
 	return moment.y;
+#endif
 }
