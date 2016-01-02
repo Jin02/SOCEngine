@@ -45,18 +45,17 @@ float VarianceShadow(
 	Texture2D<float> momentShadowMapAtlas,
 	float2 uv, float depth)
 {
-	float my = 0.0f;
-	float mx = 0.0f;
 	float shadow = 0.0f;
+	float2 moment = float2(0.0f, 0.0f);
 
 	[unroll] for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
 	{
 		[unroll] for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-			mx = shadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
-			my = momentShadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+			moment.x = shadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
+			moment.y = momentShadowMapAtlas.Sample(shadowSamplerState, uv, int2(i, j)).x;
 
-			shadow += ChebyshevUpperBound(float2(mx, my), depth);
+			shadow += ChebyshevUpperBound(moment, depth);
 		}
 	}
 
