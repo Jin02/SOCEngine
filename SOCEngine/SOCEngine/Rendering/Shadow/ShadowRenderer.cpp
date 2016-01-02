@@ -117,7 +117,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_pointLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
 			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 
@@ -136,7 +140,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_spotLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
 			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 
@@ -155,7 +163,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_directionalLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
 			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 }
@@ -327,10 +339,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 
 	if(_useVSM)
 	{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-#else
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
-#endif
 		_spotLightMomentShadowMapAtlas->Clear(context, clearColor);
 		rtv = _spotLightMomentShadowMapAtlas->GetRenderTargetView();
 
@@ -409,10 +418,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 
 	if(_useVSM)
 	{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-#else
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
-#endif
 		_pointLightMomentShadowMapAtlas->Clear(context, clearColor);
 
 		rtv = _pointLightMomentShadowMapAtlas->GetRenderTargetView();
@@ -494,10 +500,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 
 	if(_useVSM)
 	{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-#else
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
-#endif
 		_directionalLightMomentShadowMapAtlas->Clear(context, clearColor);
 
 		rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
