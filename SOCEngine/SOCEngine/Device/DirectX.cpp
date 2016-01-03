@@ -12,7 +12,7 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _lessEqualComparisonState(nullptr), _greaterEqualComparisonState(nullptr)
+	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -313,18 +313,34 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		hr = _device ->CreateSamplerState( &desc, &_pointSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
-		desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-		desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.MaxAnisotropy = 1;
-		hr = _device->CreateSamplerState( &desc, &_lessEqualComparisonState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _lessEqualComparisonState state");
+		// Shadow Sampler State
+		{
+			desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+			desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+			desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.MaxAnisotropy = 1;
+			hr = _device->CreateSamplerState( &desc, &_shadowLessEqualCompState );
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLessEqualCompState state");
 
-		desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
-		hr = _device->CreateSamplerState( &desc, &_greaterEqualComparisonState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _greaterEqualComparisonState state");
+			desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
+			hr = _device->CreateSamplerState( &desc, &_shadowGreaterEqualCompState );
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowGreaterEqualCompState state");
+
+			desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.MipLODBias = 0.0f;
+			desc.MaxAnisotropy = 1;
+			desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+			desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
+			desc.MinLOD = 0;
+			desc.MaxLOD = D3D11_FLOAT32_MAX;
+			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState state");
+		}
 	}
 
 	return true;
