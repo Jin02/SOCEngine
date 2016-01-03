@@ -13,7 +13,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage), _optionConstBuffer(nullptr)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage)
 {
 }
 
@@ -43,9 +43,6 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 
 	_camMatConstBuffer = new ConstBuffer;
 	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
-
-	_optionConstBuffer = new ConstBuffer;
-	_optionConstBuffer->Initialize(sizeof(OptionCBData));
 }
 
 void CameraForm::Destroy()
@@ -163,8 +160,6 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
 	}
 
-	UpdateOptionCBData(dx);
-
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		(*iter)->Culling(_frustum);
 }
@@ -232,23 +227,5 @@ void CameraForm::_Clone(CameraForm* newCam) const
 		D3D11_TEXTURE2D_DESC desc;
 		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		
 		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
-	}
-}
-
-void CameraForm::UpdateOptionCBData(const Device::DirectX* dx)
-{
-	OptionCBData optionCBData;
-	{
-		optionCBData.nearZ		= _clippingNear;
-		optionCBData.farZ		= _clippingFar;
-		optionCBData.fov		= Math::Common::Deg2Rad(_fieldOfViewDegree);
-		optionCBData.dummy		= 0;
-	}
-
-	bool updatedOption = memcmp(&_prevOptionCBData, &optionCBData, sizeof(OptionCBData)) != 0;
-	if(updatedOption)
-	{
-		_optionConstBuffer->UpdateSubResource(dx->GetContext(), &optionCBData);
-		_prevOptionCBData = optionCBData;
 	}
 }

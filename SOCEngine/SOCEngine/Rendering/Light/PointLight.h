@@ -11,7 +11,7 @@ namespace Rendering
 		class PointLight : public LightForm
 		{
 		private:
-			Math::Matrix	_viewMatOffsetOne[5];		// another viewMat was placed in LightForm.
+			Math::Matrix	_invViewProjMatOffsetOne[5];		// another viewMat was placed in LightForm.
 			Math::Matrix	_viewProjMatOffsetOne[5];	// another viewProjMat was placed in LightForm.
 
 			Math::Matrix	_prevViewProj;
@@ -32,7 +32,7 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			void GetViewMatrices(std::array<Math::Matrix, 6>& out) const;
+			void GetInvViewProjMatrices(std::array<Math::Matrix, 6>& out) const;
 			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const;
 
 			GET_ACCESSOR(Shadow, const Shadow::PointLightShadow*, static_cast<const Shadow::PointLightShadow*>(_shadow) );

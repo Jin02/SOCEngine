@@ -34,8 +34,9 @@ void ShadingWithLightCulling::Initialize(
 	const Math::Size<uint>& backBufferSize,
 	bool useDebugMode)
 {
-	const auto* scene = Director::GetInstance()->GetCurrentScene();
-	Manager::LightManager* lightManager = scene->GetLightManager();
+	const Core::Scene* scene				= Director::GetInstance()->GetCurrentScene();
+	Manager::LightManager* lightManager		= scene->GetLightManager();
+	Shadow::ShadowRenderer* shadowMgr		= scene->GetShadowManager();
 
 	std::string filePath = "";
 	{
@@ -49,6 +50,9 @@ void ShadingWithLightCulling::Initialize(
 	{
 		if(useDebugMode)
 			macros.push_back(ShaderMacro("DEBUG_MODE", ""));
+
+		if(shadowMgr->GetUseVSM())
+			macros.push_back(ShaderMacro("USE_VSM", ""));
 	}
 
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
@@ -143,8 +147,6 @@ void ShadingWithLightCulling::Initialize(
 
 		// ShadowMap Atlas
 		{
-			Shadow::ShadowRenderer* shadowMgr = scene->GetShadowManager();
-
 			uint idx = (uint)TextureBindIndex::PointLightShadowMapAtlas;			
 			AddTextureToInputTextureList(idx, shadowMgr->GetPointLightShadowMapAtlas());
 
@@ -153,6 +155,18 @@ void ShadingWithLightCulling::Initialize(
 
 			idx = (uint)TextureBindIndex::DirectionalLightShadowMapAtlas;
 			AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
+
+			if(shadowMgr->GetUseVSM())
+			{
+				idx = (uint)TextureBindIndex::PointLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetPointLightMomentShadowMapAtlas());
+
+				idx = (uint)TextureBindIndex::SpotLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightMomentShadowMapAtlas());
+
+				idx = (uint)TextureBindIndex::DirectionalLightMomentShadowMapAtlas;
+				AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightMomentShadowMapAtlas());
+			}
 		}
 	}
 

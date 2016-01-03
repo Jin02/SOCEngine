@@ -62,49 +62,49 @@ class ParseCode:
 	def UpdateState(self, state):
 		self.beforeState 	= self.currentState
 		self.currentState 	= state
-	def Run(self, lineCode):
-		def RemoveComment(code):
-			commentSplitCode 	= code.split("//")	# remove //
-			splitCodeCount 		= len(commentSplitCode)
-			modifiedCode 		= commentSplitCode[0]
+	def RemoveComment(self, code):
+		commentSplitCode 	= code.split("//")	# remove //
+		splitCodeCount 		= len(commentSplitCode)
+		modifiedCode 		= commentSplitCode[0]
 
-			if splitCodeCount > 1:
-				modifiedCode += '\n'
+		if splitCodeCount > 1:
+			modifiedCode += '\n'
 
-			start	= 0
-			end		= 0
+		start	= 0
+		end		= 0
 
-			#remove /* */
-			def RemoveGlobalComment(code):
-				while 1: 
-					start 	= code.find("/*")
-					end 	= code.find("*/")
+		#remove /* */
+		def RemoveGlobalComment(code):
+			while 1: 
+				start 	= code.find("/*")
+				end 	= code.find("*/")
 
-					if ((start != -1) and (end != -1)) and (start < end):
-						code = code[:start] + code[end+2:]
-					else:
-						break
-
-				return code
-
-			modifiedCode = RemoveGlobalComment(modifiedCode)
-
-			if self.isCommentArea:
-				end = modifiedCode.find("*/")
-				if end != -1:
-					self.UpdateState(self.beforeState)
-					self.isCommentArea 	= False
-					modifiedCode 		= RemoveGlobalComment( modifiedCode[(end+2):] )
+				if ((start != -1) and (end != -1)) and (start < end):
+					code = code[:start] + code[end+2:]
 				else:
-					modifiedCode = ""
-			elif "/*" in modifiedCode: #also isCommentArea == false
-				self.UpdateState(self.StateEnum.Comment)
-				self.isCommentArea 	= True
-				modifiedCode 		= modifiedCode[:start]
+					break
 
-			return modifiedCode
+			return code
 
-		code = RemoveComment(lineCode)
+		modifiedCode = RemoveGlobalComment(modifiedCode)
+
+		if self.isCommentArea:
+			end = modifiedCode.find("*/")
+			if end != -1:
+				self.UpdateState(self.beforeState)
+				self.isCommentArea 	= False
+				modifiedCode 		= RemoveGlobalComment( modifiedCode[(end+2):] )
+			else:
+				modifiedCode = ""
+		elif "/*" in modifiedCode: #also isCommentArea == false
+			self.UpdateState(self.StateEnum.Comment)
+			self.isCommentArea 	= True
+			modifiedCode 		= modifiedCode[:start]
+
+		return modifiedCode
+	
+	def Run(self, lineCode):
+		code = self.RemoveComment(lineCode)
 
 		if (self.currentState == self.StateEnum.FindingStructName) or ('struct' in code):
 			self.currentStructName = self.ParseStructName(code)
@@ -288,7 +288,7 @@ class ParseCode:
 
 ####### Run ################################################################################################
 WorkReturnValues = Enum('EmptyFile', 'Success', 'NotCreateMeta')
-def Work(shaderFilePath, metaDataFilePath, useEasyView):
+def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
 	print "\nShader File Modify Time : " + time.ctime(shaderFileModifyTime)
 
@@ -315,20 +315,59 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	if isCreateMetadata:		
 		if ONLY_PATH_FINDING in firstLine:
 			return WorkReturnValues.EmptyFile
+		elif USED_FOR_INCLUDE in firstLine:
+			return WorkReturnValues.NotCreateMeta
 
 		print "Create Metadata\n"
 	else:
 		return WorkReturnValues.NotCreateMeta
 
 	shaderFile 	= open(shaderFilePath, 'rU')
-	parser 		= ParseCode()
+	lines = shaderFile.read().split('\n')
+
+	parser = ParseCode()
+	# insert include file
+	while 1:
+		lineIdx 	= 0
+		hasInclude	= False
+		while 1:
+			line 			= lines[lineIdx]
+			cleanLine 		= parser.RemoveComment(line)
+			isIncludeLine 	= "#include" in cleanLine
+
+			if isIncludeLine == True:
+				hasInclude = True
+				lines[lineIdx] = '' # remove include
+
+				incFileName	= cleanLine[cleanLine.find('"')+1 : cleanLine.rfind('"')]
+				incFile 	= open(folderPath + incFileName, 'rU')
+
+				newFileLines = incFile.read().split('\n')
+				if (NOT_CREATE_META_DATA in newFileLines[0]) or (ONLY_PATH_FINDING in newFileLines[0]):
+					incFile.close()
+					continue
+
+				newLineIdx = 0
+				for newLine in newFileLines:
+					lines.insert(lineIdx + newLineIdx, newLine)
+					newLineIdx += 1
+
+				incFile.close()
+			else:
+				lineIdx += 1
+
+			if lineIdx >= len(lines):
+				break
+		if hasInclude == False:
+			break
+	del parser
+
+
+	parser = ParseCode()
 
 	# parser work
-	while 1:	
-		line = shaderFile.readline()
+	for line in lines:
 		parser.Run(line)
-		if not line :
-			break
 
 	shaderFile.close()
 
@@ -424,8 +463,9 @@ def Work(shaderFilePath, metaDataFilePath, useEasyView):
 	del parser
 	return WorkReturnValues.Success
 
-NOT_CREATE_META_DATA = "NOT_CREATE_META_DATA"
-ONLY_PATH_FINDING = "EMPTY_META_DATA"  #Empty Meta Data
+NOT_CREATE_META_DATA	= "NOT_CREATE_META_DATA"
+ONLY_PATH_FINDING		= "EMPTY_META_DATA"  #Empty Meta Data
+USED_FOR_INCLUDE		= "USED_FOR_INCLUDE"
 CONSOLE_LINE = "***********************************************"
 
 print CONSOLE_LINE + '\n'
@@ -503,7 +543,7 @@ for (path, dirs, files) in os.walk(targetDir):
         		metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
         	else:
         		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
-        	result = Work(shaderFilePath, metaDataFilePath, useEasyView)
+        	result = Work(shaderFilePath, path+'\\', metaDataFilePath, useEasyView)
         	if result == WorkReturnValues.EmptyFile: #ONLY_PATH_FINDING, empty file
         		SimpleWriteFile(metaDataFilePath, "{}")
 

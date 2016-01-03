@@ -2,6 +2,10 @@
 
 #include "Voxelization_Common.h"
 
+#ifndef USE_SHADOW_INVERTED_DEPTH
+#include "Injection_Common.h"
+#endif
+
 struct VS_INPUT
 {
 	float3 position 			: POSITION;

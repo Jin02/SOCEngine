@@ -36,7 +36,10 @@ namespace Rendering
 		DirectionalLightShadowColor				= 22,
 		PointLightShadowIndexToLightIndex		= 23,
 		SpotLightShadowIndexToLightIndex		= 24,
-		DirectionalLightShadowIndexToLightIndex	= 25
+		DirectionalLightShadowIndexToLightIndex	= 25,
+		PointLightMomentShadowMapAtlas			= 26,
+		SpotLightMomentShadowMapAtlas			= 27,
+		DirectionalLightMomentShadowMapAtlas	= 28,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -48,7 +51,6 @@ namespace Rendering
 		ShadowGlobalParam				= 4,
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
-		CameraOptionCB					= 7
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
@@ -56,6 +58,7 @@ namespace Rendering
 		DefaultSamplerState				= 0,
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
+		VSMShadowSamplerState			= 3,
 	};
 
 	enum class UAVBindIndex : unsigned int

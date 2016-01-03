@@ -117,7 +117,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_pointLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
+			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 
@@ -136,7 +140,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_spotLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
+			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 
@@ -155,7 +163,11 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_directionalLightMomentShadowMapAtlas = new RenderTexture;
+#if defined(USE_SHADOW_INVERTED_DEPTH)
 			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#else
+			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 		}
 	}
 }
@@ -219,7 +231,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat		= light->GetViewMatrix();
+		cbData.viewMat		= light->GetInvViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invViewProj 사용
 		cbData.viewProjMat	= light->GetViewProjectionMatrix();
 	}
 
@@ -243,13 +255,12 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	auto& shadowCastingLight = _shadowCastingPointLights.Get(index);
 	const PointLight* light = reinterpret_cast<const PointLight*>(shadowCastingLight.lightAddress);
 
-	std::array<Matrix, 6> viewMatrices;
+	std::array<Matrix, 6> invViewProjMatrices;
 	std::array<Matrix, 6> viewProjMatrices;
 
-	light->GetViewMatrices(viewMatrices);
+	light->GetInvViewProjMatrices(invViewProjMatrices);
 	light->GetViewProjectionMatrices(viewProjMatrices);
 
-	//prevViewProjMat is viewMatrices[0]
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &viewProjMatrices[0], sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
@@ -259,7 +270,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 		{
 			CameraForm::CamMatCBData cb;
 			{
-				cb.viewMat		= viewMatrices[i];
+				cb.viewMat		= invViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invViewProj 사용
 				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
@@ -281,7 +292,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat = light->GetViewMatrix();
+		cbData.viewMat = light->GetInvViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invViewProj 사용
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
 	}
 
@@ -321,8 +332,21 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 	_spotLightShadowMapAtlas->Clear(context, 1.0f, 0);
 #endif
 
-	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _spotLightShadowMapAtlas->GetDepthStencilView());
+	ID3D11RenderTargetView* rtv		= nullptr;
+	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
+	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
+
+	if(_useVSM)
+	{
+		Color clearColor(1.f, 1.f, 1.f, 1.f);
+		_spotLightMomentShadowMapAtlas->Clear(context, clearColor);
+		rtv = _spotLightMomentShadowMapAtlas->GetRenderTargetView();
+
+		opaqueRenderType		= RenderType::Forward_MomentDepth;
+		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+	}
+
+	context->OMSetRenderTargets(1, &rtv, _spotLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -347,7 +371,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
-			MeshCamera::RenderType::Forward_DepthOnly,
+			opaqueRenderType,
 			camConstBuffer, &intersectFunc);
 
 
@@ -355,7 +379,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::Forward_AlphaTest,
+			alphaBlendRenderType,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( nullptr );
@@ -387,8 +411,22 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	_pointLightShadowMapAtlas->Clear(context, 1.0f, 0);
 #endif
 
-	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _pointLightShadowMapAtlas->GetDepthStencilView());
+	ID3D11RenderTargetView* rtv		= nullptr;
+	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
+	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
+
+	if(_useVSM)
+	{
+		Color clearColor(1.f, 1.f, 1.f, 1.f);
+		_pointLightMomentShadowMapAtlas->Clear(context, clearColor);
+
+		rtv = _pointLightMomentShadowMapAtlas->GetRenderTargetView();
+		
+		opaqueRenderType		= RenderType::Forward_MomentDepth;
+		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+	}
+
+	context->OMSetRenderTargets(1, &rtv, _pointLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -417,13 +455,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
-				MeshCamera::RenderType::Forward_DepthOnly,
+				opaqueRenderType,
 				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
-				MeshCamera::RenderType::Forward_AlphaTest,
+				alphaBlendRenderType,
 				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
@@ -455,8 +493,22 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	_directionalLightShadowMapAtlas->Clear(context, 1.0f, 0);
 #endif
 
-	ID3D11RenderTargetView* nullRTV = nullptr;
-	context->OMSetRenderTargets(1, &nullRTV, _directionalLightShadowMapAtlas->GetDepthStencilView());
+	ID3D11RenderTargetView* rtv		= nullptr;
+	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
+	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
+
+	if(_useVSM)
+	{
+		Color clearColor(1.f, 1.f, 1.f, 1.f);
+		_directionalLightMomentShadowMapAtlas->Clear(context, clearColor);
+
+		rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
+
+		opaqueRenderType		= RenderType::Forward_MomentDepth;
+		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+	}
+
+	context->OMSetRenderTargets(1, &rtv, _directionalLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
 	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
@@ -482,13 +534,13 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
-			MeshCamera::RenderType::Forward_DepthOnly,
+			opaqueRenderType,
 			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
-			MeshCamera::RenderType::Forward_AlphaTest,
+			alphaBlendRenderType,
 			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}

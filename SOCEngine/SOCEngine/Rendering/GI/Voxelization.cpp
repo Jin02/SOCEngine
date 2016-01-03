@@ -261,10 +261,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 		// Render Voxel
 		{
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
 
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
 		}
 	}
 
