@@ -198,7 +198,7 @@ void RenderSpotLight(
 		uint shadowIndex = (uint)g_inputSpotLightShadowParams[lightIndex].index;
 		if(shadowIndex != 0) //isShadow == true
 		{
-			float3 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition);
+			float3 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);
 
 			resultDiffuseColor	*= shadowColor;
 			resultSpecularColor	*= shadowColor;
