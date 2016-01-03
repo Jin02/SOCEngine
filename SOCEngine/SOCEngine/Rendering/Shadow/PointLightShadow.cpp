@@ -22,7 +22,7 @@ void PointLightShadow::MakeParam(Param& outParam, bool useVSM) const
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
 	if(useVSM)
-		light->GetInvViewProjectionMatrices(outParam.viewProjMat);
+		light->GetInvViewProjMatrices(outParam.viewProjMat);
 	else
 #else
 		light->GetViewProjectionMatrices(outParam.viewProjMat);
