@@ -7,7 +7,7 @@ Required : python 2.7.x, VS2012, FBXSDK2014.1
 
 -----------
 
-Rendering: TBDR, MSAA(only 4x), Microfacet BRDF, Dynamic Lighting, Transparency, Model load using fbx-conv(obj, fbx, dae, etc..), Shadow Mapping.
+Rendering: TBDR, MSAA(only 4x), Microfacet BRDF, Dynamic Lighting, Transparency, Model load using fbx-conv(obj, fbx, dae, etc..), Variance Shadow Mapping.
 
 ![Test_Image](http://i.imgur.com/lCluQ1q.png)
-![ShadowTest](http://i.imgur.com/KczmdCc.png)
+![ShadowTest](http://i.imgur.com/3NYNdy0.png)
