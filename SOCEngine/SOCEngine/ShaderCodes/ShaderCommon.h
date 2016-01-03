@@ -219,4 +219,9 @@ float4 UintToFloat4(uint value)
 	return (ret / 255.0f);
 }
 
+float smoothStep(float low, float high, float v)
+{
+	return clamp( (v - low) / (high - low), 0.0f, 1.0f);
+}
+
 #endif

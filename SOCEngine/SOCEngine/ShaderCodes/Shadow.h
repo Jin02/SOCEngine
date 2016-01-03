@@ -34,10 +34,11 @@ float ChebyshevUpperBound(float2 moments, float t)
 	variance = max(variance, 0.00002f);
 
 	float d = t - moments.x;
-	float pMax = variance / (variance + d * d);
+	float pMax = smoothStep(0.2f, 1.0f, variance / (variance + d * d));
 
-	return max(p, pMax);
+	return saturate( max(p, pMax) );
 }
+
 float VarianceShadow(
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 	Texture2D<float2> momentShadowMapAtlas,
