@@ -21,15 +21,7 @@ namespace Rendering
 			{
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
-			};
-			struct OptionCBData
-			{
-				float nearZ;
-				float farZ;
-				float fov;
-
-				float dummy;
-			};
+			};\
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -63,9 +55,6 @@ namespace Rendering
 			Buffer::ConstBuffer*			_camMatConstBuffer;
 			CamMatCBData					_prevCamMatCBData;
 
-			Buffer::ConstBuffer*			_optionConstBuffer;
-			OptionCBData					_prevOptionCBData;
-
 		public:
 			CameraForm(Usage usage);
 			virtual ~CameraForm(void);
@@ -87,8 +76,6 @@ namespace Rendering
 			// if mainRTSampleCount = 0, mainRTSampleCount = msaa.count
 			void Initialize(uint mainRTSampleCount = 0);
 			void Destroy();
-
-			void UpdateOptionCBData(const Device::DirectX* dx);
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
