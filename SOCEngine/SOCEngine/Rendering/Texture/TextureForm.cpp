@@ -18,6 +18,6 @@ TextureForm::~TextureForm()
 
 void TextureForm::Destroy()
 {
-	_srv->Destory();
-	_uav->Destroy();
+	if(_srv)	_srv->Destory();
+	if(_uav)	_uav->Destroy();
 }
