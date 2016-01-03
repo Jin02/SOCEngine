@@ -24,9 +24,8 @@ void PointLightShadow::MakeParam(Param& outParam, bool useVSM) const
 	if(useVSM)
 		light->GetInvViewProjMatrices(outParam.viewProjMat);
 	else
-#else
-		light->GetViewProjectionMatrices(outParam.viewProjMat);
 #endif
+	light->GetViewProjectionMatrices(outParam.viewProjMat);
 
 	for(uint i=0; i<6; ++i)
 		Math::Matrix::Transpose(outParam.viewProjMat[i], outParam.viewProjMat[i]);
