@@ -30,7 +30,7 @@ namespace Rendering
 			};
 
 		protected:
-			Math::Matrix			_viewMat;
+			Math::Matrix			_invViewProjMat;
 			Math::Matrix			_viewProjMat;
 
 			Color					_color;
@@ -76,8 +76,9 @@ namespace Rendering
 
 			uint Get32BitMainColor() const;
 
-			GET_ACCESSOR(ViewMatrix,			const Math::Matrix&,	_viewMat);
-			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&,	_viewProjMat);
+//			GET_ACCESSOR(ViewMatrix,			const Math::Matrix&,	_viewMat);
+			GET_ACCESSOR(InvViewProjectionMatrix,	const Math::Matrix&,	_invViewProjMat);
+			GET_ACCESSOR(ViewProjectionMatrix,		const Math::Matrix&,	_viewProjMat);
 
 			GET_ACCESSOR(UseShadow, bool, _shadow != nullptr);
 			GET_ACCESSOR(ShadowColor, const Color&, _shadow->GetColor());

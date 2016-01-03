@@ -60,7 +60,6 @@ namespace Rendering
 			struct ShadowCastingPointLight : public LightAddress
 			{
 				std::array<Buffer::ConstBuffer*, 6> camConstBuffers;
-
 			};
 			struct ShadowCastingSpotDirectionalLight : public LightAddress
 			{

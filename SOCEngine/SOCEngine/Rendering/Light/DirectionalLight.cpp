@@ -25,7 +25,7 @@ void DirectionalLight::CreateLightShadow(const std::function<void()>& addUpdateC
 
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
 {
-	Matrix& view = _viewMat;
+	Matrix view;
 	_owner->GetTransform()->FetchWorldMatrix(view);
 
 	Vector3 forward = Vector3(view._13, view._23, view._33).Normalized();
@@ -39,12 +39,17 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 
 	float orthogonalWH	= sceneBoundBox.GetSize().Length();
 
-	Matrix proj;
+	Matrix proj, invProj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z); //inverted
+	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
+	Matrix::OrthoLH(invProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
 #else
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
+	Matrix::OrthoLH(invProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
 #endif
+
+	_invViewProjMat = view * invProj;
+
 	Matrix& viewProj = _viewProjMat;
 	viewProj = view * proj;
 

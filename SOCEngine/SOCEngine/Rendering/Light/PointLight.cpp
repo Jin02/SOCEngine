@@ -65,17 +65,19 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 		Vector3( 0.0f,  0.0f,  1.0f),
 	};
 
-	Matrix proj;
+	Matrix proj, invProj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _radius, _projNear);
+	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(90.0f), _projNear, _radius);
 #else
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), _projNear, _radius);
+	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(90.0f), _radius, _projNear);
 #endif
 
-	auto ComputeViewProj = [](Matrix& outView, Matrix& viewProj,
-		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
+	auto ComputeViewProj = [](Matrix& outInvViewProj, Matrix& outViewProj,
+		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat, const Matrix& invProjMat)
 	{
-		Matrix& view = outView;
+		Matrix view;
 		{
 			Transform tf0(nullptr);
 			tf0.UpdatePosition(eyePos);
@@ -85,36 +87,37 @@ void PointLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundB
 			CameraForm::GetViewMatrix(view, view);
 		}
 
-		viewProj = view * projMat;
+		outViewProj		= view * projMat;
+		outInvViewProj	= view * invProjMat;
 	};
 
 	Vector3 worldPos;
 	_owner->GetTransform()->FetchWorldPosition(worldPos);
 
-	Matrix view, viewProj;
-	ComputeViewProj(view, viewProj, worldPos, forwards[0], ups[0], proj);
+	Matrix invViewProj, viewProj;
+	ComputeViewProj(invViewProj, viewProj, worldPos, forwards[0], ups[0], proj, invProj);
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
 		_prevViewProj = viewProj;
 
-		LightForm::_viewMat = view;
-		LightForm::_viewProjMat = viewProj;
+		LightForm::_invViewProjMat	= invViewProj;
+		LightForm::_viewProjMat		= viewProj;
 
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
-			ComputeViewProj(_viewMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj);
+			ComputeViewProj(_invViewProjMatOffsetOne[matIdx], _viewProjMatOffsetOne[matIdx], worldPos, forwards[i], ups[i], proj, invProj);
 		}
 	}
 }
 
-void PointLight::GetViewMatrices(std::array<Math::Matrix, 6>& out) const
+void PointLight::GetInvViewProjMatrices(std::array<Math::Matrix, 6>& out) const
 {
-	out[0] = LightForm::_viewMat;
+	out[0] = LightForm::_invViewProjMat;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewMatOffsetOne[i-1];
+		out[i] = _invViewProjMatOffsetOne[i-1];
 }
 
 void PointLight::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const

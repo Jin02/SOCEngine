@@ -231,7 +231,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat		= light->GetViewMatrix();
+		cbData.viewMat		= light->GetInvViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invViewProj 사용
 		cbData.viewProjMat	= light->GetViewProjectionMatrix();
 	}
 
@@ -255,13 +255,12 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	auto& shadowCastingLight = _shadowCastingPointLights.Get(index);
 	const PointLight* light = reinterpret_cast<const PointLight*>(shadowCastingLight.lightAddress);
 
-	std::array<Matrix, 6> viewMatrices;
+	std::array<Matrix, 6> invViewProjMatrices;
 	std::array<Matrix, 6> viewProjMatrices;
 
-	light->GetViewMatrices(viewMatrices);
+	light->GetInvViewProjMatrices(invViewProjMatrices);
 	light->GetViewProjectionMatrices(viewProjMatrices);
 
-	//prevViewProjMat is viewMatrices[0]
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &viewProjMatrices[0], sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
@@ -271,7 +270,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 		{
 			CameraForm::CamMatCBData cb;
 			{
-				cb.viewMat		= viewMatrices[i];
+				cb.viewMat		= invViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invViewProj 사용
 				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
@@ -293,7 +292,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat = light->GetViewMatrix();
+		cbData.viewMat = light->GetInvViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invViewProj 사용
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
 	}
 
