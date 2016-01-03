@@ -93,7 +93,7 @@ void Scene::RenderPreview()
 		(*iter)->UpdateConstBuffer(_dx);
 
 	_lightManager->ComputeAllLightViewProj(_boundBox);
-	_lightManager->UpdateBuffer(_dx);
+	_lightManager->UpdateBuffer(_dx, _shadowRenderer->GetUseVSM());
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)

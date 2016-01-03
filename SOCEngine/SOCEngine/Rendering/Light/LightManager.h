@@ -80,15 +80,15 @@ namespace Rendering
 			~LightManager(void);
 
 		private:
-			void UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context);
-			void UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context);
+			void UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context, bool useVSM);
+			void UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context, bool useVSM);
 
 		public:
 			void InitializeAllShaderResourceBuffer();
 			void DestroyAllShaderReourceBuffer();
 
 			void Add(Light::LightForm*& light);
-			void UpdateBuffer(const Device::DirectX* dx);
+			void UpdateBuffer(const Device::DirectX* dx, bool useVSM);
 			void ComputeAllLightViewProj(const Intersection::BoundBox& sceneBoundBox);
 
 			bool Has(Light::LightForm*& light) const;

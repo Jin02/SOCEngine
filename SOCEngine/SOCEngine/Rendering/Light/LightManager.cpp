@@ -181,17 +181,17 @@ void LightManager::Add(LightForm*& light)
 	_lights.Add(searchKey, Lights(light, counter));
 }
 
-void LightManager::UpdateBuffer(const DirectX* dx)
+void LightManager::UpdateBuffer(const DirectX* dx, bool useVSM)
 {
 	D3D_FEATURE_LEVEL level = dx->GetFeatureLevel();
 
 	if(level >= D3D_FEATURE_LEVEL_11_1)
-		UpdateBufferUsingMapNoOverWrite(dx->GetContext());
+		UpdateBufferUsingMapNoOverWrite(dx->GetContext(), useVSM);
 	else
-		UpdateBufferUsingMapDiscard(dx->GetContext());
+		UpdateBufferUsingMapDiscard(dx->GetContext(), useVSM);
 }
 
-void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
+void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context, bool useVSM)
 {
 	bool isUpdatedDL = false;
 	bool isUpdatedPL = false;
@@ -229,7 +229,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 
 			DirectionalLightShadow::Param shadowParam;
 			if( useShadow )
-				dl->GetShadow()->MakeParam(shadowParam);
+				dl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			LightForm::LightTransformBuffer* transform = _directionalLightTransformBuffer.Find(key);
 			if( transform == nullptr ) //하나만 검색해도 됨
@@ -262,7 +262,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 
 			PointLightShadow::Param shadowParam;
 			if( useShadow )
-				pl->GetShadow()->MakeParam(shadowParam);
+				pl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			LightForm::LightTransformBuffer* transform = _pointLightTransformBuffer.Find(key);
 			if( transform == nullptr)
@@ -294,7 +294,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 
 			SpotLightShadow::Param shadowParam;
 			if( useShadow )
-				sl->GetShadow()->MakeParam(shadowParam);
+				sl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			LightForm::LightTransformBuffer* transform = _spotLightTransformBuffer.Find(key);
 			if( transform == nullptr )
@@ -411,7 +411,7 @@ void LightManager::UpdateBufferUsingMapDiscard(ID3D11DeviceContext* context)
 	}
 }
 
-void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
+void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context, bool useVSM)
 {
 	auto CalcStartEndIdx = [](uint& start, uint& end, uint newIdx)
 	{
@@ -471,7 +471,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 			DirectionalLightShadow::Param shadowParam;
 			if(useShadow)
-				dl->GetShadow()->MakeParam(shadowParam);
+				dl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _directionalLightTransformBuffer.Find(key, &lightIdx);
@@ -526,7 +526,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 			PointLightShadow::Param shadowParam;
 			if( useShadow )
-				pl->GetShadow()->MakeParam(shadowParam);
+				pl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _pointLightTransformBuffer.Find(key, &lightIdx);
@@ -576,7 +576,7 @@ void LightManager::UpdateBufferUsingMapNoOverWrite(ID3D11DeviceContext* context)
 
 			SpotLightShadow::Param shadowParam;
 			if( useShadow )
-				sl->GetShadow()->MakeParam(shadowParam);
+				sl->GetShadow()->MakeParam(shadowParam, useVSM);
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _spotLightTransformBuffer.Find(key, &lightIdx);
