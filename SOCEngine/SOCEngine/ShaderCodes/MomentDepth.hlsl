@@ -12,7 +12,13 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
 	ps.position			= mul(posWorld, cameraMat_viewProj);
+
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+	float4 invPos		= mul(posWorld, cameraMat_view); // ShadowMap에서 사용하는 viewMat은 invViewProjMat임.
+	ps.depth			= invPos.z / invPos.w;
+#else
 	ps.depth			= ps.position.z / ps.position.w;
+#endif
 
 	return ps;
 }
@@ -44,7 +50,6 @@ float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 	return moment;
 #else
-	// x는 이미 다른곳에서 기록 중
-	return moment.y;
+	return moment.y;	// x는 이미 다른곳에서 기록 중
 #endif
 }
