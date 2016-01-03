@@ -294,7 +294,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 					obj->GetTransform()->FetchWorldPosition(worldPos);
 
 					Sphere sphere(worldPos, obj->GetRadius());
-					isCulled |= (*intersectFunc)(sphere) == false;
+					isCulled |= ((*intersectFunc)(sphere) == false);
 				}
 
 				if(isCulled == false)
@@ -472,15 +472,15 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		if(useShadow)
 		{
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-			ID3D11SamplerState* shadowSamplerState = dx->GetGreaterEqualSamplerComparisonState();
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
 #else
-			ID3D11SamplerState* shadowSamplerState = dx->GetLessEqualSamplerComparisonState();
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
 #endif
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
 			if(useVSM)
 			{
-				ID3D11SamplerState* linearSamplerState = dx->GetSamplerStateLinear();
-				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &linearSamplerState);
+				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &shadowSamplerState);
 			}
 		}
 
