@@ -84,29 +84,29 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	// Input Buffer Setting
 	{
 		// Point Light Transform
-		uint idx = (uint)InputSRBufferBindSlotIndex::PointLightRadiusWithCenter;
+		uint idx = (uint)TextureBindIndex::PointLightRadiusWithCenter;
 		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformSRBuffer();
 		AddInputBufferToList(_inputPointLightTransformBuffer, idx, srBuffer);
 		
 		// Spot Light Transform
-		idx = (uint)InputSRBufferBindSlotIndex::SpotLightRadiusWithCenter;
+		idx = (uint)TextureBindIndex::SpotLightRadiusWithCenter;
 		srBuffer = lightManager->GetSpotLightTransformSRBuffer();
 		AddInputBufferToList(_inputSpotLightTransformBuffer, idx, srBuffer);
 
-		idx = (uint)InputSRBufferBindSlotIndex::SpotLightParam;
+		idx = (uint)TextureBindIndex::SpotLightParam;
 		srBuffer = lightManager->GetSpotLightParamSRBuffer();
 		AddInputBufferToList(_inputSpotLightParamBuffer, idx, srBuffer);
 
 		// depth buffer
 		{
 			// Opaque Depth Buffer
-			idx = (uint)InputSRBufferBindSlotIndex::GBuffer_Depth;
+			idx = (uint)TextureBindIndex::GBuffer_Depth;
 			AddTextureToInputTextureList(idx, opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
 			{
-				idx = (uint)InputSRBufferBindSlotIndex::GBuffer_BlendedDepth;
+				idx = (uint)TextureBindIndex::GBuffer_BlendedDepth;
 				AddTextureToInputTextureList(idx, blendedDepthBuffer);
 			}
 		}
@@ -143,7 +143,7 @@ void LightCulling::Dispatch(const Device::DirectX* dx,
 		ShaderForm::InputConstBuffer icb;
 
 		icb.buffer		= tbrConstBuffer;
-		icb.bindIndex	= (uint)InputConstBufferBindSlotIndex::TBRParam;
+		icb.bindIndex	= (uint)ConstBufferBindIndex::TBRParam;
 		inputConstBuffers.push_back(icb);
 	}
 	if(additionalConstBuffers)

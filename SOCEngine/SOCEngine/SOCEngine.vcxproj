@@ -86,6 +86,7 @@
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h" />
+    <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h" />
     <ClInclude Include="Rendering\GI\Voxelization.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
@@ -105,6 +106,7 @@
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
+    <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\HullShader.h" />
@@ -117,8 +119,8 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
     <ClInclude Include="Rendering\Shading\OffScreen.h" />
+    <ClInclude Include="Rendering\Shading\BindIndexInfo.h" />
     <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
-    <ClInclude Include="Rendering\Shading\TBRShaderIndexSlotInfo.h" />
     <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h" />
     <ClInclude Include="Rendering\Shadow\PointLightShadow.h" />
     <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
@@ -145,7 +147,7 @@
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -153,8 +155,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <ClInclude Include="ShaderCodes\DynamicLightingCommon.h" />
+    <ClInclude Include="ShaderCodes\DynamicLighting.h" />
     <ClInclude Include="ShaderCodes\GBufferCommon.h" />
+    <ClInclude Include="ShaderCodes\GICommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -167,6 +170,7 @@
     <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h" />
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h" />
     <ClInclude Include="ShaderCodes\MonteCarlo.h" />
+    <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -187,8 +191,9 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\FullScreenShader.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
+    <ClInclude Include="ShaderCodes\Shadow.h" />
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
@@ -210,6 +215,15 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
+    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -238,6 +252,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -250,7 +267,7 @@
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

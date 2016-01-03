@@ -13,6 +13,8 @@
 #include "MeshCamera.h"
 #include "BoundBox.h"
 
+#include "RenderTypes.h"
+
 namespace Core
 {
 	class Scene;
@@ -45,6 +47,10 @@ namespace Rendering
 			Texture::DepthBuffer*	_spotLightShadowMapAtlas;
 			Texture::DepthBuffer*	_directionalLightShadowMapAtlas;
 
+			Texture::RenderTexture*	_pointLightMomentShadowMapAtlas;
+			Texture::RenderTexture*	_spotLightMomentShadowMapAtlas;
+			Texture::RenderTexture*	_directionalLightMomentShadowMapAtlas;
+
 		private:
 			struct LightAddress
 			{
@@ -54,7 +60,6 @@ namespace Rendering
 			struct ShadowCastingPointLight : public LightAddress
 			{
 				std::array<Buffer::ConstBuffer*, 6> camConstBuffers;
-
 			};
 			struct ShadowCastingSpotDirectionalLight : public LightAddress
 			{
@@ -87,12 +92,14 @@ namespace Rendering
 			uint	_updateConter;
 			uint	_prevUpdateCounter;
 
+			bool	_useVSM;
+
 		public:
 			ShadowRenderer();
 			~ShadowRenderer();
 
 		public:
-			void Initialize(uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
+			void Initialize(bool useVSM, uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
 
 		public:
 			void ResizeShadowMapAtlas(
@@ -137,6 +144,12 @@ namespace Rendering
 			GET_ACCESSOR(PointLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _pointLightShadowIdxToLightIdxSRBuffer);
 			GET_ACCESSOR(SpotLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _spotLightShadowIdxToLightIdxSRBuffer);
 			GET_ACCESSOR(DirectionalLightShadowIndexToLightIndexSRBuffer,	const Buffer::ShaderResourceBuffer*, _directionalLightShadowIdxToLightIdxSRBuffer);
+
+			GET_ACCESSOR(PointLightMomentShadowMapAtlas,		const Texture::RenderTexture*,	_pointLightMomentShadowMapAtlas);
+			GET_ACCESSOR(SpotLightMomentShadowMapAtlas,			const Texture::RenderTexture*,	_spotLightMomentShadowMapAtlas);
+			GET_ACCESSOR(DirectionalLightMomentShadowMapAtlas,	const Texture::RenderTexture*,	_directionalLightMomentShadowMapAtlas);
+
+			GET_ACCESSOR(UseVSM, bool, _useVSM);
 
 			bool IsWorking() const;
 		};

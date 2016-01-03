@@ -1,4 +1,4 @@
-#include "TBRShaderIndexSlotInfo.h"
+#include "BindIndexInfo.h"
 #include "Voxelization.h"
 #include "Object.h"
 #include "ResourceManager.h"
@@ -17,9 +17,7 @@ using namespace Rendering::View;
 using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
-	: _viewProjAxisesConstBuffer(nullptr), _infoConstBuffer(nullptr),
-	_maxNumOfCascade(0),
-	_clearVoxelMapCS(nullptr), 
+:	_infoConstBuffer(nullptr), _clearVoxelMapCS(nullptr), 
 	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr)
 {
 }
@@ -33,14 +31,12 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_voxelEmissionMapAtlas);
 
 	SAFE_DELETE(_infoConstBuffer);
-	SAFE_DELETE(_viewProjAxisesConstBuffer);
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dimension)
+void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, float minWorldSize, uint dimension)
 {
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
-	_maxNumOfCascade = maxNumOfCascade;
 
 	auto Log2 = [](float v) -> float
 	{
@@ -49,6 +45,13 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
+	GlobalInfo& globalInfo = outGlobalInfo;
+	globalInfo.maxNumOfCascade		= maxNumOfCascade;
+	globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
+	globalInfo.initVoxelSize		= minWorldSize / (float)dimension;
+	globalInfo.initWorldSize		= minWorldSize;
+	globalInfo.maxMipLevel			= (float)mipmapLevels;
+
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
 	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
@@ -59,18 +62,14 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 	_infoConstBuffer = new ConstBuffer;
-	_infoConstBuffer->Initialize(sizeof(Info));
+	_infoConstBuffer->Initialize(sizeof(InfoCBData));
+	_constBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::Voxelization_InfoCB, _infoConstBuffer, false, true, false, true));
 
-	_viewProjAxisesConstBuffer = new ConstBuffer;
-	_viewProjAxisesConstBuffer->Initialize(sizeof(ViewProjAxisesCBData));
+	InitializeClearVoxelMap(dimension, maxNumOfCascade);
+}
 
-	Info info;
-	{
-		info.dimension = dimension;
-		info.voxelizeSize = minWorldSize;
-	}
-	UpdateInitVoxelizationInfo(info);
-
+void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
+{
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
@@ -88,7 +87,7 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 		{
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
-		
+
 		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)AnisotropicVoxelMapAtlas::Direction::Num);
 		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
 		threadGroup.z = ComputeThreadGroupSideLength(dimension);
@@ -100,11 +99,11 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ShaderForm::InputTexture> inputTextures;
 	{
 		ShaderForm::InputTexture inputTexture;
-		inputTexture.bindIndex	= (uint)BindIndex::AlbedoUAV;
+		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		inputTexture.texture	= _voxelAlbedoMapAtlas;
-		inputTexture.bindIndex	= (uint)BindIndex::NormalUAV;
+		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
 		inputTexture.texture	= _voxelNormalMapAtlas;
-		inputTexture.bindIndex	= (uint)BindIndex::EmissionUAV;
+		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
 		inputTexture.texture	= _voxelEmissionMapAtlas;
 
 		inputTextures.push_back(inputTexture);
@@ -113,21 +112,18 @@ void Voxelization::Initialize(uint maxNumOfCascade, float minWorldSize, uint dim
 	std::vector<ComputeShader::Output> outputs;
 	{
 		ComputeShader::Output output;
-		output.bindIndex	= (uint)BindIndex::AlbedoUAV;
-		output.output		= _voxelAlbedoMapAtlas->GetMipmapUAV(0);
-		output.bindIndex	= (uint)BindIndex::NormalUAV;
-		output.output		= _voxelNormalMapAtlas->GetMipmapUAV(0);
-		output.bindIndex	= (uint)BindIndex::EmissionUAV;
-		output.output		= _voxelEmissionMapAtlas->GetMipmapUAV(0);
+		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
+		output.output		= _voxelAlbedoMapAtlas->GetSourceMapUAV();
+		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
+		output.output		= _voxelNormalMapAtlas->GetSourceMapUAV();
+		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
+		output.output		= _voxelEmissionMapAtlas->GetSourceMapUAV();
 
 		outputs.push_back(output);
 	}
 
 	_clearVoxelMapCS->SetInputTextures(inputTextures);
 	_clearVoxelMapCS->SetOutputs(outputs);
-
-	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)BindIndex::InfoCB, _infoConstBuffer, false, true, false, true));
-	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)BindIndex::ViewProjAxisesCB, _viewProjAxisesConstBuffer, false, true, false, true));
 }
 
 void Voxelization::Destroy()
@@ -137,9 +133,8 @@ void Voxelization::Destroy()
 	_voxelEmissionMapAtlas->Destory();
 
 	_infoConstBuffer->Destory();
-	_viewProjAxisesConstBuffer->Destory();
 
-	_inputConstBuffers.clear();
+	_constBuffers.clear();
 }
 
 void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
@@ -147,7 +142,10 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 	_clearVoxelMapCS->Dispatch(dx->GetContext());
 }
 
-void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camera, const RenderManager*& renderManager, bool onlyStaticMesh)
+void Voxelization::Voxelize(const Device::DirectX*& dx,
+							const MeshCamera*& camera, const RenderManager*& renderManager,
+							const GlobalInfo& globalInfo,
+							bool onlyStaticMesh)
 {
 	Math::Matrix camWorldMat;
 	{
@@ -174,73 +172,58 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	float cameraFar  = camera->GetFar();
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	ID3D11RasterizerState* originRSState = nullptr;
-	context->RSGetState(&originRSState);
-
-	ID3D11DepthStencilState* originDepthState = nullptr;
-	uint originDepthStateRef = 0;
-	context->OMGetDepthStencilState(&originDepthState, &originDepthStateRef);
-
 	context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
+
 	float blendFactor[1] = {0, };
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+
+	D3D11_VIEWPORT originViewport;
+	uint originViewportNum = 0;
+	context->RSGetViewports(&originViewportNum, &originViewport);
+
+	float dimension = float(1 << globalInfo.voxelDimensionPow2);
+
 	D3D11_VIEWPORT viewport;
 	{
 		viewport.TopLeftX	= 0.0f;
 		viewport.TopLeftY	= 0.0f;
 		viewport.MinDepth	= 0.0f;
 		viewport.MaxDepth	= 1.0f;
-		viewport.Width		= (float)_initVoxelizationInfo.dimension;
-		viewport.Height		= (float)_initVoxelizationInfo.dimension;
+		viewport.Width		= dimension;
+		viewport.Height		= dimension;
 	}
 	context->RSSetViewports(1, &viewport);
 
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
-
-	D3D11_VIEWPORT originViewport;
-	{
-		uint vpNum = 1;
-		context->RSGetViewports(&vpNum, &originViewport);
-	}
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
 
 	ID3D11UnorderedAccessView* uavs [] =
 	{
-		_voxelAlbedoMapAtlas->GetMipmapUAV(0)->GetView(),
-		_voxelNormalMapAtlas->GetMipmapUAV(0)->GetView(),
-		_voxelEmissionMapAtlas->GetMipmapUAV(0)->GetView()
+		_voxelAlbedoMapAtlas->GetSourceMapUAV()->GetView(),
+		_voxelNormalMapAtlas->GetSourceMapUAV()->GetView(),
+		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView()
 	};
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
-	for(uint currentCascade=0; currentCascade<_maxNumOfCascade; ++currentCascade)
+	uint maxCascade = globalInfo.maxNumOfCascade;
+	for(uint currentCascade=0; currentCascade<maxCascade; ++currentCascade)
 	{
 		// Compute & Update Const Buffers
 		{
 			// Compute Voxelize Bound
 			float worldSize;
-			Vector3 bbMin, bbMax, bbMid, worldMinPos;
-			{
-				ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, &worldMinPos, currentCascade, camWorldPos);
-			}
+			Vector3 bbMin, bbMax, bbMid;
+			ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, currentCascade, camWorldPos);
 
-			// Update Voxelize Info CB
-			{
-				InfoCBData currentVoxelizeInfo;
-				{
-					currentVoxelizeInfo.currentCascade	= currentCascade;
-					currentVoxelizeInfo.dimension		= _initVoxelizationInfo.dimension;
-
-					currentVoxelizeInfo.voxelizeSize	= worldSize;
-					currentVoxelizeInfo.voxelSize		= worldSize / (float)currentVoxelizeInfo.dimension;
-
-					currentVoxelizeInfo.voxelizeMinPos	= worldMinPos;
-					currentVoxelizeInfo.dummy = 0;
-				}
-				
-				_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
-			}
+			InfoCBData currentVoxelizeInfo;
+			currentVoxelizeInfo.currentCascade	= currentCascade;
+			currentVoxelizeInfo.voxelizeSize	= worldSize;
+			currentVoxelizeInfo.voxelSize		= worldSize / dimension;
+			currentVoxelizeInfo.voxelizeMinPos	= bbMin;
+			currentVoxelizeInfo.dummy1			= 0.0f;
+			currentVoxelizeInfo.dummy2			= 0.0f;
 
 			// Update View Proj ConstBuffer
 			{
@@ -267,22 +250,21 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 				LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
 				LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
 
-				ViewProjAxisesCBData viewProjAxises;
-				viewProjAxises.viewProjX = viewAxisX * orthoProjMat;
-				viewProjAxises.viewProjY = viewAxisY * orthoProjMat;
-				viewProjAxises.viewProjZ = viewAxisZ * orthoProjMat;
-
-				_viewProjAxisesConstBuffer->UpdateSubResource(context, &viewProjAxises);
+				currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
+				currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
+				currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
 			}
+
+			_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
 		}
 
 		// Render Voxel
 		{
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_inputConstBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
 
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, MeshCamera::RenderType::Voxelization, nullptr, nullptr, &_inputConstBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
 		}
 	}
 
@@ -290,20 +272,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx, const MeshCamera*& camer
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
 
 	ID3D11SamplerState* nullSampler = nullptr;
-	context->PSSetSamplers((uint)TBDR::InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
-	context->RSSetState(originRSState);
-	context->RSSetViewports(1, &originViewport);
-	context->OMSetDepthStencilState(originDepthState, originDepthStateRef);
-}
-
-void Voxelization::UpdateInitVoxelizationInfo(const Info& info)
-{
-	InfoCBData& initInfo = _initVoxelizationInfo;
-
-	initInfo.currentCascade	= 0;
-	initInfo.voxelizeSize	= info.voxelizeSize;
-	initInfo.dimension		= info.dimension;
-	initInfo.voxelSize		= info.voxelizeSize / (float)info.dimension;
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
+	context->RSSetViewports(originViewportNum, &originViewport);
 }
 
 void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos) const
@@ -312,7 +282,7 @@ void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint curre
 
 	float worldSize = 0.0f;
 	Vector3 centerPos;
-	ComputeBound(nullptr, &centerPos, nullptr, &worldSize, nullptr, currentCascade, camWorldPos);
+	ComputeBound(nullptr, &centerPos, nullptr, &worldSize, currentCascade, camWorldPos);
 
 	ASSERT_COND_MSG(worldSize != 0.0f, "Error, Voxelize Size is zero");
 
@@ -331,18 +301,13 @@ void Voxelization::ComputeBound(
 	Math::Vector3* outMid,
 	Math::Vector3* outMax,
 	float* outWorldSize,
-	Math::Vector3* outVoxelizeMinPos,
 	uint currentCascade,
 	const Math::Vector3& camWorldPos) const
 {
 	float worldSize		= _initVoxelizationInfo.voxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
-	float offset		= (worldSize / (float)(currentCascade + 1)) / 2.0f;
-	Vector3 worldMinPos	= camWorldPos - Vector3(offset, offset, offset);
-
 	float halfWorldSize	= worldSize / 2.0f;
-	float cascadeScale	= (float)(currentCascade + 1);
 
-	Vector3 bbMin = worldMinPos * Vector3(cascadeScale, cascadeScale, cascadeScale);
+	Vector3 bbMin = camWorldPos - Vector3(halfWorldSize, halfWorldSize, halfWorldSize);
 	Vector3 bbMax = bbMin + Vector3(worldSize, worldSize, worldSize);
 	Vector3 bbMid = (bbMin + bbMax) / 2.0f;
 
@@ -350,7 +315,4 @@ void Voxelization::ComputeBound(
 	if(outMid)			(*outMid) = bbMid;
 	if(outMax)			(*outMax) = bbMax;
 	if(outWorldSize)	(*outWorldSize) = worldSize;
-	
-	if(outVoxelizeMinPos)
-		(*outVoxelizeMinPos) = worldMinPos;
 }

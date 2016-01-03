@@ -1,3 +1,5 @@
+//NOT_CREATE_META_DATA
+
 #ifndef __SOC_ALPHA_BLENDING_H__
 #define __SOC_ALPHA_BLENDING_H__
 

@@ -3,28 +3,25 @@
 #ifndef __SOC_VOXELIZATION_COMMON_H__
 #define __SOC_VOXELIZATION_COMMON_H__
 
-#include "DynamicLightingCommon.h"
+#include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
+#include "GICommon.h"
 
 #define USE_VOXELIZATION_BLOATING_POS
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
-cbuffer Voxelization_ViewProjAxis_CB : register( b5 )
+cbuffer Voxelization_Info_CB : register( b5 )
 {
 	matrix	voxelization_vp_axisX;
 	matrix	voxelization_vp_axisY;
 	matrix	voxelization_vp_axisZ;
-};
 
-cbuffer Voxelization_Info_CB : register( b6 )
-{
-	float	voxelization_voxelizeSize;
-	float	voxelization_dimension;
 	float3	voxelization_minPos;
-
-	float	voxelization_voxelSize;
 	uint	voxelization_currentCascade;
-	float	voxelization_dummy;
+
+	float	voxelization_voxelizeSize;
+	float	voxelization_voxelSize;
+	float2	voxelization_dummy;
 };
 
 SamplerState defaultSampler			: register( s0 );
@@ -35,12 +32,6 @@ RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
 RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
 #endif
 
-int3 GetVoxelIndex(float3 worldPos)
-{
-	return int3( (worldPos - voxelization_minPos) / voxelization_voxelSize );
-}
-
-//if isEmission is not, input value to emission
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
 {
 	uint newValue = Float4ToUint(value);

@@ -22,7 +22,7 @@ namespace Rendering
 			~DirectionalLightShadow();
 
 		public:
-			void MakeParam(Param& outParam) const;
+			void MakeParam(Param& outParam, bool useVSM) const;
 		};
 	}
 }

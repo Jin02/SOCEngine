@@ -62,7 +62,7 @@ void OnlyLightCulling::Initialize(
 
 		ComputeShader::Output outputBuffer;
 		{
-			outputBuffer.bindIndex	= (uint)OutputBufferShaderIndex::LightIndexBuffer;
+			outputBuffer.bindIndex	= (uint)UAVBindIndex::Lightculling_LightIndexBuffer;
 			outputBuffer.output		= _uav;
 		}
 

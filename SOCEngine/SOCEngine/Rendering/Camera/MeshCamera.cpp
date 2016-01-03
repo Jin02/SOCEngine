@@ -39,19 +39,19 @@ void MeshCamera::OnInitialize()
 
 	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create albedo_emission render texture" 
 		);
 
 	_specular_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _specular_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
@@ -100,7 +100,7 @@ void MeshCamera::OnDestroy()
 
 void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	CamConstBufferData camConstBufferData;
+	CamMatCBData camConstBufferData;
 
 	Matrix	worldMat;
 	Matrix& viewMat = camConstBufferData.viewMat;
@@ -113,7 +113,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		GetProjectionMatrix(projMat, true);
 		viewProjMat = viewMat * projMat;
 
-		bool updatedVP = memcmp(&_prevCamConstBufferData, &camConstBufferData, sizeof(CamConstBufferData)) != 0;
+		bool updatedVP = memcmp(&_prevCamMatCBData, &camConstBufferData, sizeof(CamMatCBData)) != 0;
 		if(updatedVP)
 		{
 			// Make Frustum
@@ -123,18 +123,17 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 				_frustum->Make(camConstBufferData.viewMat * notInvProj);
 			}
 
-			_prevCamConstBufferData = camConstBufferData;
+			_prevCamMatCBData = camConstBufferData;
 
 			Matrix::Transpose(camConstBufferData.viewMat,		camConstBufferData.viewMat);
 			Matrix::Transpose(camConstBufferData.viewProjMat,	viewProjMat);
 
-			_camConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
+			_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
 		}
 
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 			(*iter)->Culling(_frustum);
 	}
-
 
 	LightCulling::TBRParam tbrParam;
 	{
@@ -180,7 +179,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 void MeshCamera::RenderMeshWithoutIASetVB(
 	const Device::DirectX* dx, const RenderManager* renderManager,
 	const Geometry::Mesh* mesh, RenderType renderType, 
-	const ConstBuffer* cameraConstBuffer,
+	const ConstBuffer* camMatConstBuffer,
 	const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -189,20 +188,9 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 	filter->GetIndexBuffer()->IASetBuffer(context);
 
 	ShaderGroup shaders;
-	if(renderType == RenderType::GBuffer_Opaque || renderType == RenderType::GBuffer_AlphaBlend)
-		renderManager->FindGBufferShader(shaders, filter->GetBufferFlag(), renderType == RenderType::GBuffer_AlphaBlend);
-	else if(renderType == RenderType::Forward_Transparency)
-		renderManager->FindTransparencyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Forward_DepthOnly)
-		renderManager->FindDepthOnlyShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Forward_AlphaTest)
-		renderManager->FindOnlyAlphaTestWithDiffuseShader(shaders, filter->GetBufferFlag());
-	else if(renderType == RenderType::Voxelization)
-		renderManager->FindVoxelizationShader(shaders, filter->GetBufferFlag());
-	else
-	{
+
+	if(renderManager->FindShader(shaders, filter->GetBufferFlag(), renderType) == false)
 		ASSERT_MSG("Error, Unsupported renderType");
-	}
 
 	Geometry::MeshRenderer* renderer	= mesh->GetMeshRenderer();
 	const auto& materials				= renderer->GetMaterials();
@@ -210,9 +198,9 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 	{					
 		Material* material = (*iter);
 		const Material::CustomShader& customShader = material->GetCustomShader();
-		PixelShader* ps = shaders.ps;
-		VertexShader* vs = shaders.vs;
-		GeometryShader* gs = shaders.gs;
+		PixelShader* ps		= shaders.ps;
+		VertexShader* vs	= shaders.vs;
+		GeometryShader* gs	= shaders.gs;
 
 		if(customShader.shaderGroup.IsAllEmpty() == false)
 		{
@@ -232,16 +220,16 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		{
 			// Setting Transform ConstBuffer
 			{
-				uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferBindSlotIndex::World;
+				uint semanticIdx = (uint)ConstBufferBindIndex::World;
 				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetWorldMatrixConstBuffer(), true, false, false, false);
 				constBuffers.push_back(buf);
 			}
 
 			// Camera
-			if(cameraConstBuffer)
+			if(camMatConstBuffer)
 			{
-				uint semanticIdx = (uint)PhysicallyBasedMaterial::InputConstBufferBindSlotIndex::Camera;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, cameraConstBuffer, true, false, false, false);
+				uint semanticIdx = (uint)ConstBufferBindIndex::Camera;
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, camMatConstBuffer, true, false, false, false);
 				constBuffers.push_back(buf);
 			}
 		}
@@ -256,7 +244,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		vs->BindInputLayoutToContext(context);
 		vs->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 
-		if(ps && (renderType != RenderType::Forward_DepthOnly) )
+		if(ps && (renderType != RenderType::Forward_OnlyDepth) )
 		{
 			ps->BindShaderToContext(context);
 			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
@@ -279,7 +267,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
-	const Buffer::ConstBuffer* cameraConstBuffer,
+	const Buffer::ConstBuffer* camMatConstBuffer,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
 	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
@@ -317,7 +305,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, additionalConstBuffers);
 				}
 			}
 		}
@@ -327,7 +315,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
-	RenderType renderType, const Buffer::ConstBuffer* cameraConstBuffer,
+	RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
 	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
@@ -358,13 +346,13 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, cameraConstBuffer, additionalConstBuffers);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, additionalConstBuffers);
 			}
 		}
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool useVSM)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -418,7 +406,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 	//};
 		
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &samplerState);
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
 
 	//GBuffer
 	{
@@ -439,7 +427,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			uint count = meshes.meshes.GetVector().size();
 
 			if(count > 0)
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer);
 		}
 
 		//Alpha Test Mesh
@@ -456,7 +444,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camMatConstBuffer);
 
 				context->RSSetState( nullptr );
 
@@ -474,7 +462,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_DepthOnly, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer);
 		}
 	}
 
@@ -488,7 +476,12 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 #else
 			ID3D11SamplerState* shadowSamplerState = dx->GetLessEqualSamplerComparisonState();
 #endif
-			context->CSSetSamplers((uint)InputSamplerStateBindSlotIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+			if(useVSM)
+			{
+				ID3D11SamplerState* linearSamplerState = dx->GetSamplerStateLinear();
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &linearSamplerState);
+			}
 		}
 
 		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
@@ -499,7 +492,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		context->VSSetShader(nullptr, nullptr, 0);
 		context->PSSetShader(nullptr, nullptr, 0);
 		ID3D11SamplerState* nullSampler = nullptr;
-		context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &nullSampler);
+		context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
 
 		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
@@ -507,7 +500,12 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 
 		if(useShadow)
-			context->CSSetSamplers((uint)InputSamplerStateBindSlotIndex::ShadowComprisonSamplerState, 1, &nullSampler);
+		{
+			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSampler);
+
+			if(useVSM)
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &nullSampler);
+		}
 	}
 
 	// Main RT
@@ -529,38 +527,38 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
 			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
 				
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::PointLightRadiusWithCenter, 
+			context->PSSetShaderResources((uint)TextureBindIndex::PointLightRadiusWithCenter, 
 				1, lightManager->GetPointLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::PointLightColor, 
+			context->PSSetShaderResources((uint)TextureBindIndex::PointLightColor, 
 				1, lightManager->GetPointLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::SpotLightRadiusWithCenter, 
+			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightRadiusWithCenter, 
 				1, lightManager->GetSpotLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::SpotLightColor, 
+			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightColor, 
 				1, lightManager->GetSpotLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::SpotLightParam,
+			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightParam,
 				1, lightManager->GetSpotLightParamSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::DirectionalLightCenterWithDirZ,
+			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightCenterWithDirZ,
 				1, lightManager->GetDirectionalLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::DirectionalLightColor,
+			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightColor,
 				1, lightManager->GetDirectionalLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::DirectionalLightParam,
+			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightParam,
 				1, lightManager->GetDirectionalLightParamSRBuffer()->GetShaderResourceView());
 
 			// Light Culling Buffer
-			context->PSSetShaderResources((uint)InputSRBufferBindSlotIndex::LightIndexBuffer,
+			context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
 				1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
 
 			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
-			context->VSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);
-			context->PSSetConstantBuffers((uint)TBDR::InputConstBufferBindSlotIndex::TBRParam, 1, &tbrCB);
+			context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+			context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
 
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-			const uint startIdx	= (uint)InputSRBufferBindSlotIndex::PointLightRadiusWithCenter;
-			const uint srvNum	= (uint)InputSRBufferBindSlotIndex::DirectionalLightParam - (uint)InputSRBufferBindSlotIndex::PointLightRadiusWithCenter + 1;
+			const uint startIdx	= (uint)TextureBindIndex::PointLightRadiusWithCenter;
+			const uint srvNum	= (uint)TextureBindIndex::DirectionalLightParam - (uint)TextureBindIndex::PointLightRadiusWithCenter + 1;
 
 			ID3D11ShaderResourceView* nullSRV[srvNum] = {nullptr, };
 			context->PSSetShaderResources(startIdx,	srvNum, nullSRV);

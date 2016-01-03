@@ -19,18 +19,11 @@ struct PS_SCENE_INPUT
 	float3 tangent 					: TANGENT;
 };
 
-struct PS_POSITION_ONLY_INPUT //used in writing depth buffer
-{
-	float4 position 	 			: SV_POSITION;
-};
-
-/******************** Render Scene ********************/
-
 PS_SCENE_INPUT VS(VS_INPUT input)
 {
 	PS_SCENE_INPUT ps;
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position 		= mul(posWorld,						camera_viewProj);
+	ps.position 		= mul(posWorld,						cameraMat_viewProj);
 	ps.positionWorld	= posWorld.xyz;
 
 	ps.uv				= input.uv;
@@ -56,24 +49,4 @@ float4 PS(PS_SCENE_INPUT input) : SV_Target
 #endif
 }
 
-
-float4 OnlyAlpaTestWithDiffusePS( PS_SCENE_INPUT input ) : SV_TARGET
-{ 
-	float4 diffuseTex = diffuseTexture.Sample(defaultSampler, input.uv);
-	float opacityMap = 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
-	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
-	if(alpha < ALPHA_TEST_BIAS)
-		discard;
-
-	return float4(diffuseTex.rgb, alpha);
-}
-
-PS_POSITION_ONLY_INPUT DepthOnlyVS(VS_INPUT input)
-{
-	PS_POSITION_ONLY_INPUT ps;
-
-	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position			= mul(posWorld,						camera_viewProj);
-
-	return ps;
-}
+#include "OptionalRendering_Forward.h"

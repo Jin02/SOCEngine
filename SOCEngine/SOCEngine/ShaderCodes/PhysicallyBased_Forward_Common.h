@@ -7,7 +7,7 @@
 
 #include "PhysicallyBased_Common.h"
 #include "LightCullingCommonCS.h"
-#include "DynamicLightingCommon.h"
+#include "DynamicLighting.h"
 
 Buffer<uint> g_perLightIndicesInTile	: register( t13 );
 SamplerState defaultSampler				: register( s0 );

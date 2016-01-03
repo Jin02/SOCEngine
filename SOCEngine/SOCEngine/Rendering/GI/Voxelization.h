@@ -6,6 +6,7 @@
 #include "ConstBuffer.h"
 #include "MeshCamera.h"
 #include "ComputeShader.h"
+#include "GlobalIlluminationCommon.h"
 
 namespace Rendering
 {
@@ -14,34 +15,19 @@ namespace Rendering
 		class Voxelization
 		{
 		public:
-			struct Info
+			struct InfoCBData
 			{
-				float voxelizeSize;
-				uint  dimension;
-			};
+				Math::Matrix	viewProjX;
+				Math::Matrix	viewProjY;
+				Math::Matrix	viewProjZ;
 
-			struct InfoCBData : public Info
-			{
 				Math::Vector3	voxelizeMinPos;
-				float			voxelSize;
 				uint			currentCascade;
-				float			dummy;
-			};
 
-			struct ViewProjAxisesCBData
-			{
-				Math::Matrix viewProjX;
-				Math::Matrix viewProjY;
-				Math::Matrix viewProjZ;
-			};
+				float			voxelizeSize;
+				float			voxelSize;
 
-			enum class BindIndex : uint
-			{
-				AlbedoUAV			= 0,
-				NormalUAV			= 1,
-				EmissionUAV			= 2,
-				InfoCB				= 0,
-				ViewProjAxisesCB	= 1
+				float dummy1, dummy2;
 			};
 
 		private:
@@ -50,35 +36,31 @@ namespace Rendering
 			AnisotropicVoxelMapAtlas*							_voxelEmissionMapAtlas;
 
 			Buffer::ConstBuffer*								_infoConstBuffer;
-			Buffer::ConstBuffer*								_viewProjAxisesConstBuffer;
-
 			InfoCBData											_initVoxelizationInfo;
 
 			Math::Matrix										_prevStaticMeshVoxelizeViewMat;
 
-			uint												_maxNumOfCascade;
-
-			std::vector<Shader::ShaderForm::InputConstBuffer>	_inputConstBuffers;
+			std::vector<Shader::ShaderForm::InputConstBuffer>	_constBuffers;
 
 		private:
-			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
+			GPGPU::DirectCompute::ComputeShader*				_clearVoxelMapCS;
 
 		public:
 			Voxelization();
 			~Voxelization();
 
+		private:
+			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
+
 		public:
-			void Initialize(uint cascades, float minWorldSize = 4.0f, uint dimension = 256);
+			void Initialize(uint cascades, GlobalInfo& outGlobalInfo, float minWorldSize = 4.0f, uint dimension = 256);			
 			void Destroy();
 
 		public:
 			void ClearZeroVoxelMap(const Device::DirectX*& dx);
-			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, bool onlyStaticMesh);
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
 			void ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos) const;
-			void ComputeBound(Math::Vector3* outMin, Math::Vector3* outMid, Math::Vector3* outMax, float* outWorldSize, Math::Vector3* outVoxelizeMinPos, uint currentCascade, const Math::Vector3& camWorldPos) const;
-
-		public:
-			void UpdateInitVoxelizationInfo(const Info& info);
+			void ComputeBound(Math::Vector3* outMin, Math::Vector3* outMid, Math::Vector3* outMax, float* outWorldSize, uint currentCascade, const Math::Vector3& camWorldPos) const;
 		};
 	}
 }

@@ -14,12 +14,19 @@ PointLightShadow::~PointLightShadow()
 {
 }
 
-void PointLightShadow::MakeParam(Param& outParam) const
+void PointLightShadow::MakeParam(Param& outParam, bool useVSM) const
 {
 	ShadowCommon::MakeParam(outParam);
 
 	const PointLight* light = dynamic_cast<const PointLight*>(_owner);
-	light->GetViewProjectionMatrices(outParam.viewProjMat);
+
+#ifdef USE_SHADOW_INVERTED_DEPTH
+	if(useVSM)
+		light->GetInvViewProjectionMatrices(outParam.viewProjMat);
+	else
+#else
+		light->GetViewProjectionMatrices(outParam.viewProjMat);
+#endif
 
 	for(uint i=0; i<6; ++i)
 		Math::Matrix::Transpose(outParam.viewProjMat[i], outParam.viewProjMat[i]);

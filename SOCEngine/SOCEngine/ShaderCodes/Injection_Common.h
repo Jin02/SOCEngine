@@ -1,37 +1,16 @@
-//EMPTY_META_DATA
+//NOT_CREATE_META_DATA
 
 #ifndef __SOC_INJECTION_COMMON_H__
 #define __SOC_INJECTION_COMMON_H__
 
-#include "DynamicLightingCommon.h"
+#include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
 #include "Voxelization_Common.h"
-
-#ifdef USE_SHADOW_INVERTED_DEPTH
-
-//cbuffer Injection_Info_CB : register(b7)
-//{
-//	matrix injection_volumeProj;
-//};
-
-Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t26 );
-Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t27 );
-Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t28 );
-
-struct DSLightInvVPVMat
-{
-	matrix invMat;
-};
-struct PLightInvVPVMat
-{
-	matrix invMat[6];
-};
-
-StructuredBuffer<DSLightInvVPVMat>	g_inputDirectionalLightShadowInvVPVMatBuffer	: register( t29 );
-StructuredBuffer<PLightInvVPVMat>	g_inputPointLightShadowInvVPVMatBuffer			: register( t30 );
-StructuredBuffer<DSLightInvVPVMat>	g_inputSpotLightShadowInvVPVMatBuffer			: register( t31 );
+#include "GICommon.h"
 
 RWTexture3D<uint> OutAnistropicVoxelColorTexture	: register( u0 );
+
+#ifdef USE_SHADOW_INVERTED_DEPTH
 
 float4 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float3 dir, uint cascade)
 {
@@ -74,6 +53,8 @@ float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, flo
 	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
 }
 
+#endif
+
 void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx)
 {
 	float anisotropicNormals[6] = {
@@ -85,18 +66,17 @@ void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx
 		-normal.z
 	};
 
-	voxelIdx.y += voxelization_currentCascade * voxelization_dimension;
+	float dimension = GetDimension();
+	voxelIdx.y += voxelization_currentCascade * dimension;
 
 	if(any(radiosity > 0.0f))
 	{
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += (faceIndex * voxelization_dimension);
+			voxelIdx.x += (faceIndex * dimension);
 			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
 		}
 	}
 }
-
-#endif
 
 #endif

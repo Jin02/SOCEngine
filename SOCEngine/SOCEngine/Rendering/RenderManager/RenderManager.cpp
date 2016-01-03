@@ -18,12 +18,12 @@ RenderManager::~RenderManager()
 {
 }
 
-Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Type meshType, uint defaultVertexInputTypeFlag,
+Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint defaultVertexInputTypeFlag,
 													 const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName = "";
 	if(customShaderFileName ? customShaderFileName->empty() : true)
-		MakeDefaultSahderFileName(fileName, meshType, defaultVertexInputTypeFlag);
+		MakeDefaultSahderFileName(fileName, renderType, defaultVertexInputTypeFlag);
 	else
 		fileName = (*customShaderFileName);
 
@@ -33,31 +33,19 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 	if(macros)
 		targetShaderMacros.assign(macros->begin(), macros->end());
 
-	if(meshType == Geometry::MeshRenderer::Type::Opaque)
-		repo = &_gbufferShaders;
-	else if(meshType == Geometry::MeshRenderer::Type::AlphaBlend)
-	{
-		repo = &_gbufferShaders_alphaTest;
+	repo = &(_renderShaders[(uint)renderType]);
 
+	if(renderType == RenderType::GBuffer_AlphaBlend || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
+	{
 		ShaderMacro alphaTestMacro;
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	else if(meshType == Geometry::MeshRenderer::Type::Transparent)
+	if(renderType == RenderType::Forward_Transparency)// || renderType == RenderType::Forward_OnlyDepth)
 	{
-		repo = &_forward_transparentShaders;
-
 		ShaderMacro useTransparencyMacro;
 		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
 		targetShaderMacros.push_back(useTransparencyMacro);
-	}
-	else if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
-		repo = &_forward_onlyAlphaTestWithDiffuseShaders;
-	else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
-		repo = &_voxelizationShaders;
-	else
-	{
-		ASSERT_MSG("Error, not supported mesh type");
 	}
 
 	auto iter = repo->find(defaultVertexInputTypeFlag);
@@ -84,22 +72,24 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(Geometry::MeshRenderer::Typ
 	{
 		std::string vsMainFunc = "VS", psMainFunc ="PS", gsMainFunc = "";
 
-		if(meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
+		if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
 			psMainFunc = "OnlyAlpaTestWithDiffusePS";
-		else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
+		else if(renderType == RenderType::Voxelization)
 			gsMainFunc = "GS";
+		else if(renderType == RenderType::Forward_OnlyDepth)
+		{
+			vsMainFunc = "DepthOnlyVS";
+			psMainFunc = "";
+		}
+		else if(renderType == RenderType::Forward_MomentDepth || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
+		{
+			vsMainFunc = "MomentDepthVS";
+			psMainFunc = "MomentDepthPS";
+		}
 
 		shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros, resourceManager->GetShaderManager());
 		if(shader.IsAllEmpty() == false)
-		{
 			repo->insert(std::make_pair(defaultVertexInputTypeFlag, shader));
-
-			if(meshType == Geometry::MeshRenderer::Type::Transparent)
-			{
-				shader = LoadShader(fileName, "DepthOnlyVS", "", "", &targetShaderMacros, resourceManager->GetShaderManager());
-				_forward_depthOnlyShaders.insert(std::make_pair(defaultVertexInputTypeFlag, shader));
-			}
-		}
 	}
 
 	return shader;
@@ -113,16 +103,17 @@ void RenderManager::Initialize()
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=0; i< ((uint)Geometry::MeshRenderer::Type::MAX); ++i)
+	for(uint i=0; i< ((uint)RenderType::MAX_NUM); ++i)
 	{
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
-			(uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
+		RenderType type = (RenderType)i;
 
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+		LoadDefaultSahder(type, (uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
+
+		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
 
-		LoadDefaultSahder((Geometry::MeshRenderer::Type)i,
+		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL | 
 			(uint)DefaultVertexInputTypeFlag::TANGENT, nullptr, &macros);
@@ -223,68 +214,25 @@ bool RenderManager::HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::Me
 	return foundedMesh != nullptr;
 }
 
-bool RenderManager::FindGBufferShader(Shader::ShaderGroup& out, uint bufferFlag, bool isAlphaTest) const
-{	
-	return FindShaderFromHashMap(out, isAlphaTest ? _gbufferShaders_alphaTest : _gbufferShaders, bufferFlag);
-}
-
-bool RenderManager::FindTransparencyShader(Shader::ShaderGroup& out, uint bufferFlag) const
+bool RenderManager::FindShader(Shader::ShaderGroup& out, uint bufferFlag, RenderType renderType) const
 {
-	return FindShaderFromHashMap(out, _forward_transparentShaders, bufferFlag);
-}
+	const auto& hashMap = _renderShaders[(uint)renderType];
 
-bool RenderManager::FindDepthOnlyShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _forward_depthOnlyShaders, bufferFlag);
-}
-
-bool RenderManager::FindOnlyAlphaTestWithDiffuseShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _forward_onlyAlphaTestWithDiffuseShaders, bufferFlag);
-}
-
-bool RenderManager::FindVoxelizationShader(Shader::ShaderGroup& out, uint bufferFlag) const
-{
-	return FindShaderFromHashMap(out, _voxelizationShaders, bufferFlag);
-}
-
-bool RenderManager::FindShaderFromHashMap(Shader::ShaderGroup& outObject, const std::hash_map<uint, const Shader::ShaderGroup>& hashMap, uint key) const
-{
-	auto iter = hashMap.find(key);
+	auto iter = hashMap.find(bufferFlag);
 	if(iter == hashMap.end())
 		return false;
 
-	outObject = iter->second;
+	out = iter->second;
 	return true;
 }
 
-bool RenderManager::HasGBufferShader(uint bufferFlag, bool isAlphaTest) const
+bool RenderManager::HasShader(uint bufferFlag, RenderType renderType) const
 {
 	ShaderGroup dummy;
-	return FindGBufferShader(dummy, bufferFlag, isAlphaTest);
+	return FindShader(dummy, bufferFlag, renderType);
 }
 
-bool RenderManager::HasTransparencyShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindTransparencyShader(dummy, bufferFlag);
-}
-
-bool RenderManager::HasDepthOnlyShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindDepthOnlyShader(dummy, bufferFlag);
-}
-
-bool RenderManager::HasDepthOnlyShaderOnlyAlphaTestWithDiffuseShader(uint bufferFlag) const
-{
-	ShaderGroup dummy;
-	return FindOnlyAlphaTestWithDiffuseShader(dummy, bufferFlag);
-}
-
-void RenderManager::MakeDefaultSahderFileName(
-	std::string& outFileName,
-	Geometry::MeshRenderer::Type meshType, uint bufferFlag) const
+void RenderManager::MakeDefaultSahderFileName(std::string& outFileName, RenderType renderType, uint bufferFlag) const
 {
 	std::string defaultVertexInputTypeStr = "";
 
@@ -300,18 +248,26 @@ void RenderManager::MakeDefaultSahderFileName(
 		defaultVertexInputTypeStr += "UV0";
 
 	std::string frontFileName = "";
-
-	if( meshType == Geometry::MeshRenderer::Type::Opaque || 
-		meshType == Geometry::MeshRenderer::Type::AlphaBlend )
-		frontFileName = "PhysicallyBased_GBuffer_";
-	else if(meshType == Geometry::MeshRenderer::Type::Transparent ||
-			meshType == Geometry::MeshRenderer::Type::OnlyAlphaTestWithDiffuse)
-		frontFileName = "PhysicallyBased_Forward_";
-	else if(meshType == Geometry::MeshRenderer::Type::Voxelization)
-		frontFileName = "Voxelization_";
-	else
+	
+	switch(renderType)
 	{
+	case RenderType::Forward_AlphaTestWithDiffuse:
+	case RenderType::Forward_OnlyDepth:
+	case RenderType::Forward_Transparency:
+	case RenderType::Forward_MomentDepth:
+	case RenderType::Forward_MomentDepthWithAlphaTest:
+		frontFileName = "PhysicallyBased_Forward_";
+		break;
+	case RenderType::GBuffer_AlphaBlend:
+	case RenderType::GBuffer_Opaque:
+		frontFileName = "PhysicallyBased_GBuffer_";
+		break;
+	case RenderType::Voxelization:
+		frontFileName = "Voxelization_";
+		break;
+	default:
 		ASSERT_MSG("Error, unsupported mesh type");
+		break;
 	}
 
 	outFileName = frontFileName + defaultVertexInputTypeStr;

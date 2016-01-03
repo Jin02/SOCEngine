@@ -29,16 +29,20 @@ void SpotLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
 
 void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
 {
-	Matrix& view = _viewMat;
+	Matrix view;
 	_owner->GetTransform()->FetchWorldMatrix(view);
 	CameraForm::GetViewMatrix(view, view);
 
-	Matrix proj;
+	Matrix proj, invProj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, _projNear);
+	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _projNear, _radius);
 #else
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _projNear, _radius);
+	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, _projNear);
 #endif
+
+	_invViewProjMat = view * invProj;
 
 	Matrix& viewProj = _viewProjMat;
 	viewProj = view * proj;

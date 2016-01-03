@@ -51,7 +51,7 @@ void Scene::Initialize()
 	_backBufferMaker->Initialize(false);
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize();
+	_shadowRenderer->Initialize(true);
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
@@ -93,7 +93,7 @@ void Scene::RenderPreview()
 		(*iter)->UpdateConstBuffer(_dx);
 
 	_lightManager->ComputeAllLightViewProj(_boundBox);
-	_lightManager->UpdateBuffer(_dx);
+	_lightManager->UpdateBuffer(_dx, _shadowRenderer->GetUseVSM());
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
@@ -113,7 +113,7 @@ void Scene::Render()
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
 			const Buffer::ConstBuffer* shadowCB = _shadowRenderer->IsWorking() ? _shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB);
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetUseVSM());
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);

@@ -242,4 +242,14 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	resultSpecularColor	= Fr * commonParamas.lightColor;
 }
 
+// Unreal4의 ReflectionEnvironmentShared.usf에 있는
+// ComputeReflectionCaptureMipFromRoughness 이거임. 그리고, 약간 수정함
+float ComputeRoughnessLOD(float roughness, uint mipCount)
+{
+	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
+	float mip = (float)mipCount - 1 - levelFrom1x1;
+
+	return (mip < 0) ? 0 : mip;
+}
+
 #endif

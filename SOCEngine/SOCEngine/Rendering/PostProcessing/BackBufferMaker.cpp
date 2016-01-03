@@ -1,6 +1,6 @@
 #include "BackBufferMaker.h"
 #include "Director.h"
-#include "TBRShaderIndexSlotInfo.h"
+#include "BindIndexInfo.h"
 
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
@@ -60,30 +60,30 @@ void BackBufferMaker::Render(
 	{
 		ID3D11Buffer* cb = tbrParamConstBuffer->GetBuffer();
 		context->PSSetConstantBuffers(
-			(uint)InputConstBufferBindSlotIndex::TBRParam,
+			(uint)ConstBufferBindIndex::TBRParam,
 			1, &cb);
 
 		ID3D11ShaderResourceView* srv = renderScene->GetShaderResourceView()->GetView();
 		context->PSSetShaderResources(
-			(uint)InputTextureShaderIndex::RenderScene, 
+			(uint)TextureBindIndex::RenderScene, 
 			1, &srv);
 
 		if(_useUI)
 		{
 			srv = uiScene->GetShaderResourceView()->GetView();
 			context->PSSetShaderResources(
-			(uint)InputTextureShaderIndex::UIScene, 
+			(uint)TextureBindIndex::UIScene, 
 			1, &srv);
 		}
 	}
 
 	ID3D11SamplerState* linerSampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::DefaultSamplerState, 1, &linerSampler);
+	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &linerSampler);
 
 	if(_useUI)
 	{
 		ID3D11SamplerState* pointSampler = dx->GetSamplerStatePoint();
-		context->PSSetSamplers((uint)InputSamplerStateBindSlotIndex::UISamplerState, 1, &pointSampler);
+		context->PSSetSamplers((uint)SamplerStateBindIndex::UISamplerState, 1, &pointSampler);
 	}
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);

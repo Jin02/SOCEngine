@@ -64,17 +64,40 @@ StructuredBuffer<PointLightShadowParam>				g_inputPointLightShadowParams		: regi
 StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
 StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
 
-Texture2D<float>	g_inputPointLightShadowMapAtlas					: register( t17 );
-Texture2D<float>	g_inputSpotLightShadowMapAtlas					: register( t18 );
-Texture2D<float>	g_inputDirectionalLightShadowMapAtlas			: register( t19 );
+Texture2D<float>	g_inputPointLightShadowMapAtlas										: register( t17 );
+Texture2D<float>	g_inputSpotLightShadowMapAtlas										: register( t18 );
+Texture2D<float>	g_inputDirectionalLightShadowMapAtlas								: register( t19 );
 
-Buffer<float4> g_inputPointLightShadowColors						: register( t20 );
-Buffer<float4> g_inputSpotLightShadowColors							: register( t21 );
-Buffer<float4> g_inputDirectionalLightShadowColors					: register( t22 );
+Buffer<float4> g_inputPointLightShadowColors											: register( t20 );
+Buffer<float4> g_inputSpotLightShadowColors												: register( t21 );
+Buffer<float4> g_inputDirectionalLightShadowColors										: register( t22 );
 
-Buffer<uint> g_inputPointLightShadowIndexToLightIndex				: register( t23 );
-Buffer<uint> g_inputSpotLightShadowIndexToLightIndex				: register( t24 );
-Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex			: register( t25 );
+Buffer<uint> g_inputPointLightShadowIndexToLightIndex									: register( t23 );
+Buffer<uint> g_inputSpotLightShadowIndexToLightIndex									: register( t24 );
+Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex								: register( t25 );
+
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+Texture2D<float2>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
+Texture2D<float2>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
+Texture2D<float2>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
+#else
+Texture2D<float>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
+Texture2D<float>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
+Texture2D<float>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
+#endif
+
+Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture									: register( t29 );
+Texture3D<float>	g_inputAnistropicVoxelNormalTexture									: register( t30 );
+Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture								: register( t31 );
+
+struct DSLightInvVPVMat	{	matrix invMat;		};
+StructuredBuffer<DSLightInvVPVMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+
+struct PLightInvVPVMat	{	matrix invMat[6];	};
+StructuredBuffer<PLightInvVPVMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
+
+StructuredBuffer<DSLightInvVPVMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
+
 
 struct LightingParams
 {
@@ -110,11 +133,13 @@ cbuffer Transform : register( b1 )		//Object World
 	matrix transform_world;
 };
 
-cbuffer Camera : register( b2 )		//Camera
+cbuffer CameraMat : register( b2 )
 {
-	matrix camera_view;
-	matrix camera_viewProj;
+	matrix	cameraMat_view;
+	matrix	cameraMat_viewProj;
 };
+
+// b3은 Material
 
 cbuffer ShadowGlobalParam : register( b4 )
 {	
@@ -127,6 +152,16 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint3	shadowGlobalParam_dummy;
 };
 
+// b5, b6, b7 은 GI 관련
+
+cbuffer CameraOption : register( b8 )
+{
+	float cameraOption_nearZ;
+	float cameraOption_farZ;
+	float cameraOption_fov;
+
+	float cameraOption_dummy;
+};
 
 uint GetNumOfPointLight(uint packedNumOfLights)
 {

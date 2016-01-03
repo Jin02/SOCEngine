@@ -7,22 +7,6 @@ namespace Rendering
 	class PhysicallyBasedMaterial : public Material
 	{
 	public:
-		enum class InputTextureShaderIndex : uint
-		{ 
-			Diffuse		= 8,
-			Normal		= 9,
-			Specular	= 10,
-			Opacity		= 11
-		};
-
-		enum class InputConstBufferBindSlotIndex : uint
-		{
-			World		= 1,
-			Camera		= 2,
-			Material	= 3
-		};
-
-	public:
 		struct GBufferParam
 		{
 			struct MainColor { float r, g, b; };

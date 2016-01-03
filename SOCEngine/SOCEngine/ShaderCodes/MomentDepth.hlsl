@@ -1,0 +1,55 @@
+//USED_FOR_INCLUDE
+
+struct PS_MOMENT_DEPTH_INPUT
+{
+	float4	position 	 	: SV_POSITION;
+	float	depth			: DEPTH;
+};
+
+PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
+{
+	PS_MOMENT_DEPTH_INPUT ps;
+
+	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
+	ps.position			= mul(posWorld, cameraMat_viewProj);
+
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+	float4 invPos		= mul(posWorld, cameraMat_view); // ShadowMap에서 사용하는 viewMat은 invViewProjMat임.
+	ps.depth			= invPos.z / invPos.w;
+#else
+	ps.depth			= ps.position.z / ps.position.w;
+#endif
+
+	return ps;
+}
+
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+float2 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
+#else
+float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
+#endif
+{
+	float depth = input.depth;
+
+	float2 moment = float2(depth, depth * depth);
+
+	float dx = ddx(depth);
+	float dy = ddy(depth);
+
+	// Adjusting moments (this is sort of bias per pixel) using partial derivative
+	moment.y += 0.25f * (dx * dx + dy * dy);
+
+#if defined(ENABLE_ALPHA_TEST)
+	float4 diffuseTex = diffuseTexture.Sample(defaultSampler, input.uv);
+	float opacityMap = 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
+	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
+	if(alpha < ALPHA_TEST_BIAS)
+		discard;
+#endif
+
+#if defined(USE_SHADOW_INVERTED_DEPTH)
+	return moment;
+#else
+	return moment.y;	// x는 이미 다른곳에서 기록 중
+#endif
+}

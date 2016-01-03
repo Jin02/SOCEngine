@@ -17,11 +17,11 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
-			struct CamConstBufferData
+			struct CamMatCBData
 			{
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
-			};
+			};\
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -52,8 +52,8 @@ namespace Rendering
 			float							_aspect;
 			Color							_clearColor;
 
-			Buffer::ConstBuffer*			_camConstBuffer;
-			CamConstBufferData				_prevCamConstBufferData;
+			Buffer::ConstBuffer*			_camMatConstBuffer;
+			CamMatCBData					_prevCamMatCBData;
 
 		public:
 			CameraForm(Usage usage);
