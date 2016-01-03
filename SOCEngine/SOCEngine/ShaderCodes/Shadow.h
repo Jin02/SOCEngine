@@ -33,8 +33,7 @@ float ChebyshevUpperBound(float2 moments, float t)
 	float variance = moments.y - (moments.x * moments.x);
 	variance = max(variance, 0.00002f);
 
-	// d가 0이하로 들어가면 노이즈가 생김
-	float d = max(t - moments.x, 0.0f);
+	float d = t - moments.x;
 	float pMax = variance / (variance + d * d);
 
 	return max(p, pMax);
