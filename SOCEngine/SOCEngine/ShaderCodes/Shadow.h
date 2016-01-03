@@ -87,11 +87,7 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#else
-		float shadow = saturate( VarianceShadow(g_inputSpotLightShadowMapAtlas, g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 #else
 	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif
@@ -127,11 +123,7 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 		bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
-	#else
-		float shadow = saturate( VarianceShadow(g_inputDirectionalLightShadowMapAtlas, g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
 #else
 	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif
@@ -193,11 +185,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#else
-		float shadow = saturate( VarianceShadow(g_inputPointLightShadowMapAtlas, g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 #else
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif
