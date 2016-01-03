@@ -20,8 +20,6 @@ using namespace Resource;
 using namespace Device;
 using namespace Math;
 
-#define USE_CITY
-
 TestScene::TestScene(void)
 {
 
@@ -55,17 +53,15 @@ void TestScene::OnInitialize()
 	AddObject(_testObject);
 
 	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
-
-	Vector3 dir = _light->GetTransform()->GetForward();
+	_light->GetTransform()->UpdateEulerAngles(Vector3(-60, -60, 0));
 	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
 
-	PointLight* spotLight = _light->AddComponent<PointLight>();
-//	spotLight->SetIntensity(1);
-	spotLight->SetLumen(150);
-	spotLight->SetRadius(20);
-	spotLight->ActiveShadow(true);
-//	spotLight->SetSpotAngleDegree(25.0f);
+	SpotLight* light = _light->AddComponent<SpotLight>();
+//	light->SetIntensity(1);
+	light->SetLumen(150);
+	light->SetRadius(10.0f);
+	light->ActiveShadow(true);
+	light->SetSpotAngleDegree(120.0f);
 
 	AddObject(_light);
 }
@@ -140,7 +136,7 @@ void TestScene::OnUpdate(float dt)
 	//Transform* tf = _testObject->GetTransform();
 
 	//Vector3 euler = tf->GetLocalEulerAngle();
-	//tf->UpdateEulerAngles(euler + Vector3(0, 0.5f, 0));
+	//tf->UpdateEulerAngles(euler - Vector3(0, 0.1f, 0));
 
 	//Vector3 pos = tf->GetLocalPosition();
 	//tf->UpdatePosition(pos - Vector3(0, 0.2f, 0));
