@@ -51,7 +51,6 @@ namespace Rendering
 		ShadowGlobalParam				= 4,
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
-		CameraOptionCB					= 7
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
