@@ -85,7 +85,7 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 	float bias = (float)g_inputSpotLightShadowParams[lightIndex].bias;
 	float depth = shadowUV.z
-#if defined(USE_SHADOW_INVERTED_DEPTH)
+#if defined(USE_SHADOW_INVERTED_DEPTH) && !defined(USE_VSM)
 		+
 #else
 		-
@@ -125,7 +125,7 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 	float bias = (float)g_inputDirectionalLightShadowParams[lightIndex].bias;
 	float depth = shadowUV.z
-#if defined(USE_SHADOW_INVERTED_DEPTH)
+#if defined(USE_SHADOW_INVERTED_DEPTH) && !defined(USE_VSM)
 		+
 #else
 		-
@@ -191,7 +191,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 
 	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
 	float depth = shadowUV.z
-#if defined(USE_SHADOW_INVERTED_DEPTH)
+#if defined(USE_SHADOW_INVERTED_DEPTH) && !defined(USE_VSM)
 		+
 #else
 		-
