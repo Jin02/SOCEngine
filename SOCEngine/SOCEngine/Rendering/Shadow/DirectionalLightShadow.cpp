@@ -14,10 +14,17 @@ DirectionalLightShadow::~DirectionalLightShadow()
 {
 }
 
-void DirectionalLightShadow::MakeParam(Param& outParam) const
+void DirectionalLightShadow::MakeParam(Param& outParam, bool useVSM) const
 {
 	ShadowCommon::MakeParam(outParam);
 
-	outParam.viewProjMat = _owner->GetViewProjectionMatrix();
+#ifdef USE_SHADOW_INVERTED_DEPTH
+	if(useVSM)
+		outParam.viewProjMat = _owner->GetInvViewProjectionMatrix();
+	else
+#else
+		outParam.viewProjMat = _owner->GetViewProjectionMatrix();
+#endif
+
 	Math::Matrix::Transpose(outParam.viewProjMat, outParam.viewProjMat);
 }

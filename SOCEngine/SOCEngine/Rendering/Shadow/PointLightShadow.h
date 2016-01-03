@@ -19,7 +19,7 @@ namespace Rendering
 			~PointLightShadow();
 
 		public:
-			void MakeParam(Param& outParam) const;
+			void MakeParam(Param& outParam, bool useVSM) const;
 		};
 	}
 }
