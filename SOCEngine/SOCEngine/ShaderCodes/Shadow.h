@@ -34,19 +34,18 @@ float ChebyshevUpperBound(float2 moments, float t)
 	variance = max(variance, 0.00002f);
 
 	float d = t - moments.x;
-	float pMax = smoothStep(0.2f, 1.0f, variance / (variance + d * d));
+	float pMax = variance / (variance + d * d);//smoothStep(0.2f, 1.0f, variance / (variance + d * d));
 
-	return saturate( max(p, pMax) );
+	return max(p, pMax);
 }
 
-float VarianceShadow(
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-	Texture2D<float2> momentShadowMapAtlas,
-#else
-	Texture2D<float> shadowMapAtlas,
-	Texture2D<float> momentShadowMapAtlas,
-#endif
-	float2 uv, float depth)
+float2 RecombinePrecision(float4 value)
+{
+	float invFactor = 1.0f / 256.0f;
+	return (value.zw * invFactor + value.xy);
+}
+
+float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float depth)
 {
 	float shadow = 0.0f;
 	float2 moment = float2(0.0f, 0.0f);
@@ -55,12 +54,7 @@ float VarianceShadow(
 	{
 		[unroll] for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-			moment = momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j));
-#else
-			moment.x = shadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)).x;
-			moment.y = momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)).x;
-#endif
+			moment = RecombinePrecision(momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)));
 			shadow += ChebyshevUpperBound(moment, depth);
 		}
 	}
@@ -69,7 +63,7 @@ float VarianceShadow(
 	return shadow;
 }
 
-float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
+float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
 {
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), g_inputSpotLightShadowParams[lightIndex].viewProjMat );
 	shadowUV /= shadowUV.w;
@@ -90,7 +84,7 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 #else
 		-
 #endif
-		bias;
+		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
 #if defined(USE_VSM)
 	#if defined(USE_SHADOW_INVERTED_DEPTH)

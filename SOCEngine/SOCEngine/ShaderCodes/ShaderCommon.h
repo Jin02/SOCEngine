@@ -76,15 +76,9 @@ Buffer<uint> g_inputPointLightShadowIndexToLightIndex									: register( t23 );
 Buffer<uint> g_inputSpotLightShadowIndexToLightIndex									: register( t24 );
 Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex								: register( t25 );
 
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-Texture2D<float2>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
-Texture2D<float2>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
-Texture2D<float2>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
-#else
-Texture2D<float>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
-Texture2D<float>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
-Texture2D<float>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
-#endif
+Texture2D<float4>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
+Texture2D<float4>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
+Texture2D<float4>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
 
 Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture									: register( t29 );
 Texture3D<float>	g_inputAnistropicVoxelNormalTexture									: register( t30 );

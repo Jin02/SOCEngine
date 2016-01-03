@@ -117,11 +117,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_pointLightMomentShadowMapAtlas = new RenderTexture;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#else
-			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#endif
+			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 
@@ -140,11 +136,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_spotLightMomentShadowMapAtlas = new RenderTexture;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#else
-			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#endif
+			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 
@@ -163,11 +155,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		if(_useVSM)
 		{
 			_directionalLightMomentShadowMapAtlas = new RenderTexture;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#else
-			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1);
-#endif
+			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
 		}
 	}
 }
