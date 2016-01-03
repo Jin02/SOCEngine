@@ -39,19 +39,19 @@ void MeshCamera::OnInitialize()
 
 	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create albedo_emission render texture" 
 		);
 
 	_specular_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _specular_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0),
+		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
@@ -134,8 +134,6 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 			(*iter)->Culling(_frustum);
 	}
-
-	UpdateOptionCBData(dx);
 
 	LightCulling::TBRParam tbrParam;
 	{
