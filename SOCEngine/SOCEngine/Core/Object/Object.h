@@ -26,7 +26,7 @@ namespace Core
 		std::vector<Component*>			_components;
 
 		float							_radius;
-		Intersection::BoundBox*			_boundBox;
+		Intersection::BoundBox			_boundBox;
 
 		Math::Matrix					_prevWorldMat;
 
@@ -44,7 +44,6 @@ namespace Core
 		void UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax);
 
 		bool Intersects(Intersection::Sphere &sphere);
-		void UpdateBoundBox(const Intersection::BoundBox* boundBox);
 
 	public:
 		void			AddChild(Object *child);
@@ -117,14 +116,15 @@ namespace Core
 		Object* Clone() const;
 
 	public:
-		GET_SET_ACCESSOR(Use,	 bool,		_use);
-		GET_SET_ACCESSOR(Parent, Object*,	_parent);
-		GET_SET_ACCESSOR(Radius, float,		_radius);
+		GET_SET_ACCESSOR(Use,		bool,							_use);
+		GET_SET_ACCESSOR(Parent,	Object*,						_parent);
+		GET_SET_ACCESSOR(Radius,	float,							_radius);
 
 		GET_ACCESSOR(Culled,		bool,							_culled);
 		GET_ACCESSOR(HasMesh,		bool,							_hasMesh);
 		GET_ACCESSOR(Name,			const std::string&,				_name);
 		GET_ACCESSOR(Transform,		Transform*,						_transform);
-		GET_ACCESSOR(BoundBox,		const Intersection::BoundBox*,	_boundBox);
+
+		SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
 	};
 }

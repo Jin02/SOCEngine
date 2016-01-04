@@ -909,7 +909,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 				bb.SetMinMax(findIter->second->boundBoxMin, findIter->second->boundBoxMax);
 				
 				object->SetRadius(findIter->second->radius);
-				object->UpdateBoundBox(&bb);
+				object->SetBoundBox(bb);
 			}
 		}
 		IndexBuffer* indexBuffer = nullptr;

@@ -12,8 +12,10 @@ using namespace Core;
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
-	_radius(0.0f), _boundBox(nullptr)
+	_radius(0.0f)
 {
+	_boundBox.SetMinMax(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+
 	_transform = new Transform( this );		
 	_root = parent ? parent->_root : this;
 
@@ -24,7 +26,6 @@ Object::Object(const std::string& name, Object* parent /* = NULL */) :
 Object::~Object(void)
 {
 	SAFE_DELETE(_transform);
-	SAFE_DELETE(_boundBox);
 
 	DeleteAllChild();
 	DeleteAllComponent();
@@ -97,8 +98,8 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 
 	if(_hasMesh)
 	{
-		const Vector3& extents		= _boundBox->GetExtents();
-		const Vector3& boxCenter	= _boundBox->GetCenter(); 
+		const Vector3& extents		= _boundBox.GetExtents();
+		const Vector3& boxCenter	= _boundBox.GetCenter(); 
 
 		Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
 		
@@ -171,15 +172,4 @@ Object* Object::Clone() const
 		newObject->_components.push_back( (*iter)->Clone() );
 	
 	return newObject;
-}
-
-void Object::UpdateBoundBox(const Intersection::BoundBox* boundBox)
-{
-	if(boundBox == nullptr)
-	{
-		SAFE_DELETE(_boundBox);
-		return;
-	}
-
-	_boundBox = new BoundBox(*boundBox);
 }
