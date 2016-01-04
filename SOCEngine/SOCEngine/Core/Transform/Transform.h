@@ -69,6 +69,8 @@ namespace Core
 		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldPosition(Math::Vector3& outPosition) const;
 		void FetchWorldTransform(Transform& out) const;
+		void FetchWorldScale(Math::Vector3& outScale) const;
+		void FetchWorldScale(Math::Vector3& outScale, const Math::Matrix& worldMat) const;
 
 		GET_ACCESSOR(UpdateCounter, uint, _updateCounter);
 		inline bool IsUpdated(uint counter) const { return _updateCounter != counter; }

@@ -256,6 +256,13 @@ namespace Core
 		outPosition.z = worldMat._43;
 	}
 
+	void Transform::FetchWorldScale(Math::Vector3& outScale) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+		FetchWorldScale(outScale, worldMat);
+	}
+
 	void Transform::FetchWorldTransform(Transform& out) const
 	{
 		Matrix worldMat;
@@ -303,5 +310,12 @@ namespace Core
 		euler.x = Math::Common::Rad2Deg( euler.x );
 		euler.y = Math::Common::Rad2Deg( euler.y );
 		euler.z = Math::Common::Rad2Deg( euler.z );
+	}
+
+	void Transform::FetchWorldScale(Math::Vector3& outScale, const Math::Matrix& worldMat) const
+	{
+		outScale.x = Vector3(worldMat._11, worldMat._12, worldMat._13).Length();
+		outScale.y = Vector3(worldMat._21, worldMat._22, worldMat._23).Length();
+		outScale.z = Vector3(worldMat._31, worldMat._32, worldMat._33).Length();
 	}
 }
