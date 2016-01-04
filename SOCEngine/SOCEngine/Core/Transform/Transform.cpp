@@ -312,7 +312,7 @@ namespace Core
 		euler.z = Math::Common::Rad2Deg( euler.z );
 	}
 
-	void Transform::FetchWorldScale(Math::Vector3& outScale, const Math::Matrix& worldMat) const
+	void Transform::FetchWorldScale(Math::Vector3& outScale, const Math::Matrix& worldMat)
 	{
 		outScale.x = Vector3(worldMat._11, worldMat._12, worldMat._13).Length();
 		outScale.y = Vector3(worldMat._21, worldMat._22, worldMat._23).Length();
