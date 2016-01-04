@@ -41,7 +41,7 @@ namespace Core
 		void Update(float delta);
 
 		void Culling(const Intersection::Frustum* frustum);
-		void UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax);
+		void UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax, const Math::Matrix& parentWorldMat);
 
 		bool Intersects(Intersection::Sphere &sphere);
 

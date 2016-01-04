@@ -38,6 +38,8 @@ namespace Core
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
 
+		Math::Matrix _localMat;
+
 	public:
 		Scene(void);
 		~Scene(void);

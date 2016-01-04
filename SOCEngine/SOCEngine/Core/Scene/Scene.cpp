@@ -60,6 +60,7 @@ void Scene::Initialize()
 	float fltMax = (*(float*)&value);
 
 	_boundBox.SetMinMax(Vector3(fltMax, fltMax, fltMax), Vector3(fltMin, fltMin, fltMin));
+	Matrix::Identity(_localMat);
 
 	NextState();
 	OnInitialize();
@@ -83,7 +84,7 @@ void Scene::RenderPreview()
 
 	const auto& objectVector = _rootObjects.GetVector();
 	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax);
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
 
 	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
 	_shadowRenderer->UpdateConstBuffer(_dx);

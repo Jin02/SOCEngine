@@ -88,18 +88,22 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax)
+void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
+	const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax,
+	const Math::Matrix& parentWorldMat)
 {
 	if(_use == false)
 		return;
 
-	Math::Matrix worldMat;
-	_transform->FetchWorldMatrix(worldMat);
+	Math::Matrix localMat;
+	_transform->FetchLocalMatrix(localMat);
+
+	Math::Matrix worldMat = localMat * parentWorldMat;
 
 	if(_hasMesh)
 	{
-		const Vector3& extents		= _boundBox.GetExtents();
-		const Vector3& boxCenter	= _boundBox.GetCenter(); 
+		Vector3 extents		= _boundBox.GetExtents();
+		Vector3 boxCenter	= _boundBox.GetCenter(); 
 
 		Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
 		
@@ -114,7 +118,9 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 		if(refWorldPosMax.y < maxPos.y) refWorldPosMax.y = maxPos.y;
 		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 	}
-	Matrix::Transpose(worldMat, worldMat);
+
+	Matrix transposedWM;
+	Matrix::Transpose(transposedWM, worldMat);
 
 	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
@@ -123,13 +129,13 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
 		if(changedWorldMat)
-			(*iter)->OnUpdateTransformCB(dx, worldMat);
+			(*iter)->OnUpdateTransformCB(dx, transposedWM);
 
 		(*iter)->OnRenderPreview();
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(dx, refWorldPosMin, refWorldPosMax);
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(dx, refWorldPosMin, refWorldPosMax, worldMat);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)
