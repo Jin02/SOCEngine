@@ -120,9 +120,9 @@ namespace Core
 		Math::Common::EulerNormalize(_eulerAngle, euler);
 
 		Vector3 re;
-		re.x = Math::Common::Deg2Rad( _eulerAngle.x );
-		re.y = Math::Common::Deg2Rad( _eulerAngle.y );
-		re.z = Math::Common::Deg2Rad( _eulerAngle.z );
+		re.x = Math::Common::Deg2Rad( -_eulerAngle.x );
+		re.y = Math::Common::Deg2Rad( -_eulerAngle.y );
+		re.z = Math::Common::Deg2Rad( -_eulerAngle.z );
 
 		Quaternion::FromEuler(_rotation, re);
 
