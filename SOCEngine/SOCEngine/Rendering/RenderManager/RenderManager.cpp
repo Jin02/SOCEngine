@@ -8,6 +8,7 @@ using namespace Rendering;
 using namespace Rendering::Manager;
 using namespace Rendering::Shader;
 using namespace Resource;
+using namespace Rendering::Geometry;
 
 RenderManager::RenderManager()
 	: _opaqueMeshes(), _alphaBlendMeshes(), _transparentMeshes()
@@ -70,21 +71,16 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 
 	ShaderGroup shader;
 	{
-		std::string vsMainFunc = "VS", psMainFunc ="PS", gsMainFunc = "";
+		std::vector<ShaderMainFuncName> mainFuncNames;
+		MakeDefaultShaderMainFuncNames(mainFuncNames, renderType);
 
-		if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
-			psMainFunc = "OnlyAlpaTestWithDiffusePS";
-		else if(renderType == RenderType::Voxelization)
-			gsMainFunc = "GS";
-		else if(renderType == RenderType::Forward_OnlyDepth)
+		std::string vsMainFunc = "", gsMainFunc = "", psMainFunc = "";
+		for(auto iter = mainFuncNames.begin(); iter != mainFuncNames.end(); ++iter)
 		{
-			vsMainFunc = "DepthOnlyVS";
-			psMainFunc = "";
-		}
-		else if(renderType == RenderType::Forward_MomentDepth || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
-		{
-			vsMainFunc = "MomentDepthVS";
-			psMainFunc = "MomentDepthPS";
+			if(iter->type == ShaderForm::Type::Vertex)			vsMainFunc = iter->name;
+			else if(iter->type == ShaderForm::Type::Pixel)		psMainFunc = iter->name;
+			else if(iter->type == ShaderForm::Type::Geometry)	gsMainFunc = iter->name;
+			else												ASSERT_MSG("Error, Unsupported Type");
 		}
 
 		shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros, resourceManager->GetShaderManager());
@@ -122,19 +118,127 @@ void RenderManager::Initialize()
 	DEBUG_LOG("Done Loading Shaders!")
 }
 
-void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
+void RenderManager::ClearMeshList(MeshRenderer::Type type)
+{
+	MeshList* targetList = nullptr;
+
+	if(type == MeshRenderer::Type::Opaque)
+		targetList = &_opaqueMeshes;
+	else if(type == MeshRenderer::Type::AlphaBlend)
+		targetList = &_alphaBlendMeshes;
+	else if(type == MeshRenderer::Type::Transparent)
+		targetList = &_transparentMeshes;
+	else
+	{
+		ASSERT_MSG("Error, Unsupported mesh type.");
+	}
+
+	targetList->updateCounter = 0xffffffff;
+	targetList->meshes.DeleteAll();
+}
+
+void RenderManager::ClearAllMeshList()
+{
+	ClearMeshList(MeshRenderer::Type::Opaque);
+	ClearMeshList(MeshRenderer::Type::Transparent);
+	ClearMeshList(MeshRenderer::Type::AlphaBlend);
+}
+
+void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncName>& outMainFuncNames, RenderType renderType)
+{
+	std::string vsMain = "VS";
+	std::string psMain = "PS";
+	std::string gsMain = "";
+
+	if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
+		psMain = "OnlyAlpaTestWithDiffusePS";
+	else if(renderType == RenderType::Voxelization)
+		gsMain = "GS";
+	else if(renderType == RenderType::Forward_OnlyDepth)
+	{
+		vsMain = "DepthOnlyVS";
+		psMain = "";
+	}
+	else if(renderType == RenderType::Forward_MomentDepth || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
+	{
+		vsMain = "MomentDepthVS";
+		psMain = "MomentDepthPS";
+	}
+
+	ShaderMainFuncName pair;
+	pair.type	= ShaderForm::Type::Vertex;
+	pair.name	= vsMain;
+	outMainFuncNames.push_back(pair);
+
+	pair.type	= ShaderForm::Type::Geometry;
+	pair.name	= gsMain;
+	outMainFuncNames.push_back(pair);
+
+	pair.type	= ShaderForm::Type::Pixel;
+	pair.name	= psMain;
+	outMainFuncNames.push_back(pair);
+}
+
+void RenderManager::DeleteDefaultShader(RenderType renderType)
+{
+	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	ShaderManager* shaderMgr = resourceManager->GetShaderManager();
+
+	auto DeleteShaderByBufferFlag = [&](uint bufferFlag)
+	{
+		std::string shaderName;
+		MakeDefaultSahderFileName(shaderName, renderType, bufferFlag);
+
+		std::vector<ShaderMainFuncName> mainFuncNames;
+		MakeDefaultShaderMainFuncNames(mainFuncNames, renderType);
+
+		std::string vsMainFunc = "", gsMainFunc = "", psMainFunc = "";
+		for(auto iter = mainFuncNames.begin(); iter != mainFuncNames.end(); ++iter)
+		{
+			ShaderForm::Type shaderType = iter->type;
+			const std::string& mainFunc = iter->name;
+
+			std::string shaderTypeStr = "";
+			if(shaderType == ShaderForm::Type::Vertex)			shaderTypeStr = "vs";
+			else if(shaderType == ShaderForm::Type::Geometry)	shaderTypeStr = "gs";
+			else if(shaderType == ShaderForm::Type::Pixel)		shaderTypeStr = "ps";
+			else ASSERT_MSG("Error, Unsupported shader type");
+
+			std::string command = shaderMgr->MakeFullCommand(shaderName, mainFunc, shaderTypeStr);
+			shaderMgr->DeleteShader(command);	
+		}
+	};
+
+	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0);
+	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0 | (uint)DefaultVertexInputTypeFlag::NORMAL);
+	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0 | (uint)DefaultVertexInputTypeFlag::NORMAL | (uint)DefaultVertexInputTypeFlag::TANGENT);
+}
+
+void RenderManager::DeleteAllDefaultShaders()
+{
+	for(uint i=0; i<(uint)RenderType::MAX_NUM; ++i)
+		DeleteDefaultShader( (RenderType)i );
+}
+
+void RenderManager::Destroy()
+{
+	ClearAllMeshList();
+	DeleteAllDefaultShaders();
+}
+
+void RenderManager::UpdateRenderList(const Mesh* mesh)
 {
 	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
 
-	auto GetMeshList = [&](Geometry::MeshRenderer::Type renderType)
+	auto GetMeshList = [&](MeshRenderer::Type renderType)
 	{
 		MeshList* meshList = nullptr;
 
-		if( renderType == Geometry::MeshRenderer::Type::Transparent )
+		if( renderType == MeshRenderer::Type::Transparent )
 			meshList = &_transparentMeshes;
-		else if( renderType == Geometry::MeshRenderer::Type::Opaque )
+		else if( renderType == MeshRenderer::Type::Opaque )
 			meshList = &_opaqueMeshes;
-		else if( renderType == Geometry::MeshRenderer::Type::AlphaBlend )
+		else if( renderType == MeshRenderer::Type::AlphaBlend )
 			meshList = &_alphaBlendMeshes;
 		else
 			ASSERT_MSG("Error, unsupported mesh type");
@@ -142,15 +246,15 @@ void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
 		return meshList;
 	};
 
-	Geometry::MeshRenderer::Type currentType	= mesh->GetMeshRenderer()->GetCurrentRenderType();
-	Geometry::MeshRenderer::Type prevType		= mesh->GetPrevRenderType();
+	MeshRenderer::Type currentType	= mesh->GetMeshRenderer()->GetCurrentRenderType();
+	MeshRenderer::Type prevType		= mesh->GetPrevRenderType();
 
 	if(prevType == currentType)
 		return; // not changed
 
 	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
 
-	if(prevType != Geometry::MeshRenderer::Type::Unknown)
+	if(prevType != MeshRenderer::Type::Unknown)
 	{
 		MeshList* prevMeshList = GetMeshList(prevType);
 
@@ -166,7 +270,7 @@ void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
 		}
 	}
 
-	if(currentType != Geometry::MeshRenderer::Type::Unknown)
+	if(currentType != MeshRenderer::Type::Unknown)
 	{
 		MeshList* currentMeshList = GetMeshList(currentType);
 		std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
@@ -185,30 +289,30 @@ void RenderManager::UpdateRenderList(const Geometry::Mesh* mesh)
 	}
 }
 
-bool RenderManager::HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type)
+bool RenderManager::HasMeshInRenderList(const Mesh* mesh, MeshRenderer::Type type)
 {
 	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
-	const Geometry::Mesh* foundedMesh = nullptr;
+	const Mesh* foundedMesh = nullptr;
 	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
 
 	MeshList* meshList = nullptr;
 
-	if(type == Geometry::MeshRenderer::Type::Transparent)
+	if(type == MeshRenderer::Type::Transparent)
 		meshList = &_transparentMeshes;
-	else if(type == Geometry::MeshRenderer::Type::Opaque)
+	else if(type == MeshRenderer::Type::Opaque)
 		meshList = &_opaqueMeshes;
-	else if(type == Geometry::MeshRenderer::Type::AlphaBlend)
+	else if(type == MeshRenderer::Type::AlphaBlend)
 		meshList = &_alphaBlendMeshes;
 	else
 	{
-		ASSERT_MSG("Error!, undefined Geometry::MeshRenderer::Type");
+		ASSERT_MSG("Error!, undefined MeshRenderer::Type");
 	}
 
 	std::set<MeshList::meshkey>* meshSets = meshList->meshes.Find(vbKey);
 	if(meshSets)
 	{
 		auto foundIter = meshSets->find(meshAddress);
-		foundedMesh = (foundIter != meshSets->end()) ? reinterpret_cast<Geometry::Mesh*>(*foundIter) : nullptr;
+		foundedMesh = (foundIter != meshSets->end()) ? reinterpret_cast<Mesh*>(*foundIter) : nullptr;
 	}
 
 	return foundedMesh != nullptr;

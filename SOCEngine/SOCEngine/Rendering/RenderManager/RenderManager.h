@@ -67,7 +67,22 @@ namespace Rendering
 			bool HasShader(uint bufferFlag, RenderType renderType) const;
 
 			void MakeDefaultSahderFileName(std::string& outFileName, RenderType renderType, uint bufferFlag) const;
-		
+
+			struct ShaderMainFuncName
+			{
+				Shader::ShaderForm::Type type;
+				std::string name;
+			};
+			void MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncName>& outMainFuncNames, RenderType renderType);
+
+			void ClearMeshList(Geometry::MeshRenderer::Type type);
+			void ClearAllMeshList();
+			
+			void DeleteDefaultShader(RenderType renderType);
+			void DeleteAllDefaultShaders();
+			
+			void Destroy();
+
 		public:
 			GET_ACCESSOR(TransparentMeshes,	const MeshList&,	_transparentMeshes);
 			GET_ACCESSOR(OpaqueMeshes,		const MeshList&,	_opaqueMeshes);
