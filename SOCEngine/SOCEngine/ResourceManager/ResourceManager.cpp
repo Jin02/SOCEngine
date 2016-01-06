@@ -8,21 +8,16 @@ using namespace Rendering;
 using namespace Resource;
 using namespace Importer;
 using namespace Rendering::Manager;
+using namespace UI;
 
 ResourceManager::ResourceManager()
-	:	_meshImporter(nullptr), _shaderMgr(nullptr),
+	:	_meshImporter(nullptr), _shaderMgr(nullptr), _fontLoader(nullptr),
 		_textureMgr(nullptr), _bufferManager(nullptr)
 {
 }
 
 ResourceManager::~ResourceManager()
 {
-	Destroy();
-
-	SAFE_DELETE(_shaderMgr);
-	SAFE_DELETE(_textureMgr);
-	SAFE_DELETE(_bufferManager);
-	SAFE_DELETE(_meshImporter);
 }
 
 void ResourceManager::Initialize()
@@ -33,12 +28,22 @@ void ResourceManager::Initialize()
 
 	_meshImporter	= new MeshImporter;
 	_meshImporter->Initialize();
+
+	_fontLoader		= new SimpleFontLoader;
+	//_fontLoader->Initialize(TEMP_FONT_DATA_PATH, TEMP_FONT_TEXTURE_PATH);
 }
 
-void ResourceManager::Destroy()
+void ResourceManager::DestroyManagers()
 {
 	_meshImporter->Destroy();
 	_shaderMgr->Destroy();
 	_textureMgr->DeleteAll();
 	_bufferManager->Destroy();
+	_fontLoader->Destroy();
+
+	SAFE_DELETE(_shaderMgr);
+	SAFE_DELETE(_textureMgr);
+	SAFE_DELETE(_bufferManager);
+	SAFE_DELETE(_meshImporter);
+	SAFE_DELETE(_fontLoader);
 }

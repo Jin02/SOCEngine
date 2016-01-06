@@ -9,6 +9,7 @@
 #include "BufferManager.h"
 #include "UIManager.h"
 #include "MeshImporter.h"
+#include "SimpleFontLoader.h"
 
 namespace Resource
 {
@@ -22,19 +23,21 @@ namespace Resource
 		Rendering::Manager::TextureManager*		_textureMgr;
 		Rendering::Manager::BufferManager*		_bufferManager;
 		Importer::MeshImporter*					_meshImporter;
+		UI::SimpleFontLoader*					_fontLoader;
 
 	private:
 		ResourceManager();
-		~ResourceManager();
+		virtual ~ResourceManager();
 
 	public:
 		void Initialize();
-		void Destroy();
+		void DestroyManagers();
 
 	public:
 		GET_ACCESSOR(TextureManager,	Rendering::Manager::TextureManager*,	_textureMgr);
 		GET_ACCESSOR(ShaderManager,		Rendering::Manager::ShaderManager*,		_shaderMgr);
 		GET_ACCESSOR(BufferManager,		Rendering::Manager::BufferManager*,		_bufferManager);
 		GET_ACCESSOR(MeshImporter,		Importer::MeshImporter*,				_meshImporter);
+		GET_ACCESSOR(SimpleFontLoader,	UI::SimpleFontLoader*,					_fontLoader);
 	};
 }
