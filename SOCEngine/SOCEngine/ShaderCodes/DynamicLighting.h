@@ -112,7 +112,7 @@ void RenderPointLight(
 		resultDiffuseColor	*= attenuation;
 		resultSpecularColor	*= attenuation;
 
-		uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index;
+		uint shadowIndex = (g_inputPointLightShadowParams[lightIndex].indexWithBias >> 16);
 		if(shadowIndex != 0) //isShadow == true
 		{
 			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
