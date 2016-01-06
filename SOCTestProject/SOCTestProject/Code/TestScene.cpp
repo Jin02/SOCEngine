@@ -7,7 +7,6 @@
 #include "Director.h"
 #include "ResourceManager.h"
 
-#include "MeshImporter.h"
 #include "PhysicallyBasedMaterial.h"
 
 using namespace Rendering;
@@ -19,6 +18,7 @@ using namespace Rendering::Geometry;
 using namespace Resource;
 using namespace Device;
 using namespace Math;
+using namespace Importer;
 
 TestScene::TestScene(void)
 {
@@ -36,32 +36,59 @@ void TestScene::OnInitialize()
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	cam->SetFieldOfViewDegree(60.0f);
 
-	Importer::MeshImporter importer;
+	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+	MeshImporter* importer = resourceMgr->GetMeshImporter();
+
 #if 0
-	_testObject = importer.Load("./Resources/Capsule/capsule.obj");
+	_testObject = importer->Load("./Resources/Capsule/capsule.obj");
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 #else
 	//_testObject = importer.Load("./Resources/House/SanFranciscoHouse.fbx");
 	//_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
-	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 0, 0));
 
-	_testObject = importer.Load("./Resources/CornellBox/box.obj");
+	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(90, 180.0f, 180));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
 	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+
+	//_testObject2 = importer->Load("./Resources/CornellBox/box.obj", false);
+	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	//_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
+	//AddObject(_testObject2);
 #endif
 	AddObject(_testObject);
 
+#if 0
 	_light = new Object("Light");
 	_light->GetTransform()->UpdateEulerAngles(Vector3(-60, -60, 0));
 	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
 
 	SpotLight* light = _light->AddComponent<SpotLight>();
-//	light->SetIntensity(1);
 	light->SetLumen(150);
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
+#elif 0
+	_light = new Object("Light");
+//	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
+	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+
+	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
+	light->SetIntensity(1);
+	light->ActiveShadow(true);
+#elif 1
+	_light = new Object("Light");
+	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
+	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+
+	PointLight* light = _light->AddComponent<PointLight>();
+	light->SetLumen(150);
+	light->SetRadius(10.0f);
+	light->ActiveShadow(true);
+	light->GetShadow()->SetUnderScanSize(0.0f);
+#endif
 
 	AddObject(_light);
 }
