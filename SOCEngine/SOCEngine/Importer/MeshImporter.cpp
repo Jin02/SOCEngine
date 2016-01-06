@@ -43,15 +43,9 @@ void MeshImporter::Destroy()
 {
 	auto vector = _originObjects.GetVector();
 	for(auto iter = vector.begin(); iter != vector.end(); ++iter)
-		SAFE_DELETE(*iter);
+		SAFE_DELETE(iter->object);
 
 	_originObjects.DeleteAll();
-}
-
-Core::Object* MeshImporter::Find(const std::string& key)
-{
-	Core::Object** found = _originObjects.Find(key);
-	return found ? (*found) : nullptr;
 }
 
 void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node,
@@ -480,11 +474,23 @@ void MeshImporter::ParseBinary(std::vector<Importer::Mesh>& outMeshes, std::vect
 	ASSERT_MSG("can't supported format");
 }
 
-Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool useDynamicIB, Rendering::Material::Type materialType)
+Object* MeshImporter::Load(const std::string& fileDir, bool useOriginalObject, bool useDynamicVB, bool useDynamicIB, Rendering::Material::Type materialType)
 {
 	std::string fileName, fileFormat, folderDir;
 	if( String::ParseDirectory(fileDir, folderDir, fileName, fileFormat) == false )
 		return nullptr;
+
+	// Check duplicated object
+	{
+		StoredOriginObject* found = _originObjects.Find(fileDir); 
+		if(found)
+		{
+			if(useOriginalObject && found->alreadyUsed)
+				ASSERT_MSG("Error, This object is already used.");
+
+			return found->object->Clone();
+		}
+	}
 
 	std::ifstream g3dFile;
 	std::string g3dFileFormat;
@@ -524,14 +530,29 @@ Object* MeshImporter::Load(const std::string& fileDir, bool useDynamicVB, bool u
 
 	delete buffer;
 
-	Object* object = BuildMesh(meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB);
+	StoredOriginObject* storedObject = BuildMesh(meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, fileDir);
 
-	return object;
+	if(useOriginalObject == false)
+	{
+		Object* retObj = storedObject->object;
+
+		std::string originName = retObj->GetName();
+		retObj = retObj->Clone();
+		retObj->SetName(originName);
+
+		return retObj;
+	}
+//	else{
+
+	storedObject->alreadyUsed = true;
+	return storedObject->object;
+//	}
 }
 
-Core::Object* MeshImporter::BuildMesh(
+MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	std::vector<Importer::Mesh>& meshes, const std::vector<Importer::Material>& materials, const std::vector<Node>& nodes,
-	const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB)
+	const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB,
+	const std::string& registKey)
 {
 	std::set<std::string> normalMapMaterialKeys;
 	MakeMaterials(normalMapMaterialKeys, materials, folderDir, meshFileName);
@@ -728,7 +749,10 @@ Core::Object* MeshImporter::BuildMesh(
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, bufferMgr, materialManager, intersectionHashMap);
 
-	return root;
+	_originObjects.Add(registKey, StoredOriginObject(false, root));
+	StoredOriginObject* ret = _originObjects.Find(registKey);
+
+	return ret;
 }
 
 void MeshImporter::FetchAllPartsInHashMap_Recursive(

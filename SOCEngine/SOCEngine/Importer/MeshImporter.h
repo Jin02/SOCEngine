@@ -19,7 +19,15 @@ namespace Importer
 		static const int MaximumRecognizeBoneCount = 4;
 
 	private:
-		Structure::VectorMap<std::string, Core::Object*>	_originObjects;
+		struct StoredOriginObject
+		{
+			bool			alreadyUsed;
+			Core::Object*	object;
+			StoredOriginObject(bool _alreadyUsed, Core::Object* _object)
+				: alreadyUsed(_alreadyUsed), object(_object) {}
+			~StoredOriginObject(){}
+		};
+		Structure::VectorMap<std::string, StoredOriginObject>	_originObjects;
 
 	private:
 		//key is Node::Parts::MeshPartId
@@ -52,7 +60,7 @@ namespace Importer
 	private:
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
 		void MakeHierarchy(Core::Object* parent, const Node& node, const std::string& meshFileName, Rendering::Manager::BufferManager* bufferManager, Rendering::Manager::MaterialManager* materialManager, const IntersectionHashMap& intersectionHashMap);
-		Core::Object* BuildMesh(std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB);
+		StoredOriginObject* BuildMesh(std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
 		void FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes);
 
@@ -64,9 +72,6 @@ namespace Importer
 	public:
 		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
 		void ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size);
-		Core::Object* Load(const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel);
-
-	public:
-		Core::Object* Find(const std::string& key);
+		Core::Object* Load(const std::string& fileDir, bool useOriginalObject = false, bool useDynamicVB = false, bool useDynamicIB = false, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel);
 	};
 }
