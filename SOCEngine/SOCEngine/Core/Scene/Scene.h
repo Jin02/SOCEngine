@@ -20,11 +20,7 @@ namespace Core
 	class Scene
 	{
 	public:
-		enum class State{ Init = 0, Loop, End, Num };
-
-	private:
-		State							_state;
-		Intersection::BoundBox			_boundBox;
+		enum class State{ Init = 0, Loop, End, Stop, Num };
 
 	private:
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	
@@ -38,11 +34,15 @@ namespace Core
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
 
-		Math::Matrix _localMat;
+
+		State							_state;
+		Intersection::BoundBox			_boundBox;
+		Math::Matrix					_localMat;
+		std::function<void()>			_exitFunc;
 
 	public:
 		Scene(void);
-		~Scene(void);
+		virtual ~Scene(void);
 
 	public:
 		void Initialize();
@@ -68,7 +68,9 @@ namespace Core
 
 	public:
 		void NextState();
-		GET_ACCESSOR(State, const State, _state);
+		void StopState();
+
+		GET_ACCESSOR(State, State, _state);
 
 		GET_ACCESSOR(CameraManager,		Rendering::Manager::CameraManager*,		_cameraMgr);
 		GET_ACCESSOR(RenderManager,		Rendering::Manager::RenderManager*,		_renderMgr);

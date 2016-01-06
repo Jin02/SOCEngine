@@ -2,7 +2,6 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
-#include "FontLoader.h"
 
 using namespace Core;
 using namespace std;
@@ -28,8 +27,6 @@ Scene::Scene(void) :
 
 Scene::~Scene(void)
 {
-	Destroy();
-
 	SAFE_DELETE(_cameraMgr);
 	SAFE_DELETE(_renderMgr);
 	SAFE_DELETE(_uiManager);
@@ -143,8 +140,8 @@ void Scene::Render()
 
 void Scene::Destroy()
 {
-	UI::FontLoader::GetInstance()->Destroy();
 	OnDestroy();
+	DeleteAllObject();
 
 	_cameraMgr->DeleteAll();
 	_materialMgr->DeleteAll();
@@ -158,6 +155,11 @@ void Scene::Destroy()
 void Scene::NextState()
 {
 	_state = (State)(((int)_state + 1) % (int)State::Num);
+}
+
+void Scene::StopState()
+{
+	_state = State::Stop;
 }
 
 void Scene::AddObject(Core::Object* object)
