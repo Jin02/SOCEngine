@@ -77,10 +77,6 @@ void MeshCamera::OnInitialize()
 
 	_offScreen = new OffScreen;
 	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
-
-	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
-	CameraForm* thisCam = this;
-	camMgr->Add(_owner->GetName(), thisCam);
 }
 
 void MeshCamera::OnDestroy()
