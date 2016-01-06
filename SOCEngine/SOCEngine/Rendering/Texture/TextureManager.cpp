@@ -19,7 +19,7 @@ TextureManager::TextureManager()
 
 TextureManager::~TextureManager()
 {
-	RemoveAll();
+	DeleteAll();
 }
 
 Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool hasAlpha)
@@ -120,7 +120,7 @@ void TextureManager::Remoave(const std::string& key)
 	}
 }
 
-void TextureManager::RemoveAll()
+void TextureManager::DeleteAll()
 {
 	for(auto iter = _hash.begin(); iter != _hash.end(); ++iter)
 		SAFE_DELETE(iter->second);
