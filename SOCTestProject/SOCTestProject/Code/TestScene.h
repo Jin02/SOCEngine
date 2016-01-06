@@ -17,7 +17,7 @@ private:
 
 public:
 	TestScene(void);
-	~TestScene(void);
+	virtual ~TestScene(void);
 
 public:
 	virtual void OnInitialize();
