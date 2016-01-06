@@ -816,3 +816,9 @@ uint LightManager::GetPackedLightCount() const
 
 	return (pointLightCount << 21) | (spotLightCount << 10) | directionalLightCount;	
 }
+
+void LightManager::Destroy()
+{
+	DeleteAll();
+	DestroyAllShaderReourceBuffer();
+}
