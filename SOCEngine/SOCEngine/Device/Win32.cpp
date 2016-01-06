@@ -71,7 +71,7 @@ namespace Device
 		}
 		else if(msg == WM_DESTROY || msg == WM_CLOSE)
 		{
-			PostQuitMessage(0);
+			director->Exit();
 			return 0;
 		}
 
@@ -133,7 +133,6 @@ namespace Device
 
 		if( _options != (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN) )
 			DestroyWindow(_handle);
-		else PostQuitMessage(0);
 	}
 
 	bool Win32::IsChild()
