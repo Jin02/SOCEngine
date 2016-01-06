@@ -19,6 +19,7 @@ DirectX::DirectX(void) :
 
 DirectX::~DirectX(void)
 {
+	Destroy();
 }
 
 bool DirectX::CreateRenderTargetView()
@@ -453,4 +454,31 @@ void DirectX::GetViewportMatrix(Math::Matrix& outMat) const
 	outMat._42 = vp.TopLeftY + vp.Height / 2.0f;
 	outMat._43 = vp.MinDepth;
 	outMat._44 = 1.0f;
+}
+
+void DirectX::Destroy()
+{
+	SAFE_RELEASE(_renderTargetView);
+	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
+	SAFE_RELEASE(_rasterizerClockwiseDefault);
+	SAFE_RELEASE(_rasterizerCounterClockwiseDisableCulling);
+	SAFE_RELEASE(_rasterizerCounterClockwiseDefault);
+	SAFE_RELEASE(_opaqueBlend);
+	SAFE_RELEASE(_alphaToCoverageBlend);
+	SAFE_RELEASE(_alphaBlend);
+	SAFE_RELEASE(_depthDisableDepthTest);
+	SAFE_RELEASE(_depthDisableDepthWrite);
+	SAFE_RELEASE(_depthLess);
+	SAFE_RELEASE(_depthEqualAndDisableDepthWrite);
+	SAFE_RELEASE(_depthGreater);
+	SAFE_RELEASE(_depthGreaterAndDisableDepthWrite);
+	SAFE_RELEASE(_anisotropicSamplerState);
+	SAFE_RELEASE(_linearSamplerState);
+	SAFE_RELEASE(_pointSamplerState);
+	SAFE_RELEASE(_shadowLessEqualCompState);
+	SAFE_RELEASE(_shadowGreaterEqualCompState);
+	SAFE_RELEASE(_shadowLinearSamplerState);
+	SAFE_RELEASE(_immediateContext);
+	SAFE_RELEASE(_swapChain);
+	SAFE_RELEASE(_device);
 }
