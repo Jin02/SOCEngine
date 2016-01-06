@@ -11,31 +11,30 @@
 
 namespace UI
 {
-	class FontLoader : public Singleton<FontLoader>
+	class SimpleFontLoader
 	{
 	private:
-		friend class Singleton<FontLoader>;
 		struct FontType
 		{
 			float left, right;
 			int size;
 		};
 
-	private:
 		std::array<FontType, BASIC_FONT_COUNT>	_font;
 		Rendering::Texture::Texture2D*			_texture;
 		Math::Size<uint>						_fontTextureSize;
 
-	private:
-		FontLoader();
-		virtual ~FontLoader();
+	public:
+		SimpleFontLoader();
+		~SimpleFontLoader();
 
 	private:
 		bool LoadFontData(const std::string& filePath);
 		bool LoadTexture(const std::string& texturePath);
 
 	public:
-		const FontLoader* Initialize(const std::string& fontDataFilePath, const std::string& fontTexturePath);
+		const SimpleFontLoader* Initialize(const std::string& fontDataFilePath, const std::string& fontTexturePath);
+		void Destroy();
 
 	public:
 		GET_ACCESSOR(Texture, const Rendering::Texture::Texture2D*, _texture);
