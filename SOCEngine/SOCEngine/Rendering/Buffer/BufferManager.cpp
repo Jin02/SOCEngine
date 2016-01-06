@@ -10,7 +10,6 @@ BufferManager::BufferManager()
 
 BufferManager::~BufferManager()
 {
-	Destroy();
 }
 
 void BufferManager::Add(const std::string& file, const std::string& key, VertexBuffer* bufferData)

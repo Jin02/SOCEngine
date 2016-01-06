@@ -19,8 +19,6 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager(void)
 {
-	DeleteAllShaderCode();
-	DeleteAllShader();
 }
 
 bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel, const std::string& funcName, const std::vector<ShaderMacro>* macros)

@@ -32,7 +32,6 @@ MeshImporter::MeshImporter()
 
 MeshImporter::~MeshImporter()
 {
-	Destroy();
 }
 
 void MeshImporter::Initialize()
