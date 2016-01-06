@@ -119,10 +119,10 @@ namespace Core
 		GET_SET_ACCESSOR(Use,		bool,							_use);
 		GET_SET_ACCESSOR(Parent,	Object*,						_parent);
 		GET_SET_ACCESSOR(Radius,	float,							_radius);
+		GET_SET_ACCESSOR(Name,		const std::string&,				_name);
 
 		GET_ACCESSOR(Culled,		bool,							_culled);
 		GET_ACCESSOR(HasMesh,		bool,							_hasMesh);
-		GET_ACCESSOR(Name,			const std::string&,				_name);
 		GET_ACCESSOR(Transform,		Transform*,						_transform);
 
 		SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
