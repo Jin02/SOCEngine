@@ -163,19 +163,24 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x = (shadowUV.x / 2.0f) + 0.5f;
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	shadowUV.xy *= shadowGlobalParam_pointLightTexelOffset.xx;
-	shadowUV.xy += (shadowGlobalParam_pointLightUnderscanScale).xx;
+	float oneShadowMapSize	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float underScanSize		= g_inputPointLightShadowParams[lightIndex].underScanSize;
+	shadowUV.xy *= ((oneShadowMapSize - (2.0f * underScanSize)) / oneShadowMapSize).xx;
+	shadowUV.xy += (underScanSize / oneShadowMapSize).xx;
 
 	shadowUV.y += (float)faceIndex;
 	shadowUV.y *= rcp(6); //1.0f / 6.0f;
 
-	uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index - 1;
+	uint idxWithBias = g_inputPointLightShadowParams[lightIndex].indexWithBias;
+
+	uint shadowIndex = (idxWithBias >> 16) - 1;
 	shadowUV.x += (float)shadowIndex;
 
 	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
-	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
+	// 65536 is 2^16
+	float bias = float(idxWithBias & 0x0000ffff) * rcp(65536.0f);
 	float depth = shadowUV.z
 #if defined(USE_SHADOW_INVERTED_DEPTH) && !defined(USE_VSM)
 		+
