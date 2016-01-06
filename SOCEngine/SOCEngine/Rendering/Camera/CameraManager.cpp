@@ -6,14 +6,12 @@ using namespace Rendering::Light;
 using namespace Core;
 using namespace Rendering::Manager;
 
-CameraManager::CameraManager() : _lightCullingCS(nullptr)
+CameraManager::CameraManager()
 {
-
 }
 
 CameraManager::~CameraManager()
 {
-	SAFE_DELETE(_lightCullingCS);
 }
 
 void CameraManager::SetFirstCamera(Camera::CameraForm *cam)
