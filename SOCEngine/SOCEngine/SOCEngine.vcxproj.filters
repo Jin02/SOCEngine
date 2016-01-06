@@ -558,9 +558,6 @@
     <ClInclude Include="UI\SimpleText2D.h">
       <Filter>UI\Text</Filter>
     </ClInclude>
-    <ClInclude Include="UI\FontLoader.h">
-      <Filter>UI\Text</Filter>
-    </ClInclude>
     <ClInclude Include="External\rapidjson\allocators.h">
       <Filter>External\rapidJson</Filter>
     </ClInclude>
@@ -829,6 +826,9 @@
     <ClInclude Include="ShaderCodes\Shadow.h">
       <Filter>ShaderCodes\Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="UI\SimpleFontLoader.h">
+      <Filter>UI\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -990,9 +990,6 @@
     <ClCompile Include="UI\SimpleText2D.cpp">
       <Filter>UI\Text</Filter>
     </ClCompile>
-    <ClCompile Include="UI\FontLoader.cpp">
-      <Filter>UI\Text</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceManager\ResourceManager.cpp">
       <Filter>ResourceManager</Filter>
     </ClCompile>
@@ -1136,6 +1133,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureForm.cpp">
       <Filter>Rendering\Texture\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\SimpleFontLoader.cpp">
+      <Filter>UI\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
