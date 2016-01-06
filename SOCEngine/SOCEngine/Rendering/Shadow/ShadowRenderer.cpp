@@ -25,7 +25,6 @@ ShadowRenderer::ShadowRenderer() :
 	_numOfShadowCastingPointLightInAtlas(0),
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
-	_pointLightShadowBlurSize(4.25f),
 	_shadowGlobalParamCB(nullptr),
 	_directionalLightShadowIdxToLightIdxSRBuffer(nullptr), _pointLightShadowIdxToLightIdxSRBuffer(nullptr), _spotLightShadowIdxToLightIdxSRBuffer(nullptr),
 	_updateConter(0), _prevUpdateCounter(0xffffffff)
@@ -738,27 +737,36 @@ uint ShadowRenderer::GetPackedShadowAtlasCapacity() const
 
 void ShadowRenderer::MakeShadowGlobalParam(ShadowGlobalParam& outParam) const
 {
-	outParam.packedNumOfShadowAtlasCapacity = GetPackedShadowAtlasCapacity();
-
-	float plMapRes = (float)_pointLightShadowMapResolution;
-	outParam.pointLightTexelOffset		= (plMapRes - (2.0f * _pointLightShadowBlurSize)) / plMapRes;
-	outParam.pointLightUnderscanScale	= _pointLightShadowBlurSize / plMapRes;
+	outParam.dummy = 0;
+	outParam.packedNumOfShadowAtlasCapacity		= GetPackedShadowAtlasCapacity();
 
 	auto Log2 = [](float f) -> float
 	{
 		return log(f) / log(2.0f);
 	};
 
-	uint plShadowMapPower = (uint)Log2((float)_pointLightShadowMapResolution);
-	plShadowMapPower &= 0x7FF;
+	// Compute packedPowerOfTwoShadowResolution
+	{
+		uint plShadowMapPower = (uint)Log2((float)_pointLightShadowMapResolution);
+		plShadowMapPower &= 0x7FF;
 
-	uint slShadowMapPower = (uint)Log2((float)_spotLightShadowMapResolution);
-	slShadowMapPower &= 0x7FF;
+		uint slShadowMapPower = (uint)Log2((float)_spotLightShadowMapResolution);
+		slShadowMapPower &= 0x7FF;
 
-	uint dlShadowMapPower = (uint)Log2((float)_directionalLightShadowMapResolution);
-	dlShadowMapPower &= 0x3FF;
+		uint dlShadowMapPower = (uint)Log2((float)_directionalLightShadowMapResolution);
+		dlShadowMapPower &= 0x3FF;
 
-	outParam.packedPowerOfTwoShadowAtlasSize = (plShadowMapPower << 21) | (slShadowMapPower << 10) | dlShadowMapPower;
+		outParam.packedPowerOfTwoShadowResolution = (plShadowMapPower << 21) | (slShadowMapPower << 10) | dlShadowMapPower;
+	}
+
+	// Compute packedNumOfShadows
+	{
+		uint plCount = _shadowCastingPointLights.GetSize()			& 0x7ff;
+		uint slCount = _shadowCastingSpotLights.GetSize()			& 0x7ff;
+		uint dlCount = _shadowCastingDirectionalLights.GetSize()	& 0x3ff;
+
+		outParam.packedNumOfShadows = (plCount << 21) | (slCount << 10) | dlCount;
+	}
 }
 
 bool ShadowRenderer::IsWorking() const
