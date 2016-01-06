@@ -6,7 +6,8 @@ using namespace Rendering::Light;
 
 PointLightShadow::PointLightShadow(const LightForm* owner,
 								   const std::function<void()>& ownerUpdateCounter)
-	: ShadowCommon(owner, ownerUpdateCounter)
+	: ShadowCommon(owner, ownerUpdateCounter),
+	_underScanSize(4.25f)
 {
 }
 
@@ -16,8 +17,6 @@ PointLightShadow::~PointLightShadow()
 
 void PointLightShadow::MakeParam(Param& outParam, bool useVSM) const
 {
-	ShadowCommon::MakeParam(outParam);
-
 	const PointLight* light = dynamic_cast<const PointLight*>(_owner);
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
@@ -29,4 +28,10 @@ void PointLightShadow::MakeParam(Param& outParam, bool useVSM) const
 
 	for(uint i=0; i<6; ++i)
 		Math::Matrix::Transpose(outParam.viewProjMat[i], outParam.viewProjMat[i]);
+
+	uint packedIdx	= (FetchShadowCastingLightIndex() + 1) << 16;
+	uint packedBias	= uint(GetBias() * 65536.0f);
+
+	outParam.indexWithBias = packedIdx | packedBias;
+	outParam.underScanSize = _underScanSize;
 }
