@@ -44,7 +44,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(Frustum, const Intersection::Frustum&, _frustum);
-			GET_ACCESSOR(Shadow, const Shadow::DirectionalLightShadow*, static_cast<const Shadow::DirectionalLightShadow*>(_shadow));
+			GET_ACCESSOR(Shadow, Shadow::DirectionalLightShadow*, static_cast<Shadow::DirectionalLightShadow*>(_shadow));
 		};
 	}
 }

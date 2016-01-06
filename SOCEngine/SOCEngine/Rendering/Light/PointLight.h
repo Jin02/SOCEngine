@@ -35,7 +35,7 @@ namespace Rendering
 			void GetInvViewProjMatrices(std::array<Math::Matrix, 6>& out) const;
 			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const;
 
-			GET_ACCESSOR(Shadow, const Shadow::PointLightShadow*, static_cast<const Shadow::PointLightShadow*>(_shadow) );
+			GET_ACCESSOR(Shadow, Shadow::PointLightShadow*, static_cast<Shadow::PointLightShadow*>(_shadow) );
 		};
 
 	}
