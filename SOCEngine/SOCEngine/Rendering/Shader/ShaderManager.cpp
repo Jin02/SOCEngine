@@ -19,8 +19,8 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager(void)
 {
-	RemoveAllShaderCode();
-	RemoveAllShader();
+	DeleteAllShaderCode();
+	DeleteAllShader();
 }
 
 bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel, const std::string& funcName, const std::vector<ShaderMacro>* macros)
@@ -290,12 +290,18 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 	return shader;
 }
 
-void ShaderManager::RemoveAllShaderCode()
+void ShaderManager::Destroy()
+{
+	DeleteAllShaderCode();
+	DeleteAllShader();
+}
+
+void ShaderManager::DeleteAllShaderCode()
 {
 	_shaderCodes.clear();
 }
 
-void ShaderManager::RemoveAllShader()
+void ShaderManager::DeleteAllShader()
 {
 	for(auto iter=_shaders.begin(); iter != _shaders.end(); ++iter)
 		SAFE_DELETE(iter->second);
@@ -303,7 +309,7 @@ void ShaderManager::RemoveAllShader()
 	_shaders.clear();
 }
 
-void ShaderManager::RemoveShaderCode(const std::string& command)
+void ShaderManager::DeleteShaderCode(const std::string& command)
 {
 	auto findIter = _shaderCodes.find(command);
 
@@ -311,7 +317,7 @@ void ShaderManager::RemoveShaderCode(const std::string& command)
 		_shaderCodes.erase(findIter);
 }
 
-void ShaderManager::RemoveShader(const std::string& command)
+void ShaderManager::DeleteShader(const std::string& command)
 {
 	auto findIter = _shaders.find(command);
 	if(findIter != _shaders.end())

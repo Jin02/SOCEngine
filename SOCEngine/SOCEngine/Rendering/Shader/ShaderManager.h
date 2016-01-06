@@ -60,10 +60,12 @@ namespace Rendering
 			const char*				FindShaderCode(const std::string& fileName);
 
 		public:
-			void					RemoveAllShaderCode();
-			void					RemoveAllShader();
-			void					RemoveShaderCode(const std::string& command);
-			void					RemoveShader(const std::string& command);
+			void					DeleteAllShaderCode();
+			void					DeleteAllShader();
+			void					DeleteShaderCode(const std::string& command);
+			void					DeleteShader(const std::string& command);
+
+			void					Destroy();
 		};
 	}
 }
