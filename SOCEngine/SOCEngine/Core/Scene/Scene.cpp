@@ -29,6 +29,14 @@ Scene::Scene(void) :
 Scene::~Scene(void)
 {
 	Destroy();
+
+	SAFE_DELETE(_cameraMgr);
+	SAFE_DELETE(_renderMgr);
+	SAFE_DELETE(_uiManager);
+	SAFE_DELETE(_lightManager);	
+	SAFE_DELETE(_materialMgr);
+	SAFE_DELETE(_backBufferMaker);
+	SAFE_DELETE(_shadowRenderer);
 }
 
 void Scene::Initialize()
@@ -51,7 +59,7 @@ void Scene::Initialize()
 	_backBufferMaker->Initialize(false);
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize(true);
+	_shadowRenderer->Initialize(false);
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
@@ -136,16 +144,15 @@ void Scene::Render()
 void Scene::Destroy()
 {
 	UI::FontLoader::GetInstance()->Destroy();
-
-	SAFE_DELETE(_cameraMgr);
-	SAFE_DELETE(_renderMgr);
-	SAFE_DELETE(_uiManager);
-	SAFE_DELETE(_lightManager);	
-	SAFE_DELETE(_materialMgr);
-	SAFE_DELETE(_backBufferMaker);
-	SAFE_DELETE(_shadowRenderer);
-
 	OnDestroy();
+
+	_cameraMgr->DeleteAll();
+	_materialMgr->DeleteAll();
+	_backBufferMaker->Destroy();
+	_shadowRenderer->Destroy();
+	_renderMgr->Destroy();
+	_uiManager->Destroy();
+	_lightManager->Destroy();
 }
 
 void Scene::NextState()
