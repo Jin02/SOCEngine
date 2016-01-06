@@ -52,8 +52,8 @@ struct Directional_Spot_LightShadowParam
 
 struct PointLightShadowParam
 {
-	float		bias;
-	uint		index;
+	uint		indexWithBias;
+	float		underScanSize;
 
 	matrix		viewProjMat[6];
 };
@@ -138,24 +138,12 @@ cbuffer CameraMat : register( b2 )
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
-	float	shadowGlobalParam_pointLightTexelOffset;
-	float	shadowGlobalParam_pointLightUnderscanScale;
-	uint	shadowGlobalParam_packedPowerOfTwoShadowAtlasSize;
-	
+	uint	shadowGlobalParam_packedPowerOfTwoShadowResolution;
 	uint	shadowGlobalParam_packedNumOfShadows;
-	uint3	shadowGlobalParam_dummy;
+	uint	shadowGlobalParam_dummy;
 };
 
 // b5, b6, b7 Àº GI °ü·Ã
-
-cbuffer CameraOption : register( b8 )
-{
-	float cameraOption_nearZ;
-	float cameraOption_farZ;
-	float cameraOption_fov;
-
-	float cameraOption_dummy;
-};
 
 uint GetNumOfPointLight(uint packedNumOfLights)
 {
