@@ -10,9 +10,7 @@ BufferManager::BufferManager()
 
 BufferManager::~BufferManager()
 {
-	DeleteAllIndexBuffer();
-	DeleteAllVertexBuffer();
-	DeleteAllOriginVBData();
+	Destroy();
 }
 
 void BufferManager::Add(const std::string& file, const std::string& key, VertexBuffer* bufferData)
@@ -170,4 +168,11 @@ void BufferManager::DeleteAllOriginVBData()
 	}
 
 	mim.clear();
+}
+
+void BufferManager::Destroy()
+{
+	DeleteAllVertexBuffer();
+	DeleteAllIndexBuffer();
+	DeleteAllOriginVBData();
 }
