@@ -55,12 +55,12 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 							  const Texture::DepthBuffer* opaqueDepthBuffer, const Texture::DepthBuffer* blendedDepthBuffer,
 							  const std::vector<Shader::ShaderMacro>* opationalMacros)
 {
-	ResourceManager* resourceManager = ResourceManager::GetInstance();
+	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
 	std::vector<Shader::ShaderMacro> macros;
 	{
-		ShaderMacro msaaMacro = Device::Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
+		ShaderMacro msaaMacro = Device::Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro();
 		macros.push_back(msaaMacro);
 
 		macros.push_back(ShaderMacro("USE_COMPUTE_SHADER", ""));
@@ -79,7 +79,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	_computeShader = new ComputeShader(threadGroup, blob);
 
 	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
-	Manager::LightManager* lightManager = Director::GetInstance()->GetCurrentScene()->GetLightManager();
+	Manager::LightManager* lightManager = Director::SharedInstance()->GetCurrentScene()->GetLightManager();
 
 	// Input Buffer Setting
 	{
@@ -124,7 +124,7 @@ void LightCulling::SetInputsToCS()
 // 화면 크기에 따라 유동적으로 타일 안 최대 빛 갯수를 계산한다.
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
-	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
+	const Math::Size<unsigned int>& size = Director::SharedInstance()->GetBackBufferSize();
 	const uint key = LIGHT_CULLING_TILE_RES;
 
 	return ( LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - ( key * ( size.h / 120 ) ) );
@@ -172,7 +172,7 @@ const Math::Size<unsigned int> LightCulling::CalcThreadGroupSize() const
 		return (unsigned int)((size + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 	};
 
-	const Math::Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
+	const Math::Size<unsigned int>& size = Director::SharedInstance()->GetBackBufferSize();
 
 	unsigned int width	= CalcThreadLength(size.w);
 	unsigned int height = CalcThreadLength(size.h);

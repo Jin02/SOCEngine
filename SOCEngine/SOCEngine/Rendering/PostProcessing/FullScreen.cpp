@@ -30,7 +30,7 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	bool success = Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
 	ASSERT_COND_MSG(success, "Error!, Invalid File Path");
 
-	auto shaderManager = ResourceManager::GetInstance()->GetShaderManager();
+	auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
 
 	// Setting Vertex Shader
 	{
@@ -50,7 +50,7 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 {
 	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
 
-	auto dx = Director::GetInstance()->GetDirectX();
+	auto dx = Director::SharedInstance()->GetDirectX();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	ID3D11DepthStencilView* nullDSV = nullptr;

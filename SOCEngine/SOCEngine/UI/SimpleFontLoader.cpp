@@ -62,7 +62,7 @@ bool SimpleFontLoader::LoadFontData(const std::string& filePath)
 
 bool SimpleFontLoader::LoadTexture(const std::string& texturePath)
 {
-	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	const ResourceManager* resourceManager = ResourceManager::SharedInstance();
 
 	auto textureMgr = resourceManager->GetTextureManager();
 	_texture = textureMgr->LoadTextureFromFile(texturePath, false);

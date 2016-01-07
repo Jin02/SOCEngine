@@ -34,7 +34,7 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 			return tex;
 	}
 
-	const Device::DirectX*	dx		= Device::Director::GetInstance()->GetDirectX();
+	const Device::DirectX*	dx		= Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device*			device	= dx->GetDevice();
 	ID3D11DeviceContext*	context	= dx->GetContext();
 

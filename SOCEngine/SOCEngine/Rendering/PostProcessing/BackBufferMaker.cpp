@@ -25,7 +25,7 @@ void BackBufferMaker::Initialize(bool useUI)
 		if(useUI)
 			macros.push_back(ShaderMacro("USE_UI", ""));
 
-		const ShaderMacro& msaaMacro = Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
+		const ShaderMacro& msaaMacro = Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro();
 		macros.push_back(msaaMacro);
 	}
 
@@ -40,7 +40,7 @@ void BackBufferMaker::Render(
 	const RenderTexture* uiScene,
 	const ConstBuffer* const& tbrParamConstBuffer)
 {
-	auto dx = Director::GetInstance()->GetDirectX();
+	auto dx = Director::SharedInstance()->GetDirectX();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	ID3D11DepthStencilView* nullDSV = nullptr;

@@ -36,7 +36,7 @@ void TestScene::OnInitialize()
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	cam->SetFieldOfViewDegree(60.0f);
 
-	const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+	const ResourceManager* resourceMgr = ResourceManager::SharedInstance();
 	MeshImporter* importer = resourceMgr->GetMeshImporter();
 
 #if 0

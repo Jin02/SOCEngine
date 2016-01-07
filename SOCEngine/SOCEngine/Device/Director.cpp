@@ -51,7 +51,7 @@ void Director::Initialize(const Math::Rect<unsigned int>& windowRect, const Math
 	_directX = new DirectX();
 	ASSERT_COND_MSG(_directX->InitDevice(_win, renderScreenRect), "Error, can not create directX device");
 
-	ResourceManager::GetInstance()->Initialize();
+	ResourceManager::SharedInstance()->Initialize();
 }
 
 void Director::Run()
@@ -93,7 +93,7 @@ void Director::Run()
 		}
 	}
 
-	Resource::ResourceManager* resourceMgr = Resource::ResourceManager::GetInstance();
+	Resource::ResourceManager* resourceMgr = Resource::ResourceManager::SharedInstance();
 	resourceMgr->DestroyManagers();
 	Resource::ResourceManager::Destroy();
 }

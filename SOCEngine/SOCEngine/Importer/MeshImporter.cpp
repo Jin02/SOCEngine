@@ -556,8 +556,8 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	std::set<std::string> normalMapMaterialKeys;
 	MakeMaterials(normalMapMaterialKeys, materials, folderDir, meshFileName);
 
-	BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
-	MaterialManager* materialManager = Director::GetInstance()->GetCurrentScene()->GetMaterialManager();
+	BufferManager* bufferMgr = ResourceManager::SharedInstance()->GetBufferManager();
+	MaterialManager* materialManager = Director::SharedInstance()->GetCurrentScene()->GetMaterialManager();
 
 	// key is meshPartId, second value is materialId
 	std::hash_map<std::string, std::vector<std::string>> meshMaterialIdInAllParts;
@@ -798,8 +798,8 @@ std::string MeshImporter::GetVertexBufferKey(const std::string& meshFileName, ui
 void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Importer::Material>& materials,
 								 const std::string& folderDir, const std::string& meshFileName)
 {
-	const ResourceManager* resourceMgr	= ResourceManager::GetInstance();
-	const Scene* scene					= Director::GetInstance()->GetCurrentScene();
+	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
+	const Scene* scene					= Director::SharedInstance()->GetCurrentScene();
 	MaterialManager* materialMgr		= scene->GetMaterialManager();
 	TextureManager* textureMgr			= resourceMgr->GetTextureManager();
 

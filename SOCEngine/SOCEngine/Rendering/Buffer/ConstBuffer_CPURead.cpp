@@ -23,7 +23,7 @@ bool ConstBuffer_CPURead::Initialize(unsigned int stride, unsigned int num)
 	desc.BindFlags = 0;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create constant buffer");

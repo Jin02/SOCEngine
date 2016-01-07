@@ -78,7 +78,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 
-	ShaderManager* shaderMgr = ResourceManager::GetInstance()->GetShaderManager();
+	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "ClearVoxelMapCS", false, nullptr);
 
 	ComputeShader::ThreadGroup threadGroup;

@@ -32,13 +32,13 @@ void SimpleText2D::Destroy()
 
 void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesKey, Rendering::Material* material)
 {
-	const Device::Director* director	= Device::Director::GetInstance();
+	const Device::Director* director	= Device::Director::SharedInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
 
 	_screenSize = director->GetBackBufferSize();
 	_maxLength = maxLength;
 
-	SimpleFontLoader* fontLoader = ResourceManager::GetInstance()->GetSimpleFontLoader();
+	SimpleFontLoader* fontLoader = ResourceManager::SharedInstance()->GetSimpleFontLoader();
 	fontLoader->Initialize(TEMP_FONT_DATA_PATH, TEMP_FONT_TEXTURE_PATH);
 
 	if(material == nullptr)
@@ -46,9 +46,9 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
 
-		const ResourceManager* resourceMgr = ResourceManager::GetInstance();
+		const ResourceManager* resourceMgr = ResourceManager::SharedInstance();
 
-		auto shaderMgr = ResourceManager::GetInstance()->GetShaderManager();
+		auto shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
 		Factory::EngineFactory factory(shaderMgr);
 
 		Shader::VertexShader*	vs = nullptr;
@@ -99,7 +99,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
-	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
+	Manager::UIManager* uiMgr = Director::SharedInstance()->GetCurrentScene()->GetUIManager();
 	uiMgr->AddRenderQueue(_name, this);
 
 	if(_root == this)
@@ -114,7 +114,7 @@ void SimpleText2D::UpdateText(const std::string& text)
 	if(text.empty())
 		return;
 
-	const SimpleFontLoader* fontLoader = ResourceManager::GetInstance()->GetSimpleFontLoader();
+	const SimpleFontLoader* fontLoader = ResourceManager::SharedInstance()->GetSimpleFontLoader();
 	const auto& fontTypes = fontLoader->GetFonts();
 	const auto& fontTextureSize = fontLoader->GetFontTextureSize();
 	float halfH = (float)fontTextureSize.h / 2.0f;
@@ -169,7 +169,7 @@ void SimpleText2D::UpdateText(const std::string& text)
 			iter.position.x -= (offsetX / 2.0f);
 	}
 
-	const Device::Director* director	= Device::Director::GetInstance();
+	const Device::Director* director	= Device::Director::SharedInstance();
 	const Device::DirectX* dx			= director->GetDirectX();
 	_meshFilter->GetVertexBuffer()->UpdateVertexData(dx->GetContext(), vertices.data(), sizeof(RectVertexInfo) * vertices.size());
 }

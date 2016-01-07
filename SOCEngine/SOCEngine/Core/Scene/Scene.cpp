@@ -45,7 +45,7 @@ void Scene::Initialize()
 
 	_uiManager		= new UIManager;
 
-	_dx				= Device::Director::GetInstance()->GetDirectX();
+	_dx				= Device::Director::SharedInstance()->GetDirectX();
 
 	_lightManager	= new LightManager;	
 	_lightManager->InitializeAllShaderResourceBuffer();

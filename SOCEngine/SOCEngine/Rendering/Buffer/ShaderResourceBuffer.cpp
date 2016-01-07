@@ -34,7 +34,7 @@ void ShaderResourceBuffer::Initialize(
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = sysMem;
 
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = sysMem ? device->CreateBuffer(&desc, &data, &_buffer)
 						: device->CreateBuffer(&desc, nullptr, &_buffer);
 

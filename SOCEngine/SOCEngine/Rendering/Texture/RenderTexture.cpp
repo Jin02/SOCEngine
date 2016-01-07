@@ -32,7 +32,7 @@ bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT
 	renderTargetViewDesc.ViewDimension = (texDesc.SampleDesc.Count > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Device::Director::SharedInstance()->GetDirectX()->GetDevice();
 
 	if(FAILED(device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_renderTargetView)))
 	{

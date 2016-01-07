@@ -28,7 +28,7 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_
 	_size.w = width;
 	_size.h = height;
 
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
 	D3D11_TEXTURE2D_DESC textureDesc;
