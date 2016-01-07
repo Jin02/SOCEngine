@@ -101,7 +101,7 @@ void Scene::RenderPreview()
 	_lightManager->ComputeAllLightViewProj(_boundBox);
 	_lightManager->UpdateBuffer(_dx, _shadowRenderer->GetUseVSM());
 
-	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
+	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 }
@@ -113,7 +113,7 @@ void Scene::Render()
 	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
 
 	_dx->ClearDeviceContext();
-	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
+	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
@@ -124,14 +124,14 @@ void Scene::Render()
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
-	CameraForm* firstCam = _cameraMgr->GetFirstCamera();
-	if(firstCam)
+	CameraForm* mainCam = _cameraMgr->GetMainCamera();
+	if(mainCam)
 	{
-		ID3D11RenderTargetView* backBufferRTV = _dx->GetBackBufferRTV();
-		const RenderTexture* camRT = firstCam->GetRenderTarget();
+		ID3D11RenderTargetView* backBufferRTV	= _dx->GetBackBufferRTV();
+		const RenderTexture* camRT				= mainCam->GetRenderTarget();
 
-		MeshCamera* mainFirstCam = dynamic_cast<MeshCamera*>(firstCam);
-		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainFirstCam->GetTBRParamConstBuffer());
+		MeshCamera* mainMeshCam = dynamic_cast<MeshCamera*>(mainCam);
+		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainMeshCam->GetTBRParamConstBuffer());
 	}
 
 	_dx->GetSwapChain()->Present(0, 0);
@@ -143,13 +143,13 @@ void Scene::Destroy()
 	OnDestroy();
 	DeleteAllObject();
 
-	_cameraMgr->DeleteAll();
 	_materialMgr->DeleteAll();
 	_backBufferMaker->Destroy();
 	_shadowRenderer->Destroy();
 	_renderMgr->Destroy();
 	_uiManager->Destroy();
 	_lightManager->Destroy();
+	_cameraMgr->Destroy();
 }
 
 void Scene::NextState()
