@@ -34,18 +34,18 @@ float ChebyshevUpperBound(float2 moments, float t)
 	variance = max(variance, 0.00002f);
 
 	float d = t - moments.x;
-	float pMax = variance / (variance + d * d);
+	float pMax = smoothStep(0.2f, 1.0f, variance / (variance + d * d));
 
 	return max(p, pMax);
 }
-float VarianceShadow(
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-	Texture2D<float2> momentShadowMapAtlas,
-#else
-	Texture2D<float> shadowMapAtlas,
-	Texture2D<float> momentShadowMapAtlas,
-#endif
-	float2 uv, float depth)
+
+float2 RecombinePrecision(float4 value)
+{
+	float invFactor = 1.0f / 256.0f;
+	return (value.zw * invFactor + value.xy);
+}
+
+float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float depth)
 {
 	float shadow = 0.0f;
 	float2 moment = float2(0.0f, 0.0f);
@@ -54,12 +54,7 @@ float VarianceShadow(
 	{
 		[unroll] for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-			moment = momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j));
-#else
-			moment.x = shadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)).x;
-			moment.y = momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)).x;
-#endif
+			moment = RecombinePrecision(momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)));
 			shadow += ChebyshevUpperBound(moment, depth);
 		}
 	}
@@ -68,7 +63,7 @@ float VarianceShadow(
 	return shadow;
 }
 
-float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
+float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
 {
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), g_inputSpotLightShadowParams[lightIndex].viewProjMat );
 	shadowUV /= shadowUV.w;
@@ -89,14 +84,10 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos)
 #else
 		-
 #endif
-		bias;
+		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#else
-		float shadow = saturate( VarianceShadow(g_inputSpotLightShadowMapAtlas, g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 #else
 	float shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif
@@ -132,11 +123,7 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 		bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
-	#else
-		float shadow = saturate( VarianceShadow(g_inputDirectionalLightShadowMapAtlas, g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );		
 #else
 	float shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif
@@ -176,19 +163,24 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x = (shadowUV.x / 2.0f) + 0.5f;
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	shadowUV.xy *= shadowGlobalParam_pointLightTexelOffset.xx;
-	shadowUV.xy += (shadowGlobalParam_pointLightUnderscanScale).xx;
+	float oneShadowMapSize	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float underScanSize		= g_inputPointLightShadowParams[lightIndex].underScanSize;
+	shadowUV.xy *= ((oneShadowMapSize - (2.0f * underScanSize)) / oneShadowMapSize).xx;
+	shadowUV.xy += (underScanSize / oneShadowMapSize).xx;
 
 	shadowUV.y += (float)faceIndex;
 	shadowUV.y *= rcp(6); //1.0f / 6.0f;
 
-	uint shadowIndex = (uint)g_inputPointLightShadowParams[lightIndex].index - 1;
+	uint idxWithBias = g_inputPointLightShadowParams[lightIndex].indexWithBias;
+
+	uint shadowIndex = (idxWithBias >> 16) - 1;
 	shadowUV.x += (float)shadowIndex;
 
 	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
 
-	float bias = (float)g_inputPointLightShadowParams[lightIndex].bias;
+	// 65536 is 2^16
+	float bias = float(idxWithBias & 0x0000ffff) * rcp(65536.0f);
 	float depth = shadowUV.z
 #if defined(USE_SHADOW_INVERTED_DEPTH) && !defined(USE_VSM)
 		+
@@ -198,11 +190,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 		lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * bias;
 
 #if defined(USE_VSM)
-	#if defined(USE_SHADOW_INVERTED_DEPTH)
-		float shadow = saturate( VarianceShadow(g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#else
-		float shadow = saturate( VarianceShadow(g_inputPointLightShadowMapAtlas, g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	#endif
+	float shadow = saturate( VarianceShadow(g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 #else
 	float shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth) );
 #endif

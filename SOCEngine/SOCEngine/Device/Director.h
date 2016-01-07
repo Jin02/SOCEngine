@@ -14,17 +14,17 @@ namespace Device
 		friend class Singleton<Director>;
 
 	private:
-		float				_elapse;
-		float				_fps;
-		Win32*				_win;
-		DirectX*			_directX;
-
-		Core::Scene*		_scene;
-		Core::Scene*		_nextScene;
+		float					_elapse;
+		float					_fps;
+		Win32*					_win;
+		DirectX*				_directX;
+		Core::Scene*			_scene;
+		Core::Scene*			_nextScene;
+		bool					_exit;
 
 	protected:
 		Director(void);
-		~Director(void);
+		virtual ~Director(void);
 
 	private:
 		void CalculateElapse();

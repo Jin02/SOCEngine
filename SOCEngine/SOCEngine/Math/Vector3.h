@@ -59,6 +59,7 @@ namespace Math
 		static void TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat);
 		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
 		static void FromRotationMatrix(Vector3& out, const Matrix& rotMat);
+		static void AdjustFrac(Vector3& out, const Vector3& v);
 
 	public:
 		Vector3 Normalized() const;

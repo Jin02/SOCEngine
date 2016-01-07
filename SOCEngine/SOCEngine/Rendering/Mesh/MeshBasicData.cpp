@@ -12,7 +12,6 @@ MeshBasicTransportData::~MeshBasicTransportData()
 
 bool MeshBasicTransportData::CreateVertexDeclations(std::vector<D3D11_INPUT_ELEMENT_DESC>& out, const MeshBasicTransportData& datas)
 {
-	//그냥 하드코딩 함 ㅇㅇ.
 	auto SetInputDesc = [](D3D11_INPUT_ELEMENT_DESC &out, const char* semanticName, unsigned int semanticIdx, DXGI_FORMAT foramt, unsigned int alignedByteOffset)
 	{
 		out.SemanticName = semanticName;

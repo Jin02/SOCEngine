@@ -21,9 +21,8 @@ void SpotLightShadow::MakeParam(Param& outParam, bool useVSM) const
 	if(useVSM)
 		outParam.viewProjMat = _owner->GetInvViewProjectionMatrix();
 	else
-#else
-		outParam.viewProjMat = _owner->GetViewProjectionMatrix();
 #endif
+	outParam.viewProjMat = _owner->GetViewProjectionMatrix();
 
 	Math::Matrix::Transpose(outParam.viewProjMat, outParam.viewProjMat);
 }

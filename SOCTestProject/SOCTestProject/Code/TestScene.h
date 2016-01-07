@@ -9,13 +9,15 @@ class TestScene : public Core::Scene
 {
 private:
 	Core::Object* _testObject;
+	Core::Object* _testObject2;
+
 	Core::Object* _camera;
 
 	Core::Object* _light;
 
 public:
 	TestScene(void);
-	~TestScene(void);
+	virtual ~TestScene(void);
 
 public:
 	virtual void OnInitialize();

@@ -10,7 +10,7 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 										uint3 groupIdx	: SV_GroupID)
 {
 	uint capacity			= GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	float perShadowMapRes	= (float)(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowAtlasSize));
+	float perShadowMapRes	= (float)(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 	uint2 shadowMapSize		= uint2(perShadowMapRes * capacity, perShadowMapRes * capacity);
 
 	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;

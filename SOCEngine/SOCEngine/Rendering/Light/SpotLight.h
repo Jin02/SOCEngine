@@ -46,7 +46,7 @@ namespace Rendering
 		public:
 			void SetSpotAngleDegree(float d);
 			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
-			GET_ACCESSOR(Shadow, const Shadow::SpotLightShadow*, static_cast<const Shadow::SpotLightShadow*>(_shadow) );
+			GET_ACCESSOR(Shadow, Shadow::SpotLightShadow*, static_cast<Shadow::SpotLightShadow*>(_shadow) );
 		};
 	}
 }

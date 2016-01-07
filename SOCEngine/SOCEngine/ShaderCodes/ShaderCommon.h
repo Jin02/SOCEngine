@@ -52,8 +52,8 @@ struct Directional_Spot_LightShadowParam
 
 struct PointLightShadowParam
 {
-	float		bias;
-	uint		index;
+	uint		indexWithBias;
+	float		underScanSize;
 
 	matrix		viewProjMat[6];
 };
@@ -76,15 +76,9 @@ Buffer<uint> g_inputPointLightShadowIndexToLightIndex									: register( t23 );
 Buffer<uint> g_inputSpotLightShadowIndexToLightIndex									: register( t24 );
 Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex								: register( t25 );
 
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-Texture2D<float2>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
-Texture2D<float2>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
-Texture2D<float2>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
-#else
-Texture2D<float>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
-Texture2D<float>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
-Texture2D<float>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
-#endif
+Texture2D<float4>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
+Texture2D<float4>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
+Texture2D<float4>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
 
 Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture									: register( t29 );
 Texture3D<float>	g_inputAnistropicVoxelNormalTexture									: register( t30 );
@@ -144,24 +138,12 @@ cbuffer CameraMat : register( b2 )
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
-	float	shadowGlobalParam_pointLightTexelOffset;
-	float	shadowGlobalParam_pointLightUnderscanScale;
-	uint	shadowGlobalParam_packedPowerOfTwoShadowAtlasSize;
-	
+	uint	shadowGlobalParam_packedPowerOfTwoShadowResolution;
 	uint	shadowGlobalParam_packedNumOfShadows;
-	uint3	shadowGlobalParam_dummy;
+	uint	shadowGlobalParam_dummy;
 };
 
 // b5, b6, b7 Àº GI °ü·Ã
-
-cbuffer CameraOption : register( b8 )
-{
-	float cameraOption_nearZ;
-	float cameraOption_farZ;
-	float cameraOption_fov;
-
-	float cameraOption_dummy;
-};
 
 uint GetNumOfPointLight(uint packedNumOfLights)
 {
@@ -217,6 +199,11 @@ float4 UintToFloat4(uint value)
 	ret.w = float((value & 0xFF000000) >> 24);
 
 	return (ret / 255.0f);
+}
+
+float smoothStep(float low, float high, float v)
+{
+	return clamp( (v - low) / (high - low), 0.0f, 1.0f);
 }
 
 #endif

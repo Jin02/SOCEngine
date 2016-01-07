@@ -49,4 +49,14 @@ namespace Math
 
 		return (unsigned short)(outSign | outExp | outMantissa);
 	}
+
+	float Common::AdjustFraction(float f)
+	{
+		int intValue = (int)(f + ((f < 0.0f) ? -FLT_EPSILON : FLT_EPSILON));
+
+		float frac = (float)f - intValue;
+		frac = (abs(frac) < FLT_EPSILON) ? 0.0f : frac;
+
+		return (float)intValue + frac;
+	}
 }

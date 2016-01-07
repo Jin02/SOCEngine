@@ -77,23 +77,22 @@ void MeshCamera::OnInitialize()
 
 	_offScreen = new OffScreen;
 	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
-
-	auto camMgr = Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager();
-	CameraForm* thisCam = this;
-	camMgr->Add(_owner->GetName(), thisCam);
 }
 
 void MeshCamera::OnDestroy()
 {
+	SAFE_DELETE(_tbrParamConstBuffer);
+
 	SAFE_DELETE(_albedo_emission);
 	SAFE_DELETE(_specular_metallic);
 	SAFE_DELETE(_normal_roughness);
-	SAFE_DELETE(_blendedDepthBuffer);
 
-	SAFE_DELETE(_tbrParamConstBuffer);
 	SAFE_DELETE(_deferredShadingWithLightCulling);
-	SAFE_DELETE(_offScreen);
+	SAFE_DELETE(_opaqueDepthBuffer);
+
 	SAFE_DELETE(_blendedMeshLightCulling);
+	SAFE_DELETE(_blendedDepthBuffer);
+	SAFE_DELETE(_offScreen);
 
 	CameraForm::Destroy();
 }
@@ -294,7 +293,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 					obj->GetTransform()->FetchWorldPosition(worldPos);
 
 					Sphere sphere(worldPos, obj->GetRadius());
-					isCulled |= (*intersectFunc)(sphere) == false;
+					isCulled |= ((*intersectFunc)(sphere) == false);
 				}
 
 				if(isCulled == false)
@@ -472,15 +471,15 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		if(useShadow)
 		{
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-			ID3D11SamplerState* shadowSamplerState = dx->GetGreaterEqualSamplerComparisonState();
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
 #else
-			ID3D11SamplerState* shadowSamplerState = dx->GetLessEqualSamplerComparisonState();
+			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
 #endif
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
 			if(useVSM)
 			{
-				ID3D11SamplerState* linearSamplerState = dx->GetSamplerStateLinear();
-				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &linearSamplerState);
+				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
+				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &shadowSamplerState);
 			}
 		}
 

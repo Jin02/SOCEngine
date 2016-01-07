@@ -232,7 +232,7 @@ void PS( GS_OUTPUT input )
 			float3 lightColor = lightColorWithLm.rgb;
 			float3 lambert = albedo.rgb * saturate(dot(normal, lightDir));
 
-			radiosity += lambert * totalAttenTerm * lightColor * RenderSpotLightShadow(lightIndex, input.worldPos);
+			radiosity += lambert * totalAttenTerm * lightColor * RenderSpotLightShadow(lightIndex, input.worldPos, distanceOfLightWithVertex / radius);
 			radiosity += material_emissionColor.rgb;
 		}
 	}

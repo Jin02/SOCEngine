@@ -30,6 +30,7 @@ namespace UI
 	public:
 		void Initialize(uint maxLength, const std::string& sharedVerticesKey, Rendering::Material* material = nullptr);
 		void UpdateText(const std::string& text);
+		void Destroy();
 
 	public:
 		virtual void Render(const Device::DirectX* dx, const Math::Matrix& viewProjMat);

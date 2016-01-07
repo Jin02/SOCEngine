@@ -10,7 +10,7 @@ void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 								uint3 groupIdx	: SV_GroupID)
 {
 	uint capacity			= GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	float perShadowMapRes	= (float)(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowAtlasSize));
+	float perShadowMapRes	= (float)(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 	uint2 shadowMapSize		= uint2(perShadowMapRes * capacity, perShadowMapRes * capacity);
 
 	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;

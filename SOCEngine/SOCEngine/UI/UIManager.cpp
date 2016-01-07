@@ -42,3 +42,17 @@ void UIManager::AddUpdateQueue(UI::UIObject* uiObject)
 {
 	_rootObjects.push_back(uiObject);
 }
+
+void UIManager::DeleteStoredObjects()
+{
+	for(auto iter = _rootObjects.begin(); iter != _rootObjects.end(); ++iter)
+		SAFE_DELETE( (*iter) );
+
+	_rootObjects.clear();
+	_renderQueue.clear();
+}
+
+void UIManager::Destroy()
+{
+	DeleteStoredObjects();
+}

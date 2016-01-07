@@ -358,6 +358,9 @@
     <Filter Include="ShaderCodes\Mesh\Forward\Optional">
       <UniqueIdentifier>{564367f1-bf44-44c4-9bbd-7e172dc0c697}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\Shadow">
+      <UniqueIdentifier>{63258c7e-291c-4190-b898-34eabb518bf0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -553,9 +556,6 @@
       <Filter>Sound</Filter>
     </ClInclude>
     <ClInclude Include="UI\SimpleText2D.h">
-      <Filter>UI\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\FontLoader.h">
       <Filter>UI\Text</Filter>
     </ClInclude>
     <ClInclude Include="External\rapidjson\allocators.h">
@@ -817,14 +817,17 @@
     <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\Shadow.h">
-      <Filter>ShaderCodes\Light</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\DynamicLighting.h">
       <Filter>ShaderCodes\Light</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\RenderManager\RenderTypes.h">
       <Filter>Rendering\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Shadow.h">
+      <Filter>ShaderCodes\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\SimpleFontLoader.h">
+      <Filter>UI\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -987,9 +990,6 @@
     <ClCompile Include="UI\SimpleText2D.cpp">
       <Filter>UI\Text</Filter>
     </ClCompile>
-    <ClCompile Include="UI\FontLoader.cpp">
-      <Filter>UI\Text</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceManager\ResourceManager.cpp">
       <Filter>ResourceManager</Filter>
     </ClCompile>
@@ -1134,6 +1134,9 @@
     <ClCompile Include="Rendering\Texture\TextureForm.cpp">
       <Filter>Rendering\Texture\Form</Filter>
     </ClCompile>
+    <ClCompile Include="UI\SimpleFontLoader.cpp">
+      <Filter>UI\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1187,9 +1190,6 @@
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
       <Filter>ShaderCodes\GI\VoxelConeTracing</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
-      <Filter>ShaderCodes\Light</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
@@ -1201,6 +1201,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
+      <Filter>ShaderCodes\Shadow</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

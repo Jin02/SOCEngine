@@ -16,6 +16,13 @@ SimpleImage2D::SimpleImage2D(const std::string& name, Core::Object* parent)
 
 SimpleImage2D::~SimpleImage2D()
 {
+	Destroy();
+}
+
+void SimpleImage2D::Destroy()
+{
+	UIObject::Destroy();
+
 	if(_isOtherMaterial == false)
 		SAFE_DELETE(_material);
 
@@ -74,7 +81,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	if(_root == this)
 		uiMgr->AddUpdateQueue(this);
 
-	UIObject::InitConstBuffer();
+	UIObject::Initialize();
 	SetSize(size);
 }
 
