@@ -30,7 +30,7 @@ void AnisotropicVoxelMapAtlas::Initialize(
 	uint height		= sideLength * maxNumOfCascade;
 	Texture3D::Initialize(width, height, sideLength, srvFormat, uavFormat, bindFlags, _mipmapCount);
 
-	auto device = Director::GetInstance()->GetDirectX()->GetDevice();
+	auto device = Director::SharedInstance()->GetDirectX()->GetDevice();
 
 	for(uint i=0; i<mipmapCount - 1; ++i)
 	{

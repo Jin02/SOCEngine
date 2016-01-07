@@ -37,7 +37,7 @@ void VertexBuffer::Initialize(
 	memset(&data, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 	data.pSysMem = sysMem;
 
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create vb");

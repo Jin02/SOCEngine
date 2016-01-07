@@ -31,7 +31,7 @@ bool DepthBuffer::Initialize(const Math::Size<unsigned int>& size, bool useShade
 	}
 	desc.Texture2D.MipSlice = 0;
 
-	ID3D11Device* device = Device::Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Device::Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateDepthStencilView(_texture, &desc, &_depthStencilView); 
 	if(FAILED(hr))
 	{

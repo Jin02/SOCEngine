@@ -53,7 +53,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 	if(iter != repo->end())
 		return iter->second;
 
-	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	const ResourceManager* resourceManager = ResourceManager::SharedInstance();
 
 	auto LoadShader = [](
 		const std::string& fileName,
@@ -95,7 +95,7 @@ void RenderManager::Initialize()
 {
 	std::vector<ShaderMacro> macros;
 	{
-		ShaderMacro msaaMacro = Device::Director::GetInstance()->GetDirectX()->GetMSAAShaderMacro();
+		ShaderMacro msaaMacro = Device::Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro();
 		macros.push_back(msaaMacro);	
 	}
 
@@ -181,7 +181,7 @@ void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncNam
 
 void RenderManager::DeleteDefaultShader(RenderType renderType)
 {
-	const ResourceManager* resourceManager = ResourceManager::GetInstance();
+	const ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	ShaderManager* shaderMgr = resourceManager->GetShaderManager();
 
 	auto DeleteShaderByBufferFlag = [&](uint bufferFlag)

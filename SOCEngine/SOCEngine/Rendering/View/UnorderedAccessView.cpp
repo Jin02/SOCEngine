@@ -34,7 +34,7 @@ void UnorderedAccessView::Initialize(
 		desc.Texture3D.WSize		= tex3dWSize;
 	}
 
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateUnorderedAccessView(resource, &desc, &_uav);

@@ -249,7 +249,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 		shader = new VertexShader(blob);
 
-		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		bool success = shader->Create(dx, vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
@@ -277,7 +277,7 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 		shader = new PixelShader(blob);
 
-		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
 		ASSERT_COND_MSG(shader->Create(device), "Error, Not Created PS");
 
@@ -388,7 +388,7 @@ GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath,
 
 		shader = new GeometryShader(blob);
 
-		const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
 		ASSERT_COND_MSG(shader->Create(device), "Error, Can't create GS");
 

@@ -35,7 +35,7 @@ void MeshCamera::OnInitialize()
 {
 	CameraForm::Initialize();
 
-	Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
+	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 
 	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
@@ -156,7 +156,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 
 		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
 
-		tbrParam.viewportSize = Director::GetInstance()->GetBackBufferSize().Cast<float>();
+		tbrParam.viewportSize = Director::SharedInstance()->GetBackBufferSize().Cast<float>();
 		tbrParam.packedNumOfLights = lightManager->GetPackedLightCount();
 
 		tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
@@ -571,7 +571,7 @@ void MeshCamera::EnableRenderTransparentMesh(bool enable)
 {	
 	if(enable)
 	{
-		const Size<unsigned int> backBufferSize = Director::GetInstance()->GetBackBufferSize();
+		const Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 
 		ASSERT_COND_MSG(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
 		{

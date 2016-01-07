@@ -15,7 +15,7 @@ private:
 	void operator=(Singleton const&){}
 
 public:
-	static T* GetInstance()
+	static T* SharedInstance()
 	{
 		if(_instance == nullptr)
 			_instance = new T();

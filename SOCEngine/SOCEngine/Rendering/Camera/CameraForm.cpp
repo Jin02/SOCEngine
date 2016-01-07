@@ -28,7 +28,7 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	_clippingNear		= 0.1f;
 	_clippingFar		= 5000.0f;
 
-	const Size<unsigned int>& backBufferSize = Director::GetInstance()->GetBackBufferSize();
+	const Size<unsigned int>& backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
 
 	_projectionType    = ProjectionType::Perspective;
@@ -44,7 +44,7 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	_camMatConstBuffer = new ConstBuffer;
 	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
 
-	Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager()->Add(this);
+	Device::Director::SharedInstance()->GetCurrentScene()->GetCameraManager()->Add(this);
 }
 
 void CameraForm::Destroy()
@@ -56,7 +56,7 @@ void CameraForm::Destroy()
 
 void CameraForm::CalcAspect()
 {
-	const Size<unsigned int>& backBufferSize =  Device::Director::GetInstance()->GetBackBufferSize();
+	const Size<unsigned int>& backBufferSize =  Device::Director::SharedInstance()->GetBackBufferSize();
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
 }
 
@@ -78,7 +78,7 @@ void CameraForm::GetPerspectiveMatrix(Math::Matrix &outMatrix, bool isInverted) 
 
 void CameraForm::GetOrthogonalMatrix(Math::Matrix &outMatrix, bool isInverted, const Math::Size<uint>* customWH) const
 {
-	const Size<uint>& wh = customWH ? (*customWH) : Device::Director::GetInstance()->GetBackBufferSize();
+	const Size<uint>& wh = customWH ? (*customWH) : Device::Director::SharedInstance()->GetBackBufferSize();
 
 	float clippingNear	= _clippingNear;
 	float clippingFar	= _clippingFar;
@@ -224,7 +224,7 @@ void CameraForm::_Clone(CameraForm* newCam) const
 	newCam->_frustum		= new Frustum(0.0f);
 	newCam->_renderTarget	= new Texture::RenderTexture;
 	{
-		const Size<unsigned int>& size = Director::GetInstance()->GetBackBufferSize();
+		const Size<unsigned int>& size = Director::SharedInstance()->GetBackBufferSize();
 
 		D3D11_TEXTURE2D_DESC desc;
 		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		

@@ -7,7 +7,7 @@ namespace Device
 {
 	LRESULT Win32::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		Director* director = Director::GetInstance();
+		Director* director = Director::SharedInstance();
 		Win32* win = const_cast<Win32*>(director->GetWin());
 		Core::Scene* scene = director->GetCurrentScene();
 
