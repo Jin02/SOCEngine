@@ -81,15 +81,18 @@ void MeshCamera::OnInitialize()
 
 void MeshCamera::OnDestroy()
 {
+	SAFE_DELETE(_tbrParamConstBuffer);
+
 	SAFE_DELETE(_albedo_emission);
 	SAFE_DELETE(_specular_metallic);
 	SAFE_DELETE(_normal_roughness);
-	SAFE_DELETE(_blendedDepthBuffer);
 
-	SAFE_DELETE(_tbrParamConstBuffer);
 	SAFE_DELETE(_deferredShadingWithLightCulling);
-	SAFE_DELETE(_offScreen);
+	SAFE_DELETE(_opaqueDepthBuffer);
+
 	SAFE_DELETE(_blendedMeshLightCulling);
+	SAFE_DELETE(_blendedDepthBuffer);
+	SAFE_DELETE(_offScreen);
 
 	CameraForm::Destroy();
 }
