@@ -36,7 +36,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 		_material = new Material(_name, Material::Type::UI);
 		_isOtherMaterial = true;
 		
-		const ResourceManager* resourceManager = ResourceManager::GetInstance();
+		const ResourceManager* resourceManager = ResourceManager::SharedInstance();
 		auto shaderMgr = resourceManager->GetShaderManager();
 		Factory::EngineFactory factory(shaderMgr);
 
@@ -75,7 +75,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 	bool success = _meshFilter->Initialize(meshCreateArgs);
 	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
 
-	Manager::UIManager* uiMgr = Director::GetInstance()->GetCurrentScene()->GetUIManager();
+	Manager::UIManager* uiMgr = Director::SharedInstance()->GetCurrentScene()->GetUIManager();
 	uiMgr->AddRenderQueue(_name, this);
 
 	if(_root == this)
@@ -91,7 +91,7 @@ void SimpleImage2D::Render(const Device::DirectX* dx, const Math::Matrix& viewPr
 
 	if(_changeSize)
 	{
-		const Math::Size<uint>& screenSize = Director::GetInstance()->GetBackBufferSize();
+		const Math::Size<uint>& screenSize = Director::SharedInstance()->GetBackBufferSize();
 
 		float left		= -(_size.w / 2.0f);
 		float right		= -left;

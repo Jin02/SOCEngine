@@ -24,7 +24,7 @@ bool ConstBuffer::Initialize(unsigned int size)
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 
-	ID3D11Device* device = Director::GetInstance()->GetDirectX()->GetDevice();
+	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create constant buffer");

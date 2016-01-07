@@ -77,7 +77,7 @@ void Mesh::OnDestroy()
 
 void Mesh::ClassifyRenderMeshType()
 {
-	Manager::RenderManager* renderMgr = Device::Director::GetInstance()->GetCurrentScene()->GetRenderManager();
+	Manager::RenderManager* renderMgr = Device::Director::SharedInstance()->GetCurrentScene()->GetRenderManager();
 	renderMgr->UpdateRenderList(this);
 	_prevRenderType = _renderer->GetCurrentRenderType();
 }

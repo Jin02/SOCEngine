@@ -32,7 +32,7 @@ void ShadowCommon::MakeParam(CommonParam& outParam) const
 
 ushort ShadowCommon::FetchShadowCastingLightIndex() const
 {
-	Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	Scene* scene = Device::Director::SharedInstance()->GetCurrentScene();
 	ShadowRenderer* shadowManager = scene->GetShadowManager();
 
 	const LightForm* owner = _owner;

@@ -20,7 +20,7 @@ void Texture3D::Initialize(uint width, uint height, uint depth, DXGI_FORMAT srvF
 	_size.y = (float)height;
 	_size.z = (float)depth;
 
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
 	D3D11_TEXTURE3D_DESC textureDesc;

@@ -23,7 +23,7 @@ void UICamera::OnInitialize()
 	CameraForm::Initialize(1);
 
 	_depthBuffer =  new DepthBuffer;
-	_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize(), false, 1);
+	_depthBuffer->Initialize(Director::SharedInstance()->GetBackBufferSize(), false, 1);
 
 	_projectionType		= ProjectionType::Orthographic;
 	_owner->GetTransform()->UpdatePosition(Math::Vector3(0, 0, -1));
@@ -40,7 +40,7 @@ void UICamera::OnDestroy()
 
 void UICamera::Update(float delta)
 {
-	const Device::Director* director	= Device::Director::GetInstance();
+	const Device::Director* director	= Device::Director::SharedInstance();
 	Core::Scene* scene					= director->GetCurrentScene();
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 
@@ -51,7 +51,7 @@ void UICamera::Update(float delta)
 
 void UICamera::Render(const Device::DirectX* dx)
 {
-	const Device::Director* director	= Device::Director::GetInstance();
+	const Device::Director* director	= Device::Director::SharedInstance();
 	Core::Scene* scene					= director->GetCurrentScene();
 	UI::Manager::UIManager* uiMgr		= scene->GetUIManager();
 	ID3D11DeviceContext* context		= dx->GetContext();
@@ -100,7 +100,7 @@ Core::Component* UICamera::Clone() const
 	_Clone(uiCam);
 
 	uiCam->_depthBuffer = new DepthBuffer;
-	uiCam->_depthBuffer->Initialize(Director::GetInstance()->GetBackBufferSize(), false, 1);
+	uiCam->_depthBuffer->Initialize(Director::SharedInstance()->GetBackBufferSize(), false, 1);
 
 	return uiCam;
 }

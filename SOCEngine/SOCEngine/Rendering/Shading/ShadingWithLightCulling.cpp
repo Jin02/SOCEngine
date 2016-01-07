@@ -34,7 +34,7 @@ void ShadingWithLightCulling::Initialize(
 	const Math::Size<uint>& backBufferSize,
 	bool useDebugMode)
 {
-	const Core::Scene* scene				= Director::GetInstance()->GetCurrentScene();
+	const Core::Scene* scene				= Director::SharedInstance()->GetCurrentScene();
 	Manager::LightManager* lightManager		= scene->GetLightManager();
 	Shadow::ShadowRenderer* shadowMgr		= scene->GetShadowManager();
 
@@ -174,7 +174,7 @@ void ShadingWithLightCulling::Initialize(
 	{
 		Math::Size<uint> bufferSize = backBufferSize;
 		{
-			const DXGI_SAMPLE_DESC& msaaDesc = Director::GetInstance()->GetDirectX()->GetMSAADesc();
+			const DXGI_SAMPLE_DESC& msaaDesc = Director::SharedInstance()->GetDirectX()->GetMSAADesc();
 			if(msaaDesc.Count > 1)
 			{
 				bufferSize.w *= 2;

@@ -22,7 +22,7 @@ void ShaderResourceView::Initialize(
 {
 	ASSERT_COND_MSG(_srv == nullptr, "Error, SRV was already allocated");
 
-	const Device::DirectX* dx = Device::Director::GetInstance()->GetDirectX();
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;

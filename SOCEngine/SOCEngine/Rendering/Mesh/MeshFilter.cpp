@@ -29,7 +29,7 @@ bool MeshFilter::Initialize(const CreateFuncArguments& args)
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices->size();
 
-	Manager::BufferManager* bufferMgr = ResourceManager::GetInstance()->GetBufferManager();
+	Manager::BufferManager* bufferMgr = ResourceManager::SharedInstance()->GetBufferManager();
 
 	std::string vbKey = args.fileName + ":" + args.key;
 

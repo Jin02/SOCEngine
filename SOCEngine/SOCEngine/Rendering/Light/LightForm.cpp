@@ -19,7 +19,7 @@ LightForm::~LightForm()
 
 void LightForm::OnInitialize()
 {
-	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	Core::Scene* scene = Device::Director::SharedInstance()->GetCurrentScene();
 
 	const std::string& key = _owner->GetName();
 
@@ -41,7 +41,7 @@ void LightForm::OnDestroy()
 {
 	if(_shadow)
 	{
-		Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+		Core::Scene* scene = Device::Director::SharedInstance()->GetCurrentScene();
 		Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
 
 		const LightForm* light = this;
@@ -82,7 +82,7 @@ void LightForm::SetLumen(uint l)
 
 void LightForm::ActiveShadow(bool isActive)
 {
-	Core::Scene* scene = Device::Director::GetInstance()->GetCurrentScene();
+	Core::Scene* scene = Device::Director::SharedInstance()->GetCurrentScene();
 	Shadow::ShadowRenderer* shadowManager = scene->GetShadowManager();
 
 	const LightForm* light = this;

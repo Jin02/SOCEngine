@@ -21,7 +21,7 @@ bool ComputeShader::Initialize()
 	if(_blob == nullptr)
 		return false;
 
-	const DirectX* dx = Director::GetInstance()->GetDirectX();
+	const DirectX* dx = Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateComputeShader(_blob->GetBufferPointer(), _blob->GetBufferSize(), 0, &_shader);
