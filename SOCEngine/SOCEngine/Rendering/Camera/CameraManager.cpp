@@ -5,31 +5,76 @@ using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Core;
 using namespace Rendering::Manager;
+using namespace Rendering::Camera;
+using namespace Structure;
 
-CameraManager::CameraManager()
+CameraManager::CameraManager(){}
+
+CameraManager::~CameraManager(){}
+
+void CameraManager::Add(Camera::CameraForm* camera)
 {
+	address key = reinterpret_cast<address>(camera);
+	ASSERT_COND_MSG(Has(key) == false, "Error, Already registed camera objeect");
+
+	VectorMap<address, Camera::CameraForm*>::Add(key, camera);
 }
 
-CameraManager::~CameraManager()
+void CameraManager::Delete(Camera::CameraForm* camera)
 {
+	address key = reinterpret_cast<address>(camera);
+	VectorMap<address, Camera::CameraForm*>::Delete(key);
+	SAFE_DELETE(camera);
 }
 
-void CameraManager::SetFirstCamera(Camera::CameraForm *cam)
+void CameraManager::DeleteAll()
 {
-	auto mainCamIter = _vector.begin();
-	auto findIter = _vector.begin();
-
-	for(findIter; findIter != _vector.end(); ++findIter)
+	for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
 	{
-		if( (*findIter) == cam )
-			break;
+		CameraForm* cam = (*iter);
+		SAFE_DELETE(cam);
 	}
 
-	ASSERT_COND_MSG(findIter != _vector.end(), "CameraManager does not have a input cam"); 
-	std::swap(findIter, mainCamIter);
+	VectorMap<address, Camera::CameraForm*>::DeleteAll();
 }
 
-Camera::CameraForm* CameraManager::GetFirstCamera() const
+void CameraManager::Destroy()
 {
-	return _vector.empty() ? nullptr : _vector.front();
+	DeleteAll();
+}
+
+void CameraManager::SetMainCamera(Camera::CameraForm* cam)
+{
+	CameraForm* curMainCam = GetMainCamera();
+	if(curMainCam == nullptr)
+	{
+		Add(cam);
+		return;
+	}
+
+	address key = reinterpret_cast<address>(cam);
+	uint vecSwapIdx = -1;
+	Find(key, &vecSwapIdx);
+
+	// Swap Vector Element
+	{
+		if(vecSwapIdx != -1)
+			std::swap(_vector.begin(), _vector.begin() + vecSwapIdx);
+		else
+		{
+			Add(cam);
+			std::swap(_vector.begin(), _vector.end() - 1);
+		}
+	}
+
+	// Swap Map Element
+	{
+		uint mainCamKey		= reinterpret_cast<address>(GetMainCamera());
+		std::swap(_map.find(mainCamKey), _map.find(key));
+	}
+}
+
+Camera::CameraForm* CameraManager::GetMainCamera() const
+{
+	return (GetSize() != 0) ? (*_vector.begin()) : nullptr;
 }
