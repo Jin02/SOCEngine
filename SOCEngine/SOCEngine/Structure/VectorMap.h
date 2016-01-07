@@ -73,6 +73,13 @@ namespace Structure
 			ASSERT_COND_MSG(index < _vector.size(), "Out index");
 			return _vector[index];
 		}
+
+		inline Object& Get(unsigned int index) const
+		{
+			ASSERT_COND_MSG(index < _vector.size(), "Out index");
+			return _vector[index];
+		}
+
 		void Delete(const Key& key)
 		{
 			std::map<Key, uint>::iterator iter = _map.find(key);
