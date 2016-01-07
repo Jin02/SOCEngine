@@ -12,8 +12,10 @@ using namespace Core;
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
-	_radius(0.0f), _boundBox(nullptr)
+	_radius(0.0f)
 {
+	_boundBox.SetMinMax(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+
 	_transform = new Transform( this );		
 	_root = parent ? parent->_root : this;
 
@@ -24,7 +26,6 @@ Object::Object(const std::string& name, Object* parent /* = NULL */) :
 Object::~Object(void)
 {
 	SAFE_DELETE(_transform);
-	SAFE_DELETE(_boundBox);
 
 	DeleteAllChild();
 	DeleteAllComponent();
@@ -87,23 +88,30 @@ void Object::Update(float delta)
 		(*iter)->Update(delta);
 }
 
-void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax)
+void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
+	const Device::DirectX*& dx, Math::Vector3& refWorldPosMin, Math::Vector3& refWorldPosMax,
+	const Math::Matrix& parentWorldMat)
 {
 	if(_use == false)
 		return;
 
-	Math::Matrix worldMat;
-	_transform->FetchWorldMatrix(worldMat);
+	Math::Matrix localMat;
+	_transform->FetchLocalMatrix(localMat);
+
+	Math::Matrix worldMat = localMat * parentWorldMat;
 
 	if(_hasMesh)
 	{
-		const Vector3& extents		= _boundBox->GetExtents();
-		const Vector3& boxCenter	= _boundBox->GetCenter(); 
+		Vector3 extents		= _boundBox.GetExtents();
+		Vector3 boxCenter	= _boundBox.GetCenter(); 
 
 		Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
-		
-		Vector3 minPos = worldPos - extents;
-		Vector3 maxPos = worldPos + extents;
+
+		Vector3 worldScale;
+		Transform::FetchWorldScale(worldScale, worldMat);
+
+		Vector3 minPos = (worldPos - extents) * worldScale;
+		Vector3 maxPos = (worldPos + extents) * worldScale;
 
 		if(refWorldPosMin.x > minPos.x) refWorldPosMin.x = minPos.x;
 		if(refWorldPosMin.y > minPos.y) refWorldPosMin.y = minPos.y;
@@ -113,7 +121,9 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 		if(refWorldPosMax.y < maxPos.y) refWorldPosMax.y = maxPos.y;
 		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 	}
-	Matrix::Transpose(worldMat, worldMat);
+
+	Matrix transposedWM;
+	Matrix::Transpose(transposedWM, worldMat);
 
 	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
@@ -122,13 +132,13 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(const Device::DirectX*
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
 		if(changedWorldMat)
-			(*iter)->OnUpdateTransformCB(dx, worldMat);
+			(*iter)->OnUpdateTransformCB(dx, transposedWM);
 
 		(*iter)->OnRenderPreview();
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(dx, refWorldPosMin, refWorldPosMax);
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(dx, refWorldPosMin, refWorldPosMax, worldMat);
 }
 
 bool Object::Intersects(Intersection::Sphere &sphere)
@@ -163,23 +173,18 @@ void Object::DeleteAllComponent()
 
 Object* Object::Clone() const
 {
-	Object* newObject = new Object(_name + "-Clone", _parent);
-	newObject->_hasMesh = _hasMesh;
+	Object* newObject = new Object(_name + "-Clone", nullptr);
 	newObject->_transform->UpdateTransform(*_transform);
+	newObject->_hasMesh		= _hasMesh;
+	newObject->_use			= _use;
+	newObject->_radius		= _radius;
+	newObject->_boundBox	= _boundBox;
 
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 		newObject->_components.push_back( (*iter)->Clone() );
+
+	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+		newObject->AddChild( (*iter)->Clone() );
 	
 	return newObject;
-}
-
-void Object::UpdateBoundBox(const Intersection::BoundBox* boundBox)
-{
-	if(boundBox == nullptr)
-	{
-		SAFE_DELETE(_boundBox);
-		return;
-	}
-
-	_boundBox = new BoundBox(*boundBox);
 }

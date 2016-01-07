@@ -1,4 +1,4 @@
-#include "FontLoader.h"
+#include "SimpleFontLoader.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
@@ -8,17 +8,21 @@ using namespace Rendering;
 using namespace Device;
 using namespace Resource;
 
-FontLoader::FontLoader()
+SimpleFontLoader::SimpleFontLoader()
 	: _texture(nullptr)
 {
 }
 
-FontLoader::~FontLoader()
+SimpleFontLoader::~SimpleFontLoader()
+{
+}
+
+void SimpleFontLoader::Destroy()
 {
 	SAFE_DELETE(_texture);
 }
 
-const FontLoader* FontLoader::Initialize(const std::string& fontDataFilePath, const std::string& fontTexturePath)
+const SimpleFontLoader* SimpleFontLoader::Initialize(const std::string& fontDataFilePath, const std::string& fontTexturePath)
 {
 	if(_texture == nullptr)
 	{
@@ -29,7 +33,7 @@ const FontLoader* FontLoader::Initialize(const std::string& fontDataFilePath, co
 	return this;
 }
 
-bool FontLoader::LoadFontData(const std::string& filePath)
+bool SimpleFontLoader::LoadFontData(const std::string& filePath)
 {
 	std::ifstream fileStream;
 
@@ -56,7 +60,7 @@ bool FontLoader::LoadFontData(const std::string& filePath)
 	return true;
 }
 
-bool FontLoader::LoadTexture(const std::string& texturePath)
+bool SimpleFontLoader::LoadTexture(const std::string& texturePath)
 {
 	const ResourceManager* resourceManager = ResourceManager::GetInstance();
 

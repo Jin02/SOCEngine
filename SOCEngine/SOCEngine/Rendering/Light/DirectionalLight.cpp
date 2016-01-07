@@ -9,7 +9,7 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-DirectionalLight::DirectionalLight() : LightForm()
+DirectionalLight::DirectionalLight() : LightForm(), _projectionSize(0.0f), _useAutoProjectLocation(true)
 {
 	_type = LightType::Directional;
 }
@@ -28,16 +28,19 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 	Matrix view;
 	_owner->GetTransform()->FetchWorldMatrix(view);
 
-	Vector3 forward = Vector3(view._13, view._23, view._33).Normalized();
-	const Vector3& sceneCenter = sceneBoundBox.GetCenter();
+	if(_useAutoProjectLocation)
+	{
+		Vector3 forward = Vector3(view._13, view._23, view._33).Normalized();
+		const Vector3& sceneCenter = sceneBoundBox.GetCenter();
 
-	view._41 = sceneCenter.x - (forward.x * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
-	view._42 = sceneCenter.y - (forward.y * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
-	view._43 = sceneCenter.z - (forward.z * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
+		view._41 = sceneCenter.x - (forward.x * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
+		view._42 = sceneCenter.y - (forward.y * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
+		view._43 = sceneCenter.z - (forward.z * DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z / 2.0f);
+	}
 
 	CameraForm::GetViewMatrix(view, view);
 
-	float orthogonalWH	= sceneBoundBox.GetSize().Length();
+	float orthogonalWH = (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
 
 	Matrix proj, invProj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
@@ -54,10 +57,7 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 	viewProj = view * proj;
 
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	//°â»ç°â»ç Frustumµµ °è»ê
-	Matrix notInvertedProj;
-	Matrix::OrthoLH(notInvertedProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
-	_frustum.Make(view * notInvertedProj);
+	_frustum.Make(_invViewProjMat);
 #else
 	_frustum.Make(viewProj);
 #endif

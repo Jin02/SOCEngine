@@ -120,9 +120,9 @@ namespace Core
 		Math::Common::EulerNormalize(_eulerAngle, euler);
 
 		Vector3 re;
-		re.x = Math::Common::Deg2Rad( _eulerAngle.x );
-		re.y = Math::Common::Deg2Rad( _eulerAngle.y );
-		re.z = Math::Common::Deg2Rad( _eulerAngle.z );
+		re.x = Math::Common::Deg2Rad( -_eulerAngle.x );
+		re.y = Math::Common::Deg2Rad( -_eulerAngle.y );
+		re.z = Math::Common::Deg2Rad( -_eulerAngle.z );
 
 		Quaternion::FromEuler(_rotation, re);
 
@@ -190,8 +190,13 @@ namespace Core
 	void Transform::FetchAxisesFromRotationMatrix(const Math::Matrix& rotationMatrix, Math::Vector3& outRight, Math::Vector3& outUp, Math::Vector3& outForward)
 	{
 		outRight	= Vector3(rotationMatrix._m[0][0], rotationMatrix._m[1][0], rotationMatrix._m[2][0]);
+		Vector3::AdjustFrac(outRight, outRight);
+
 		outUp 		= Vector3(rotationMatrix._m[0][1], rotationMatrix._m[1][1], rotationMatrix._m[2][1]);
+		Vector3::AdjustFrac(outUp, outUp);
+
 		outForward	= Vector3(rotationMatrix._m[0][2], rotationMatrix._m[1][2], rotationMatrix._m[2][2]);
+		Vector3::AdjustFrac(outForward, outForward);
 	}
 
 	void Transform::UpdateTransform(const Transform& transform)
@@ -256,6 +261,13 @@ namespace Core
 		outPosition.z = worldMat._43;
 	}
 
+	void Transform::FetchWorldScale(Math::Vector3& outScale) const
+	{
+		Matrix worldMat;
+		FetchWorldMatrix(worldMat);
+		FetchWorldScale(outScale, worldMat);
+	}
+
 	void Transform::FetchWorldTransform(Transform& out) const
 	{
 		Matrix worldMat;
@@ -276,17 +288,17 @@ namespace Core
 		Vector3 worldRight	= Vector3(worldMat._11, worldMat._21, worldMat._31);
 		right = Vector3(worldRight.x / scale.x,
 						worldRight.y / scale.y,
-						worldRight.z / scale.z	);
+						worldRight.z / scale.z).Normalized();
 
 		Vector3 worldUp	= Vector3(worldMat._12, worldMat._22, worldMat._32);
 		up = Vector3(	worldUp.x / scale.x,
 						worldUp.y / scale.y,
-						worldUp.z / scale.z	);
+						worldUp.z / scale.z).Normalized();
 
 		Vector3 worldForward = Vector3(worldMat._13, worldMat._23, worldMat._33);
 		forward = Vector3(	worldForward.x / scale.x,
 							worldForward.y / scale.y,
-							worldForward.z / scale.z);
+							worldForward.z / scale.z).Normalized();
 
 		position.x = worldMat._41;
 		position.y = worldMat._42;
@@ -303,5 +315,12 @@ namespace Core
 		euler.x = Math::Common::Rad2Deg( euler.x );
 		euler.y = Math::Common::Rad2Deg( euler.y );
 		euler.z = Math::Common::Rad2Deg( euler.z );
+	}
+
+	void Transform::FetchWorldScale(Math::Vector3& outScale, const Math::Matrix& worldMat)
+	{
+		outScale.x = Vector3(worldMat._11, worldMat._12, worldMat._13).Length();
+		outScale.y = Vector3(worldMat._21, worldMat._22, worldMat._23).Length();
+		outScale.z = Vector3(worldMat._31, worldMat._32, worldMat._33).Length();
 	}
 }

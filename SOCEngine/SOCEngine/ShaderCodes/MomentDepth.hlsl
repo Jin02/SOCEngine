@@ -23,11 +23,20 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 	return ps;
 }
 
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-float2 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
-#else
-float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
-#endif
+float4 DistributePrecision(float2 moment)
+{  
+	float distFactor	= 256.0f;
+	float invFactor		= 1 / distFactor;  
+
+	// Split precision  
+	float2 intPart;  
+	float2 fracPart = modf(moment * distFactor, intPart); // 정수, 소수점부분을 분리
+
+	// Compose outputs to make reconstruction cheap.  
+	return float4(intPart * invFactor, fracPart);  
+}  
+
+float4 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 {
 	float depth = input.depth;
 
@@ -38,6 +47,7 @@ float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 
 	// Adjusting moments (this is sort of bias per pixel) using partial derivative
 	moment.y += 0.25f * (dx * dx + dy * dy);
+	float4 outColor = DistributePrecision(moment);
 
 #if defined(ENABLE_ALPHA_TEST)
 	float4 diffuseTex = diffuseTexture.Sample(defaultSampler, input.uv);
@@ -47,9 +57,5 @@ float MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 		discard;
 #endif
 
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-	return moment;
-#else
-	return moment.y;	// x는 이미 다른곳에서 기록 중
-#endif
+	return outColor;
 }

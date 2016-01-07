@@ -197,7 +197,7 @@
     </ClInclude>
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
-    <ClInclude Include="UI\FontLoader.h" />
+    <ClInclude Include="UI\SimpleFontLoader.h" />
     <ClInclude Include="UI\SimpleImage2D.h" />
     <ClInclude Include="UI\SimpleText2D.h" />
     <ClInclude Include="UI\UICamera.h" />
@@ -366,7 +366,7 @@
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
     <ClCompile Include="ResourceManager\ResourceManager.cpp" />
-    <ClCompile Include="UI\FontLoader.cpp" />
+    <ClCompile Include="UI\SimpleFontLoader.cpp" />
     <ClCompile Include="UI\SimpleImage2D.cpp" />
     <ClCompile Include="UI\SimpleText2D.cpp" />
     <ClCompile Include="UI\UICamera.cpp" />

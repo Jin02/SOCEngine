@@ -18,5 +18,6 @@ namespace Math
 
 	public:
 		static void EulerNormalize(Vector3& out, const Vector3& eulerAngles);
+		static float AdjustFraction(float f);
 	};
 }

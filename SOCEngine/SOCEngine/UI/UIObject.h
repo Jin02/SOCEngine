@@ -24,7 +24,7 @@ namespace UI
 		virtual ~UIObject();
 
 	protected:
-		void InitConstBuffer();
+		void Initialize();
 
 	public:
 		void Add(const std::string& key, UIObject* object);
@@ -37,6 +37,7 @@ namespace UI
 
 		void Update(float delta);
 		void UpdateTransform(ID3D11DeviceContext* context, const Math::Matrix& viewProj);
+		void Destroy();
 
 	public:
 		virtual void Render(ID3D11DeviceContext* context, const Math::Matrix& viewProjMat){};

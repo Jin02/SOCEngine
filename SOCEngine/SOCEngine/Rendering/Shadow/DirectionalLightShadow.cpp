@@ -8,6 +8,7 @@ DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner,
 											   const std::function<void()>& ownerUpdateCounter)
 	: ShadowCommon(owner, ownerUpdateCounter)
 {
+	SetBias(0.0f);
 }
 
 DirectionalLightShadow::~DirectionalLightShadow()
@@ -22,9 +23,8 @@ void DirectionalLightShadow::MakeParam(Param& outParam, bool useVSM) const
 	if(useVSM)
 		outParam.viewProjMat = _owner->GetInvViewProjectionMatrix();
 	else
-#else
-		outParam.viewProjMat = _owner->GetViewProjectionMatrix();
 #endif
+	outParam.viewProjMat = _owner->GetViewProjectionMatrix();
 
 	Math::Matrix::Transpose(outParam.viewProjMat, outParam.viewProjMat);
 }

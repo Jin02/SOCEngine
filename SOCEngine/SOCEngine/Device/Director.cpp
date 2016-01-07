@@ -6,16 +6,12 @@ using namespace Resource;
 
 Director::Director(void) :
 	_elapse(0.0f), _fps(0), _win(nullptr), _directX(nullptr),
-	_scene(nullptr), _nextScene(nullptr)
+	_scene(nullptr), _nextScene(nullptr), _exit(false)
 {
 }
 
 Director::~Director(void)
 {
-	SAFE_DELETE(_win);
-	SAFE_DELETE(_directX);
-
-	ResourceManager::GetInstance()->Destroy();
 }
 
 void Director::CalculateElapse()
@@ -64,7 +60,7 @@ void Director::Run()
 	MSG msg;
 	ZeroMemory( &msg, sizeof( msg ) );
 
-	while( msg.message != WM_QUIT )
+	while( (msg.message != WM_QUIT) && (_exit == false) )
 	{
 		if( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
 		{
@@ -96,9 +92,31 @@ void Director::Run()
 			else continue;				
 		}
 	}
+
+	Resource::ResourceManager* resourceMgr = Resource::ResourceManager::GetInstance();
+	resourceMgr->DestroyManagers();
+	Resource::ResourceManager::Destroy();
 }
 
 void Director::Exit()
 {
-	PostQuitMessage(0);
+	if(_exit) return;
+	_exit = true;
+
+	_scene->StopState();
+
+	if(_scene)
+	{
+		_scene->Destroy();
+		delete _scene;
+	}
+
+	if(_nextScene)
+	{
+		_nextScene->Destroy();
+		delete _nextScene;
+	}
+
+	SAFE_DELETE(_directX);
+	SAFE_DELETE(_win);
 }

@@ -15,10 +15,16 @@ UIObject::UIObject(const std::string& name, Object* parent)
 
 UIObject::~UIObject()
 {
+	Destroy();
+}
+
+void UIObject::Destroy()
+{
+	DeleteAll(true);
 	SAFE_DELETE(_transformCB);
 }
 
-void UIObject::InitConstBuffer()
+void UIObject::Initialize()
 {
 	_transformCB = new ConstBuffer;
 	_transformCB->Initialize(sizeof(Math::Matrix));

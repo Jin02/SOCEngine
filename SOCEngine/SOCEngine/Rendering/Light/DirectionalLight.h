@@ -25,7 +25,9 @@ namespace Rendering
 			};
 
 		private:
-			Intersection::Frustum				_frustum;
+			Intersection::Frustum		_frustum;
+			float						_projectionSize;
+			bool						_useAutoProjectLocation;
 
 		public:
 			DirectionalLight();
@@ -43,8 +45,11 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(Frustum, const Intersection::Frustum&, _frustum);
-			GET_ACCESSOR(Shadow, const Shadow::DirectionalLightShadow*, static_cast<const Shadow::DirectionalLightShadow*>(_shadow));
+			GET_ACCESSOR(Frustum,	const Intersection::Frustum&,		_frustum);
+			GET_ACCESSOR(Shadow,	Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
+
+			GET_SET_ACCESSOR(ProjectionSize,			float,	_projectionSize);
+			GET_SET_ACCESSOR(UseAutoProjectionLocation,	bool,	_useAutoProjectLocation);
 		};
 	}
 }

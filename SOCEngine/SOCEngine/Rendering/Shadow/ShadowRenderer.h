@@ -30,12 +30,10 @@ namespace Rendering
 			friend class Core::Scene;
 			struct ShadowGlobalParam
 			{
-				uint	packedNumOfShadowAtlasCapacity;
-
-				float	pointLightTexelOffset;
-				float	pointLightUnderscanScale;
-
-				uint	packedPowerOfTwoShadowAtlasSize;
+				uint packedNumOfShadowAtlasCapacity;
+				uint packedPowerOfTwoShadowResolution;
+				uint packedNumOfShadows;
+				uint dummy;
 			};
 
 		private:
@@ -66,11 +64,11 @@ namespace Rendering
 				Buffer::ConstBuffer* camConstBuffer;
 			};
 
-		private:
 			Structure::VectorMap<address, ShadowCastingPointLight>				_shadowCastingPointLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingSpotLights;
 			Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>	_shadowCastingDirectionalLights;
 
+		private:
 			uint	_numOfShadowCastingPointLightInAtlas;			//default 1
 			uint	_numOfShadowCastingSpotLightInAtlas;			//default 1
 			uint	_numOfShadowCastingDirectionalLightInAtlas;		//default 1
@@ -78,8 +76,6 @@ namespace Rendering
 			uint	_pointLightShadowMapResolution;					//default 1024
 			uint	_spotLightShadowMapResolution;					//default 1024
 			uint	_directionalLightShadowMapResolution;			//default 2048
-
-			float	_pointLightShadowBlurSize;						//default 4.25
 
 			Structure::VectorMap<address, uint>	_pointLightShadowIdxToLightIdxBuffer;
 			Structure::VectorMap<address, uint>	_spotLightShadowIdxToLightIdxBuffer;
@@ -138,7 +134,6 @@ namespace Rendering
 			GET_ACCESSOR(SpotLightShadowMapResolution,			uint,	_spotLightShadowMapResolution);
 			GET_ACCESSOR(DirectionalLightShadowMapResolution,	uint,	_directionalLightShadowMapResolution);
 
-			GET_SET_ACCESSOR(PointLightShadowBlurSize, float, _pointLightShadowBlurSize);
 			GET_ACCESSOR(ShadowGlobalParamConstBuffer, const Buffer::ConstBuffer*, _shadowGlobalParamCB);
 
 			GET_ACCESSOR(PointLightShadowIndexToLightIndexSRBuffer,			const Buffer::ShaderResourceBuffer*, _pointLightShadowIdxToLightIdxSRBuffer);

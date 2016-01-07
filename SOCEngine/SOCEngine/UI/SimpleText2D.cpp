@@ -1,7 +1,7 @@
 #include "SimpleText2D.h"
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
-#include "FontLoader.h"
+#include "SimpleFontLoader.h"
 
 #include "ResourceManager.h"
 
@@ -17,6 +17,13 @@ SimpleText2D::SimpleText2D(const std::string& name, Core::Object* parent)
 
 SimpleText2D::~SimpleText2D()
 {
+	Destroy();
+}
+
+void SimpleText2D::Destroy()
+{
+	UIObject::Destroy();
+
 	if(_isOtherMaterial == false)
 		SAFE_DELETE(_material);
 
@@ -31,9 +38,8 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 	_screenSize = director->GetBackBufferSize();
 	_maxLength = maxLength;
 
-	const FontLoader* fontLoader =
-		FontLoader::GetInstance()->Initialize(	TEMP_FONT_DATA_PATH, 
-												TEMP_FONT_TEXTURE_PATH);
+	SimpleFontLoader* fontLoader = ResourceManager::GetInstance()->GetSimpleFontLoader();
+	fontLoader->Initialize(TEMP_FONT_DATA_PATH, TEMP_FONT_TEXTURE_PATH);
 
 	if(material == nullptr)
 	{
@@ -99,7 +105,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 	if(_root == this)
 		uiMgr->AddUpdateQueue(this);
 
-	UIObject::InitConstBuffer();
+	UIObject::Initialize();
 }
 
 void SimpleText2D::UpdateText(const std::string& text)
@@ -108,7 +114,7 @@ void SimpleText2D::UpdateText(const std::string& text)
 	if(text.empty())
 		return;
 
-	const FontLoader* fontLoader = FontLoader::GetInstance();
+	const SimpleFontLoader* fontLoader = ResourceManager::GetInstance()->GetSimpleFontLoader();
 	const auto& fontTypes = fontLoader->GetFonts();
 	const auto& fontTextureSize = fontLoader->GetFontTextureSize();
 	float halfH = (float)fontTextureSize.h / 2.0f;

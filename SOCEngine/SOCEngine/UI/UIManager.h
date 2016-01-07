@@ -23,6 +23,9 @@ namespace UI
 			UIObject* AddRenderQueue(std::string key, UI::UIObject* uiObject);
 			void DepthSort();
 
+			void DeleteStoredObjects();
+			void Destroy();
+
 		public:
 			GET_ACCESSOR(RootUIObjects, const std::vector<UI::UIObject*>&, _rootObjects);
 			GET_ACCESSOR(RenderQueue, const std::vector<UI::UIObject*>&, _renderQueue);

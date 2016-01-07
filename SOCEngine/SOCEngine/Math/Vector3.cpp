@@ -218,7 +218,13 @@ namespace Math
 	Vector3 Vector3::Normalize(const Vector3& value)
 	{
 		float v = Vector3::Length(value);
-		return value / v;
+
+		Vector3 res = value / v;
+		res.x = Common::AdjustFraction(res.x);
+		res.y = Common::AdjustFraction(res.y);
+		res.z = Common::AdjustFraction(res.z);
+
+		return res;
 	}
 
 	Vector3 Vector3::Project(const Vector3& vector, const Vector3& onNormal)
@@ -353,5 +359,12 @@ namespace Math
 		out.x = thetaX;
 		out.y = thetaY;
 		out.z = thetaZ;
+	}
+
+	void Vector3::AdjustFrac(Vector3& out, const Vector3& v)
+	{
+		out.x = Common::AdjustFraction(v.x);
+		out.y = Common::AdjustFraction(v.y);
+		out.z = Common::AdjustFraction(v.z);
 	}
 }

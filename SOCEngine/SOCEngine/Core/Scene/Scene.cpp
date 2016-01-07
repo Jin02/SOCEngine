@@ -2,7 +2,6 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
-#include "FontLoader.h"
 
 using namespace Core;
 using namespace std;
@@ -28,7 +27,13 @@ Scene::Scene(void) :
 
 Scene::~Scene(void)
 {
-	Destroy();
+	SAFE_DELETE(_cameraMgr);
+	SAFE_DELETE(_renderMgr);
+	SAFE_DELETE(_uiManager);
+	SAFE_DELETE(_lightManager);	
+	SAFE_DELETE(_materialMgr);
+	SAFE_DELETE(_backBufferMaker);
+	SAFE_DELETE(_shadowRenderer);
 }
 
 void Scene::Initialize()
@@ -51,7 +56,7 @@ void Scene::Initialize()
 	_backBufferMaker->Initialize(false);
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize(true);
+	_shadowRenderer->Initialize(false);
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
@@ -60,6 +65,7 @@ void Scene::Initialize()
 	float fltMax = (*(float*)&value);
 
 	_boundBox.SetMinMax(Vector3(fltMax, fltMax, fltMax), Vector3(fltMin, fltMin, fltMin));
+	Matrix::Identity(_localMat);
 
 	NextState();
 	OnInitialize();
@@ -83,7 +89,7 @@ void Scene::RenderPreview()
 
 	const auto& objectVector = _rootObjects.GetVector();
 	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax);
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
 
 	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
 	_shadowRenderer->UpdateConstBuffer(_dx);
@@ -95,7 +101,7 @@ void Scene::RenderPreview()
 	_lightManager->ComputeAllLightViewProj(_boundBox);
 	_lightManager->UpdateBuffer(_dx, _shadowRenderer->GetUseVSM());
 
-	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
+	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 }
@@ -107,7 +113,7 @@ void Scene::Render()
 	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
 
 	_dx->ClearDeviceContext();
-	const std::vector<CameraForm*>& cameras = _cameraMgr->GetVector();
+	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
@@ -118,14 +124,14 @@ void Scene::Render()
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
-	CameraForm* firstCam = _cameraMgr->GetFirstCamera();
-	if(firstCam)
+	CameraForm* mainCam = _cameraMgr->GetMainCamera();
+	if(mainCam)
 	{
-		ID3D11RenderTargetView* backBufferRTV = _dx->GetBackBufferRTV();
-		const RenderTexture* camRT = firstCam->GetRenderTarget();
+		ID3D11RenderTargetView* backBufferRTV	= _dx->GetBackBufferRTV();
+		const RenderTexture* camRT				= mainCam->GetRenderTarget();
 
-		MeshCamera* mainFirstCam = dynamic_cast<MeshCamera*>(firstCam);
-		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainFirstCam->GetTBRParamConstBuffer());
+		MeshCamera* mainMeshCam = dynamic_cast<MeshCamera*>(mainCam);
+		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainMeshCam->GetTBRParamConstBuffer());
 	}
 
 	_dx->GetSwapChain()->Present(0, 0);
@@ -134,22 +140,26 @@ void Scene::Render()
 
 void Scene::Destroy()
 {
-	UI::FontLoader::GetInstance()->Destroy();
-
-	SAFE_DELETE(_cameraMgr);
-	SAFE_DELETE(_renderMgr);
-	SAFE_DELETE(_uiManager);
-	SAFE_DELETE(_lightManager);	
-	SAFE_DELETE(_materialMgr);
-	SAFE_DELETE(_backBufferMaker);
-	SAFE_DELETE(_shadowRenderer);
-
 	OnDestroy();
+	DeleteAllObject();
+
+	_materialMgr->DeleteAll();
+	_backBufferMaker->Destroy();
+	_shadowRenderer->Destroy();
+	_renderMgr->Destroy();
+	_uiManager->Destroy();
+	_lightManager->Destroy();
+	_cameraMgr->Destroy();
 }
 
 void Scene::NextState()
 {
 	_state = (State)(((int)_state + 1) % (int)State::Num);
+}
+
+void Scene::StopState()
+{
+	_state = State::Stop;
 }
 
 void Scene::AddObject(Core::Object* object)

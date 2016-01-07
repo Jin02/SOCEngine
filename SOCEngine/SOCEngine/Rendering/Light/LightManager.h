@@ -96,6 +96,7 @@ namespace Rendering
 
 			void Delete(const Light::LightForm*& light);
 			void DeleteAll();
+			void Destroy();
 
 			uint GetPackedLightCount() const;
 

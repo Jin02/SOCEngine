@@ -43,6 +43,8 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 
 	_camMatConstBuffer = new ConstBuffer;
 	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
+
+	Device::Director::GetInstance()->GetCurrentScene()->GetCameraManager()->Add(this);
 }
 
 void CameraForm::Destroy()

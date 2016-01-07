@@ -41,6 +41,8 @@ namespace Rendering
 			void DeleteAllVertexBuffer();
 			void DeleteAllIndexBuffer();
 			void DeleteAllOriginVBData();
+
+			void Destroy();
 		};
 	}
 }
