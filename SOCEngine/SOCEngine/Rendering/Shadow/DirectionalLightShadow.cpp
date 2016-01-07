@@ -8,6 +8,7 @@ DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner,
 											   const std::function<void()>& ownerUpdateCounter)
 	: ShadowCommon(owner, ownerUpdateCounter)
 {
+	SetBias(0.0f);
 }
 
 DirectionalLightShadow::~DirectionalLightShadow()
