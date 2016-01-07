@@ -361,6 +361,9 @@
     <Filter Include="ShaderCodes\Shadow">
       <UniqueIdentifier>{63258c7e-291c-4190-b898-34eabb518bf0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI\Injection">
+      <UniqueIdentifier>{17510d26-381a-4872-83f6-91ff0571b093}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -829,6 +832,15 @@
     <ClInclude Include="UI\SimpleFontLoader.h">
       <Filter>UI\Text</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectPointLight.h">
+      <Filter>Rendering\GI\Injection</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectSpotLight.h">
+      <Filter>Rendering\GI\Injection</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectDirectionalLight.h">
+      <Filter>Rendering\GI\Injection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1136,6 +1148,15 @@
     </ClCompile>
     <ClCompile Include="UI\SimpleFontLoader.cpp">
       <Filter>UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectPointLight.cpp">
+      <Filter>Rendering\GI\Injection</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectSpotLight.cpp">
+      <Filter>Rendering\GI\Injection</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectDirectionalLight.cpp">
+      <Filter>Rendering\GI\Injection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
