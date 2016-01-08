@@ -40,6 +40,14 @@ namespace Rendering
 		PointLightMomentShadowMapAtlas			= 26,
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
+
+		AnisotropicVoxelAlbedoTexture			= 29,
+		AnisotropicVoxelNormalTexture			= 30,
+		AnisotropicVoxelEmissionTexture			= 31,
+
+		DirectionalLightShadowInvVPVMat			= 32,
+		PointLightShadowInvVPVMat				= 33,
+		SpotLightShadowInvVPVMat				= 34,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -66,6 +74,8 @@ namespace Rendering
 		TBDR_OutScreen					= 0,
 		
 		Lightculling_LightIndexBuffer	= 0,
+
+		OutAnisotropicVoxelColorTexture	= 0,
 
 		VoxelMap_Albedo					= 0,
 		VoxelMap_Normal					= 1,
