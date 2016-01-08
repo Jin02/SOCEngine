@@ -56,6 +56,7 @@ namespace Rendering
 				const Rendering::Buffer::ConstBuffer* buffer;
 
 				InputConstBuffer();
+				InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer);
 				InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS);
 				InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage);
 
@@ -68,6 +69,7 @@ namespace Rendering
 				const Texture::TextureForm* texture;
 
 				InputTexture();
+				InputTexture(uint bindIndex, const Texture::TextureForm* texture);
 				InputTexture(uint bindIndex, const Texture::TextureForm* texture, bool useVS, bool useGS, bool useHS, bool usePS);
 				InputTexture(uint bindIndex, const Texture::TextureForm* texture, Usage usage);
 
@@ -80,10 +82,24 @@ namespace Rendering
 				const Buffer::ShaderResourceBuffer* srBuffer;
 
 				InputShaderResourceBuffer();
+				InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer);
 				InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
 				InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage);
 				~InputShaderResourceBuffer(){}
 			};
+
+			struct OutputUnorderedAccessView : public Usage
+			{
+				uint bindIndex;
+				const View::UnorderedAccessView* uav;
+
+				OutputUnorderedAccessView();
+				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav);
+				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS);
+				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage);
+				~OutputUnorderedAccessView(){}
+			};
+
 
 		public:
 			GET_ACCESSOR(Shader, ID3DBlob*, _blob);

@@ -36,18 +36,25 @@ ShaderForm::InputConstBuffer::InputConstBuffer()
 {
 }
 
+ShaderForm::InputConstBuffer::InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer)
+	: Usage(false, false, false, false)
+{
+	this->bindIndex	= bindIndex;
+	this->buffer	= buffer;
+}
+
 ShaderForm::InputConstBuffer::InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
-	this->bindIndex = bindIndex;
-	this->buffer = buffer;
+	this->bindIndex	= bindIndex;
+	this->buffer	= buffer;
 }
 
 ShaderForm::InputConstBuffer::InputConstBuffer(uint bindIndex, const Rendering::Buffer::ConstBuffer* buffer, Usage usage)
 	: Usage(usage)
 {
-	this->bindIndex = bindIndex;
-	this->buffer = buffer;
+	this->bindIndex	= bindIndex;
+	this->buffer	= buffer;
 }
 
 
@@ -56,18 +63,25 @@ ShaderForm::InputTexture::InputTexture()
 {
 }
 
+ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::TextureForm* texture)
+	: Usage(false, false, false, false)
+{
+	this->bindIndex	= bindIndex;
+	this->texture	= texture;
+}
+
 ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::TextureForm* texture, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
-	this->bindIndex = bindIndex;
-	this->texture = texture;
+	this->bindIndex	= bindIndex;
+	this->texture	= texture;
 }
 
 ShaderForm::InputTexture::InputTexture(uint bindIndex, const Texture::TextureForm* texture, Usage usage)
 	: Usage(usage)
 {
-	this->bindIndex = bindIndex;
-	this->texture = texture;
+	this->bindIndex	= bindIndex;
+	this->texture	= texture;
 }
 
 
@@ -76,16 +90,50 @@ ShaderForm::InputShaderResourceBuffer::InputShaderResourceBuffer()
 {
 }
 
+ShaderForm::InputShaderResourceBuffer::InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer)
+	: Usage(false, false, false, false)
+{
+	this->bindIndex	= bindIndex;
+	this->srBuffer	= srBuffer;
+}
+
 ShaderForm::InputShaderResourceBuffer::InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
-	this->bindIndex = bindIndex;
-	this->srBuffer = srBuffer;
+	this->bindIndex	= bindIndex;
+	this->srBuffer	= srBuffer;
 }
 
 ShaderForm::InputShaderResourceBuffer::InputShaderResourceBuffer(uint bindIndex, const Buffer::ShaderResourceBuffer* srBuffer, Usage usage)
 	: Usage(usage)
 {
-	this->bindIndex = bindIndex;
-	this->srBuffer = srBuffer;
+	this->bindIndex	= bindIndex;
+	this->srBuffer	= srBuffer;
+}
+
+
+ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView()
+	: Usage(), bindIndex(-1), uav(nullptr)
+{
+}
+
+ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav)
+	: Usage(false, false, false, false)
+{
+	this->bindIndex	= bindIndex;
+	this->uav		= uav;
+}
+
+ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS)
+	: Usage(useVS, useGS, useHS, usePS)
+{
+	this->bindIndex	= bindIndex;
+	this->uav		= uav;
+}
+
+ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage)
+	: Usage(usage)
+{
+	this->bindIndex	= bindIndex;
+	this->uav		= uav;
 }
