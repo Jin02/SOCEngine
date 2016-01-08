@@ -17,7 +17,7 @@ using namespace Rendering::View;
 using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
-:	_infoConstBuffer(nullptr), _clearVoxelMapCS(nullptr), 
+:	_clearVoxelMapCS(nullptr),
 	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr)
 {
 }
@@ -30,7 +30,10 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_voxelNormalMapAtlas);
 	SAFE_DELETE(_voxelEmissionMapAtlas);
 
-	SAFE_DELETE(_infoConstBuffer);
+	for(auto iter = _constBuffers.begin(); iter != _constBuffers.end(); ++iter)
+		SAFE_DELETE(*iter);
+	_constBuffers.clear();
+
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
@@ -61,9 +64,18 @@ void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, f
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
 	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
-	_infoConstBuffer = new ConstBuffer;
-	_infoConstBuffer->Initialize(sizeof(InfoCBData));
-	_constBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::Voxelization_InfoCB, _infoConstBuffer, false, true, false, true));
+	// Setting Const Buffers
+	{
+		for(uint i=0; i<maxNumOfCascade; ++i)
+		{
+			ConstBuffer* infoConstBuffer = new ConstBuffer;
+			infoConstBuffer->Initialize(sizeof(InfoCBData));
+
+			_constBuffers.push_back(infoConstBuffer);
+		}
+
+//		_renderInputCBContainer.push_back( ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::Voxelization_InfoCB), nullptr, false, true, false, true) );
+	}
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 }
@@ -109,15 +121,15 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		inputTextures.push_back(inputTexture);
 	}
 
-	std::vector<ComputeShader::Output> outputs;
+	std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
 	{
-		ComputeShader::Output output;
+		ShaderForm::OutputUnorderedAccessView output;
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		output.output		= _voxelAlbedoMapAtlas->GetSourceMapUAV();
+		output.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		output.output		= _voxelNormalMapAtlas->GetSourceMapUAV();
+		output.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		output.output		= _voxelEmissionMapAtlas->GetSourceMapUAV();
+		output.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
 
 		outputs.push_back(output);
 	}
@@ -132,7 +144,8 @@ void Voxelization::Destroy()
 	_voxelNormalMapAtlas->Destory();
 	_voxelEmissionMapAtlas->Destory();
 
-	_infoConstBuffer->Destory();
+	for(auto iter = _constBuffers.begin(); iter != _constBuffers.end(); ++iter)
+		(*iter)->Destory();
 
 	_constBuffers.clear();
 }
@@ -210,61 +223,18 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	uint maxCascade = globalInfo.maxNumOfCascade;
 	for(uint currentCascade=0; currentCascade<maxCascade; ++currentCascade)
 	{
-		// Compute & Update Const Buffers
-		{
-			// Compute Voxelize Bound
-			float worldSize;
-			Vector3 bbMin, bbMax, bbMid;
-			ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, currentCascade, camWorldPos);
-
-			InfoCBData currentVoxelizeInfo;
-			currentVoxelizeInfo.currentCascade	= currentCascade;
-			currentVoxelizeInfo.voxelizeSize	= worldSize;
-			currentVoxelizeInfo.voxelSize		= worldSize / dimension;
-			currentVoxelizeInfo.voxelizeMinPos	= bbMin;
-			currentVoxelizeInfo.dummy1			= 0.0f;
-			currentVoxelizeInfo.dummy2			= 0.0f;
-
-			// Update View Proj ConstBuffer
-			{
-				Matrix orthoProjMat;
-				Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, cameraNear, cameraFar);
-
-				auto LookAtView = [](
-					Matrix& outViewMat,
-					const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
-					)
-				{
-					Transform tf(nullptr);
-					tf.UpdatePosition(worldPos);
-					tf.LookAtWorld(targetPos, &up);
-
-					Matrix worldMat;
-					tf.FetchWorldMatrix(worldMat);
-
-					CameraForm::GetViewMatrix(outViewMat, worldMat);
-				};
-
-				Matrix viewAxisX, viewAxisY, viewAxisZ;
-				LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
-				LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
-				LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
-
-				currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
-				currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
-				currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
-			}
-
-			_infoConstBuffer->UpdateSubResource(context, &currentVoxelizeInfo);
-		}
+		UpdateConstBuffer(dx, currentCascade, camWorldPos, globalInfo, dimension, cameraNear, cameraFar);
 
 		// Render Voxel
 		{
+			std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
+			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::Voxelization_InfoCB), _constBuffers[currentCascade], false, true, false, true));
+
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr, &inputConstBuffers);
 
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr, &_constBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr, &inputConstBuffers);
 		}
 	}
 
@@ -276,13 +246,64 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	context->RSSetViewports(originViewportNum, &originViewport);
 }
 
-void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos) const
+void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade,
+									 const Vector3& camWorldPos, const GlobalInfo& globalInfo,
+									 float dimension, float camNear, float camFar)
+{
+	// Compute Voxelize Bound
+	float worldSize;
+	Vector3 bbMin, bbMax, bbMid;
+	ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, currentCascade, camWorldPos, globalInfo.initWorldSize);
+
+	InfoCBData currentVoxelizeInfo;
+	currentVoxelizeInfo.currentCascade	= currentCascade;
+	currentVoxelizeInfo.voxelizeSize	= worldSize;
+	currentVoxelizeInfo.voxelSize		= worldSize / dimension;
+	currentVoxelizeInfo.voxelizeMinPos	= bbMin;
+	currentVoxelizeInfo.dummy1			= 0.0f;
+	currentVoxelizeInfo.dummy2			= 0.0f;
+
+	// Update View Proj ConstBuffer
+	{
+		Matrix orthoProjMat;
+		Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, camNear, camFar);
+
+		auto LookAtView = [](
+			Matrix& outViewMat,
+			const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
+			)
+		{
+			Transform tf(nullptr);
+			tf.UpdatePosition(worldPos);
+			tf.LookAtWorld(targetPos, &up);
+
+			Matrix worldMat;
+			tf.FetchWorldMatrix(worldMat);
+
+			CameraForm::GetViewMatrix(outViewMat, worldMat);
+		};
+
+		Matrix viewAxisX, viewAxisY, viewAxisZ;
+		LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
+		LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
+		LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
+
+		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
+		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
+		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
+	}
+
+	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
+}
+
+void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade,
+												const Math::Vector3& camWorldPos, float initVoxelizeSize)
 {
 	memset(&outMat, 0, sizeof(Math::Matrix));
 
 	float worldSize = 0.0f;
 	Vector3 centerPos;
-	ComputeBound(nullptr, &centerPos, nullptr, &worldSize, currentCascade, camWorldPos);
+	ComputeBound(nullptr, &centerPos, nullptr, &worldSize, currentCascade, camWorldPos, initVoxelizeSize);
 
 	ASSERT_COND_MSG(worldSize != 0.0f, "Error, Voxelize Size is zero");
 
@@ -297,14 +318,10 @@ void Voxelization::ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint curre
 }
 
 void Voxelization::ComputeBound(
-	Math::Vector3* outMin,
-	Math::Vector3* outMid,
-	Math::Vector3* outMax,
-	float* outWorldSize,
-	uint currentCascade,
-	const Math::Vector3& camWorldPos) const
+	Vector3* outMin, Vector3* outMid, Vector3* outMax, float* outWorldSize,
+	uint currentCascade, const Vector3& camWorldPos, float initVoxelizeSize)
 {
-	float worldSize		= _initVoxelizationInfo.voxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
+	float worldSize		= initVoxelizeSize * ( (float)( (currentCascade + 1) * (currentCascade + 1) ) );
 	float halfWorldSize	= worldSize / 2.0f;
 
 	Vector3 bbMin = camWorldPos - Vector3(halfWorldSize, halfWorldSize, halfWorldSize);
