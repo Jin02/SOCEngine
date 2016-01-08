@@ -60,13 +60,13 @@ void OnlyLightCulling::Initialize(
 		_uav = new UnorderedAccessView;
 		_uav->Initialize(DXGI_FORMAT_R32_UINT, num, _shaderResourceBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
 
-		ComputeShader::Output outputBuffer;
+		ShaderForm::OutputUnorderedAccessView outputBuffer;
 		{
 			outputBuffer.bindIndex	= (uint)UAVBindIndex::Lightculling_LightIndexBuffer;
-			outputBuffer.output		= _uav;
+			outputBuffer.uav		= _uav;
 		}
 
-		std::vector<ComputeShader::Output> outputs;
+		std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
 		outputs.push_back(outputBuffer);
 
 		SetOuputBuferToCS(outputs);
