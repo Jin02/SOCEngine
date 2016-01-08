@@ -63,7 +63,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 
 	for(auto iter = _outputs.begin(); iter != _outputs.end(); ++iter)
 	{
-		auto output = iter->output;
+		auto output = iter->uav;
 		if(output)
 		{
 			ID3D11UnorderedAccessView* uav = output->GetView();
