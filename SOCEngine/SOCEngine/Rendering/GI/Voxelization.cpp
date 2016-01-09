@@ -227,16 +227,21 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 
 		// Render Voxel
 		{
-			std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
-			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::Voxelization_InfoCB), _constBuffers[currentCascade], false, true, false, true));
+			ID3D11Buffer* buf = _constBuffers[currentCascade]->GetBuffer();
+			context->GSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &buf);
+			context->PSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &buf);
 
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr, &inputConstBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr);
 
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr, &inputConstBuffers);
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr);
 		}
 	}
+
+	ID3D11Buffer* nullBuff = nullptr;
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &nullBuff);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &nullBuff);
 
 	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr};
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
