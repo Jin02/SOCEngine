@@ -178,8 +178,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 void MeshCamera::RenderMeshWithoutIASetVB(
 	const Device::DirectX* dx, const RenderManager* renderManager,
 	const Geometry::Mesh* mesh, RenderType renderType, 
-	const ConstBuffer* camMatConstBuffer,
-	const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
+	const ConstBuffer* camMatConstBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -233,9 +232,6 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 			}
 		}
 
-		if(additionalConstBuffers)
-			constBuffers.insert(constBuffers.end(), additionalConstBuffers->begin(), additionalConstBuffers->end());
-
 		const auto& textures	= material->GetTextures();
 		const auto& srBuffers	= material->GetShaderResourceBuffers();
 
@@ -267,8 +263,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
 	const Buffer::ConstBuffer* camMatConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -304,7 +299,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, additionalConstBuffers);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
 				}
 			}
 		}
@@ -315,8 +310,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
 	RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
-	std::function<bool(const Intersection::Sphere&)>* intersectFunc,
-	const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers)
+	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -345,7 +339,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, additionalConstBuffers);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
 			}
 		}
 	}
