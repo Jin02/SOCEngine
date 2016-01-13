@@ -59,16 +59,19 @@ void TestScene::OnInitialize()
 #endif
 	AddObject(_testObject);
 
-#if 0
+#if 1
 	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(-60, -60, 0));
-	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+	//_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
+	//_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	_light->GetTransform()->UpdatePosition(Vector3(0.5f, -0.8, 6.0f));
 
 	SpotLight* light = _light->AddComponent<SpotLight>();
 	light->SetLumen(150);
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
+	light->GetShadow()->SetUseVSM(true);
 #elif 0
 	_light = new Object("Light");
 	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
@@ -80,7 +83,7 @@ void TestScene::OnInitialize()
 	light->SetIntensity(1);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(true);
-#elif 1
+#elif 0
 	_light = new Object("Light");
 	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
 	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
@@ -90,6 +93,8 @@ void TestScene::OnInitialize()
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
+	light->GetShadow()->SetUseVSM(true);
+	light->GetShadow()->SetUnderScanSize(4.25f);
 #endif
 
 	AddObject(_light);
