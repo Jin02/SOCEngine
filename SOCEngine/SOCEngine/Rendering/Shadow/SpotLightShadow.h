@@ -9,17 +9,17 @@ namespace Rendering
 		class SpotLightShadow : public ShadowCommon
 		{
 		public:
-			struct Param : public ShadowCommon::CommonParam
-			{
-				Math::Matrix	viewProjMat;
-			};
+			typedef ShadowCommon::CommonParam Param;
 
 		public:
-			SpotLightShadow(const Light::LightForm* owner, const std::function<void()>& ownerUpdateCounter);
+			SpotLightShadow(const Light::LightForm* owner);
 			~SpotLightShadow();
 
 		public:
-			void MakeParam(Param& outParam, bool useVSM) const;
+			void ComputeViewProjMatrix(const Math::Matrix& invViewportMat);
+
+		public:
+			void MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const;
 		};
 	}
 }
