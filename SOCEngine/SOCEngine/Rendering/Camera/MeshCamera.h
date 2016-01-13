@@ -46,7 +46,7 @@ namespace Rendering
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-			void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool useVSM);
+			void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM);
 
 		public:
 			static void RenderMeshWithoutIASetVB(
