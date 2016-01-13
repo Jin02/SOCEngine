@@ -50,8 +50,8 @@ void RenderDirectionalLight(
 		resultDiffuseColor				*= intensity;
 		resultSpecularColor				*= intensity;
 
-		uint shadowIndex = (uint)g_inputDirectionalLightShadowParams[lightIndex].index;
-		if(shadowIndex != 0) //isShadow == true
+		uint shadowIndex = g_inputDirectionalLightShadowIndex[lightIndex];
+		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
 
@@ -112,8 +112,8 @@ void RenderPointLight(
 		resultDiffuseColor	*= attenuation;
 		resultSpecularColor	*= attenuation;
 
-		uint shadowIndex = (g_inputPointLightShadowParams[lightIndex].indexWithBias >> 16);
-		if(shadowIndex != 0) //isShadow == true
+		uint shadowIndex = g_inputPointLightShadowIndex[lightIndex];
+		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
 
@@ -148,9 +148,9 @@ void RenderSpotLight(
 	float radiusWithMinusZDirBit = lightCenterPosWithRadius.w;
 
 	float4 spotParam = g_inputSpotLightParamBuffer[lightIndex];
-	float3 lightDir = float3(spotParam.x, spotParam.y, 0.0f);
+	float3 lightDir = -float3(spotParam.x, spotParam.y, 0.0f);
 	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y);
-	lightDir.z = lerp(-lightDir.z, lightDir.z, radiusWithMinusZDirBit >= 0.0f);
+	lightDir.z = (radiusWithMinusZDirBit < 0.0f) ? -lightDir.z : lightDir.z;
 
 	float radius = abs(radiusWithMinusZDirBit);
 
@@ -163,7 +163,7 @@ void RenderSpotLight(
 	float distanceOfLightWithVertex = length(vtxToLight);
 
 	float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
-	if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
+	if( (distanceOfLightWithVertex < (radius * 2.0f)) &&
 		(outerCosineConeAngle < currentCosineConeAngle) )
 	{
 		LightingCommonParams commonParams;
@@ -195,8 +195,8 @@ void RenderSpotLight(
 		resultDiffuseColor	*= totalAttenTerm;
 		resultSpecularColor	*= totalAttenTerm;
 
-		uint shadowIndex = (uint)g_inputSpotLightShadowParams[lightIndex].index;
-		if(shadowIndex != 0) //isShadow == true
+		uint shadowIndex = g_inputPointLightShadowIndex[lightIndex];
+		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);
 
