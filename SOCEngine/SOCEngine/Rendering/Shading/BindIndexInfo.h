@@ -25,18 +25,23 @@ namespace Rendering
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,
+
 		PointLightShadowParam					= 14,
 		SpotLightShadowParam					= 15,
 		DirectionalLightShadowParam				= 16,
+
 		PointLightShadowMapAtlas				= 17,
 		SpotLightShadowMapAtlas					= 18,
 		DirectionalLightShadowMapAtlas			= 19,
-		PointLightShadowColor					= 20,
-		SpotLightShadowColor					= 21,
-		DirectionalLightShadowColor				= 22,
-		PointLightShadowIndexToLightIndex		= 23,
-		SpotLightShadowIndexToLightIndex		= 24,
-		DirectionalLightShadowIndexToLightIndex	= 25,
+
+		PointLightShadowIndex					= 20,
+		SpotLightShadowIndex					= 21,
+		DirectionalLightShadowIndex				= 22,
+
+		PointLightShadowViewProjMatrix			= 23,
+		SpotLightShadowViewProjMatrix			= 24,
+		DirectionalLightShadowViewProjMatrix	= 25,
+
 		PointLightMomentShadowMapAtlas			= 26,
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
