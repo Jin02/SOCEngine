@@ -269,22 +269,22 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			ASSERT_MSG("Error!, device cant create _depthDisableDepthWrite");
 		
 		//disable depth test
-		desc.DepthEnable = false;
+		desc.DepthEnable		= false;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthDisableDepthTest)) )
 			ASSERT_MSG("Error!, device cant create _depthDisableDepthTest");
 
-		desc.DepthEnable = true;
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		desc.DepthFunc = D3D11_COMPARISON_GREATER; //inverted
+		desc.DepthEnable		= true;
+		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //inverted
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreaterAndDisableDepthWrite)) )
 			ASSERT_MSG("Error!, device cant create _depthGreaterAndDisableDepthWrite");
 
-		desc.DepthFunc = D3D11_COMPARISON_EQUAL;
+		desc.DepthFunc			= D3D11_COMPARISON_EQUAL;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
 			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
 
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc			= D3D11_COMPARISON_LESS;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLess)) )
 			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
 	}
@@ -294,14 +294,14 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		D3D11_SAMPLER_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_SAMPLER_DESC));
 
-		desc.Filter = D3D11_FILTER_ANISOTROPIC;
-		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.MaxAnisotropy = 16;
-		desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		desc.MinLOD = -D3D11_FLOAT32_MAX;
-		desc.MaxLOD = D3D11_FLOAT32_MAX;
+		desc.Filter			= D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU		= D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV		= D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW		= D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.MaxAnisotropy	= 16;
+		desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;
+		desc.MinLOD			= -D3D11_FLOAT32_MAX;
+		desc.MaxLOD			= D3D11_FLOAT32_MAX;
 
 		HRESULT hr = _device ->CreateSamplerState( &desc, &_anisotropicSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
@@ -316,12 +316,12 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 
 		// Shadow Sampler State
 		{
-			desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-			desc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-			desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.MaxAnisotropy = 1;
+			desc.Filter			= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+			desc.ComparisonFunc	= D3D11_COMPARISON_LESS_EQUAL;
+			desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.MaxAnisotropy	= 1;
 			hr = _device->CreateSamplerState( &desc, &_shadowLessEqualCompState );
 			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLessEqualCompState state");
 
@@ -329,16 +329,16 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			hr = _device->CreateSamplerState( &desc, &_shadowGreaterEqualCompState );
 			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowGreaterEqualCompState state");
 
-			desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-			desc.MipLODBias = 0.0f;
-			desc.MaxAnisotropy = 1;
-			desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-			desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
-			desc.MinLOD = 0;
-			desc.MaxLOD = D3D11_FLOAT32_MAX;
+			desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			desc.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.MipLODBias		= 0.0f;
+			desc.MaxAnisotropy	= 0;
+			desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;//D3D11_COMPARISON_ALWAYS;
+			desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
+			desc.MinLOD			= 0;
+			desc.MaxLOD			= 0;
 			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
 			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState state");
 		}
@@ -454,6 +454,14 @@ void DirectX::GetViewportMatrix(Math::Matrix& outMat) const
 	outMat._42 = vp.TopLeftY + vp.Height / 2.0f;
 	outMat._43 = vp.MinDepth;
 	outMat._44 = 1.0f;
+}
+
+void DirectX::GetInvViewportMatrix(Math::Matrix& outMat) const
+{
+	Math::Matrix viewportMat;
+	GetViewportMatrix(viewportMat);
+
+	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
 void DirectX::Destroy()
