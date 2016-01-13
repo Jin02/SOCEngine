@@ -44,10 +44,6 @@ namespace Rendering
 
 			bool															_useBlendedMeshCulling;
 
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
-
 		public:
 			LightCulling();
 			virtual ~LightCulling();
@@ -67,7 +63,7 @@ namespace Rendering
 			inline void SetOuputBuferToCS(const std::vector<Shader::ShaderForm::OutputUnorderedAccessView>&  outputs) { _computeShader->SetOutputs(outputs); }
 
 		protected:
-			void AddInputBufferToList(Shader::ShaderForm::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
+			void AddInputBufferToList(uint idx, const Buffer::ShaderResourceBuffer* buffer);
 			void AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture);
 
 		public:	
