@@ -71,7 +71,7 @@ void TestScene::OnInitialize()
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
-	light->GetShadow()->SetUseVSM(true);
+	light->GetShadow()->SetUseVSM(false);
 #elif 0
 	_light = new Object("Light");
 	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
