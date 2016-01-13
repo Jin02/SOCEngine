@@ -5,92 +5,75 @@
 
 #include "../GlobalDefine.h"
 
-#define DEG_2_RAD(X)					PI * X / 180.0f
+#define DEG_2_RAD(X) PI * X / 180.0f
 
-Buffer<float4> g_inputPointLightTransformBuffer						: register( t0 ); // center, radius
-Buffer<float4> g_inputPointLightColorBuffer							: register( t1 ); // rgb, lumen(maximum : 30,000)
+Buffer<float4>								g_inputPointLightTransformBuffer					: register( t0 ); // center, radius
+Buffer<float4>								g_inputPointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
 
-Buffer<float4> g_inputSpotLightTransformBuffer						: register( t2 ); // center, radiusWithDirZSignBit
-Buffer<float4> g_inputSpotLightColorBuffer							: register( t3 ); // rgb, lumen(maximum : 30,000)
-Buffer<float4> g_inputSpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
+Buffer<float4>								g_inputSpotLightTransformBuffer						: register( t2 ); // center, radiusWithDirZSignBit
+Buffer<float4>								g_inputSpotLightColorBuffer							: register( t3 ); // rgb, lumen(maximum : 30,000)
+Buffer<float4>								g_inputSpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
 
-Buffer<float4> g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 ); // center, DirZ
-Buffer<float4> g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
-Buffer<float2> g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
+Buffer<float4>								g_inputDirectionalLightTransformWithDirZBuffer		: register( t5 ); // center, DirZ
+Buffer<float4>								g_inputDirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
+Buffer<float2>								g_inputDirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferAlbedo_emission	: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferSpecular_metallic	: register( t9 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT> g_tGBufferNormal_roughness	: register( t10 );
-Texture2DMS<float,	MSAA_SAMPLES_COUNT> g_tDepth					: register( t11 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferAlbedo_emission							: register( t8 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferSpecular_metallic							: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferNormal_roughness							: register( t10 );
+Texture2DMS<float,	MSAA_SAMPLES_COUNT>		g_tDepth											: register( t11 );
 
 #if defined(ENABLE_BLEND)
-Texture2DMS<float, MSAA_SAMPLES_COUNT>	g_tBlendedDepth				: register( t12 );
+Texture2DMS<float,  MSAA_SAMPLES_COUNT>		g_tBlendedDepth										: register( t12 );
 #endif
 
 #else //Turn off MSAA
 
-Texture2D<float4>	g_tGBufferAlbedo_emission						: register( t8 );
-Texture2D<float4>	g_tGBufferSpecular_metallic						: register( t9 );
-Texture2D<float4>	g_tGBufferNormal_roughness						: register( t10 );
-Texture2D<float>	g_tDepth										: register( t11 );
+Texture2D<float4>							g_tGBufferAlbedo_emission							: register( t8 );
+Texture2D<float4>							g_tGBufferSpecular_metallic							: register( t9 );
+Texture2D<float4>							g_tGBufferNormal_roughness							: register( t10 );
+Texture2D<float>							g_tDepth											: register( t11 );
 
 #if defined(ENABLE_BLEND)
-Texture2D<float> 	g_tBlendedDepth		 							: register( t12 );
+Texture2D<float>							g_tBlendedDepth		 								: register( t12 );
 #endif
 
 #endif
-
-struct Directional_Spot_LightShadowParam
-{
-	float		bias;
-	uint		index;
-
-	matrix		viewProjMat;
-};
-
-struct PointLightShadowParam
-{
-	uint		indexWithBias;
-	float		underScanSize;
-
-	matrix		viewProjMat[6];
-};
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
 
-StructuredBuffer<PointLightShadowParam>				g_inputPointLightShadowParams		: register( t14 );
-StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputSpotLightShadowParams		: register( t15 );
-StructuredBuffer<Directional_Spot_LightShadowParam>	g_inputDirectionalLightShadowParams	: register( t16 );
+Buffer<uint3>								g_inputPointLightShadowParams						: register( t14 ); // lightIndexWithbiasWithFlag, color, underScanSize
+Buffer<uint2>								g_inputSpotLightShadowParams						: register( t15 ); // lightIndexWithbiasWithFlag, color
+Buffer<uint2>								g_inputDirectionalLightShadowParams					: register( t16 ); // lightIndexWithbiasWithFlag, color
 
-Texture2D<float>	g_inputPointLightShadowMapAtlas										: register( t17 );
-Texture2D<float>	g_inputSpotLightShadowMapAtlas										: register( t18 );
-Texture2D<float>	g_inputDirectionalLightShadowMapAtlas								: register( t19 );
+Texture2D<float>							g_inputPointLightShadowMapAtlas						: register( t17 );
+Texture2D<float>							g_inputSpotLightShadowMapAtlas						: register( t18 );
+Texture2D<float>							g_inputDirectionalLightShadowMapAtlas				: register( t19 );
 
-Buffer<float4> g_inputPointLightShadowColors											: register( t20 );
-Buffer<float4> g_inputSpotLightShadowColors												: register( t21 );
-Buffer<float4> g_inputDirectionalLightShadowColors										: register( t22 );
+Buffer<uint>								g_inputPointLightShadowIndex						: register( t20 );
+Buffer<uint>								g_inputSpotLightShadowIndex							: register( t21 );
+Buffer<uint>								g_inputDirectionalLightShadowIndex					: register( t22 );
 
-Buffer<uint> g_inputPointLightShadowIndexToLightIndex									: register( t23 );
-Buffer<uint> g_inputSpotLightShadowIndexToLightIndex									: register( t24 );
-Buffer<uint> g_inputDirectionalLightShadowIndexToLightIndex								: register( t25 );
+struct DSLightVPMat	{	matrix mat;		};
+struct PLightVPMat	{	matrix mat[6];	};
 
-Texture2D<float4>	g_inputPointLightMomentShadowMapAtlas								: register( t26 );
-Texture2D<float4>	g_inputSpotLightMomentShadowMapAtlas								: register( t27 );
-Texture2D<float4>	g_inputDirectionalLightMomentShadowMapAtlas							: register( t28 );
+StructuredBuffer<PLightVPMat>				g_inputPointLightShadowViewProjMatrix				: register( t23 );
+StructuredBuffer<DSLightVPMat>				g_inputSpotLightShadowViewProjMatrix				: register( t24 );
+StructuredBuffer<DSLightVPMat>				g_inputDirectionalLightShadowViewProjMatrix			: register( t25 );
 
-Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture									: register( t29 );
-Texture3D<float>	g_inputAnistropicVoxelNormalTexture									: register( t30 );
-Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture								: register( t31 );
+Texture2D<float4>							g_inputPointLightMomentShadowMapAtlas				: register( t26 );
+Texture2D<float4>							g_inputSpotLightMomentShadowMapAtlas				: register( t27 );
+Texture2D<float4>							g_inputDirectionalLightMomentShadowMapAtlas			: register( t28 );
 
-struct DSLightInvVPVMat	{	matrix invMat;		};
-StructuredBuffer<DSLightInvVPVMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+Texture3D<float4>							g_inputAnistropicVoxelAlbedoTexture					: register( t29 );
+Texture3D<float>							g_inputAnistropicVoxelNormalTexture					: register( t30 );
+Texture3D<float4>							g_inputAnistropicVoxelEmissionTexture				: register( t31 );
 
-struct PLightInvVPVMat	{	matrix invMat[6];	};
-StructuredBuffer<PLightInvVPVMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
-
-StructuredBuffer<DSLightInvVPVMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
+StructuredBuffer<PLightVPMat>				g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+StructuredBuffer<DSLightVPMat>				g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
+StructuredBuffer<DSLightVPMat>				g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
 
 
 struct LightingParams
@@ -204,6 +187,22 @@ float4 UintToFloat4(uint value)
 float smoothStep(float low, float high, float v)
 {
 	return clamp( (v - low) / (high - low), 0.0f, 1.0f);
+}
+
+struct ParsedShadowParam
+{
+	uint	lightIndex;
+	uint	flag;
+	float	bias;
+	float4	color;
+};
+
+void ParseShadowParam(out ParsedShadowParam outParam, uint2 shadowParam)
+{
+	outParam.lightIndex	= shadowParam.x >> 16;
+	outParam.bias		= float(uint(shadowParam.x & 0xfff0) >> 4) / (8192.0f);
+	outParam.flag		= shadowParam.x & 0xf;
+	outParam.color		= UintToFloat4(shadowParam.y);
 }
 
 #endif
