@@ -9,20 +9,14 @@ namespace Rendering
 		class DirectionalLightShadow : public ShadowCommon
 		{
 		public:
-			struct Param : public ShadowCommon::CommonParam
-			{
-				Math::Matrix	viewProjMat;
-
-				Param() : ShadowCommon::CommonParam() {}
-				~Param() {}
-			};
+			typedef ShadowCommon::CommonParam Param;
 
 		public:
-			DirectionalLightShadow(const Light::LightForm* owner, const std::function<void()>& ownerUpdateCounter);
+			DirectionalLightShadow(const Light::LightForm* owner);
 			~DirectionalLightShadow();
 
 		public:
-			void MakeParam(Param& outParam, bool useVSM) const;
+			void MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const;
 		};
 	}
 }
