@@ -18,12 +18,12 @@ DirectionalLight::~DirectionalLight()
 {
 }
 
-void DirectionalLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
+void DirectionalLight::CreateShadow()
 {
-	_shadow = new DirectionalLightShadow(this, addUpdateCounter);
+	_shadow = new DirectionalLightShadow(this);
 }
 
-void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
+void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat)
 {
 	Matrix view;
 	_owner->GetTransform()->FetchWorldMatrix(view);
@@ -42,25 +42,28 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 
 	float orthogonalWH = (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
 
-	Matrix proj, invProj;
+	Matrix proj, invNearFarProj;
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
-	Matrix::OrthoLH(invProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
+	Matrix::OrthoLH(invNearFarProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
 #else
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
-	Matrix::OrthoLH(invProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
+	Matrix::OrthoLH(invNearFarProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
 #endif
 
-	_invViewProjMat = view * invProj;
-
-	Matrix& viewProj = _viewProjMat;
-	viewProj = view * proj;
+	_invNearFarViewProjMat	= view * invNearFarProj;
+	_viewProjMat			= view * proj;
 
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	_frustum.Make(_invViewProjMat);
+	_frustum.Make(_invNearFarViewProjMat);
 #else
-	_frustum.Make(viewProj);
+	_frustum.Make(_viewProjMat);
 #endif
+
+	Matrix invViewProj;
+	Matrix::Inverse(invViewProj, _viewProjMat);
+
+	_invViewProjViewportMat = invViewportMat * invViewProj;
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
@@ -68,7 +71,7 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
+void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
 	Transform worldTransform(nullptr);
