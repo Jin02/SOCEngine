@@ -21,7 +21,7 @@ namespace Rendering
 			{
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
-			};\
+			};
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -44,7 +44,6 @@ namespace Rendering
 			Texture::RenderTexture*			_renderTarget;
 			RenderQueue						_transparentMeshQueue;
 
-		protected:
 			float							_fieldOfViewDegree;
 			float							_clippingNear;
 			float							_clippingFar;
@@ -54,6 +53,8 @@ namespace Rendering
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
 			CamMatCBData					_prevCamMatCBData;
+
+			Math::Rect<float>				_renderRect;
 
 		public:
 			CameraForm(Usage usage);
@@ -72,9 +73,12 @@ namespace Rendering
 			static void  GetViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
 			void GetViewMatrix(Math::Matrix& outMatrix) const;
 
+			static void GetViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect);
+			static void GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect);
+
 		protected:
 			// if mainRTSampleCount = 0, mainRTSampleCount = msaa.count
-			void Initialize(uint mainRTSampleCount = 0);
+			void Initialize(const Math::Rect<float>& renderRect, uint mainRTSampleCount = 0);
 			void Destroy();
 
 		public:
@@ -84,9 +88,10 @@ namespace Rendering
 			void _Clone(CameraForm* newCam) const;
 
 		public:
-			GET_SET_ACCESSOR(Near,				float, _clippingNear);
-			GET_SET_ACCESSOR(Far,				float, _clippingFar);
-			GET_SET_ACCESSOR(FieldOfViewDegree,	float, _fieldOfViewDegree);
+			GET_SET_ACCESSOR(Near,				float,						_clippingNear);
+			GET_SET_ACCESSOR(Far,				float,						_clippingFar);
+			GET_SET_ACCESSOR(FieldOfViewDegree,	float,						_fieldOfViewDegree);
+			GET_SET_ACCESSOR(RenderRect,		const Math::Rect<float>&,	_renderRect);
 
 			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
 			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
