@@ -93,10 +93,8 @@ void Scene::RenderPreview()
 
 	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
 
-	Math::Matrix invViewportMat;
-	_dx->GetInvViewportMatrix(invViewportMat);
-	_shadowRenderer->ComputeAllLightViewProj(invViewportMat);
-	_lightManager->ComputeDirectionalLightViewProj(_boundBox, invViewportMat);
+	_shadowRenderer->ComputeAllLightViewProj();
+	_lightManager->ComputeDirectionalLightViewProj(_boundBox, float(_shadowRenderer->GetDirectionalLightShadowMapResolution()));
 
 	_shadowRenderer->UpdateConstBuffer(_dx);
 
