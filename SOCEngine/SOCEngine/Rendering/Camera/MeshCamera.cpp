@@ -33,9 +33,8 @@ MeshCamera::~MeshCamera()
 
 void MeshCamera::OnInitialize()
 {
-	CameraForm::Initialize();
-
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
+	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
 	_albedo_emission = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
@@ -143,7 +142,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix::Transpose(tbrParam.invProjMat, invProjMat);
 
 		Matrix invViewportMat;
-		dx->GetInvViewportMatrix(invViewportMat);
+		GetInvViewportMatrix(invViewportMat, _renderRect);
 
 		Matrix invViewProj;
 		Matrix::Inverse(invViewProj, viewProjMat);
