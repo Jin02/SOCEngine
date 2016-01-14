@@ -16,9 +16,7 @@ using namespace GPGPU::DirectCompute;
 using namespace Resource;
 using namespace Rendering::TBDR;
 
-LightCulling::LightCulling() : 
-	_computeShader(nullptr), _inputPointLightTransformBuffer(nullptr),
-	_inputSpotLightTransformBuffer(nullptr), _inputSpotLightParamBuffer(nullptr)
+LightCulling::LightCulling() : _computeShader(nullptr)
 {
 
 }
@@ -28,7 +26,7 @@ LightCulling::~LightCulling()
 	Destroy();
 }
 
-void LightCulling::AddInputBufferToList(ShaderForm::InputShaderResourceBuffer*& outBuffer, uint idx, const ShaderResourceBuffer*& buffer)
+void LightCulling::AddInputBufferToList(uint idx, const ShaderResourceBuffer* buffer)
 {
 	ShaderForm::InputShaderResourceBuffer inputBuffer;
 	{
@@ -37,7 +35,6 @@ void LightCulling::AddInputBufferToList(ShaderForm::InputShaderResourceBuffer*& 
 	}
 
 	_inputBuffers.push_back(inputBuffer);
-	outBuffer = &_inputBuffers.back();
 }
 
 void LightCulling::AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture)
@@ -83,32 +80,18 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 
 	// Input Buffer Setting
 	{
-		// Point Light Transform
-		uint idx = (uint)TextureBindIndex::PointLightRadiusWithCenter;
-		const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightTransformSRBuffer();
-		AddInputBufferToList(_inputPointLightTransformBuffer, idx, srBuffer);
-		
-		// Spot Light Transform
-		idx = (uint)TextureBindIndex::SpotLightRadiusWithCenter;
-		srBuffer = lightManager->GetSpotLightTransformSRBuffer();
-		AddInputBufferToList(_inputSpotLightTransformBuffer, idx, srBuffer);
-
-		idx = (uint)TextureBindIndex::SpotLightParam;
-		srBuffer = lightManager->GetSpotLightParamSRBuffer();
-		AddInputBufferToList(_inputSpotLightParamBuffer, idx, srBuffer);
+		AddInputBufferToList(uint(TextureBindIndex::PointLightRadiusWithCenter),	lightManager->GetPointLightTransformSRBuffer());
+		AddInputBufferToList(uint(TextureBindIndex::SpotLightRadiusWithCenter),		lightManager->GetSpotLightTransformSRBuffer());
+		AddInputBufferToList(uint(TextureBindIndex::SpotLightParam),				lightManager->GetSpotLightParamSRBuffer());
 
 		// depth buffer
 		{
 			// Opaque Depth Buffer
-			idx = (uint)TextureBindIndex::GBuffer_Depth;
-			AddTextureToInputTextureList(idx, opaqueDepthBuffer);
+			AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Depth), opaqueDepthBuffer);
 
 			// Blended DepthBuffer (used in Transparency Rendering)
 			if(blendedDepthBuffer)
-			{
-				idx = (uint)TextureBindIndex::GBuffer_BlendedDepth;
-				AddTextureToInputTextureList(idx, blendedDepthBuffer);
-			}
+				AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_BlendedDepth), blendedDepthBuffer);
 		}
 	}
 
@@ -184,10 +167,6 @@ void LightCulling::Destroy()
 {
 	_inputBuffers.clear();
 	_inputTextures.clear();
-
-	_inputPointLightTransformBuffer	= nullptr;
-	_inputSpotLightTransformBuffer	= nullptr;
-	_inputSpotLightParamBuffer		= nullptr;
 
 	SAFE_DELETE(_computeShader);
 

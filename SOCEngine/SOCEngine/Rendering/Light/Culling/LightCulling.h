@@ -38,15 +38,11 @@ namespace Rendering
 		private:
 			std::vector<Shader::ShaderForm::InputShaderResourceBuffer>		_inputBuffers;
 			std::vector<Shader::ShaderForm::InputTexture>					_inputTextures;
-			std::vector<GPGPU::DirectCompute::ComputeShader::Output>		_outputs;
+			std::vector<Shader::ShaderForm::OutputUnorderedAccessView>		_outputs;
 
 			GPGPU::DirectCompute::ComputeShader*							_computeShader;
 
 			bool															_useBlendedMeshCulling;
-
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputPointLightTransformBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightTransformBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*					_inputSpotLightParamBuffer;
 
 		public:
 			LightCulling();
@@ -64,10 +60,10 @@ namespace Rendering
 
 			void Destroy();
 
-			inline void SetOuputBuferToCS(const std::vector<GPGPU::DirectCompute::ComputeShader::Output>&  outputs) { _computeShader->SetOutputs(outputs); }
+			inline void SetOuputBuferToCS(const std::vector<Shader::ShaderForm::OutputUnorderedAccessView>&  outputs) { _computeShader->SetOutputs(outputs); }
 
 		protected:
-			void AddInputBufferToList(Shader::ShaderForm::InputShaderResourceBuffer*& outBuffer, uint idx, const Buffer::ShaderResourceBuffer*& buffer);
+			void AddInputBufferToList(uint idx, const Buffer::ShaderResourceBuffer* buffer);
 			void AddTextureToInputTextureList(uint idx, const Texture::Texture2D* texture);
 
 		public:	

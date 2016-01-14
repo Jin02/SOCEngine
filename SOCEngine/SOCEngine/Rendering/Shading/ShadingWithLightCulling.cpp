@@ -12,13 +12,7 @@ using namespace Rendering::Texture;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::TBDR;
 
-ShadingWithLightCulling::ShadingWithLightCulling() : 
-	_offScreen(nullptr), _inputPointLightColorBuffer(nullptr),
-	_inputSpotLightColorBuffer(nullptr), _inputDirectionalLightColorBuffer(nullptr),
-	_inputDirectionalLightParamBuffer(nullptr), _inputDirectionalLightTransformBuffer(nullptr),
-
-	_inputDirectionalLightShadowParamBuffer(nullptr), _inputPointLightShadowParamBuffer(nullptr), _inputSpotLightShadowParamBuffer(nullptr),
-	_inputDirectionalLightShadowColorBuffer(nullptr), _inputPointLightShadowColorBuffer(nullptr), _inputSpotLightShadowColorBuffer(nullptr)
+ShadingWithLightCulling::ShadingWithLightCulling() : _offScreen(nullptr)
 {
 
 }
@@ -51,121 +45,49 @@ void ShadingWithLightCulling::Initialize(
 		if(useDebugMode)
 			macros.push_back(ShaderMacro("DEBUG_MODE", ""));
 
-		if(shadowMgr->GetUseVSM())
-			macros.push_back(ShaderMacro("USE_VSM", ""));
+		if(shadowMgr->GetNeverUseVSM())
+			macros.push_back(ShaderMacro("NEVER_USE_VSM", ""));
 	}
 
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
 
-	// Additional Input buffer
-	{
-		// Point Light
-		{
-			uint idx = (uint)TextureBindIndex::PointLightColor;
-			const ShaderResourceBuffer* srBuffer = lightManager->GetPointLightColorSRBuffer();
-			AddInputBufferToList(_inputPointLightColorBuffer, idx, srBuffer);
-		}
+	// Input Shader Resource Buffers
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),		lightManager->GetDirectionalLightTransformSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightColor),					lightManager->GetDirectionalLightColorSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightParam),					lightManager->GetDirectionalLightParamSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowParam),			shadowMgr->GetDirectionalLightShadowParamSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowIndex),			lightManager->GetDirectionalLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowViewProjMatrix),	shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 
-		// Spot Light
-		{
-			uint idx = (uint)TextureBindIndex::SpotLightColor;
-			const ShaderResourceBuffer* srBuffer = lightManager->GetSpotLightColorSRBuffer();
-			AddInputBufferToList(_inputSpotLightColorBuffer, idx, srBuffer);
-		}
+	// Point Light transform은 LightCulling::Initialize에서 등록하고 있다.
+	AddInputBufferToList(uint(TextureBindIndex::PointLightColor),						lightManager->GetPointLightColorSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowParam),					shadowMgr->GetPointLightShadowParamSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowIndex),					lightManager->GetPointLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowViewProjMatrix),		shadowMgr->GetPointLightShadowViewProjSRBuffer());
 
-		// Directional Light
-		{
-			// Center With DirZ
-			{
-				uint idx = (uint)TextureBindIndex::DirectionalLightCenterWithDirZ;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightTransformSRBuffer();
-				AddInputBufferToList(_inputDirectionalLightTransformBuffer, idx, srBuffer);
-			}
-
-			// Color
-			{
-				uint idx = (uint)TextureBindIndex::DirectionalLightColor;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightColorSRBuffer();
-				AddInputBufferToList(_inputDirectionalLightColorBuffer, idx, srBuffer);
-			}
-
-			// Param half / DirX, DirY
-			{
-				uint idx = (uint)TextureBindIndex::DirectionalLightParam;
-				const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightParamSRBuffer();
-				AddInputBufferToList(_inputDirectionalLightParamBuffer, idx, srBuffer);
-			}
-		}
-
-		// Shadows
-		{
-			uint idx = (uint)TextureBindIndex::DirectionalLightShadowParam;
-			const ShaderResourceBuffer* srBuffer = lightManager->GetDirectionalLightShadowParamSRBuffer();
-			AddInputBufferToList(_inputDirectionalLightShadowParamBuffer, idx, srBuffer);
-
-			idx = (uint)TextureBindIndex::PointLightShadowParam;
-			srBuffer = lightManager->GetPointLightShadowParamSRBuffer();
-			AddInputBufferToList(_inputPointLightShadowParamBuffer, idx, srBuffer);
-
-			idx = (uint)TextureBindIndex::SpotLightShadowParam;
-			srBuffer = lightManager->GetSpotLightShadowParamSRBuffer();
-			AddInputBufferToList(_inputSpotLightShadowParamBuffer, idx, srBuffer);
-
-			idx = (uint)TextureBindIndex::DirectionalLightShadowColor;
-			srBuffer = lightManager->GetDirectionalLightShadowColorSRBuffer();
-			AddInputBufferToList(_inputDirectionalLightShadowColorBuffer, idx, srBuffer);
-
-			idx = (uint)TextureBindIndex::PointLightShadowColor;
-			srBuffer = lightManager->GetPointLightShadowColorSRBuffer();
-			AddInputBufferToList(_inputPointLightShadowColorBuffer, idx, srBuffer);
-
-			idx = (uint)TextureBindIndex::SpotLightShadowColor;
-			srBuffer = lightManager->GetSpotLightShadowColorSRBuffer();
-			AddInputBufferToList(_inputSpotLightShadowColorBuffer, idx, srBuffer);
-		}
-	}
+	// Spot Light transform와 Param은 LightCulling::Initialize에서 등록하고 있다.
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightColor),						lightManager->GetSpotLightColorSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowParam),					shadowMgr->GetSpotLightShadowParamSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowIndex),					lightManager->GetSpotLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowViewProjMatrix),			shadowMgr->GetSpotLightShadowViewProjSRBuffer());
 
 	// Input Texture
 	{
-		// Albedo_Emission
-		{
-			uint idx = (uint)TextureBindIndex::GBuffer_Albedo_Emission;
-			AddTextureToInputTextureList(idx, geometryBuffers.albedo_emission);
-		}
-
-		// Specular_Metallic
-		{
-			uint idx = (uint)TextureBindIndex::GBuffer_Specular_Metallic;
-			AddTextureToInputTextureList(idx, geometryBuffers.specular_metallic);
-		}
-
-		// Normal_Roughness
-		{
-			uint idx = (uint)TextureBindIndex::GBuffer_Normal_Roughness;
-			AddTextureToInputTextureList(idx, geometryBuffers.normal_roughness);
-		}
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Albedo_Emission),	geometryBuffers.albedo_emission);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Specular_Metallic),	geometryBuffers.specular_metallic);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Normal_Roughness),	geometryBuffers.normal_roughness);
 
 		// ShadowMap Atlas
 		{
-			uint idx = (uint)TextureBindIndex::PointLightShadowMapAtlas;			
-			AddTextureToInputTextureList(idx, shadowMgr->GetPointLightShadowMapAtlas());
+			AddTextureToInputTextureList(uint(TextureBindIndex::PointLightShadowMapAtlas),			shadowMgr->GetPointLightShadowMapAtlas());
+			AddTextureToInputTextureList(uint(TextureBindIndex::SpotLightShadowMapAtlas),			shadowMgr->GetSpotLightShadowMapAtlas());
+			AddTextureToInputTextureList(uint(TextureBindIndex::DirectionalLightShadowMapAtlas),	shadowMgr->GetDirectionalLightShadowMapAtlas());
 
-			idx = (uint)TextureBindIndex::SpotLightShadowMapAtlas;
-			AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightShadowMapAtlas());
-
-			idx = (uint)TextureBindIndex::DirectionalLightShadowMapAtlas;
-			AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightShadowMapAtlas());
-
-			if(shadowMgr->GetUseVSM())
+			if(shadowMgr->GetNeverUseVSM() == false)
 			{
-				idx = (uint)TextureBindIndex::PointLightMomentShadowMapAtlas;
-				AddTextureToInputTextureList(idx, shadowMgr->GetPointLightMomentShadowMapAtlas());
-
-				idx = (uint)TextureBindIndex::SpotLightMomentShadowMapAtlas;
-				AddTextureToInputTextureList(idx, shadowMgr->GetSpotLightMomentShadowMapAtlas());
-
-				idx = (uint)TextureBindIndex::DirectionalLightMomentShadowMapAtlas;
-				AddTextureToInputTextureList(idx, shadowMgr->GetDirectionalLightMomentShadowMapAtlas());
+				AddTextureToInputTextureList(uint(TextureBindIndex::PointLightMomentShadowMapAtlas),		shadowMgr->GetPointLightMomentShadowMapAtlas());
+				AddTextureToInputTextureList(uint(TextureBindIndex::SpotLightMomentShadowMapAtlas),			shadowMgr->GetSpotLightMomentShadowMapAtlas());
+				AddTextureToInputTextureList(uint(TextureBindIndex::DirectionalLightMomentShadowMapAtlas),	shadowMgr->GetDirectionalLightMomentShadowMapAtlas());
 			}
 		}
 	}
@@ -185,13 +107,13 @@ void ShadingWithLightCulling::Initialize(
 		_offScreen = new RenderTexture;
 		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
 
-		ComputeShader::Output output;
+		ShaderForm::OutputUnorderedAccessView output;
 		{
 			output.bindIndex	= (uint)UAVBindIndex::TBDR_OutScreen;
-			output.output		= _offScreen->GetUnorderedAccessView();
+			output.uav			= _offScreen->GetUnorderedAccessView();
 		}
 
-		std::vector<ComputeShader::Output> outputs;
+		std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
 		outputs.push_back(output);
 
 		SetOuputBuferToCS(outputs);
@@ -202,19 +124,6 @@ void ShadingWithLightCulling::Initialize(
 
 void ShadingWithLightCulling::Destory()
 {
-	_inputPointLightColorBuffer				= nullptr;
-	_inputSpotLightColorBuffer				= nullptr;
-	_inputDirectionalLightTransformBuffer	= nullptr;
-	_inputDirectionalLightColorBuffer		= nullptr;
-	_inputDirectionalLightParamBuffer		= nullptr;
-
-	_inputDirectionalLightShadowParamBuffer	= nullptr;
-	_inputPointLightShadowParamBuffer		= nullptr;
-	_inputSpotLightShadowParamBuffer		= nullptr;
-	_inputDirectionalLightShadowColorBuffer	= nullptr;
-	_inputPointLightShadowColorBuffer		= nullptr;
-	_inputSpotLightShadowColorBuffer		= nullptr;
-
 	SAFE_DELETE(_offScreen);
 	LightCulling::Destroy();
 }

@@ -12,7 +12,7 @@ namespace Rendering
 		class SpotLight : public LightForm
 		{
 		public:
-			struct Params
+			struct Param
 			{
 				unsigned short			dirX;
 				unsigned short			dirY;
@@ -20,12 +20,12 @@ namespace Rendering
 				unsigned short			outerConeCosAngle;
 				unsigned short			innerConeCosAngle;
 
-				Params() : outerConeCosAngle(0), innerConeCosAngle(0), dirX(0), dirY(0) {}
-				~Params() {}
+				Param() : outerConeCosAngle(0), innerConeCosAngle(0), dirX(0), dirY(0) {}
+				~Param() {}
 			};
 
 		public:
-			Params			_param;
+			Param			_param;
 			float			_spotAngleDegree;
 
 		public:
@@ -33,20 +33,20 @@ namespace Rendering
 			virtual ~SpotLight();
 
 		public:
-			virtual void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox);
-			virtual void CreateLightShadow(const std::function<void()>& addUpdateCounter);
+			virtual void CreateShadow();
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const;
+			void MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
 
 		public:
 			void SetSpotAngleDegree(float d);
-			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
-			GET_ACCESSOR(Shadow, Shadow::SpotLightShadow*, static_cast<Shadow::SpotLightShadow*>(_shadow) );
+
+			GET_ACCESSOR(SpotAngleDegree,	float,						_spotAngleDegree);
+			GET_ACCESSOR(Shadow,			Shadow::SpotLightShadow*,	static_cast<Shadow::SpotLightShadow*>(_shadow) );
 		};
 	}
 }

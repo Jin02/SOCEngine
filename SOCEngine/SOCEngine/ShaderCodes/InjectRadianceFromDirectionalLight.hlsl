@@ -11,16 +11,14 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 {
 	uint capacity			= GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	float perShadowMapRes	= (float)(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	uint2 shadowMapSize		= uint2(perShadowMapRes * capacity, perShadowMapRes * capacity);
 
-	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;
-	uint lightIndex		= g_inputDirectionalLightShadowIndexToLightIndex[shadowIndex];
+	uint shadowIndex		= globalIdx.x / (uint)perShadowMapRes;
+	uint lightIndex			= g_inputDirectionalLightShadowIndexToLightIndex[shadowIndex];
 
-	if( (globalIdx.x >= shadowMapSize.x || globalIdx.y >= shadowMapSize.y) ||
-		(((uint)g_inputDirectionalLightShadowParams[lightIndex].index - 1) != shadowIndex) )
+	if( ((uint)g_inputDirectionalLightShadowParams[lightIndex].index - 1) != shadowIndex )
 		return;
 
-	float2 shadowMapPos	= float2(globalIdx.x % perShadowMapRes, globalIdx.y);
+	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y);
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
 	float depth = g_inputDirectionalLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
@@ -28,20 +26,21 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].invMat );
 	worldPos /= worldPos.w;
 
-	float3 voxelSpaceCoord = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
-	int3 voxelIdx = int3(voxelSpaceCoord * voxelization_dimension);
+	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
+	int dimension		= (int)GetDimension();
+	int3 voxelIdx = int3(voxelSpaceUV * dimension);
 
-	if( any(voxelIdx < 0) || any(voxelization_dimension < voxelIdx) )
+	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;
 
 	//float4 screenSpaceCoord = float4( shadowMapUV.x * 2.0f - 1.0f,
 	//								-(shadowMapUV.y * 2.0f - 1.0f),
 	//								depth, 1.0f );
 
-	//float4 voxelSpaceCoord = mul(screenSpaceCoord, injection_volumeProj);
-	//voxelSpaceCoord /= voxelSpaceCoord.w;
-	//voxelSpaceCoord.xyz = voxelSpaceCoord.xyz * 0.5f + 0.5f;
-	//uint3 voxelIdx = uint3(voxelSpaceCoord.xyz * voxelization_dimension);
+	//float4 voxelSpaceUV = mul(screenSpaceCoord, injection_volumeProj);
+	//voxelSpaceUV /= voxelSpaceUV.w;
+	//voxelSpaceUV.xyz = voxelSpaceUV.xyz * 0.5f + 0.5f;
+	//uint3 voxelIdx = uint3(voxelSpaceUV.xyz * dimension);
 
 	float4 lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
 	float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];

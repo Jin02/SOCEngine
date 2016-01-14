@@ -80,6 +80,7 @@ namespace Device
 		void ClearDeviceContext() const;
 		Math::Size<uint> FetchBackBufferSize();
 		void GetViewportMatrix(Math::Matrix& outMat) const;
+		void GetInvViewportMatrix(Math::Matrix& outMat) const;
 		void Destroy();
 
 	public:

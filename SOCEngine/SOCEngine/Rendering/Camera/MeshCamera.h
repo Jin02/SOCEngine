@@ -46,26 +46,23 @@ namespace Rendering
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-			void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool useVSM);
+			void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM);
 
 		public:
 			static void RenderMeshWithoutIASetVB(
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const Geometry::Mesh* mesh, RenderType renderType,
-				const Buffer::ConstBuffer* camMatConstBuffer,
-				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers);
+				const Buffer::ConstBuffer* camMatConstBuffer);
 			static void RenderMeshesUsingSortedMeshVectorByVB(
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const Manager::RenderManager::MeshList& meshes,
 				RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
-				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr,
-				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers = nullptr);
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
 			static void RenderMeshesUsingMeshVector(
 				const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 				const std::vector<const Geometry::Mesh*>& meshes,
 				RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
-				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr,
-				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers = nullptr);
+				std::function<bool(const Intersection::Sphere&)>* intersectFunc = nullptr);
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);

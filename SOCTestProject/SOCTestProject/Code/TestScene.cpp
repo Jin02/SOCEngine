@@ -43,14 +43,14 @@ void TestScene::OnInitialize()
 	_testObject = importer->Load("./Resources/Capsule/capsule.obj");
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 #else
-	_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx");
-	_camera->GetTransform()->UpdatePosition(Vector3(0, 5, -15));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
+	//_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx");
+	//_camera->GetTransform()->UpdatePosition(Vector3(0, 5, -15));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
 
-	//_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	//_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
-	//_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
+	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
 
 	//_testObject2 = importer->Load("./Resources/CornellBox/box.obj", false);
 	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
@@ -59,17 +59,20 @@ void TestScene::OnInitialize()
 #endif
 	AddObject(_testObject);
 
-#if 0
+#if 1
 	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(-60, -60, 0));
-	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+	//_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
+	//_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	_light->GetTransform()->UpdatePosition(Vector3(0.5f, -0.8, 6.0f));
 
 	SpotLight* light = _light->AddComponent<SpotLight>();
 	light->SetLumen(150);
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
-#elif 1
+	light->GetShadow()->SetUseVSM(false);
+#elif 0
 	_light = new Object("Light");
 	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
@@ -90,6 +93,8 @@ void TestScene::OnInitialize()
 	light->SetRadius(10.0f);
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
+	light->GetShadow()->SetUseVSM(true);
+	light->GetShadow()->SetUnderScanSize(4.25f);
 #endif
 
 	AddObject(_light);
