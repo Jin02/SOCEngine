@@ -143,12 +143,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix::Transpose(tbrParam.invProjMat, invProjMat);
 
 		Matrix invViewportMat;
-		{
-			Matrix viewportMat;
-			dx->GetViewportMatrix(viewportMat);
-
-			Matrix::Inverse(invViewportMat, viewportMat);
-		}
+		dx->GetInvViewportMatrix(invViewportMat);
 
 		Matrix invViewProj;
 		Matrix::Inverse(invViewProj, viewProjMat);
@@ -345,7 +340,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool useVSM)
+void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -470,7 +465,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
 #endif
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
-			if(useVSM)
+			if(neverUseVSM == false)
 			{
 				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
 				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &shadowSamplerState);
@@ -496,7 +491,7 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		{
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSampler);
 
-			if(useVSM)
+			if(neverUseVSM == false)
 				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &nullSampler);
 		}
 	}

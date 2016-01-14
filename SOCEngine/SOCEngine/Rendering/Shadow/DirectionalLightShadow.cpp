@@ -4,9 +4,8 @@
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 
-DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner,
-											   const std::function<void()>& ownerUpdateCounter)
-	: ShadowCommon(owner, ownerUpdateCounter)
+DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner)
+	: ShadowCommon(owner)
 {
 	SetBias(0.0f);
 }
@@ -15,16 +14,15 @@ DirectionalLightShadow::~DirectionalLightShadow()
 {
 }
 
-void DirectionalLightShadow::MakeParam(Param& outParam, bool useVSM) const
+void DirectionalLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const
 {
-	ShadowCommon::MakeParam(outParam);
+	const DirectionalLight* owner = dynamic_cast<const DirectionalLight*>(_owner);
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
-	if(useVSM)
-		outParam.viewProjMat = _owner->GetInvViewProjectionMatrix();
+	if(GetUseVSM())
+		Math::Matrix::Transpose(outViewProjMat,	owner->GetInvNearFarViewProjectionMatrix());
 	else
 #endif
-	outParam.viewProjMat = _owner->GetViewProjectionMatrix();
-
-	Math::Matrix::Transpose(outParam.viewProjMat, outParam.viewProjMat);
+	Math::Matrix::Transpose(outViewProjMat,		owner->GetViewProjectionMatrix());
+	Math::Matrix::Transpose(outInvVPVMat,		owner->GetInvViewProjViewportMatrix());
 }

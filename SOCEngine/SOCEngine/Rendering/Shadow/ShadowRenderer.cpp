@@ -18,7 +18,7 @@ using namespace Rendering::Manager;
 
 ShadowRenderer::ShadowRenderer() :
 	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
-	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr), _useVSM(false),
+	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr), _neverUseVSM(false),
 	_pointLightShadowMapResolution(512),
 	_spotLightShadowMapResolution(512),
 	_directionalLightShadowMapResolution(512),
@@ -26,22 +26,71 @@ ShadowRenderer::ShadowRenderer() :
 	_numOfShadowCastingSpotLightInAtlas(0),
 	_numOfShadowCastingDirectionalLightInAtlas(0),
 	_shadowGlobalParamCB(nullptr),
-	_directionalLightShadowIdxToLightIdxSRBuffer(nullptr), _pointLightShadowIdxToLightIdxSRBuffer(nullptr), _spotLightShadowIdxToLightIdxSRBuffer(nullptr),
-	_updateConter(0), _prevUpdateCounter(0xffffffff)
+	_directionalLightShadowParamSRBuffer(nullptr),	_spotLightShadowParamSRBuffer(nullptr),	_pointLightShadowParamSRBuffer(nullptr),
+	_directionalLightViewProjMatSRBuffer(nullptr),	_spotLightViewProjMatSRBuffer(nullptr),	_pointLightViewProjMatSRBuffer(nullptr),
+	_directionalLightInvVPVMatSRBuffer(nullptr),	_spotLightInvVPVMatSRBuffer(nullptr),	_pointLightInvVPVMatSRBuffer(nullptr),
+	_forceUpdateDL(true), _forceUpdatePL(true), _forceUpdateSL(false)
 {
 }
 
 ShadowRenderer::~ShadowRenderer()
 {
-	Destroy();
+	SAFE_DELETE(_shadowGlobalParamCB);
+
+	SAFE_DELETE(_pointLightShadowMapAtlas);
+	SAFE_DELETE(_spotLightShadowMapAtlas);
+	SAFE_DELETE(_directionalLightShadowMapAtlas);
+
+	SAFE_DELETE(_pointLightMomentShadowMapAtlas);
+	SAFE_DELETE(_spotLightMomentShadowMapAtlas);
+	SAFE_DELETE(_directionalLightMomentShadowMapAtlas);
+
+	SAFE_DELETE(_pointLightShadowParamSRBuffer);
+	SAFE_DELETE(_pointLightViewProjMatSRBuffer);
+	SAFE_DELETE(_pointLightInvVPVMatSRBuffer);
+	SAFE_DELETE(_spotLightShadowParamSRBuffer);
+	SAFE_DELETE(_spotLightViewProjMatSRBuffer);
+	SAFE_DELETE(_spotLightInvVPVMatSRBuffer);
+	SAFE_DELETE(_directionalLightShadowParamSRBuffer);
+	SAFE_DELETE(_directionalLightViewProjMatSRBuffer);
+	SAFE_DELETE(_directionalLightInvVPVMatSRBuffer);
+
+	// DL
+	{
+		auto& lights = _shadowCastingDirectionalLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+			SAFE_DELETE(lights.Get(i).camConstBuffer);
+	}
+
+	// SL
+	{
+		auto& lights = _shadowCastingSpotLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+			SAFE_DELETE(lights.Get(i).camConstBuffer);
+	}
+
+	// PL
+	{
+		auto& lights = _shadowCastingPointLights;
+		uint count = lights.GetVector().size();
+		for(uint i=0; i<count; ++i)
+		{
+			for(uint j=0; j<6; ++j)
+			{
+				SAFE_DELETE(lights.Get(i).camConstBuffers[j]);
+			}
+		}
+	}
 }
 
-void ShadowRenderer::Initialize(bool useVSM,
+void ShadowRenderer::Initialize(bool neverUseVSM,
 								uint numOfShadowCastingPointLight,
 								uint numOfShadowCastingSpotLight,
 								uint numOfShadowCastingDirectionalLight)
 {
-	_useVSM = useVSM;
+	_neverUseVSM = neverUseVSM;
 
 	ResizeShadowMapAtlas(	numOfShadowCastingPointLight,
 							numOfShadowCastingSpotLight,
@@ -51,25 +100,67 @@ void ShadowRenderer::Initialize(bool useVSM,
 	_shadowGlobalParamCB = new ConstBuffer;
 	_shadowGlobalParamCB->Initialize(sizeof(ShadowGlobalParam));
 
-	const __int32 dummyData[POINT_LIGHT_BUFFER_MAX_NUM * 4] = {0, };
+	unsigned __int32 dummyData[POINT_LIGHT_BUFFER_MAX_NUM * 4] = {0, };
+	memset(&dummyData, -1, sizeof(dummyData));
 
-	_pointLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
-	_pointLightShadowIdxToLightIdxSRBuffer->Initialize(
-		4, POINT_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32_UINT,
-		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
-	
-	_directionalLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
-	_directionalLightShadowIdxToLightIdxSRBuffer->Initialize(
-		4, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32_UINT,
+	_pointLightShadowParamSRBuffer = new ShaderResourceBuffer;
+	_pointLightShadowParamSRBuffer->Initialize(
+		sizeof(PointLightShadow::Param), POINT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32B32_UINT,
 		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
-	_spotLightShadowIdxToLightIdxSRBuffer = new ShaderResourceBuffer;
-	_spotLightShadowIdxToLightIdxSRBuffer->Initialize(
-		4, SPOT_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32_UINT,
+	_directionalLightShadowParamSRBuffer = new ShaderResourceBuffer;
+	_directionalLightShadowParamSRBuffer->Initialize(
+		sizeof(DirectionalLightShadow::Param), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32_UINT,
 		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_spotLightShadowParamSRBuffer = new ShaderResourceBuffer;
+	_spotLightShadowParamSRBuffer->Initialize(
+		sizeof(DirectionalLightShadow::Param), SPOT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32_UINT,
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+
+
+	Math::Matrix dummyMat[POINT_LIGHT_BUFFER_MAX_NUM * 6];
+	memset(dummyMat, 0, sizeof(dummyMat));
+
+	_directionalLightViewProjMatSRBuffer = new ShaderResourceBuffer;
+	_directionalLightViewProjMatSRBuffer->Initialize(
+		sizeof(Math::Matrix), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_spotLightViewProjMatSRBuffer = new ShaderResourceBuffer;
+	_spotLightViewProjMatSRBuffer->Initialize(
+		sizeof(Math::Matrix), SPOT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_pointLightViewProjMatSRBuffer = new ShaderResourceBuffer;
+	_pointLightViewProjMatSRBuffer->Initialize(
+		sizeof(Math::Matrix) * 6, POINT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_directionalLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
+	_directionalLightInvVPVMatSRBuffer->Initialize(
+		sizeof(Math::Matrix), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_spotLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
+	_spotLightInvVPVMatSRBuffer->Initialize(
+		sizeof(Math::Matrix), SPOT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
+	_pointLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
+	_pointLightInvVPVMatSRBuffer->Initialize(
+		sizeof(Math::Matrix) * 6, POINT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_UNKNOWN,
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+
 }
 
 void ShadowRenderer::ResizeShadowMapAtlas(
@@ -113,7 +204,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_pointLightShadowMapAtlas = new DepthBuffer;
 		_pointLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_useVSM)
+		if(_neverUseVSM == false)
 		{
 			_pointLightMomentShadowMapAtlas = new RenderTexture;
 			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
@@ -132,7 +223,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_spotLightShadowMapAtlas = new DepthBuffer;
 		_spotLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_useVSM)
+		if(_neverUseVSM == false)
 		{
 			_spotLightMomentShadowMapAtlas = new RenderTexture;
 			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
@@ -151,7 +242,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_directionalLightShadowMapAtlas = new DepthBuffer;
 		_directionalLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_useVSM)
+		if(_neverUseVSM == false)
 		{
 			_directionalLightMomentShadowMapAtlas = new RenderTexture;
 			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
@@ -161,65 +252,47 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 void ShadowRenderer::Destroy()
 {
-	SAFE_DELETE(_shadowGlobalParamCB);
+	_forceUpdateDL =
+	_forceUpdatePL =
+	_forceUpdateSL = true;
 
-	SAFE_DELETE(_pointLightShadowMapAtlas);
-	SAFE_DELETE(_spotLightShadowMapAtlas);
-	SAFE_DELETE(_directionalLightShadowMapAtlas);
+	_numOfShadowCastingPointLightInAtlas		=
+	_numOfShadowCastingSpotLightInAtlas			=
+	_numOfShadowCastingDirectionalLightInAtlas	=
+	_pointLightShadowMapResolution				=
+	_spotLightShadowMapResolution				=
+	_directionalLightShadowMapResolution		= 0;
 
-	SAFE_DELETE(_pointLightMomentShadowMapAtlas);
-	SAFE_DELETE(_spotLightMomentShadowMapAtlas);
-	SAFE_DELETE(_directionalLightMomentShadowMapAtlas);
+	_shadowCastingPointLights.DeleteAll();
+	_shadowCastingSpotLights.DeleteAll();
+	_shadowCastingDirectionalLights.DeleteAll();
 
-	// DL
-	{
-		auto& lights = _shadowCastingDirectionalLights;
-		uint count = lights.GetVector().size();
-		for(uint i=0; i<count; ++i)
-			SAFE_DELETE(lights.Get(i).camConstBuffer);
-	}
+	_pointLightShadowParamBuffer.DeleteAll();
+	_pointLightViewProjMatBuffer.DeleteAll();
+	_pointLightInvVPVMatBuffer.DeleteAll();
 
-	// SL
-	{
-		auto& lights = _shadowCastingSpotLights;
-		uint count = lights.GetVector().size();
-		for(uint i=0; i<count; ++i)
-			SAFE_DELETE(lights.Get(i).camConstBuffer);
-	}
+	_spotLightShadowParamBuffer.DeleteAll();
+	_spotLightViewProjMatBuffer.DeleteAll();
+	_spotLightInvVPVMatBuffer.DeleteAll();
 
-	// PL
-	{
-		auto& lights = _shadowCastingPointLights;
-		uint count = lights.GetVector().size();
-		for(uint i=0; i<count; ++i)
-		{
-			for(uint j=0; j<6; ++j)
-			{
-				SAFE_DELETE(lights.Get(i).camConstBuffers[j]);
-			}
-		}
-	}
-
-	_directionalLightShadowIdxToLightIdxBuffer.DeleteAll();
-	_pointLightShadowIdxToLightIdxBuffer.DeleteAll();
-	_spotLightShadowIdxToLightIdxBuffer.DeleteAll();
-
-	SAFE_DELETE(_directionalLightShadowIdxToLightIdxSRBuffer);
-	SAFE_DELETE(_pointLightShadowIdxToLightIdxSRBuffer);
-	SAFE_DELETE(_spotLightShadowIdxToLightIdxSRBuffer);
+	_directionalLightShadowParamBuffer.DeleteAll();
+	_directionalLightViewProjMatBuffer.DeleteAll();
+	_directionalLightInvVPVMatBuffer.DeleteAll();
 }
 
 void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, uint index)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto& shadowCastingLight = _shadowCastingSpotLights.Get(index);
-	const SpotLight* light = reinterpret_cast<const SpotLight*>(shadowCastingLight.lightAddress);
+	auto& shadowCastingLight		= _shadowCastingSpotLights.Get(index);
+	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
+	const SpotLight* light			= static_cast<const SpotLight*>(ownerLight);
+	const SpotLightShadow* shadow	= shadowCastingLight.shadow;
 
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat		= light->GetInvViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invViewProj 사용
-		cbData.viewProjMat	= light->GetViewProjectionMatrix();
+		cbData.viewMat		= shadow->GetInvNearFarViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invNearFarViewProj 사용
+		cbData.viewProjMat	= shadow->GetViewProjectionMatrix();
 	}
 
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &cbData.viewProjMat, sizeof(Matrix)) != 0;
@@ -239,14 +312,16 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto& shadowCastingLight = _shadowCastingPointLights.Get(index);
-	const PointLight* light = reinterpret_cast<const PointLight*>(shadowCastingLight.lightAddress);
+	auto& shadowCastingLight		= _shadowCastingPointLights.Get(index);
+	const PointLightShadow* shadow	= shadowCastingLight.shadow;
+	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
+	const PointLight* light			= static_cast<const PointLight*>(ownerLight);
 
-	std::array<Matrix, 6> invViewProjMatrices;
+	std::array<Matrix, 6> invNearFarViewProjMatrices;
 	std::array<Matrix, 6> viewProjMatrices;
 
-	light->GetInvViewProjMatrices(invViewProjMatrices);
-	light->GetViewProjectionMatrices(viewProjMatrices);
+	shadow->GetInvNearFarViewProjMatrices(invNearFarViewProjMatrices);
+	shadow->GetViewProjectionMatrices(viewProjMatrices);
 
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &viewProjMatrices[0], sizeof(Matrix)) != 0;
 	if(isDifferent)
@@ -257,7 +332,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 		{
 			CameraForm::CamMatCBData cb;
 			{
-				cb.viewMat		= invViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invViewProj 사용
+				cb.viewMat		= invNearFarViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
@@ -274,12 +349,13 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto& shadowCastingLight = _shadowCastingDirectionalLights.Get(index);
-	DirectionalLight* light = reinterpret_cast<DirectionalLight*>(shadowCastingLight.lightAddress);
-
+	auto& shadowCastingLight		= _shadowCastingDirectionalLights.Get(index);
+	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
+	const DirectionalLight* light	= static_cast<const DirectionalLight*>(ownerLight);
+	
 	CameraForm::CamMatCBData cbData;
 	{
-		cbData.viewMat = light->GetInvViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invViewProj 사용
+		cbData.viewMat = light->GetInvNearFarViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
 	}
 
@@ -323,7 +399,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_useVSM)
+	if(_neverUseVSM == false)
 	{
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
 		_spotLightMomentShadowMapAtlas->Clear(context, clearColor);
@@ -344,8 +420,9 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 #ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingSpotLightCB(dx, index);
 #endif
-		address lightAddress = _shadowCastingSpotLights.Get(index).lightAddress;		
-		const SpotLight* light = reinterpret_cast<const SpotLight*>(lightAddress);
+
+		const LightForm* ownerLight = _shadowCastingSpotLights.Get(index).shadow->GetOwner();
+		const SpotLight* light = static_cast<const SpotLight*>(ownerLight);
 		auto IntersectLight = [&](const Sphere& sphere)
 		{
 			return light->Intersect(sphere);
@@ -402,7 +479,7 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_useVSM)
+	if(_neverUseVSM == false)
 	{
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
 		_pointLightMomentShadowMapAtlas->Clear(context, clearColor);
@@ -424,8 +501,9 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 #ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingPointLightCB(dx, index);
 #endif
-		address lightAddress = _shadowCastingPointLights.Get(index).lightAddress;		
-		const PointLight* light = reinterpret_cast<const PointLight*>(lightAddress);
+
+		const LightForm* ownerLight = _shadowCastingPointLights.Get(index).shadow->GetOwner();
+		const PointLight* light = static_cast<const PointLight*>(ownerLight);
 		auto IntersectLight = [&](const Sphere& sphere)
 		{
 			return light->Intersect(sphere);
@@ -484,7 +562,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_useVSM)
+	if(_neverUseVSM == false)
 	{
 		Color clearColor(1.f, 1.f, 1.f, 1.f);
 		_directionalLightMomentShadowMapAtlas->Clear(context, clearColor);
@@ -510,8 +588,8 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
 
-		address lightAddress = _shadowCastingDirectionalLights.Get(index).lightAddress;		
-		const DirectionalLight* light = reinterpret_cast<const DirectionalLight*>(lightAddress);
+		const LightForm* ownerLight = _shadowCastingDirectionalLights.Get(index).shadow->GetOwner();		
+		const DirectionalLight* light = static_cast<const DirectionalLight*>(ownerLight);
 		auto IntersectLight = [&](const Sphere& sphere)
 		{
 			return light->Intersect(sphere);
@@ -535,7 +613,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	context->RSSetViewports(1, &originViewport);
 }
 
-void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIndexInEachLights)
+void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 {
 	address lightAddress = reinterpret_cast<address>(light);
 
@@ -546,7 +624,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 			ASSERT_MSG("Error, Duplicated Light");
 
 		ShadowCastingPointLight scl;
-		scl.lightAddress	= lightAddress;
+		scl.shadow	= static_cast<const PointLight*>(light)->GetShadow();
 		for(uint i=0; i<6; ++i)
 		{
 			scl.camConstBuffers[i] = new ConstBuffer;
@@ -554,28 +632,30 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
-		_pointLightShadowIdxToLightIdxBuffer.Add(lightAddress, lightIndexInEachLights);
 	}
-	else if( (lightType == LightForm::LightType::Spot) ||
-			 (lightType == LightForm::LightType::Directional) )
+	else if(lightType == LightForm::LightType::Spot)
 	{
-		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
-			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
-
-		if(shadowCastingLights->Find(lightAddress))
+		if(_shadowCastingSpotLights.Find(lightAddress))
 			ASSERT_MSG("Error, Duplicated Light");
 
-		ShadowCastingSpotDirectionalLight scl;
-		scl.lightAddress	= lightAddress;
+		ShadowCastingSpotLight scl;
+		scl.shadow			= static_cast<const SpotLight*>(light)->GetShadow();;
 		scl.camConstBuffer	= new ConstBuffer;
 		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamMatCBData));
 
-		shadowCastingLights->Add(lightAddress, scl);
+		_shadowCastingSpotLights.Add(lightAddress, scl);
+	}
+	else if(lightType == LightForm::LightType::Directional)
+	{
+		if(_shadowCastingDirectionalLights.Find(lightAddress))
+			ASSERT_MSG("Error, Duplicated Light");
 
-		Structure::VectorMap<address, uint>* shadowIdxTolightIdxBuffer =
-			(lightType == LightForm::LightType::Spot) ? &_spotLightShadowIdxToLightIdxBuffer : &_directionalLightShadowIdxToLightIdxBuffer;
+		ShadowCastingDirectionalLight scl;
+		scl.shadow			= static_cast<const DirectionalLight*>(light)->GetShadow();;
+		scl.camConstBuffer	= new ConstBuffer;
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamMatCBData));
 
-		shadowIdxTolightIdxBuffer->Add(lightAddress, lightIndexInEachLights);
+		_shadowCastingDirectionalLights.Add(lightAddress, scl);
 	}
 	else
 		ASSERT_MSG("Unsupported light type.");
@@ -583,16 +663,14 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light, uint lightIn
 	uint plCount = _shadowCastingPointLights.GetSize();
 	uint slCount = _shadowCastingSpotLights.GetSize();
 	uint dlCount = _shadowCastingDirectionalLights.GetSize();
-	ResizeShadowMapAtlas(plCount, slCount, dlCount,
-		_pointLightShadowMapResolution,
-		_spotLightShadowMapResolution,
-		_directionalLightShadowMapResolution);
 
-	++_updateConter;
+	ResizeShadowMapAtlas(plCount, slCount, dlCount, _pointLightShadowMapResolution, _spotLightShadowMapResolution, _directionalLightShadowMapResolution);
 }
 
 void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 {
+#define DELETE_CB(x){if(x == nullptr){return;}SAFE_DELETE(x->camConstBuffer);}
+
 	address lightAddress = reinterpret_cast<address>(light);
 
 	LightForm::LightType lightType = light->GetType();
@@ -606,50 +684,55 @@ void ShadowRenderer::DeleteShadowCastingLight(const LightForm*& light)
 			SAFE_DELETE(scpl->camConstBuffers[i]);
 
 		_shadowCastingPointLights.Delete(lightAddress);
-		_pointLightShadowIdxToLightIdxBuffer.Delete(lightAddress);
+		_pointLightShadowParamBuffer.Delete(lightAddress);
+		_pointLightViewProjMatBuffer.Delete(lightAddress);
+		_pointLightInvVPVMatBuffer.Delete(lightAddress);
+
+		_forceUpdatePL = true;
 	}
-	else if( (lightType == LightForm::LightType::Spot) ||
-			 (lightType == LightForm::LightType::Directional) )
+	else if(lightType == LightForm::LightType::Spot)
 	{
-		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
-			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
+		ShadowCastingDirectionalLight* shadowLight = _shadowCastingDirectionalLights.Find(lightAddress);
+		DELETE_CB(shadowLight);
 
-		ShadowCastingSpotDirectionalLight* scsdl = shadowCastingLights->Find(lightAddress);
-		if(scsdl == nullptr)
-			return;
+		_shadowCastingDirectionalLights.Delete(lightAddress);
+		_spotLightShadowParamBuffer.Delete(lightAddress);
+		_spotLightViewProjMatBuffer.Delete(lightAddress);
+		_spotLightInvVPVMatBuffer.Delete(lightAddress);
 
-		SAFE_DELETE(scsdl->camConstBuffer);
-		shadowCastingLights->Delete(lightAddress);
+		_forceUpdateSL = true;
+	}
+	else if(lightType == LightForm::LightType::Directional)
+	{
+		ShadowCastingSpotLight* shadowLight = _shadowCastingSpotLights.Find(lightAddress);
+		DELETE_CB(shadowLight);
 
-		auto shadowIdxToLightIdxBuffer = (lightType == LightForm::LightType::Spot) ? &_spotLightShadowIdxToLightIdxBuffer : &_directionalLightShadowIdxToLightIdxBuffer;
-		shadowIdxToLightIdxBuffer->Delete(lightAddress);
+		_shadowCastingSpotLights.Delete(lightAddress);
+		_directionalLightShadowParamBuffer.Delete(lightAddress);
+		_directionalLightViewProjMatBuffer.Delete(lightAddress);
+		_directionalLightInvVPVMatBuffer.Delete(lightAddress);
+
+		_forceUpdateDL = true;
 	}
 	else
 		ASSERT_MSG("Unsupported light type.");
-
-	++_updateConter;
 }
 
 bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 {
 	address lightAddress = reinterpret_cast<address>(light);
 
+	bool has = false;
+
 	LightForm::LightType lightType = light->GetType();
-	if(lightType == LightForm::LightType::Point)
-	{
-		return _shadowCastingPointLights.Find(lightAddress) != nullptr;
-	}
-	else if( (lightType == LightForm::LightType::Spot) ||
-			 (lightType == LightForm::LightType::Directional) )
-	{
-		Structure::VectorMap<address, ShadowCastingSpotDirectionalLight>* shadowCastingLights =
-			(lightType == LightForm::LightType::Spot) ? &_shadowCastingSpotLights : &_shadowCastingDirectionalLights;
 
-		return shadowCastingLights->Find(lightAddress) != nullptr;
-	}
+	if(lightType == LightForm::LightType::Point)			has = _shadowCastingPointLights.Find(lightAddress) != nullptr;
+	else if(lightType == LightForm::LightType::Spot)		has = _shadowCastingSpotLights.Find(lightAddress) != nullptr;
+	else if(lightType == LightForm::LightType::Directional)	has = _shadowCastingDirectionalLights.Find(lightAddress) != nullptr;
+	else 
+		ASSERT_MSG("Unsupported light type.");
 
-	ASSERT_MSG("Unsupported light type.");
-	return false;
+	return has;
 }
 
 void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
@@ -705,25 +788,28 @@ void ShadowRenderer::RenderShadowMap(const Device::DirectX*& dx, const RenderMan
 		RenderDirectionalLightShadowMap(dx, renderManager);
 }
 
-ushort ShadowRenderer::FetchShadowCastingLightIndex(const LightForm*& light)
+uint ShadowRenderer::FetchShadowIndexInEachShadowLights(const LightForm* light)
 {
-	address lightAddress = reinterpret_cast<address>(light);
-	LightForm::LightType type = light->GetType();
-
 	uint index = -1;
 
-	if(type == LightForm::LightType::Point)
-		_shadowCastingPointLights.Find(lightAddress, &index);
-	else if(type == LightForm::LightType::Spot)
-		_shadowCastingSpotLights.Find(lightAddress, &index);
-	else if(type == LightForm::LightType::Directional)
-		_shadowCastingDirectionalLights.Find(lightAddress, &index);
-	else
+	if(light)
 	{
-		DEBUG_LOG("Warning, Can not found shadow casting light index.");
+		address lightAddress = reinterpret_cast<address>(light);
+		LightForm::LightType type = light->GetType();
+
+		if(type == LightForm::LightType::Point)
+			_shadowCastingPointLights.Find(lightAddress, &index);
+		else if(type == LightForm::LightType::Spot)
+			_shadowCastingSpotLights.Find(lightAddress, &index);
+		else if(type == LightForm::LightType::Directional)
+			_shadowCastingDirectionalLights.Find(lightAddress, &index);
+		else
+		{
+			ASSERT_MSG("Warning, Can not found shadow casting light index.");
+		}
 	}
 
-	return (ushort)index;
+	return index;
 }
 
 uint ShadowRenderer::GetPackedShadowAtlasCapacity() const
@@ -778,25 +864,250 @@ bool ShadowRenderer::IsWorking() const
 	return has;
 }
 
-void ShadowRenderer::UpdateShadowIndexToLightIndexBuffer(const Device::DirectX*& dx)
+void ShadowRenderer::ComputeAllLightViewProj(const Math::Matrix& invViewportMat)
 {
-	if( _prevUpdateCounter == _updateConter )
-		return;
-	
-	_prevUpdateCounter = _updateConter;
+	// Directional Light는 Light Manager에서 수행함.
 
+	const auto& scsl = _shadowCastingSpotLights.GetVector();
+	for(auto iter = scsl.begin(); iter != scsl.end(); ++iter)
+		iter->shadow->ComputeViewProjMatrix(invViewportMat);
+
+	const auto& scpl = _shadowCastingPointLights.GetVector();
+	for(auto iter = scpl.begin(); iter != scpl.end(); ++iter)
+		iter->shadow->ComputeViewProjMatrix(invViewportMat);
+}
+
+
+
+struct UpdateParamAndTransformReturn
+{
+	bool isUpdatedParam;
+	bool isUpdatedTransform;
+};
+
+template<typename ShadowCastingLightType, typename LightShadow, typename LightShadowParam, typename ViewProjMatrixType>
+UpdateParamAndTransformReturn UpdateParamAndTransformBuffer(VectorMap<address, ShadowCastingLightType>& shadowCastingLights,
+															VectorMap<address, LightShadowParam>& sclParamBuffer,
+															VectorHashMap<address, ViewProjMatrixType>& sclViewProjBuffer,
+															VectorHashMap<address, ViewProjMatrixType>& sclInvVPVBuffer,
+															std::function<uint(const LightForm*)> getLightIndexInEachLightsFunc)
+//															,BufferUpdateType updateType)
+{
+	//auto CalcStartEndIdx = [](uint& start, uint& end, uint newIdx)
+	//{
+	//	start	= min(start, newIdx);
+	//	end		= max(end, newIdx);
+	//};
+	//auto UpdateSRBuffer = [](ID3D11DeviceContext* context, ShaderResourceBuffer* srBuffer, const void* inputData, uint bufferElementSize, uint startIdx, uint endIdx)
+	//{
+	//	uint offset = startIdx * bufferElementSize;
+	//	const void* data = (char*)inputData + offset;
+	//	uint size = ((endIdx+1) - startIdx) * bufferElementSize;
+
+	//	srBuffer->UpdateResourceUsingMapUnMap(context, data, startIdx * bufferElementSize, size, D3D11_MAP_WRITE_NO_OVERWRITE);
+	//};
+
+	//struct SelectiveInfo
+	//{
+	//	uint changedCount;
+	//	uint startIndex;
+	//	uint endIndex;
+	//	
+	//	ReplaceCount() : changedCount(0), startIndex(0), endIndex(0) {}
+	//	~ReplaceCount(){}
+	//}
+
+	//SelectiveInfo paramIndex, viewProjIndex;
+
+	UpdateParamAndTransformReturn ret;
+	ret.isUpdatedParam		= false;
+	ret.isUpdatedTransform	= false;
+
+	uint vectorIndex	= 0;
+	auto& vector		= shadowCastingLights.GetVector();
+	for(auto iter = vector.begin(); iter != vector.end(); ++iter, ++vectorIndex)
+	{
+		LightShadow* shadow = iter->shadow;
+		address key = reinterpret_cast<address>( shadow->GetOwner() );
+
+		// Param
+		{
+			uint& prevUpdateCounter	= shadowCastingLights.Get(vectorIndex).prevParamUpateCounter;
+			uint curUpdateCounter	= iter->shadow->GetParamUpdateCounter();
+
+			if(prevUpdateCounter != curUpdateCounter)
+			{
+				LightShadow::Param param;
+				shadow->MakeParam(param, getLightIndexInEachLightsFunc(shadow->GetOwner()));
+
+				//uint curBufferIndex = 0;
+
+				LightShadow::Param* existParam = sclParamBuffer.Find(key);
+				if(existParam == nullptr)
+				{
+					sclParamBuffer.Add(key, param);
+					//curBufferIndex = sclParamBuffer.GetSize() - 1;
+				}
+				else
+				{
+					(*existParam) = param;
+				}
+
+				//if(updateType == BufferUpdateType::Selective)
+				//{
+				//	const void* data = sclParamBuffer.GetVector().data() + curBufferIndex;
+				//	UpdateSRBuffer(context, ?, data, sizeof(LightShadowParam), curBufferIndex, curBufferIndex);
+				//}
+
+				prevUpdateCounter	= curUpdateCounter;
+				ret.isUpdatedParam	= true;
+			}
+		}
+
+		// Transform
+		{
+			uint& prevUpdateCounter	= shadowCastingLights.Get(vectorIndex).prevTransformUpateCounter;
+			uint curUpdateCounter	= iter->shadow->GetTransformUpdateCounter();
+
+			if(prevUpdateCounter != curUpdateCounter)
+			{
+				ViewProjMatrixType viewProjMat, invVPVMat;
+				shadow->MakeMatrixParam(viewProjMat, invVPVMat);
+
+				//uint curBufferIndex = 0;
+
+				ViewProjMatrixType* existMat = sclViewProjBuffer.Find(key);
+				if(existMat == nullptr)
+				{
+					sclViewProjBuffer.Add(key,	viewProjMat);
+					sclInvVPVBuffer.Add(key,	invVPVMat);
+					//curBufferIndex = sclViewProjBuffer.GetSize() - 1;
+				}
+				else
+				{
+					(*existMat)						= viewProjMat;
+					(*sclInvVPVBuffer.Find(key))	= invVPVMat;
+				}
+
+				//if(updateType == BufferUpdateType::Selective)
+				//{
+				//	const void* data = sclViewProjBuffer.GetVector().data() + curBufferIndex;
+				//	UpdateSRBuffer(context, ?, data, sizeof(ViewProjMatrixType), curBufferIndex, curBufferIndex);
+				//}
+
+				prevUpdateCounter		= curUpdateCounter;
+				ret.isUpdatedTransform	= true;
+			}
+		}
+	}
+
+	return ret;
+}
+
+void ShadowRenderer::UpdateSRBufferUsingMapDiscard(	const Device::DirectX*& dx,
+													std::function<uint(const LightForm*)> getLightIndexInEachLightsFunc)
+{
+	UpdateParamAndTransformReturn pl, dl, sl;
+
+	pl = UpdateParamAndTransformBuffer<ShadowCastingPointLight, PointLightShadow, PointLightShadow::Param, std::array<Math::Matrix, 6>>
+		(_shadowCastingPointLights,
+		_pointLightShadowParamBuffer, _pointLightViewProjMatBuffer, _pointLightInvVPVMatBuffer,
+		getLightIndexInEachLightsFunc);
+
+	sl = UpdateParamAndTransformBuffer<ShadowCastingSpotLight, SpotLightShadow, SpotLightShadow::Param, Math::Matrix>
+		(_shadowCastingSpotLights,
+		_spotLightShadowParamBuffer, _spotLightViewProjMatBuffer, _spotLightInvVPVMatBuffer,
+		getLightIndexInEachLightsFunc);
+
+	dl = UpdateParamAndTransformBuffer<ShadowCastingDirectionalLight, DirectionalLightShadow, DirectionalLightShadow::Param, Math::Matrix>
+		(_shadowCastingDirectionalLights,
+		_directionalLightShadowParamBuffer, _directionalLightViewProjMatBuffer, _directionalLightInvVPVMatBuffer,
+		getLightIndexInEachLightsFunc);
 
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	uint count = _pointLightShadowIdxToLightIdxBuffer.GetSize();
-	const void* data = _pointLightShadowIdxToLightIdxBuffer.GetVector().data();
-	_pointLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
+	// Update point light sr buffer
+	{
+		// 어디서 뭘 사용하던 count의 값은 같다.
+		uint count = _pointLightShadowParamBuffer.GetSize();
 
-	count = _spotLightShadowIdxToLightIdxBuffer.GetSize();
-	data = _spotLightShadowIdxToLightIdxBuffer.GetVector().data();
-	_spotLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
+		if(pl.isUpdatedParam || _forceUpdatePL)
+		{
+			const void* data = _pointLightShadowParamBuffer.GetVector().data();
+			_pointLightShadowParamSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(PointLightShadow::Param));
+		}
 
-	count = _directionalLightShadowIdxToLightIdxBuffer.GetSize();
-	data = _directionalLightShadowIdxToLightIdxBuffer.GetVector().data();
-	_directionalLightShadowIdxToLightIdxSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * 4);
+		if(pl.isUpdatedTransform || _forceUpdatePL)
+		{
+			const void* data = _pointLightViewProjMatBuffer.GetVector().data();
+			_pointLightViewProjMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix) * 6);
+
+			data = _pointLightInvVPVMatBuffer.GetVector().data();
+			_pointLightInvVPVMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix) * 6);
+		}
+
+		_forceUpdatePL = false;
+	}
+
+	// Update spot light sr buffer
+	{
+		// 어디서 뭘 사용하던 count의 값은 같다.
+		uint count = _spotLightShadowParamBuffer.GetSize();
+
+		if(sl.isUpdatedParam || _forceUpdateSL)
+		{
+			const void* data = _spotLightShadowParamBuffer.GetVector().data();
+			_spotLightShadowParamSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(SpotLightShadow::Param));
+		}
+
+		if(sl.isUpdatedTransform || _forceUpdateSL)
+		{
+			const void* data = _spotLightViewProjMatBuffer.GetVector().data();
+			_spotLightViewProjMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix));
+
+			data = _spotLightInvVPVMatBuffer.GetVector().data();
+			_spotLightInvVPVMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix));
+		}
+
+		_forceUpdateSL = false;
+	}
+
+	// Update directional light sr buffer
+	{
+		// 어디서 뭘 사용하던 count의 값은 같다.
+		uint count = _directionalLightShadowParamBuffer.GetSize();
+
+		if(dl.isUpdatedParam || _forceUpdateDL)
+		{
+			const void* data = _directionalLightShadowParamBuffer.GetVector().data();
+			_directionalLightShadowParamSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(DirectionalLightShadow::Param));
+		}
+
+		if(dl.isUpdatedTransform || _forceUpdateDL)
+		{
+			const void* data = _directionalLightViewProjMatBuffer.GetVector().data();
+			_directionalLightViewProjMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix));
+
+			data = _directionalLightInvVPVMatBuffer.GetVector().data();
+			_directionalLightInvVPVMatSRBuffer->UpdateResourceUsingMapUnMap(context, data, count * sizeof(Math::Matrix));
+		}
+
+		_forceUpdateDL = false;
+	}
+}
+
+void ShadowRenderer::UpdateSRBufferUsingMapNoOverWrite(const Device::DirectX*& dx)
+{
+	ASSERT_MSG("Deprecated func");
+}
+
+void ShadowRenderer::UpdateSRBuffer(const Device::DirectX*& dx,
+									const std::function<uint(const LightForm*)>& getLightIndexInEachLightsFunc)
+{
+	//D3D_FEATURE_LEVEL level = dx->GetFeatureLevel();
+
+	//if(level >= D3D_FEATURE_LEVEL_11_1)
+	//	UpdateBufferUsingMapNoOverWrite(dx->GetContext());
+	//else
+	UpdateSRBufferUsingMapDiscard(dx, getLightIndexInEachLightsFunc);
 }

@@ -20,21 +20,6 @@ namespace Rendering
 		private:
 			Rendering::Texture::RenderTexture*				_offScreen;
 
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightColorBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightColorBuffer;
-
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightTransformBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightColorBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightParamBuffer;
-
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowParamBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowParamBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowParamBuffer;
-
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputDirectionalLightShadowColorBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputPointLightShadowColorBuffer;
-			Shader::ShaderForm::InputShaderResourceBuffer*	_inputSpotLightShadowColorBuffer;
-
 		public:
 			ShadingWithLightCulling();
 			virtual ~ShadingWithLightCulling();

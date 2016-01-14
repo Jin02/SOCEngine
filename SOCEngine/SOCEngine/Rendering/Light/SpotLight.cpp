@@ -22,30 +22,9 @@ SpotLight::~SpotLight()
 
 }
 
-void SpotLight::CreateLightShadow(const std::function<void()>& addUpdateCounter)
+void SpotLight::CreateShadow()
 {
-	_shadow = new SpotLightShadow(this, addUpdateCounter);
-}
-
-void SpotLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox)
-{
-	Matrix view;
-	_owner->GetTransform()->FetchWorldMatrix(view);
-	CameraForm::GetViewMatrix(view, view);
-
-	Matrix proj, invProj;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, _projNear);
-	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _projNear, _radius);
-#else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _projNear, _radius);
-	Matrix::PerspectiveFovLH(invProj, 1.0f, Common::Deg2Rad(_spotAngleDegree), _radius, _projNear);
-#endif
-
-	_invViewProjMat = view * invProj;
-
-	Matrix& viewProj = _viewProjMat;
-	viewProj = view * proj;
+	_shadow = new SpotLightShadow(this);
 }
 
 bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
@@ -65,7 +44,7 @@ bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 #endif
 }
 
-void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Params& outParam) const
+void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
 

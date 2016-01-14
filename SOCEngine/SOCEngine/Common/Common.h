@@ -13,4 +13,11 @@
 
 typedef unsigned int		uint;
 typedef unsigned __int64	address;
-typedef unsigned __int16	ushort;		
+typedef unsigned __int16	ushort;
+
+enum class BufferUpdateType : uint
+{
+	Overall,
+	Selective,
+	MapDiscard
+};

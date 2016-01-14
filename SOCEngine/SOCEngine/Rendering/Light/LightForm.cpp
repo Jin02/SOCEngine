@@ -8,7 +8,7 @@ using namespace Rendering;
 using namespace Rendering::Light;
 
 LightForm::LightForm()
-	: _radius(10.0f), _lumen(500), _shadow(nullptr), _projNear(0.1f)
+	: _radius(10.0f), _lumen(500), _shadow(nullptr)
 {
 	_color			= Color::White();
 }
@@ -89,14 +89,8 @@ void LightForm::ActiveShadow(bool isActive)
 
 	if(isActive)
 	{
-		const Manager::LightManager* lm = scene->GetLightManager();
-		shadowManager->AddShadowCastingLight(light, lm->GetLightIndexInEachLights(light));
-		
-		auto AddCounter = [&]()
-		{
-			AddOwnerUpdateCounter();
-		};
-		CreateLightShadow(AddCounter);
+		CreateShadow();
+		shadowManager->AddShadowCastingLight(light);
 	}
 	else
 	{

@@ -92,14 +92,29 @@ void Scene::RenderPreview()
 		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
 
 	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
+
+	Math::Matrix invViewportMat;
+	_dx->GetInvViewportMatrix(invViewportMat);
+	_shadowRenderer->ComputeAllLightViewProj(invViewportMat);
+	_lightManager->ComputeDirectionalLightViewProj(_boundBox, invViewportMat);
+
 	_shadowRenderer->UpdateConstBuffer(_dx);
 
 	auto materials = _materialMgr->GetMaterials().GetVector();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		(*iter)->UpdateConstBuffer(_dx);
 
-	_lightManager->ComputeAllLightViewProj(_boundBox);
-	_lightManager->UpdateBuffer(_dx, _shadowRenderer->GetUseVSM());
+	auto FetchLightIndex = [&](const Light::LightForm* light) -> uint
+	{
+		return _lightManager->FetchLightIndexInEachLights(light);
+	};
+	auto FetchShadowIndex = [&](const Light::LightForm* light) -> uint
+	{
+		return _shadowRenderer->FetchShadowIndexInEachShadowLights(light);
+	};
+
+	_lightManager->UpdateSRBuffer(_dx, FetchShadowIndex);
+	_shadowRenderer->UpdateSRBuffer(_dx, FetchLightIndex);
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
@@ -119,7 +134,7 @@ void Scene::Render()
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
 			const Buffer::ConstBuffer* shadowCB = _shadowRenderer->IsWorking() ? _shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetUseVSM());
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM());
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
