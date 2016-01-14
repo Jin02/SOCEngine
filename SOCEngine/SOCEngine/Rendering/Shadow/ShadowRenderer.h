@@ -168,7 +168,7 @@ namespace Rendering
 								const std::function<uint(const Light::LightForm*)>& getLightIndexInEachLightsFunc);
 
 			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
-			void ComputeAllLightViewProj(const Math::Matrix& invViewportMat);
+			void ComputeAllLightViewProj();
 
 		public:
 			GET_ACCESSOR(PointLightShadowMapAtlas,						const Texture::DepthBuffer*,				_pointLightShadowMapAtlas);

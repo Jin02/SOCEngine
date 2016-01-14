@@ -864,17 +864,23 @@ bool ShadowRenderer::IsWorking() const
 	return has;
 }
 
-void ShadowRenderer::ComputeAllLightViewProj(const Math::Matrix& invViewportMat)
+void ShadowRenderer::ComputeAllLightViewProj()
 {
 	// Directional Light는 Light Manager에서 수행함.
 
+	Matrix spotLightInvViewport;
+	CameraForm::GetInvViewportMatrix(spotLightInvViewport, Rect<float>(0.0f, 0.0f, float(_spotLightShadowMapResolution), float(_spotLightShadowMapResolution)));
+
 	const auto& scsl = _shadowCastingSpotLights.GetVector();
 	for(auto iter = scsl.begin(); iter != scsl.end(); ++iter)
-		iter->shadow->ComputeViewProjMatrix(invViewportMat);
+		iter->shadow->ComputeViewProjMatrix(spotLightInvViewport);
+
+	Matrix pointLightInvViewport;
+	CameraForm::GetInvViewportMatrix(pointLightInvViewport, Rect<float>(0.0f, 0.0f, float(_pointLightShadowMapResolution), float(_pointLightShadowMapResolution)));
 
 	const auto& scpl = _shadowCastingPointLights.GetVector();
 	for(auto iter = scpl.begin(); iter != scpl.end(); ++iter)
-		iter->shadow->ComputeViewProjMatrix(invViewportMat);
+		iter->shadow->ComputeViewProjMatrix(pointLightInvViewport);
 }
 
 
