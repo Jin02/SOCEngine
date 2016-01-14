@@ -71,8 +71,8 @@ Texture3D<float4>							g_inputAnistropicVoxelAlbedoTexture					: register( t29 
 Texture3D<float>							g_inputAnistropicVoxelNormalTexture					: register( t30 );
 Texture3D<float4>							g_inputAnistropicVoxelEmissionTexture				: register( t31 );
 
-StructuredBuffer<PLightVPMat>				g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
-StructuredBuffer<DSLightVPMat>				g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
+StructuredBuffer<DSLightVPMat>				g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+StructuredBuffer<PLightVPMat>				g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
 StructuredBuffer<DSLightVPMat>				g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
 
 

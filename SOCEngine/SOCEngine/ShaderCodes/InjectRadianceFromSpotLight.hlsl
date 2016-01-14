@@ -12,18 +12,17 @@ void InjectRadianceSpotLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 	uint capacity			= GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	float perShadowMapRes	= (float)(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 
-	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;
-	uint lightIndex		= g_inputSpotLightShadowIndexToLightIndex[shadowIndex];
-
-	if( ((uint)g_inputSpotLightShadowParams[lightIndex].index - 1) != shadowIndex )
-		return;
+	uint shadowIndex		= globalIdx.x / (uint)perShadowMapRes;
+	ParsedShadowParam shadowParam;
+	ParseShadowParam(shadowParam, g_inputSpotLightShadowParams[shadowIndex]);
+	uint lightIndex			= shadowParam.lightIndex;
 
 	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y % uint(perShadowMapRes));
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
 	float depth = g_inputSpotLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputSpotLightShadowInvVPVMatBuffer[shadowIndex].invMat );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputSpotLightShadowInvVPVMatBuffer[shadowIndex].mat );
 	worldPos /= worldPos.w;
 
 	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
