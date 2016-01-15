@@ -3,11 +3,11 @@
 
 #include "ShaderCommon.h"
 
-Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t29 );
-Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t30 );
-Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t31 );
+Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t0 );
+Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t1 );
+Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t2 );
 
-cbuffer GIInfoCB : register( b6 )
+cbuffer GIInfoCB : register( b0 )
 {
 	// High 16 bit is cascade
 	// Low bits is voxel dimension

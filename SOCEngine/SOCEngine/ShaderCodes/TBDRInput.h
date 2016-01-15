@@ -67,16 +67,6 @@ Texture2D<float4>							g_inputPointLightMomentShadowMapAtlas				: register( t26
 Texture2D<float4>							g_inputSpotLightMomentShadowMapAtlas				: register( t27 );
 Texture2D<float4>							g_inputDirectionalLightMomentShadowMapAtlas			: register( t28 );
 
-// 아래 코드들은 GICommon에 있음
-//Texture3D<float4>							g_inputAnistropicVoxelAlbedoTexture					: register( t29 );
-//Texture3D<float>							g_inputAnistropicVoxelNormalTexture					: register( t30 );
-//Texture3D<float4>							g_inputAnistropicVoxelEmissionTexture				: register( t31 );
-
-StructuredBuffer<DSLightVPMat>				g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
-StructuredBuffer<PLightVPMat>				g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
-StructuredBuffer<DSLightVPMat>				g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
-
-
 struct LightingParams
 {
 	uint	lightIndex;

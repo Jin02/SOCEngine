@@ -10,7 +10,7 @@
 #define USE_VOXELIZATION_BLOATING_POS
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
-cbuffer Voxelization_Info_CB : register( b5 )
+cbuffer Voxelization_Info_CB : register( b1 )
 {
 	matrix	voxelization_vp_axisX;
 	matrix	voxelization_vp_axisY;

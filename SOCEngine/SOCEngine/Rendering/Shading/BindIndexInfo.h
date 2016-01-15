@@ -46,13 +46,13 @@ namespace Rendering
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
 
-		AnisotropicVoxelAlbedoTexture			= 29,
-		AnisotropicVoxelNormalTexture			= 30,
-		AnisotropicVoxelEmissionTexture			= 31,
+		AnisotropicVoxelAlbedoTexture			= 0,
+		AnisotropicVoxelNormalTexture			= 1,
+		AnisotropicVoxelEmissionTexture			= 2,
 
-		DirectionalLightShadowInvVPVMat			= 32,
-		PointLightShadowInvVPVMat				= 33,
-		SpotLightShadowInvVPVMat				= 34,
+		DirectionalLightShadowInvVPVMat			= 3,
+		PointLightShadowInvVPVMat				= 4,
+		SpotLightShadowInvVPVMat				= 5,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -62,8 +62,10 @@ namespace Rendering
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
-		Voxelization_InfoCB				= 5,
-		GlobalIIllumination_InfoCB		= 6,
+
+		GlobalIIllumination_InfoCB		= 0,
+		Voxelization_InfoCB				= 1,
+		Mipmap_InfoCB					= 2,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
