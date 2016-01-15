@@ -3,6 +3,7 @@
 #ifndef __SOC_SHADOW_H__
 #define __SOC_SHADOW_H__
 
+#include "TBDRInput.h"
 #include "ShaderCommon.h"
 
 #define SHADOW_KERNEL_LEVEL				4
