@@ -25,7 +25,7 @@ namespace Rendering
 			~GlobalIllumination();
 
 		public:
-			void Initialize();
+			void Initialize(uint dimension, float minWorldSize);
 		};
 	}
 }

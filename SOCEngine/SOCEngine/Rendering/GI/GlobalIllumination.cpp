@@ -23,8 +23,22 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_giGlobalInfoCB);
 }
 
-void GlobalIllumination::Initialize()
+void GlobalIllumination::Initialize(uint dimension, float minWorldSize)
 {
 	_giGlobalInfoCB = new ConstBuffer;
 	_giGlobalInfoCB->Initialize(sizeof(GlobalInfo));
+
+	auto Log2 = [](float v) -> float
+	{
+		return log(v) / log(2.0f);
+	};
+
+	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
+	
+	GlobalInfo globalInfo;
+	globalInfo.maxNumOfCascade		= 1;
+	globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
+	globalInfo.initVoxelSize		= minWorldSize / (float)dimension;
+	globalInfo.initWorldSize		= minWorldSize;
+	globalInfo.maxMipLevel			= (float)mipmapLevels;
 }
