@@ -17,6 +17,7 @@ namespace GPGPU
 				ThreadGroup() : x(0), y(0), z(0){}
 				ThreadGroup(unsigned int _x, unsigned int _y, unsigned _z) : x(_x), y(_y), z(_z){}
 				~ThreadGroup(){}
+				bool IsValid() const { return x && y && z; }
 			};
 
 		private:
