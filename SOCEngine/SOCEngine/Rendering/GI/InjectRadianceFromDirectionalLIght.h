@@ -13,7 +13,7 @@ namespace Rendering
 			~InjectRadianceFromDirectionalLIght();
 
 		public:
-			void Initialize(const Buffer::ConstBuffer*& giInfoConstBuffer);
+			void Initialize(const InjectRadiance::InitParam& initParam);
 		};
 	}
 }

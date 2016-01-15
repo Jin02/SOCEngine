@@ -21,28 +21,27 @@ InjectRadianceFromDirectionalLIght::~InjectRadianceFromDirectionalLIght()
 {
 }
 
-void InjectRadianceFromDirectionalLIght::Initialize(const ConstBuffer*& giInfoConstBuffer)
+void InjectRadianceFromDirectionalLIght::Initialize(const InjectRadiance::InitParam& initParam)
 {
 	const Scene* curScene			= Director::SharedInstance()->GetCurrentScene();
 	const LightManager* lightMgr	= curScene->GetLightManager();
 	const ShadowRenderer* shadowMgr	= curScene->GetShadowManager();
 
 	ComputeShader::ThreadGroup threadGroup;
-	InjectRadiance::Initialize("InjectRadianceFromDirectionalLight", threadGroup, giInfoConstBuffer);
+	InjectRadiance::Initialize("InjectRadianceFromDirectionalLight", threadGroup, initParam);
 
 	std::vector<ShaderForm::InputShaderResourceBuffer> inputSRBuffers = _shader->GetInputSRBuffers();
 	{
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),			lightMgr->GetDirectionalLightTransformSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightColor),					lightMgr->GetDirectionalLightColorSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightParam),					lightMgr->GetDirectionalLightParamSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowParam),				lightMgr->GetDirectionalLightShadowParamSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowColor),				lightMgr->GetDirectionalLightShadowColorSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowIndexToLightIndex),	shadowMgr->GetDirectionalLightShadowIndexToLightIndexSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowInvVPVMat),			nullptr));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),	lightMgr->GetDirectionalLightTransformSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightColor),			lightMgr->GetDirectionalLightColorSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightParam),			lightMgr->GetDirectionalLightParamSRBuffer()));
+
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowParam),		shadowMgr->GetDirectionalLightShadowParamSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowInvVPVMat),	shadowMgr->GetDirectionalLightInvViewProjViewpotSRBuffer()));
 	}
 	_shader->SetInputSRBuffers(inputSRBuffers);
 
-	std::vector<ShaderForm::InputTexture> inputTextures;
+	std::vector<ShaderForm::InputTexture> inputTextures = _shader->GetInputTextures();
 	{
 		inputTextures.push_back(ShaderForm::InputTexture( uint(TextureBindIndex::DirectionalLightShadowMapAtlas), shadowMgr->GetDirectionalLightShadowMapAtlas()) );
 	}
