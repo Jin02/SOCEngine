@@ -37,7 +37,7 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, float minWorldSize, uint dimension)
+void Voxelization::Initialize(uint maxNumOfCascade, const GlobalInfo& globalInfo, float minWorldSize, uint dimension)
 {
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
@@ -48,21 +48,14 @@ void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, f
 
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
-	GlobalInfo& globalInfo = outGlobalInfo;
-	globalInfo.maxNumOfCascade		= maxNumOfCascade;
-	globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
-	globalInfo.initVoxelSize		= minWorldSize / (float)dimension;
-	globalInfo.initWorldSize		= minWorldSize;
-	globalInfo.maxMipLevel			= (float)mipmapLevels;
-
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	// Setting Const Buffers
 	{

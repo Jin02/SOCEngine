@@ -49,7 +49,7 @@ namespace Rendering
 			void UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade, const Math::Vector3& camWorldPos, const GlobalInfo& globalInfo, float dimension, float camNear, float camFar);
 
 		public:
-			void Initialize(uint cascades, GlobalInfo& outGlobalInfo, float minWorldSize = 4.0f, uint dimension = 256);			
+			void Initialize(uint cascades, const GlobalInfo& globalInfo, float minWorldSize = 4.0f, uint dimension = 256);			
 			void Destroy();
 
 		public:
