@@ -15,7 +15,7 @@ namespace Rendering
 			struct InitParam
 			{
 				const GlobalInfo*					globalInfo;
-				const ConstBuffer*					giInfoConstBuffer;
+				const Buffer::ConstBuffer*			giInfoConstBuffer;
 				const AnisotropicVoxelMapAtlas*		albedoMap;
 				const AnisotropicVoxelMapAtlas*		normalMap;
 				const AnisotropicVoxelMapAtlas*		emissionMap;

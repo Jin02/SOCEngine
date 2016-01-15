@@ -1,10 +1,11 @@
 //EMPTY_META_DATA
 
-//#include "Voxelization_Common.h"
+#include "ShaderCommon.h"
 
-cbuffer MipMapInfoCB : register(c?)
+cbuffer MipMapInfoCB : register(b2)
 {
 	uint mipmapInfo_sourceDimension;
+	uint3 mipmapInfo_dummy;
 };
 
 RWTexture3D<uint> g_inputVoxelMap		: register(u0);
