@@ -15,7 +15,7 @@ AnisotropicVoxelMapAtlas::AnisotropicVoxelMapAtlas()
 
 AnisotropicVoxelMapAtlas::~AnisotropicVoxelMapAtlas()
 {
-	Destroy();
+	AnisotropicVoxelMapAtlas::Destory();
 }
 
 void AnisotropicVoxelMapAtlas::Initialize(
@@ -44,4 +44,16 @@ void AnisotropicVoxelMapAtlas::Initialize(
 
 		_mipmapUAVs.push_back(uav);
 	}
+}
+
+void AnisotropicVoxelMapAtlas::Destroy()
+{
+	for(auto iter = _mipmapUAVs.begin(); iter != _mipmapUAVs.end(); ++iter)
+	{
+		(*iter)->Destroy();
+		SAFE_DELETE(*iter);
+	}
+	
+	_mipmapUAVs.clear();
+	Texture3D::Destory();
 }
