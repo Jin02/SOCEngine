@@ -25,7 +25,7 @@ namespace GPGPU
 			std::vector<InputTexture>				_inputTextures;
 			std::vector<InputConstBuffer>			_inputConstBuffers;
 
-			std::vector<OutputUnorderedAccessView>	_outputs;
+			std::vector<InputUnorderedAccessView>	_uavs;
 
 			ID3D11ComputeShader*					_shader;
 			ThreadGroup								_threadGroup;
@@ -39,7 +39,7 @@ namespace GPGPU
 			void Dispatch(ID3D11DeviceContext* context);
 
 		public:
-			inline void ClearOutputSlot()						{ _outputs.clear();				}
+			inline void ClearUAVSlot()							{ _uavs.clear();				}
 			inline void ClearInputShaderResourceBufferSlot()	{ _inputSRBuffers.clear();		}
 			inline void ClearInputTextureSlot()					{ _inputTextures.clear();		}
 			inline void ClearInputConstBuffer()					{ _inputConstBuffers.clear();	}
@@ -49,7 +49,7 @@ namespace GPGPU
 			GET_SET_ACCESSOR(InputConstBuffers,	const std::vector<InputConstBuffer>&,			_inputConstBuffers); 
 			GET_SET_ACCESSOR(InputSRBuffers,	const std::vector<InputShaderResourceBuffer>&,	_inputSRBuffers);
 			GET_SET_ACCESSOR(InputTextures,		const std::vector<InputTexture>&,				_inputTextures);
-			GET_SET_ACCESSOR(Outputs,			const std::vector<OutputUnorderedAccessView>&,	_outputs);
+			GET_SET_ACCESSOR(UAVs,				const std::vector<InputUnorderedAccessView>&,	_uavs);
 		};
 	}
 }
