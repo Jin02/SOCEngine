@@ -38,7 +38,7 @@ namespace Rendering
 		private:
 			std::vector<Shader::ShaderForm::InputShaderResourceBuffer>		_inputBuffers;
 			std::vector<Shader::ShaderForm::InputTexture>					_inputTextures;
-			std::vector<Shader::ShaderForm::OutputUnorderedAccessView>		_outputs;
+			std::vector<Shader::ShaderForm::InputUnorderedAccessView>		_outputs;
 
 			GPGPU::DirectCompute::ComputeShader*							_computeShader;
 
@@ -60,7 +60,7 @@ namespace Rendering
 
 			void Destroy();
 
-			inline void SetOuputBuferToCS(const std::vector<Shader::ShaderForm::OutputUnorderedAccessView>&  outputs) { _computeShader->SetOutputs(outputs); }
+			inline void SetOuputBuferToCS(const std::vector<Shader::ShaderForm::InputUnorderedAccessView>&  outputs) { _computeShader->SetUAVs(outputs); }
 
 		protected:
 			void AddInputBufferToList(uint idx, const Buffer::ShaderResourceBuffer* buffer);

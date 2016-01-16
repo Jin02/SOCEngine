@@ -107,13 +107,13 @@ void ShadingWithLightCulling::Initialize(
 		_offScreen = new RenderTexture;
 		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
 
-		ShaderForm::OutputUnorderedAccessView output;
+		ShaderForm::InputUnorderedAccessView output;
 		{
 			output.bindIndex	= (uint)UAVBindIndex::TBDR_OutScreen;
 			output.uav			= _offScreen->GetUnorderedAccessView();
 		}
 
-		std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
+		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 		outputs.push_back(output);
 
 		SetOuputBuferToCS(outputs);
