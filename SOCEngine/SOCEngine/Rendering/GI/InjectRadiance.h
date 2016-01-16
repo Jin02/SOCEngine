@@ -4,6 +4,8 @@
 #include "ConstBuffer.h"
 #include "AnisotropicVoxelMapAtlas.h"
 #include "GlobalIlluminationCommon.h"
+#include "DirectX.h"
+#include "Scene.h"
 
 namespace Rendering
 {
@@ -20,7 +22,7 @@ namespace Rendering
 				const AnisotropicVoxelMapAtlas*		normalMap;
 				const AnisotropicVoxelMapAtlas*		emissionMap;
 
-				bool IsInvalid() const
+				bool IsValid() const
 				{
 					return globalInfo && giInfoConstBuffer && albedoMap && normalMap && emissionMap;
 				}
@@ -32,18 +34,19 @@ namespace Rendering
 		protected:
 			GPGPU::DirectCompute::ComputeShader*				_shader;
 
-		public:
+		protected:
 			InjectRadiance();
 			~InjectRadiance();
 
 		protected:
-			void Initialize(const std::string& fileName,
-							const GPGPU::DirectCompute::ComputeShader::ThreadGroup& threadGroup,
-							const InitParam& param);
+			void Initialize(const std::string& fileName, const InitParam& param);
+			void Destroy();
 
 			void Dispath(const Device::DirectX* dx,
 						 const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers);
-			void Destroy();
+
+		public:
+			GET_ACCESSOR(ColorMap, const AnisotropicVoxelMapAtlas*, _colorMap);
 		};
 	}
 }

@@ -27,11 +27,9 @@ InjectRadiance::~InjectRadiance()
 	SAFE_DELETE(_shader);
 }
 
-void InjectRadiance::Initialize(const std::string& fileName,
-								const ComputeShader::ThreadGroup& threadGroup,
-								const InitParam& param)
+void InjectRadiance::Initialize(const std::string& fileName, const InitParam& param)
 {
-	ASSERT_COND_MSG(param.IsInvalid() == false, "Error,  Param is invalid.");
+	ASSERT_COND_MSG(param.IsValid(),		"Error,  Param is invalid.");
 
 	std::string filePath = "";
 	EngineFactory pathFinder(nullptr);
@@ -49,7 +47,7 @@ void InjectRadiance::Initialize(const std::string& fileName,
 	}
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
-	_shader = new ComputeShader(threadGroup, blob);
+	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
 
 	// Setting Inputs
@@ -80,12 +78,12 @@ void InjectRadiance::Initialize(const std::string& fileName,
 
 	// Setting Output
 	{
-		std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
+		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 		{
-			outputs.push_back(ShaderForm::OutputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),		_colorMap->GetSourceMapUAV()));
+			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),		_colorMap->GetSourceMapUAV()));
 		}
 
-		_shader->SetOutputs(outputs);
+		_shader->SetUAVs(outputs);
 	}
 }
 
@@ -100,8 +98,8 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 		_shader->Dispatch(context);
 	}
 
-	ID3D11Buffer* cb = nullptr;
-	context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
+	//ID3D11Buffer* cb = nullptr;
+	//context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
 }
 
 void InjectRadiance::Destroy()
