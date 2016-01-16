@@ -864,6 +864,21 @@ bool ShadowRenderer::IsWorking() const
 	return has;
 }
 
+Math::Size<uint> ShadowRenderer::GetActivatedDLShadowMapSize() const
+{
+	return Size<uint>(_directionalLightShadowMapResolution * _shadowCastingDirectionalLights.GetSize(), _directionalLightShadowMapResolution);
+}
+
+Math::Size<uint> ShadowRenderer::GetActivatedPLShadowMapSize() const
+{
+	return Size<uint>(_pointLightShadowMapResolution * _shadowCastingPointLights.GetSize(), _pointLightShadowMapResolution * 6);
+}
+
+Math::Size<uint> ShadowRenderer::GetActivatedSLShadowMapSize() const
+{
+	return Size<uint>(_spotLightShadowMapResolution * _shadowCastingSpotLights.GetSize(), _spotLightShadowMapResolution);
+}
+
 void ShadowRenderer::ComputeAllLightViewProj()
 {
 	// Directional Light는 Light Manager에서 수행함.
