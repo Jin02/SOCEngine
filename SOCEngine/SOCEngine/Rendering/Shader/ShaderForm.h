@@ -88,16 +88,16 @@ namespace Rendering
 				~InputShaderResourceBuffer(){}
 			};
 
-			struct OutputUnorderedAccessView : public Usage
+			struct InputUnorderedAccessView : public Usage
 			{
 				uint bindIndex;
 				const View::UnorderedAccessView* uav;
 
-				OutputUnorderedAccessView();
-				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav);
-				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS);
-				OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage);
-				~OutputUnorderedAccessView(){}
+				InputUnorderedAccessView();
+				InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav);
+				InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage);
+				~InputUnorderedAccessView(){}
 			};
 
 
