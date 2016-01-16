@@ -6,7 +6,7 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class InjectRadianceFromDirectionalLIght : private InjectRadiance
+		class InjectRadianceFromDirectionalLIght : public InjectRadiance
 		{
 		public:
 			InjectRadianceFromDirectionalLIght();
@@ -14,6 +14,8 @@ namespace Rendering
 
 		public:
 			void Initialize(const InjectRadiance::InitParam& initParam);
+			void Inject(const Device::DirectX*& dx, const Shadow::ShadowRenderer*& shadowMgr,
+						const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers);
 		};
 	}
 }
