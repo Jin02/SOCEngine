@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "EngineShaderFactory.hpp"
 
+#include "MeshCamera.h"
+
 using namespace Resource;
 using namespace Core;
 using namespace Math;
@@ -37,8 +39,9 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint maxNumOfCascade, const GlobalInfo& globalInfo, float minWorldSize, uint dimension)
+void Voxelization::Initialize(const GlobalInfo& globalInfo)
 {
+	uint maxNumOfCascade = globalInfo.maxNumOfCascade;
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
 	auto Log2 = [](float v) -> float
@@ -46,6 +49,7 @@ void Voxelization::Initialize(uint maxNumOfCascade, const GlobalInfo& globalInfo
 		return log(v) / log(2.0f);
 	};
 
+	uint dimension = 1 << globalInfo.voxelDimensionPow2;
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
@@ -114,9 +118,9 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		inputTextures.push_back(inputTexture);
 	}
 
-	std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
+	std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 	{
-		ShaderForm::OutputUnorderedAccessView output;
+		ShaderForm::InputUnorderedAccessView output;
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		output.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
@@ -128,7 +132,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	}
 
 	_clearVoxelMapCS->SetInputTextures(inputTextures);
-	_clearVoxelMapCS->SetOutputs(outputs);
+	_clearVoxelMapCS->SetUAVs(outputs);
 }
 
 void Voxelization::Destroy()
@@ -149,7 +153,7 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx,
-							const MeshCamera*& camera, const RenderManager*& renderManager,
+							const CameraForm*& camera, const RenderManager*& renderManager,
 							const GlobalInfo& globalInfo,
 							bool onlyStaticMesh)
 {
