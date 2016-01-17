@@ -376,6 +376,9 @@
     <Filter Include="Rendering\GI\Injection\Lights\Spot">
       <UniqueIdentifier>{15dd8ab0-ec1d-4426-a943-52343aada496}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI\Mipmap">
+      <UniqueIdentifier>{11ee3144-445e-4332-a272-c241d95ebcd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -859,6 +862,12 @@
     <ClInclude Include="Rendering\GI\GlobalIllumination.h">
       <Filter>Rendering\GI</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.h">
+      <Filter>Rendering\GI\Mipmap</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\TBDRInput.h">
+      <Filter>ShaderCodes\Deferred</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1181,6 +1190,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\GlobalIllumination.cpp">
       <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.cpp">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
