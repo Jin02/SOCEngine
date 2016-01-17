@@ -3,11 +3,15 @@
 
 #include "ShaderCommon.h"
 
+#ifndef VOXEL_CONE_TRACING
 Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t0 );
 Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t1 );
 Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t2 );
 
 cbuffer GIInfoCB : register( b0 )
+#else
+cbuffer GIInfoCB : register( b1 )
+#endif
 {
 	// High 16 bit is cascade
 	// Low bits is voxel dimension
@@ -16,6 +20,11 @@ cbuffer GIInfoCB : register( b0 )
 	float	gi_initVoxelSize;
 	float	gi_initWorldSize;
 	float	gi_maxMipLevel;
+}
+
+uint GetMaximumCascade()
+{
+	return (gi_maxCascadeWithVoxelDimensionPowOf2 >> 16);
 }
 
 uint ComputeCascade(float3 worldPos)
