@@ -2,7 +2,7 @@
 
 #define VOXEL_CONE_TRACING
 
-#include "GBufferCommon.h"
+#include "GBufferParser.h"
 #include "AlphaBlending.h"
 #include "GICommon.h"
 
@@ -198,7 +198,7 @@ void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID,
 							uint3 groupIdx	: SV_GroupID)
 {
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy);
+	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, 0.0f);
 
@@ -225,12 +225,12 @@ void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID,
 
 	[unroll] for(uint i=0; i<4; ++i)
 	{
-		float4 directColor = g_inputDirectColorTexture.Load(texIndex[i], 0);
-		float4 baseColor = directColor * (1.0f - surface.metallic);
-
+		float4 directColor	= g_inputDirectColorTexture.Load( uint3(texIndex[i], 0) );
+		float3 baseColor	= directColor.rgb * (1.0f - surface.metallic);
+	
 		// Metallic 값을 이용해서 대충 섞는다.
-		float4 indirectDiffuse = baseColor + diffuseVCT * directColor * surface.metallic;
-		float4 indirectSpecular = baseColor + specularVCT * directColor * surface.metallic;
+		float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
+		float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
 
 		g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 	}
