@@ -53,6 +53,9 @@ namespace Rendering
 		DirectionalLightShadowInvVPVMat			= 3,
 		PointLightShadowInvVPVMat				= 4,
 		SpotLightShadowInvVPVMat				= 5,
+
+		VCT_InputVoxelColorMap					= 29,
+		VCT_InputDirectColorMap					= 30,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -66,6 +69,7 @@ namespace Rendering
 		GlobalIIllumination_InfoCB		= 0,
 		Voxelization_InfoCB				= 1,
 		Mipmap_InfoCB					= 2,
+		VCT_GlobalInfoCB				= 1,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
@@ -89,6 +93,8 @@ namespace Rendering
 		VoxelMap_Emission				= 2,
 
 		VoxelMipmap_InputVoxelMap		= 0,
-		VoxelMipmap_OutputVoxelMap		= 1
+		VoxelMipmap_OutputVoxelMap		= 1,
+
+		VCT_OutIndirectMap				= 0,
 	};
 }
