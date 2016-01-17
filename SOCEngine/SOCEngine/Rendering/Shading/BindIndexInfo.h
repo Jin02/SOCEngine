@@ -87,5 +87,8 @@ namespace Rendering
 		VoxelMap_Albedo					= 0,
 		VoxelMap_Normal					= 1,
 		VoxelMap_Emission				= 2,
+
+		VoxelMipmap_InputVoxelMap		= 0,
+		VoxelMipmap_OutputVoxelMap		= 1
 	};
 }
