@@ -5,7 +5,8 @@
 cbuffer MipMapInfoCB : register(b2)
 {
 	uint mipmapInfo_sourceDimension;
-	uint3 mipmapInfo_dummy;
+	uint mipmapInfo_currentCascade;
+	uint2 mipmapInfo_dummy;
 };
 
 RWTexture3D<uint> g_inputVoxelMap		: register(u0);
@@ -36,6 +37,7 @@ uint AlphaBledningAnisotropicVoxelMap
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
+	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
 	return UintToFloat4(g_inputVoxelMap[voxelIdx]);
 }
 
@@ -44,7 +46,7 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 								 uint3 localIdx	 : SV_GroupThreadID,
 								 uint3 groupIdx	 : SV_GroupID)
 {
-	uint3 lowerMipIdx = globalIdx * 2;
+	uint3 lowerMipIdx = globalIdx * 2; // or source
 
 	uint3 sampleIdx[8] =
 	{
@@ -89,6 +91,7 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 	);
 
 	uint destDimension = mipmapInfo_sourceDimension / 2;
+	globalIdx.y += mipmapInfo_currentCascade * destDimension;
 
 	g_outputMipMap[uint3(globalIdx.x,						globalIdx.yz)]	= posx;
 	g_outputMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= negx;
