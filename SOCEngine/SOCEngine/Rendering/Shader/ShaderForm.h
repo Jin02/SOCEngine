@@ -30,13 +30,16 @@ namespace Rendering
 				Pixel
 			};
 
+		private:
+			std::string		_key;
+
 		protected:
 			ID3DBlob*		_blob;
 			Type			_type;
 
 		public:
-			ShaderForm(ID3DBlob* blob);
-			~ShaderForm(void);
+			ShaderForm(ID3DBlob* blob, const std::string& key);
+			virtual ~ShaderForm(void);
 
 		public:
 			struct Usage
@@ -102,8 +105,9 @@ namespace Rendering
 
 
 		public:
-			GET_ACCESSOR(Shader, ID3DBlob*, _blob);
-			GET_ACCESSOR(ShaderType, Type, _type);
+			GET_ACCESSOR(Blob,			ID3DBlob*,				_blob);
+			GET_ACCESSOR(ShaderType,	Type,					_type);
+			GET_ACCESSOR(Key,			const std::string&,		_key);
 		};
 	}
 }

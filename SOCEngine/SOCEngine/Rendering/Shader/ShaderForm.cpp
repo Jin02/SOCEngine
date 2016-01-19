@@ -3,7 +3,8 @@
 using namespace Rendering::Shader;
 using namespace Rendering;
 
-ShaderForm::ShaderForm(ID3DBlob* blob) : _blob(blob), _type(Type::Invalid)
+ShaderForm::ShaderForm(ID3DBlob* blob, const std::string& key)
+	: _blob(blob), _type(Type::Invalid), _key(key)
 {
 }
 
