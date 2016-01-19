@@ -153,7 +153,7 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx,
-							const CameraForm*& camera, const RenderManager*& renderManager,
+							const MeshCamera*& camera, const RenderManager*& renderManager,
 							const GlobalInfo& globalInfo,
 							bool onlyStaticMesh)
 {

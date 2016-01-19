@@ -4,7 +4,7 @@
 #include <functional>
 #include "Vector3.h"
 #include "ConstBuffer.h"
-#include "CameraForm.h"
+#include "MeshCamera.h"
 #include "ComputeShader.h"
 #include "GlobalIlluminationCommon.h"
 
@@ -51,7 +51,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const GlobalInfo& globalInfo);			
-			void Voxelize(const Device::DirectX*& dx, const Camera::CameraForm*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
 			void Destroy();
 
 		public:
