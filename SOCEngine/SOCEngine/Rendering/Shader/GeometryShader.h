@@ -13,8 +13,8 @@ namespace Rendering
 			ID3D11GeometryShader*	_shader;
 
 		public:
-			GeometryShader(ID3DBlob* blob);
-			~GeometryShader();
+			GeometryShader(ID3DBlob* blob, const std::string& key);
+			virtual ~GeometryShader();
 
 		public:
 			bool Create(ID3D11Device* device);

@@ -12,8 +12,8 @@ namespace Rendering
 			ID3D11PixelShader* _shader;
 
 		public:
-			PixelShader(ID3DBlob* blob);
-			~PixelShader(void);
+			PixelShader(ID3DBlob* blob, const std::string& key);
+			virtual ~PixelShader(void);
 
 		public:
 			bool Create(ID3D11Device* device);

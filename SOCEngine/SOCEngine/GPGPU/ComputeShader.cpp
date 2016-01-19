@@ -5,8 +5,8 @@ using namespace Device;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::Shader;
 
-ComputeShader::ComputeShader(const ThreadGroup& threadGroup, ID3DBlob* blob) : ShaderForm(blob),
-	_shader(nullptr), _threadGroup(threadGroup)
+ComputeShader::ComputeShader(const ThreadGroup& threadGroup, ID3DBlob* blob)
+	: ShaderForm(blob, "CS"), _shader(nullptr), _threadGroup(threadGroup)
 {
 
 }

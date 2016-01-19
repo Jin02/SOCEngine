@@ -32,7 +32,7 @@ namespace GPGPU
 
 		public:
 			ComputeShader(const ThreadGroup& threadGroup, ID3DBlob* blob);
-			~ComputeShader(void);
+			virtual ~ComputeShader(void);
 
 		public:
 			bool Initialize();
