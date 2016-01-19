@@ -23,6 +23,7 @@ ShaderManager::~ShaderManager(void)
 
 bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel, const std::string& funcName, const std::vector<ShaderMacro>* macros)
 {
+	(*outBlob) = nullptr;
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
 #if defined( DEBUG ) || defined( _DEBUG )
@@ -65,6 +66,7 @@ bool ShaderManager::Compile(ID3DBlob** outBlob, const std::string &fileFullPath,
 		if( pErrorBlob ) pErrorBlob->Release();
 
 		ASSERT_MSG((char*)pErrorBlob->GetBufferPointer() );
+		(*outBlob)->Release();
 
 		return false;
 	}
@@ -229,6 +231,44 @@ bool ShaderManager::CommandValidator(const std::string& partlyCommand, const std
 	return true;
 }
 
+void ShaderManager::MakeKey(std::string& out,
+							const std::string& fileName, const std::string& mainFunc, const std::string& shaderTypeStr, const std::vector<ShaderMacro>* macros)
+{
+	std::string fullCommand = fileName + ":" + shaderTypeStr + ":" + mainFunc;
+	MakeKey(out, fullCommand, macros);
+}
+
+void ShaderManager::MakeKey(std::string& out, const std::string& fullCommand, const std::vector<ShaderMacro>* macros)
+{
+	std::string key = fullCommand;
+
+	if(macros)
+	{
+		key += ":";
+
+		std::vector<uint> hashKeys;
+		for(auto iter = macros->begin(); iter != macros->end(); ++iter)
+		{
+			std::hash<std::string> hashString;
+			uint hashKey = hashString(iter->GetName() + ":" + iter->GetDefinition());
+
+			hashKeys.push_back(hashKey);
+		}
+
+		std::sort(hashKeys.begin(), hashKeys.end());
+		for(auto iter = hashKeys.begin(); iter != hashKeys.end(); ++iter)
+		{
+			char dummy[9] = {0, };
+			uint hashCode = (*iter);
+			sprintf_s(dummy, "%x", hashCode);
+
+			key += dummy;
+		}
+	}
+
+	out = key;
+}
+
 VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros)
 {
 	std::string fileName, mainFunc;
@@ -239,7 +279,9 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		return nullptr;
 	}
 
-	VertexShader* shader = FindVertexShader(fileName, mainFunc);
+	std::string key = "";
+	MakeKey(key, VS_FULL_COMMAND(fileName, mainFunc), macros);
+	VertexShader* shader = FindShader<VertexShader>(key);
 	
 	if(shader == nullptr)
 	{
@@ -247,13 +289,12 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 		if(blob == nullptr)
 			return nullptr;
 
-		shader = new VertexShader(blob);
+		shader = new VertexShader(blob, key);
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		bool success = shader->Create(dx, vertexDeclations);		
 		ASSERT_COND_MSG(success, "Error, Not Created VS");
 
-		std::string key = VS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
 	}
 
@@ -267,7 +308,9 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 	if(CommandValidator(partlyCommand, "ps", &fileName, &mainFunc) == false)
 		return nullptr;
 
-	PixelShader* shader = FindPixelShader(fileName, mainFunc);
+	std::string key = "";
+	MakeKey(key, PS_FULL_COMMAND(fileName, mainFunc), macros);
+	PixelShader* shader = FindShader<PixelShader>(key);
 
 	if(shader == nullptr)
 	{
@@ -275,13 +318,12 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 		if(blob == nullptr)
 			return nullptr;
 
-		shader = new PixelShader(blob);
+		shader = new PixelShader(blob, key);
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
 		ASSERT_COND_MSG(shader->Create(device), "Error, Not Created PS");
 
-		std::string key = PS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
 	}
 
@@ -307,44 +349,22 @@ void ShaderManager::DeleteAllShader()
 	_shaders.clear();
 }
 
-void ShaderManager::DeleteShaderCode(const std::string& command)
+void ShaderManager::DeleteShaderCode(const std::string& key)
 {
-	auto findIter = _shaderCodes.find(command);
+	auto findIter = _shaderCodes.find(key);
 
 	if(findIter != _shaderCodes.end())
 		_shaderCodes.erase(findIter);
 }
 
-void ShaderManager::DeleteShader(const std::string& command)
+void ShaderManager::DeleteShader(const std::string& key)
 {
-	auto findIter = _shaders.find(command);
+	auto findIter = _shaders.find(key);
 	if(findIter != _shaders.end())
 	{
 		SAFE_DELETE(findIter->second);
 		_shaders.erase(findIter);
 	}
-}
-
-ShaderForm* ShaderManager::FindShader(const std::string& fileName, const std::string& mainFunc, ShaderForm::Type type)
-{
-	if(type == ShaderForm::Type::Vertex)
-		return FindVertexShader(fileName, mainFunc);
-	else if(type == ShaderForm::Type::Pixel)
-		return FindPixelShader(fileName, mainFunc);
-
-	return nullptr;
-}
-
-VertexShader* ShaderManager::FindVertexShader(const std::string& fileName, const std::string& mainFunc)
-{
-	auto findIter = _shaders.find(VS_FULL_COMMAND(fileName, mainFunc));
-	return findIter == _shaders.end() ? nullptr : static_cast<VertexShader*>(findIter->second);
-}
-
-PixelShader* ShaderManager::FindPixelShader(const std::string& fileName, const std::string& mainFunc)
-{
-	auto findIter = _shaders.find(PS_FULL_COMMAND(fileName, mainFunc));
-	return findIter == _shaders.end() ? nullptr : static_cast<PixelShader*>(findIter->second);
 }
 
 void ShaderManager::Add(const std::string& fullCommand, Rendering::Shader::ShaderForm* shader)
@@ -378,7 +398,9 @@ GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath,
 	if(CommandValidator(partlyCommand, "gs", &fileName, &mainFunc) == false)
 		return nullptr;
 
-	GeometryShader* shader = FindGeometryShader(fileName, mainFunc);
+	std::string key = "";
+	MakeKey(key, GS_FULL_COMMAND(fileName, mainFunc), macros);
+	GeometryShader* shader = FindShader<GeometryShader>(key);
 
 	if(shader == nullptr)
 	{
@@ -386,21 +408,14 @@ GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath,
 		if(blob == nullptr)
 			return nullptr;
 
-		shader = new GeometryShader(blob);
+		shader = new GeometryShader(blob, key);
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
 		ASSERT_COND_MSG(shader->Create(device), "Error, Can't create GS");
 
-		std::string key = GS_FULL_COMMAND(fileName, mainFunc);
 		_shaders.insert(std::make_pair(key, shader));
 	}
 
 	return shader;
-}
-
-GeometryShader*	ShaderManager::FindGeometryShader(const std::string& fileName, const std::string& mainFunc)
-{
-	auto findIter = _shaders.find(GS_FULL_COMMAND(fileName, mainFunc));
-	return findIter == _shaders.end() ? nullptr : static_cast<GeometryShader*>(findIter->second);
 }
