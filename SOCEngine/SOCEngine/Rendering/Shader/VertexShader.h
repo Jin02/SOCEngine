@@ -25,8 +25,8 @@ namespace Rendering
 			ID3D11InputLayout*	_layout;
 
 		public:
-			VertexShader(ID3DBlob* blob);
-			~VertexShader(void);
+			VertexShader(ID3DBlob* blob, const std::string& key);
+			virtual ~VertexShader(void);
 
 		public:
 			GET_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
