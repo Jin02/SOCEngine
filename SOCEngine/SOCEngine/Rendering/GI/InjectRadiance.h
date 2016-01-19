@@ -5,7 +5,7 @@
 #include "AnisotropicVoxelMapAtlas.h"
 #include "GlobalIlluminationCommon.h"
 #include "DirectX.h"
-#include "Scene.h"
+#include "ShadowRenderer.h"
 
 namespace Rendering
 {
@@ -40,10 +40,11 @@ namespace Rendering
 
 		protected:
 			void Initialize(const std::string& fileName, const InitParam& param);
-			void Destroy();
-
 			void Dispath(const Device::DirectX* dx,
 						 const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers);
+
+		public:
+			void Destroy();
 
 		public:
 			GET_ACCESSOR(ColorMap, const AnisotropicVoxelMapAtlas*, _colorMap);
