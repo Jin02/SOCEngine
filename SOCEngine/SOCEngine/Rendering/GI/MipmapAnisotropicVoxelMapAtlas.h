@@ -30,7 +30,7 @@ namespace Rendering
 
 		public:
 			void Initialize();
-			void Mipmapping(const Device::DirectX* dx, const InjectRadiance* injection, uint maxNumOfCascade);
+			void Mipmapping(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* colorMap, uint maxNumOfCascade);
 			void Destroy();
 		};
 	}

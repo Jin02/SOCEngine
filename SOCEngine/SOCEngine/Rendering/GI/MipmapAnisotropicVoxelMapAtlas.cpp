@@ -55,10 +55,9 @@ void MipmapAnisotropicVoxelMapAtlas::Destroy()
 
 }
 
-void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const InjectRadiance* injection, uint maxNumOfCascade)
+void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const AnisotropicVoxelMapAtlas* colorMap, uint maxNumOfCascade)
 {
 	ID3D11DeviceContext* context				= dx->GetContext();
-	const AnisotropicVoxelMapAtlas* colorMap	= injection->GetColorMap();
 	uint dimension								= colorMap->GetSideLength();
 
 	auto Mipmap = [&](const UnorderedAccessView* sourceUAV, const UnorderedAccessView* targetUAV, uint mipLevel, uint curCascade)
