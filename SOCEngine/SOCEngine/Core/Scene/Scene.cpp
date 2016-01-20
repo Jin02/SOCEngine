@@ -16,11 +16,12 @@ using namespace UI::Manager;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
 using namespace Rendering::Shadow;
+using namespace Rendering::GI;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
 	_renderMgr(nullptr), _backBufferMaker(nullptr),
-	_shadowRenderer(nullptr)
+	_shadowRenderer(nullptr), _globalIllumination(nullptr)
 {
 	_state = State::Init;
 }
@@ -34,6 +35,7 @@ Scene::~Scene(void)
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_backBufferMaker);
 	SAFE_DELETE(_shadowRenderer);
+	SAFE_DELETE(_globalIllumination);
 }
 
 void Scene::Initialize()
@@ -126,17 +128,44 @@ void Scene::Render()
 	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
 
 	_dx->ClearDeviceContext();
+
+	auto GIPass = [&](MeshCamera* meshCam) -> const RenderTexture*
+	{
+		bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
+		const RenderTexture* indirectColorMap = nullptr;
+
+		if(_globalIllumination && isMainCam)
+		{
+			if(meshCam->GetUseIndirectColorMap() == false)
+				meshCam->ReCompileOffScreen(true);
+
+			_globalIllumination->Run(_dx, meshCam, _renderMgr, _shadowRenderer);
+			indirectColorMap = _globalIllumination->GetIndirectColorMap();
+		}
+		else
+		{
+			if(meshCam->GetUseIndirectColorMap())
+				meshCam->ReCompileOffScreen(false);
+		}
+
+		return indirectColorMap;
+	};
+
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
-			const Buffer::ConstBuffer* shadowCB = _shadowRenderer->IsWorking() ? _shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM());
+			// const Buffer::ConstBuffer* 코드 길어져서 걍 auto로 대체
+			auto shadowCB	=	_shadowRenderer->IsWorking() ?
+								_shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
+
+			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM(), GIPass);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
+
 	CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	if(mainCam)
 	{
@@ -163,6 +192,7 @@ void Scene::Destroy()
 	_uiManager->Destroy();
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
+	_globalIllumination->Destroy();
 }
 
 void Scene::NextState()
@@ -215,4 +245,23 @@ void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keybo
 {
 	if(_state == State::Loop)
 		OnInput(mouse, keyboard);
+}
+
+void Scene::ActivateGI(bool activate)
+{
+	if(activate == false)
+	{
+		if(_globalIllumination)
+			_globalIllumination->Destroy();
+
+		SAFE_DELETE(_globalIllumination);
+	}
+	else
+	{
+		if(_globalIllumination)
+			return;
+
+		_globalIllumination = new GlobalIllumination;
+		_globalIllumination->Initialize(_dx);
+	}
 }

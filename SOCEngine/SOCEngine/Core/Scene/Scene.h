@@ -14,6 +14,7 @@
 #include "MeshCamera.h"
 #include "BackBufferMaker.h"
 #include "ShadowRenderer.h"
+#include "GlobalIllumination.h"
 
 namespace Core
 {
@@ -33,7 +34,7 @@ namespace Core
 		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
-
+		Rendering::GI::GlobalIllumination*					_globalIllumination;
 
 		State							_state;
 		Intersection::BoundBox			_boundBox;
@@ -65,6 +66,8 @@ namespace Core
 		Core::Object* FindObject(const std::string& key);
 		void DeleteObject(Core::Object* object);
 		void DeleteAllObject();
+
+		void ActivateGI(bool activate);
 
 	public:
 		void NextState();
