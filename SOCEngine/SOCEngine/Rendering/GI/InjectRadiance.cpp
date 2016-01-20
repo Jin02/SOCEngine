@@ -38,13 +38,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
-	std::vector<ShaderMacro> macros;
-	{
-		// 무조건 일반 Shadow Map을 사용해야하기 때문에 아래 매크로를 추가해준다.
-		macros.push_back(ShaderMacro("NEVER_USE_VSM", ""));
-	}
-
-	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
 
