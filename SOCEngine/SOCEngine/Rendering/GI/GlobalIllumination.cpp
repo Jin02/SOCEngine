@@ -68,7 +68,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	{
 		_injectionColorMap = new AnisotropicVoxelMapAtlas;
 		_injectionColorMap->Initialize(	dimension, _globalInfo.maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, _globalInfo.maxMipLevel);
+										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, uint(_globalInfo.maxMipLevel));
 
 		InjectRadiance::InitParam initParam;
 		{

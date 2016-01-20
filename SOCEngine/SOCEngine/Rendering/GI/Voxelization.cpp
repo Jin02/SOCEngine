@@ -52,16 +52,13 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 	uint dimension = 1 << globalInfo.voxelDimensionPow2;
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade,
-									 DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade,
-									 DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(	dimension, maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	// Setting Const Buffers
 	{
