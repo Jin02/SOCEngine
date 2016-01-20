@@ -379,6 +379,9 @@
     <Filter Include="Rendering\GI\Mipmap">
       <UniqueIdentifier>{11ee3144-445e-4332-a272-c241d95ebcd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI\VoxelConeTracing">
+      <UniqueIdentifier>{ceba6f59-37a2-40b6-8f7d-3d55c0c64d04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -814,9 +817,6 @@
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
-    <ClInclude Include="ShaderCodes\GBufferCommon.h">
-      <Filter>ShaderCodes\Common</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\MonteCarlo.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
@@ -867,6 +867,12 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\TBDRInput.h">
       <Filter>ShaderCodes\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
+      <Filter>Rendering\GI\VoxelConeTracing</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\GBufferParser.h">
+      <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1193,6 +1199,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.cpp">
       <Filter>Rendering\GI\Mipmap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
+      <Filter>Rendering\GI\VoxelConeTracing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
