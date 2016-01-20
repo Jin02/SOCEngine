@@ -17,10 +17,12 @@ FullScreen::FullScreen()
 
 FullScreen::~FullScreen()
 {
+	Destroy();
 }
 
 void FullScreen::Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<ShaderMacro>* macros)
 {
+	Destroy();
 	Factory::EngineFactory shaderPathFinder(nullptr);
 	
 	std::string path = "";
@@ -46,31 +48,23 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	}
 }
 
-void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sampler)
+void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT)
 {
-	ID3D11RenderTargetView* rtv = outResultRT->GetRenderTargetView();	
-
-	auto dx = Director::SharedInstance()->GetDirectX();
-	ID3D11DeviceContext* context = dx->GetContext();
+	ID3D11RenderTargetView* rtv		= outResultRT->GetRenderTargetView();	
+	ID3D11DeviceContext* context	= dx->GetContext();
 
 	ID3D11DepthStencilView* nullDSV = nullptr;
 	context->OMSetRenderTargets(1, &rtv, nullDSV);
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
-
-	uint stride = 0;
-	uint offset = 0;
-	ID3D11Buffer* nullBuffer[] = {nullptr};
-
 
 	_vertexShader->BindShaderToContext(context);
 	_vertexShader->BindInputLayoutToContext(context);
 	
 	_pixelShader->BindShaderToContext(context);
 	_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
-	context->PSSetSamplers(
-		(uint)Rendering::SamplerStateBindIndex::DefaultSamplerState,
-		1, &sampler);
 
+	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
+	context->PSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &sampler);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	context->RSSetState( nullptr );
 
@@ -82,8 +76,17 @@ void FullScreen::Render(const RenderTexture* outResultRT, ID3D11SamplerState* sa
 
 void FullScreen::Destroy()
 {
-	_vertexShader = nullptr;
-	_pixelShader = nullptr;
+	auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
+	if(_vertexShader)
+	{
+		shaderManager->DeleteShader(_vertexShader->GetKey());
+		_vertexShader	= nullptr;
+	}
+	if(_pixelShader)
+	{
+		shaderManager->DeleteShader(_pixelShader->GetKey());
+		_pixelShader	= nullptr;
+	}
 
 	_inputPSTextures.clear();
 }

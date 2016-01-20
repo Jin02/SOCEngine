@@ -25,7 +25,7 @@ namespace Rendering
 
 		public:
 			AnisotropicVoxelMapAtlas();
-			~AnisotropicVoxelMapAtlas();
+			virtual ~AnisotropicVoxelMapAtlas();
 
 		public:
 			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount);

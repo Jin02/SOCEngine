@@ -14,18 +14,16 @@ void InjectRadiancePointLightsCS(uint3 globalIdx	: SV_DispatchThreadID,
 
 	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;
 	uint faceIndex		= globalIdx.y / (uint)perShadowMapRes;
-	uint lightIndex		= g_inputPointLightShadowIndexToLightIndex[shadowIndex];
-
-	uint bufferShadowIdx = (g_inputPointLightShadowParams[lightIndex].indexWithBias >> 16);
-	if( (bufferShadowIdx - 1) != shadowIndex )
-		return;
+	ParsedShadowParam shadowParam;
+	ParseShadowParam(shadowParam, g_inputPointLightShadowParams[shadowIndex].xy);
+	uint lightIndex		= shadowParam.lightIndex;
 
 	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y % uint(perShadowMapRes));
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
 	float depth = g_inputPointLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].invMat[faceIndex] );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].mat[faceIndex] );
 	worldPos /= worldPos.w;
 
 	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;

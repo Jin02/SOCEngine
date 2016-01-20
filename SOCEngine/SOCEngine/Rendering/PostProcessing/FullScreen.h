@@ -24,7 +24,7 @@ namespace Rendering
 			void Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<Shader::ShaderMacro>* macros);
 
 		public:
-			void Render(const Texture::RenderTexture* outResultRT, ID3D11SamplerState* sampler);
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT);
 			void Destroy();
 
 		public:

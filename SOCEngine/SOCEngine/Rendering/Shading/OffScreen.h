@@ -8,12 +8,20 @@ namespace Rendering
 	{
 		class OffScreen : public PostProcessing::FullScreen
 		{
+		private:
+			bool _useIndirectColorMap;
+
 		public:
 			OffScreen();
 			virtual ~OffScreen();
 
+		public:			
+			void Initialize(const Texture::RenderTexture* directColorMap, bool useIndirectColorMap);
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Texture::RenderTexture* indirectColorMap);
+			void ReCompile(bool useIndirectColorMap);
+
 		public:
-			void Initialize(const Rendering::Texture::RenderTexture* inputRenderTexture);
+			GET_ACCESSOR(UseIndirectColorMap, bool, _useIndirectColorMap);
 		};
 	}
 }

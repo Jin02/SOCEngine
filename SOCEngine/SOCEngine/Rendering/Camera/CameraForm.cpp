@@ -22,7 +22,7 @@ CameraForm::~CameraForm(void)
 	Destroy();
 }
 
-void CameraForm::Initialize(uint mainRTSampleCount)
+void CameraForm::Initialize(const Math::Rect<float>& renderRect, uint mainRTSampleCount)
 {
 	_fieldOfViewDegree	= 45.0f;
 	_clippingNear		= 0.1f;
@@ -40,6 +40,7 @@ void CameraForm::Initialize(uint mainRTSampleCount)
 	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
+	_renderRect = renderRect;
 
 	_camMatConstBuffer = new ConstBuffer;
 	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
@@ -130,6 +131,37 @@ void CameraForm::GetViewMatrix(Math::Matrix& outMatrix) const
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
 
 	GetViewMatrix(outMatrix, worldMat);
+}
+
+void CameraForm::GetViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect)
+{
+	outMat._11 = rect.size.w /  2.0f;
+	outMat._12 = 0.0f;
+	outMat._13 = 0.0f;
+	outMat._14 = 0.0f;
+
+	outMat._21 = 0.0f;
+	outMat._22 = -rect.size.h / 2.0f;
+	outMat._23 = 0.0f;
+	outMat._24 = 0.0f;
+
+	outMat._31 = 0.0f;
+	outMat._32 = 0.0f;
+	outMat._33 = 1.0f;
+	outMat._34 = 0.0f;
+
+	outMat._41 = rect.x + rect.size.w / 2.0f;
+	outMat._42 = rect.y + rect.size.h / 2.0f;
+	outMat._43 = 0.0f;
+	outMat._44 = 1.0f;
+}
+
+void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect)
+{
+	Math::Matrix viewportMat;
+	GetViewportMatrix(viewportMat, rect);
+
+	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)

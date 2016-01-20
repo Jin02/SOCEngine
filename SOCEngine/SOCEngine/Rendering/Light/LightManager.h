@@ -81,7 +81,7 @@ namespace Rendering
 			uint Add(Light::LightForm*& light);
 			void UpdateSRBuffer(const Device::DirectX* dx,
 								const std::function<uint(const Light::LightForm*)>& getShadowIndexInEachShadowLights);
-			void ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
+			void ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, float directionalLightShadowMapResolution);
 
 			bool Has(Light::LightForm*& light) const;
 			uint FetchLightIndexInEachLights(const Light::LightForm* light) const;

@@ -3,7 +3,8 @@
 using namespace Rendering::Shader;
 using namespace Rendering;
 
-ShaderForm::ShaderForm(ID3DBlob* blob) : _blob(blob), _type(Type::Invalid)
+ShaderForm::ShaderForm(ID3DBlob* blob, const std::string& key)
+	: _blob(blob), _type(Type::Invalid), _key(key)
 {
 }
 
@@ -112,26 +113,26 @@ ShaderForm::InputShaderResourceBuffer::InputShaderResourceBuffer(uint bindIndex,
 }
 
 
-ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView()
+ShaderForm::InputUnorderedAccessView::InputUnorderedAccessView()
 	: Usage(), bindIndex(-1), uav(nullptr)
 {
 }
 
-ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav)
+ShaderForm::InputUnorderedAccessView::InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav)
 	: Usage(false, false, false, false)
 {
 	this->bindIndex	= bindIndex;
 	this->uav		= uav;
 }
 
-ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS)
+ShaderForm::InputUnorderedAccessView::InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, bool useVS, bool useGS, bool useHS, bool usePS)
 	: Usage(useVS, useGS, useHS, usePS)
 {
 	this->bindIndex	= bindIndex;
 	this->uav		= uav;
 }
 
-ShaderForm::OutputUnorderedAccessView::OutputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage)
+ShaderForm::InputUnorderedAccessView::InputUnorderedAccessView(uint bindIndex, const View::UnorderedAccessView* uav, Usage usage)
 	: Usage(usage)
 {
 	this->bindIndex	= bindIndex;

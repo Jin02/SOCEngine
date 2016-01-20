@@ -2,6 +2,7 @@
 
 #include "LightCullingCompareAtomicCS.h"
 #include "DynamicLighting.h"
+#include "GBufferParser.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
@@ -16,34 +17,17 @@ RWTexture2D<float4> g_tOutScreen : register( u0 );
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
 {
-	float4 normal_roughness = g_tGBufferNormal_roughness.Load( globalIdx, sampleIdx );
+	Surface surface;
+	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
 
-	float3 normal = normal_roughness.xyz;
-	normal *= 2; normal -= float3(1.0f, 1.0f, 1.0f);
-
-	float roughness = normal_roughness.w;
-
-	float depth = g_tDepth.Load( globalIdx, sampleIdx ).x;
-
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
-	worldPosition /= worldPosition.w;
-
-	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
-
-	float4 albedo_emission	= g_tGBufferAlbedo_emission.Load( globalIdx, sampleIdx );
-	float3 albedo			= albedo_emission.xyz;
-
-	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( globalIdx, sampleIdx );
-	float3 specularColor = specular_metallic.rgb;
-	float metallic = specular_metallic.a;
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - surface.worldPos );
 
 	LightingParams lightParams;
-
 	lightParams.viewDir			= viewDir;
-	lightParams.normal			= normal;
-	lightParams.roughness		= roughness;
-	lightParams.diffuseColor	= albedo;
-	lightParams.specularColor	= specularColor;
+	lightParams.normal			= surface.normal;
+	lightParams.roughness		= surface.roughness;
+	lightParams.diffuseColor	= surface.albedo;
+	lightParams.specularColor	= surface.specular;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
@@ -51,30 +35,30 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float3 localDiffuse		= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular	= float3(0.0f, 0.0f, 0.0f);
 
-	uint pointLightIdx = (int)(depth == 0.0f) * pointLightCountInThisTile;
+	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
 	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
 		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 
-		RenderPointLight(localDiffuse, localSpecular, lightParams, worldPosition.xyz);
+		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, depth != 0.0f);
+	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
 
-		RenderSpotLight(localDiffuse, localSpecular, lightParams, worldPosition.xyz);
+		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight();
-	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
+	uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
@@ -122,85 +106,52 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 	GroupMemoryBarrierWithGroupSync();
 
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 normal_roughness = g_tGBufferNormal_roughness.Load( globalIdx.xy, 0 );
-#else // non-MSAA
-	float4 normal_roughness = g_tGBufferNormal_roughness.Load( uint3(globalIdx.xy, 0) );
-#endif
+	Surface surface;
+	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	float3 normal = normal_roughness.xyz;
-	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
-
-	float roughness = normal_roughness.w;
-
-#if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	float depth = g_tDepth.Load( globalIdx.xy, 0 ).x;
-#else
-	float depth = g_tDepth.Load( uint3(globalIdx.xy, 0) ).x;
-#endif
-
-	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
-	worldPosition /= worldPosition.w;
-
-	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - worldPosition.xyz );
-
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( globalIdx.xy, 0 );
-#else
-	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( uint3(globalIdx.xy, 0) );
-#endif
-	float3 albedo	= albedo_emission.xyz;
-
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( globalIdx.xy, 0 );
-#else
-	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( uint3(globalIdx.xy, 0) );
-#endif
-	float3 specularColor = specular_metallic.rgb;
-	float metallic = specular_metallic.a;
+	float3 viewDir				= normalize( tbrParam_cameraWorldPosition.xyz - surface.worldPos );
 
 	LightingParams lightParams;
-
 	lightParams.viewDir			= viewDir;
-	lightParams.normal			= normal;
-	lightParams.roughness		= roughness;
-	lightParams.diffuseColor	= albedo;
-	lightParams.specularColor	= specularColor;
+	lightParams.normal			= surface.normal;
+	lightParams.roughness		= surface.roughness;
+	lightParams.diffuseColor	= surface.albedo;
+	lightParams.specularColor	= surface.specular;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
 	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
-	uint pointLightIdx = (int)(depth == 0.0f) * pointLightCountInThisTile;
+	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
 	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
 		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 
-		RenderPointLight(localDiffuse, localSpecular, lightParams, worldPosition.xyz);
+		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, depth != 0.0f);
+	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
 
-		RenderSpotLight(localDiffuse, localSpecular, lightParams, worldPosition.xyz);
+		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
-	uint directionalLightIdx = (int)(depth == 0.0f) * directionalLightCount;
+	uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
-		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, worldPosition.xyz);
+		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
@@ -223,7 +174,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		sampleNormal = g_tGBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
 		sampleNormal *= 2; sampleNormal -= float3(1.0f, 1.0f, 1.0f);
 
-		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, normal) < DEG_2_RAD(60.0f) );
+		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, surface.normal) < DEG_2_RAD(60.0f) );
 	}
 
 	if(isDetectedEdge)

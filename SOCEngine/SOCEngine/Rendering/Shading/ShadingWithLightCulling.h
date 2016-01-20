@@ -31,7 +31,7 @@ namespace Rendering
 			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
 
 		public:
-			GET_ACCESSOR(OffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
+			GET_ACCESSOR(UncompressedOffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
 		};
 	}
 }

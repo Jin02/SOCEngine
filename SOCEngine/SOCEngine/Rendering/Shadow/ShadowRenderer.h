@@ -168,7 +168,7 @@ namespace Rendering
 								const std::function<uint(const Light::LightForm*)>& getLightIndexInEachLightsFunc);
 
 			void RenderShadowMap(const Device::DirectX*& dx, const Manager::RenderManager*& renderManager);
-			void ComputeAllLightViewProj(const Math::Matrix& invViewportMat);
+			void ComputeAllLightViewProj();
 
 		public:
 			GET_ACCESSOR(PointLightShadowMapAtlas,						const Texture::DepthBuffer*,				_pointLightShadowMapAtlas);
@@ -195,7 +195,14 @@ namespace Rendering
 			GET_ACCESSOR(DirectionalLightShadowViewProjSRBuffer,		const Buffer::ShaderResourceBuffer*,		_directionalLightViewProjMatSRBuffer);
 			GET_ACCESSOR(DirectionalLightInvViewProjViewpotSRBuffer,	const Buffer::ShaderResourceBuffer*,		_directionalLightInvVPVMatSRBuffer);
 
+			GET_ACCESSOR(DirectionalLightCount,							uint,										_shadowCastingDirectionalLights.GetSize());
+			GET_ACCESSOR(PointLightCount,								uint,										_shadowCastingPointLights.GetSize());
+			GET_ACCESSOR(SpotLightCount,								uint,										_shadowCastingSpotLights.GetSize());
+
 			bool IsWorking() const;
+			Math::Size<uint> GetActivatedDLShadowMapSize() const;
+			Math::Size<uint> GetActivatedPLShadowMapSize() const;
+			Math::Size<uint> GetActivatedSLShadowMapSize() const;
 		};
 	}
 }

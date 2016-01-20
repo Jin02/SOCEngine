@@ -3,8 +3,8 @@
 
 using namespace Rendering::Shader;
 
-GeometryShader::GeometryShader(ID3DBlob* blob)
-	: ShaderForm(blob), _shader(nullptr)
+GeometryShader::GeometryShader(ID3DBlob* blob, const std::string& key)
+	: ShaderForm(blob, key), _shader(nullptr)
 {
 	_type = Type::Geometry;
 }

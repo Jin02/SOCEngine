@@ -46,7 +46,11 @@ namespace Rendering
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-			void Render(const Device::DirectX* dx, const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM);
+			void Render(
+				const Device::DirectX* dx,
+				const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager,
+				const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+				std::function<const Texture::RenderTexture*(MeshCamera*)> giPass);
 
 		public:
 			static void RenderMeshWithoutIASetVB(
@@ -66,12 +70,24 @@ namespace Rendering
 
 		public:
 			void EnableRenderTransparentMesh(bool enable);
+			inline void ReCompileOffScreen(bool useIndirectColorMap) { _offScreen->ReCompile(useIndirectColorMap); }
 
 		public:
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(TBRParamConstBuffer, const Buffer::ConstBuffer*, _tbrParamConstBuffer);
+			GET_ACCESSOR(TBRParamConstBuffer,		const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
+
+			GET_ACCESSOR(GBufferAlbedoEmission,		const Texture::RenderTexture*,		_albedo_emission);
+			GET_ACCESSOR(GBufferNormalRoughness,	const Texture::RenderTexture*,		_normal_roughness);
+			GET_ACCESSOR(GBufferSpecularMetallic,	const Texture::RenderTexture*,		_specular_metallic);
+
+			GET_ACCESSOR(OpaqueDepthBuffer,			const Texture::DepthBuffer*,		_opaqueDepthBuffer);
+			GET_ACCESSOR(BlendedDepthBuffer,		const Texture::DepthBuffer*,		_blendedDepthBuffer);
+
+			GET_ACCESSOR(OffScreen,					const Texture::RenderTexture*,		_renderTarget);
+			GET_ACCESSOR(UncompressedOffScreen,		const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
+			GET_ACCESSOR(UseIndirectColorMap,		bool,								_offScreen->GetUseIndirectColorMap());
 		};
 	}
 

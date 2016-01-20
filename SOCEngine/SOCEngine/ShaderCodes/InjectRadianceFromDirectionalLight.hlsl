@@ -13,22 +13,21 @@ void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID,
 	float perShadowMapRes	= (float)(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 
 	uint shadowIndex		= globalIdx.x / (uint)perShadowMapRes;
-	uint lightIndex			= g_inputDirectionalLightShadowIndexToLightIndex[shadowIndex];
-
-	if( ((uint)g_inputDirectionalLightShadowParams[lightIndex].index - 1) != shadowIndex )
-		return;
+	ParsedShadowParam shadowParam;
+	ParseShadowParam(shadowParam, g_inputDirectionalLightShadowParams[shadowIndex]);
+	uint lightIndex			= shadowParam.lightIndex;
 
 	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y);
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
 	float depth = g_inputDirectionalLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].invMat );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].mat );
 	worldPos /= worldPos.w;
 
 	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
 	int dimension		= (int)GetDimension();
-	int3 voxelIdx = int3(voxelSpaceUV * dimension);
+	int3 voxelIdx		= int3(voxelSpaceUV * dimension);
 
 	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;

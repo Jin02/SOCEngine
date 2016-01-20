@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "EngineShaderFactory.hpp"
 
+#include "MeshCamera.h"
+
 using namespace Resource;
 using namespace Core;
 using namespace Math;
@@ -37,8 +39,9 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, float minWorldSize, uint dimension)
+void Voxelization::Initialize(const GlobalInfo& globalInfo)
 {
+	uint maxNumOfCascade = globalInfo.maxNumOfCascade;
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
 	auto Log2 = [](float v) -> float
@@ -46,23 +49,17 @@ void Voxelization::Initialize(uint maxNumOfCascade, GlobalInfo& outGlobalInfo, f
 		return log(v) / log(2.0f);
 	};
 
+	uint dimension = 1 << globalInfo.voxelDimensionPow2;
 	const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
 	
-	GlobalInfo& globalInfo = outGlobalInfo;
-	globalInfo.maxNumOfCascade		= maxNumOfCascade;
-	globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
-	globalInfo.initVoxelSize		= minWorldSize / (float)dimension;
-	globalInfo.initWorldSize		= minWorldSize;
-	globalInfo.maxMipLevel			= (float)mipmapLevels;
-
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
 
 	// Setting Const Buffers
 	{
@@ -121,9 +118,9 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		inputTextures.push_back(inputTexture);
 	}
 
-	std::vector<ShaderForm::OutputUnorderedAccessView> outputs;
+	std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 	{
-		ShaderForm::OutputUnorderedAccessView output;
+		ShaderForm::InputUnorderedAccessView output;
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		output.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
@@ -135,7 +132,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	}
 
 	_clearVoxelMapCS->SetInputTextures(inputTextures);
-	_clearVoxelMapCS->SetOutputs(outputs);
+	_clearVoxelMapCS->SetUAVs(outputs);
 }
 
 void Voxelization::Destroy()

@@ -669,9 +669,12 @@ void LightManager::Destroy()
 	DestroyAllShaderReourceBuffer();
 }
 
-void LightManager::ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat)
+void LightManager::ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, float directionalLightShadowMapResolution)
 {
+	Matrix invViewport;
+	CameraForm::GetInvViewportMatrix(invViewport, Rect<float>(0.0f, 0.0f, directionalLightShadowMapResolution, directionalLightShadowMapResolution));
+
 	const auto& lights = _directionalLights.GetVector();
 	for(auto iter = lights.begin(); iter != lights.end(); ++iter)
-		(*iter)->ComputeViewProjMatrix(sceneBoundBox, invViewportMat);
+		(*iter)->ComputeViewProjMatrix(sceneBoundBox, invViewport);
 }

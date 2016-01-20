@@ -2,7 +2,8 @@
 
 using namespace Rendering::Shader;
 
-PixelShader::PixelShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr)
+PixelShader::PixelShader(ID3DBlob* blob, const std::string& key)
+	: ShaderForm(blob, key), _shader(nullptr)
 {
 	_type = Type::Pixel;
 }

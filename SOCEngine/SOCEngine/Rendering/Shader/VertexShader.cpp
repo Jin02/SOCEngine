@@ -4,7 +4,8 @@ using namespace Device;
 using namespace Rendering::Shader;
 
 
-VertexShader::VertexShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr), _layout(nullptr)
+VertexShader::VertexShader(ID3DBlob* blob, const std::string& key)
+	: ShaderForm(blob, key), _shader(nullptr), _layout(nullptr)
 {
 	_type = Type::Vertex;
 }
@@ -12,6 +13,7 @@ VertexShader::VertexShader(ID3DBlob* blob) : ShaderForm(blob), _shader(nullptr),
 VertexShader::~VertexShader(void)
 {
 	SAFE_RELEASE(_shader);
+	SAFE_RELEASE(_layout);
 }
 
 bool VertexShader::Create(

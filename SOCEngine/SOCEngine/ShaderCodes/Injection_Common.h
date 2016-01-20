@@ -8,9 +8,14 @@
 #include "Voxelization_Common.h"
 #include "GICommon.h"
 
+
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
-RWTexture3D<uint> OutAnistropicVoxelColorTexture	: register( u0 );
+StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t3 );
+StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t4 );
+StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t5 );
+
+RWTexture3D<uint> OutAnistropicVoxelColorTexture									: register( u0 );
 
 float4 GetColor(Texture3D<float4> anisotropicVoxelTexture, uint3 voxelIdx, float3 dir, uint cascade)
 {

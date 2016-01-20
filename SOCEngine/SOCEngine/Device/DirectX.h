@@ -79,8 +79,6 @@ namespace Device
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
 		void ClearDeviceContext() const;
 		Math::Size<uint> FetchBackBufferSize();
-		void GetViewportMatrix(Math::Matrix& outMat) const;
-		void GetInvViewportMatrix(Math::Matrix& outMat) const;
 		void Destroy();
 
 	public:

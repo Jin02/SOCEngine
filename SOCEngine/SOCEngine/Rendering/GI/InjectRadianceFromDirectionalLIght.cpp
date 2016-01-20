@@ -1,8 +1,10 @@
 #include "InjectRadianceFromDirectionalLIght.h"
 #include "BindIndexInfo.h"
 #include "Director.h"
+#include "Size.h"
 
 using namespace Device;
+using namespace Math;
 using namespace Core;
 using namespace Rendering;
 using namespace Rendering::Light;
@@ -13,7 +15,7 @@ using namespace Rendering::GI;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 
-InjectRadianceFromDirectionalLIght::InjectRadianceFromDirectionalLIght()
+InjectRadianceFromDirectionalLIght::InjectRadianceFromDirectionalLIght() : InjectRadiance()
 {
 }
 
@@ -21,30 +23,40 @@ InjectRadianceFromDirectionalLIght::~InjectRadianceFromDirectionalLIght()
 {
 }
 
-void InjectRadianceFromDirectionalLIght::Initialize(const ConstBuffer*& giInfoConstBuffer)
+void InjectRadianceFromDirectionalLIght::Initialize(const InjectRadiance::InitParam& initParam)
 {
 	const Scene* curScene			= Director::SharedInstance()->GetCurrentScene();
 	const LightManager* lightMgr	= curScene->GetLightManager();
 	const ShadowRenderer* shadowMgr	= curScene->GetShadowManager();
 
-	ComputeShader::ThreadGroup threadGroup;
-	InjectRadiance::Initialize("InjectRadianceFromDirectionalLight", threadGroup, giInfoConstBuffer);
+	InjectRadiance::Initialize("InjectRadianceFromDirectionalLight", initParam);
 
 	std::vector<ShaderForm::InputShaderResourceBuffer> inputSRBuffers = _shader->GetInputSRBuffers();
 	{
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),			lightMgr->GetDirectionalLightTransformSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightColor),					lightMgr->GetDirectionalLightColorSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightParam),					lightMgr->GetDirectionalLightParamSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowParam),				lightMgr->GetDirectionalLightShadowParamSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowColor),				lightMgr->GetDirectionalLightShadowColorSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowIndexToLightIndex),	shadowMgr->GetDirectionalLightShadowIndexToLightIndexSRBuffer()));
-		//inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowInvVPVMat),			nullptr));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),	lightMgr->GetDirectionalLightTransformSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightColor),			lightMgr->GetDirectionalLightColorSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightParam),			lightMgr->GetDirectionalLightParamSRBuffer()));
+
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowParam),		shadowMgr->GetDirectionalLightShadowParamSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::DirectionalLightShadowInvVPVMat),	shadowMgr->GetDirectionalLightInvViewProjViewpotSRBuffer()));
 	}
 	_shader->SetInputSRBuffers(inputSRBuffers);
 
-	std::vector<ShaderForm::InputTexture> inputTextures;
+	std::vector<ShaderForm::InputTexture> inputTextures = _shader->GetInputTextures();
 	{
 		inputTextures.push_back(ShaderForm::InputTexture( uint(TextureBindIndex::DirectionalLightShadowMapAtlas), shadowMgr->GetDirectionalLightShadowMapAtlas()) );
 	}
 	_shader->SetInputTextures(inputTextures);
+}
+
+void InjectRadianceFromDirectionalLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr,
+												const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers)
+{
+	Size<uint> activatedShadowMapSize	= shadowMgr->GetActivatedDLShadowMapSize();
+
+	ComputeShader::ThreadGroup threadGroup(	(activatedShadowMapSize.w + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES,
+											(activatedShadowMapSize.h + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES, 1 );
+
+	_shader->SetThreadGroupInfo(threadGroup);
+	Dispath(dx, voxelizationInfoConstBuffers);
 }

@@ -47,14 +47,14 @@ namespace Rendering
 		private:
 			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
 			void UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade, const Math::Vector3& camWorldPos, const GlobalInfo& globalInfo, float dimension, float camNear, float camFar);
+			void ClearZeroVoxelMap(const Device::DirectX*& dx);
 
 		public:
-			void Initialize(uint cascades, GlobalInfo& outGlobalInfo, float minWorldSize = 4.0f, uint dimension = 256);			
+			void Initialize(const GlobalInfo& globalInfo);			
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
 			void Destroy();
 
 		public:
-			void ClearZeroVoxelMap(const Device::DirectX*& dx);
-			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
 			static void ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos, float initVoxelizeSize);
 			static void ComputeBound(Math::Vector3* outMin, Math::Vector3* outMid, Math::Vector3* outMax, float* outWorldSize,
 									 uint currentCascade, const Math::Vector3& camWorldPos, float initVoxelizeSize);
