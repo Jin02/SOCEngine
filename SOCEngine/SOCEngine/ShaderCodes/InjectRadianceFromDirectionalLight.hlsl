@@ -5,9 +5,9 @@
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
 [numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, 1)]
-void InjectRadianceDirectionalLightsCS(	uint3 globalIdx	: SV_DispatchThreadID, 
-										uint3 localIdx	: SV_GroupThreadID,
-										uint3 groupIdx	: SV_GroupID)
+void CS(uint3 globalIdx	: SV_DispatchThreadID, 
+		uint3 localIdx	: SV_GroupThreadID,
+		uint3 groupIdx	: SV_GroupID)
 {
 	uint capacity			= GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 	float perShadowMapRes	= (float)(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
