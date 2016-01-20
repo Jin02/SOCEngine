@@ -4,6 +4,9 @@ struct PS_MOMENT_DEPTH_INPUT
 {
 	float4	position 	 	: SV_POSITION;
 	float	depth			: DEPTH;
+#if defined(ENABLE_ALPHA_TEST)
+	float2	uv				: TEXCOORD0;
+#endif
 };
 
 PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
@@ -18,6 +21,10 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 	ps.depth			= invPos.z / invPos.w;
 #else
 	ps.depth			= ps.position.z / ps.position.w;
+#endif
+
+#if defined(ENABLE_ALPHA_TEST)
+	ps.uv				= input.uv;
 #endif
 
 	return ps;
