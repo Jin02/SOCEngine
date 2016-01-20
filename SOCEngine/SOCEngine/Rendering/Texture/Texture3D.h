@@ -20,7 +20,9 @@ namespace Rendering
 			virtual ~Texture3D();
 
 		public:
-			void Initialize(uint width, uint height, uint depth, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint mipLevels);
+			void Initialize(uint width, uint height, uint depth,
+							DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
+							uint optionBindFlag, uint mipLevels);
 			void Destory();
 
 		public:
