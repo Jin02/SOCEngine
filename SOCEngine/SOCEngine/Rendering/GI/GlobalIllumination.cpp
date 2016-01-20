@@ -45,7 +45,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 			return log(v) / log(2.0f);
 		};
 
-		const uint mipmapLevels = min((uint)Log2((float)dimension) + 1, 1);
+		const uint mipmapLevels = max((uint)Log2((float)dimension) + 1, 1);
 
 		_globalInfo.maxNumOfCascade		= 1;
 		_globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);

@@ -74,7 +74,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 	uint dimension = 1 << param.globalInfo->voxelDimensionPow2;
 
 	_colorMap = new AnisotropicVoxelMapAtlas;
-	_colorMap->Initialize(dimension, param.globalInfo->maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, param.globalInfo->maxMipLevel);
+	_colorMap->Initialize(dimension, param.globalInfo->maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, param.globalInfo->maxMipLevel);
 
 	// Setting Output
 	{
