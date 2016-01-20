@@ -12,8 +12,10 @@ namespace Rendering
 		class Texture3D : public TextureForm
 		{
 		protected:
-			ID3D11Texture3D*	_texture;
-			Math::Vector3		_size;
+			ID3D11Texture3D*				_texture;
+			Math::Vector3					_size;
+			ID3D11RenderTargetView*			_rtv;
+
 
 		public:
 			Texture3D();
