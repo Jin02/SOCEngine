@@ -31,6 +31,8 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+//	ActivateGI(true);
+
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
@@ -42,24 +44,26 @@ void TestScene::OnInitialize()
 #if 0
 	_testObject = importer->Load("./Resources/Capsule/capsule.obj");
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
+	AddObject(_testObject);
 #else
 	//_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx");
 	//_camera->GetTransform()->UpdatePosition(Vector3(0, 5, -15));
 	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
 
-	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
-	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	//_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
+	//_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
+	//_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	//AddObject(_testObject);
 
-	//_testObject2 = importer->Load("./Resources/CornellBox/box.obj", false);
-	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	//_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
-	//AddObject(_testObject2);
+	_testObject2 = importer->Load("./Resources/CornellBox/Sphere.obj", false);
+	_testObject2->GetTransform()->UpdatePosition(Vector3(0, -4.0f, 11.0f));
+	_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
+	_testObject2->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	AddObject(_testObject2);
 #endif
-	AddObject(_testObject);
-
-#if 1
+	
+#if 0
 	_light = new Object("Light");
 	//_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
 	//_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
@@ -83,18 +87,17 @@ void TestScene::OnInitialize()
 	light->SetIntensity(1);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(true);
-#elif 0
+#elif 1
 	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
-	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12));
+//	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
+//	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12)); //box
+	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 11.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
-	light->SetLumen(150);
-	light->SetRadius(10.0f);
+	light->SetLumen(50);
+	light->SetRadius(20.0f);
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
-	light->GetShadow()->SetUseVSM(true);
-	light->GetShadow()->SetUnderScanSize(4.25f);
 #endif
 
 	AddObject(_light);
@@ -114,15 +117,15 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		Vector3 pos = control->GetLocalPosition();
 		control->UpdatePosition(pos + Vector3(0, 0.1f, 0));
 	}
-	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(-0.1f, 0, 0));
-	}
 	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
 		control->UpdatePosition(pos + Vector3(0, -0.1f, 0));
+	}
+	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
+	{
+		Vector3 pos = control->GetLocalPosition();
+		control->UpdatePosition(pos + Vector3(-0.1f, 0, 0));
 	}
 	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
 	{
@@ -143,23 +146,25 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 	if(keyboard.states['U'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(e + Vector3(5, 0, 0));
+		PointLight* pl = _light->GetComponent<PointLight>();
+		float us = pl->GetShadow()->GetUnderScanSize();
+		pl->GetShadow()->SetUnderScanSize(us + 0.1f);
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(e + Vector3(-5, 0, 0));
+		PointLight* pl = _light->GetComponent<PointLight>();
+		float us = pl->GetShadow()->GetUnderScanSize();
+		pl->GetShadow()->SetUnderScanSize(us - 0.1f);
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(e + Vector3(0, 5, 0));
+		PointLight* pl = _light->GetComponent<PointLight>();
+		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
 	}
 	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
 	{
-		Vector3 e = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(e + Vector3(0, -5, 0));
+		PointLight* pl = _light->GetComponent<PointLight>();
+		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
 	}
 
 
