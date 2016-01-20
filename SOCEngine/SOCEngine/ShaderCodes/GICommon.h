@@ -4,9 +4,9 @@
 #include "ShaderCommon.h"
 
 #ifndef VOXEL_CONE_TRACING
-Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t0 );
-Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t1 );
-Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t2 );
+Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t29 );
+Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t30 );
+Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t31 );
 
 cbuffer GIInfoCB : register( b0 )
 #else

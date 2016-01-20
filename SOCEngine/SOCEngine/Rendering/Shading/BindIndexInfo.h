@@ -46,13 +46,13 @@ namespace Rendering
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
 
-		AnisotropicVoxelAlbedoTexture			= 0,
-		AnisotropicVoxelNormalTexture			= 1,
-		AnisotropicVoxelEmissionTexture			= 2,
+		AnisotropicVoxelAlbedoTexture			= 29,
+		AnisotropicVoxelNormalTexture			= 30,
+		AnisotropicVoxelEmissionTexture			= 31,
 
-		DirectionalLightShadowInvVPVMat			= 3,
-		PointLightShadowInvVPVMat				= 4,
-		SpotLightShadowInvVPVMat				= 5,
+		DirectionalLightShadowInvVPVMat			= 32,
+		PointLightShadowInvVPVMat				= 33,
+		SpotLightShadowInvVPVMat				= 34,
 
 		VCT_InputVoxelColorMap					= 29,
 		VCT_InputDirectColorMap					= 30,

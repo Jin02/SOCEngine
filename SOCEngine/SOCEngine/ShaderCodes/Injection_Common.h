@@ -3,17 +3,18 @@
 #ifndef __SOC_INJECTION_COMMON_H__
 #define __SOC_INJECTION_COMMON_H__
 
+#define NEVER_USE_VSM
+
 #include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
 #include "Voxelization_Common.h"
 #include "GICommon.h"
 
-
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
-StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t3 );
-StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t4 );
-StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t5 );
+StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
+StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
 
 RWTexture3D<uint> OutAnistropicVoxelColorTexture									: register( u0 );
 
