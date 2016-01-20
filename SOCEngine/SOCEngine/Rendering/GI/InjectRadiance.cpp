@@ -16,14 +16,12 @@ using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
-InjectRadiance::InjectRadiance()
-	: _shader(nullptr), _colorMap(nullptr)
+InjectRadiance::InjectRadiance() : _shader(nullptr)
 {
 }
 
 InjectRadiance::~InjectRadiance()
 {
-	SAFE_DELETE(_colorMap);
 	SAFE_DELETE(_shader);
 }
 
@@ -64,23 +62,20 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 
 		std::vector<ShaderForm::InputTexture> inputTextures;
 		{
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.albedoMap));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.normalMap));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.emissionMap));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
 		}
 		_shader->SetInputTextures(inputTextures);
 	}
 
 	uint dimension = 1 << param.globalInfo->voxelDimensionPow2;
 
-	_colorMap = new AnisotropicVoxelMapAtlas;
-	_colorMap->Initialize(dimension, param.globalInfo->maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, param.globalInfo->maxMipLevel);
-
 	// Setting Output
 	{
 		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 		{
-			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),		_colorMap->GetSourceMapUAV()));
+			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),			param.outColorMap->GetSourceMapUAV()));
 		}
 
 		_shader->SetUAVs(outputs);
@@ -104,5 +99,4 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 
 void InjectRadiance::Destroy()
 {
-	_colorMap->Destroy();
 }

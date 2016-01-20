@@ -49,8 +49,7 @@ void InjectRadianceFromSpotLIght::Initialize(const InjectRadiance::InitParam& in
 	_shader->SetInputTextures(inputTextures);
 }
 
-void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr,
-										 const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers)
+void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization)
 {
 	Size<uint> activatedShadowMapSize = shadowMgr->GetActivatedSLShadowMapSize();
 
@@ -58,5 +57,5 @@ void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const Shado
 											(activatedShadowMapSize.h + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES, 1 );
 
 	_shader->SetThreadGroupInfo(threadGroup);
-	Dispath(dx, voxelizationInfoConstBuffers);
+	Dispath(dx, voxelization->GetConstBuffers());
 }

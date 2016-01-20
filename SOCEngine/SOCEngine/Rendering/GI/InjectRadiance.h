@@ -6,6 +6,7 @@
 #include "GlobalIlluminationCommon.h"
 #include "DirectX.h"
 #include "ShadowRenderer.h"
+#include "Voxelization.h"
 
 namespace Rendering
 {
@@ -18,18 +19,14 @@ namespace Rendering
 			{
 				const GlobalInfo*					globalInfo;
 				const Buffer::ConstBuffer*			giInfoConstBuffer;
-				const AnisotropicVoxelMapAtlas*		albedoMap;
-				const AnisotropicVoxelMapAtlas*		normalMap;
-				const AnisotropicVoxelMapAtlas*		emissionMap;
+				const AnisotropicVoxelMapAtlas*		outColorMap;
+				const Voxelization*					voxelization;
 
 				bool IsValid() const
 				{
-					return globalInfo && giInfoConstBuffer && albedoMap && normalMap && emissionMap;
+					return globalInfo && giInfoConstBuffer && voxelization && outColorMap;
 				}
 			};
-
-		private:
-			AnisotropicVoxelMapAtlas*							_colorMap;
 
 		protected:
 			GPGPU::DirectCompute::ComputeShader*				_shader;
@@ -45,9 +42,6 @@ namespace Rendering
 
 		public:
 			void Destroy();
-
-		public:
-			GET_ACCESSOR(ColorMap, const AnisotropicVoxelMapAtlas*, _colorMap);
 		};
 	}
 }
