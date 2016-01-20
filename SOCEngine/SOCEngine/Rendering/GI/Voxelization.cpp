@@ -50,7 +50,6 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 	};
 
 	uint dimension = 1 << globalInfo.voxelDimensionPow2;
-	const uint mipmapLevels = max((uint)Log2((float)dimension) + 1, 1);
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
 	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade,
