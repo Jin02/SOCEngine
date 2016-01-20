@@ -16,7 +16,7 @@ using namespace GPGPU::DirectCompute;
 GlobalIllumination::GlobalIllumination()
 	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
 	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr),
-	_voxelConeTracing(nullptr)
+	_voxelConeTracing(nullptr), _injectionColorMap(nullptr)
 {
 }
 
@@ -31,6 +31,7 @@ GlobalIllumination::~GlobalIllumination()
 
 	SAFE_DELETE(_mipmap);
 	SAFE_DELETE(_voxelConeTracing);
+	SAFE_DELETE(_injectionColorMap);
 }
 
 void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, float minWorldSize)
@@ -45,7 +46,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 			return log(v) / log(2.0f);
 		};
 
-		const uint mipmapLevels = max((uint)Log2((float)dimension) + 1, 1);
+		const uint mipmapGenOffset		= 4;
+		const uint mipmapLevels			= max((uint)Log2((float)dimension) + 1 - mipmapGenOffset, 1);
 
 		_globalInfo.maxNumOfCascade		= 1;
 		_globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
@@ -64,13 +66,16 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	// Injection
 	{
+		_injectionColorMap = new AnisotropicVoxelMapAtlas;
+		_injectionColorMap->Initialize(	dimension, _globalInfo.maxNumOfCascade,
+										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, _globalInfo.maxMipLevel);
+
 		InjectRadiance::InitParam initParam;
 		{
 			initParam.globalInfo		= &_globalInfo;
 			initParam.giInfoConstBuffer	= _giGlobalInfoCB;
-			initParam.albedoMap			= _voxelization->GetAnisotropicVoxelAlbedoMapAtlas();
-			initParam.normalMap			= _voxelization->GetAnisotropicVoxelNormalMapAtlas();
-			initParam.emissionMap		= _voxelization->GetAnisotropicVoxelEmissionMapAtlas();
+			initParam.voxelization		= _voxelization;
+			initParam.outColorMap		= _injectionColorMap;
 		}
 
 		_injectDirectionalLight	= new InjectRadianceFromDirectionalLIght;
@@ -101,16 +106,29 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 							 const Shadow::ShadowRenderer* shadowRenderer)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
-	// 작업 순서
-	// Voxelization -> Injection -> Mipmap -> Voxel Cone Tracing
 
-	// Voxelization Pass
+	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
 
-	// Injection, Mipmap, VCT Pass
+	// 2. Injection Pass
+	{
+		if(shadowRenderer->GetDirectionalLightCount() > 0)
+			_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization);
+
+		if(shadowRenderer->GetPointLightCount() > 0)
+			_injectPointLight->Inject(dx, shadowRenderer, _voxelization);
+
+		if(shadowRenderer->GetSpotLightCount() > 0)
+			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
+	}
+
+	// 3. Mipmap Pass
+	_mipmap->Mipmapping(dx, _injectionColorMap, _globalInfo.maxNumOfCascade);
+
+	// 4. Voxel Cone Tracing Pass
 	{
 		VoxelConeTracing::DirectLightingParam param;
 		{
@@ -121,26 +139,7 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 			param.directLightingColorMap	= camera->GetUncompressedOffScreen();
 		}
 
-		if(shadowRenderer->GetDirectionalLightCount() > 0)
-		{
-			_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
-			_mipmap->Mipmapping(dx, _injectDirectionalLight, _globalInfo.maxNumOfCascade);
-			_voxelConeTracing->Run(dx, _injectDirectionalLight->GetColorMap(), param);
-		}
-
-		if(shadowRenderer->GetPointLightCount() > 0)
-		{
-			_injectPointLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
-			_mipmap->Mipmapping(dx, _injectPointLight, _globalInfo.maxNumOfCascade);
-			_voxelConeTracing->Run(dx, _injectPointLight->GetColorMap(), param);
-		}
-
-		if(shadowRenderer->GetSpotLightCount() > 0)
-		{
-			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
-			_mipmap->Mipmapping(dx, _injectSpotLight, _globalInfo.maxNumOfCascade);
-			_voxelConeTracing->Run(dx, _injectSpotLight->GetColorMap(), param);
-		}
+		_voxelConeTracing->Run(dx, _injectionColorMap, param);
 	}
 }
 
@@ -153,4 +152,5 @@ void GlobalIllumination::Destroy()
 	_injectSpotLight->Destroy();
 	_mipmap->Destroy();
 	_voxelConeTracing->Destroy();
+	_injectionColorMap->Destory();
 }

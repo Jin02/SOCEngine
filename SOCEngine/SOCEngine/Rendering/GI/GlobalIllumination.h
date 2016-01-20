@@ -25,6 +25,7 @@ namespace Rendering
 		private:
 			GlobalInfo								_globalInfo;
 			Buffer::ConstBuffer*					_giGlobalInfoCB;
+			AnisotropicVoxelMapAtlas*				_injectionColorMap;
 
 			Voxelization*							_voxelization;
 
