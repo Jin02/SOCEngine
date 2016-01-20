@@ -19,16 +19,14 @@ AnisotropicVoxelMapAtlas::~AnisotropicVoxelMapAtlas()
 }
 
 void AnisotropicVoxelMapAtlas::Initialize(
-	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount)
+	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount)
 {
-	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-
 	_sideLength		= sideLength;
 	_mipmapCount	= mipmapCount;
 
 	uint width		= sideLength * (uint)Direction::Num;
 	uint height		= sideLength * maxNumOfCascade;
-	Texture3D::Initialize(width, height, sideLength, srvFormat, uavFormat, bindFlags, _mipmapCount);
+	Texture3D::Initialize(width, height, sideLength, typelessFormat, srvFormat, uavFormat, 0, _mipmapCount);
 
 	auto device = Director::SharedInstance()->GetDirectX()->GetDevice();
 
