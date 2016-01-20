@@ -15,7 +15,8 @@ using namespace GPGPU::DirectCompute;
 
 GlobalIllumination::GlobalIllumination()
 	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
-	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr)
+	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr),
+	_voxelConeTracing(nullptr)
 {
 }
 
@@ -29,6 +30,7 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_injectSpotLight);
 
 	SAFE_DELETE(_mipmap);
+	SAFE_DELETE(_voxelConeTracing);
 }
 
 void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, float minWorldSize)
@@ -86,44 +88,69 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 		_mipmap = new MipmapAnisotropicVoxelMapAtlas;
 		_mipmap->Initialize();
 	}
+
+	// Voxel Cone Tracing
+	{
+		_voxelConeTracing = new VoxelConeTracing;
+		_voxelConeTracing->Initialize(dx);
+	}
 }
 
-void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::CameraForm*& camera, const Core::Scene* curScene)
+void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
+							 const Manager::RenderManager* renderManager,
+							 const Shadow::ShadowRenderer* shadowRenderer)
 {
-	const RenderManager* renderManager		= curScene->GetRenderManager();
-	const ShadowRenderer* shadowRenderer	= curScene->GetShadowManager();
+	ASSERT_COND_MSG(camera, "Error, camera is null");
+	// 작업 순서
+	// Voxelization -> Injection -> Mipmap -> Voxel Cone Tracing
 
-	// 1. Voxelization Pass
+	// Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
 
-	// 2. Injection Pass
+	// Injection, Mipmap, VCT Pass
 	{
+		VoxelConeTracing::DirectLightingParam param;
+		{
+			param.gbuffer.albedo_emission	= camera->GetGBufferAlbedoEmission();
+			param.gbuffer.normal_roughness	= camera->GetGBufferNormalRoughness();
+			param.gbuffer.specular_metallic = camera->GetGBufferSpecularMetallic();
+			param.opaqueDepthBuffer			= camera->GetOpaqueDepthBuffer();
+			param.directLightingColorMap	= camera->GetUncompressedOffScreen();
+		}
+
 		if(shadowRenderer->GetDirectionalLightCount() > 0)
+		{
 			_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
+			_mipmap->Mipmapping(dx, _injectDirectionalLight, _globalInfo.maxNumOfCascade);
+			_voxelConeTracing->Run(dx, _injectDirectionalLight->GetColorMap(), param);
+		}
 
-		if(shadowRenderer->GetDirectionalLightCount() > 0)
+		if(shadowRenderer->GetPointLightCount() > 0)
+		{
 			_injectPointLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
+			_mipmap->Mipmapping(dx, _injectPointLight, _globalInfo.maxNumOfCascade);
+			_voxelConeTracing->Run(dx, _injectPointLight->GetColorMap(), param);
+		}
 
-		if(shadowRenderer->GetDirectionalLightCount() > 0)
+		if(shadowRenderer->GetSpotLightCount() > 0)
+		{
 			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization->GetConstBuffers());
-	}
-
-	// 3. Mipmapping Pass
-	{
-		_mipmap->Mipmapping(dx, _injectDirectionalLight, _globalInfo.maxNumOfCascade);
-		_mipmap->Mipmapping(dx, _injectPointLight, _globalInfo.maxNumOfCascade);
-		_mipmap->Mipmapping(dx, _injectSpotLight, _globalInfo.maxNumOfCascade);
-	}
-
-	// 4. Voxel Cone Tracing Pass
-	{
-
+			_mipmap->Mipmapping(dx, _injectSpotLight, _globalInfo.maxNumOfCascade);
+			_voxelConeTracing->Run(dx, _injectSpotLight->GetColorMap(), param);
+		}
 	}
 }
 
 void GlobalIllumination::Destroy()
 {
+	_giGlobalInfoCB->Destory();
+	_voxelization->Destroy();
+	_injectDirectionalLight->Destroy();
+	_injectPointLight->Destroy();
+	_injectSpotLight->Destroy();
+	_mipmap->Destroy();
+	_voxelConeTracing->Destroy();
 }

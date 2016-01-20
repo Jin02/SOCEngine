@@ -12,7 +12,9 @@
 
 #include "MipmapAnisotropicVoxelMapAtlas.h"
 
-#include "CameraForm.h"
+#include "VoxelConeTracing.h"
+#include "RenderManager.h"
+#include "ShadowRenderer.h"
 
 namespace Rendering
 {
@@ -31,6 +33,7 @@ namespace Rendering
 			InjectRadianceFromSpotLIght*			_injectSpotLight;
 
 			MipmapAnisotropicVoxelMapAtlas*			_mipmap;
+			VoxelConeTracing*						_voxelConeTracing;
 
 		public:
 			GlobalIllumination();
@@ -38,8 +41,11 @@ namespace Rendering
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
-			void Run(const Device::DirectX* dx, const Camera::CameraForm*& camera, const Core::Scene* curScene);
+			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Manager::RenderManager* renderManager, const Shadow::ShadowRenderer* shadowRenderer);
 			void Destroy();
+
+		public:
+			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*, _voxelConeTracing->GetIndirectColorMap());
 		};
 	}
 }
