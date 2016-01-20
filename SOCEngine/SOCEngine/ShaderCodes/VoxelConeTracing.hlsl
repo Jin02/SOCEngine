@@ -193,9 +193,9 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 }
 
 [numthreads(VOXEL_CONE_TRACING_TILE_RES, VOXEL_CONE_TRACING_TILE_RES, 1)]
-void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID, 
-							uint3 localIdx	: SV_GroupThreadID,
-							uint3 groupIdx	: SV_GroupID)
+void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID, 
+						uint3 localIdx	: SV_GroupThreadID,
+						uint3 groupIdx	: SV_GroupID)
 {
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);

@@ -50,7 +50,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 		std::vector<ShaderMacro> macros;
 		macros.push_back(dx->GetMSAAShaderMacro());
 	
-		blob = shaderMgr->CreateBlob(filePath, "cs", "VoxelConeTracing", false, &macros);
+		blob = shaderMgr->CreateBlob(filePath, "cs", "VoxelConeTracingCS", false, &macros);
 	}
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 0);
