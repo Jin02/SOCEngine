@@ -217,10 +217,10 @@ void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID,
 
 	uint2 texIndex[4] =
 	{
-		globalIdx.xy + uint2(0, 0),
-		globalIdx.xy + uint2(0, 1),
-		globalIdx.xy + uint2(1, 0),
-		globalIdx.xy + uint2(1, 1)
+		scaledGlobalIdx + uint2(0, 0),
+		scaledGlobalIdx + uint2(0, 1),
+		scaledGlobalIdx + uint2(1, 0),
+		scaledGlobalIdx + uint2(1, 1)
 	};
 
 	[unroll] for(uint i=0; i<4; ++i)
@@ -232,7 +232,7 @@ void GlobalIlluminationCS(	uint3 globalIdx : SV_DispatchThreadID,
 		float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
 		float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
 
-		g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+		g_outputIndirectMap[texIndex[i]] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 	}
 
 #else
