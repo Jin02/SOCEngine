@@ -9,6 +9,8 @@
 
 #include "BoundBox.h"
 
+#define SET_SHADOW_ACCESSOR(name, type, variable, counter) inline void Set##name(type t)	{ variable = t; ++counter;}
+
 namespace Rendering
 {
 	namespace Light
@@ -31,16 +33,15 @@ namespace Rendering
 			Color						_color; //a is strength
 			float						_bias;
 			float						_projNear;
-			uint						_paramUpdateCounter;
 			bool						_useVSM;
 
 		protected:
+			uint						_paramUpdateCounter;
+
 			const Light::LightForm*		_owner;
 			Math::Matrix				_invNearFarViewProjMat;
 			Math::Matrix				_viewProjMat;
 			Math::Matrix				_invViewProjViewportMat;
-
-			uint						_transformUpdateCounter;
 
 		public:
 			ShadowCommon(const Light::LightForm* owner);
@@ -53,22 +54,23 @@ namespace Rendering
 			void MakeParam(CommonParam& outParam, uint lightIndex) const;
 
 		public:
-			void SetBias(float bias);
-			void SetProjNear(float n);
-			void SetColor(const Color& color);
-			void SetUseVSM(bool b);
-
 			GET_ACCESSOR(Bias,								float,						_bias);
+			SET_SHADOW_ACCESSOR(Bias,						float,						_bias,			_paramUpdateCounter);
+
 			GET_ACCESSOR(Color,								const Color&,				_color);
+			SET_SHADOW_ACCESSOR(Color,						const Color&,				_color,			_paramUpdateCounter);
+
 			GET_ACCESSOR(ProjectionNear,					float,						_projNear);
+			void SetProjectionNear(float n);
+
 			GET_ACCESSOR(UseVSM,							bool,						_useVSM);
+			SET_SHADOW_ACCESSOR(UseVSM,						bool,						_useVSM,		_paramUpdateCounter);
 
 			GET_ACCESSOR(InvNearFarViewProjectionMatrix,	const Math::Matrix&,		_invNearFarViewProjMat);
 			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,		_viewProjMat);
 			GET_ACCESSOR(Owner,								const Light::LightForm*,	_owner);
 
 			GET_ACCESSOR(ParamUpdateCounter,				uint,						_paramUpdateCounter);
-			GET_ACCESSOR(TransformUpdateCounter,			uint,						_transformUpdateCounter);
 		};
 	}
 }
