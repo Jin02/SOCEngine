@@ -57,7 +57,7 @@ void MeshCamera::OnInitialize()
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
-	EnableRenderTransparentMesh(true);
+	EnableRenderTransparentMesh(false);
 
 	_deferredShadingWithLightCulling = new ShadingWithLightCulling;
 	{
@@ -75,7 +75,7 @@ void MeshCamera::OnInitialize()
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
 
 	_offScreen = new OffScreen;
-	_offScreen->Initialize(_deferredShadingWithLightCulling->GetOffScreen());
+	_offScreen->Initialize(_deferredShadingWithLightCulling->GetUncompressedOffScreen(), false);
 }
 
 void MeshCamera::OnDestroy()
@@ -339,7 +339,10 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	}
 }
 
-void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderManager, const LightManager* lightManager, const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM)
+void MeshCamera::Render(const Device::DirectX* dx,
+						const RenderManager* renderManager, const LightManager* lightManager,
+						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -495,10 +498,10 @@ void MeshCamera::Render(const Device::DirectX* dx, const RenderManager* renderMa
 		}
 	}
 
+	const RenderTexture* indirectColorMap = (giPass != nullptr) ? giPass(this) : nullptr;
+
 	// Main RT
-	{
-		_offScreen->Render(_renderTarget, dx->GetSamplerStateLinear());
-	}
+	_offScreen->Render(	dx, _renderTarget, indirectColorMap);
 
 	// Transparency
 	if(_useTransparent)
