@@ -35,6 +35,7 @@ namespace Device
 		ID3D11RasterizerState*		_rasterizerClockwiseDisableCulling;
 		ID3D11RasterizerState*		_rasterizerClockwiseDefault;
 		ID3D11RasterizerState*		_rasterizerCounterClockwiseDisableCulling;
+		ID3D11RasterizerState*		_rasterizerClockwiseDisableCullingWithClip;
 		ID3D11RasterizerState*		_rasterizerCounterClockwiseDefault;
 
 		ID3D11BlendState*			_opaqueBlend;
@@ -91,6 +92,7 @@ namespace Device
 		GET_ACCESSOR(RasterizerStateCCWDisableCulling,			ID3D11RasterizerState*,		_rasterizerCounterClockwiseDisableCulling);
 		GET_ACCESSOR(RasterizerStateCCWDefaultState,			ID3D11RasterizerState*,		_rasterizerCounterClockwiseDefault);
 		GET_ACCESSOR(RasterizerStateCWDisableCulling,			ID3D11RasterizerState*,		_rasterizerClockwiseDisableCulling);
+		GET_ACCESSOR(RasterizerStateCWDisableCullingWithClip,	ID3D11RasterizerState*,		_rasterizerClockwiseDisableCullingWithClip);
 		GET_ACCESSOR(RasterizerStateCWDefaultState,				ID3D11RasterizerState*,		_rasterizerClockwiseDefault);
 
 		GET_ACCESSOR(BlendStateOpaque,							ID3D11BlendState*,			_opaqueBlend);

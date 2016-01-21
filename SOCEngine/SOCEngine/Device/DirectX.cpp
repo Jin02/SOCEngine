@@ -12,7 +12,8 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr)
+	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
+	_rasterizerClockwiseDisableCullingWithClip(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -244,6 +245,13 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.FrontCounterClockwise	= false;
 		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDefault)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
+
+		desc.FillMode				= D3D11_FILL_SOLID;
+		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.DepthClipEnable		= false;
+		desc.FrontCounterClockwise	= false;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCullingWithClip)) )
+			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
 	//Initialize Blend State
@@ -432,6 +440,7 @@ Math::Size<uint> DirectX::FetchBackBufferSize()
 void DirectX::Destroy()
 {
 	SAFE_RELEASE(_renderTargetView);
+	SAFE_RELEASE(_rasterizerClockwiseDisableCullingWithClip);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
 	SAFE_RELEASE(_rasterizerClockwiseDefault);
 	SAFE_RELEASE(_rasterizerCounterClockwiseDisableCulling);
