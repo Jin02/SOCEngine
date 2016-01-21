@@ -81,7 +81,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
-		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMap");
+		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMaps");
 
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
@@ -109,11 +109,14 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		ShaderForm::InputTexture inputTexture;
 		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		inputTexture.texture	= _voxelAlbedoMapAtlas;
+		inputTextures.push_back(inputTexture);
+
 		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
 		inputTexture.texture	= _voxelNormalMapAtlas;
+		inputTextures.push_back(inputTexture);
+
 		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
 		inputTexture.texture	= _voxelEmissionMapAtlas;
-
 		inputTextures.push_back(inputTexture);
 	}
 
@@ -122,11 +125,14 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		ShaderForm::InputUnorderedAccessView output;
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		output.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
+		outputs.push_back(output);
+
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
 		output.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
+		outputs.push_back(output);
+
 		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
 		output.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
-
 		outputs.push_back(output);
 	}
 
