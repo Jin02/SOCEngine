@@ -1,9 +1,12 @@
 #include "GlobalIllumination.h"
 #include "BindIndexInfo.h"
 #include "Director.h"
+#include "EngineShaderFactory.hpp"
+#include "ResourceManager.h"
 
 using namespace Device;
 using namespace Core;
+using namespace Resource;
 using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
@@ -16,7 +19,7 @@ using namespace GPGPU::DirectCompute;
 GlobalIllumination::GlobalIllumination()
 	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
 	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr),
-	_voxelConeTracing(nullptr), _injectionColorMap(nullptr)
+	_voxelConeTracing(nullptr), _injectionColorMap(nullptr), _clearVoxelMapCS(nullptr)
 {
 }
 
@@ -32,7 +35,54 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_mipmap);
 	SAFE_DELETE(_voxelConeTracing);
 	SAFE_DELETE(_injectionColorMap);
+	SAFE_DELETE(_clearVoxelMapCS);
 }
+
+// 귀찮아서 그냥 복붙했지만, Voxelization에 있는 것과 하나로 합쳐서 정리해야함
+void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
+{
+	std::string filePath = "";
+	{
+		Factory::EngineFactory pathFind(nullptr);
+		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMap");
+
+		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+	}
+
+	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
+
+	ComputeShader::ThreadGroup threadGroup;
+	{
+		auto ComputeThreadGroupSideLength = [](uint sideLength)
+		{
+			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
+		};
+
+		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)AnisotropicVoxelMapAtlas::Direction::Num);
+		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
+		threadGroup.z = ComputeThreadGroupSideLength(dimension);
+	}
+
+	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
+	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+
+	std::vector<ShaderForm::InputTexture> inputTextures;
+	inputTextures.push_back(ShaderForm::InputTexture(0, _injectionColorMap));
+
+	std::vector<ShaderForm::InputUnorderedAccessView> outputs;
+	outputs.push_back(ShaderForm::InputUnorderedAccessView(0, _injectionColorMap->GetUnorderedAccessView()));
+
+	_clearVoxelMapCS->SetInputTextures(inputTextures);
+	_clearVoxelMapCS->SetUAVs(outputs);
+}
+
+// 귀찮아서 그냥 복붙했지만, Voxelization에 있는 것과 하나로 합쳐서 정리해야함
+void GlobalIllumination::ClearInjectColorVoxelMap(const Device::DirectX* dx)
+{
+	_clearVoxelMapCS->Dispatch(dx->GetContext());
+}
+////
 
 void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, float minWorldSize)
 {
@@ -99,6 +149,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 		_voxelConeTracing = new VoxelConeTracing;
 		_voxelConeTracing->Initialize(dx);
 	}
+
+	InitializeClearVoxelMap(dimension, _globalInfo.maxNumOfCascade);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
@@ -112,6 +164,8 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
+
+	ClearInjectColorVoxelMap(dx);
 
 	// 2. Injection Pass
 	{

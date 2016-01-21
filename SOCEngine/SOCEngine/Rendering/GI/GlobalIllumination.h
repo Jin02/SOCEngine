@@ -35,10 +35,15 @@ namespace Rendering
 
 			MipmapAnisotropicVoxelMapAtlas*			_mipmap;
 			VoxelConeTracing*						_voxelConeTracing;
+			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
 		public:
 			GlobalIllumination();
 			~GlobalIllumination();
+
+		private:
+			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
+			void ClearInjectColorVoxelMap(const Device::DirectX* dx);
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
