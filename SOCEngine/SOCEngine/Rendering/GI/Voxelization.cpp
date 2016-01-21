@@ -181,7 +181,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	float cameraFar  = camera->GetFar();
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
+	context->RSSetState(dx->GetRasterizerStateCWDisableCullingWithClip());
 	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
 
 	float blendFactor[1] = {0, };
@@ -213,6 +213,11 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 		_voxelNormalMapAtlas->GetSourceMapUAV()->GetView(),
 		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView()
 	};
+
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
+	context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
+	context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 

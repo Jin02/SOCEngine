@@ -28,8 +28,9 @@ namespace Rendering
 			void Destory();
 
 		public:
-			GET_ACCESSOR(Texture, ID3D11Texture3D*, _texture);
-			GET_ACCESSOR(Size, const Math::Vector3&, _size);
+			GET_ACCESSOR(Texture,				ID3D11Texture3D*,				_texture);
+			GET_ACCESSOR(RenderTargetView,		ID3D11RenderTargetView*,		_rtv);
+			GET_ACCESSOR(Size,					const Math::Vector3&,			_size);
 		};
 	}
 }
