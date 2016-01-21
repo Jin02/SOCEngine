@@ -382,6 +382,9 @@
     <Filter Include="Rendering\GI\VoxelConeTracing">
       <UniqueIdentifier>{ceba6f59-37a2-40b6-8f7d-3d55c0c64d04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\GI\Voxelization\Clear">
+      <UniqueIdentifier>{bbd6abee-6df7-4926-a831-ab67af13f2a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1235,9 +1238,6 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
-      <Filter>ShaderCodes\GI\Voxelization</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
       <Filter>ShaderCodes\GI\Injection</Filter>
     </FxCompile>
@@ -1270,6 +1270,12 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <Filter>ShaderCodes\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelMaps.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
