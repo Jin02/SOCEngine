@@ -66,12 +66,8 @@ void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const Anisotr
 
 		// Setting Thread Group
 		{
-			ComputeShader::ThreadGroup threadGroup;
-			threadGroup.x = ((dimension / mipCoff / 6) + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
-			threadGroup.y =  (dimension / mipCoff + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
-			threadGroup.z =  (dimension / mipCoff + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
-
-			_shader->SetThreadGroupInfo(threadGroup);
+			uint threadCount = (dimension / mipCoff + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
+			_shader->SetThreadGroupInfo(ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
 		}
 
 		InfoCB info;
@@ -99,8 +95,8 @@ void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const Anisotr
 	{
 		Mipmap(colorMap->GetSourceMapUAV(), colorMap->GetMipmapUAV(0), 0, curCascade);
 
-		uint mipCount = colorMap->GetMipMapCount();
-		for(uint i=1; i<mipCount; ++i)
+		uint maxMipLevel = colorMap->GetMaxMipmapLevel();
+		for(uint i=1; i<maxMipLevel; ++i)
 			Mipmap(colorMap->GetMipmapUAV(i-1), colorMap->GetMipmapUAV(i), i, curCascade);
 	}
 }
