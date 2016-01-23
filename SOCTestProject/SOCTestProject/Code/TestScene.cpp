@@ -31,8 +31,8 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-//	ActivateGI(true);
-
+	ActivateGI(true);
+//
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
@@ -109,6 +109,7 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
+	return;
 	Transform* control = _light->GetTransform();
 	float value = 1;
 
