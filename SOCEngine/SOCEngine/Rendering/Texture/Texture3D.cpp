@@ -73,7 +73,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	if(bindFlag & D3D11_BIND_UNORDERED_ACCESS)
 	{
 		_uav = new UnorderedAccessView;
-		_uav->Initialize(uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, depth);
+		_uav->Initialize(uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
 	}
 }
 
