@@ -104,40 +104,23 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 
-	std::vector<ShaderForm::InputTexture> inputTextures;
+	std::vector<ShaderForm::InputUnorderedAccessView> uavs;
 	{
-		ShaderForm::InputTexture inputTexture;
-		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		inputTexture.texture	= _voxelAlbedoMapAtlas;
-		inputTextures.push_back(inputTexture);
+		ShaderForm::InputUnorderedAccessView uav;
+		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
+		uav.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
+		uavs.push_back(uav);
 
-		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		inputTexture.texture	= _voxelNormalMapAtlas;
-		inputTextures.push_back(inputTexture);
+		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
+		uav.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
+		uavs.push_back(uav);
 
-		inputTexture.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		inputTexture.texture	= _voxelEmissionMapAtlas;
-		inputTextures.push_back(inputTexture);
+		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
+		uav.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
+		uavs.push_back(uav);
 	}
 
-	std::vector<ShaderForm::InputUnorderedAccessView> outputs;
-	{
-		ShaderForm::InputUnorderedAccessView output;
-		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		output.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
-		outputs.push_back(output);
-
-		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		output.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
-		outputs.push_back(output);
-
-		output.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		output.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
-		outputs.push_back(output);
-	}
-
-	_clearVoxelMapCS->SetInputTextures(inputTextures);
-	_clearVoxelMapCS->SetUAVs(outputs);
+	_clearVoxelMapCS->SetUAVs(uavs);
 }
 
 void Voxelization::Destroy()
@@ -220,10 +203,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView()
 	};
 
-	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
-	context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
-	context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
+	//float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	//context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
+	//context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
+	//context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
