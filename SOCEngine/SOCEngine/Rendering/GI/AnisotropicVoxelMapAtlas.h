@@ -32,8 +32,9 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(SideLength,	uint,	_sideLength);
-			GET_ACCESSOR(MipMapCount,	uint,	_mipmapCount);
+			GET_ACCESSOR(SideLength,		uint,		_sideLength);
+			GET_ACCESSOR(MaxMipmapLevel,	uint,		_mipmapCount-1);
+			GET_ACCESSOR(MipmapCount,		uint,		_mipmapCount);
 
 			GET_ACCESSOR(SourceMapUAV, const View::UnorderedAccessView*, _uav);
 			inline const View::UnorderedAccessView* GetMipmapUAV(uint index) const { return _mipmapUAVs[index]; }

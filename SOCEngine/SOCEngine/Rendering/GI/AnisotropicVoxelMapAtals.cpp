@@ -31,15 +31,10 @@ void AnisotropicVoxelMapAtlas::Initialize(
 
 	auto device = Director::SharedInstance()->GetDirectX()->GetDevice();
 
-	for(uint i=0; i<mipmapCount - 1; ++i)
+	for(uint i=1; i<mipmapCount; ++i)
 	{
 		UnorderedAccessView* uav = new UnorderedAccessView;
-
-		width	/= 2;
-		height	/= 2;
-		depth	/= 2;
-
-		uav->Initialize(uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, i, depth);
+		uav->Initialize(uavFormat, 0, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, i, -1);
 
 		_mipmapUAVs.push_back(uav);
 	}
