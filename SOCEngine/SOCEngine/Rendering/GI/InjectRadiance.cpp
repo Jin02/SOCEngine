@@ -80,6 +80,9 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
+	ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
+	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+
 	for(auto iter = voxelizationInfoConstBuffers.begin(); iter != voxelizationInfoConstBuffers.end(); ++iter)
 	{
 		ID3D11Buffer* cb = (*iter)->GetBuffer();
@@ -87,8 +90,8 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 		_shader->Dispatch(context);
 	}
 
-	//ID3D11Buffer* cb = nullptr;
-	//context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
+	ID3D11SamplerState* nullSamplerState = nullptr;
+	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSamplerState);
 }
 
 void InjectRadiance::Destroy()
