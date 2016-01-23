@@ -10,7 +10,7 @@ Texture3D<float4> g_inputAnisotropicVoxelMap	: register(t29);
 Texture2D<float4> g_inputDirectColorMap			: register(t30);
 
 RWTexture2D<float4> g_outputIndirectMap			: register(u0);
-SamplerState defaultSampler						: register(s0);
+SamplerState defaultSampler						: register(s0);	// linear
 
 #define MAXIMUM_CONE_COUNT				6
 #define CONE_TRACING_BIAS				2.5f
@@ -202,13 +202,13 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, 0.0f);
 
-	float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
-																		 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
-																		 // 나중에 해결 방안을 찾으면 고쳐야한다.
-	//const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
-	//const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
-	//float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
-	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, surface.roughness, halfConeAngle, 0.0f);
+	//float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
+	//																	 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
+	//																	 // 나중에 해결 방안을 찾으면 고쳐야한다.
+	////const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
+	////const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
+	////float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
+	//float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, surface.roughness, halfConeAngle, 0.0f);
 
 	//surface.metallic = 0.3f; //임시
 
@@ -240,8 +240,10 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 baseColor	= directColor.rgb * (1.0f - surface.metallic);
 
 	// Metallic 값을 이용해서 대충 섞는다.
-	float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
-	float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
+	//float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
+	//float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
+	float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * 1.0f);
+	float3 indirectSpecular	= float3(0.0f, 0.0f, 0.0f);
 
 	g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 #endif
