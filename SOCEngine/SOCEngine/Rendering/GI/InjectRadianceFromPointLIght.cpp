@@ -33,11 +33,13 @@ void InjectRadianceFromPointLIght::Initialize(const InjectRadiance::InitParam& i
 
 	std::vector<ShaderForm::InputShaderResourceBuffer> inputSRBuffers = _shader->GetInputSRBuffers();
 	{
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightRadiusWithCenter),	lightMgr->GetPointLightTransformSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightColor),				lightMgr->GetPointLightColorSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightRadiusWithCenter),		lightMgr->GetPointLightTransformSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightColor),					lightMgr->GetPointLightColorSRBuffer()));
 
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowParam),		shadowMgr->GetPointLightShadowParamSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowInvVPVMat),	shadowMgr->GetPointLightInvViewProjViewpotSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowParam),			shadowMgr->GetPointLightShadowParamSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowInvVPVMat),		shadowMgr->GetPointLightInvViewProjViewpotSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowIndex),			lightMgr->GetPointLightShadowIndexSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowViewProjMatrix),	shadowMgr->GetPointLightShadowViewProjSRBuffer()));
 	}
 	_shader->SetInputSRBuffers(inputSRBuffers);
 

@@ -39,6 +39,8 @@ void InjectRadianceFromSpotLIght::Initialize(const InjectRadiance::InitParam& in
 
 		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowParam),			shadowMgr->GetSpotLightShadowParamSRBuffer()));
 		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowInvVPVMat),		shadowMgr->GetSpotLightInvViewProjViewpotSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowIndex),			lightMgr->GetSpotLightShadowIndexSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowViewProjMatrix),	shadowMgr->GetSpotLightShadowViewProjSRBuffer()));
 	}
 	_shader->SetInputSRBuffers(inputSRBuffers);
 
