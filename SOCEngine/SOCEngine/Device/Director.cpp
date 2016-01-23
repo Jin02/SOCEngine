@@ -41,6 +41,11 @@ void Director::CalculateFPS()
 		elapsed = 0;
 		frameCnt = 0;
 	}
+
+	//char fpsChars[32] = {0, };
+	//sprintf_s(fpsChars, "FPS : %f", _fps);
+	//std::string fpsStr = fpsChars;
+	//Utility::Debug::Log(fpsStr);
 }
 
 void Director::Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
