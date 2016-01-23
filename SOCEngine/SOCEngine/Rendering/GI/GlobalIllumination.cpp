@@ -67,14 +67,10 @@ void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCa
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 
-	std::vector<ShaderForm::InputTexture> inputTextures;
-	inputTextures.push_back(ShaderForm::InputTexture(0, _injectionColorMap));
+	std::vector<ShaderForm::InputUnorderedAccessView> uavs;
+	uavs.push_back(ShaderForm::InputUnorderedAccessView(0, _injectionColorMap->GetUnorderedAccessView()));
 
-	std::vector<ShaderForm::InputUnorderedAccessView> outputs;
-	outputs.push_back(ShaderForm::InputUnorderedAccessView(0, _injectionColorMap->GetUnorderedAccessView()));
-
-	_clearVoxelMapCS->SetInputTextures(inputTextures);
-	_clearVoxelMapCS->SetUAVs(outputs);
+	_clearVoxelMapCS->SetUAVs(uavs);
 }
 
 // 귀찮아서 그냥 복붙했지만, Voxelization에 있는 것과 하나로 합쳐서 정리해야함
@@ -86,18 +82,18 @@ void GlobalIllumination::ClearInjectColorVoxelMap(const Device::DirectX* dx)
 
 void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, float minWorldSize)
 {
+	auto Log2 = [](float v) -> float
+	{
+		return log(v) / log(2.0f);
+	};
+
+	const uint mipmapGenOffset		= 0;
+	const uint mipmapLevels			= max((uint)Log2((float)dimension) - mipmapGenOffset + 1, 1);
+
 	// Setting GlobalInfo
 	{
 		_giGlobalInfoCB = new ConstBuffer;
 		_giGlobalInfoCB->Initialize(sizeof(GlobalInfo));
-
-		auto Log2 = [](float v) -> float
-		{
-			return log(v) / log(2.0f);
-		};
-
-		const uint mipmapGenOffset		= 4;
-		const uint mipmapLevels			= max((uint)Log2((float)dimension) + 1 - mipmapGenOffset, 1);
 
 		_globalInfo.maxNumOfCascade		= 1;
 		_globalInfo.voxelDimensionPow2	= (uint)Log2((float)dimension);
@@ -118,7 +114,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	{
 		_injectionColorMap = new AnisotropicVoxelMapAtlas;
 		_injectionColorMap->Initialize(	dimension, _globalInfo.maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, uint(_globalInfo.maxMipLevel));
+										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels);
 
 		InjectRadiance::InitParam initParam;
 		{
@@ -147,7 +143,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Voxel Cone Tracing
 	{
 		_voxelConeTracing = new VoxelConeTracing;
-		_voxelConeTracing->Initialize(dx);
+		_voxelConeTracing->Initialize(dx, _giGlobalInfoCB);
 	}
 
 	InitializeClearVoxelMap(dimension, _globalInfo.maxNumOfCascade);
@@ -184,16 +180,7 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	// 4. Voxel Cone Tracing Pass
 	{
-		VoxelConeTracing::DirectLightingParam param;
-		{
-			param.gbuffer.albedo_emission	= camera->GetGBufferAlbedoEmission();
-			param.gbuffer.normal_roughness	= camera->GetGBufferNormalRoughness();
-			param.gbuffer.specular_metallic = camera->GetGBufferSpecularMetallic();
-			param.opaqueDepthBuffer			= camera->GetOpaqueDepthBuffer();
-			param.directLightingColorMap	= camera->GetUncompressedOffScreen();
-		}
-
-		_voxelConeTracing->Run(dx, _injectionColorMap, param);
+		_voxelConeTracing->Run(dx, _injectionColorMap, camera);
 	}
 }
 
