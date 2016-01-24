@@ -104,10 +104,10 @@ void PointLightShadow::ComputeViewProjMatrix(const Math::Matrix& invViewportMat)
 
 			// Compute InvViewProjViewportMat
 			{
-				Matrix invNearFarViewProj;
-				Matrix::Inverse(invNearFarViewProj, _viewProjMat[matIdx]);
+				Matrix invViewProj;
+				Matrix::Inverse(invViewProj, _viewProjMat[matIdx]);
 
-				_invViewProjViewportMat[matIdx] = invViewportMat * invNearFarViewProj;
+				_invViewProjViewportMat[matIdx] = invViewportMat * invViewProj;
 			}
 		}
 	}
