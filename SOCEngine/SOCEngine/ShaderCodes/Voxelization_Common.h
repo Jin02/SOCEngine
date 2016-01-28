@@ -7,21 +7,16 @@
 #include "PhysicallyBased_Common.h"
 #include "GICommon.h"
 
-#define USE_VOXELIZATION_BLOATING_POS
+//#define USE_VOXELIZATION_BLOATING_POS
 #define VOXELIZATION_BLOATING_RATIO 5.0f
 
-cbuffer Voxelization_Info_CB : register( b1 )
+cbuffer Voxelization_Info_CB : register( b5 )
 {
-	matrix	voxelization_vp_axisX;
-	matrix	voxelization_vp_axisY;
-	matrix	voxelization_vp_axisZ;
+	matrix	voxelization_toVoxelViewSpace;
+	matrix	voxelization_toVoxelViewProjSpace;
 
 	float3	voxelization_minPos;
 	uint	voxelization_currentCascade;
-
-	float	voxelization_voxelizeSize;
-	float	voxelization_voxelSize;
-	float2	voxelization_dummy;
 };
 
 SamplerState defaultSampler			: register( s0 );

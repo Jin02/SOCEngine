@@ -17,17 +17,11 @@ namespace Rendering
 		public:
 			struct InfoCBData
 			{
-				Math::Matrix	viewProjX;
-				Math::Matrix	viewProjY;
-				Math::Matrix	viewProjZ;
+				Math::Matrix	voxelView;
+				Math::Matrix	voxelViewProj;
 
 				Math::Vector3	voxelizeMinPos;
 				uint			currentCascade;
-
-				float			voxelizeSize;
-				float			voxelSize;
-
-				float dummy1, dummy2;
 			};
 
 		private:
@@ -46,7 +40,7 @@ namespace Rendering
 
 		private:
 			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
-			void UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade, const Math::Vector3& camWorldPos, const GlobalInfo& globalInfo, float dimension, float camNear, float camFar);
+			void UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade, const Math::Vector3& camWorldPos, const GlobalInfo& globalInfo, float dimension);
 			void ClearZeroVoxelMap(const Device::DirectX*& dx);
 
 		public:
@@ -55,7 +49,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			static void ComputeVoxelVolumeProjMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos, float initVoxelizeSize);
+			static void ComputeVoxelViewMatrix(Math::Matrix& outMat, uint currentCascade, const Math::Vector3& camWorldPos, float initVoxelizeSize);
 			static void ComputeBound(Math::Vector3* outMin, Math::Vector3* outMid, Math::Vector3* outMax, float* outWorldSize,
 									 uint currentCascade, const Math::Vector3& camWorldPos, float initVoxelizeSize);
 
