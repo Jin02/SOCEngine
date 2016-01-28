@@ -26,21 +26,13 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].mat[faceIndex] );
 	worldPos /= worldPos.w;
 
-	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelization_voxelizeSize;
+	float voxelizeSize	= GetVoxelizeSize(voxelization_currentCascade);
+	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelizeSize;
 	int dimension		= (int)GetDimension();
 	int3 voxelIdx		= int3(voxelSpaceUV * dimension);
 
 	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;
-
-	//float4 screenSpaceCoord = float4( shadowMapUV.x * 2.0f - 1.0f,
-	//								-(shadowMapUV.y * 2.0f - 1.0f),
-	//								depth, 1.0f );
-
-	//float4 voxelSpaceUV = mul(screenSpaceCoord, injection_volumeProj);
-	//voxelSpaceUV /= voxelSpaceUV.w;
-	//voxelSpaceUV.xyz = voxelSpaceUV.xyz * 0.5f + 0.5f;
-	//uint3 voxelIdx = uint3(voxelSpaceUV.xyz * dimension);
 
 	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightIndex];
 	float3 lightCenterWorldPos		= lightCenterWithRadius.xyz;
