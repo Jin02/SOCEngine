@@ -67,7 +67,7 @@ namespace Rendering
 		ShadowGlobalParam				= 4,
 
 		GlobalIIllumination_InfoCB		= 0,
-		Voxelization_InfoCB				= 1,
+		Voxelization_InfoCB				= 5,
 		Mipmap_InfoCB					= 2,
 		VCT_GlobalInfoCB				= 1,
 	};
