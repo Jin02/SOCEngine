@@ -212,16 +212,16 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		{
 			// Setting Transform ConstBuffer
 			{
-				uint semanticIdx = (uint)ConstBufferBindIndex::World;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetWorldMatrixConstBuffer(), true, false, false, false);
+				uint bindIndex = (uint)ConstBufferBindIndex::World;
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, mesh->GetWorldMatrixConstBuffer(), true, gs != nullptr, false, false);
 				constBuffers.push_back(buf);
 			}
 
 			// Camera
 			if(camMatConstBuffer)
 			{
-				uint semanticIdx = (uint)ConstBufferBindIndex::Camera;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, camMatConstBuffer, true, false, false, false);
+				uint bindIndex = (uint)ConstBufferBindIndex::Camera;
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, camMatConstBuffer, true, gs != nullptr, false, false);
 				constBuffers.push_back(buf);
 			}
 		}
