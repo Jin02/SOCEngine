@@ -68,4 +68,15 @@ float ComputeVoxelSize(uint cascade)
 	return worldSize / dimension;
 }
 
+float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
+{
+	float3 voxelCenter;
+
+	voxelCenter.x = (voxelIdx.x * voxelSize) + (voxelSize * 0.5f) + bbMin.x;
+	voxelCenter.y = (voxelIdx.y * voxelSize) + (voxelSize * 0.5f) + bbMin.y;
+	voxelCenter.z = (voxelIdx.z * voxelSize) + (voxelSize * 0.5f) + bbMin.z;
+
+	return voxelCenter;
+}
+
 #endif
