@@ -57,6 +57,9 @@ void MipmapAnisotropicVoxelMapAtlas::Destroy()
 
 void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const AnisotropicVoxelMapAtlas* colorMap, uint maxNumOfCascade)
 {
+	if(colorMap->GetMipmapCount() <= 1)
+		return;
+
 	ID3D11DeviceContext* context				= dx->GetContext();
 	uint dimension								= colorMap->GetSideLength();
 
