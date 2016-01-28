@@ -12,6 +12,7 @@
 cbuffer Transform : register( b1 )		//Object World
 {
 	matrix transform_world;
+	matrix transform_worldInvTranspose;
 };
 
 cbuffer CameraMat : register( b2 )

@@ -15,6 +15,12 @@ namespace Rendering
 	{
 		class LightForm;
 	};
+
+	struct TransformCB
+	{
+		Math::Matrix world;
+		Math::Matrix worldInvTranspose;
+	};
 };
 
 namespace Core
@@ -42,7 +48,7 @@ namespace Core
 	public:
 		virtual void OnInitialize() = 0;
 		virtual void OnUpdate(float deltaTime);
-		virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix);
+		virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB);
 		virtual void OnRenderPreview();
 		virtual void OnDestroy() = 0;
 

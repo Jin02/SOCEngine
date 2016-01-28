@@ -27,7 +27,7 @@ VS_OUTPUT VS( VS_INPUT input )
 
 	output.localPos		= input.position;
 	output.uv			= input.uv;
-	output.normal 		= mul(input.normal, (float3x3)transform_world);
+	output.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
  
     return output;
 }
