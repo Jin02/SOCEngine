@@ -412,7 +412,7 @@ void DirectX::ClearDeviceContext() const
     FLOAT BlendFactor[4] = { 0,0,0,0 };
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
 	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(nullptr);
+	_immediateContext->RSSetState(_rasterizerClockwiseDefault);
 }
 
 Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
