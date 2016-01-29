@@ -9,15 +9,15 @@ namespace Rendering
 	{
 		class ConstBuffer;
 
-		class ConstBuffer_CPURead : private BaseBuffer
+		class CPUReadBuffer : private BaseBuffer
 		{
 		public:
-			ConstBuffer_CPURead();
-			virtual ~ConstBuffer_CPURead();
+			CPUReadBuffer();
+			virtual ~CPUReadBuffer();
 
 		public:
 			bool Initialize(unsigned int stride, unsigned int num);
-			void Read(ID3D11DeviceContext* context, BaseBuffer* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
+			void Read(ID3D11DeviceContext* context, ID3D11Resource* target, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
 
 		private:
 			void Update(ID3D11DeviceContext* context, const void* data){}
