@@ -77,7 +77,7 @@
     <ClInclude Include="Rendering\Buffer\BaseBuffer.h" />
     <ClInclude Include="Rendering\Buffer\BufferManager.h" />
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h" />
+    <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
@@ -95,6 +95,9 @@
     <ClInclude Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.h" />
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h" />
     <ClInclude Include="Rendering\GI\Voxelization.h" />
+    <ClInclude Include="Rendering\GI\VoxelViewer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
@@ -283,6 +286,13 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Component\Component.cpp" />
@@ -328,7 +338,7 @@
     <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\BufferManager.cpp" />
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp" />
+    <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
@@ -345,6 +355,9 @@
     <ClCompile Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.cpp" />
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp" />
     <ClCompile Include="Rendering\GI\Voxelization.cpp" />
+    <ClCompile Include="Rendering\GI\VoxelViewer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
     <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp" />

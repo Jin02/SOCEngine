@@ -385,6 +385,18 @@
     <Filter Include="ShaderCodes\GI\Voxelization\Clear">
       <UniqueIdentifier>{bbd6abee-6df7-4926-a831-ab67af13f2a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI\Debug">
+      <UniqueIdentifier>{0e5095af-568b-402b-bb18-56577dd22a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Debug\VoxelViewer">
+      <UniqueIdentifier>{edb207c4-6040-4741-bf50-fd2545f14159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\GI\Debug">
+      <UniqueIdentifier>{f436679a-a7b1-48c8-901b-76271f7ae05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\CPURead">
+      <UniqueIdentifier>{849d23c7-d827-4bd0-b5b3-73a31080cedf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -530,9 +542,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Buffer\ConstBuffer_CPURead.h">
-      <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material\Manager</Filter>
@@ -877,6 +886,12 @@
     <ClInclude Include="ShaderCodes\GBufferParser.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelViewer.h">
+      <Filter>Rendering\GI\Debug\VoxelViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h">
+      <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -992,9 +1007,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp">
       <Filter>Rendering\Light\Culling</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Buffer\ConstBuffer_CPURead.cpp">
-      <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material\Manager</Filter>
@@ -1206,6 +1218,12 @@
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
       <Filter>Rendering\GI\VoxelConeTracing</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelViewer.cpp">
+      <Filter>Rendering\GI\Debug\VoxelViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp">
+      <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1276,6 +1294,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\ClearVoxelMaps.hlsl">
       <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
+      <Filter>ShaderCodes\GI\Debug</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
