@@ -32,7 +32,7 @@ TestScene::~TestScene(void)
 void TestScene::OnInitialize()
 {
 	ActivateGI(true);
-//
+
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
@@ -50,17 +50,44 @@ void TestScene::OnInitialize()
 	//_camera->GetTransform()->UpdatePosition(Vector3(0, 5, -15));
 	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
 
-	//_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	//_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
-	//_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
-	//AddObject(_testObject);
+	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
+	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	AddObject(_testObject);
 
-	_testObject2 = importer->Load("./Resources/CornellBox/Sphere.obj", false);
-	_testObject2->GetTransform()->UpdatePosition(Vector3(0, -4.0f, 11.0f));
-	_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
-	_testObject2->GetTransform()->UpdateScale(Vector3(5, 5, 5));
-	AddObject(_testObject2);
+	//_testObject2 = importer->Load("./Resources/CornellBox/Sphere.obj", false);
+	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, -4.0f, 11.0f));
+	//_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
+	//_testObject2->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	//AddObject(_testObject2);
+
+	//_testObject2 = importer->Load("./Resources/Voxel/voxel.obj", false);
+	//_testObject2->GetTransform()->UpdatePosition(Vector3(-2.5f, 2.2f, 14.0f));
+	//_testObject2->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));
+	//_testObject2->GetTransform()->UpdateScale(Vector3(3, 3, 3));
+	//AddObject(_testObject2);
+
+	{
+		//PhysicallyBasedMaterial* left	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(3)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//left->UpdateMainColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
+
+		//PhysicallyBasedMaterial* right	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(0)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//right->UpdateMainColor(Color(0.0f, 0.0f, 1.0f, 1.0f));
+
+		//PhysicallyBasedMaterial* back	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(1)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//back->UpdateMainColor(Color(0.0f, 1.0f, 1.0f, 1.0f));
+
+		//PhysicallyBasedMaterial* front	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(4)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//front->UpdateMainColor(Color(1.0f, 1.0f, 0.0f, 1.0f));
+
+		//PhysicallyBasedMaterial* top	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(5)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//top->UpdateMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+		//PhysicallyBasedMaterial* bottom	= static_cast<PhysicallyBasedMaterial*>(_testObject2->GetChild(0)->GetChild(2)->GetComponent<Rendering::Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+		//bottom->UpdateMainColor(Color(1.0f, 0.0f, 1.0f, 1.0f));
+	}
+
 #endif
 	
 #if 0
@@ -105,11 +132,28 @@ void TestScene::OnInitialize()
 
 void TestScene::OnRenderPreview()
 {
+	if(_globalIllumination)
+	{
+		auto voxelViwer = _globalIllumination->GetDebugVoxelViewer();
+		
+		Object* debugVoxels = voxelViwer->GetVoxelsParent();
+		if(debugVoxels)
+		{
+			Object* exist = FindObject(debugVoxels->GetName());
+			if( exist == nullptr )
+			{
+				auto& objects = _rootObjects.GetVector();
+				for(auto iter = objects.begin(); iter != objects.end(); ++iter)
+					(*iter)->SetUse(false);
+	
+				AddObject(debugVoxels);
+			}
+		}
+	}
 }
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	return;
 	Transform* control = _light->GetTransform();
 	float value = 1;
 
@@ -150,22 +194,30 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		PointLight* pl = _light->GetComponent<PointLight>();
 		float us = pl->GetShadow()->GetUnderScanSize();
 		pl->GetShadow()->SetUnderScanSize(us + 0.1f);
+		//Vector3 euler = control->GetLocalEulerAngle();
+		//control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
 		PointLight* pl = _light->GetComponent<PointLight>();
 		float us = pl->GetShadow()->GetUnderScanSize();
 		pl->GetShadow()->SetUnderScanSize(us - 0.1f);
+		//Vector3 euler = control->GetLocalEulerAngle();
+		//control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
 		PointLight* pl = _light->GetComponent<PointLight>();
 		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
+		//Vector3 euler = control->GetLocalEulerAngle();
+		//control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
 	}
 	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
 	{
 		PointLight* pl = _light->GetComponent<PointLight>();
 		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
+		//Vector3 euler = control->GetLocalEulerAngle();
+		//control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
 	}
 
 
