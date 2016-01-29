@@ -19,7 +19,8 @@ using namespace GPGPU::DirectCompute;
 GlobalIllumination::GlobalIllumination()
 	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
 	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr),
-	_voxelConeTracing(nullptr), _injectionColorMap(nullptr), _clearVoxelMapCS(nullptr)
+	_voxelConeTracing(nullptr), _injectionColorMap(nullptr), _clearVoxelMapCS(nullptr),
+	_debugVoxelViewer(nullptr)
 {
 }
 
@@ -36,6 +37,7 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_voxelConeTracing);
 	SAFE_DELETE(_injectionColorMap);
 	SAFE_DELETE(_clearVoxelMapCS);
+	SAFE_DELETE(_debugVoxelViewer);
 }
 
 // 귀찮아서 그냥 복붙했지만, Voxelization에 있는 것과 하나로 합쳐서 정리해야함
@@ -147,6 +149,9 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	}
 
 	InitializeClearVoxelMap(dimension, _globalInfo.maxNumOfCascade);
+
+	_debugVoxelViewer = new Debug::VoxelViewer;
+	_debugVoxelViewer->Initialize(dimension);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
@@ -160,6 +165,8 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
+
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, Debug::VoxelViewer::Type::Color);
 
 	ClearInjectColorVoxelMap(dx);
 

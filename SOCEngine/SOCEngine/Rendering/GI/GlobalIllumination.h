@@ -16,6 +16,8 @@
 #include "RenderManager.h"
 #include "ShadowRenderer.h"
 
+#include "VoxelViewer.h"
+
 namespace Rendering
 {
 	namespace GI
@@ -37,6 +39,9 @@ namespace Rendering
 			VoxelConeTracing*						_voxelConeTracing;
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
+
+			Debug::VoxelViewer*						_debugVoxelViewer;
+
 		public:
 			GlobalIllumination();
 			~GlobalIllumination();
@@ -51,7 +56,8 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*, _voxelConeTracing->GetIndirectColorMap());
+			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*,	_voxelConeTracing->GetIndirectColorMap());
+			GET_ACCESSOR(DebugVoxelViewer, const Debug::VoxelViewer*,		_debugVoxelViewer);
 		};
 	}
 }
