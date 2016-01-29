@@ -384,7 +384,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	}
 
 	// off alpha blending
-	float blendFactor[1] = {0, };
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 	//struct MeshInForwardRendering
@@ -435,6 +435,8 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		{
 			const auto& meshes = renderManager->GetOpaqueMeshes();
 			uint count = meshes.meshes.GetVector().size();
+
+			context->RSSetState( nullptr );
 
 			if(count > 0)
 				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer);
