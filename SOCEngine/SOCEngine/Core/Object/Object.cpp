@@ -34,7 +34,12 @@ Object::~Object(void)
 void Object::DeleteAllChild()
 {
 	for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
+	{
+		(*iter)->DeleteAllComponent();
+		(*iter)->DeleteAllChild();
+
 		SAFE_DELETE((*iter));
+	}
 
 	DeleteAll();
 }
