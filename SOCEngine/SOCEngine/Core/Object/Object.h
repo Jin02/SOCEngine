@@ -34,9 +34,6 @@ namespace Core
 		Object(const std::string& name, Object* parent = NULL);
 		virtual ~Object(void);
 
-	protected:
-		void DeleteAllChild();
-
 	public:
 		void Update(float delta);
 
@@ -111,6 +108,7 @@ namespace Core
 
 		void DeleteComponent(Component *component);
 		void DeleteAllComponent();
+		void DeleteAllChild();
 
 		bool CompareIsChildOfParent(Object *parent);
 		Object* Clone() const;
