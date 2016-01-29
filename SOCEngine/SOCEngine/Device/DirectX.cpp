@@ -13,7 +13,8 @@ DirectX::DirectX(void) :
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
 	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
-	_rasterizerClockwiseDisableCullingWithClip(nullptr)
+	_rasterizerClockwiseDisableCullingWithClip(nullptr),
+	_depthLessEqual(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -262,12 +263,23 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
-		desc.DepthEnable		= true; 
-		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL; 
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //inverted depth
-		desc.StencilEnable		= false; 
-		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
-		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
+		desc.DepthEnable					= true; 
+		desc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL; 
+		desc.DepthFunc						= D3D11_COMPARISON_GREATER; //inverted depth
+		desc.StencilEnable					= false; 
+		desc.StencilReadMask				= D3D11_DEFAULT_STENCIL_READ_MASK; 
+		desc.StencilWriteMask				= D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+		desc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+		desc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
+		desc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+		desc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreater)) )
 			ASSERT_MSG("Error!, device cant create lessEqual dpeth state");
 
@@ -294,7 +306,11 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc			= D3D11_COMPARISON_LESS;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLess)) )
-			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
+			ASSERT_MSG("Error!, device cant create _depthLess");
+
+		desc.DepthFunc			= D3D11_COMPARISON_LESS_EQUAL;
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLessEqual)) )
+			ASSERT_MSG("Error!, device cant create _depthLessEqual");
 	}
 
 	//sampler
@@ -460,6 +476,7 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_shadowLessEqualCompState);
 	SAFE_RELEASE(_shadowGreaterEqualCompState);
 	SAFE_RELEASE(_shadowLinearSamplerState);
+	SAFE_RELEASE(_depthLessEqual);
 	SAFE_RELEASE(_immediateContext);
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
