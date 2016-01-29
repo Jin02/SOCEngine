@@ -262,6 +262,6 @@ void Scene::ActivateGI(bool activate)
 			return;
 
 		_globalIllumination = new GlobalIllumination;
-		_globalIllumination->Initialize(_dx);
+		_globalIllumination->Initialize(_dx, 256, 20.0f);
 	}
 }
