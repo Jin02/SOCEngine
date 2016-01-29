@@ -100,7 +100,7 @@ void PS( GS_OUTPUT input )
 								((input.voxelPos.y * 0.5f) + 0.5f) * dimension, 
 								((input.voxelPos.z * 0.5f) + 0.5f) * dimension	);
 
-#ifdef USE_SHADOW_INVERTED_DEPTH
+#if 1
 	float anisotropicNormals[6] = {
 		 normal.x,
 		-normal.x,
