@@ -166,19 +166,13 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	ClearZeroVoxelMap(dx);
 	Vector3 camWorldPos(camWorldMat._41, camWorldMat._42, camWorldMat._43);
 
-	float cameraNear = camera->GetNear();
-	float cameraFar  = camera->GetFar();
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	context->RSSetState(dx->GetRasterizerStateCWDisableCullingWithClip());
-	context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0x00);
+	context->OMSetDepthStencilState(dx->GetDepthStateLessEqual(), 0x00);
 
-	float blendFactor[1] = {0, };
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
-
-	D3D11_VIEWPORT originViewport;
-	uint originViewportNum = 0;
-	context->RSGetViewports(&originViewportNum, &originViewport);
 
 	float dimension = float(1 << globalInfo.voxelDimensionPow2);
 
@@ -203,10 +197,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView()
 	};
 
-	//float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	//context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
-	//context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
-	//context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
+	context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
+	context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
@@ -238,7 +232,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 
 	ID3D11SamplerState* nullSampler = nullptr;
 	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
-	context->RSSetViewports(originViewportNum, &originViewport);
+
+	context->RSSetState(nullptr);
 }
 
 void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade,
