@@ -22,9 +22,9 @@ cbuffer Voxelization_Info_CB : register( b5 )
 SamplerState defaultSampler			: register( s0 );
 
 #if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
-RWTexture3D<uint> OutAnistropicVoxelAlbedoTexture	: register( u0 );
-RWTexture3D<uint> OutAnistropicVoxelNormalTexture	: register( u1 );
-RWTexture3D<uint> OutAnistropicVoxelEmissionTexture	: register( u2 );
+RWTexture3D<uint> OutVoxelAlbedoTexture	: register( u0 );
+RWTexture3D<uint> OutVoxelNormalTexture	: register( u1 );
+RWTexture3D<uint> OutVoxelEmissionTexture	: register( u2 );
 #endif
 
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
