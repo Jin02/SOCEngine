@@ -29,7 +29,7 @@ namespace Rendering
 			~MipmapAnisotropicVoxelMapAtlas();
 
 		public:
-			void Initialize();
+			void Initialize(bool useAnisotropicMipmap);
 			void Mipmapping(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* colorMap, uint maxNumOfCascade);
 			void Destroy();
 		};

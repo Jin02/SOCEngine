@@ -36,7 +36,9 @@ uint AlphaBledningAnisotropicVoxelMap
 
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
+#if defined(ANISOTROPIC_MIPMAP)
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
+#endif
 	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
 	return UintToFloat4(g_inputVoxelMap[voxelIdx]);
 }
@@ -51,23 +53,23 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint3 sampleIdx[8] =
 	{
 		( lowerMipIdx + uint3(0, 0, 0) ),
-		( lowerMipIdx + uint3(0, 0, 1) ),
-		( lowerMipIdx + uint3(0, 1, 0) ),
-		( lowerMipIdx + uint3(0, 1, 1) ),
 		( lowerMipIdx + uint3(1, 0, 0) ),
-		( lowerMipIdx + uint3(1, 0, 1) ),
+		( lowerMipIdx + uint3(0, 1, 0) ),
 		( lowerMipIdx + uint3(1, 1, 0) ),
+		( lowerMipIdx + uint3(0, 0, 1) ),
+		( lowerMipIdx + uint3(1, 0, 1) ),
+		( lowerMipIdx + uint3(0, 1, 1) ),
 		( lowerMipIdx + uint3(1, 1, 1) ) 
 	};
 
 	uint posx = AlphaBledningAnisotropicVoxelMap(
-		GetColorFromVoxelMap(sampleIdx[0], 0), GetColorFromVoxelMap(sampleIdx[1], 0), GetColorFromVoxelMap(sampleIdx[2], 0), GetColorFromVoxelMap(sampleIdx[3], 0),	//Fronts
-		GetColorFromVoxelMap(sampleIdx[4], 0), GetColorFromVoxelMap(sampleIdx[5], 0), GetColorFromVoxelMap(sampleIdx[6], 0), GetColorFromVoxelMap(sampleIdx[7], 0)	//Backs
+		GetColorFromVoxelMap(sampleIdx[0], 0), GetColorFromVoxelMap(sampleIdx[2], 0), GetColorFromVoxelMap(sampleIdx[4], 0), GetColorFromVoxelMap(sampleIdx[6], 0),	//Fronts
+		GetColorFromVoxelMap(sampleIdx[1], 0), GetColorFromVoxelMap(sampleIdx[3], 0), GetColorFromVoxelMap(sampleIdx[5], 0), GetColorFromVoxelMap(sampleIdx[7], 0)	//Backs
 	);
 
 	uint negx = AlphaBledningAnisotropicVoxelMap(
-		GetColorFromVoxelMap(sampleIdx[4], 1), GetColorFromVoxelMap(sampleIdx[5], 1), GetColorFromVoxelMap(sampleIdx[6], 1), GetColorFromVoxelMap(sampleIdx[7], 1),	//Fronts
-		GetColorFromVoxelMap(sampleIdx[0], 1), GetColorFromVoxelMap(sampleIdx[1], 1), GetColorFromVoxelMap(sampleIdx[2], 1), GetColorFromVoxelMap(sampleIdx[3], 1)	//Backs
+		GetColorFromVoxelMap(sampleIdx[1], 1), GetColorFromVoxelMap(sampleIdx[3], 1), GetColorFromVoxelMap(sampleIdx[5], 1), GetColorFromVoxelMap(sampleIdx[7], 1),	//Fronts
+		GetColorFromVoxelMap(sampleIdx[0], 1), GetColorFromVoxelMap(sampleIdx[2], 1), GetColorFromVoxelMap(sampleIdx[4], 1), GetColorFromVoxelMap(sampleIdx[6], 1)	//Backs
 	);
 
 	uint posy = AlphaBledningAnisotropicVoxelMap(
@@ -81,14 +83,15 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 	);
 
 	uint posz = AlphaBledningAnisotropicVoxelMap(
-		GetColorFromVoxelMap(sampleIdx[0], 4), GetColorFromVoxelMap(sampleIdx[2], 4), GetColorFromVoxelMap(sampleIdx[4], 4), GetColorFromVoxelMap(sampleIdx[6], 4),	//Fronts
-		GetColorFromVoxelMap(sampleIdx[1], 4), GetColorFromVoxelMap(sampleIdx[3], 4), GetColorFromVoxelMap(sampleIdx[5], 4), GetColorFromVoxelMap(sampleIdx[7], 4)	//Backs
+		GetColorFromVoxelMap(sampleIdx[0], 4), GetColorFromVoxelMap(sampleIdx[1], 4), GetColorFromVoxelMap(sampleIdx[2], 4), GetColorFromVoxelMap(sampleIdx[3], 4),	//Fronts
+		GetColorFromVoxelMap(sampleIdx[4], 4), GetColorFromVoxelMap(sampleIdx[5], 4), GetColorFromVoxelMap(sampleIdx[6], 4), GetColorFromVoxelMap(sampleIdx[7], 4)	//Backs
 	);
 	
 	uint negz = AlphaBledningAnisotropicVoxelMap(
-		GetColorFromVoxelMap(sampleIdx[1], 5), GetColorFromVoxelMap(sampleIdx[3], 5), GetColorFromVoxelMap(sampleIdx[5], 5), GetColorFromVoxelMap(sampleIdx[7], 5),	//Fronts
-		GetColorFromVoxelMap(sampleIdx[0], 5), GetColorFromVoxelMap(sampleIdx[2], 5), GetColorFromVoxelMap(sampleIdx[4], 5), GetColorFromVoxelMap(sampleIdx[6], 5)	//Backs
+		GetColorFromVoxelMap(sampleIdx[4], 5), GetColorFromVoxelMap(sampleIdx[5], 5), GetColorFromVoxelMap(sampleIdx[6], 5), GetColorFromVoxelMap(sampleIdx[7], 5),	//Fronts
+		GetColorFromVoxelMap(sampleIdx[0], 5), GetColorFromVoxelMap(sampleIdx[1], 5), GetColorFromVoxelMap(sampleIdx[2], 5), GetColorFromVoxelMap(sampleIdx[3], 5)	//Backs
 	);
+
 
 	uint destDimension = mipmapInfo_sourceDimension / 2;
 	globalIdx.y += mipmapInfo_currentCascade * destDimension;

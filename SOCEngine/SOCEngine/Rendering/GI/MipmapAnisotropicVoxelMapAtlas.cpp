@@ -31,7 +31,7 @@ MipmapAnisotropicVoxelMapAtlas::~MipmapAnisotropicVoxelMapAtlas()
 	SAFE_DELETE(_infoCB);
 }
 
-void MipmapAnisotropicVoxelMapAtlas::Initialize()
+void MipmapAnisotropicVoxelMapAtlas::Initialize(bool useAnisotropicMipmap)
 {
 	std::string filePath = "";
 	EngineFactory pathFinder(nullptr);
@@ -42,7 +42,13 @@ void MipmapAnisotropicVoxelMapAtlas::Initialize()
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
-	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "MipmapAnisotropicVoxelMapCS", false, nullptr);
+	std::vector<ShaderMacro> macros;
+	if(useAnisotropicMipmap)
+	{
+		macros.push_back(ShaderMacro("ANISOTROPIC_MIPMAP", ""));
+	}
+
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "MipmapAnisotropicVoxelMapCS", false, &macros);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
 
