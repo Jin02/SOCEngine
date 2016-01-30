@@ -101,6 +101,7 @@ void PS( GS_OUTPUT input )
 								((input.voxelPos.z * 0.5f) + 0.5f) * dimension	);
 
 #if 1
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
 	float anisotropicNormals[6] = {
 		 normal.x,
 		-normal.x,
@@ -109,11 +110,13 @@ void PS( GS_OUTPUT input )
 		 normal.z,
 		-normal.z
 	};
+#endif
 
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
 		voxelIdx.y += voxelization_currentCascade * dimension;
 
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
 			voxelIdx.x += (faceIndex * dimension);
@@ -121,16 +124,18 @@ void PS( GS_OUTPUT input )
 			float storeRatio = max(anisotropicNormals[faceIndex], 0.0f);
 
 			float3 outAlbedo = albedo.xyz * storeRatio;
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelAlbedoTexture,			voxelIdx, float4(outAlbedo, alpha));
-			//OutAnistropicVoxelAlbedoTexture[voxelIdx] = Float4ToUint(float4(outAlbedo, alpha));
+			StoreVoxelMapAtomicColorMax(OutVoxelAlbedoTexture,			voxelIdx, float4(outAlbedo, alpha));
 
 			float3 outEmission = material_emissionColor.xyz * storeRatio;
-			StoreVoxelMapAtomicColorMax(OutAnistropicVoxelEmissionTexture,			voxelIdx, float4(outEmission, 1.0f));
-			//OutAnistropicVoxelEmissionTexture[voxelIdx] = Float4ToUint(float4(outEmission, 1.0f));
+			StoreVoxelMapAtomicColorMax(OutVoxelEmissionTexture,			voxelIdx, float4(outEmission, 1.0f));
 
-			StoreVoxelMapAtomicAddNormalOneValue(OutAnistropicVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
-			//OutAnistropicVoxelNormalTexture[voxelIdx] = asuint(max(abs(anisotropicNormals[faceIndex]), 0.0f));
+			StoreVoxelMapAtomicAddNormalOneValue(OutVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 		}
+#else
+		StoreVoxelMapAtomicColorMax(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
+		StoreVoxelMapAtomicColorMax(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
+		StoreVoxelMapAtomicColorMax(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));
+#endif
 	}
 #else
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
