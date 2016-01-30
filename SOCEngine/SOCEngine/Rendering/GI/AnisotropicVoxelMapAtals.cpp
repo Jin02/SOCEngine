@@ -19,12 +19,13 @@ AnisotropicVoxelMapAtlas::~AnisotropicVoxelMapAtlas()
 }
 
 void AnisotropicVoxelMapAtlas::Initialize(
-	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount)
+	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount,
+	bool isAnisotropic)
 {
 	_sideLength		= sideLength;
 	_mipmapCount	= mipmapCount;
 
-	uint width		= sideLength * (uint)Direction::Num;
+	uint width		= sideLength * (isAnisotropic ? (uint)Direction::Num : 1);
 	uint height		= sideLength * maxNumOfCascade;
 	uint depth		= sideLength;
 	Texture3D::Initialize(width, height, depth, typelessFormat, srvFormat, uavFormat, 0, _mipmapCount);
