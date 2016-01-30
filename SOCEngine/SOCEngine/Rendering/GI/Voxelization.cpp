@@ -49,16 +49,22 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 		return log(v) / log(2.0f);
 	};
 
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
+	bool isAnisotropic = true;
+#else
+	bool isAnisotropic = false;
+#endif
+
 	uint dimension = 1 << globalInfo.voxelDimensionPow2;
 	
 	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 
 	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 
 	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1);
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 
 	// Setting Const Buffers
 	{
@@ -95,8 +101,11 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		{
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
-
-		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)AnisotropicVoxelMapAtlas::Direction::Num);
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
+		threadGroup.x = ComputeThreadGroupSideLength(dimension) * (uint)AnisotropicVoxelMapAtlas::Direction::Num;
+#else
+		threadGroup.x = ComputeThreadGroupSideLength(dimension);
+#endif
 		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
 		threadGroup.z = ComputeThreadGroupSideLength(dimension);
 	}
