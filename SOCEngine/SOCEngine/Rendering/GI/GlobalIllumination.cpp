@@ -157,8 +157,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearVoxelMap(dimension, _globalInfo.maxNumOfCascade);
 
-	_debugVoxelViewer = new Debug::VoxelViewer;
-	_debugVoxelViewer->Initialize(dimension);
+//	_debugVoxelViewer = new Debug::VoxelViewer;
+//	_debugVoxelViewer->Initialize(dimension);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
