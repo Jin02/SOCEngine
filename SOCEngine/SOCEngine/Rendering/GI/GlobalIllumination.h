@@ -27,7 +27,7 @@ namespace Rendering
 		private:
 			GlobalInfo								_globalInfo;
 			Buffer::ConstBuffer*					_giGlobalInfoCB;
-			AnisotropicVoxelMapAtlas*				_injectionColorMap;
+			VoxelMap*								_injectionColorMap;
 
 			Voxelization*							_voxelization;
 
@@ -36,6 +36,7 @@ namespace Rendering
 			InjectRadianceFromSpotLIght*			_injectSpotLight;
 
 			MipmapAnisotropicVoxelMapAtlas*			_mipmap;
+
 			VoxelConeTracing*						_voxelConeTracing;
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
