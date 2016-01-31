@@ -5,7 +5,7 @@
 #include "GlobalIlluminationCommon.h"
 
 #include "ShadingWithLightCulling.h"
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 
 #include "MeshCamera.h"
 
@@ -25,7 +25,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* giInfoCB);
-			void Run(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* injectedColorMap, const Camera::MeshCamera* meshCam);
+			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const VoxelMap* anisotropicMipmapColorMap, const Camera::MeshCamera* meshCam);
 			void Destroy();
 
 		public:

@@ -92,7 +92,7 @@ void VoxelConeTracing::Destroy()
 }
 
 void VoxelConeTracing::Run(const Device::DirectX* dx,
-						   const AnisotropicVoxelMapAtlas* injectedColorMap,
+						   const VoxelMap* injectedColorMap, const VoxelMap* anisotropicMipmapColorMap,
 						   const Camera::MeshCamera* meshCam)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -103,7 +103,10 @@ void VoxelConeTracing::Run(const Device::DirectX* dx,
 		context->CSSetShaderResources(uint(bind), 1, &view);
 	};
 
-	CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelColorMap,			injectedColorMap->GetShaderResourceView());
+	CSSetShaderResource(context, TextureBindIndex::VCT_InputSourceVoxelMap,			injectedColorMap->GetShaderResourceView());
+	if(anisotropicMipmapColorMap)
+		CSSetShaderResource(context, TextureBindIndex::VCT_InputAnisotropicMipVoxelMap,	anisotropicMipmapColorMap->GetShaderResourceView());
+
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Emission,			meshCam->GetGBufferAlbedoEmission()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Specular_Metallic,		meshCam->GetGBufferSpecularMetallic()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,		meshCam->GetGBufferNormalRoughness()->GetShaderResourceView());
@@ -131,8 +134,8 @@ void VoxelConeTracing::Run(const Device::DirectX* dx,
 		tbrParamCB = nullptr;
 		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
 
-
-		CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelColorMap,			nullptr);
+		CSSetShaderResource(context, TextureBindIndex::VCT_InputSourceVoxelMap,			nullptr);
+		CSSetShaderResource(context, TextureBindIndex::VCT_InputAnisotropicMipVoxelMap,	nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Emission,			nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Specular_Metallic,		nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,		nullptr);
