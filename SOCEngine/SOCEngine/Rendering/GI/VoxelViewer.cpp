@@ -35,12 +35,12 @@ VoxelViewer::~VoxelViewer()
 	SAFE_DELETE(_voxelsParent);
 }
 
-void VoxelViewer::Initialize(uint dimension)
+void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 {
 	//_infoCB = new ConstBuffer;
 	//_infoCB->Initialize(sizeof(InfoCB));
 
-	//const ResourceManager* resourceMgr = ResourceManager::SharedInstance();
+	//const ResourceManager* resourceMgr = ResourceManager::SharedInstance(bool _isAnisotropic);
 	//ShaderManager* shaderMgr = resourceMgr->GetShaderManager();
 
 	//std::string filePath = "";
@@ -58,12 +58,13 @@ void VoxelViewer::Initialize(uint dimension)
 	//_shader->SetUAVs(uavs);
 
 	_readBuffer = new CPUReadBuffer;
-	_readBuffer->Initialize(4, (dimension * 6) * dimension * dimension);
+	_readBuffer->Initialize(4, dimension * dimension * dimension * (isAnisotropic ? 6 : 1));
 
-	_dimension = dimension;
+	_dimension		= dimension;
+	_isAnisotropic	= isAnisotropic;
 }
 
-Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* voxelMapAtlas, uint cascade, Type type, bool realloc)
+Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, Type type, bool realloc)
 {
 	if(realloc)
 		DestroyAllVoxelMeshes();
@@ -106,11 +107,12 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const Anisot
 		{
 			auto Recive = [&](const void* data) -> void
 			{
-				uint maxCount = GetVoxelIdx(_dimension * 6, _dimension, _dimension);
+				uint coff =  (_isAnisotropic ? 6 : 1);
+				uint maxCount = GetVoxelIdx(_dimension * coff, _dimension, _dimension);
 				voxelMap.reserve( maxCount );
 
 				uint* start	= (uint*)data + GetVoxelIdx(0, _dimension * cascade, 0);
-				uint* end	= start + GetVoxelIdx(_dimension * 6, _dimension, _dimension);
+				uint* end	= start + GetVoxelIdx(_dimension * coff, _dimension, _dimension);
 
 				std::copy(start, end, voxelMap.begin());
 			};
@@ -144,53 +146,105 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const Anisot
 		{
 			for(uint x=0; x<_dimension; ++x)
 			{
-				Color	leftColor(0.0f, 0.0f, 0.0f, 0.0f),	rightColor(0.0f, 0.0f, 0.0f, 0.0f),
+				if(_isAnisotropic)
+				{
+					Color	leftColor(0.0f, 0.0f, 0.0f, 0.0f),	rightColor(0.0f, 0.0f, 0.0f, 0.0f),
 						topColor(0.0f, 0.0f, 0.0f, 0.0f),	botColor(0.0f, 0.0f, 0.0f, 0.0f),
 						frontColor(0.0f, 0.0f, 0.0f, 0.0f),	backColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-				if(type == Type::Color)
-				{
-					rightColor	= GetColor(GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z));
-					leftColor	= GetColor(GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z));
-					botColor	= GetColor(GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z));
-					topColor	= GetColor(GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z));
-					backColor	= GetColor(GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z));
-					frontColor	= GetColor(GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z));
+					if(type == Type::Color)
+					{
+						rightColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z)]);
+						leftColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z)]);
+						botColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z)]);
+						topColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z)]);
+						backColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z)]);
+						frontColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z)]);
+					}
+					else if(type == Type::Normal)
+					{
+						auto asfloat = [&](uint idx) -> float
+						{
+							uint uintValue = voxelMap[idx];
+							return *reinterpret_cast<float*>(&uintValue);
+						};
+						float px =  asfloat(GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z));
+						float nx = -asfloat(GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z));
+						float py =  asfloat(GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z));
+						float ny = -asfloat(GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z));
+						float pz =  asfloat(GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z));
+						float nz = -asfloat(GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z));
+
+						Vector3 normal(px + nx, py + ny, pz + nz);
+						if(normal.x != 0.0f || normal.y != 0.0f || normal.z != 0.0f)
+						{
+							Vector3 resColorVec = (normal.Normalized() * 0.5f + Vector3(1.0f, 1.0f, 1.0f));
+							Color resColor = Color(resColorVec.x, resColorVec.y, resColorVec.z, 1.0f);
+
+							rightColor	= resColor;
+							leftColor	= resColor;
+							botColor	= resColor;
+							topColor	= resColor;
+							backColor	= resColor;
+							frontColor	= resColor;
+						}
+					}
+
+					if((rightColor.Get32BitUintColor()	|	leftColor.Get32BitUintColor()	| 
+						botColor.Get32BitUintColor()	|	topColor.Get32BitUintColor()	| 
+						backColor.Get32BitUintColor()	|	frontColor.Get32BitUintColor()	) == 0) //모든 칸에 값이 없으면 굳이 매쉬를 만들 필요가 없음
+						continue;
+
+					Object* meshObject = importer->Load("./Resources/Voxel/voxel.obj", false);
+					{
+						meshObject->GetTransform()->UpdatePosition( Vector3(float(x), float(y), float(z)) * scale );
+						meshObject->GetTransform()->UpdateScale(Vector3(scale, scale, scale));
+						_voxelsParent->AddChild(meshObject);
+
+						Object* container = meshObject->GetChild(0);
+
+						PhysicallyBasedMaterial* left	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(3)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						left->UpdateMainColor(leftColor);
+
+						PhysicallyBasedMaterial* right	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						right->UpdateMainColor(rightColor);
+
+						PhysicallyBasedMaterial* back	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(1)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						back->UpdateMainColor(backColor);
+
+						PhysicallyBasedMaterial* front	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(4)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						front->UpdateMainColor(frontColor);
+
+						PhysicallyBasedMaterial* top	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(5)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						top->UpdateMainColor(topColor);
+
+						PhysicallyBasedMaterial* bottom	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(2)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						bottom->UpdateMainColor(botColor);
+					}
+
+					_voxelObjects.push_back(meshObject);
 				}
-
-				if((rightColor.Get32BitUintColor()	|	leftColor.Get32BitUintColor()	| 
-					botColor.Get32BitUintColor()	|	topColor.Get32BitUintColor()	| 
-					backColor.Get32BitUintColor()	|	frontColor.Get32BitUintColor()	) == 0) //모든 칸에 값이 없으면 굳이 매쉬를 만들 필요가 없음
-					continue;
-
-				Object* meshObject = importer->Load("./Resources/Voxel/voxel.obj", false);
+				else
 				{
-					meshObject->GetTransform()->UpdatePosition( Vector3(float(x), float(y), float(z)) * scale );
-					meshObject->GetTransform()->UpdateScale(Vector3(scale, scale, scale));
-					_voxelsParent->AddChild(meshObject);
+					Color voxelColor = GetColor(GetVoxelIdx(x, y, z));
 
-					Object* container = meshObject->GetChild(0);
+					if(voxelColor.Get32BitUintColor() == 0)
+						continue;
 
-					PhysicallyBasedMaterial* left	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(3)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					left->UpdateMainColor(leftColor);
+					Object* meshObject = importer->Load("./Resources/Cube/Cube.obj", false);
+					{
+						meshObject->GetTransform()->UpdatePosition( Vector3(float(x), float(y), float(z)) * scale );
+						meshObject->GetTransform()->UpdateScale(Vector3(scale, scale, scale));
+						_voxelsParent->AddChild(meshObject);
 
-					PhysicallyBasedMaterial* right	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					right->UpdateMainColor(rightColor);
+						Object* container = meshObject->GetChild(0);
 
-					PhysicallyBasedMaterial* back	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(1)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					back->UpdateMainColor(backColor);
+						PhysicallyBasedMaterial* material	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						material->UpdateMainColor(voxelColor);
+					}
 
-					PhysicallyBasedMaterial* front	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(4)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					front->UpdateMainColor(frontColor);
-
-					PhysicallyBasedMaterial* top	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(5)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					top->UpdateMainColor(topColor);
-
-					PhysicallyBasedMaterial* bottom	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(2)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-					bottom->UpdateMainColor(botColor);
+					_voxelObjects.push_back(meshObject);
 				}
-
-				_voxelObjects.push_back(meshObject);
 			}
 		}
 	}

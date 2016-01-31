@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 #include "Object.h"
 #include "ConstBuffer.h"
 #include "ComputeShader.h"
@@ -37,14 +37,15 @@ namespace Rendering
 				//Buffer::ConstBuffer*					_infoCB;
 				//GPGPU::DirectCompute::ComputeShader*	_shader;
 				Core::Object*							_voxelsParent;
+				bool									_isAnisotropic;
 
 			public:
 				VoxelViewer();
 				~VoxelViewer();
 
 			public:
-				void Initialize(uint dimension);
-				Core::Object* GenerateVoxelViewer(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* voxelMapAtlas, uint cascade, Type type, bool realloc = false);
+				void Initialize(uint dimension, bool isAnisotropic);
+				Core::Object* GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, Type type, bool realloc);
 				void DestroyAllVoxelMeshes();
 
 			public:
