@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 #include <functional>
 #include "Vector3.h"
 #include "ConstBuffer.h"
@@ -25,14 +25,14 @@ namespace Rendering
 			};
 
 		private:
-			AnisotropicVoxelMapAtlas*							_voxelAlbedoMapAtlas;
-			AnisotropicVoxelMapAtlas*							_voxelNormalMapAtlas;
-			AnisotropicVoxelMapAtlas*							_voxelEmissionMapAtlas;
+			VoxelMap*								_voxelAlbedoMapAtlas;
+			VoxelMap*								_voxelNormalMapAtlas;
+			VoxelMap*								_voxelEmissionMapAtlas;
 
-			Math::Matrix										_prevStaticMeshVoxelizeViewMat;
+			Math::Matrix							_prevStaticMeshVoxelizeViewMat;
 
-			std::vector<Buffer::ConstBuffer*>					_constBuffers;
-			GPGPU::DirectCompute::ComputeShader*				_clearVoxelMapCS;
+			std::vector<Buffer::ConstBuffer*>		_constBuffers;
+			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
 		public:
 			Voxelization();
@@ -55,9 +55,9 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(ConstBuffers,							const std::vector<Buffer::ConstBuffer*>&,	_constBuffers);
-			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const AnisotropicVoxelMapAtlas*,			_voxelAlbedoMapAtlas);
-			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const AnisotropicVoxelMapAtlas*,			_voxelNormalMapAtlas);
-			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const AnisotropicVoxelMapAtlas*,			_voxelEmissionMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const VoxelMap*,							_voxelAlbedoMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const VoxelMap*,							_voxelNormalMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const VoxelMap*,							_voxelEmissionMapAtlas);
 		};
 	}
 }

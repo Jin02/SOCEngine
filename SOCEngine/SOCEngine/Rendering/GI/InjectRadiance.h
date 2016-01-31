@@ -2,7 +2,7 @@
 
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 #include "GlobalIlluminationCommon.h"
 #include "DirectX.h"
 #include "ShadowRenderer.h"
@@ -19,7 +19,7 @@ namespace Rendering
 			{
 				const GlobalInfo*					globalInfo;
 				const Buffer::ConstBuffer*			giInfoConstBuffer;
-				const AnisotropicVoxelMapAtlas*		outColorMap;
+				const VoxelMap*						outColorMap;
 				const Voxelization*					voxelization;
 
 				bool IsValid() const

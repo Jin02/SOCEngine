@@ -57,16 +57,16 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 
 	uint dimension = 1 << globalInfo.voxelDimensionPow2;
 	
-	_voxelAlbedoMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelAlbedoMapAtlas = new VoxelMap;
 	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 
-	_voxelNormalMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelNormalMapAtlas = new VoxelMap;
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
 	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 #else
 	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 #endif
-	_voxelEmissionMapAtlas = new AnisotropicVoxelMapAtlas;
+	_voxelEmissionMapAtlas = new VoxelMap;
 	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
 
 	// Setting Const Buffers
@@ -105,7 +105,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
-		threadGroup.x = ComputeThreadGroupSideLength(dimension) * (uint)AnisotropicVoxelMapAtlas::Direction::Num;
+		threadGroup.x = ComputeThreadGroupSideLength(dimension) * (uint)VoxelMap::Direction::Num;
 #else
 		threadGroup.x = ComputeThreadGroupSideLength(dimension);
 #endif
