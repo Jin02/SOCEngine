@@ -1,4 +1,4 @@
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 #include "Director.h"
 
 using namespace Device;
@@ -8,19 +8,18 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::View;
 
-AnisotropicVoxelMapAtlas::AnisotropicVoxelMapAtlas()
+VoxelMap::VoxelMap()
 	: Texture3D()
 {
 }
 
-AnisotropicVoxelMapAtlas::~AnisotropicVoxelMapAtlas()
+VoxelMap::~VoxelMap()
 {
-	AnisotropicVoxelMapAtlas::Destory();
+	VoxelMap::Destory();
 }
 
-void AnisotropicVoxelMapAtlas::Initialize(
-	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount,
-	bool isAnisotropic)
+void VoxelMap::Initialize(
+	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount, bool isAnisotropic)
 {
 	_sideLength		= sideLength;
 	_mipmapCount	= mipmapCount;
@@ -41,7 +40,7 @@ void AnisotropicVoxelMapAtlas::Initialize(
 	}
 }
 
-void AnisotropicVoxelMapAtlas::Destroy()
+void VoxelMap::Destroy()
 {
 	for(auto iter = _mipmapUAVs.begin(); iter != _mipmapUAVs.end(); ++iter)
 	{

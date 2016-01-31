@@ -6,7 +6,7 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class AnisotropicVoxelMapAtlas : public Texture::Texture3D
+		class VoxelMap : public Texture::Texture3D
 		{
 		public:
 			enum class Direction : uint
@@ -24,8 +24,8 @@ namespace Rendering
 			std::vector<View::UnorderedAccessView*>	_mipmapUAVs;
 
 		public:
-			AnisotropicVoxelMapAtlas();
-			virtual ~AnisotropicVoxelMapAtlas();
+			VoxelMap();
+			virtual ~VoxelMap();
 
 		public:
 			void Initialize(uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount, bool isAnisotropic);
