@@ -85,7 +85,7 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
-    <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h" />
+    <ClInclude Include="Rendering\GI\VoxelMap.h" />
     <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
     <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromDirectionalLIght.h" />
@@ -346,7 +346,7 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
-    <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp" />
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp" />
     <ClCompile Include="Rendering\GI\GlobalIllumination.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromDirectionalLIght.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadiance.cpp" />

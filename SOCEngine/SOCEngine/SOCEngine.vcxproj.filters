@@ -807,9 +807,6 @@
     <ClInclude Include="Rendering\GI\Voxelization.h">
       <Filter>Rendering\GI\Voxelization</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\AnisotropicVoxelMapAtlas.h">
-      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\View\UnorderedAccessView.h">
       <Filter>Rendering\View</Filter>
     </ClInclude>
@@ -891,6 +888,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h">
       <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelMap.h">
+      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1182,9 +1182,6 @@
     <ClCompile Include="Rendering\GI\Voxelization.cpp">
       <Filter>Rendering\GI\Voxelization</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\AnisotropicVoxelMapAtals.cpp">
-      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp">
       <Filter>Rendering\View</Filter>
     </ClCompile>
@@ -1223,6 +1220,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp">
       <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
+      <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
