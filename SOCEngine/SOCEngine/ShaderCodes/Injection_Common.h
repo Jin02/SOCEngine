@@ -68,7 +68,13 @@ float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, flo
 	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
 }
 #else
-#define GetNormal(A, B, C, D) GetColor(A, B, C, D).xyz
+float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, float3 dir, uint cascade)
+{
+	float3 normal = GetColor(voxelNormalMap, voxelIdx, dir, cascade).xyz;
+	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
+
+	return normal;
+}
 #endif
 
 #endif

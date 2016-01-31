@@ -134,6 +134,8 @@ void PS( GS_OUTPUT input )
 #else
 		StoreVoxelMapAtomicColorMax(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
 		StoreVoxelMapAtomicColorMax(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
+
+		normal = normal * 0.5f + 0.5f;
 		StoreVoxelMapAtomicColorMax(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));
 #endif
 	}
