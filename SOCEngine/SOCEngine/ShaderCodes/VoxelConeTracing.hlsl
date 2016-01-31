@@ -6,8 +6,12 @@
 #include "AlphaBlending.h"
 #include "GICommon.h"
 
-Texture3D<float4> g_inputAnisotropicVoxelMap	: register(t29);
-Texture2D<float4> g_inputDirectColorMap			: register(t30);
+Texture3D<float4> g_inputSourceVoxelMap					: register(t29);
+Texture2D<float4> g_inputDirectColorMap					: register(t30);
+
+#ifndef USE_ANISOTROPIC_VOXELIZATION
+Texture3D<float4> g_inputMipmappedAnisotropicVoxelMap	: register(t31);
+#endif
 
 RWTexture2D<float4> g_outputIndirectMap			: register(u0);
 SamplerState defaultSampler						: register(s0);	// linear
@@ -43,14 +47,19 @@ static const float ConeWeights[MAXIMUM_CONE_COUNT] =
 };
 
 
-float3 GetAnisotropicVoxelUV(float3 worldPos, uniform uint faceIdx, uint cascade)
+float3 GetAnisotropicVoxelUV(float3 worldPos, uniform uint faceIdx, uint cascade, float3 bbMin)
 {
-	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, cascade);
-
 	float3 uv = (worldPos - bbMin) / GetVoxelizeSize(cascade);
 
 	uv.x = (uv.x + (float)faceIdx) * rcp(6.0f);
+	uv.y = (uv.y + (float)cascade) * rcp((float)GetMaximumCascade());
+
+	return uv;
+}
+
+float3 GetVoxelUV(float3 worldPos, uint cascade, float3 bbMin)
+{
+	float3 uv = (worldPos - bbMin) / GetVoxelizeSize(cascade);
 	uv.y = (uv.y + (float)cascade) * rcp((float)GetMaximumCascade());
 
 	return uv;
@@ -60,21 +69,51 @@ float4 SampleAnisotropicVoxelTex
 	(float3 samplePos, float3 dir, uint cascade, float lod)
 {
 	//defaultSampler is linearSampler
+	//야이, 꼬이잖아 저거 2개
+	//어짜피 읽어야 할 주체가 변경되니.. 전체적으로 코드 뜯는게 나을걸
 
+	float3 bbMin, bbMax;
+	ComputeVoxelizationBound(bbMin, bbMax, cascade);
+
+#ifdef USE_ANISOTROPIC_VOXELIZATION
 	float4 colorAxisX = (dir.x > 0.0f) ? 
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 0, cascade), lod) :
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 1, cascade), lod);
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 0, cascade, bbMin), lod) :
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 1, cascade, bbMin), lod);
 
 	float4 colorAxisY = (dir.y > 0.0f) ?
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 2, cascade), lod) :
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 3, cascade), lod);
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 2, cascade, bbMin), lod) :
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 3, cascade, bbMin), lod);
 	
 	float4 colorAxisZ = (dir.z > 0.0f) ?
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 4, cascade), lod) :
-		g_inputAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 5, cascade), lod);
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 4, cascade, bbMin), lod) :
+		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 5, cascade, bbMin), lod);
 
 	dir = abs(dir);
 	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
+#else
+	float4 result = g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetVoxelUV(samplePos, cascade, bbMin), 0);
+
+	lod -= 1.0f; // g_inputMipmappedAnisotropicVoxelMap에 기록된 값들은 이미 한번 원본에서 한번 밉맵처리가 된 상태이다.
+	if(lod > 0.0f)
+	{
+		float4 colorAxisX = (dir.x > 0.0f) ? 
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 0, cascade, bbMin), lod) :
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 1, cascade, bbMin), lod);
+
+		float4 colorAxisY = (dir.y > 0.0f) ?
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 2, cascade, bbMin), lod) :
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 3, cascade, bbMin), lod);
+
+		float4 colorAxisZ = (dir.z > 0.0f) ?
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 4, cascade, bbMin), lod) :
+			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 5, cascade, bbMin), lod);
+
+		dir = abs(dir);
+		result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
+	}
+
+	return result;
+#endif
 }
 
 float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAngleRadian)
