@@ -89,9 +89,12 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 void PS( GS_OUTPUT input )
 {
-	float4 albedo		= diffuseTexture.Sample(defaultSampler, input.uv);
-	float opacityMap	= 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
-	float alpha			= 1.0f;//albedo.a * opacityMap * ParseMaterialAlpha();
+	float4 diffuseTex	= diffuseTexture.Sample(defaultSampler, input.uv);
+	float3 mainColor	= abs(material_mainColor);
+	float3 albedo		= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseTexture());
+
+	//float opacityMap	= 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
+	float alpha			= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseTexture()) * opacityMap * ParseMaterialAlpha();
 
 	float3 normal		= normalize(input.normal);
 	int dimension		= int(GetDimension());
@@ -124,19 +127,19 @@ void PS( GS_OUTPUT input )
 			float storeRatio = max(anisotropicNormals[faceIndex], 0.0f);
 
 			float3 outAlbedo = albedo.xyz * storeRatio;
-			StoreVoxelMapAtomicColorMax(OutVoxelAlbedoTexture,			voxelIdx, float4(outAlbedo, alpha));
+			StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,			voxelIdx, float4(outAlbedo, alpha));
 
 			float3 outEmission = material_emissionColor.xyz * storeRatio;
-			StoreVoxelMapAtomicColorMax(OutVoxelEmissionTexture,			voxelIdx, float4(outEmission, 1.0f));
+			StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,			voxelIdx, float4(outEmission, 1.0f));
 
 			StoreVoxelMapAtomicAddNormalOneValue(OutVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 		}
 #else
-		StoreVoxelMapAtomicColorMax(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
-		StoreVoxelMapAtomicColorMax(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
+		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
+		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
 
 		normal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorMax(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));
+		StoreVoxelMapAtomicColorAvg(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));
 #endif
 	}
 #else
