@@ -43,14 +43,14 @@ struct GS_OUTPUT
 [maxvertexcount(3)]
 void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStream)
 {
-	float3 worldPos[3] = 
+	float4 worldPos[3] = 
 	{
-		mul(float4(input[0].localPos, 1.0f), transform_world).xyz,
-		mul(float4(input[1].localPos, 1.0f), transform_world).xyz,
-		mul(float4(input[2].localPos, 1.0f), transform_world).xyz,
+		mul(float4(input[0].localPos, 1.0f), transform_world),
+		mul(float4(input[1].localPos, 1.0f), transform_world),
+		mul(float4(input[2].localPos, 1.0f), transform_world),
 	};
 
-	float3 faceNormal = cross(normalize(worldPos[1] - worldPos[0]), normalize(worldPos[2] - worldPos[0]));
+	float3 faceNormal = cross(normalize(worldPos[1].xyz - worldPos[0].xyz), normalize(worldPos[2].xyz - worldPos[0].xyz));
 
 	float3 axis;
 	{
@@ -77,9 +77,9 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		}
 
 		GS_OUTPUT output;
-		output.position		= mul(dominantAxisLocalPos,			transform_world);
-		output.position		= mul(output.position,				voxelization_toVoxelViewProjSpace);
-		output.voxelPos		= mul(float4(worldPos[i], 1.0f),	voxelization_toVoxelViewSpace).xyz;
+		output.position		= mul(dominantAxisLocalPos,	transform_world);
+		output.position		= mul(output.position,		voxelization_toVoxelViewProjSpace);
+		output.voxelPos		= mul(worldPos[i],			voxelization_toVoxelViewSpace).xyz;
 		output.normal		= input[i].normal;
 		output.uv			= input[i].uv;
 
