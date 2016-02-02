@@ -3,7 +3,7 @@
 #ifndef __SOC_VOXELIZATION_COMMON_H__
 #define __SOC_VOXELIZATION_COMMON_H__
 
-#include "DynamicLighting.h"
+//#include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
 #include "GICommon.h"
 
@@ -29,7 +29,7 @@ RWTexture3D<uint> OutVoxelEmissionTexture	: register( u2 );
 
 void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
 {
-	uint newValue = Float4ToUint(value);
+	uint newValue = Float4ColorToUint(value);
 	uint prevStoredValue = 0;
 	uint currentStoredValue = 0;
 
@@ -43,9 +43,36 @@ void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 
 		prevStoredValue = currentStoredValue;
 		
-		float4 curFlt4 = UintToFloat4(currentStoredValue);
+		float4 curFlt4 = RGBA8UintColorToFloat4(currentStoredValue);
 		float4 reCompute = curFlt4 + value; //걍 섞음. 뭐, 이래도 Max이긴 매한가지
-		newValue = Float4ToUint(reCompute);
+		newValue = Float4ColorToUint(reCompute);
+
+	}while(true);
+}
+
+void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
+{
+	uint newValue = Float4ColorToUint(value);
+	uint prevStoredValue = 0;
+	uint currentStoredValue = 0;
+
+	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
+	[allow_uav_condition]do
+	{
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+
+		if(prevStoredValue == currentStoredValue)
+			break;
+
+		prevStoredValue = currentStoredValue;
+
+		float4 curFlt4 = ToFloat4(currentStoredValue);
+		curFlt4.xyz = curFlt4.xyz * curFlt4.w;
+
+		float4 reCompute = curFlt4 + value;
+		reCompute.xyz /= (reCompute.w);
+
+		newValue = ToUint(reCompute);
 
 	}while(true);
 }
