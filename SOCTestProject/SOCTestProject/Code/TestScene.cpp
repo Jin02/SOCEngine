@@ -143,7 +143,7 @@ void TestScene::OnRenderPreview()
 			Object* exist = FindObject(debugVoxels->GetName());
 			if( exist == nullptr )
 			{
-				_testObject->SetUse(false);
+//				_testObject->SetUse(false);
 	
 				AddObject(debugVoxels);
 				_testObject2 = debugVoxels;
