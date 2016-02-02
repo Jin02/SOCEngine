@@ -17,8 +17,9 @@ namespace Rendering
 		public:
 			struct InfoCBData
 			{
-				Math::Matrix	voxelView;
-				Math::Matrix	voxelViewProj;
+				Math::Matrix	viewProjX;
+				Math::Matrix	viewProjY;
+				Math::Matrix	viewProjZ;
 
 				Math::Vector3	voxelizeMinPos;
 				uint			currentCascade;

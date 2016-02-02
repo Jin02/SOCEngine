@@ -12,8 +12,9 @@
 
 cbuffer Voxelization_Info_CB : register( b5 )
 {
-	matrix	voxelization_toVoxelViewSpace;
-	matrix	voxelization_toVoxelViewProjSpace;
+	matrix	voxelization_vp_axisX;
+	matrix	voxelization_vp_axisY;
+	matrix	voxelization_vp_axisZ;
 
 	float3	voxelization_minPos;
 	uint	voxelization_currentCascade;

@@ -269,14 +269,32 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 
 	// Update View Proj ConstBuffer
 	{
-		Matrix voxelView;
-		ComputeVoxelViewMatrix(voxelView, currentCascade, camWorldPos, globalInfo.initWorldSize);
+		Matrix orthoProjMat;
+		Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, 0.0f, worldSize);
 
-		Matrix projMat;
-		Matrix::OrthoLH(projMat, 2.0f, 2.0f, 1.0f, -1.0f);
+		auto LookAtView = [](
+			Matrix& outViewMat,
+			const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
+			)
+		{
+			Transform tf(nullptr);
+			tf.UpdatePosition(worldPos);
+			tf.LookAtWorld(targetPos, &up);
 
-		currentVoxelizeInfo.voxelView		= voxelView;
-		currentVoxelizeInfo.voxelViewProj	= voxelView * projMat;
+			Matrix worldMat;
+			tf.FetchWorldMatrix(worldMat);
+
+			CameraForm::GetViewMatrix(outViewMat, worldMat);
+		};
+
+		Matrix viewAxisX, viewAxisY, viewAxisZ;
+		LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
+		LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
+		LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
+
+		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
+		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
+		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
