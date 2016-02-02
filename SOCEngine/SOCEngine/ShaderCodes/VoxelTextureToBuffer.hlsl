@@ -17,6 +17,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 {
 	globalIdx.y += curCascade;
 
+#ifdef USE_FACE_INDEX
 	[unroll]
 	for(uint faceIdx = 0; faceIdx < 6; ++faceIdx)
 	{
@@ -25,4 +26,8 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 		uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
 		OutputBuffer[idx].x = InputVoxelTexture[globalIdx];
 	}
+#else
+	uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
+	OutputBuffer[idx].x = InputVoxelTexture[globalIdx];
+#endif
 }
