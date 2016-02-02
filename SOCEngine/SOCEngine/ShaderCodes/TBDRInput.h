@@ -1,7 +1,7 @@
 //NOT_CREATE_META_DATA
 
-#ifndef __SOC_INPUT_DATAS_H__
-#define __SOC_INPUT_DATAS_H__
+#ifndef __SOC_TBDR_INPUT_H__
+#define __SOC_TBDR_INPUT_H__
 
 #include "../GlobalDefine.h"
 
