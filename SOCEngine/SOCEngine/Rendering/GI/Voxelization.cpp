@@ -297,9 +297,13 @@ void Voxelization::ComputeVoxelViewMatrix(	Math::Matrix& outMat, uint currentCas
 	outMat._22 = 2.0f / worldSize;
 	outMat._33 = 2.0f / worldSize;
 
-	outMat._41 = camWorldPos.x;
-	outMat._42 = camWorldPos.y;
-	outMat._43 = camWorldPos.z;
+	Math::Vector3 right		= Math::Vector3(outMat._11, outMat._21, outMat._31);
+	Math::Vector3 up		= Math::Vector3(outMat._12, outMat._22, outMat._32);
+	Math::Vector3 forward	= Math::Vector3(outMat._13, outMat._23, outMat._33);
+
+	outMat._41 = -Vector3::Dot(right,	camWorldPos);
+	outMat._42 = -Vector3::Dot(up,		camWorldPos);
+	outMat._43 = -Vector3::Dot(forward,	camWorldPos);
 	outMat._44 = 1.0f;
 }
 

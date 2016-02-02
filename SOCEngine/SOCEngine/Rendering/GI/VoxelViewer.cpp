@@ -152,7 +152,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 		{
 			for(int x=0; x<int(_dimension); ++x)
 			{
-				Vector3 pos	= Vector3(float(x - int(_dimension / 2)), float(y - int(_dimension / 2)), float(z - int(_dimension / 2))) * voxelSize;
+				Vector3 pos	= Vector3(float(x - int(_dimension / 2)), float(y - int(_dimension / 2)), float(z - int(_dimension / 2)));
 
 				if(_isAnisotropic)
 				{
@@ -236,7 +236,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 				{
 					Color voxelColor = GetColor(voxelMap[GetVoxelIdx(x, y, z)]);
 
-					if((voxelColor.Get32BitUintColor() & 0xffffffff) == 0)
+					if((voxelColor.Get32BitUintColor() & 0x00ffffff) == 0)
 						continue;
 
 					Object* meshObject = importer->Load("./Resources/Cube/Cube.obj", false);
@@ -247,7 +247,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 
 						meshObject->SetName(name);
 						meshObject->GetTransform()->UpdatePosition( pos );
-						meshObject->GetTransform()->UpdateScale(Vector3(voxelSize, voxelSize, voxelSize));
+//						meshObject->GetTransform()->UpdateScale(Vector3(voxelSize, voxelSize, voxelSize));
 						_voxelsParent->AddChild(meshObject);
 
 						//Object* container = meshObject->GetChild(0);
@@ -262,6 +262,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 		}
 	}
 
+	_voxelsParent->GetTransform()->UpdateScale(Vector3(voxelSize, voxelSize, voxelSize));
 	return _voxelsParent;
 }
 
