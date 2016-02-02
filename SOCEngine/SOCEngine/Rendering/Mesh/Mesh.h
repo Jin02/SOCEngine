@@ -24,6 +24,9 @@ namespace Rendering
 			unsigned int						_selectMaterialIndex;
 			MeshRenderer::Type					_prevRenderType;
 
+			bool								_prevShow;
+			bool								_show;
+
 		public:
 			Mesh();
 			~Mesh();
@@ -51,14 +54,16 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
-			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
+			GET_ACCESSOR(MeshFilter,				MeshFilter*,					_filter);
+			GET_ACCESSOR(MeshRenderer,				MeshRenderer*,					_renderer);
 
-			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
-			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
+			GET_ACCESSOR(WorldMatrixConstBuffer,	const Buffer::ConstBuffer*,		_transformConstBuffer);
+			GET_ACCESSOR(PrevRenderType,			MeshRenderer::Type,				_prevRenderType);
+			GET_ACCESSOR(Show,						bool,							_show);
+			void SetShow(bool b);
 
-			GET_ACCESSOR(WorldMatrixConstBuffer, const Buffer::ConstBuffer*, _transformConstBuffer);
-			GET_ACCESSOR(PrevRenderType, MeshRenderer::Type, _prevRenderType);
+			GET_SET_ACCESSOR(MaterialUpdateType,	MaterialUpdateType,				_updateType);
+			GET_SET_ACCESSOR(SelectMaterialIndex,	unsigned int,					_selectMaterialIndex);
 
 		public:
 			virtual Core::Component* Clone() const;

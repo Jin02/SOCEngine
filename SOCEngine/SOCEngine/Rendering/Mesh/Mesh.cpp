@@ -8,7 +8,7 @@ using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown)
+	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown), _show(true), _prevShow(false)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -78,7 +78,10 @@ void Mesh::OnDestroy()
 void Mesh::ClassifyRenderMeshType()
 {
 	Manager::RenderManager* renderMgr = Device::Director::SharedInstance()->GetCurrentScene()->GetRenderManager();
-	renderMgr->UpdateRenderList(this);
+
+	renderMgr->UpdateRenderList(this, _prevShow);
+	_prevShow = _show;
+
 	_prevRenderType = _renderer->GetCurrentRenderType();
 }
 
@@ -101,4 +104,10 @@ Core::Component* Mesh::Clone() const
 	}
 
 	return newMesh;
+}
+
+void Mesh::SetShow(bool b)
+{
+	_show = b;
+	ClassifyRenderMeshType();
 }
