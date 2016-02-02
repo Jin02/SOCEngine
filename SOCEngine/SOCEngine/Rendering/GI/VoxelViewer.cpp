@@ -74,7 +74,7 @@ void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 	_isAnisotropic	= isAnisotropic;
 }
 
-Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, Type type, bool realloc)
+Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, Type type, bool realloc, float voxelSize)
 {
 	if(realloc)
 		DestroyAllVoxelMeshes();
@@ -135,8 +135,6 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 	const ResourceManager* resourceMgr = ResourceManager::SharedInstance();
 	MeshImporter* importer = resourceMgr->GetMeshImporter();
 
-	const float scale = 1.0f;
-
 	auto GetColor = [](uint voxelData) -> Color
 	{
 		Color color;
@@ -148,17 +146,19 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 		return color;
 	};
 
-	for(uint z=0; z<_dimension; ++z)
+	for(int z=0; z<int(_dimension); ++z)
 	{
-		for(uint y=0; y<_dimension; ++y)
+		for(int y=0; y<int(_dimension); ++y)
 		{
-			for(uint x=0; x<_dimension; ++x)
+			for(int x=0; x<int(_dimension); ++x)
 			{
+				Vector3 pos	= Vector3(float(x - int(_dimension / 2)), float(y - int(_dimension / 2)), float(z - int(_dimension / 2))) * voxelSize;
+
 				if(_isAnisotropic)
 				{
 					Color	leftColor(0.0f, 0.0f, 0.0f, 0.0f),	rightColor(0.0f, 0.0f, 0.0f, 0.0f),
-						topColor(0.0f, 0.0f, 0.0f, 0.0f),	botColor(0.0f, 0.0f, 0.0f, 0.0f),
-						frontColor(0.0f, 0.0f, 0.0f, 0.0f),	backColor(0.0f, 0.0f, 0.0f, 0.0f);
+							topColor(0.0f, 0.0f, 0.0f, 0.0f),	botColor(0.0f, 0.0f, 0.0f, 0.0f),
+							frontColor(0.0f, 0.0f, 0.0f, 0.0f),	backColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 					if(type == Type::Color)
 					{
@@ -205,29 +205,29 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 
 					Object* meshObject = importer->Load("./Resources/Voxel/voxel.obj", false);
 					{
-						meshObject->GetTransform()->UpdatePosition( Vector3(float(x), float(y), float(z)) * scale );
-						meshObject->GetTransform()->UpdateScale(Vector3(scale, scale, scale));
+						meshObject->GetTransform()->UpdatePosition( pos );
+						meshObject->GetTransform()->UpdateScale(Vector3(voxelSize, voxelSize, voxelSize));
 						_voxelsParent->AddChild(meshObject);
 
-						Object* container = meshObject->GetChild(0);
+						//Object* container = meshObject->GetChild(0);
 
-						PhysicallyBasedMaterial* left	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(3)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						left->UpdateMainColor(leftColor);
+						//PhysicallyBasedMaterial* left	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(3)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//left->UpdateMainColor(leftColor);
 
-						PhysicallyBasedMaterial* right	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						right->UpdateMainColor(rightColor);
+						//PhysicallyBasedMaterial* right	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//right->UpdateMainColor(rightColor);
 
-						PhysicallyBasedMaterial* back	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(1)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						back->UpdateMainColor(backColor);
+						//PhysicallyBasedMaterial* back	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(1)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//back->UpdateMainColor(backColor);
 
-						PhysicallyBasedMaterial* front	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(4)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						front->UpdateMainColor(frontColor);
+						//PhysicallyBasedMaterial* front	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(4)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//front->UpdateMainColor(frontColor);
 
-						PhysicallyBasedMaterial* top	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(5)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						top->UpdateMainColor(topColor);
+						//PhysicallyBasedMaterial* top	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(5)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//top->UpdateMainColor(topColor);
 
-						PhysicallyBasedMaterial* bottom	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(2)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						bottom->UpdateMainColor(botColor);
+						//PhysicallyBasedMaterial* bottom	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(2)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//bottom->UpdateMainColor(botColor);
 					}
 
 					_voxelObjects.push_back(meshObject);
@@ -246,14 +246,14 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 						std::string name = arr;
 
 						meshObject->SetName(name);
-						meshObject->GetTransform()->UpdatePosition( Vector3(float(x), float(y), float(z)) * scale );
-						meshObject->GetTransform()->UpdateScale(Vector3(scale, scale, scale));
+						meshObject->GetTransform()->UpdatePosition( pos );
+						meshObject->GetTransform()->UpdateScale(Vector3(voxelSize, voxelSize, voxelSize));
 						_voxelsParent->AddChild(meshObject);
 
-						Object* container = meshObject->GetChild(0);
+						//Object* container = meshObject->GetChild(0);
 
-						PhysicallyBasedMaterial* material	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
-						material->UpdateMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
+						//PhysicallyBasedMaterial* material	= static_cast<PhysicallyBasedMaterial*>(container->GetChild(0)->GetComponent<Geometry::Mesh>()->GetMeshRenderer()->GetMaterials().front());
+						//material->UpdateMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
 					}
 
 					_voxelObjects.push_back(meshObject);
