@@ -31,7 +31,7 @@ uint AlphaBledningAnisotropicVoxelMap
 	float4 color2 = AlphaBlending(front2, back2);
 	float4 color3 = AlphaBlending(front3, back3);
 
-	return Float4ToUint( (color0 + color1 + color2 + color3) * 0.25f );
+	return Float4ColorToUint( (color0 + color1 + color2 + color3) * 0.25f );
 }
 
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
@@ -40,7 +40,7 @@ float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
 #endif
 	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
-	return UintToFloat4(g_inputVoxelMap[voxelIdx]);
+	return RGBA8UintColorToFloat4(g_inputVoxelMap[voxelIdx]);
 }
 
 [numthreads(MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF)]

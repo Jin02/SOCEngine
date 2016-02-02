@@ -101,10 +101,10 @@ void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
 			voxelIdx.x += (faceIndex * dimension);
-			StoreVoxelMapAtomicColorMax(OutVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+			StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
 		}
 #else
-		StoreVoxelMapAtomicColorMax(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
+		StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
 #endif
 	}
 }
