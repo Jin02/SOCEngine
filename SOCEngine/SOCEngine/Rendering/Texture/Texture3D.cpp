@@ -65,7 +65,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 		rtvDesc.ViewDimension			= D3D11_RTV_DIMENSION_TEXTURE3D;
 		rtvDesc.Texture3D.MipSlice		= 0;
 		rtvDesc.Texture3D.FirstWSlice	= 0;
-		rtvDesc.Texture3D.WSize			= depth;
+		rtvDesc.Texture3D.WSize			= -1;
 		HRESULT hr = device->CreateRenderTargetView(_texture, &rtvDesc, &_rtv);
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, can't create render target view");
 	}
