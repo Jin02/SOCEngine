@@ -70,8 +70,8 @@ void MipmapAnisotropicVoxelMapAtlas::Initialize(const GlobalInfo& giInfo)
 
 #ifndef USE_ANISOTROPIC_VOXELIZATION
 	_anisotropicColorMap = new VoxelMap;
-	uint dimension = 1 << (giInfo.voxelDimensionPow2 - 1);
-	_anisotropicColorMap->Initialize(dimension, giInfo.maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, giInfo.maxMipLevel - 1, true);
+	uint dimension = 1 << ((giInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff) - 1);
+	_anisotropicColorMap->Initialize(dimension, (giInfo.maxCascadeWithVoxelDimensionPow2 >> 16), DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, giInfo.maxMipLevel - 1, true);
 #endif
 }
 

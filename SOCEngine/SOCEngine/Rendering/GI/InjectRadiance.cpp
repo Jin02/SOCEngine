@@ -63,7 +63,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 		_shader->SetInputTextures(inputTextures);
 	}
 
-	uint dimension = 1 << param.globalInfo->voxelDimensionPow2;
+	uint dimension = (1 << (param.globalInfo->maxCascadeWithVoxelDimensionPow2 & 0xffff));
 
 	// Setting Output
 	{
