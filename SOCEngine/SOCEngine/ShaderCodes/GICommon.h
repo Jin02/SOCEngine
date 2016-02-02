@@ -33,13 +33,13 @@ uint GetMaximumCascade()
 	return (gi_maxCascadeWithVoxelDimensionPowOf2 >> 16);
 }
 
-uint ComputeCascade(float3 worldPos)
+uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
 {
 	//x, y, z 축 중에 가장 큰걸 고름
-	float	dist = max(	abs(worldPos.x - tbrParam_cameraWorldPosition.x),
-						abs(worldPos.y - tbrParam_cameraWorldPosition.y));
+	float	dist = max(	abs(worldPos.x - cameraWorldPos.x),
+						abs(worldPos.y - cameraWorldPos.y));
 			dist = max(	dist,
-						abs(worldPos.z - tbrParam_cameraWorldPosition.z) );
+						abs(worldPos.z - cameraWorldPos.z) );
 
 	return (uint)sqrt(dist / (gi_initWorldSize * 0.5f));
 }
@@ -50,14 +50,14 @@ float GetVoxelizeSize(uint cascade)
 	return gi_initWorldSize * (cascadeScale * cascadeScale);
 }
 
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade)
+void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
 {
 	float cascadeScale = float(cascade + 1);
 
 	float worldSize		= GetVoxelizeSize(cascade);
 	float halfWorldSize	= worldSize * 0.5f;
 
-	outBBMin = tbrParam_cameraWorldPosition.xyz - halfWorldSize.xxx;
+	outBBMin = cameraWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
 }
 
