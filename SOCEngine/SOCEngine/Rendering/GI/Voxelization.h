@@ -33,6 +33,7 @@ namespace Rendering
 
 			std::vector<Buffer::ConstBuffer*>		_constBuffers;
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
+			const Buffer::ConstBuffer*				_globalInfoCB;
 
 		public:
 			Voxelization();
@@ -44,7 +45,7 @@ namespace Rendering
 			void ClearZeroVoxelMap(const Device::DirectX*& dx);
 
 		public:
-			void Initialize(const GlobalInfo& globalInfo);			
+			void Initialize(const GlobalInfo& globalInfo, const Buffer::ConstBuffer* globalInfoCB);
 			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
 			void Destroy();
 

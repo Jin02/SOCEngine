@@ -20,7 +20,7 @@ using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
 :	_clearVoxelMapCS(nullptr),
-	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr)
+	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr), _globalInfoCB(nullptr)
 {
 }
 
@@ -39,9 +39,9 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(const GlobalInfo& globalInfo)
+void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* globalInfoCB)
 {
-	uint maxNumOfCascade = globalInfo.maxNumOfCascade;
+	uint maxNumOfCascade = globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
 	auto Log2 = [](float v) -> float
@@ -55,7 +55,7 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 	bool isAnisotropic = false;
 #endif
 
-	uint dimension = 1 << globalInfo.voxelDimensionPow2;
+	uint dimension = 1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
 	
 	_voxelAlbedoMapAtlas = new VoxelMap;
 	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
@@ -83,6 +83,7 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo)
 	}
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
+	_globalInfoCB = globalInfoCB;
 }
 
 void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
@@ -176,6 +177,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	}
 
 	ClearZeroVoxelMap(dx);
+
 	Vector3 camWorldPos(camWorldMat._41, camWorldMat._42, camWorldMat._43);
 
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -186,7 +188,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-	float dimension = float(1 << globalInfo.voxelDimensionPow2);
+	float dimension = float(1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff));
 
 	D3D11_VIEWPORT viewport;
 	{
@@ -216,7 +218,11 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
-	uint maxCascade = globalInfo.maxNumOfCascade;
+	ID3D11Buffer* globalInfoBuffer = _globalInfoCB->GetBuffer();
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB), 1, &globalInfoBuffer);
+
+	uint maxCascade = globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+
 	for(uint currentCascade=0; currentCascade<maxCascade; ++currentCascade)
 	{
 		UpdateConstBuffer(dx, currentCascade, camWorldPos, globalInfo, dimension);
@@ -236,8 +242,9 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	}
 
 	ID3D11Buffer* nullBuff = nullptr;
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &nullBuff);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &nullBuff);
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB),			1, &nullBuff);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB),			1, &nullBuff);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB),	1, &nullBuff);
 
 	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr};
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
