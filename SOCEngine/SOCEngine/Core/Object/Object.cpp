@@ -73,6 +73,8 @@ bool Object::CompareIsChildOfParent(Object *parent)
 
 void Object::Culling(const Intersection::Frustum *frustum)
 {
+	if(_use == false) return;
+
 	Vector3 wp;
 	_transform->FetchWorldPosition(wp);
 	_culled = !frustum->In(wp, _radius);
@@ -200,4 +202,15 @@ Object* Object::Clone() const
 		newObject->AddChild( (*iter)->Clone() );
 	
 	return newObject;
+}
+
+void Object::SetUse(bool b)
+{
+	_use = b;
+	Geometry::Mesh* mesh = GetComponent<Geometry::Mesh>();
+	if(mesh)
+		mesh->SetShow(b);
+
+	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+		(*iter)->SetUse(b);
 }

@@ -114,7 +114,9 @@ namespace Core
 		Object* Clone() const;
 
 	public:
-		GET_SET_ACCESSOR(Use,		bool,							_use);
+		GET_ACCESSOR(Use,			bool,							_use);
+		void SetUse(bool b);
+
 		GET_SET_ACCESSOR(Parent,	Object*,						_parent);
 		GET_SET_ACCESSOR(Radius,	float,							_radius);
 		GET_SET_ACCESSOR(Name,		const std::string&,				_name);
