@@ -68,7 +68,7 @@ namespace Core
 		void DeleteObject(Core::Object* object);
 		void DeleteAllObject();
 
-		void ActivateGI(bool activate);
+		void ActivateGI(bool activate, uint dimension, float giSize);
 
 	public:
 		void NextState();

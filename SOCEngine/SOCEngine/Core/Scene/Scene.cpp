@@ -247,7 +247,7 @@ void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keybo
 		OnInput(mouse, keyboard);
 }
 
-void Scene::ActivateGI(bool activate)
+void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 {
 	if(activate == false)
 	{
@@ -262,6 +262,6 @@ void Scene::ActivateGI(bool activate)
 			return;
 
 		_globalIllumination = new GlobalIllumination;
-		_globalIllumination->Initialize(_dx, 256, 25.0f);
+		_globalIllumination->Initialize(_dx, dimension, giSize);
 	}
 }
