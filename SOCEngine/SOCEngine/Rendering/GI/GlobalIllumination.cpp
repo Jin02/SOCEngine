@@ -175,7 +175,7 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
 
-	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, Debug::VoxelViewer::Type::Color, false);
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, Debug::VoxelViewer::Type::Color, false, _globalInfo.initVoxelSize);
 
 	ClearInjectColorVoxelMap(dx);
 
