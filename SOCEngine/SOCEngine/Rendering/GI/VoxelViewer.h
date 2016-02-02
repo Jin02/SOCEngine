@@ -34,8 +34,8 @@ namespace Rendering
 				std::vector<Core::Object*>				_voxelObjects;
 				Buffer::CPUReadBuffer*					_readBuffer;
 				uint									_dimension;
-				//Buffer::ConstBuffer*					_infoCB;
-				//GPGPU::DirectCompute::ComputeShader*	_shader;
+				Buffer::ConstBuffer*					_infoCB;
+				GPGPU::DirectCompute::ComputeShader*	_shader;
 				Core::Object*							_voxelsParent;
 				bool									_isAnisotropic;
 
