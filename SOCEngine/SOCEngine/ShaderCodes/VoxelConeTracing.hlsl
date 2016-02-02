@@ -5,6 +5,7 @@
 #include "GBufferParser.h"
 #include "AlphaBlending.h"
 #include "GICommon.h"
+#include "TBDRInput.h"
 
 Texture3D<float4> g_inputSourceVoxelMap					: register(t29);
 Texture2D<float4> g_inputDirectColorMap					: register(t30);
@@ -73,7 +74,7 @@ float4 SampleAnisotropicVoxelTex
 	//어짜피 읽어야 할 주체가 변경되니.. 전체적으로 코드 뜯는게 나을걸
 
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, cascade);
+	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition.xyz);
 
 #ifdef USE_ANISOTROPIC_VOXELIZATION
 	float4 colorAxisX = (dir.x > 0.0f) ? 
@@ -139,11 +140,11 @@ float3 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 	float3 samplePos	= worldPos + (dir * currLength);
 
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1);
+	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
 
 	for(uint i=0; i<512; ++i)
 	{
-		uint cascade = ComputeCascade(samplePos);
+		uint cascade = ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
 		
 		if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
 			samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
@@ -187,14 +188,14 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 		float oneVoxelSize	= gi_initVoxelSize;// * CONE_TRACING_BIAS;
 		
 		float3 bbMin, bbMax;
-		ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1);
+		ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
 
 		float halfConeAngleRad	= ConeWeights[coneIdx] * 0.5f;
 		float radiusRatio		= tan(halfConeAngleRad);
 		float4 accumDiffuse		= float4(0.0f, 0.0f, 0.0f, 0.0f);
 		for(uint i=0; i<64; ++i)
 		{
-			uint cascade = ComputeCascade(samplePos);
+			uint cascade = ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
 
 			if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
 				samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
