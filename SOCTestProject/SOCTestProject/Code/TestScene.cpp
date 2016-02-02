@@ -18,7 +18,7 @@ using namespace Rendering::Geometry;
 using namespace Resource;
 using namespace Device;
 using namespace Math;
-using namespace Importer;
+//using namespace Importer;
 
 TestScene::TestScene(void) : _testObject2(nullptr)
 {
@@ -35,11 +35,12 @@ void TestScene::OnInitialize()
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
-	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+//	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	_camera->GetTransform()->UpdatePosition(Vector3(0, -0.3f, -4.1f));
 	cam->SetFieldOfViewDegree(60.0f);
 
-	const ResourceManager* resourceMgr = ResourceManager::SharedInstance();
-	MeshImporter* importer = resourceMgr->GetMeshImporter();
+	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
+	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
 #if 0
 	_testObject = importer->Load("./Resources/Capsule/capsule.obj");
@@ -142,12 +143,11 @@ void TestScene::OnRenderPreview()
 			Object* exist = FindObject(debugVoxels->GetName());
 			if( exist == nullptr )
 			{
-				auto& objects = _rootObjects.GetVector();
-				for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-					(*iter)->SetUse(false);
+				_testObject->SetUse(false);
 	
 				AddObject(debugVoxels);
 				_testObject2 = debugVoxels;
+				debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 0.0f, 0.2f));
 			}
 		}
 	}
@@ -155,8 +155,8 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	Transform* control = _testObject2 ? _testObject2->GetTransform() : _light->GetTransform();
-	const float scale = 1.0f;
+	Transform* control = _testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
+	const float scale = 0.1f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
@@ -192,35 +192,38 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 	if(keyboard.states['U'] == Win32::Keyboard::Type::Up)
 	{
-		PointLight* pl = _light->GetComponent<PointLight>();
-		float us = pl->GetShadow()->GetUnderScanSize();
-		pl->GetShadow()->SetUnderScanSize(us + scale);
-		//Vector3 euler = control->GetLocalEulerAngle();
-		//control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
+		//PointLight* pl = _light->GetComponent<PointLight>();
+		//float us = pl->GetShadow()->GetUnderScanSize();
+		//pl->GetShadow()->SetUnderScanSize(us + scale);
+		Vector3 euler = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
-		PointLight* pl = _light->GetComponent<PointLight>();
-		float us = pl->GetShadow()->GetUnderScanSize();
-		pl->GetShadow()->SetUnderScanSize(us - scale);
-		//Vector3 euler = control->GetLocalEulerAngle();
-		//control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
+		//PointLight* pl = _light->GetComponent<PointLight>();
+		//float us = pl->GetShadow()->GetUnderScanSize();
+		//pl->GetShadow()->SetUnderScanSize(us - scale);
+		Vector3 euler = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
-		PointLight* pl = _light->GetComponent<PointLight>();
-		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
-		//Vector3 euler = control->GetLocalEulerAngle();
-		//control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
+		//PointLight* pl = _light->GetComponent<PointLight>();
+		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
+		Vector3 euler = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
 	}
 	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
 	{
-		PointLight* pl = _light->GetComponent<PointLight>();
-		pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
-		//Vector3 euler = control->GetLocalEulerAngle();
-		//control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
+		//PointLight* pl = _light->GetComponent<PointLight>();
+		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
+		Vector3 euler = control->GetLocalEulerAngle();
+		control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
 	}
-
+	if(keyboard.states['M'] == Win32::Keyboard::Type::Up)
+	{
+		_testObject->SetUse(!_testObject->GetUse());
+	}
 
 }
 
