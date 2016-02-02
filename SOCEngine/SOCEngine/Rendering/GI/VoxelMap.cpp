@@ -27,7 +27,7 @@ void VoxelMap::Initialize(
 	uint width		= sideLength * (isAnisotropic ? (uint)Direction::Num : 1);
 	uint height		= sideLength * maxNumOfCascade;
 	uint depth		= sideLength;
-	Texture3D::Initialize(width, height, depth, typelessFormat, srvFormat, uavFormat, 0, _mipmapCount);
+	Texture3D::Initialize(width, height, depth, typelessFormat, srvFormat, uavFormat, D3D11_BIND_RENDER_TARGET, _mipmapCount);
 
 	auto device = Director::SharedInstance()->GetDirectX()->GetDevice();
 
