@@ -56,7 +56,7 @@ namespace Rendering
 
 		VCT_InputSourceVoxelMap					= 29,
 		VCT_InputDirectColorMap					= 30,
-		VCT_InputAnisotropicMipVoxelMap	= 31,
+		VCT_InputAnisotropicMipVoxelMap			= 31,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
