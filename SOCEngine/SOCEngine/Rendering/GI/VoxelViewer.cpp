@@ -236,7 +236,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 				{
 					Color voxelColor = GetColor(voxelMap[GetVoxelIdx(x, y, z)]);
 
-					if((voxelColor.Get32BitUintColor() & 0x00ffffff) == 0)
+					if((voxelColor.Get32BitUintColor() & 0xffffffff) == 0)
 						continue;
 
 					Object* meshObject = importer->Load("./Resources/Cube/Cube.obj", false);
