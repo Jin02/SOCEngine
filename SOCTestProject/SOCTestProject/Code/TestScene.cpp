@@ -20,7 +20,7 @@ using namespace Device;
 using namespace Math;
 using namespace Importer;
 
-TestScene::TestScene(void)
+TestScene::TestScene(void) : _testObject2(nullptr)
 {
 
 }
@@ -147,6 +147,7 @@ void TestScene::OnRenderPreview()
 					(*iter)->SetUse(false);
 	
 				AddObject(debugVoxels);
+				_testObject2 = debugVoxels;
 			}
 		}
 	}
@@ -154,46 +155,46 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	Transform* control = _light->GetTransform();
-	float value = 1;
+	Transform* control = _testObject2 ? _testObject2->GetTransform() : _light->GetTransform();
+	const float scale = 1.0f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, 0.1f, 0));
+		control->UpdatePosition(pos + Vector3(0, scale, 0));
 	}
 	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, -0.1f, 0));
+		control->UpdatePosition(pos + Vector3(0, -scale, 0));
 	}
 	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(-0.1f, 0, 0));
+		control->UpdatePosition(pos + Vector3(-scale, 0, 0));
 	}
 	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0.1f, 0, 0));
+		control->UpdatePosition(pos + Vector3(scale, 0, 0));
 	}
 
 	if(keyboard.states['T'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, 0, 0.1f));
+		control->UpdatePosition(pos + Vector3(0, 0, scale));
 	}
 	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
 	{
 		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, 0, -0.1f));
+		control->UpdatePosition(pos + Vector3(0, 0, -scale));
 	}
 
 	if(keyboard.states['U'] == Win32::Keyboard::Type::Up)
 	{
 		PointLight* pl = _light->GetComponent<PointLight>();
 		float us = pl->GetShadow()->GetUnderScanSize();
-		pl->GetShadow()->SetUnderScanSize(us + 0.1f);
+		pl->GetShadow()->SetUnderScanSize(us + scale);
 		//Vector3 euler = control->GetLocalEulerAngle();
 		//control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
 	}
@@ -201,7 +202,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 	{
 		PointLight* pl = _light->GetComponent<PointLight>();
 		float us = pl->GetShadow()->GetUnderScanSize();
-		pl->GetShadow()->SetUnderScanSize(us - 0.1f);
+		pl->GetShadow()->SetUnderScanSize(us - scale);
 		//Vector3 euler = control->GetLocalEulerAngle();
 		//control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
 	}
