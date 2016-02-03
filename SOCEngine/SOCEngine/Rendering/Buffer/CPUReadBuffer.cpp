@@ -13,7 +13,7 @@ CPUReadBuffer::CPUReadBuffer() : BaseBuffer(), _uav(nullptr), _readBuffer(nullpt
 CPUReadBuffer::~CPUReadBuffer()
 {
 	SAFE_DELETE(_uav);
-	SAFE_DELETE(_readBuffer);
+	SAFE_RELEASE(_readBuffer);
 }
 
 bool CPUReadBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format)

@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true);
+	ActivateGI(true, 256, 30.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -143,7 +143,7 @@ void TestScene::OnRenderPreview()
 			Object* exist = FindObject(debugVoxels->GetName());
 			if( exist == nullptr )
 			{
-				_testObject->SetUse(false);
+//				_testObject->SetUse(false);
 	
 				AddObject(debugVoxels);
 				_testObject2 = debugVoxels;

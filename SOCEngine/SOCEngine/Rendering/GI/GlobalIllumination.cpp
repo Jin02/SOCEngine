@@ -177,7 +177,7 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, Debug::VoxelViewer::Type::Color, false, _globalInfo.initVoxelSize);
 
-	ClearInjectColorVoxelMap(dx);
+	//ClearInjectColorVoxelMap(dx);
 
 	//// 2. Injection Pass
 	//{
@@ -192,7 +192,7 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 	//}
 
 	//// 3. Mipmap Pass
-	//_mipmap->Mipmapping(dx, _injectionColorMap, _globalInfo.maxNumOfCascade);
+	//_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
 
 	//// 4. Voxel Cone Tracing Pass
 	//{
