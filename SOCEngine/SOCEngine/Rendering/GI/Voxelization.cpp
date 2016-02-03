@@ -276,7 +276,9 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 		Matrix::OrthoLH(projMat, 2.0f, 2.0f, 1.0f, -1.0f);
 
 		currentVoxelizeInfo.voxelView		= voxelView;
+		Matrix::Transpose(currentVoxelizeInfo.voxelView, currentVoxelizeInfo.voxelView);
 		currentVoxelizeInfo.voxelViewProj	= voxelView * projMat;
+		Matrix::Transpose(currentVoxelizeInfo.voxelViewProj, currentVoxelizeInfo.voxelViewProj);
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
