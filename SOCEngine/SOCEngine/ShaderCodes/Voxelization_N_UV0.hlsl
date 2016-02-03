@@ -133,8 +133,10 @@ void PS( GS_OUTPUT input )
 			StoreVoxelMapAtomicAddNormalOneValue(OutVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 		}
 #else
-		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
-		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
+//		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
+		OutVoxelAlbedoTexture[voxelIdx] = Float4ColorToUint(float4(albedo.xyz, alpha));
+
+//		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
 
 		normal = normal * 0.5f + 0.5f;
 		StoreVoxelMapAtomicColorAvg(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));

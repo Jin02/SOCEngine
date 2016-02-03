@@ -287,7 +287,7 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 			CameraForm::GetViewMatrix(outViewMat, worldMat);
 		};
 
-		Vector3 center;
+		Vector3 center = camWorldPos;
 
 		Matrix viewAxisX, viewAxisY, viewAxisZ;
 		//LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
@@ -302,6 +302,19 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
 		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
 		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
+
+		Matrix::Transpose(currentVoxelizeInfo.viewProjX, currentVoxelizeInfo.viewProjX);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
+
+		//Matrix tmpScale;
+		//Matrix::Identity(tmpScale);
+		//float voxelSize = worldSize / float(dimension);
+		//tmpScale._11 = voxelSize; tmpScale._22 = voxelSize; tmpScale._33 = voxelSize;
+
+		//Matrix tmpTranslate;
+		//Matrix::Identity(tmpTranslate);
+		//tmpTranslate._41 = -bbMin.x; tmpTranslate._42 = -bbMin.y; tmpTranslate._43 = -bbMin.z;
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
