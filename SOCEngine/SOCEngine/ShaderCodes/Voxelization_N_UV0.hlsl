@@ -35,6 +35,7 @@ VS_OUTPUT VS( VS_INPUT input )
 struct GS_OUTPUT
 {
 	float4 position				: SV_POSITION;
+//	float3 voxelPos				: VOXEL_POSITION;
 	float3 worldPos				: WORLD_POSITION;
 	float3 normal				: NORMAL;
 	float2 uv					: TEXCOORD0;
@@ -77,9 +78,11 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 	{
 		GS_OUTPUT output;
 		output.position	= position[i];
-		output.worldPos	= worldPos[i].xyz;
+//		output.voxelPos	= mul(voxelization_worldToVoxel, worldPos[i]).xyz;
 		output.uv		= input[i].uv;
 		output.normal	= input[i].normal;
+		output.worldPos	= worldPos[i].xyz;
+
 		outputStream.Append(output);
 	}
 
@@ -133,10 +136,10 @@ void PS( GS_OUTPUT input )
 			StoreVoxelMapAtomicAddNormalOneValue(OutVoxelNormalTexture,	voxelIdx, max(abs(anisotropicNormals[faceIndex]), 0.0f));
 		}
 #else
-//		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
-		OutVoxelAlbedoTexture[voxelIdx] = Float4ColorToUint(float4(albedo.xyz, alpha));
+		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
+//		OutVoxelAlbedoTexture[voxelIdx] = Float4ColorToUint( float4(albedo.xyz, alpha) );
 
-//		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
+		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
 
 		normal = normal * 0.5f + 0.5f;
 		StoreVoxelMapAtomicColorAvg(OutVoxelNormalTexture,		voxelIdx,	float4(normal, 1.0f));
