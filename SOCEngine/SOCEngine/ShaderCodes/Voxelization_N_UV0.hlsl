@@ -35,7 +35,8 @@ VS_OUTPUT VS( VS_INPUT input )
 struct GS_OUTPUT
 {
 	float4 position				: SV_POSITION;
-	float3 voxelPos				: VOXEL_POSITION;
+//	float3 voxelPos				: VOXEL_POSITION;
+	float3 worldPos				: WORLD_POSITION;
 	float3 normal				: NORMAL;
 	float2 uv					: TEXCOORD0;
 };
@@ -53,38 +54,39 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 	float3 faceNormal = cross(normalize(worldPos[1].xyz - worldPos[0].xyz), normalize(worldPos[2].xyz - worldPos[0].xyz));
 
 	float3 axis;
-	{
-		axis.x = abs(dot(faceNormal, float3(1.0f, 0.0f, 0.0f)));
-		axis.y = abs(dot(faceNormal, float3(0.0f, 1.0f, 0.0f)));
-		axis.z = abs(dot(faceNormal, float3(0.0f, 0.0f, 1.0f)));
-	}
+	axis.x = abs( dot(float3(1, 0, 0), faceNormal) );
+	axis.y = abs( dot(float3(0, 1, 0), faceNormal) );
+	axis.z = abs( dot(float3(0, 0, 1), faceNormal) );
 
-	uint axisIndex;
+	matrix viewProjMat;
+	if(		axis.x > max(axis.y, axis.z))
+		viewProjMat = voxelization_vp_axisX;
+	else if(axis.y > max(axis.x, axis.z))
+		viewProjMat = voxelization_vp_axisY;
+	else if(axis.z > max(axis.x, axis.y))
+		viewProjMat = voxelization_vp_axisZ;
+
+	float4 position[3] =
 	{
-		if(axis.x > max(axis.y, axis.z))		axisIndex = 0;
-		else if(axis.y > max(axis.x, axis.z))	axisIndex = 1;
-		else if(axis.z > max(axis.x, axis.y))	axisIndex = 2;
-	}
+		mul(worldPos[0], viewProjMat),
+		mul(worldPos[1], viewProjMat),
+		mul(worldPos[2], viewProjMat),
+	};
 
 	[unroll]
 	for(uint i=0; i<3; ++i)
 	{
-		float4 dominantAxisLocalPos;
-		{
-			if(axisIndex == 0)		dominantAxisLocalPos = float4(input[i].localPos.yzx, 1.0f);
-			else if(axisIndex == 1)	dominantAxisLocalPos = float4(input[i].localPos.zxy, 1.0f);
-			else if(axisIndex == 2)	dominantAxisLocalPos = float4(input[i].localPos.xyz, 1.0f);
-		}
-
 		GS_OUTPUT output;
-		output.position		= mul(dominantAxisLocalPos,	transform_world);
-		output.position		= mul(output.position,		voxelization_toVoxelViewProjSpace);
-		output.voxelPos		= mul(worldPos[i],			voxelization_toVoxelViewSpace).xyz;
-		output.normal		= input[i].normal;
-		output.uv			= input[i].uv;
+		output.position	= position[i];
+//		output.voxelPos	= mul(voxelization_worldToVoxel, worldPos[i]).xyz;
+		output.uv		= input[i].uv;
+		output.normal	= input[i].normal;
+		output.worldPos	= worldPos[i].xyz;
 
 		outputStream.Append(output);
 	}
+
+	outputStream.RestartStrip();
 }
 
 void PS( GS_OUTPUT input )
@@ -98,10 +100,9 @@ void PS( GS_OUTPUT input )
 
 	float3 normal		= normalize(input.normal);
 	int dimension		= int(GetDimension());
-	
-	int3 voxelIdx		= int3(	((input.voxelPos.x * 0.5f) + 0.5f) * dimension,
-								((input.voxelPos.y * 0.5f) + 0.5f) * dimension, 
-								((input.voxelPos.z * 0.5f) + 0.5f) * dimension	);
+
+	float voxelSize		= ComputeVoxelSize(voxelization_currentCascade);
+	int3 voxelIdx		= int3( (input.worldPos - voxelization_minPos) / voxelSize );
 
 #if 1
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
@@ -136,6 +137,8 @@ void PS( GS_OUTPUT input )
 		}
 #else
 		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		voxelIdx,	float4(albedo.xyz, alpha));
+//		OutVoxelAlbedoTexture[voxelIdx] = Float4ColorToUint( float4(albedo.xyz, alpha) );
+
 		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	voxelIdx,	float4(material_emissionColor.xyz, 1.0f));
 
 		normal = normal * 0.5f + 0.5f;

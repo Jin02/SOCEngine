@@ -269,16 +269,57 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 
 	// Update View Proj ConstBuffer
 	{
-		Matrix voxelView;
-		ComputeVoxelViewMatrix(voxelView, currentCascade, camWorldPos, globalInfo.initWorldSize);
+		Matrix orthoProjMat;
+		Matrix::OrthoLH(orthoProjMat, worldSize, worldSize, 0.0f, worldSize);
 
-		Matrix projMat;
-		Matrix::OrthoLH(projMat, 2.0f, 2.0f, 1.0f, -1.0f);
+		auto LookAtView = [](
+			Matrix& outViewMat,
+			const Vector3& worldPos, const Vector3& targetPos, const Vector3& up
+			)
+		{
+			Transform tf(nullptr);
+			tf.UpdatePosition(worldPos);
+			tf.LookAtWorld(targetPos, &up);
 
-		currentVoxelizeInfo.voxelView		= voxelView;
-		Matrix::Transpose(currentVoxelizeInfo.voxelView, currentVoxelizeInfo.voxelView);
-		currentVoxelizeInfo.voxelViewProj	= voxelView * projMat;
-		Matrix::Transpose(currentVoxelizeInfo.voxelViewProj, currentVoxelizeInfo.voxelViewProj);
+			Matrix worldMat;
+			tf.FetchWorldMatrix(worldMat);
+
+			CameraForm::GetViewMatrix(outViewMat, worldMat);
+		};
+
+		Vector3 center = bbMid;
+
+		Matrix viewAxisX, viewAxisY, viewAxisZ;
+		//LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
+		//LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
+		//LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
+
+		float halfWorldSize = worldSize / 2.0f;
+		LookAtView(viewAxisX, center + Vector3(halfWorldSize, 0.0f, 0.0f), center, Vector3(0.0f, 1.0f, 0.0f)); //x
+		LookAtView(viewAxisY, center + Vector3(0.0f, halfWorldSize, 0.0f), center, Vector3(0.0f, 0.0f,-1.0f)); //y
+		LookAtView(viewAxisZ, center + Vector3(0.0f, 0.0f, halfWorldSize), center, Vector3(0.0f, 1.0f, 0.0f)); //z
+
+		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
+		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
+		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
+
+		Matrix::Transpose(currentVoxelizeInfo.viewProjX, currentVoxelizeInfo.viewProjX);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
+
+		//Matrix worldToVoxel;
+		//{
+		//	Matrix::Identity(worldToVoxel);
+
+		//	worldToVoxel._11 = 1.0f / worldSize;
+		//	worldToVoxel._22 = 1.0f / worldSize;
+		//	worldToVoxel._33 = 1.0f / worldSize;
+
+		//	worldToVoxel._41 = bbMin.x;
+		//	worldToVoxel._42 = bbMin.y;
+		//	worldToVoxel._43 = bbMin.z;
+		//}
+		//Matrix::Transpose(currentVoxelizeInfo.worldToVoxel, worldToVoxel);
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
