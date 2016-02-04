@@ -52,32 +52,75 @@ void StoreVoxelMapAtomicColorMax(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 	}while(true);
 }
 
+uint encUnsignedNibble(uint m, uint n)
+{
+  return	(m & 0xFEFEFEFE)		|
+			(n & 0x00000001)		|
+			(n & 0x00000002) << 7U	|
+			(n & 0x00000004) << 14U	|
+			(n & 0x00000008) << 21U;
+}
+
+uint decUnsignedNibble(uint m)
+{
+  return	(m & 0x00000001)		|
+			(m & 0x00000100) >> 7U	|
+			(m & 0x00010000) >> 14U	|
+			(m & 0x01000000) >> 21U;
+}
+
 void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
 {
-	uint newValue = Float4ColorToUint(value);
-	uint prevStoredValue = 0;
-	uint currentStoredValue = 0;
+	uint newValue			= Float4ColorToUint(value);
+	uint prevStoredValue	= 0;
+	uint currentStoredValue	= 0;
 
-	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
+	uint counter = 0;
 	[allow_uav_condition]do
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 
 		if(prevStoredValue == currentStoredValue)
 			break;
-
 		prevStoredValue = currentStoredValue;
 
-		float4 curFlt4 = ToFloat4(currentStoredValue);
-		curFlt4.xyz = curFlt4.xyz * curFlt4.w;
+		float4 rval = ToFloat4(currentStoredValue & 0xFEFEFEFE);
+		uint n = decUnsignedNibble(currentStoredValue);
 
-		float4 reCompute = curFlt4 + value;
-		reCompute.xyz /= (reCompute.w);
+		rval = rval * n + value;
+		rval /= ++n;
+		rval = round(rval / 2) * 2;
+		newValue = encUnsignedNibble(ToUint(rval), n);
 
-		newValue = ToUint(reCompute);
-
-	}while(true);
+	}while(counter++ < 16);
 }
+
+//void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
+//{
+//	uint newValue = Float4ColorToUint(value);
+//	uint prevStoredValue = 0;
+//	uint currentStoredValue = 0;
+//
+//	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
+//	[allow_uav_condition]do
+//	{
+//		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+//
+//		if(prevStoredValue == currentStoredValue)
+//			break;
+//
+//		prevStoredValue = currentStoredValue;
+//
+//		float4 curFlt4 = ToFloat4(currentStoredValue);
+//		curFlt4.xyz = curFlt4.xyz * curFlt4.w;
+//
+//		float4 reCompute = curFlt4 + value;
+//		reCompute.xyz /= (reCompute.w);
+//
+//		newValue = ToUint(reCompute);
+//
+//	}while(true);
+//}
 
 void StoreVoxelMapAtomicAddNormalOneValue(RWTexture3D<uint> voxelMap, int3 idx, float value)
 {
