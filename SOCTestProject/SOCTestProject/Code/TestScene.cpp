@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true, 256, 30.0f);
+	ActivateGI(true, 256, 60.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -119,7 +119,7 @@ void TestScene::OnInitialize()
 	_light = new Object("Light");
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
 //	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12)); //box
-	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 11.0f));
+	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 8.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
 	light->SetLumen(50);
@@ -147,7 +147,7 @@ void TestScene::OnRenderPreview()
 	
 				AddObject(debugVoxels);
 				_testObject2 = debugVoxels;
-				debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 0.0f, 0.2f));
+				debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
 			}
 		}
 	}
