@@ -43,7 +43,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	lightDir = normalize(lightDir);
 
 	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
 	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
 
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
@@ -58,9 +58,13 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 
 		radiosity = lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, distanceOfLightWithVertex / lightRadius);
 	}
-	radiosity += emission.rgb;
+	radiosity = saturate(radiosity + emission.rgb);
 
-	StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
+	if(any(radiosity > 0.0f))
+		OutVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
+
+	//StoreVoxelMapAtomicColorAvg 이거 잘 작동하지 않음
+	//StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
 }
 
 #endif
