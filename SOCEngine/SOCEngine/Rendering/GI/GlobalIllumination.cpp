@@ -143,7 +143,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	// Mipmap
 	{
-		_mipmap = new MipmapAnisotropicVoxelMapAtlas;
+		_mipmap = new MipmapVoxelTexture;
 		_mipmap->Initialize(_globalInfo);
 	}
 

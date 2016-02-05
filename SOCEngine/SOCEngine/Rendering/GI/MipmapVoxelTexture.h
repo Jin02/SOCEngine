@@ -10,7 +10,7 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class MipmapAnisotropicVoxelMapAtlas
+		class MipmapVoxelTexture
 		{
 		public:
 			struct InfoCB
@@ -25,8 +25,8 @@ namespace Rendering
 			Buffer::ConstBuffer*						_infoCB;
 
 		public:
-			MipmapAnisotropicVoxelMapAtlas();
-			~MipmapAnisotropicVoxelMapAtlas();
+			MipmapVoxelTexture();
+			~MipmapVoxelTexture();
 
 		public:
 			void Initialize(const GlobalInfo& giInfo);

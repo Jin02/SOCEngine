@@ -10,7 +10,7 @@
 #include "InjectRadianceFromPointLIght.h"
 #include "InjectRadianceFromSpotLIght.h"
 
-#include "MipmapAnisotropicVoxelMapAtlas.h"
+#include "MipmapVoxelTexture.h"
 
 #include "VoxelConeTracing.h"
 #include "RenderManager.h"
@@ -35,7 +35,7 @@ namespace Rendering
 			InjectRadianceFromPointLIght*			_injectPointLight;
 			InjectRadianceFromSpotLIght*			_injectSpotLight;
 
-			MipmapAnisotropicVoxelMapAtlas*			_mipmap;
+			MipmapVoxelTexture*			_mipmap;
 
 			VoxelConeTracing*						_voxelConeTracing;
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;

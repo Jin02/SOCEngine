@@ -1,4 +1,4 @@
-#include "MipmapAnisotropicVoxelMapAtlas.h"
+#include "MipmapVoxelTexture.h"
 #include "Utility.h"
 #include "EngineShaderFactory.hpp"
 #include "ShaderManager.h"
@@ -18,11 +18,11 @@ using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
-MipmapAnisotropicVoxelMapAtlas::MipmapAnisotropicVoxelMapAtlas() : _shader(nullptr)
+MipmapVoxelTexture::MipmapVoxelTexture() : _shader(nullptr)
 {
 }
 
-MipmapAnisotropicVoxelMapAtlas::~MipmapAnisotropicVoxelMapAtlas()
+MipmapVoxelTexture::~MipmapVoxelTexture()
 {
 	Destroy();
 
@@ -30,7 +30,7 @@ MipmapAnisotropicVoxelMapAtlas::~MipmapAnisotropicVoxelMapAtlas()
 	SAFE_DELETE(_infoCB);
 }
 
-void MipmapAnisotropicVoxelMapAtlas::Initialize(const GlobalInfo& giInfo)
+void MipmapVoxelTexture::Initialize(const GlobalInfo& giInfo)
 {
 	auto LoadComputeShader = [](const std::string& fileName, const std::string& mainFuncName) -> ComputeShader*
 	{
@@ -60,11 +60,11 @@ void MipmapAnisotropicVoxelMapAtlas::Initialize(const GlobalInfo& giInfo)
 	_infoCB->Initialize(sizeof(InfoCB));
 }
 
-void MipmapAnisotropicVoxelMapAtlas::Destroy()
+void MipmapVoxelTexture::Destroy()
 {
 }
 
-void MipmapAnisotropicVoxelMapAtlas::Mipmapping(const DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade)
+void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade)
 {
 	ID3D11DeviceContext* context	= dx->GetContext();
 	uint sourceDimension			= sourceColorMap->GetSideLength();
