@@ -49,37 +49,30 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* g
 		return log(v) / log(2.0f);
 	};
 
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-	bool isAnisotropic = true;
-#else
-	bool isAnisotropic = false;
-#endif
 
 	uint dimension = 1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
 	
-	_voxelAlbedoMapAtlas = new VoxelMap;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
+	_voxelAlbedoMapAtlas	= new VoxelMap;
+	_voxelEmissionMapAtlas	= new VoxelMap;
+
+#ifdef USE_ANISOTROPIC_VOXELIZATION
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, true);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, true);
+#else
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+#endif
 
 	_voxelNormalMapAtlas = new VoxelMap;
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R32_TYPELESS, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
-#else
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
-#endif
-	_voxelEmissionMapAtlas = new VoxelMap;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, isAnisotropic);
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
 
 	// Setting Const Buffers
+	for(uint i=0; i<maxNumOfCascade; ++i)
 	{
-		for(uint i=0; i<maxNumOfCascade; ++i)
-		{
-			ConstBuffer* infoConstBuffer = new ConstBuffer;
-			infoConstBuffer->Initialize(sizeof(InfoCBData));
+		ConstBuffer* infoConstBuffer = new ConstBuffer;
+		infoConstBuffer->Initialize(sizeof(InfoCBData));
 
-			_constBuffers.push_back(infoConstBuffer);
-		}
-
-//		_renderInputCBContainer.push_back( ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::Voxelization_InfoCB), nullptr, false, true, false, true) );
+		_constBuffers.push_back(infoConstBuffer);
 	}
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
@@ -105,8 +98,9 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		{
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-		threadGroup.x = ComputeThreadGroupSideLength(dimension) * (uint)VoxelMap::Direction::Num;
+
+#ifdef USE_ANISOTROPIC_VOXELIZATION
+		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)VoxelMap::Direction::Num);
 #else
 		threadGroup.x = ComputeThreadGroupSideLength(dimension);
 #endif
@@ -122,10 +116,6 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 		ShaderForm::InputUnorderedAccessView uav;
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
 		uav.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
-		uavs.push_back(uav);
-
-		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		uav.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
 		uavs.push_back(uav);
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
