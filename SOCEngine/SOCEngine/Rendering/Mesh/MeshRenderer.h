@@ -30,6 +30,7 @@ namespace Rendering
 		public:
 			bool HasMaterial(const Material* material) const;
 			bool AddMaterial(Material* material);
+			void DeleteMaterial(uint index);
 
 			Type GetCurrentRenderType() const;
 			bool IsTransparent() const;
