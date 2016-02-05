@@ -139,7 +139,7 @@ void Scene::Render()
 			if(meshCam->GetUseIndirectColorMap() == false)
 				meshCam->ReCompileOffScreen(true);
 
-			_globalIllumination->Run(_dx, meshCam, _renderMgr, _shadowRenderer);
+			_globalIllumination->Run(_dx, meshCam, _renderMgr, _shadowRenderer, _materialMgr);
 			indirectColorMap = _globalIllumination->GetIndirectColorMap();
 		}
 		else
