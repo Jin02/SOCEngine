@@ -120,13 +120,9 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Injection
 	{
 		_injectionColorMap = new VoxelMap;
-#ifdef USE_ANISOTROPIC_VOXELIZATION
-		_injectionColorMap->Initialize(	dimension, _globalInfo.maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, false);
-#else
 		_injectionColorMap->Initialize(	dimension, maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
-#endif
+										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, false);
+
 		InjectRadiance::InitParam initParam;
 		{
 			initParam.globalInfo		= &_globalInfo;
@@ -160,22 +156,48 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 
 	_debugVoxelViewer = new Debug::VoxelViewer;
-	_debugVoxelViewer->Initialize(dimension, false);
+	_debugVoxelViewer->Initialize(dimension, true);
+//	_debugVoxelViewer->Initialize(dimension, false);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
 							 const Manager::RenderManager* renderManager,
-							 const Shadow::ShadowRenderer* shadowRenderer)
+							 const Shadow::ShadowRenderer* shadowRenderer,
+							 Manager::MaterialManager* materialMgr)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
+
+	// Clear Voxel Normal Map
+	{
+		const VoxelMap* normalMap = _voxelization->GetAnisotropicVoxelNormalMapAtlas();
+
+		std::vector<ShaderForm::InputUnorderedAccessView> originUAVs	= _clearVoxelMapCS->GetUAVs();
+		ComputeShader::ThreadGroup originThreadGroup					= _clearVoxelMapCS->GetThreadGroupInfo();
+	
+		// set voxel normal map info
+		{
+			uint count = uint( (float)( (1 << (_globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff)) + 8 - 1 ) / 8.0f );
+			_clearVoxelMapCS->SetThreadGroupInfo(ComputeShader::ThreadGroup(count, count, count));
+	
+			std::vector<ShaderForm::InputUnorderedAccessView> uavs;
+			uavs.push_back(ShaderForm::InputUnorderedAccessView(0, normalMap->GetUnorderedAccessView()));
+			_clearVoxelMapCS->SetUAVs(uavs);
+		}
+
+		_clearVoxelMapCS->Dispatch(dx->GetContext());
+
+		// recover
+		_clearVoxelMapCS->SetThreadGroupInfo(originThreadGroup);
+		_clearVoxelMapCS->SetUAVs(originUAVs);
+	}
 
 	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
-
-	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, Debug::VoxelViewer::Type::Color, false, _globalInfo.initVoxelSize);
+	
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	//ClearInjectColorVoxelMap(dx);
 
@@ -191,13 +213,16 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 	//		_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
 	//}
 
-	//// 3. Mipmap Pass
-	//_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap, 0, false, _globalInfo.initWorldSize, materialMgr);
 
-	//// 4. Voxel Cone Tracing Pass
-	//{
-	//	_voxelConeTracing->Run(dx, _injectionColorMap, _mipmap->GetAnisotropicColorMap(), camera);
-	//}
+	// 3. Mipmap Pass
+	//_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap, 0, false, _globalInfo.initWorldSize, materialMgr);
+
+	// 4. Voxel Cone Tracing Pass
+	{
+		//_voxelConeTracing->Run(dx, _injectionColorMap, _mipmap->GetAnisotropicColorMap(), camera);
+	}
 }
 
 void GlobalIllumination::Destroy()

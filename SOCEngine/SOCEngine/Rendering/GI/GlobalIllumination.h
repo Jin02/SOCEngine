@@ -53,7 +53,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
-			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Manager::RenderManager* renderManager, const Shadow::ShadowRenderer* shadowRenderer);
+			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Manager::RenderManager* renderManager, const Shadow::ShadowRenderer* shadowRenderer, Manager::MaterialManager* materialMgr);
 			void Destroy();
 
 		public:
