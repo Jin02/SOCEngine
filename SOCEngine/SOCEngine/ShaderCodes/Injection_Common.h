@@ -45,37 +45,15 @@ float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, float3 dir, uint
 #endif
 }
 
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-float3 GetNormal(Texture3D<float> anisotropicVoxelNormalMap, uint3 voxelIdx, float3 dir, uint cascade)
+float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)
 {
-	uint dimension = (uint)GetDimension();
+	voxelIdx.y += cascade * int(GetDimension());
 
-	uint3 idx = voxelIdx;
-	idx.y += cascade * dimension;
-
-	float normalAxisX = (dir.x > 0.0f) ? 
-		anisotropicVoxelNormalMap.Load(int4(idx.x + (0 * dimension), idx.yz, 0)) :
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (1 * dimension), idx.yz, 0));
-
-	float normalAxisY = (dir.y > 0.0f) ?
-		anisotropicVoxelNormalMap.Load(int4(idx.x + (2 * dimension), idx.yz, 0))	:
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (3 * dimension), idx.yz, 0));
-	
-	float normalAxisZ = (dir.z > 0.0f) ?
-		anisotropicVoxelNormalMap.Load(int4(idx.x + (4 * dimension), idx.yz, 0))	:
-	   -anisotropicVoxelNormalMap.Load(int4(idx.x + (5 * dimension), idx.yz, 0));
-
-	return normalize( float3(normalAxisX, normalAxisY, normalAxisZ) );
-}
-#else
-float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, float3 dir, uint cascade)
-{
-	float3 normal = GetColor(voxelNormalMap, voxelIdx, dir, cascade).xyz;
+	float3 normal = voxelNormalMap.Load(int4(voxelIdx, 0)).xyz;
 	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 
 	return normal;
 }
-#endif
 
 #endif
 
