@@ -21,10 +21,7 @@ namespace Rendering
 			};
 
 		private:
-			GPGPU::DirectCompute::ComputeShader*		_blockToAnisotropicMipmapShader;
-			GPGPU::DirectCompute::ComputeShader*		_anisotropicMipmapShader;
-			VoxelMap*									_anisotropicColorMap;
-
+			GPGPU::DirectCompute::ComputeShader*		_shader;
 			Buffer::ConstBuffer*						_infoCB;
 
 		public:
@@ -35,9 +32,6 @@ namespace Rendering
 			void Initialize(const GlobalInfo& giInfo);
 			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade);
 			void Destroy();
-
-		public:
-			GET_ACCESSOR(AnisotropicColorMap, const VoxelMap*, _anisotropicColorMap);
 		};
 	}
 }
