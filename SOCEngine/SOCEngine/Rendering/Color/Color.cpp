@@ -62,7 +62,6 @@ namespace Rendering
 		color.b += c.b;
 		color.a += c.a;
 
-		CalculateColor(&color);
 		return color;
 	}
 
@@ -178,5 +177,13 @@ namespace Rendering
 		outArray[1] = Math::Common::FloatToHalf(g);
 		outArray[2] = Math::Common::FloatToHalf(b);
 		outArray[3] = Math::Common::FloatToHalf(a);
+	}
+
+	Color Color::Normalized()
+	{
+		Color thisColor = (*this);
+		CalculateColor(&thisColor);
+
+		return thisColor;
 	}
 }
