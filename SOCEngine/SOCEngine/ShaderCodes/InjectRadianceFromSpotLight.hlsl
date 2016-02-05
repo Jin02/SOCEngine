@@ -53,7 +53,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float currentCosineConeAngle	= dot(-vtxToLightDir, lightDir);
 
 	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
 	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
 
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);

@@ -38,7 +38,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
 	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, lightDir, voxelization_currentCascade);
-	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, lightDir, voxelization_currentCascade);
+	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
 	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, lightDir, voxelization_currentCascade);
 
 	float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
