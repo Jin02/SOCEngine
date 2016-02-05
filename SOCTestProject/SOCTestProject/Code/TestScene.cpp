@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true, 256, 60.0f);
+	ActivateGI(true, 128, 60.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -137,17 +137,21 @@ void TestScene::OnRenderPreview()
 	{
 		auto voxelViwer = _globalIllumination->GetDebugVoxelViewer();
 		
-		Object* debugVoxels = voxelViwer->GetVoxelsParent();
-		if(debugVoxels)
+		if(voxelViwer)
 		{
-			Object* exist = FindObject(debugVoxels->GetName());
-			if( exist == nullptr )
+			Object* debugVoxels = voxelViwer->GetVoxelsParent();
+			if(debugVoxels)
 			{
-//				_testObject->SetUse(false);
-	
-				AddObject(debugVoxels);
-				_testObject2 = debugVoxels;
-				debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
+				Object* exist = FindObject(debugVoxels->GetName());
+				if( exist == nullptr )
+				{
+					_testObject->SetUse(false);
+
+					AddObject(debugVoxels);
+					_testObject2 = debugVoxels;
+					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
+					//debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+				}
 			}
 		}
 	}
