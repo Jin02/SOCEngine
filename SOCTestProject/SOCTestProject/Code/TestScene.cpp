@@ -149,8 +149,11 @@ void TestScene::OnRenderPreview()
 
 					AddObject(debugVoxels);
 					_testObject2 = debugVoxels;
+//#ifndef USE_ANISOTROPIC_VOXELIZATION
 					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
-					//debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+//#else
+//					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+//#endif
 				}
 			}
 		}
