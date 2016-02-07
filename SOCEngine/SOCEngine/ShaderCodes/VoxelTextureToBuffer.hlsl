@@ -17,14 +17,15 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 {
 	globalIdx.y += curCascade;
 
-#ifdef USE_FACE_INDEX
+#if defined(USE_FACE_INDEX)
 	[unroll]
 	for(uint faceIdx = 0; faceIdx < 6; ++faceIdx)
 	{
-		globalIdx.x += faceIdx;
+		uint3 voxelIdx = globalIdx;
+		voxelIdx.x += faceIdx * dimension;
 
-		uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
-		OutputBuffer[idx].x = InputVoxelTexture[globalIdx];
+		uint idx = voxelIdx.x + (voxelIdx.y * dimension * 6) + (voxelIdx.z * dimension * dimension * 6);
+		OutputBuffer[idx].x = InputVoxelTexture[voxelIdx];
 	}
 #else
 	uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
