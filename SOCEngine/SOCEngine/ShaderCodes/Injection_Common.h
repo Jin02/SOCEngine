@@ -78,11 +78,18 @@ void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
-			voxelIdx.x += (faceIndex * dimension);
-			StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity * max(anisotropicNormals[faceIndex], 0.0f), alpha));
+			uint3 index = voxelIdx;
+			index.x += (faceIndex * dimension);
+
+			float rate = max(anisotropicNormals[faceIndex], 0.0f);
+			float4 storeValue = float4(radiosity * rate, alpha);
+
+//			StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, index, storeValue);
+			OutVoxelColorTexture[index] = Float4ColorToUint(storeValue);
 		}
 #else
-		StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
+		//StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
+		OutVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
 #endif
 	}
 }
