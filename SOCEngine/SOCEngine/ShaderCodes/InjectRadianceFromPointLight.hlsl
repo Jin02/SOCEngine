@@ -60,11 +60,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	}
 	radiosity = saturate(radiosity + emission.rgb);
 
-	if(any(radiosity > 0.0f))
-		OutVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
-
-	//StoreVoxelMapAtomicColorAvg 이거 잘 작동하지 않음
-	//StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
+	StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
 }
 
 #endif
