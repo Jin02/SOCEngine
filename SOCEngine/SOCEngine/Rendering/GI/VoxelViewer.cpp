@@ -88,7 +88,8 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 
 	auto GetVoxelIdx = [&](uint x, uint y, uint z) -> uint
 	{
-		return (z * _dimension * _dimension) + (y * _dimension) + x;
+		uint coff =  (_isAnisotropic ? 6 : 1);
+		return (z * _dimension * _dimension * coff) + (y * _dimension * coff) + x;
 	};
 
 	std::vector<uint> voxelMap;
@@ -164,12 +165,12 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 
 					rightColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z)]);
 					leftColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z)]);
-					botColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z)]);
-					topColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z)]);
+					botColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z)]);
+					topColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z)]);
 					backColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z)]);
 					frontColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z)]);
 
-					if((rightColor.Get32BitUintColor()	|	leftColor.Get32BitUintColor()	| 
+					if((rightColor.Get32BitUintColor() 	|	leftColor.Get32BitUintColor()	| 
 						botColor.Get32BitUintColor()	|	topColor.Get32BitUintColor()	| 
 						backColor.Get32BitUintColor()	|	frontColor.Get32BitUintColor()	) == 0) //모든 칸에 값이 없으면 굳이 매쉬를 만들 필요가 없음
 						continue;
