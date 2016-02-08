@@ -74,7 +74,7 @@ void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 	_isAnisotropic	= isAnisotropic;
 }
 
-Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr)
+Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11UnorderedAccessView* uav, uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr)
 {
 	float voxelSize = voxelizeSize / float(_dimension);
 
@@ -107,13 +107,13 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 	
 			_infoCB->UpdateSubResource(context, &info);
 	
-			ID3D11UnorderedAccessView* uav = voxelMapAtlas->GetSourceMapUAV()->GetView();
-			context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+			ID3D11UnorderedAccessView* target = uav;
+			context->CSSetUnorderedAccessViews(0, 1, &target, nullptr);
 	
 			_shader->Dispatch(context);
 	
-			uav = nullptr;
-			context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+			target = nullptr;
+			context->CSSetUnorderedAccessViews(0, 1, &target, nullptr);
 		}
 
 		// Buffer to vector
@@ -163,12 +163,12 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, const VoxelM
 							topColor(0.0f, 0.0f, 0.0f, 0.0f),	botColor(0.0f, 0.0f, 0.0f, 0.0f),
 							frontColor(0.0f, 0.0f, 0.0f, 0.0f),	backColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-					rightColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z)]);
-					leftColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z)]);
-					botColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z)]);
-					topColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z)]);
-					backColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z)]);
-					frontColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z)]);
+					rightColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 1), y + (_dimension * cascade), z)]);
+					leftColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 0), y + (_dimension * cascade), z)]);
+					botColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 2), y + (_dimension * cascade), z)]);
+					topColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 3), y + (_dimension * cascade), z)]);
+					backColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 5), y + (_dimension * cascade), z)]);
+					frontColor	= GetColor(voxelMap[GetVoxelIdx(x + (_dimension * 4), y + (_dimension * cascade), z)]);
 
 					if((rightColor.Get32BitUintColor() 	|	leftColor.Get32BitUintColor()	| 
 						botColor.Get32BitUintColor()	|	topColor.Get32BitUintColor()	| 

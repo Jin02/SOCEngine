@@ -45,7 +45,8 @@ namespace Rendering
 
 			public:
 				void Initialize(uint dimension, bool isAnisotropic);
-				Core::Object* GenerateVoxelViewer(const Device::DirectX* dx, const VoxelMap* voxelMapAtlas, uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr);
+				Core::Object* GenerateVoxelViewer(const Device::DirectX* dx, ID3D11UnorderedAccessView* uav,
+													uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr);
 				void DestroyAllVoxelMeshes();
 
 			public:
