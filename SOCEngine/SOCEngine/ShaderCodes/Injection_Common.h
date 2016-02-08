@@ -26,17 +26,14 @@ float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, float3 dir, uint
 	idx.y += cascade * dimension;
 
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
-	float4 colorAxisX = (dir.x > 0.0f) ? 
-		voxelTexture.Load(int4(idx.x + (0 * dimension), idx.yz, 0)) :
-		voxelTexture.Load(int4(idx.x + (1 * dimension), idx.yz, 0));
+	uint3 dirIdx;
+	dirIdx.x = (dir.x < 0.0f) ? 0 : 1;
+	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;
+	dirIdx.z = (dir.z < 0.0f) ? 4 : 5;
 
-	float4 colorAxisY = (dir.y > 0.0f) ?
-		voxelTexture.Load(int4(idx.x + (2 * dimension), idx.yz, 0)) :
-		voxelTexture.Load(int4(idx.x + (3 * dimension), idx.yz, 0));
-	
-	float4 colorAxisZ = (dir.z > 0.0f) ?
-		voxelTexture.Load(int4(idx.x + (4 * dimension), idx.yz, 0)) :
-		voxelTexture.Load(int4(idx.x + (5 * dimension), idx.yz, 0));
+	float4 colorAxisX = voxelTexture.Load(int4(idx.x + (dirIdx.x * dimension), idx.yz, 0));
+	float4 colorAxisY = voxelTexture.Load(int4(idx.x + (dirIdx.y * dimension), idx.yz, 0));
+	float4 colorAxisZ = voxelTexture.Load(int4(idx.x + (dirIdx.z * dimension), idx.yz, 0));
 
 	dir = abs(dir);
 	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
@@ -61,12 +58,12 @@ void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx
 {
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
 	float anisotropicNormals[6] = {
-		 normal.x,
 		-normal.x,
-		 normal.y,
+		 normal.x,
 		-normal.y,
-		 normal.z,
-		-normal.z
+		 normal.y,
+		-normal.z,
+		 normal.z
 	};
 #endif
 
