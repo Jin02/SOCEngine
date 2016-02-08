@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true, 128, 60.0f);
+//	ActivateGI(true, 128, 60.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -104,21 +104,23 @@ void TestScene::OnInitialize()
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
 	light->GetShadow()->SetUseVSM(false);
-#elif 0
+#elif 1
 	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
+//	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
-	_light->GetTransform()->UpdatePosition(Vector3(0, 30, 0));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+
+//	_light->GetTransform()->UpdatePosition(Vector3(0, 30, 0));
+	_light->GetTransform()->UpdatePosition(_camera->GetTransform()->GetLocalPosition());
 
 	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
-	light->SetProjectionSize(10);
+//	light->SetProjectionSize(10);
+	light->SetProjectionSize(30);
 	light->SetIntensity(1);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(true);
-#elif 1
+#elif 0
 	_light = new Object("Light");
-//	_light->GetTransform()->UpdateEulerAngles(Vector3(60, 60, 0));
-//	_light->GetTransform()->UpdatePosition(Vector3(-1, 1.5,  12)); //box
 	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 8.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
@@ -162,7 +164,7 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	Transform* control = _testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
+	Transform* control = _light->GetTransform();//_testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
 	const float scale = 0.1f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
