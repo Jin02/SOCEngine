@@ -7,15 +7,11 @@
 #include "GICommon.h"
 #include "TBDRInput.h"
 
-Texture3D<float4> g_inputSourceVoxelMap					: register(t29);
+Texture3D<float4> g_inputVoxelMap						: register(t29);
 Texture2D<float4> g_inputDirectColorMap					: register(t30);
 
-#ifndef USE_ANISOTROPIC_VOXELIZATION
-Texture3D<float4> g_inputMipmappedAnisotropicVoxelMap	: register(t31);
-#endif
-
-RWTexture2D<float4> g_outputIndirectMap			: register(u0);
-SamplerState defaultSampler						: register(s0);	// linear
+RWTexture2D<float4> g_outIndirectColorMap				: register(u0);
+SamplerState linearSampler								: register(s0);
 
 #define MAXIMUM_CONE_COUNT				6
 #define CONE_TRACING_BIAS				2.5f
@@ -69,51 +65,23 @@ float3 GetVoxelUV(float3 worldPos, uint cascade, float3 bbMin)
 float4 SampleAnisotropicVoxelTex
 	(float3 samplePos, float3 dir, uint cascade, float lod)
 {
-	//defaultSampler is linearSampler
-	//야이, 꼬이잖아 저거 2개
-	//어짜피 읽어야 할 주체가 변경되니.. 전체적으로 코드 뜯는게 나을걸
-
 	float3 bbMin, bbMax;
 	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition.xyz);
 
 #ifdef USE_ANISOTROPIC_VOXELIZATION
-	float4 colorAxisX = (dir.x > 0.0f) ? 
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 0, cascade, bbMin), lod) :
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 1, cascade, bbMin), lod);
+	uint3 dirIdx;
+	dirIdx.x = (dir.x < 0.0f) ? 0 : 1;
+	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;
+	dirIdx.z = (dir.z < 0.0f) ? 4 : 5;
 
-	float4 colorAxisY = (dir.y > 0.0f) ?
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 2, cascade, bbMin), lod) :
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 3, cascade, bbMin), lod);
-	
-	float4 colorAxisZ = (dir.z > 0.0f) ?
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 4, cascade, bbMin), lod) :
-		g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 5, cascade, bbMin), lod);
+	float4 colorAxisX = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.x, cascade, bbMin), lod);
+	float4 colorAxisY = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, cascade, bbMin), lod);
+	float4 colorAxisZ = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, cascade, bbMin), lod);
 
 	dir = abs(dir);
 	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 #else
-	float4 result = g_inputSourceVoxelMap.SampleLevel(defaultSampler, GetVoxelUV(samplePos, cascade, bbMin), 0);
-
-	lod -= 1.0f; // g_inputMipmappedAnisotropicVoxelMap에 기록된 값들은 이미 한번 원본에서 한번 밉맵처리가 된 상태이다.
-	if(lod > 0.0f)
-	{
-		float4 colorAxisX = (dir.x > 0.0f) ? 
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 0, cascade, bbMin), lod) :
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 1, cascade, bbMin), lod);
-
-		float4 colorAxisY = (dir.y > 0.0f) ?
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 2, cascade, bbMin), lod) :
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 3, cascade, bbMin), lod);
-
-		float4 colorAxisZ = (dir.z > 0.0f) ?
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 4, cascade, bbMin), lod) :
-			g_inputMipmappedAnisotropicVoxelMap.SampleLevel(defaultSampler, GetAnisotropicVoxelUV(samplePos, 5, cascade, bbMin), lod);
-
-		dir = abs(dir);
-		result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
-	}
-
-	return result;
+	return g_inputVoxelMap.SampleLevel(linearSampler, GetVoxelUV(samplePos, cascade, bbMin), lod);
 #endif
 }
 
@@ -272,7 +240,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 		float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
 		float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
 
-		g_outputIndirectMap[texIndex[i]] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+		g_outIndirectColorMap[texIndex[i]] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 	}
 
 #else
@@ -285,6 +253,6 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * 1.0f);
 	float3 indirectSpecular	= float3(0.0f, 0.0f, 0.0f);
 
-	g_outputIndirectMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+	g_outIndirectColorMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 #endif
 }
