@@ -50,11 +50,7 @@ void MipmapVoxelTexture::Initialize(const GlobalInfo& giInfo)
 		return shader;
 	};
 
-#ifdef USE_ANISOTROPIC_VOXELIZATION
 	_shader		= LoadComputeShader("MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS");
-#else
-	_shader		= LoadComputeShader("MipmapVoxelTexture", "MipmapVoxelMapCS");
-#endif
 
 	_infoCB = new ConstBuffer;
 	_infoCB->Initialize(sizeof(InfoCB));
@@ -76,7 +72,7 @@ void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceCol
 
 		// Setting Thread Group
 		{
-			uint threadCount = (curDimension + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
+			uint threadCount = ((curDimension/2) + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
 			shader->SetThreadGroupInfo(ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
 		}
 
