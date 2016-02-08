@@ -120,9 +120,13 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Injection
 	{
 		_injectionColorMap = new VoxelMap;
+#ifdef USE_ANISOTROPIC_VOXELIZATION
+		_injectionColorMap->Initialize(	dimension, maxNumOfCascade,
+										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, true);
+#else
 		_injectionColorMap->Initialize(	dimension, maxNumOfCascade,
 										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, false);
-
+#endif
 		InjectRadiance::InitParam initParam;
 		{
 			initParam.globalInfo		= &_globalInfo;
@@ -155,8 +159,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 
-	_debugVoxelViewer = new Debug::VoxelViewer;
-	_debugVoxelViewer->Initialize(dimension, true);
+//	_debugVoxelViewer = new Debug::VoxelViewer;
+//	_debugVoxelViewer->Initialize(dimension / 4, true);
 //	_debugVoxelViewer->Initialize(dimension, false);
 }
 
@@ -197,27 +201,27 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
 	}
 	
-	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
-	//ClearInjectColorVoxelMap(dx);
+	ClearInjectColorVoxelMap(dx);
 
-	//// 2. Injection Pass
-	//{
-	//	if(shadowRenderer->GetDirectionalLightCount() > 0)
-	//		_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization);
+	// 2. Injection Pass
+	{
+		if(shadowRenderer->GetDirectionalLightCount() > 0)
+			_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization);
 
-	//	if(shadowRenderer->GetPointLightCount() > 0)
-	//		_injectPointLight->Inject(dx, shadowRenderer, _voxelization);
+		if(shadowRenderer->GetPointLightCount() > 0)
+			_injectPointLight->Inject(dx, shadowRenderer, _voxelization);
 
-	//	if(shadowRenderer->GetSpotLightCount() > 0)
-	//		_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
-	//}
+		if(shadowRenderer->GetSpotLightCount() > 0)
+			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
+	}
 
 	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap, 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 3. Mipmap Pass
-	//_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap, 0, false, _globalInfo.initWorldSize, materialMgr);
+	_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(1)->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 4. Voxel Cone Tracing Pass
 	{
