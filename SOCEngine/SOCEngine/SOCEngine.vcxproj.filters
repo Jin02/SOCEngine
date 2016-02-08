@@ -871,9 +871,6 @@
     <ClInclude Include="Rendering\GI\GlobalIllumination.h">
       <Filter>Rendering\GI</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.h">
-      <Filter>Rendering\GI\Mipmap</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\TBDRInput.h">
       <Filter>ShaderCodes\Deferred</Filter>
     </ClInclude>
@@ -891,6 +888,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelMap.h">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1206,12 +1206,6 @@
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp">
       <Filter>Rendering\GI\Injection\Lights\Spot</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp">
-      <Filter>Rendering\GI</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.cpp">
-      <Filter>Rendering\GI\Mipmap</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
       <Filter>Rendering\GI\VoxelConeTracing</Filter>
     </ClCompile>
@@ -1223,6 +1217,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelMap.cpp">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp">
+      <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

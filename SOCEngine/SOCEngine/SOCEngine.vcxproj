@@ -92,7 +92,7 @@
     <ClInclude Include="Rendering\GI\InjectRadiance.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h" />
-    <ClInclude Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.h" />
+    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h" />
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h" />
     <ClInclude Include="Rendering\GI\Voxelization.h" />
     <ClInclude Include="Rendering\GI\VoxelViewer.h">
@@ -352,7 +352,7 @@
     <ClCompile Include="Rendering\GI\InjectRadiance.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp" />
-    <ClCompile Include="Rendering\GI\MipmapAnisotropicVoxelMapAtlas.cpp" />
+    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp" />
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp" />
     <ClCompile Include="Rendering\GI\Voxelization.cpp" />
     <ClCompile Include="Rendering\GI\VoxelViewer.cpp">
