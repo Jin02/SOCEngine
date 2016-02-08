@@ -54,9 +54,8 @@ namespace Rendering
 		PointLightShadowInvVPVMat				= 33,
 		SpotLightShadowInvVPVMat				= 34,
 
-		VCT_InputSourceVoxelMap					= 29,
+		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
-		VCT_InputAnisotropicMipVoxelMap			= 31,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
