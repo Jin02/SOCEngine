@@ -99,7 +99,7 @@ void PS( GS_OUTPUT input )
 	float alpha			= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseTexture()) * opacityMap * ParseMaterialAlpha();
 
 	float3 normal		= normalize(input.normal);
-	int dimension		= 128;//int(GetDimension());
+	int dimension		= int(GetDimension());
 
 	float voxelSize		= ComputeVoxelSize(voxelization_currentCascade);
 	int3 voxelIdx		= int3( (input.worldPos - voxelization_minPos) / voxelSize );
@@ -107,12 +107,12 @@ void PS( GS_OUTPUT input )
 //#if 1
 #if defined(USE_ANISOTROPIC_VOXELIZATION)
 	float anisotropicNormals[6] = {
-		 normal.x,
 		-normal.x,
-		 normal.y,
+		 normal.x,
 		-normal.y,
-		 normal.z,
-		-normal.z
+		 normal.y,
+		-normal.z,
+		 normal.z
 	};
 #endif
 
@@ -126,7 +126,7 @@ void PS( GS_OUTPUT input )
 			int3 index = voxelIdx;
 			index.x += (faceIndex * dimension);
 			
-			float storeRatio = max(anisotropicNormals[faceIndex], 0.0f);
+			float storeRatio = 1.0f;//max(anisotropicNormals[faceIndex], 0.0f);
 
 			float3 outAlbedo = albedo.xyz * storeRatio;
 			StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,				index, float4(outAlbedo, alpha));
