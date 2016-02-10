@@ -49,7 +49,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
 	radiosity += emission.rgb;
 
-	StoreRadiosity(radiosity, albedo.a, normal, voxelIdx);
+	StoreRadiosity(OutVoxelColorTexture, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
 }
 
 #endif
