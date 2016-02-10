@@ -18,6 +18,11 @@
 
 #include "VoxelViewer.h"
 
+namespace Core
+{
+	class Scene;
+}
+
 namespace Rendering
 {
 	namespace GI
@@ -31,7 +36,6 @@ namespace Rendering
 
 			Voxelization*							_voxelization;
 
-			InjectRadianceFromDirectionalLIght*		_injectDirectionalLight;
 			InjectRadianceFromPointLIght*			_injectPointLight;
 			InjectRadianceFromSpotLIght*			_injectSpotLight;
 
@@ -53,7 +57,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
-			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Manager::RenderManager* renderManager, const Shadow::ShadowRenderer* shadowRenderer, Manager::MaterialManager* materialMgr);
+			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene);
 			void Destroy();
 
 		public:

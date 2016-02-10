@@ -3,6 +3,7 @@
 #include "Director.h"
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
+#include "Scene.h"
 
 using namespace Device;
 using namespace Core;
@@ -18,7 +19,7 @@ using namespace GPGPU::DirectCompute;
 
 GlobalIllumination::GlobalIllumination()
 	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
-	_injectDirectionalLight(nullptr), _injectPointLight(nullptr), _injectSpotLight(nullptr),
+	_injectPointLight(nullptr), _injectSpotLight(nullptr),
 	_voxelConeTracing(nullptr), _injectionColorMap(nullptr), _clearVoxelMapCS(nullptr),
 	_debugVoxelViewer(nullptr)
 {
@@ -29,7 +30,6 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_giGlobalInfoCB);
 	SAFE_DELETE(_voxelization);
 
-	SAFE_DELETE(_injectDirectionalLight);
 	SAFE_DELETE(_injectPointLight);
 	SAFE_DELETE(_injectSpotLight);
 
@@ -135,9 +135,6 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 			initParam.outColorMap		= _injectionColorMap;
 		}
 
-		_injectDirectionalLight	= new InjectRadianceFromDirectionalLIght;
-		_injectDirectionalLight->Initialize(initParam);
-
 		_injectPointLight		= new InjectRadianceFromPointLIght;
 		_injectPointLight->Initialize(initParam);
 
@@ -159,15 +156,12 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 
-//	_debugVoxelViewer = new Debug::VoxelViewer;
-//	_debugVoxelViewer->Initialize(dimension / 4, true);
+	_debugVoxelViewer = new Debug::VoxelViewer;
+	_debugVoxelViewer->Initialize(dimension, true);
 //	_debugVoxelViewer->Initialize(dimension, false);
 }
 
-void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera,
-							 const Manager::RenderManager* renderManager,
-							 const Shadow::ShadowRenderer* shadowRenderer,
-							 Manager::MaterialManager* materialMgr)
+void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
 
@@ -195,21 +189,22 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		_clearVoxelMapCS->SetUAVs(originUAVs);
 	}
 
+	ClearInjectColorVoxelMap(dx);
+
+	const RenderManager* renderManager = scene->GetRenderManager();
+	
 	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
-		_voxelization->Voxelize(dx, camera, renderManager, _globalInfo, false);
+		_voxelization->Voxelize(dx, camera, scene, _globalInfo, _injectionColorMap, false);
 	}
 	
 	//_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
-	ClearInjectColorVoxelMap(dx);
+	const ShadowRenderer* shadowRenderer = scene->GetShadowManager();
 
 	// 2. Injection Pass
 	{
-		if(shadowRenderer->GetDirectionalLightCount() > 0)
-			_injectDirectionalLight->Inject(dx, shadowRenderer, _voxelization);
-
 		if(shadowRenderer->GetPointLightCount() > 0)
 			_injectPointLight->Inject(dx, shadowRenderer, _voxelization);
 
@@ -217,11 +212,13 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
 	}
 
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap, 0, false, _globalInfo.initWorldSize, materialMgr);
+	MaterialManager* materialMgr = scene->GetMaterialManager();
+
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 3. Mipmap Pass
 	_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(1)->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(0)->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 4. Voxel Cone Tracing Pass
 	{
@@ -233,7 +230,6 @@ void GlobalIllumination::Destroy()
 {
 	_giGlobalInfoCB->Destory();
 	_voxelization->Destroy();
-	_injectDirectionalLight->Destroy();
 	_injectPointLight->Destroy();
 	_injectSpotLight->Destroy();
 	_mipmap->Destroy();
