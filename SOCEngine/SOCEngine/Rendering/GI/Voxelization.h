@@ -8,6 +8,11 @@
 #include "ComputeShader.h"
 #include "GlobalIlluminationCommon.h"
 
+namespace Core
+{
+	class Scene;
+}
+
 namespace Rendering
 {
 	namespace GI
@@ -48,7 +53,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const GlobalInfo& globalInfo, const Buffer::ConstBuffer* globalInfoCB);
-			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Manager::RenderManager*& renderManager, const GlobalInfo& globalInfo, bool onlyStaticMesh);
+			void Voxelize(const Device::DirectX*& dx, const Camera::MeshCamera*& camera, const Core::Scene* scene, const GlobalInfo& globalInfo, const VoxelMap* injectionColorMap, bool onlyStaticMesh);
 			void Destroy();
 
 		public:

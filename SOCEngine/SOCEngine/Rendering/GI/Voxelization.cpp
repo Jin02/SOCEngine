@@ -6,6 +6,8 @@
 
 #include "MeshCamera.h"
 
+#include "Scene.h"
+
 using namespace Resource;
 using namespace Core;
 using namespace Math;
@@ -15,6 +17,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Camera;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
+using namespace Rendering::Shadow;
 using namespace Rendering::View;
 using namespace GPGPU::DirectCompute;
 
@@ -144,8 +147,8 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx,
-							const MeshCamera*& camera, const RenderManager*& renderManager,
-							const GlobalInfo& globalInfo,
+							const MeshCamera*& camera, const Core::Scene* scene,
+							const GlobalInfo& globalInfo, const VoxelMap* injectionColorMap,
 							bool onlyStaticMesh)
 {
 	Math::Matrix camWorldMat;
@@ -191,14 +194,12 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	}
 	context->RSSetViewports(1, &viewport);
 
-	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
-
 	ID3D11UnorderedAccessView* uavs [] =
 	{
 		_voxelAlbedoMapAtlas->GetSourceMapUAV()->GetView(),
 		_voxelNormalMapAtlas->GetSourceMapUAV()->GetView(),
-		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView()
+		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView(),
+		injectionColorMap->GetSourceMapUAV()->GetView()
 	};
 
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
@@ -208,9 +209,47 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
-	ID3D11Buffer* globalInfoBuffer = _globalInfoCB->GetBuffer();
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB), 1, &globalInfoBuffer);
+	auto PSSetSRBuffer = [](ID3D11DeviceContext* context, TextureBindIndex bind, const ShaderResourceBuffer* srBuffer)
+	{
+		ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
+		context->PSSetShaderResources(uint(bind), 1, &srv);
+	};
+	auto PSSetConstBuffer = [](ID3D11DeviceContext* context, ConstBufferBindIndex bind, const ConstBuffer* cb)
+	{
+		ID3D11Buffer* buffer = cb ? cb->GetBuffer() : nullptr;
+		context->PSSetConstantBuffers(uint(bind), 1, &buffer);
+	};
+	auto PSSetTexture = [](ID3D11DeviceContext* context, TextureBindIndex bind, const TextureForm* texture)
+	{
+		ID3D11ShaderResourceView* srv = texture ? texture->GetShaderResourceView()->GetView() : nullptr;
+		context->PSSetShaderResources(uint(bind), 1, &srv);
+	};
+	auto PSSetSampler = [](ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+	{
+		ID3D11SamplerState* sampler = samplerState ? samplerState : nullptr;
+		context->PSSetSamplers(uint(bind), 1, &sampler);
+	};
 
+	const LightManager*		lightMgr	= scene->GetLightManager();
+	const ShadowRenderer*	shadowMgr	= scene->GetShadowManager();
+
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,			lightMgr->GetDirectionalLightTransformSRBuffer());
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightColor,					lightMgr->GetDirectionalLightColorSRBuffer());
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightParam,					lightMgr->GetDirectionalLightParamSRBuffer());
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				shadowMgr->GetDirectionalLightShadowParamSRBuffer());
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				lightMgr->GetDirectionalLightShadowIndexSRBuffer());
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
+	
+	PSSetConstBuffer(context,	ConstBufferBindIndex::GlobalIIllumination_InfoCB,			_globalInfoCB);
+	PSSetConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,					shadowMgr->GetShadowGlobalParamConstBuffer());
+
+	PSSetTexture(context,		TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowMgr->GetDirectionalLightShadowMapAtlas());
+
+	PSSetSampler(context,		SamplerStateBindIndex::ShadowComprisonSamplerState,			dx->GetShadowGreaterEqualSamplerComparisonState());	
+	PSSetSampler(context,		SamplerStateBindIndex::DefaultSamplerState,					dx->GetSamplerStateAnisotropic());	
+	PSSetSampler(context,		SamplerStateBindIndex::VSMShadowSamplerState,				dx->GetShadowSamplerState());	
+
+	const RenderManager* renderManager = scene->GetRenderManager();
 	uint maxCascade = globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
 
 	for(uint currentCascade=0; currentCascade<maxCascade; ++currentCascade)
@@ -234,13 +273,25 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	ID3D11Buffer* nullBuff = nullptr;
 	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB),			1, &nullBuff);
 	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB),			1, &nullBuff);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB),	1, &nullBuff);
 
-	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr};
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,		nullptr);
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightColor,				nullptr);
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightParam,				nullptr);
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,			nullptr);
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,			nullptr);
+	PSSetSRBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,	nullptr);
+
+	PSSetConstBuffer(context,	ConstBufferBindIndex::GlobalIIllumination_InfoCB,		nullptr);
+	PSSetConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,				nullptr);
+
+	PSSetTexture(context,		TextureBindIndex::DirectionalLightShadowMapAtlas,		nullptr);
+
+	PSSetSampler(context,		SamplerStateBindIndex::ShadowComprisonSamplerState,		nullptr);
+	PSSetSampler(context,		SamplerStateBindIndex::DefaultSamplerState,				nullptr);	
+	PSSetSampler(context,		SamplerStateBindIndex::VSMShadowSamplerState,			nullptr);	
+
+	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr, nullptr};
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
-
-	ID3D11SamplerState* nullSampler = nullptr;
-	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
 
 	context->RSSetState(nullptr);
 }
