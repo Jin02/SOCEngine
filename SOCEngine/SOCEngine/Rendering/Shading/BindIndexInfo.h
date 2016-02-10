@@ -66,9 +66,10 @@ namespace Rendering
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
 
-		GlobalIIllumination_InfoCB		= 0,
 		Voxelization_InfoCB				= 5,
-		Mipmap_InfoCB					= 2,
+		GlobalIIllumination_InfoCB		= 6,
+
+		Mipmap_InfoCB					= 0,
 		VCT_GlobalInfoCB				= 1,
 	};
 

@@ -2,7 +2,7 @@
 
 #include "ShaderCommon.h"
 
-cbuffer MipMapInfoCB : register(b2)
+cbuffer MipMapInfoCB : register(b0)
 {
 	uint mipmapInfo_sourceDimension;
 	uint mipmapInfo_currentCascade;
