@@ -112,7 +112,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 	context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
 
 	ID3D11UnorderedAccessView* uav = _indirectColorMap->GetUnorderedAccessView()->GetView();
-	context->CSGetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav);
+	context->CSSetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav, nullptr);
 
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateLinear();
 	context->CSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1,	&samplerState);
@@ -124,7 +124,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 		context->CSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &samplerState);
 
 		uav = nullptr;
-		context->CSGetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav);
+		context->CSSetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav, nullptr);
 
 		tbrParamCB = nullptr;
 		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
