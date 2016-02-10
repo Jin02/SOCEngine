@@ -54,41 +54,4 @@ float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)
 
 #endif
 
-void StoreRadiosity(float3 radiosity, float alpha, float3 normal, uint3 voxelIdx)
-{
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-	float anisotropicNormals[6] = {
-		-normal.x,
-		 normal.x,
-		-normal.y,
-		 normal.y,
-		-normal.z,
-		 normal.z
-	};
-#endif
-
-	uint dimension = (uint)GetDimension();
-	voxelIdx.y += voxelization_currentCascade * dimension;
-
-	if(any(radiosity > 0.0f))
-	{
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-		for(int faceIndex=0; faceIndex<6; ++faceIndex)
-		{
-			uint3 index = voxelIdx;
-			index.x += (faceIndex * dimension);
-
-			float rate = max(anisotropicNormals[faceIndex], 0.0f);
-			float4 storeValue = float4(radiosity * rate, alpha);
-
-//			StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, index, storeValue);
-			OutVoxelColorTexture[index] = Float4ColorToUint(storeValue);
-		}
-#else
-		//StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
-		OutVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
-#endif
-	}
-}
-
 #endif

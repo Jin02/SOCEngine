@@ -9,7 +9,7 @@ Texture3D<float4>	g_inputVoxelAlbedoTexture	: register( t29 );
 Texture3D<float4>	g_inputVoxelEmissionTexture	: register( t31 );
 Texture3D<float4>	g_inputVoxelNormalTexture	: register( t30 );
 
-cbuffer GIInfoCB : register( b0 )
+cbuffer GIInfoCB : register( b6 )
 #else
 cbuffer GIInfoCB : register( b1 )
 #endif
@@ -79,5 +79,43 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 
 	return voxelCenter;
 }
+
+void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
+{
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
+	float anisotropicNormals[6] = {
+		-normal.x,
+		 normal.x,
+		-normal.y,
+		 normal.y,
+		-normal.z,
+		 normal.z
+	};
+#endif
+
+	uint dimension = (uint)GetDimension();
+	voxelIdx.y += curCascade * dimension;
+
+	if(any(radiosity > 0.0f))
+	{
+#if defined(USE_ANISOTROPIC_VOXELIZATION)
+		for(int faceIndex=0; faceIndex<6; ++faceIndex)
+		{
+			uint3 index = voxelIdx;
+			index.x += (faceIndex * dimension);
+
+			float rate = max(anisotropicNormals[faceIndex], 0.0f);
+			float4 storeValue = float4(radiosity * rate, alpha);
+
+//			StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, index, storeValue);
+			outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
+		}
+#else
+		//StoreVoxelMapAtomicColorAvg(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
+		outVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
+#endif
+	}
+}
+
 
 #endif
