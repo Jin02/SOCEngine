@@ -161,8 +161,6 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel
 	float4 accumColor = float4(0.0f, 0.0f, 0.0f, 0.0f); //w is occlusion
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
-		// worldNormal을 기준으로 Cone Dir Local Space 만큼 방향을 이동시킴
-		// 별거 없는데 공식 이해가 안가면 직접 그려보면서 이해하는걸 추천 -_-
 		float3 dir = coneDir[coneIdx];
 
 		// w or a is occlusion
