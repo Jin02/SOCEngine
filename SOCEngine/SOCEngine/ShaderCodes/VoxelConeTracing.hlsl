@@ -137,22 +137,39 @@ float3 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float h
 
 float3 DiffuseVCT(float3 worldPos, float3 worldNormal, uniform float minMipLevel)
 {
-	float3 up		= (worldNormal.y > 0.95f) ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f);
-	float3 right	= cross(up, worldNormal);
-	up = cross(worldNormal, right);
+	float3 coneDir[MAXIMUM_CONE_COUNT];
+	{
+		float3x3 rotMat = (float3x3)0;
+
+		if(worldNormal.y ==  1.0f)		rotMat._11_22_33 =  1.0f;
+		else if(worldNormal.y == -1.0f)	rotMat._11_22_33 = -1.0f;
+		else
+		{
+			float3 binormal = cross(worldNormal, float3(0.0f, 1.0f, 0.0f));
+			float3 tangent	= cross(binormal, worldNormal);
+
+			rotMat._11_12_13 = normalize(tangent);
+			rotMat._21_22_23 = normalize(worldNormal);
+			rotMat._31_32_33 = normalize(binormal);
+		}
+
+		[unroll]
+		for(uint i=0; i<5; ++i)
+			coneDir[i] = normalize( mul(ConeDirLS[i], rotMat) );
+	}
 
 	float4 accumColor = float4(0.0f, 0.0f, 0.0f, 0.0f); //w is occlusion
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
 		// worldNormal을 기준으로 Cone Dir Local Space 만큼 방향을 이동시킴
 		// 별거 없는데 공식 이해가 안가면 직접 그려보면서 이해하는걸 추천 -_-
-		float3 dir = normalize( worldNormal + (ConeDirLS[coneIdx].x * right) + (ConeDirLS[coneIdx].z * up) );
+		float3 dir = coneDir[coneIdx];
 
 		// w or a is occlusion
 		float4 accumColor	= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-		float currLength	= 0;//gi_initVoxelSize * CONE_TRACING_BIAS;
-		float3 samplePos	= float3(0.0f, 0.0f, 0.0f);//worldPos + (dir * currLength);
+		float currLength	= gi_initVoxelSize * CONE_TRACING_BIAS;
+		float3 samplePos	= worldPos + (dir * currLength);
 		float oneVoxelSize	= gi_initVoxelSize;// * CONE_TRACING_BIAS;
 		
 		float3 bbMin, bbMax;
@@ -210,12 +227,12 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, 0.0f);
 
-	//float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
-	//																	 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
-	//																	 // 나중에 해결 방안을 찾으면 고쳐야한다.
-	////const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
-	////const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
-	////float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
+//	float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
+																		 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
+																		 // 나중에 해결 방안을 찾으면 고쳐야한다.
+	//const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
+	//const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
+	//float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
 	//float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, surface.roughness, halfConeAngle, 0.0f);
 
 	//surface.metallic = 0.3f; //임시
@@ -243,16 +260,17 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 		g_outIndirectColorMap[texIndex[i]] = float4(indirectDiffuse + indirectSpecular, 1.0f);
 	}
 
+	g_outIndirectColorMap[globalIdx.xy] = float4(0.0f, 0.0f, 1.0f, 1.0f);//directColor;//float4(indirectDiffuse + indirectSpecular, 1.0f);
 #else
 	float4 directColor	= g_inputDirectColorMap.Load( uint3(globalIdx.xy, 0) );
-	float3 baseColor	= directColor.rgb * (1.0f - surface.metallic);
+	//float3 baseColor	= directColor.rgb;// * (1.0f - surface.metallic);
 
 	// Metallic 값을 이용해서 대충 섞는다.
 	//float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
 	//float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
-	float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * 1.0f);
-	float3 indirectSpecular	= float3(0.0f, 0.0f, 0.0f);
+	//float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb);
+	//float3 indirectSpecular	= float3(0.0f, 0.0f, 0.0f);
 
-	g_outIndirectColorMap[globalIdx.xy] = float4(indirectDiffuse + indirectSpecular, 1.0f);
+	g_outIndirectColorMap[globalIdx.xy] = float4(diffuseVCT, 1.0f);
 #endif
 }
