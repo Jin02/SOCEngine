@@ -114,7 +114,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 	ID3D11UnorderedAccessView* uav = _indirectColorMap->GetUnorderedAccessView()->GetView();
 	context->CSSetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav, nullptr);
 
-	ID3D11SamplerState* samplerState = dx->GetSamplerStateLinear();
+	ID3D11SamplerState* samplerState = dx->GetConeTracingSamplerState();
 	context->CSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1,	&samplerState);
 	_shader->Dispatch(context);
 
