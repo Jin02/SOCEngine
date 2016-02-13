@@ -14,7 +14,7 @@ DirectX::DirectX(void) :
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
 	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
 	_rasterizerClockwiseDisableCullingWithClip(nullptr),
-	_depthLessEqual(nullptr)
+	_depthLessEqual(nullptr), _coneTracingSamplerState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -364,7 +364,24 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.MinLOD			= 0;
 			desc.MaxLOD			= 0;
 			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState state");
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
+
+			ZeroMemory(&desc, sizeof(desc));
+			desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.MaxAnisotropy	= 0;
+			desc.AddressU		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressV		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.BorderColor[0]	= 0.0f;
+			desc.BorderColor[1]	= 0.0f;
+			desc.BorderColor[2]	= 0.0f;
+			desc.BorderColor[3]	= 1.0f;
+			desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;
+			desc.MinLOD			= 0;
+			desc.MaxLOD			= D3D11_FLOAT32_MAX;
+
+			hr = _device->CreateSamplerState( &desc, &_coneTracingSamplerState );
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _coneTracingSamplerState");
 		}
 	}
 
@@ -480,4 +497,5 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_immediateContext);
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
+	SAFE_RELEASE(_coneTracingSamplerState);
 }
