@@ -88,7 +88,9 @@
     <ClInclude Include="Rendering\GI\VoxelMap.h" />
     <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
     <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h" />
-    <ClInclude Include="Rendering\GI\InjectRadianceFromDirectionalLIght.h" />
+    <ClInclude Include="Rendering\GI\InjectRadianceFromDirectionalLIght.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadiance.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h" />
@@ -348,7 +350,9 @@
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\GI\VoxelMap.cpp" />
     <ClCompile Include="Rendering\GI\GlobalIllumination.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromDirectionalLIght.cpp" />
+    <ClCompile Include="Rendering\GI\InjectRadianceFromDirectionalLIght.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadiance.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp" />
