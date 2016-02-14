@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-//	ActivateGI(true, 128, 60.0f);
+	ActivateGI(true, 128, 60.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -104,7 +104,7 @@ void TestScene::OnInitialize()
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
 	light->GetShadow()->SetUseVSM(false);
-#elif 1
+#elif 0
 	_light = new Object("Light");
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
@@ -119,9 +119,10 @@ void TestScene::OnInitialize()
 	light->SetIntensity(1);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(true);
-#elif 0
+#elif 1
 	_light = new Object("Light");
 	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 8.0f));
+//	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 3.4f, 10.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
 	light->SetLumen(50);
