@@ -15,7 +15,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 	float4 direct	= directLightColorMap.Sample(linerSamplerState, input.uv);
 	float4 indirect	= indirectLightColorMap.Sample(linerSamplerState, input.uv);
 
-	return direct;//test
+	return indirect;//test
 #else
 	return directLightColorMap.Sample(linerSamplerState, input.uv);
 #endif
