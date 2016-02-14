@@ -100,43 +100,19 @@ void PS( GS_OUTPUT input )
 	float voxelSize		= ComputeVoxelSize(voxelization_currentCascade);
 	int3 voxelIdx		= int3( (input.worldPos - voxelization_minPos) / voxelSize );
 
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-	float anisotropicNormals[6] = {
-		-normal.x,
-		 normal.x,
-		-normal.y,
-		 normal.y,
-		-normal.z,
-		 normal.z
-	};
-#endif
-
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
 		int3 index = voxelIdx;
 		index.y += voxelization_currentCascade * dimension;
 
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-		for(int faceIndex=0; faceIndex<6; ++faceIndex)
-		{
-			float storeRatio = max(anisotropicNormals[faceIndex], 0.0f);
+		StoreVoxelMapAtomicColorAvgNibble(OutVoxelAlbedoTexture,	index,	float4(albedo.xyz, alpha));
+		//OutVoxelAlbedoTexture[index] = Float4ColorToUint(float4(albedo.xyz, alpha));
 
-			float3 outAlbedo = albedo.xyz * storeRatio;
-			StoreVoxelMapAtomicColorAvgNibble(OutVoxelAlbedoTexture,				int3(index.x + (faceIndex * dimension), index.yz), float4(outAlbedo, alpha));
-
-			float3 outEmission = material_emissionColor.xyz * storeRatio;
-			StoreVoxelMapAtomicColorAvgNibble(OutVoxelEmissionTexture,			int3(index.x + (faceIndex * dimension), index.yz), float4(outEmission, 1.0f));
-		}
-
-#else
-		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,		index,	float4(albedo.xyz, alpha));
-//		OutVoxelAlbedoTexture[voxelIdx] = Float4ColorToUint( float4(albedo.xyz, alpha) );
-
-		StoreVoxelMapAtomicColorAvgNibble(OutVoxelEmissionTexture,	index,	float4(material_emissionColor.xyz, 1.0f));
-#endif
+		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	index,	float4(material_emissionColor.xyz, 1.0f));
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorAvgNibble(OutVoxelNormalTexture, index, float4(storeNormal, 1.0f));
+		StoreVoxelMapAtomicColorAvgNibble(OutVoxelNormalTexture,	index,	float4(storeNormal, 1.0f));
+		//OutVoxelNormalTexture[index] = Float4ColorToUint(float4(storeNormal, 1.0f));
 	}
 
 

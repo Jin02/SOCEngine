@@ -19,28 +19,12 @@ StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: regist
 
 RWTexture3D<uint> OutVoxelColorTexture									: register( u0 );
 
-float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, float3 dir, uint cascade)
+float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, uint cascade)
 {
-	uint dimension = (uint)GetDimension();
-
 	uint3 idx = voxelIdx;
-	idx.y += cascade * dimension;
+	idx.y += cascade * uint(GetDimension());
 
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
-	uint3 dirIdx;
-	dirIdx.x = (dir.x < 0.0f) ? 0 : 1;
-	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;
-	dirIdx.z = (dir.z < 0.0f) ? 4 : 5;
-
-	float4 colorAxisX = voxelTexture.Load(int4(idx.x + (dirIdx.x * dimension), idx.yz, 0));
-	float4 colorAxisY = voxelTexture.Load(int4(idx.x + (dirIdx.y * dimension), idx.yz, 0));
-	float4 colorAxisZ = voxelTexture.Load(int4(idx.x + (dirIdx.z * dimension), idx.yz, 0));
-
-	dir = abs(dir);
-	return ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
-#else
 	return voxelTexture.Load(int4(idx, 0));
-#endif
 }
 
 float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)

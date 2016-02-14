@@ -67,7 +67,7 @@ float4 SampleAnisotropicVoxelTex
 	float3 bbMin, bbMax;
 	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition.xyz);
 
-#ifdef USE_ANISOTROPIC_VOXELIZATION
+#ifdef USE_ANISOTROPIC_INJECTION_MAP
 	uint3 dirIdx;
 	dirIdx.x = (dir.x < 0.0f) ? 0 : 1;
 	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;

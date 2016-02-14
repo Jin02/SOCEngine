@@ -60,11 +60,8 @@ void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCa
 		{
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
-#ifdef USE_ANISOTROPIC_VOXELIZATION
+
 		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)VoxelMap::Direction::Num);
-#else
-		threadGroup.x = ComputeThreadGroupSideLength(dimension);
-#endif
 		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
 		threadGroup.z = ComputeThreadGroupSideLength(dimension);
 	}
@@ -120,13 +117,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Injection
 	{
 		_injectionColorMap = new VoxelMap;
-#ifdef USE_ANISOTROPIC_VOXELIZATION
 		_injectionColorMap->Initialize(	dimension, maxNumOfCascade,
 										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, true);
-#else
-		_injectionColorMap->Initialize(	dimension, maxNumOfCascade,
-										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, false);
-#endif
 		InjectRadiance::InitParam initParam;
 		{
 			initParam.globalInfo		= &_globalInfo;
@@ -156,37 +148,13 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 
-//	_debugVoxelViewer = new Debug::VoxelViewer;
-//	_debugVoxelViewer->Initialize(dimension, true);
+	//_debugVoxelViewer = new Debug::VoxelViewer;
+	//_debugVoxelViewer->Initialize(dimension, 1);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
-
-	// Clear Voxel Normal Map
-	{
-		const VoxelMap* normalMap = _voxelization->GetAnisotropicVoxelNormalMapAtlas();
-
-		std::vector<ShaderForm::InputUnorderedAccessView> originUAVs	= _clearVoxelMapCS->GetUAVs();
-		ComputeShader::ThreadGroup originThreadGroup					= _clearVoxelMapCS->GetThreadGroupInfo();
-	
-		// set voxel normal map info
-		{
-			uint count = uint( (float)( (1 << (_globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff)) + 8 - 1 ) / 8.0f );
-			_clearVoxelMapCS->SetThreadGroupInfo(ComputeShader::ThreadGroup(count, count, count));
-	
-			std::vector<ShaderForm::InputUnorderedAccessView> uavs;
-			uavs.push_back(ShaderForm::InputUnorderedAccessView(0, normalMap->GetUnorderedAccessView()));
-			_clearVoxelMapCS->SetUAVs(uavs);
-		}
-
-		_clearVoxelMapCS->Dispatch(dx->GetContext());
-
-		// recover
-		_clearVoxelMapCS->SetThreadGroupInfo(originThreadGroup);
-		_clearVoxelMapCS->SetUAVs(originUAVs);
-	}
 
 	ClearInjectColorVoxelMap(dx);
 

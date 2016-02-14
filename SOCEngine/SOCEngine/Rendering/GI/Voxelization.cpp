@@ -56,15 +56,10 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* g
 	uint dimension = 1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
 	
 	_voxelAlbedoMapAtlas	= new VoxelMap;
-	_voxelEmissionMapAtlas	= new VoxelMap;
-
-#ifdef USE_ANISOTROPIC_VOXELIZATION
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, true);
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, true);
-#else
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
 	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
-#endif
+
+	_voxelEmissionMapAtlas	= new VoxelMap;
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
 
 	_voxelNormalMapAtlas = new VoxelMap;
 	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
@@ -102,11 +97,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 			return (uint)((float)(sideLength + 8 - 1) / 8.0f);
 		};
 
-#ifdef USE_ANISOTROPIC_VOXELIZATION
-		threadGroup.x = ComputeThreadGroupSideLength(dimension * (uint)VoxelMap::Direction::Num);
-#else
 		threadGroup.x = ComputeThreadGroupSideLength(dimension);
-#endif
 		threadGroup.y = ComputeThreadGroupSideLength(dimension * maxNumOfCascade);
 		threadGroup.z = ComputeThreadGroupSideLength(dimension);
 	}
@@ -123,6 +114,10 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
 		uav.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
+		uavs.push_back(uav);
+
+		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
+		uav.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
 		uavs.push_back(uav);
 	}
 

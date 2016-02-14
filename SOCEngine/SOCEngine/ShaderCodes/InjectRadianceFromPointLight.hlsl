@@ -43,8 +43,8 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	lightDir = normalize(lightDir);
 
 	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
-	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, normal, voxelization_currentCascade);
-	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, normal, voxelization_currentCascade);
+	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
+	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
 
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 	if( distanceOfLightWithVertex < lightRadius )
