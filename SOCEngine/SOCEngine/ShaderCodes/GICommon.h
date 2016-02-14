@@ -97,14 +97,14 @@ uint decUnsignedNibble(uint m)
 			(m & 0x01000000) >> 21U;
 }
 
-void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
+void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
 {
 	uint newValue			= Float4ColorToUint(value);
 	uint prevStoredValue	= 0;
 	uint currentStoredValue	= 0;
 
-	uint counter = 0;
-	[allow_uav_condition]do
+	uint count = 0;
+	do//while( (!useLimit) || (count++ < 8) )
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 
@@ -120,18 +120,20 @@ void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, flo
 		rval = round(rval / 2) * 2;
 		newValue = encUnsignedNibble(ToUint(rval), n);
 
-	}while(counter++ < 16);
+	}while(count++ < 16);
 }
 
-void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value)
+void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
 {
-	uint newValue = Float4ColorToUint(value);
-	uint prevStoredValue = 0;
-	uint currentStoredValue = 0;
+	value *= 255.0f;
+
+	uint newValue			= ToUint(value);
+	uint prevStoredValue	= 0;
+	uint currentStoredValue	= 0;
 
 	uint count = 0;
-	// while이나 for는 그래픽 드라이버에 따라 에러가 난다고 함 -ㅠ-;
-	[allow_uav_condition]do
+
+	do//while( (!useLimit) || (count++ < 8) )
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 
@@ -140,17 +142,18 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 
 		prevStoredValue = currentStoredValue;
 
-		float4 currColor = RGBA8UintColorToFloat4(currentStoredValue);
-		currColor += (1.0f - currColor.a) * value;
+		float4 curFlt4 = ToFloat4(currentStoredValue);
+		curFlt4.xyz = (curFlt4.xyz * curFlt4.w);
 
-		newValue = Float4ColorToUint(currColor);
+		float4 reCompute = curFlt4 + value;
+		reCompute.xyz /= reCompute.w;
 
-	}while(count++ < 16);
+		newValue = ToUint(reCompute);
+	}while( (!useLimit) || (count++ < 8) );
 }
 
 void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
 {
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
 	float anisotropicNormals[6] = {
 		-normal.x,
 		 normal.x,
@@ -159,14 +162,12 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, fl
 		-normal.z,
 		 normal.z
 	};
-#endif
 
 	uint dimension = (uint)GetDimension();
 	voxelIdx.y += curCascade * dimension;
 
 	if(any(radiosity > 0.0f))
 	{
-#if defined(USE_ANISOTROPIC_VOXELIZATION)
 		for(int faceIndex=0; faceIndex<6; ++faceIndex)
 		{
 			uint3 index = voxelIdx;
@@ -175,13 +176,9 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, fl
 			float rate = max(anisotropicNormals[faceIndex], 0.0f);
 			float4 storeValue = float4(radiosity * rate, alpha);
 
-//			StoreVoxelMapAtomicColorAvgNibble(outVoxelColorTexture, index, storeValue);
+//			StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
 			outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
 		}
-#else
-		//StoreVoxelMapAtomicColorAvgNibble(OutVoxelColorTexture, voxelIdx, float4(radiosity, alpha));
-		outVoxelColorTexture[voxelIdx] = Float4ColorToUint(float4(radiosity, albedo.a));
-#endif
 	}
 }
 
