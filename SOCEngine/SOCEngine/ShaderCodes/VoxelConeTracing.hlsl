@@ -148,16 +148,16 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
+		float3 dir = normalize(worldNormal + ConeDirLS[coneIdx].x * right + ConeDirLS[coneIdx].z * up);
+
 		float3 sampleStartPos = worldPos + worldNormal * gi_initVoxelSize * 2.0f;
 		float3 samplePos = sampleStartPos;
 
-		const float offset = gi_initVoxelSize * 0.5f;
-		float3 dir = normalize(worldNormal + ConeDirLS[coneIdx].x * right + ConeDirLS[coneIdx].z * up);
-		samplePos += dir * offset;
+		const float offsetTest = gi_initVoxelSize * 0.5f;
+		samplePos += dir * offsetTest;
 
 		float halfConeAngleRad	= DEG_2_RAD(60.0f) * 0.5f;
-		float currRadius		= halfConeAngleRad * offset;
-		float currLength		= offset;
+		float currLength		= offsetTest;
 
 		float3 bbMin, bbMax;
 		ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
@@ -174,11 +174,9 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 			float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 
 			float prevLength = currLength;
-			currLength	= max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
-			samplePos	= sampleStartPos + dir * currLength;
-			currRadius	= tan(halfConeAngleRad) * currLength;
+			currLength	 = max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
+			samplePos	 = sampleStartPos + dir * currLength;
 
-			//sampleColor.a = 1.0f - pow(1.0f - sampleColor.a, ((currLength - prevLength) / currRadius));
 			colorAccumInCone += (1.0f - colorAccumInCone.a) * sampleColor;
 
 			if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
