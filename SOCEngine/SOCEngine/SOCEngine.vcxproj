@@ -147,7 +147,6 @@
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
     <ClInclude Include="ResourceManager\ResourceManager.h" />
-    <ClInclude Include="ShaderCodes\AlphaBlending.h" />
     <ClInclude Include="ShaderCodes\BRDF.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>

@@ -829,9 +829,6 @@
     <ClInclude Include="ShaderCodes\MonteCarlo.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\AlphaBlending.h">
-      <Filter>ShaderCodes\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shading\BindIndexInfo.h">
       <Filter>Rendering\Shading</Filter>
     </ClInclude>
