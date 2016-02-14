@@ -209,7 +209,11 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float3 shadowColor = shadowParam.color.rgb;
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
+#ifndef NOT_USE_SHADOW_STRENGTH
 	float shadowStrength = shadowParam.color.a;
+#else
+	float shadowStrength = 1.0f;
+#endif
 	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
 }
 

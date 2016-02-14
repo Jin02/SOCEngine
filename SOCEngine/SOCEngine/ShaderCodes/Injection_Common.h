@@ -4,6 +4,7 @@
 #define __SOC_INJECTION_COMMON_H__
 
 #define NEVER_USE_VSM
+#define NOT_USE_SHADOW_STRENGTH
 
 #include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
