@@ -95,6 +95,9 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	context->ClearRenderTargetView(_indirectColorMap->GetRenderTargetView(), clearColor);
+
 	auto CSSetShaderResource = [](ID3D11DeviceContext* context, TextureBindIndex bind, const ShaderResourceView* srv) -> void
 	{
 		ID3D11ShaderResourceView* view = srv ? srv->GetView() : nullptr;
