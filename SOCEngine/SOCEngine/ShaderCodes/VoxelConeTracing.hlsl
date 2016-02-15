@@ -79,7 +79,6 @@ float4 SampleAnisotropicVoxelTex
 
 	dir = abs(dir);
 	float4 result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
-	//result.rgb *= 8.0f;
 
 	return result;
 #else
@@ -93,49 +92,44 @@ float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAng
 	return max(mip, 0);
 }
 
-//float3 SpecularVCT(float3 worldPos, float3 worldNormal, float roughness, float halfConeAngle, uniform float minMipLevel)
-//{
-//	float3 viewDir		= normalize(tbrParam_cameraWorldPosition.xyz - worldPos);
-//	float3 reflectDir	= reflect(-viewDir, worldNormal);
-//
-//	// reflect dir은 roughness가 0일때만 정확하다.
-//	// 그래서 그냥 roughness가 1로 갈수록 노멀쪽으로 값을 옮김
-//	// ndc2015 모두를 위한 물리 기반 렌더링의 이론과 활용, p69 참고
-//	float3 dir			= lerp(worldNormal, reflectDir, roughness);
-//
-//	// w or a is occlusion
-//	float4 accumColor	= float4(0.0f, 0.0f, 0.0f, 0.0f);
-//
-//	float currLength	= gi_initVoxelSize * CONE_TRACING_BIAS;
-//	float3 samplePos	= worldPos + (dir * currLength);
-//
-//	float3 bbMin, bbMax;
-//	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
-//
-//	for(uint i=0; i<512; ++i)
-//	{
-//		uint cascade = ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
-//		
-//		if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
-//			samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
-//			samplePos.z < bbMin.z || samplePos.x >= bbMax.x )
-//			break;
-//
-//		float oneVoxelSize	= ComputeVoxelSize(cascade);
-//		float mipLevel		= ComputeDistanceLOD(oneVoxelSize, currLength, halfConeAngle) + minMipLevel; //정확하진 않을듯. 임시용
-//
-//		float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
-//		//accumColor = PremultipliedAlphaBlending(accumColor, sampleColor);
-//
-//		if(accumColor.a >= SPECULAR_OCCLUSION)
-//			break;
-//
-//		currLength += oneVoxelSize * CONE_TRACING_NEXT_STEP_RATIO;//pow(2.0f, mipLevel) * 0.5f;
-//		samplePos = worldPos + (dir * currLength);
-//	}
-//
-//	return accumColor.xyz;
-//}
+float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
+{
+	float3 viewDir		= normalize(tbrParam_cameraWorldPosition.xyz - worldPos);
+	float3 reflectDir	= reflect(-viewDir, worldNormal);
+
+	float currLength		= gi_initVoxelSize * 2.0f;
+	float3 samplePos		= worldPos + reflectDir * currLength;
+	float3 sampleStartPos	= samplePos;// + worldNormal * gi_initVoxelSize * 2.0f;
+
+	float3 bbMin, bbMax;
+	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
+
+	float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
+	float aoAccumInCone		= 0.0f;
+
+	for(uint i=0; i<64; ++i)
+	{
+		uint cascade	= ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
+		float voxelSize	= ComputeVoxelSize(cascade);
+		float mipLevel	= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
+		
+		float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, reflectDir, cascade, mipLevel);
+
+		colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
+		aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + DIFFUSE_AO_K * currLength));
+
+		currLength	 = max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
+		samplePos	 = sampleStartPos + reflectDir * currLength;
+
+		if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
+			samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
+			samplePos.z < bbMin.z || samplePos.x >= bbMax.x ||
+			colorAccumInCone.a >= 1.0f )
+			break;
+	}
+
+	return colorAccumInCone.rgb;
+}
 
 float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 {
@@ -150,14 +144,11 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 	{
 		float3 dir = normalize(worldNormal + ConeDirLS[coneIdx].x * right + ConeDirLS[coneIdx].z * up);
 
-		float3 sampleStartPos = worldPos + worldNormal * gi_initVoxelSize * 2.0f;
-		float3 samplePos = sampleStartPos;
-
-		const float offsetTest = gi_initVoxelSize * 0.5f;
-		samplePos += dir * offsetTest;
+		float currLength		= gi_initVoxelSize * 2.0f;
+		float3 sampleStartPos	= worldPos + dir * currLength;
+		float3 samplePos		= sampleStartPos;
 
 		float halfConeAngleRad	= DEG_2_RAD(60.0f) * 0.5f;
-		float currLength		= offsetTest;
 
 		float3 bbMin, bbMax;
 		ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
@@ -165,7 +156,7 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 		float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
 		float aoAccumInCone		= 0.0f;
 
-		for(uint i=0; i<64; ++i)
+		for(uint i=0; i<32; ++i)
 		{
 			uint cascade	= ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
 			float voxelSize	= ComputeVoxelSize(cascade);
@@ -173,11 +164,11 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 
 			float4 sampleColor = SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 
-			float prevLength = currLength;
+			colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
+			aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + DIFFUSE_AO_K * currLength));
+
 			currLength	 = max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
 			samplePos	 = sampleStartPos + dir * currLength;
-
-			colorAccumInCone += (1.0f - colorAccumInCone.a) * sampleColor;
 
 			if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
 				samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
@@ -201,17 +192,16 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
+	//surface.metallic	= 0.9f;
+	//surface.roughness	= 0.1f;
+
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 
-//	float halfConeAngle = sin(1.5 * sqrt( pow(surface.roughness, 1.5) ));// 그냥.. roughness를 적당한 값으로 변경해준다.
-																		 // 전혀 정확하지 않다. 그냥 적당히 값을 변경해준것 뿐이다.
-																		 // 나중에 해결 방안을 찾으면 고쳐야한다.
-	//const float minConeHalfAngle = 0.0436332313f;	// 2.5	degree
-	//const float maxConeHalfAngle = 0.3490658500f;	// 20	degree
-	//float halfConeAngle = lerp(minConeHalfAngle, maxConeHalfAngle, surface.roughness);
-	//float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, surface.roughness, halfConeAngle, 0.0f);
+	float halfConeAngle =	(sin(1.7f * sqrt( pow(surface.roughness, 1.5f) )) +			// 그냥.. roughness를 적당한 값으로 변경해준다.
+							0.2f * sin(surface.roughness * surface.roughness)) * 0.5f;	// 나중에 해결 방안을 찾으면 고쳐야한다.
 
-	//surface.metallic = 0.3f; //임시
+	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle);
+
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA only 4x
 	uint2 scaledGlobalIdx = globalIdx.xy * 2;
@@ -238,15 +228,16 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	g_outIndirectColorMap[globalIdx.xy] = float4(0.0f, 0.0f, 1.0f, 1.0f);//directColor;//float4(indirectDiffuse + indirectSpecular, 1.0f);
 #else
+
 	float4 directColor	= g_inputDirectColorMap.Load( uint3(globalIdx.xy, 0) );
-	//float3 baseColor	= directColor.rgb;// * (1.0f - surface.metallic);
+	float3 baseColor	= directColor.rgb;
 
 	// Metallic 값을 이용해서 대충 섞는다.
-	//float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb * surface.metallic);
-	//float3 indirectSpecular	= baseColor + (specularVCT * directColor.rgb * surface.metallic);
-	//float3 indirectDiffuse	= baseColor + (diffuseVCT * directColor.rgb);
-	//float3 indirectSpecular	= float3(0.0f, 0.0f, 0.0f);
+	float3 indirectDiffuse	= diffuseVCT * baseColor * (1.0f - surface.metallic);
+	float3 indirectSpecular	= specularVCT * surface.metallic;
+	float3 indirectColor	= indirectDiffuse + indirectSpecular;
 
-	g_outIndirectColorMap[globalIdx.xy] = float4(diffuseVCT, 1.0f);
+//	g_outIndirectColorMap[globalIdx.xy] = float4(directColor.rgb + indirectColor, 1.0f);
+	g_outIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
 #endif
 }
