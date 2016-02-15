@@ -99,7 +99,9 @@ uint decUnsignedNibble(uint m)
 
 void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
 {
-	uint newValue			= Float4ColorToUint(value);
+	value *= 255.0f;
+
+	uint newValue			= ToUint(value);
 	uint prevStoredValue	= 0;
 	uint currentStoredValue	= 0;
 
@@ -133,7 +135,7 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 
 	uint count = 0;
 
-	do//while( (!useLimit) || (count++ < 8) )
+	do//for(uint i=0; ((i<8) || (!useLimit)); ++i)
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
 
@@ -149,7 +151,7 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 		reCompute.xyz /= reCompute.w;
 
 		newValue = ToUint(reCompute);
-	}while( (!useLimit) || (count++ < 8) );
+	}while(count++ < 16);
 }
 
 void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)

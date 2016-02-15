@@ -105,13 +105,13 @@ void PS( GS_OUTPUT input )
 		int3 index = voxelIdx;
 		index.y += voxelization_currentCascade * dimension;
 
-		StoreVoxelMapAtomicColorAvgNibble(OutVoxelAlbedoTexture,	index,	float4(albedo.xyz, alpha), false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,	index,	float4(albedo.xyz, alpha), false);
 		//OutVoxelAlbedoTexture[index] = Float4ColorToUint(float4(albedo.xyz, alpha));
 
 		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	index,	float4(material_emissionColor.xyz, 1.0f));
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorAvgNibble(OutVoxelNormalTexture,	index,	float4(storeNormal, 1.0f), false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelNormalTexture,	index,	float4(storeNormal, 1.0f), false);
 		//OutVoxelNormalTexture[index] = Float4ColorToUint(float4(storeNormal, 1.0f));
 	}
 
