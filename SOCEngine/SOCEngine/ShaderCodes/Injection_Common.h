@@ -11,8 +11,6 @@
 #include "Voxelization_Common.h"
 #include "GICommon.h"
 
-#ifdef USE_SHADOW_INVERTED_DEPTH
-
 StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
 StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
 StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
@@ -36,7 +34,5 @@ float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)
 
 	return normal;
 }
-
-#endif
 
 #endif
