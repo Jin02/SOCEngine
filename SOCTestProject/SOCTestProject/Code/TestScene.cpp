@@ -31,7 +31,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true, 128, 60.0f);
+	ActivateGI(true, 256, 60.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
