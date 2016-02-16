@@ -99,11 +99,19 @@ uint decUnsignedNibble(uint m)
 
 void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
 {
+	// 나도 이게 왜 돌아가는지 모르겠다.
+	// 그런데 결과물이 가장 좋음 -_-.. 
+
+	// value *= 255.0f;
+	// uint newValue = ToUint(value);
 	uint newValue			= Float4ColorToUint(value);
+
 	uint prevStoredValue	= 0;
 	uint currentStoredValue	= 0;
 
 	uint count = 0;
+	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
+	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	do//while( (!useLimit) || (count++ < 8) )
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
@@ -120,7 +128,7 @@ void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, flo
 		rval = round(rval / 2) * 2;
 		newValue = encUnsignedNibble(ToUint(rval), n);
 
-	}while(count++ < 16);
+	}while(++count < 16);
 }
 
 void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
@@ -133,6 +141,8 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 
 	uint count = 0;
 
+	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
+	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
@@ -149,7 +159,7 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 		reCompute.xyz /= reCompute.w;
 
 		newValue = ToUint(reCompute);
-	}while(true);
+	}while(++count < 16);
 }
 
 void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)

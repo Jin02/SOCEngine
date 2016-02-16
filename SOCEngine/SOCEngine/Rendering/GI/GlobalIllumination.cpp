@@ -154,11 +154,6 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
-	static bool t = false;
-	if(t == false)
-		t = true;
-	else
-		return;
 	ASSERT_COND_MSG(camera, "Error, camera is null");
 
 	ClearInjectColorVoxelMap(dx);
