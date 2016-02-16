@@ -192,8 +192,8 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	//surface.metallic	= 0.9f;
-	//surface.roughness	= 0.1f;
+	surface.metallic	= 0.9f;
+	surface.roughness	= 0.1f;
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 
@@ -237,7 +237,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 indirectSpecular	= specularVCT * surface.metallic;
 	float3 indirectColor	= indirectDiffuse + indirectSpecular;
 
-//	g_outIndirectColorMap[globalIdx.xy] = float4(directColor.rgb + indirectColor, 1.0f);
-	g_outIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
+	g_outIndirectColorMap[globalIdx.xy] = float4(diffuseVCT, 1.0f);
+//	g_outIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
 #endif
 }
