@@ -13,19 +13,19 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Mesh;	}
-			enum MaterialUpdateType
-			{
-				One, All
-			};
+			enum class MaterialUpdateType { One, All };
 
 		private:
 			MeshFilter*							_filter;
 			MeshRenderer*						_renderer;
-			Buffer::ConstBuffer*				_worldMatrixConstBuffer;
+			Buffer::ConstBuffer*				_transformConstBuffer;
 
 			MaterialUpdateType					_updateType;
 			unsigned int						_selectMaterialIndex;
 			MeshRenderer::Type					_prevRenderType;
+
+			bool								_prevShow;
+			bool								_show;
 
 		public:
 			Mesh();
@@ -49,19 +49,21 @@ namespace Rendering
 		public:
 			virtual void OnInitialize();
 			virtual void OnUpdate(float deltaTime);
-			virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix);
+			virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB);
 			virtual void OnRenderPreview();
 			virtual void OnDestroy();
 
 		public:
-			GET_ACCESSOR(MeshFilter, MeshFilter*, _filter);
-			GET_ACCESSOR(MeshRenderer, MeshRenderer*, _renderer);
+			GET_ACCESSOR(MeshFilter,				MeshFilter*,					_filter);
+			GET_ACCESSOR(MeshRenderer,				MeshRenderer*,					_renderer);
 
-			GET_SET_ACCESSOR(MaterialUpdateType, MaterialUpdateType, _updateType);
-			GET_SET_ACCESSOR(SelectMaterialIndex, unsigned int, _selectMaterialIndex);
+			GET_ACCESSOR(WorldMatrixConstBuffer,	const Buffer::ConstBuffer*,		_transformConstBuffer);
+			GET_ACCESSOR(PrevRenderType,			MeshRenderer::Type,				_prevRenderType);
+			GET_ACCESSOR(Show,						bool,							_show);
+			void SetShow(bool b);
 
-			GET_ACCESSOR(WorldMatrixConstBuffer, const Buffer::ConstBuffer*, _worldMatrixConstBuffer);
-			GET_ACCESSOR(PrevRenderType, MeshRenderer::Type, _prevRenderType);
+			GET_SET_ACCESSOR(MaterialUpdateType,	MaterialUpdateType,				_updateType);
+			GET_SET_ACCESSOR(SelectMaterialIndex,	unsigned int,					_selectMaterialIndex);
 
 		public:
 			virtual Core::Component* Clone() const;

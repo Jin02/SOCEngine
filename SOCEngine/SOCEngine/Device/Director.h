@@ -5,6 +5,7 @@
 #include "Singleton.h"
 #include "Timer.h"
 #include "Scene.h"
+#include "GlobalDefine.h"
 
 namespace Device
 {

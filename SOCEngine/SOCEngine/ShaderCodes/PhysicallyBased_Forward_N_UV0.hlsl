@@ -25,7 +25,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 	ps.positionWorld	= posWorld.xyz;
 	
 	ps.uv				= input.uv;
-	ps.normal 			= mul(input.normal, (float3x3)transform_world);
+	ps.normal 			= mul(input.normal, (float3x3)transform_worldInvTranspose);
 
 	return ps;
 }

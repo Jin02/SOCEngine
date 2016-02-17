@@ -24,8 +24,6 @@ namespace Core
 		enum class State{ Init = 0, Loop, End, Stop, Num };
 
 	private:
-		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;	
-
 		Rendering::Manager::CameraManager*					_cameraMgr;
 		Rendering::Manager::RenderManager*					_renderMgr;	
 		UI::Manager::UIManager*								_uiManager;
@@ -34,12 +32,15 @@ namespace Core
 		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
-		Rendering::GI::GlobalIllumination*					_globalIllumination;
 
 		State							_state;
 		Intersection::BoundBox			_boundBox;
 		Math::Matrix					_localMat;
 		std::function<void()>			_exitFunc;
+
+	protected:
+		Rendering::GI::GlobalIllumination*					_globalIllumination;
+		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;
 
 	public:
 		Scene(void);
@@ -67,7 +68,7 @@ namespace Core
 		void DeleteObject(Core::Object* object);
 		void DeleteAllObject();
 
-		void ActivateGI(bool activate);
+		void ActivateGI(bool activate, uint dimension, float giSize);
 
 	public:
 		void NextState();

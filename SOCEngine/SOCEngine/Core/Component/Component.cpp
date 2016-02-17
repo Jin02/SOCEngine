@@ -19,7 +19,7 @@ namespace Core
 		//null
 	}
 
-	void Component::OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix)
+	void Component::OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB)
 	{
 		//null
 	}

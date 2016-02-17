@@ -4,11 +4,12 @@
 #include "ShaderCommon.h"
 
 #ifndef VOXEL_CONE_TRACING
-Texture3D<float4>	g_inputAnistropicVoxelAlbedoTexture		: register( t0 );
-Texture3D<float>	g_inputAnistropicVoxelNormalTexture		: register( t1 );
-Texture3D<float4>	g_inputAnistropicVoxelEmissionTexture	: register( t2 );
 
-cbuffer GIInfoCB : register( b0 )
+Texture3D<float4>	g_inputVoxelAlbedoTexture	: register( t29 );
+Texture3D<float4>	g_inputVoxelEmissionTexture	: register( t31 );
+Texture3D<float4>	g_inputVoxelNormalTexture	: register( t30 );
+
+cbuffer GIInfoCB : register( b6 )
 #else
 cbuffer GIInfoCB : register( b1 )
 #endif
@@ -27,13 +28,13 @@ uint GetMaximumCascade()
 	return (gi_maxCascadeWithVoxelDimensionPowOf2 >> 16);
 }
 
-uint ComputeCascade(float3 worldPos)
+uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
 {
 	//x, y, z 축 중에 가장 큰걸 고름
-	float	dist = max(	abs(worldPos.x - tbrParam_cameraWorldPosition.x),
-						abs(worldPos.y - tbrParam_cameraWorldPosition.y));
+	float	dist = max(	abs(worldPos.x - cameraWorldPos.x),
+						abs(worldPos.y - cameraWorldPos.y));
 			dist = max(	dist,
-						abs(worldPos.z - tbrParam_cameraWorldPosition.z) );
+						abs(worldPos.z - cameraWorldPos.z) );
 
 	return (uint)sqrt(dist / (gi_initWorldSize * 0.5f));
 }
@@ -44,14 +45,14 @@ float GetVoxelizeSize(uint cascade)
 	return gi_initWorldSize * (cascadeScale * cascadeScale);
 }
 
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade)
+void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
 {
 	float cascadeScale = float(cascade + 1);
 
 	float worldSize		= GetVoxelizeSize(cascade);
 	float halfWorldSize	= worldSize * 0.5f;
 
-	outBBMin = tbrParam_cameraWorldPosition.xyz - halfWorldSize.xxx;
+	outBBMin = cameraWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
 }
 
@@ -67,5 +68,126 @@ float ComputeVoxelSize(uint cascade)
 
 	return worldSize / dimension;
 }
+
+float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
+{
+	float3 voxelCenter;
+
+	voxelCenter.x = (voxelIdx.x * voxelSize) + (voxelSize * 0.5f) + bbMin.x;
+	voxelCenter.y = (voxelIdx.y * voxelSize) + (voxelSize * 0.5f) + bbMin.y;
+	voxelCenter.z = (voxelIdx.z * voxelSize) + (voxelSize * 0.5f) + bbMin.z;
+
+	return voxelCenter;
+}
+
+uint encUnsignedNibble(uint m, uint n)
+{
+  return	(m & 0xFEFEFEFE)		|
+			(n & 0x00000001)		|
+			(n & 0x00000002) << 7U	|
+			(n & 0x00000004) << 14U	|
+			(n & 0x00000008) << 21U;
+}
+
+uint decUnsignedNibble(uint m)
+{
+  return	(m & 0x00000001)		|
+			(m & 0x00000100) >> 7U	|
+			(m & 0x00010000) >> 14U	|
+			(m & 0x01000000) >> 21U;
+}
+
+void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
+{
+	// 나도 이게 왜 돌아가는지 모르겠다.
+	// 그런데 결과물이 가장 좋음 -_-.. 
+
+	// value *= 255.0f;
+	// uint newValue = ToUint(value);
+	uint newValue			= Float4ColorToUint(value);
+
+	uint prevStoredValue	= 0;
+	uint currentStoredValue	= 0;
+
+	uint count = 0;
+	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
+	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
+	do//while( (!useLimit) || (count++ < 8) )
+	{
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+
+		if(prevStoredValue == currentStoredValue)
+			break;
+		prevStoredValue = currentStoredValue;
+
+		float4 rval = ToFloat4(currentStoredValue & 0xFEFEFEFE);
+		uint n = decUnsignedNibble(currentStoredValue);
+
+		rval = rval * n + value;
+		rval /= ++n;
+		rval = round(rval / 2) * 2;
+		newValue = encUnsignedNibble(ToUint(rval), n);
+
+	}while(++count < 16);
+}
+
+void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
+{
+	value *= 255.0f;
+
+	uint newValue			= ToUint(value);
+	uint prevStoredValue	= 0;
+	uint currentStoredValue	= 0;
+
+	uint count = 0;
+
+	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
+	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
+	[allow_uav_condition]do//[allow_uav_condition]while(true)
+	{
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+
+		if(prevStoredValue == currentStoredValue)
+			break;
+
+		prevStoredValue = currentStoredValue;
+
+		float4 curFlt4 = ToFloat4(currentStoredValue);
+		curFlt4.xyz = (curFlt4.xyz * curFlt4.w);
+
+		float4 reCompute = curFlt4 + value;
+		reCompute.xyz /= reCompute.w;
+
+		newValue = ToUint(reCompute);
+	}while(++count < 16);
+}
+
+void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
+{
+	float anisotropicNormals[6] = {
+		-normal.x,
+		 normal.x,
+		-normal.y,
+		 normal.y,
+		-normal.z,
+		 normal.z
+	};
+
+	uint dimension = (uint)GetDimension();
+	voxelIdx.y += curCascade * dimension;
+
+	for(int faceIndex=0; faceIndex<6; ++faceIndex)
+	{
+		uint3 index = voxelIdx;
+		index.x += (faceIndex * dimension);
+
+		float rate = max(anisotropicNormals[faceIndex], 0.0f);
+		float4 storeValue = float4(radiosity * rate, alpha);
+
+//		StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
+		outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
+	}
+}
+
 
 #endif

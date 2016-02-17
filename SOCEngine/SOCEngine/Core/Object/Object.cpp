@@ -34,7 +34,12 @@ Object::~Object(void)
 void Object::DeleteAllChild()
 {
 	for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
+	{
+		(*iter)->DeleteAllComponent();
+		(*iter)->DeleteAllChild();
+
 		SAFE_DELETE((*iter));
+	}
 
 	DeleteAll();
 }
@@ -68,6 +73,8 @@ bool Object::CompareIsChildOfParent(Object *parent)
 
 void Object::Culling(const Intersection::Frustum *frustum)
 {
+	if(_use == false) return;
+
 	Vector3 wp;
 	_transform->FetchWorldPosition(wp);
 	_culled = !frustum->In(wp, _radius);
@@ -122,8 +129,16 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 	}
 
-	Matrix transposedWM;
+	Rendering::TransformCB transformCB;
+	
+	Matrix& transposedWM = transformCB.world;
 	Matrix::Transpose(transposedWM, worldMat);
+
+	Matrix& worldInvTranspose = transformCB.worldInvTranspose;
+	{
+		Matrix::Inverse(worldInvTranspose, transposedWM);
+		Matrix::Transpose(worldInvTranspose, worldInvTranspose);
+	}
 
 	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
@@ -132,7 +147,7 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
 		if(changedWorldMat)
-			(*iter)->OnUpdateTransformCB(dx, transposedWM);
+			(*iter)->OnUpdateTransformCB(dx, transformCB);
 
 		(*iter)->OnRenderPreview();
 	}
@@ -187,4 +202,15 @@ Object* Object::Clone() const
 		newObject->AddChild( (*iter)->Clone() );
 	
 	return newObject;
+}
+
+void Object::SetUse(bool b)
+{
+	_use = b;
+	Geometry::Mesh* mesh = GetComponent<Geometry::Mesh>();
+	if(mesh)
+		mesh->SetShow(b);
+
+	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
+		(*iter)->SetUse(b);
 }

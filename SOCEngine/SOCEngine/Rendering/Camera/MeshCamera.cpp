@@ -212,16 +212,16 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		{
 			// Setting Transform ConstBuffer
 			{
-				uint semanticIdx = (uint)ConstBufferBindIndex::World;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, mesh->GetWorldMatrixConstBuffer(), true, false, false, false);
+				uint bindIndex = (uint)ConstBufferBindIndex::World;
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, mesh->GetWorldMatrixConstBuffer(), true, gs != nullptr, false, false);
 				constBuffers.push_back(buf);
 			}
 
 			// Camera
 			if(camMatConstBuffer)
 			{
-				uint semanticIdx = (uint)ConstBufferBindIndex::Camera;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(semanticIdx, camMatConstBuffer, true, false, false, false);
+				uint bindIndex = (uint)ConstBufferBindIndex::Camera;
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, camMatConstBuffer, true, gs != nullptr, false, false);
 				constBuffers.push_back(buf);
 			}
 		}
@@ -250,6 +250,10 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		}
 
 		context->DrawIndexed(filter->GetIndexCount(), 0, 0);
+
+		if(vs) context->VSSetShader(nullptr, nullptr, 0);
+		if(ps) context->PSSetShader(nullptr, nullptr, 0);
+		if(gs) context->GSSetShader(nullptr, nullptr, 0);
 	}
 }
 
@@ -344,6 +348,20 @@ void MeshCamera::Render(const Device::DirectX* dx,
 						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
 						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
+	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
+	{
+		D3D11_VIEWPORT viewport;
+		{
+			viewport.TopLeftX	= renderRect.x;
+			viewport.TopLeftY	= renderRect.y;
+			viewport.MinDepth	= 0.0f;
+			viewport.MaxDepth	= 1.0f;
+			viewport.Width		= renderRect.size.w;
+			viewport.Height		= renderRect.size.h;
+		}
+		context->RSSetViewports(1, &viewport);
+	};
+
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	//Clear
@@ -366,7 +384,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	}
 
 	// off alpha blending
-	float blendFactor[1] = {0, };
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
 	//struct MeshInForwardRendering
@@ -411,10 +429,14 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		context->OMSetRenderTargets(NumOfRenderTargets, renderTargetViews, dsv);
 		context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 
+		SetCurrentViewport(context, _renderRect);
+
 		//Opaque Mesh
 		{
 			const auto& meshes = renderManager->GetOpaqueMeshes();
 			uint count = meshes.meshes.GetVector().size();
+
+			context->RSSetState( nullptr );
 
 			if(count > 0)
 				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer);
@@ -501,6 +523,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	const RenderTexture* indirectColorMap = (giPass != nullptr) ? giPass(this) : nullptr;
 
 	// Main RT
+	SetCurrentViewport(context, _renderRect); 
 	_offScreen->Render(	dx, _renderTarget, indirectColorMap);
 
 	// Transparency

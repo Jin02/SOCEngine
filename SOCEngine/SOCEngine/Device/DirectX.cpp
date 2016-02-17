@@ -12,7 +12,9 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr)
+	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
+	_rasterizerClockwiseDisableCullingWithClip(nullptr),
+	_depthLessEqual(nullptr), _coneTracingSamplerState(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -244,6 +246,13 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.FrontCounterClockwise	= false;
 		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDefault)) )
 			ASSERT_MSG("Error!, device cant create rasterizer state");
+
+		desc.FillMode				= D3D11_FILL_SOLID;
+		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.DepthClipEnable		= false;
+		desc.FrontCounterClockwise	= false;
+		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCullingWithClip)) )
+			ASSERT_MSG("Error!, device cant create rasterizer state");
 	}
 	
 	//Initialize Blend State
@@ -254,12 +263,23 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
-		desc.DepthEnable		= true; 
-		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL; 
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //inverted depth
-		desc.StencilEnable		= false; 
-		desc.StencilReadMask	= D3D11_DEFAULT_STENCIL_READ_MASK; 
-		desc.StencilWriteMask	= D3D11_DEFAULT_STENCIL_WRITE_MASK; 
+		desc.DepthEnable					= true; 
+		desc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL; 
+		desc.DepthFunc						= D3D11_COMPARISON_GREATER; //inverted depth
+		desc.StencilEnable					= false; 
+		desc.StencilReadMask				= D3D11_DEFAULT_STENCIL_READ_MASK; 
+		desc.StencilWriteMask				= D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+		desc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+		desc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
+		desc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+		desc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreater)) )
 			ASSERT_MSG("Error!, device cant create lessEqual dpeth state");
 
@@ -286,7 +306,11 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc			= D3D11_COMPARISON_LESS;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLess)) )
-			ASSERT_MSG("Error!, device cant create _depthEqualAndDisableDepthWrite");
+			ASSERT_MSG("Error!, device cant create _depthLess");
+
+		desc.DepthFunc			= D3D11_COMPARISON_LESS_EQUAL;
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthLessEqual)) )
+			ASSERT_MSG("Error!, device cant create _depthLessEqual");
 	}
 
 	//sampler
@@ -340,7 +364,24 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.MinLOD			= 0;
 			desc.MaxLOD			= 0;
 			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState state");
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
+
+			ZeroMemory(&desc, sizeof(desc));
+			desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.MaxAnisotropy	= 0;
+			desc.AddressU		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressV		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.BorderColor[0]	= 0.0f;
+			desc.BorderColor[1]	= 0.0f;
+			desc.BorderColor[2]	= 0.0f;
+			desc.BorderColor[3]	= 1.0f;
+			desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;
+			desc.MinLOD			= 0;
+			desc.MaxLOD			= D3D11_FLOAT32_MAX;
+
+			hr = _device->CreateSamplerState( &desc, &_coneTracingSamplerState );
+			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _coneTracingSamplerState");
 		}
 	}
 
@@ -404,7 +445,7 @@ void DirectX::ClearDeviceContext() const
     FLOAT BlendFactor[4] = { 0,0,0,0 };
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
 	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(nullptr);
+	_immediateContext->RSSetState(_rasterizerClockwiseDefault);
 }
 
 Rendering::Shader::ShaderMacro DirectX::GetMSAAShaderMacro() const
@@ -432,6 +473,7 @@ Math::Size<uint> DirectX::FetchBackBufferSize()
 void DirectX::Destroy()
 {
 	SAFE_RELEASE(_renderTargetView);
+	SAFE_RELEASE(_rasterizerClockwiseDisableCullingWithClip);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
 	SAFE_RELEASE(_rasterizerClockwiseDefault);
 	SAFE_RELEASE(_rasterizerCounterClockwiseDisableCulling);
@@ -451,7 +493,9 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_shadowLessEqualCompState);
 	SAFE_RELEASE(_shadowGreaterEqualCompState);
 	SAFE_RELEASE(_shadowLinearSamplerState);
+	SAFE_RELEASE(_depthLessEqual);
 	SAFE_RELEASE(_immediateContext);
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
+	SAFE_RELEASE(_coneTracingSamplerState);
 }

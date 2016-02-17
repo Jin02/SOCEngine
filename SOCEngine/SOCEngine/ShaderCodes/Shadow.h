@@ -84,9 +84,12 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
+	//gpu에서 분기문 처리할 때, 양쪽 모두 조건을 미리 실행시키고 맞는것만 대입시키는 방식인듯
+	//그게 아니라면, sampler 없다고 에러를 띄울리가 없으니까 -_-..
+	//이런 방식 그러니깐, 동적으로 flag 가져와서 처리하지 말고 쉐이더를 다시 컴파일 하는 방식으로 문제를 해결해야하는 듯 싶다.
+	//if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
+	//	shadow = saturate( VarianceShadow(g_inputSpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
+	//else
 #endif
 #ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth + bias) );
@@ -121,9 +124,12 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
+	//gpu에서 분기문 처리할 때, 양쪽 모두 조건을 미리 실행시키고 맞는것만 대입시키는 방식인듯
+	//그게 아니라면, sampler 없다고 에러를 띄울리가 없으니까 -_-..
+	//이런 방식 그러니깐, 동적으로 flag 가져와서 처리하지 말고 쉐이더를 다시 컴파일 하는 방식으로 문제를 해결해야하는 듯 싶다.
+	//if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
+	//	shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
+	//else
 #endif
 #ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias) );
@@ -190,9 +196,9 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(g_inputPointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
+	//gpu에서 분기문 처리할 때, 양쪽 모두 조건을 미리 실행시키고 맞는것만 대입시키는 방식인듯
+	//그게 아니라면, sampler 없다고 에러를 띄울리가 없으니까 -_-..
+	//이런 방식 그러니깐, 동적으로 flag 가져와서 처리하지 말고 쉐이더를 다시 컴파일 하는 방식으로 문제를 해결해야하는 듯 싶다.
 #endif
 #ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(g_inputPointLightShadowMapAtlas, shadowUV.xy, depth + bias) );
@@ -203,7 +209,11 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float3 shadowColor = shadowParam.color.rgb;
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
+#ifndef NOT_USE_SHADOW_STRENGTH
 	float shadowStrength = shadowParam.color.a;
+#else
+	float shadowStrength = 1.0f;
+#endif
 	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
 }
 

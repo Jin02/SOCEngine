@@ -16,14 +16,12 @@ using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
-InjectRadiance::InjectRadiance()
-	: _shader(nullptr), _colorMap(nullptr)
+InjectRadiance::InjectRadiance() : _shader(nullptr)
 {
 }
 
 InjectRadiance::~InjectRadiance()
 {
-	SAFE_DELETE(_colorMap);
 	SAFE_DELETE(_shader);
 }
 
@@ -40,13 +38,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
-	std::vector<ShaderMacro> macros;
-	{
-		// 무조건 일반 Shadow Map을 사용해야하기 때문에 아래 매크로를 추가해준다.
-		macros.push_back(ShaderMacro("NEVER_USE_VSM", ""));
-	}
-
-	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
 
@@ -64,23 +56,20 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 
 		std::vector<ShaderForm::InputTexture> inputTextures;
 		{
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.albedoMap));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.normalMap));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.emissionMap));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
 		}
 		_shader->SetInputTextures(inputTextures);
 	}
 
-	uint dimension = 1 << param.globalInfo->voxelDimensionPow2;
-
-	_colorMap = new AnisotropicVoxelMapAtlas;
-	_colorMap->Initialize(dimension, param.globalInfo->maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, param.globalInfo->maxMipLevel);
+	uint dimension = (1 << (param.globalInfo->maxCascadeWithVoxelDimensionPow2 & 0xffff));
 
 	// Setting Output
 	{
 		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
 		{
-			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),		_colorMap->GetSourceMapUAV()));
+			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),			param.outColorMap->GetSourceMapUAV()));
 		}
 
 		_shader->SetUAVs(outputs);
@@ -91,6 +80,9 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
+	ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
+	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+
 	for(auto iter = voxelizationInfoConstBuffers.begin(); iter != voxelizationInfoConstBuffers.end(); ++iter)
 	{
 		ID3D11Buffer* cb = (*iter)->GetBuffer();
@@ -98,11 +90,10 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer
 		_shader->Dispatch(context);
 	}
 
-	//ID3D11Buffer* cb = nullptr;
-	//context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
+	ID3D11SamplerState* nullSamplerState = nullptr;
+	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSamplerState);
 }
 
 void InjectRadiance::Destroy()
 {
-	_colorMap->Destroy();
 }

@@ -33,11 +33,13 @@ void InjectRadianceFromPointLIght::Initialize(const InjectRadiance::InitParam& i
 
 	std::vector<ShaderForm::InputShaderResourceBuffer> inputSRBuffers = _shader->GetInputSRBuffers();
 	{
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightRadiusWithCenter),	lightMgr->GetPointLightTransformSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightColor),				lightMgr->GetPointLightColorSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightRadiusWithCenter),		lightMgr->GetPointLightTransformSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightColor),					lightMgr->GetPointLightColorSRBuffer()));
 
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowParam),		shadowMgr->GetPointLightShadowParamSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowInvVPVMat),	shadowMgr->GetPointLightInvViewProjViewpotSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowParam),			shadowMgr->GetPointLightShadowParamSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowInvVPVMat),		shadowMgr->GetPointLightInvViewProjViewpotSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowIndex),			lightMgr->GetPointLightShadowIndexSRBuffer()));
+		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::PointLightShadowViewProjMatrix),	shadowMgr->GetPointLightShadowViewProjSRBuffer()));
 	}
 	_shader->SetInputSRBuffers(inputSRBuffers);
 
@@ -48,8 +50,7 @@ void InjectRadianceFromPointLIght::Initialize(const InjectRadiance::InitParam& i
 	_shader->SetInputTextures(inputTextures);
 }
 
-void InjectRadianceFromPointLIght::Inject(	const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr,
-											const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers)
+void InjectRadianceFromPointLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization)
 {
 	Size<uint> activatedShadowMapSize = shadowMgr->GetActivatedPLShadowMapSize();
 
@@ -57,5 +58,5 @@ void InjectRadianceFromPointLIght::Inject(	const Device::DirectX*& dx, const Sha
 											(activatedShadowMapSize.h + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES, 1 );
 	
 	_shader->SetThreadGroupInfo(threadGroup);
-	Dispath(dx, voxelizationInfoConstBuffers);
+	Dispath(dx, voxelization->GetConstBuffers());
 }

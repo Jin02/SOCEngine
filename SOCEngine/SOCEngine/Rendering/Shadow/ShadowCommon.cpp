@@ -11,7 +11,7 @@ using namespace Rendering;
 
 ShadowCommon::ShadowCommon(const LightForm* owner) 
 	: _owner(owner), _bias(0.001f), _projNear(0.1f),
-	_paramUpdateCounter(0), _transformUpdateCounter(0), _useVSM(false)
+	_paramUpdateCounter(0), _useVSM(false)
 {
 	_color = Color::Black();
 	_color.a = 0.5f;
@@ -35,26 +35,8 @@ void ShadowCommon::MakeParam(CommonParam& outParam, uint lightIndex) const
 	outParam.color						= _color.Get32BitUintColor();
 }
 
-void ShadowCommon::SetBias(float bias)
-{
-	_bias = bias;
-	++_paramUpdateCounter;
-}
-
-void ShadowCommon::SetUseVSM(bool b)
-{
-	_useVSM = b;
-	++_paramUpdateCounter;
-}
-
-void ShadowCommon::SetColor(const Color& color)
-{
-	_color = color;
-	++_paramUpdateCounter;
-}
-
-void ShadowCommon::SetProjNear(float n)
+void ShadowCommon::SetProjectionNear(float n)
 {
 	_projNear = n;
-	++_transformUpdateCounter;
+	_owner->GetOwner()->GetTransform()->AddUpdateCounter();
 }

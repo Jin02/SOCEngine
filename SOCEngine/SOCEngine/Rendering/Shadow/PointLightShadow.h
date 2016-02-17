@@ -34,7 +34,8 @@ namespace Rendering
 			void MakeParam(Param& outParam, uint lightIndex) const;
 			void MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat, std::array<Math::Matrix, 6>& outInvVPVMat) const;
 
-			GET_SET_ACCESSOR(UnderScanSize, float, _underScanSize);
+			GET_ACCESSOR(UnderScanSize,			float,	_underScanSize);
+			SET_SHADOW_ACCESSOR(UnderScanSize,	float,	_underScanSize, _paramUpdateCounter);
 
 			void GetInvNearFarViewProjMatrices(std::array<Math::Matrix, 6>& out) const;
 			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const;

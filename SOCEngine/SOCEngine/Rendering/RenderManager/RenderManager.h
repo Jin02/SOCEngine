@@ -60,7 +60,7 @@ namespace Rendering
 			Shader::ShaderGroup LoadDefaultSahder(RenderType renderType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName = nullptr, const std::vector<Rendering::Shader::ShaderMacro>* macros = nullptr);
 
-			void UpdateRenderList(const Geometry::Mesh* mesh);
+			void UpdateRenderList(const Geometry::Mesh* mesh, bool prevShow);
 			bool HasMeshInRenderList(const Geometry::Mesh* mesh, Geometry::MeshRenderer::Type type);
 
 			bool FindShader(Shader::ShaderGroup& out, uint bufferFlag, RenderType renderType) const;

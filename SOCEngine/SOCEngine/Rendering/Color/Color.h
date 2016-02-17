@@ -59,6 +59,8 @@ namespace Rendering
 		unsigned long Get32BitUintColor() const;
 		void Get16BitFloat4Color(std::array<unsigned short, 4>& outArray) const;
 
+		Color Normalized();
+
 	private:
 		void CalculateColor(Color *color);
 	};

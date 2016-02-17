@@ -139,7 +139,7 @@ void Scene::Render()
 			if(meshCam->GetUseIndirectColorMap() == false)
 				meshCam->ReCompileOffScreen(true);
 
-			_globalIllumination->Run(_dx, meshCam, _renderMgr, _shadowRenderer);
+			_globalIllumination->Run(_dx, meshCam, this);
 			indirectColorMap = _globalIllumination->GetIndirectColorMap();
 		}
 		else
@@ -247,7 +247,7 @@ void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keybo
 		OnInput(mouse, keyboard);
 }
 
-void Scene::ActivateGI(bool activate)
+void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 {
 	if(activate == false)
 	{
@@ -262,6 +262,6 @@ void Scene::ActivateGI(bool activate)
 			return;
 
 		_globalIllumination = new GlobalIllumination;
-		_globalIllumination->Initialize(_dx);
+		_globalIllumination->Initialize(_dx, dimension, giSize);
 	}
 }

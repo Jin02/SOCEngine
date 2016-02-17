@@ -5,7 +5,9 @@
 #include "GlobalIlluminationCommon.h"
 
 #include "ShadingWithLightCulling.h"
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
+
+#include "MeshCamera.h"
 
 namespace Rendering
 {
@@ -13,14 +15,6 @@ namespace Rendering
 	{
 		class VoxelConeTracing
 		{
-		public:
-			struct DirectLightingParam
-			{
-				TBDR::ShadingWithLightCulling::GBuffers	gbuffer;
-				const Texture::DepthBuffer*				opaqueDepthBuffer;
-				const Texture::RenderTexture*			directLightingColorMap;
-			};
-
 		private:
 			GPGPU::DirectCompute::ComputeShader*	_shader;
 			Texture::RenderTexture*					_indirectColorMap;
@@ -30,8 +24,8 @@ namespace Rendering
 			~VoxelConeTracing();
 
 		public:
-			void Initialize(const Device::DirectX* dx);
-			void Run(const Device::DirectX* dx, const AnisotropicVoxelMapAtlas* mipmappedVoxelColorMap, const DirectLightingParam& param);
+			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* giInfoCB);
+			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam);
 			void Destroy();
 
 		public:

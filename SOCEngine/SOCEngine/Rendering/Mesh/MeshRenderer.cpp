@@ -37,6 +37,11 @@ bool MeshRenderer::AddMaterial(Material* material)
 	return true;
 }
 
+void MeshRenderer::DeleteMaterial(uint index)
+{
+	_materials.erase(_materials.begin() + index);
+}
+
 bool MeshRenderer::IsTransparent() const
 {
 	for(auto iter = _materials.begin(); iter != _materials.end(); ++iter)

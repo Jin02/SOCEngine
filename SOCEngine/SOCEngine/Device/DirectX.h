@@ -35,6 +35,7 @@ namespace Device
 		ID3D11RasterizerState*		_rasterizerClockwiseDisableCulling;
 		ID3D11RasterizerState*		_rasterizerClockwiseDefault;
 		ID3D11RasterizerState*		_rasterizerCounterClockwiseDisableCulling;
+		ID3D11RasterizerState*		_rasterizerClockwiseDisableCullingWithClip;
 		ID3D11RasterizerState*		_rasterizerCounterClockwiseDefault;
 
 		ID3D11BlendState*			_opaqueBlend;
@@ -46,6 +47,7 @@ namespace Device
 		ID3D11DepthStencilState*	_depthDisableDepthWrite;
 
 		ID3D11DepthStencilState*	_depthLess;
+		ID3D11DepthStencilState*	_depthLessEqual;
 		ID3D11DepthStencilState*	_depthEqualAndDisableDepthWrite;
 
 		ID3D11DepthStencilState*	_depthGreater;
@@ -57,6 +59,7 @@ namespace Device
 		ID3D11SamplerState*			_shadowLessEqualCompState;
 		ID3D11SamplerState*			_shadowGreaterEqualCompState;
 		ID3D11SamplerState*			_shadowLinearSamplerState;
+		ID3D11SamplerState*			_coneTracingSamplerState;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
 		Math::Size<uint>			_backBufferSize;
@@ -91,6 +94,7 @@ namespace Device
 		GET_ACCESSOR(RasterizerStateCCWDisableCulling,			ID3D11RasterizerState*,		_rasterizerCounterClockwiseDisableCulling);
 		GET_ACCESSOR(RasterizerStateCCWDefaultState,			ID3D11RasterizerState*,		_rasterizerCounterClockwiseDefault);
 		GET_ACCESSOR(RasterizerStateCWDisableCulling,			ID3D11RasterizerState*,		_rasterizerClockwiseDisableCulling);
+		GET_ACCESSOR(RasterizerStateCWDisableCullingWithClip,	ID3D11RasterizerState*,		_rasterizerClockwiseDisableCullingWithClip);
 		GET_ACCESSOR(RasterizerStateCWDefaultState,				ID3D11RasterizerState*,		_rasterizerClockwiseDefault);
 
 		GET_ACCESSOR(BlendStateOpaque,							ID3D11BlendState*,			_opaqueBlend);
@@ -103,13 +107,14 @@ namespace Device
 		GET_ACCESSOR(DepthStateEqualAndDisableDepthWrite,		ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
 		GET_ACCESSOR(DepthStateGreater,							ID3D11DepthStencilState*,	_depthGreater);
 		GET_ACCESSOR(DepthStateGreaterAndDisableDepthWrite,		ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
-
+		GET_ACCESSOR(DepthStateLessEqual,						ID3D11DepthStencilState*,	_depthLessEqual);
 		GET_ACCESSOR(SamplerStateAnisotropic,					ID3D11SamplerState*,		_anisotropicSamplerState);
 		GET_ACCESSOR(SamplerStateLinear,						ID3D11SamplerState*,		_linearSamplerState);
 		GET_ACCESSOR(SamplerStatePoint,							ID3D11SamplerState*,		_pointSamplerState);
 		GET_ACCESSOR(ShadowLessEqualSamplerComparisonState,		ID3D11SamplerState*,		_shadowLessEqualCompState);
 		GET_ACCESSOR(ShadowGreaterEqualSamplerComparisonState,	ID3D11SamplerState*,		_shadowGreaterEqualCompState);
 		GET_ACCESSOR(ShadowSamplerState,						ID3D11SamplerState*,		_shadowLinearSamplerState);
+		GET_ACCESSOR(ConeTracingSamplerState,					ID3D11SamplerState*,		_coneTracingSamplerState);
 
 		GET_ACCESSOR(MSAADesc,								const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;

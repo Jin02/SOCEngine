@@ -17,7 +17,7 @@ RenderTexture::~RenderTexture()
 
 bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount)
 {
-	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | optionalBindFlags;
+	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | ((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS : 0) | optionalBindFlags;
 	
 	Texture2D::Initialize(size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, 1);
 

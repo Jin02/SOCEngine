@@ -1,11 +1,13 @@
 #define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
 
 #include "Voxelization_Common.h"
+#include "NormalMapping.h"
 
 struct VS_INPUT
 {
 	float3 position 			: POSITION;
 	float3 normal				: NORMAL;
+	float3 tangent				: TANGENT;
 	float2 uv					: TEXCOORD0;
 };
 
@@ -13,6 +15,7 @@ struct VS_OUTPUT
 {
 	float3 localPos				: LOCAL_POSITION;
 	float3 normal 				: NORMAL;
+	float3 tangent				: TANGENT;
 
 	float2 uv					: TEXCOORD0;
 };
@@ -23,7 +26,8 @@ VS_OUTPUT VS( VS_INPUT input )
 
 	output.localPos		= input.position;
 	output.uv			= input.uv;
-	output.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
+	output.normal 		= normalize( mul(input.normal,	(float3x3)transform_worldInvTranspose) );
+	output.tangent		= normalize( mul(input.tangent,	(float3x3)transform_worldInvTranspose) );
  
     return output;
 }
@@ -33,6 +37,7 @@ struct GS_OUTPUT
 	float4 position				: SV_POSITION;
 	float3 worldPos				: WORLD_POSITION;
 	float3 normal				: NORMAL;
+	float3 tangent				: TANGENT;
 	float2 uv					: TEXCOORD0;
 };
 
@@ -56,6 +61,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		output.position	= position[i];
 		output.uv		= input[i].uv;
 		output.normal	= input[i].normal;
+		output.tangent	= input[i].tangent;
 		output.worldPos	= worldPos[i].xyz;
 
 		outputStream.Append(output);
@@ -66,6 +72,11 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 void PS( GS_OUTPUT input )
 {
-	float3 normal = normalize(input.normal);
-	VoxelizationInPSStage(normal, input.uv, input.worldPos);
+	float4 normalMap = normalTexture.Sample(defaultSampler, input.uv);
+	bool hasNormalMap = HasNormalTexture();
+
+	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
+	float3 normal		= lerp(input.normal, bumpedNormal, hasNormalMap);
+
+	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos);
 }

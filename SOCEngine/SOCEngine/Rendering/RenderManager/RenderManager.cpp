@@ -103,7 +103,8 @@ void RenderManager::Initialize()
 	{
 		RenderType type = (RenderType)i;
 
-		LoadDefaultSahder(type, (uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
+		if(type != RenderType::Voxelization)
+			LoadDefaultSahder(type, (uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
 
 		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
@@ -226,7 +227,7 @@ void RenderManager::Destroy()
 	DeleteAllDefaultShaders();
 }
 
-void RenderManager::UpdateRenderList(const Mesh* mesh)
+void RenderManager::UpdateRenderList(const Mesh* mesh, bool prevShow)
 {
 	MeshList::meshkey meshAddress = reinterpret_cast<MeshList::meshkey>(mesh);
 
@@ -249,42 +250,52 @@ void RenderManager::UpdateRenderList(const Mesh* mesh)
 	MeshRenderer::Type currentType	= mesh->GetMeshRenderer()->GetCurrentRenderType();
 	MeshRenderer::Type prevType		= mesh->GetPrevRenderType();
 
-	if(prevType == currentType)
+	if( (prevType == currentType) && (prevShow == mesh->GetShow()) )
 		return; // not changed
 
 	const std::string& vbKey = mesh->GetMeshFilter()->GetVertexBuffer()->GetKey();
 
-	if(prevType != MeshRenderer::Type::Unknown)
+	auto Delete = [&](MeshList* meshList) -> void
 	{
-		MeshList* prevMeshList = GetMeshList(prevType);
-
-		std::set<MeshList::meshkey>* meshSets = prevMeshList->meshes.Find(vbKey);
+		std::set<MeshList::meshkey>* meshSets = meshList->meshes.Find(vbKey);
 		if(meshSets)
 		{
 			meshSets->erase(meshAddress);
 
 			if(meshSets->empty())
-				prevMeshList->meshes.Delete(vbKey);
+				meshList->meshes.Delete(vbKey);
 
-			++prevMeshList->updateCounter;
+			++meshList->updateCounter;
 		}
-	}
+	};
+
+	if(prevType != MeshRenderer::Type::Unknown)
+		Delete(GetMeshList(prevType));
 
 	if(currentType != MeshRenderer::Type::Unknown)
 	{
 		MeshList* currentMeshList = GetMeshList(currentType);
-		std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
-		if(meshSets == nullptr)
-		{
-			std::set<MeshList::meshkey> set;
-			set.insert(meshAddress);
 
-			currentMeshList->meshes.Add(vbKey, set);
+		if(mesh->GetShow())
+		{
+			std::set<MeshList::meshkey>* meshSets = currentMeshList->meshes.Find(vbKey);
+			if(meshSets == nullptr)
+			{
+				std::set<MeshList::meshkey> set;
+				set.insert(meshAddress);
+	
+				currentMeshList->meshes.Add(vbKey, set);
+			}
+			else
+			{
+				meshSets->insert(meshAddress);
+			}
 		}
 		else
 		{
-			meshSets->insert(meshAddress);
+			Delete(currentMeshList);
 		}
+
 		++currentMeshList->updateCounter;
 	}
 }

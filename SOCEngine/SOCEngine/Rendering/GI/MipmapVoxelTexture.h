@@ -3,14 +3,14 @@
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
 #include "GlobalIlluminationCommon.h"
-#include "AnisotropicVoxelMapAtlas.h"
+#include "VoxelMap.h"
 #include "InjectRadiance.h"
 
 namespace Rendering
 {
 	namespace GI
 	{
-		class MipmapAnisotropicVoxelMapAtlas
+		class MipmapVoxelTexture
 		{
 		public:
 			struct InfoCB
@@ -25,12 +25,12 @@ namespace Rendering
 			Buffer::ConstBuffer*						_infoCB;
 
 		public:
-			MipmapAnisotropicVoxelMapAtlas();
-			~MipmapAnisotropicVoxelMapAtlas();
+			MipmapVoxelTexture();
+			~MipmapVoxelTexture();
 
 		public:
-			void Initialize();
-			void Mipmapping(const Device::DirectX* dx, const InjectRadiance* injection, uint maxNumOfCascade);
+			void Initialize(const GlobalInfo& giInfo);
+			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade);
 			void Destroy();
 		};
 	}

@@ -8,7 +8,7 @@ using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown)
+	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown), _show(true), _prevShow(false)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -28,8 +28,8 @@ void Mesh::Initialize(const CreateFuncArguments& args)
 	if(_renderer->AddMaterial(args.material) == false)
 		ASSERT_MSG("Error, renderer addmaterial");
 
-	_worldMatrixConstBuffer = new Buffer::ConstBuffer;
-	if(_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix)) == false)
+	_transformConstBuffer = new Buffer::ConstBuffer;
+	if(_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
 		ASSERT_MSG("Error, transformBuffer->Initialize");
 
 	ClassifyRenderMeshType();
@@ -47,8 +47,8 @@ void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer,
 	if(_renderer->AddMaterial(initMaterial) == false)
 		ASSERT_MSG("Error, cant add material in MeshRenderer");
 
-	_worldMatrixConstBuffer = new Buffer::ConstBuffer;
-	if(_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix)) == false)
+	_transformConstBuffer = new Buffer::ConstBuffer;
+	if(_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
 		ASSERT_MSG("Error, transformBuffer->Initialize");
 
 	ClassifyRenderMeshType();
@@ -62,23 +62,26 @@ void Mesh::OnUpdate(float deltaTime)
 {
 }
 
-void Mesh::OnUpdateTransformCB(const Device::DirectX*& dx, const Math::Matrix& transposedWorldMatrix)
+void Mesh::OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-	_worldMatrixConstBuffer->UpdateSubResource(context, &transposedWorldMatrix);
+	_transformConstBuffer->UpdateSubResource(context, &transformCB);
 }
 
 void Mesh::OnDestroy()
 {
 	SAFE_DELETE(_filter);
 	SAFE_DELETE(_renderer);
-	SAFE_DELETE(_worldMatrixConstBuffer);
+	SAFE_DELETE(_transformConstBuffer);
 }
 
 void Mesh::ClassifyRenderMeshType()
 {
 	Manager::RenderManager* renderMgr = Device::Director::SharedInstance()->GetCurrentScene()->GetRenderManager();
-	renderMgr->UpdateRenderList(this);
+
+	renderMgr->UpdateRenderList(this, _prevShow);
+	_prevShow = _show;
+
 	_prevRenderType = _renderer->GetCurrentRenderType();
 }
 
@@ -93,12 +96,18 @@ Core::Component* Mesh::Clone() const
 	{
 		newMesh->_filter = new MeshFilter(*_filter);
 		newMesh->_renderer = new MeshRenderer(*_renderer);
-		newMesh->_worldMatrixConstBuffer = new Buffer::ConstBuffer;
-		newMesh->_worldMatrixConstBuffer->Initialize(sizeof(Math::Matrix));
+		newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
+		newMesh->_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB));
 		newMesh->ClassifyRenderMeshType();
 
 		newMesh->_owner = _owner;
 	}
 
 	return newMesh;
+}
+
+void Mesh::SetShow(bool b)
+{
+	_show = b;
+	ClassifyRenderMeshType();
 }

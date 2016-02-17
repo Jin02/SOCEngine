@@ -988,7 +988,7 @@ UpdateParamAndTransformReturn UpdateParamAndTransformBuffer(VectorMap<address, S
 		// Transform
 		{
 			uint& prevUpdateCounter	= shadowCastingLights.Get(vectorIndex).prevTransformUpateCounter;
-			uint curUpdateCounter	= iter->shadow->GetTransformUpdateCounter();
+			uint curUpdateCounter	= iter->shadow->GetOwner()->GetOwner()->GetTransform()->GetUpdateCounter();
 
 			if(prevUpdateCounter != curUpdateCounter)
 			{
