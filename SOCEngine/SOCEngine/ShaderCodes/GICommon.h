@@ -176,19 +176,16 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, fl
 	uint dimension = (uint)GetDimension();
 	voxelIdx.y += curCascade * dimension;
 
-	if(any(radiosity > 0.0f))
+	for(int faceIndex=0; faceIndex<6; ++faceIndex)
 	{
-		for(int faceIndex=0; faceIndex<6; ++faceIndex)
-		{
-			uint3 index = voxelIdx;
-			index.x += (faceIndex * dimension);
+		uint3 index = voxelIdx;
+		index.x += (faceIndex * dimension);
 
-			float rate = max(anisotropicNormals[faceIndex], 0.0f);
-			float4 storeValue = float4(radiosity * rate, alpha);
+		float rate = max(anisotropicNormals[faceIndex], 0.0f);
+		float4 storeValue = float4(radiosity * rate, alpha);
 
-//			StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
-			outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
-		}
+//		StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
+		outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
 	}
 }
 
