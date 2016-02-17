@@ -1,5 +1,8 @@
 //EMPTY_META_DATA
 
+#define USE_VOXEL_CONE_TRACING_TEST
+//
+
 #define VOXEL_CONE_TRACING
 
 #include "GBufferParser.h"
@@ -170,8 +173,10 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	//surface.metallic	= 0.9f;
-	//surface.roughness	= 0.1f;
+#ifdef USE_VOXEL_CONE_TRACING_TEST
+	surface.metallic	= 0.9f;
+	surface.roughness	= 0.1f;
+#endif
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 

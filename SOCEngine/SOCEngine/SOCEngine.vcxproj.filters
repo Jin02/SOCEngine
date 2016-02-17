@@ -889,6 +889,9 @@
     <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h">
       <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\NormalMapping.h">
+      <Filter>ShaderCodes\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1294,6 +1297,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
       <Filter>ShaderCodes\GI\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_TN_UV0.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
