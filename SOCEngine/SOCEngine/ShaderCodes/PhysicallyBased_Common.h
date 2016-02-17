@@ -3,6 +3,8 @@
 #ifndef __SOC_PHYSICALLY_BASED_COMMON_H__
 #define __SOC_PHYSICALLY_BASED_COMMON_H__
 
+#include "NormalMapping.h"
+
 #if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
 #else
@@ -38,18 +40,6 @@ Texture2D diffuseTexture			: register( t8 );
 Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
 Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
-
-float3 NormalMapping(float3 normalMapXYZ, float3 normal, float3 tangent, float2 uv)
-{
-	float3 binormal = normalize( cross(normal, tangent) );
-
-	float3 texNormal = normalMapXYZ;
-	texNormal *= 2.0f; texNormal -= float3(1.0f, 1.0f, 1.0f);
-
-	float3x3 TBN = float3x3(normalize(binormal), normalize(tangent), normalize(normal));
-
-	return normalize( mul(texNormal, TBN) );
-}
 
 void Parse_Metallic_Roughness_Emission(out float metallic,
 									   out float roughness,
