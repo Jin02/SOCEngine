@@ -96,11 +96,8 @@ float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAng
 	return max(mip, 0);
 }
 
-float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
+float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfConeAngleRad, uniform float occlusionBias, uniform uint sampleCount)
 {
-	float3 viewDir			= normalize(tbrParam_cameraWorldPosition.xyz - worldPos);
-	float3 reflectDir		= reflect(-viewDir, worldNormal);
-
 	float currLength		= 0.0f;
 	float3 samplePos		= worldPos + worldNormal * gi_initVoxelSize * SAMPLE_START_OFFSET_RATE;
 	float3 sampleStartPos	= samplePos;// + worldNormal * gi_initVoxelSize * 2.0f;
@@ -111,28 +108,37 @@ float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
 	float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
 	float aoAccumInCone		= 0.0f;
 
-	for(uint i=0; i<SPECULAR_SAMPLING_COUNT; ++i)
+	for(uint i=0; i<sampleCount; ++i)
 	{
 		uint cascade		= ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
 		float voxelSize		= ComputeVoxelSize(cascade);
 		float mipLevel		= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
 		
-		float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, reflectDir, cascade, mipLevel);
+		float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 
 		colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
 		aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + AMBIENT_OCCLUSION_K * currLength));
 
 		currLength			= max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
-		samplePos			= sampleStartPos + reflectDir * currLength;
+		samplePos			= sampleStartPos + dir * currLength;
 
 		if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
 			samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
 			samplePos.z < bbMin.z || samplePos.x >= bbMax.x ||
-			colorAccumInCone.a >= SPECULAR_OCCLUSION )
+			colorAccumInCone.a >= occlusionBias )
 			break;
 	}
 
-	return colorAccumInCone.rgb;
+	return float4(colorAccumInCone.rgb, aoAccumInCone);
+}
+
+float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
+{
+	float3 viewDir			= normalize(tbrParam_cameraWorldPosition.xyz - worldPos);
+	float3 reflectDir		= reflect(-viewDir, worldNormal);
+
+	float4 colorAccum = TraceCone(worldPos, worldNormal, reflectDir, halfConeAngleRad, SPECULAR_OCCLUSION, SPECULAR_SAMPLING_COUNT);
+	return colorAccum.rgb;
 }
 
 float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
@@ -141,48 +147,16 @@ float3 DiffuseVCT(float3 worldPos, float3 worldNormal)
 	float3 right	= cross(worldNormal, up);
 	up				= cross(worldNormal, right);
 
-	float4	colorAccum	= float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float	aoAccum		= 0.0f;
+	const float halfConeAngleRad	= DEG_2_RAD(60.0f) * 0.5f;
+	float4	colorAccum				= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is ao
 
+	[unroll]
 	for(uint coneIdx = 0; coneIdx < MAXIMUM_CONE_COUNT; ++coneIdx)
 	{
 		float3 dir = normalize(worldNormal + ConeDirLS[coneIdx].x * right + ConeDirLS[coneIdx].z * up);
 
-		float currLength		= 0.0f;
-		float3 sampleStartPos	= worldPos + worldNormal * gi_initVoxelSize * SAMPLE_START_OFFSET_RATE;
-		float3 samplePos		= sampleStartPos;
-
-		float halfConeAngleRad	= DEG_2_RAD(60.0f) * 0.5f;
-
-		float3 bbMin, bbMax;
-		ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
-
-		float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
-		float aoAccumInCone		= 0.0f;
-
-		for(uint i=0; i<DIFFUSE_SAMPLING_COUNT; ++i)
-		{
-			uint cascade		= ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
-			float voxelSize		= ComputeVoxelSize(cascade);
-			float mipLevel		= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
-
-			float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
-
-			colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
-			aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + AMBIENT_OCCLUSION_K * currLength));
-
-			currLength			= max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
-			samplePos			= sampleStartPos + dir * currLength;
-
-			if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
-				samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
-				samplePos.z < bbMin.z || samplePos.x >= bbMax.x ||
-				colorAccumInCone.a >= DIFFUSE_OCCLUSION )
-				break;
-		}
-
+		float4 colorAccumInCone = TraceCone(worldPos, worldNormal, dir, halfConeAngleRad, DIFFUSE_OCCLUSION, DIFFUSE_SAMPLING_COUNT);
 		colorAccum	+= colorAccumInCone * ConeWeights[coneIdx];
-		aoAccum		+= aoAccumInCone * ConeWeights[coneIdx];
 	}
 
 	return colorAccum.rgb;
@@ -196,8 +170,8 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	surface.metallic	= 0.2f;
-	surface.roughness	= 0.1f;
+	//surface.metallic	= 0.9f;
+	//surface.roughness	= 0.1f;
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 
