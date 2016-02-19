@@ -36,14 +36,13 @@ namespace Rendering
 		public:
 			struct CreateFuncArguments
 			{
-				template <typename Type>
-				struct Buffer
+				struct Vertices
 				{
-					const Type* data;
-					unsigned int count;
-					unsigned int byteWidth;
+					const void*		data;
+					unsigned int	count;
+					unsigned int	byteWidth;
 				};
-				Buffer<void>					vertices;
+				Vertices						vertices;
 				std::vector<uint>*				indices;
 				bool							useDynamicVB;
 				bool							useDynamicIB;
