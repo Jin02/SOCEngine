@@ -31,12 +31,12 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	ActivateGI(true, 256, 60.0f);
+//	ActivateGI(true, 256, 40.0f);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
-//	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	_camera->GetTransform()->UpdatePosition(Vector3(0, -0.3f, -4.1f));
+	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+//	_camera->GetTransform()->UpdatePosition(Vector3(0, -0.3f, -4.1f));
 	cam->SetFieldOfViewDegree(60.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
@@ -47,21 +47,28 @@ void TestScene::OnInitialize()
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 5));
 	AddObject(_testObject);
 #else
+	_testObject = importer->Load("./Resources/Sphere/sphere.obj", false);
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0.3f, 11.0f));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));
+	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	AddObject(_testObject);
+
 	//_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx");
 	//_camera->GetTransform()->UpdatePosition(Vector3(0, 5, -15));
 	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
 
-	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
-	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
-	AddObject(_testObject);
+	//_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
+	//_testObject->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, 180.0f, 180));
+	//_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	//AddObject(_testObject);
 
 	//_testObject2 = importer->Load("./Resources/CornellBox/Sphere.obj", false);
-	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, -4.0f, 11.0f));
+	//_testObject2->GetTransform()->UpdatePosition(Vector3(0, -5.5f, 17.2f));
 	//_testObject2->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
-	//_testObject2->GetTransform()->UpdateScale(Vector3(5, 5, 5));
+	//_testObject2->GetTransform()->UpdateScale(Vector3(10, 10, 10));
 	//AddObject(_testObject2);
+	//cam->SetFieldOfViewDegree(75.0f);
 
 	//_testObject2 = importer->Load("./Resources/Voxel/voxel.obj", false);
 	//_testObject2->GetTransform()->UpdatePosition(Vector3(-2.5f, 2.2f, 14.0f));
@@ -104,29 +111,30 @@ void TestScene::OnInitialize()
 	light->ActiveShadow(true);
 	light->SetSpotAngleDegree(120.0f);
 	light->GetShadow()->SetUseVSM(false);
-#elif 0
+#elif 1
 	_light = new Object("Light");
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(315, 340, 0));
 //	_light->GetTransform()->UpdateEulerAngles(Vector3(90, 0, 0));
-	_light->GetTransform()->UpdateEulerAngles(Vector3(0, 0, 0));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(55.0f, 320.0f, 0));
 
 //	_light->GetTransform()->UpdatePosition(Vector3(0, 30, 0));
 	_light->GetTransform()->UpdatePosition(_camera->GetTransform()->GetLocalPosition());
 
 	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
 //	light->SetProjectionSize(10);
-	light->SetProjectionSize(30);
+//	light->SetProjectionSize(30);
 	light->SetIntensity(1);
 	light->SetUseAutoProjectionLocation(true);
-	light->ActiveShadow(true);
-#elif 1
+	light->ActiveShadow(false);
+#elif 0
 	_light = new Object("Light");
-	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 8.0f));
+//	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 0.9f, 8.0f));
 //	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 3.4f, 10.0f));
+	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 5.2f, 12.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
-	light->SetLumen(50);
-	light->SetRadius(20.0f);
+	light->SetLumen(100);
+	light->SetRadius(30.0f);
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
 #endif
@@ -232,7 +240,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 	}
 	if(keyboard.states['M'] == Win32::Keyboard::Type::Up)
 	{
-		_testObject->SetUse(!_testObject->GetUse());
+		//_testObject->SetUse(!_testObject->GetUse());
 	}
 
 }
