@@ -2,7 +2,6 @@
 
 #include "MeshFilter.h"
 #include "MeshRenderer.h"
-#include "MeshBasicData.h"
 #include "Component.h"
 
 namespace Rendering
