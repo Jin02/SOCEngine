@@ -480,8 +480,8 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 	// Light Culling and Deferred Shading
 	{
-		bool useShadow = shadowGlobalParamCB != nullptr;
-		if(useShadow)
+		//bool useShadow = shadowGlobalParamCB != nullptr;
+		//if(useShadow)
 		{
 #if defined(USE_SHADOW_INVERTED_DEPTH)
 			ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
@@ -511,7 +511,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
 
-		if(useShadow)
+		//if(useShadow)
 		{
 			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSampler);
 
