@@ -157,9 +157,7 @@ void Scene::Render()
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
 			// const Buffer::ConstBuffer* 코드 길어져서 걍 auto로 대체
-			auto shadowCB	=	_shadowRenderer->IsWorking() ?
-								_shadowRenderer->GetShadowGlobalParamConstBuffer() : nullptr;
-
+			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
 			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM(), GIPass);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
