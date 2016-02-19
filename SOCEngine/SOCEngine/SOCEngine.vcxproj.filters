@@ -142,9 +142,6 @@
     <Filter Include="Rendering\Mesh\Renderer">
       <UniqueIdentifier>{2a7e15a3-7ad8-463a-9f3d-0a34cd6fe05b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Mesh\data">
-      <UniqueIdentifier>{ee6cd56b-b4d5-48b9-9210-70faa266a6d0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Manager">
       <UniqueIdentifier>{2bb07164-6800-4a02-8eb8-eb09a7a69905}</UniqueIdentifier>
     </Filter>
@@ -397,6 +394,12 @@
     <Filter Include="Rendering\Buffer\CPURead">
       <UniqueIdentifier>{849d23c7-d827-4bd0-b5b3-73a31080cedf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Sky">
+      <UniqueIdentifier>{c8f26fa2-2e51-4a87-a5d4-b164b926585b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Mesh\BasicGeometryGenerator">
+      <UniqueIdentifier>{9ef1bbf1-d189-45c6-895b-7da79b40b373}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -527,9 +530,6 @@
     </ClInclude>
     <ClInclude Include="Utility\DirectoryManager.h">
       <Filter>Utility\DirectoryManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshBasicData.h">
-      <Filter>Rendering\Mesh\data</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshFilter.h">
       <Filter>Rendering\Mesh\Filter</Filter>
@@ -892,6 +892,12 @@
     <ClInclude Include="ShaderCodes\NormalMapping.h">
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyDome.h">
+      <Filter>Rendering\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
+      <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -992,9 +998,6 @@
     </ClCompile>
     <ClCompile Include="Utility\DirectoryManager.cpp">
       <Filter>Utility\DirectoryManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Mesh\MeshBasicData.cpp">
-      <Filter>Rendering\Mesh\data</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp">
       <Filter>Rendering\Mesh\Filter</Filter>
@@ -1223,6 +1226,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp">
       <Filter>Rendering\GI\Mipmap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyDome.cpp">
+      <Filter>Rendering\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
+      <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
