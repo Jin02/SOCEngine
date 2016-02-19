@@ -831,7 +831,7 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 				const auto& textures = impMat.textures;
 				for(auto iter = textures.begin(); iter != textures.end(); ++iter)
 				{
-					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(folderDir + "Textures/" + iter->fileName, false);
+					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(folderDir + iter->fileName, false);
 
 					if(texture)
 					{
