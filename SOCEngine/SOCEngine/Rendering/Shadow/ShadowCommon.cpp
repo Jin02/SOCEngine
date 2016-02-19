@@ -14,7 +14,7 @@ ShadowCommon::ShadowCommon(const LightForm* owner)
 	_paramUpdateCounter(0), _useVSM(false)
 {
 	_color = Color::Black();
-	_color.a = 0.5f;
+	_color.a = 0.8f;
 }
 
 ShadowCommon::~ShadowCommon()
