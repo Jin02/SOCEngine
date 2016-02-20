@@ -16,7 +16,7 @@ bool BasicGeometryGenerator::HasFlag(uint vtxInputTypeFlag, RenderManager::Defau
 std::string BasicGeometryGenerator::UintToStr(uint data)
 {
 	char str[16] = {0, };
-	sprintf_s(str, "%x", data);
+	sprintf_s(str, "%08x", data);
 
 	return str;
 }
@@ -37,7 +37,7 @@ void BasicGeometryGenerator::AppendVertexData(	std::vector<float>& inoutVertexDa
 		inoutVertexDatas.push_back(normal.z);
 	}
 
-	if(HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::NORMAL))
+	if(HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::TANGENT))
 	{
 		inoutVertexDatas.push_back(tangent.x);
 		inoutVertexDatas.push_back(tangent.y);
@@ -83,7 +83,7 @@ void BasicGeometryGenerator::MakeMeshInfo(MeshInfo& outInfo, uint vtxInputTypeFl
 			HasFlag(vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag::UV1) )
 		{
 			stride += 8;
-			AppendSemanticInfo("UV0", 0, 8);
+			AppendSemanticInfo("TEXCOORD", 0, 8);
 		}
 	}
 
@@ -91,7 +91,7 @@ void BasicGeometryGenerator::MakeMeshInfo(MeshInfo& outInfo, uint vtxInputTypeFl
 	outInfo.semantics	= semantics;
 }
 
-void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, const Math::Vector3& size, uint defautVertexInputTypeFlag)
+Object* BasicGeometryGenerator::CreateBox(const Math::Vector3& size, uint defautVertexInputTypeFlag)
 {
 	const uint vtxCount = 24;
 
@@ -197,10 +197,13 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
-	createMeshCallback(args);
+	Object* object = new Object("Box");
+	object->AddComponent<Mesh>()->Initialize(args);
+
+	return object;
 }
 
-void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
+Object* BasicGeometryGenerator::CreateSphere(float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
 	std::vector<float> vertexDatas;
 	AppendVertexData(vertexDatas, Vector3(0.0f,  radius, 0.0f), Vector3(0.0f,  1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 0.0f), defautVertexInputTypeFlag);
@@ -307,10 +310,13 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
-	createMeshCallback(args);
+	Object* object = new Object("Sphere");
+	object->AddComponent<Mesh>()->Initialize(args);
+
+	return object;
 }
 
-void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
+Object* BasicGeometryGenerator::CreateCylinder(float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
 	float stackHeight	= height / stackCount;
 	float radiusStep	= (topRadius - botRadius) / stackCount;
@@ -464,10 +470,13 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
-	createMeshCallback(args);
+	Object* object = new Object("Cylinder");
+	object->AddComponent<Mesh>()->Initialize(args);
+
+	return object;
 }
 
-void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, float width, float height, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
+Object* BasicGeometryGenerator::CreatePlane(float width, float height, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
 {
 	uint vertexCount = widthVertexCount * heightVertexCount;
 	uint faceCount   = (widthVertexCount - 1) * (heightVertexCount - 1) * 2;
@@ -550,5 +559,8 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
-	createMeshCallback(args);
+	Object* object = new Object("plane");
+	object->AddComponent<Mesh>()->Initialize(args);
+
+	return object;
 }
