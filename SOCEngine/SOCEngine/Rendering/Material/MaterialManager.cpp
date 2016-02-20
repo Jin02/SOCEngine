@@ -1,4 +1,5 @@
 #include "MaterialManager.h"
+#include "PhysicallyBasedMaterial.h"
 
 using namespace Rendering;
 using namespace Rendering::Manager;
@@ -9,6 +10,15 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
+}
+
+void MaterialManager::Initialize()
+{
+	PhysicallyBasedMaterial* material = new PhysicallyBasedMaterial("@Default");
+	material->Initialize();
+	material->UpdateMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	Add("@Default", material);
 }
 
 void MaterialManager::Add(const std::string& file, const std::string& name, Material* material)

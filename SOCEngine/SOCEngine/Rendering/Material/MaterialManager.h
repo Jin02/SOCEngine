@@ -19,6 +19,7 @@ namespace Rendering
 			~MaterialManager();
 
 		public:
+			void Initialize();
 			void Add(const std::string& file, const std::string& name, Material* material);
 			Material* Find(const std::string& file, const std::string& name);
 			void Delete(const std::string& file, const std::string& name);

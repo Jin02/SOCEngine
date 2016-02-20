@@ -53,6 +53,7 @@ void Scene::Initialize()
 	_lightManager->InitializeAllShaderResourceBuffer();
 
 	_materialMgr	= new MaterialManager;
+	_materialMgr->Initialize();
 
 	_backBufferMaker = new BackBufferMaker;
 	_backBufferMaker->Initialize(false);
