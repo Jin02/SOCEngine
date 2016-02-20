@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{c72771c7-3a5c-412c-be26-cd10facebc59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\BC.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DDS.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectXHelpers.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectXTex.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectXTexP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Filters.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PlatformHelpers.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\allocators.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\document.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\encodedstream.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\encodings.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\error\en.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\error\error.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\filereadstream.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\filestream.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\filewritestream.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\dtoa.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\itoa.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\meta.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\pow10.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\stack.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\internal\strfunc.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\memorybuffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\memorystream.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\msinttypes\inttypes.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\msinttypes\stdint.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\prettywriter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\rapidjson.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\reader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\stringbuffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\rapidjson\writer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\scoped.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\WICTextureLoader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Header\DirectXTex.inl">
+      <Filter>Header</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\BC.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BC4BC5.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BC6HBC7.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexCompress.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexConvert.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexD3D11.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexDDS.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexFlipRotate.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexMipmaps.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexMisc.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexNormalMaps.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexPMAlpha.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexResize.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexTGA.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexUtil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectXTexWIC.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WICTextureLoader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
