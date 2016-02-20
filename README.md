@@ -3,7 +3,7 @@ SOCEngine
 
 Simple 3D real-time rendering engine
 
-Required : python 2.7.x, VS2012, FBXSDK2014.1
+Required : python 2.7.x, VS2012, VS2013, FBXSDK2014.1
 
 -----------
 
