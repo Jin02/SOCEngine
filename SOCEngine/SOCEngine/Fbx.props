@@ -7,7 +7,7 @@
   <PropertyGroup>
     <IncludePath>$(FBX_SDK)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(FBX_SDK)lib\vs2012\x86\debug;$(LibraryPath)</LibraryPath>
-    <_PropertySheetDisplayName>ExternalLib</_PropertySheetDisplayName>
+    <_PropertySheetDisplayName>Fbx</_PropertySheetDisplayName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
