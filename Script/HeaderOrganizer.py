@@ -9,7 +9,7 @@ def CheckParameter():
 	excludePaths		= None
 
 	count = len(sys.argv)-1
-	if count >= 6:
+	if count >= 8:
 		for i in xrange(1, count):
 			if sys.argv[i] == "-OutputPath":
 				outputPath = os.path.abspath(sys.argv[i+1])
