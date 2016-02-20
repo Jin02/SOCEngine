@@ -4,10 +4,6 @@
 #include <d3dcompiler.h>
 #include <vector>
 
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3dcompiler.lib")
-
 #include "Common.h"
 #include "Win32.h"
 

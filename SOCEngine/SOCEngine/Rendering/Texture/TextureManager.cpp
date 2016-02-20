@@ -2,8 +2,8 @@
 #include "Director.h"
 #include "Utility.h"
 
-#include "DirectXTK/WICTextureLoader.h"
-#include "DirectXTex/DirectXTex.h"
+#include <WICTextureLoader.h>
+#include <DirectXTex.h>
 
 #include <locale>
 #include <codecvt>

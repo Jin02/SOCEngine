@@ -1,5 +1,7 @@
 #include "SimpleSoundPlayer.h"
 
+#pragma comment (lib, "strmiids.lib")
+
 using namespace Sound;
 
 SimpleSoundPlayer::SimpleSoundPlayer(void)

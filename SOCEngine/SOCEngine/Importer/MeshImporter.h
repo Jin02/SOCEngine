@@ -4,7 +4,7 @@
 #include <string>
 #include "Object.h"
 #include "Material.h"
-#include "rapidjson/document.h"
+#include <rapidjson/document.h>
 #include "G3djDataTypes.h"
 #include "MaterialManager.h"
 #include <set>

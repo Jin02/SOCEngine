@@ -1,6 +1,8 @@
 #include "Director.h"
 #include "ResourceManager.h"
 
+#pragma comment(lib, "ExternalLib.lib")
+
 using namespace Device;
 using namespace Resource;
 

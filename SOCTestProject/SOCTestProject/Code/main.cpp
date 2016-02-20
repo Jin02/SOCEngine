@@ -1,5 +1,5 @@
 #include <Windows.h>
-#include "Director.h"
+#include <Director.h>
 #include "TestScene.h"
 
 INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )

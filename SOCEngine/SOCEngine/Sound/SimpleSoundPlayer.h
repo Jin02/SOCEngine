@@ -4,8 +4,6 @@
 #include "Common.h"
 #include <string>
 
-#pragma comment (lib, "strmiids.lib")
-
 namespace Sound
 {
 	class SimpleSoundPlayer

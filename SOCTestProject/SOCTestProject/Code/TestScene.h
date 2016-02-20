@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Scene.h"
+#include <Scene.h>
 #include "ShaderFactory.hpp"
-#include "SimpleSoundPlayer.h"
-#include "SimpleText2D.h"
+#include <SimpleSoundPlayer.h>
+#include <SimpleText2D.h>
 
 class TestScene : public Core::Scene
 {
