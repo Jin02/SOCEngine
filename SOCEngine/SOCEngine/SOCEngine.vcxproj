@@ -20,39 +20,6 @@
     </ClInclude>
     <ClInclude Include="Core\Time\Timer.h" />
     <ClInclude Include="Core\Transform\Transform.h" />
-    <ClInclude Include="External\DirectXTex\BC.h" />
-    <ClInclude Include="External\DirectXTex\DDS.h" />
-    <ClInclude Include="External\DirectXTex\DirectXTex.h" />
-    <ClInclude Include="External\DirectXTex\DirectXTexP.h" />
-    <ClInclude Include="External\DirectXTex\Filters.h" />
-    <ClInclude Include="External\DirectXTex\scoped.h" />
-    <ClInclude Include="External\DirectXTK\DirectXHelpers.h" />
-    <ClInclude Include="External\DirectXTK\PlatformHelpers.h" />
-    <ClInclude Include="External\DirectXTK\WICTextureLoader.h" />
-    <ClInclude Include="External\rapidjson\allocators.h" />
-    <ClInclude Include="External\rapidjson\document.h" />
-    <ClInclude Include="External\rapidjson\encodedstream.h" />
-    <ClInclude Include="External\rapidjson\encodings.h" />
-    <ClInclude Include="External\rapidjson\error\en.h" />
-    <ClInclude Include="External\rapidjson\error\error.h" />
-    <ClInclude Include="External\rapidjson\filereadstream.h" />
-    <ClInclude Include="External\rapidjson\filestream.h" />
-    <ClInclude Include="External\rapidjson\filewritestream.h" />
-    <ClInclude Include="External\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="External\rapidjson\internal\itoa.h" />
-    <ClInclude Include="External\rapidjson\internal\meta.h" />
-    <ClInclude Include="External\rapidjson\internal\pow10.h" />
-    <ClInclude Include="External\rapidjson\internal\stack.h" />
-    <ClInclude Include="External\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="External\rapidjson\memorybuffer.h" />
-    <ClInclude Include="External\rapidjson\memorystream.h" />
-    <ClInclude Include="External\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="External\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="External\rapidjson\prettywriter.h" />
-    <ClInclude Include="External\rapidjson\rapidjson.h" />
-    <ClInclude Include="External\rapidjson\reader.h" />
-    <ClInclude Include="External\rapidjson\stringbuffer.h" />
-    <ClInclude Include="External\rapidjson\writer.h" />
     <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="Importer\G3djDataTypes.h" />
@@ -311,24 +278,6 @@
     </ClCompile>
     <ClCompile Include="Core\Time\Timer.cpp" />
     <ClCompile Include="Core\Transform\Transform.cpp" />
-    <ClCompile Include="External\DirectXTex\BC.cpp" />
-    <ClCompile Include="External\DirectXTex\BC4BC5.cpp" />
-    <ClCompile Include="External\DirectXTex\BC6HBC7.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexCompress.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexConvert.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexD3D11.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexDDS.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexFlipRotate.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexImage.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexMipmaps.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexMisc.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexNormalMaps.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexPMAlpha.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexResize.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexTGA.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexUtil.cpp" />
-    <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp" />
-    <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp" />
     <ClCompile Include="GPGPU\ComputeShader.cpp" />
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp" />
@@ -488,9 +437,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">USE_COMPUTE_SHADER</PreprocessorDefinitions>
     </FxCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="External\DirectXTex\DirectXTex.inl" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D2F8E424-3F82-4761-840D-187B4405A969}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -500,7 +446,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -516,7 +462,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ExternalLib.props" />
+    <Import Project="Fbx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -524,9 +470,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;External;./;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -538,14 +485,31 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4717</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory</Command>
+      <Message>ShaderParser</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>HeaderOrganizer</Message>
+    </PostBuildEvent>
+    <FxCompile>
+      <EntryPointName />
+    </FxCompile>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

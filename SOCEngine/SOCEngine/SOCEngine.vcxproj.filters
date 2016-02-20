@@ -187,12 +187,6 @@
     <Filter Include="UI\Text">
       <UniqueIdentifier>{e3ad2669-43d4-46f8-9026-f168354a386a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External">
-      <UniqueIdentifier>{af4f435f-c3aa-4022-8fbf-935ca4c43953}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\rapidJson">
-      <UniqueIdentifier>{9ebbd374-d17d-4bdd-9bc4-bd52ca114e24}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ResourceManager">
       <UniqueIdentifier>{17e22084-e070-4576-bfe4-0ee1f8859e32}</UniqueIdentifier>
     </Filter>
@@ -259,9 +253,6 @@
     <Filter Include="Rendering\PostProcessing\BackBufferMaker">
       <UniqueIdentifier>{6dc42fd7-ce2d-4f11-8bb2-7ba4c8f7b85b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DirectXTK">
-      <UniqueIdentifier>{197c00a3-ca0a-4d6e-879e-19980317d55a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Texture\Manager">
       <UniqueIdentifier>{3439f999-db4a-4c0d-860a-6e71210e8d2b}</UniqueIdentifier>
     </Filter>
@@ -270,9 +261,6 @@
     </Filter>
     <Filter Include="ShaderCodes\Mesh\GBuffer">
       <UniqueIdentifier>{88135b69-cc45-4b5e-bf31-e2b4d4387614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\DirectXTex">
-      <UniqueIdentifier>{7fa04a61-926a-4673-be20-b2b6f499f069}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Shadow">
       <UniqueIdentifier>{a083a166-2c43-42f8-bbe5-9916c27883c3}</UniqueIdentifier>
@@ -591,78 +579,6 @@
     <ClInclude Include="UI\SimpleText2D.h">
       <Filter>UI\Text</Filter>
     </ClInclude>
-    <ClInclude Include="External\rapidjson\allocators.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\document.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\dtoa.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\error\en.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\encodedstream.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\encodings.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\error\error.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\filereadstream.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\filestream.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\filewritestream.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\msinttypes\inttypes.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\itoa.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\memorybuffer.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\memorystream.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\meta.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\pow10.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\prettywriter.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\rapidjson.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\reader.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\stack.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\msinttypes\stdint.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\internal\strfunc.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\stringbuffer.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
-    <ClInclude Include="External\rapidjson\writer.h">
-      <Filter>External\rapidJson</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceManager\ResourceManager.h">
       <Filter>ResourceManager</Filter>
     </ClInclude>
@@ -738,38 +654,11 @@
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h">
       <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
     </ClInclude>
-    <ClInclude Include="External\DirectXTK\WICTextureLoader.h">
-      <Filter>External\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTK\DirectXHelpers.h">
-      <Filter>External\DirectXTK</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTK\PlatformHelpers.h">
-      <Filter>External\DirectXTK</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\G3djDataTypes.h">
       <Filter>Importer</Filter>
     </ClInclude>
     <ClInclude Include="Intersection\BoundBox.h">
       <Filter>Intersection</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\DDS.h">
-      <Filter>External\DirectXTex</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\DirectXTex.h">
-      <Filter>External\DirectXTex</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\DirectXTexP.h">
-      <Filter>External\DirectXTex</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\Filters.h">
-      <Filter>External\DirectXTex</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\scoped.h">
-      <Filter>External\DirectXTex</Filter>
-    </ClInclude>
-    <ClInclude Include="External\DirectXTex\BC.h">
-      <Filter>External\DirectXTex</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
       <Filter>Rendering\Shadow</Filter>
@@ -1098,62 +987,8 @@
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp">
       <Filter>Rendering\PostProcessing\BackBufferMaker</Filter>
     </ClCompile>
-    <ClCompile Include="External\DirectXTK\WICTextureLoader.cpp">
-      <Filter>External\DirectXTK</Filter>
-    </ClCompile>
     <ClCompile Include="Intersection\BoundBox.cpp">
       <Filter>Intersection</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexCompress.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexConvert.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexD3D11.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexDDS.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexFlipRotate.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexImage.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexMipmaps.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexMisc.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexNormalMaps.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexPMAlpha.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexResize.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexTGA.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexUtil.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\DirectXTexWIC.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\BC.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\BC4BC5.cpp">
-      <Filter>External\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="External\DirectXTex\BC6HBC7.cpp">
-      <Filter>External\DirectXTex</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
       <Filter>Rendering\Shadow</Filter>
@@ -1310,10 +1145,5 @@
     <FxCompile Include="ShaderCodes\Voxelization_TN_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="External\DirectXTex\DirectXTex.inl">
-      <Filter>External\DirectXTex</Filter>
-    </None>
   </ItemGroup>
 </Project>
