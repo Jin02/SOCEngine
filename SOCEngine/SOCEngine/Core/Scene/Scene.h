@@ -16,6 +16,8 @@
 #include "ShadowRenderer.h"
 #include "GlobalIllumination.h"
 
+#include "BasicGeometryGenerator.h"
+
 namespace Core
 {
 	class Scene
