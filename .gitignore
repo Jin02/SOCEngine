@@ -11,3 +11,6 @@ SOCTestProject/SOCTestProject/Debug/
 EngineShaderFactory.hpp
 ShaderFactory.hpp
 *.metadata
+
+ExternalLib/ExternalLib/Debug/
+ExternalLib/Output/
