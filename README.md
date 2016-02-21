@@ -13,3 +13,4 @@ Rendering: TBDR, MSAA(only 4x in deferred), Microfacet BRDF, Dynamic Lighting, T
 ![ShadowTest](http://i.imgur.com/3NYNdy0.png)
 ![Voxelization](http://i.imgur.com/NJX7Yoj.png)
 ![VCT](http://i.imgur.com/T480Sy1.png)
+![VCT2](http://i.imgur.com/D10RQMR.png)
