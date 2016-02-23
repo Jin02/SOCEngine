@@ -50,7 +50,8 @@ namespace Rendering
 				const Device::DirectX* dx,
 				const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager,
 				const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
-				std::function<const Texture::RenderTexture*(MeshCamera*)> giPass);
+				std::function<const Texture::RenderTexture*(MeshCamera*)> giPass,
+				std::function<void(const MeshCamera*)> skyPass);
 
 		public:
 			static void RenderMeshWithoutIASetVB(
