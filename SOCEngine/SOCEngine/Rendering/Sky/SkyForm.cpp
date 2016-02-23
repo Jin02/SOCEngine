@@ -65,7 +65,7 @@ void SkyForm::_Render(const Device::DirectX* dx,
 		ID3D11SamplerState* linearSampler = dx->GetSamplerStateLinear();
 		context->PSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &linearSampler);
 	
-		context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0);
+		context->OMSetDepthStencilState(dx->GetDepthStateGreaterEqualAndDisableDepthWrite(), 0);
 
 		ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = opaqueDepthBuffer->GetDepthStencilView();
