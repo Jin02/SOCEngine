@@ -25,6 +25,7 @@ namespace Rendering
 
 			bool								_prevShow;
 			bool								_show;
+			bool								_isManagedRenderQ;
 
 		public:
 			Mesh();
@@ -39,8 +40,8 @@ namespace Rendering
 				~CreateFuncArguments() {}
 			};
 
-			void Initialize(const CreateFuncArguments& args);
-			void Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer, Rendering::Material*& initMaterial);
+			void Initialize(const CreateFuncArguments& args, bool updateRenderQueue = true, bool allocTransformCB = true);
+			void Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, Rendering::Buffer::IndexBuffer*& indexBuffer, Rendering::Material*& initMaterial, bool updateRenderQueue = true, bool allocTransformCB = true);
 
 		private:
 			void ClassifyRenderMeshType();
@@ -63,6 +64,7 @@ namespace Rendering
 
 			GET_SET_ACCESSOR(MaterialUpdateType,	MaterialUpdateType,				_updateType);
 			GET_SET_ACCESSOR(SelectMaterialIndex,	unsigned int,					_selectMaterialIndex);
+			GET_SET_ACCESSOR(IsManagedRenderQueue,	bool,							_isManagedRenderQ);
 
 		public:
 			virtual Core::Component* Clone() const;

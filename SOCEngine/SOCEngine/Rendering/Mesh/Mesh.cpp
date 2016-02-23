@@ -8,7 +8,8 @@ using namespace Rendering::Buffer;
 
 Mesh::Mesh() : 
 	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown), _show(true), _prevShow(false)
+	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown),
+	_show(true), _prevShow(false), _isManagedRenderQ(false)
 {
 	_updateType = MaterialUpdateType::All;
 }
@@ -18,26 +19,32 @@ Mesh::~Mesh()
 	OnDestroy();
 }
 
-void Mesh::Initialize(const CreateFuncArguments& args)
+void Mesh::Initialize(const CreateFuncArguments& args, bool updateRenderQueue, bool allocTransformCB)
 {
 	_filter = new MeshFilter;
-	if(_filter->Initialize(args) == false)
+	if (_filter->Initialize(args) == false)
 		ASSERT_MSG("Error, filter->cratebuffer");
 
 	_renderer = new MeshRenderer;
-	if(_renderer->AddMaterial(args.material) == false)
+	if (_renderer->AddMaterial(args.material) == false)
 		ASSERT_MSG("Error, renderer addmaterial");
 
-	_transformConstBuffer = new Buffer::ConstBuffer;
-	if(_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
-		ASSERT_MSG("Error, transformBuffer->Initialize");
+	if (allocTransformCB)
+	{
+		_transformConstBuffer = new Buffer::ConstBuffer;
+		if (_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
+			ASSERT_MSG("Error, transformBuffer->Initialize");
+	}
+	
+	if (updateRenderQueue)
+		ClassifyRenderMeshType();
 
-	ClassifyRenderMeshType();
+	_isManagedRenderQ = updateRenderQueue;
 }
 
 void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, 
 					  Rendering::Buffer::IndexBuffer*& indexBuffer,
-					  Rendering::Material*& initMaterial)
+					  Rendering::Material*& initMaterial, bool updateRenderQueue, bool allocTransformCB)
 {
 	_filter = new MeshFilter;
 	if(_filter->Initialize(vertexBuffer, indexBuffer) == false)
@@ -47,11 +54,17 @@ void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer,
 	if(_renderer->AddMaterial(initMaterial) == false)
 		ASSERT_MSG("Error, cant add material in MeshRenderer");
 
-	_transformConstBuffer = new Buffer::ConstBuffer;
-	if(_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
-		ASSERT_MSG("Error, transformBuffer->Initialize");
+	if (allocTransformCB)
+	{
+		_transformConstBuffer = new Buffer::ConstBuffer;
+		if (_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
+			ASSERT_MSG("Error, transformBuffer->Initialize");
+	}
 
-	ClassifyRenderMeshType();
+	if (updateRenderQueue)
+		ClassifyRenderMeshType();
+
+	_isManagedRenderQ = updateRenderQueue;
 }
 
 void Mesh::OnInitialize()
@@ -77,6 +90,9 @@ void Mesh::OnDestroy()
 
 void Mesh::ClassifyRenderMeshType()
 {
+	if (_isManagedRenderQ == false)
+		return;
+
 	Manager::RenderManager* renderMgr = Device::Director::SharedInstance()->GetCurrentScene()->GetRenderManager();
 
 	renderMgr->UpdateRenderList(this, _prevShow);
@@ -94,6 +110,8 @@ Core::Component* Mesh::Clone() const
 {
 	Mesh* newMesh = new Mesh;
 	{
+		(*newMesh) = (*this);
+
 		newMesh->_filter = new MeshFilter(*_filter);
 		newMesh->_renderer = new MeshRenderer(*_renderer);
 		newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
