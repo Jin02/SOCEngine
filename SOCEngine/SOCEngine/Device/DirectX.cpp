@@ -18,7 +18,7 @@ DirectX::DirectX(void) :
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
 	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
 	_rasterizerClockwiseDisableCullingWithClip(nullptr),
-	_depthLessEqual(nullptr), _coneTracingSamplerState(nullptr)
+	_depthLessEqual(nullptr), _coneTracingSamplerState(nullptr), _depthGreaterEqualAndDisableDepthWrite(nullptr)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -299,9 +299,13 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 
 		desc.DepthEnable		= true;
 		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO;
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER; //inverted
+		desc.DepthFunc			= D3D11_COMPARISON_GREATER;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreaterAndDisableDepthWrite)) )
 			ASSERT_MSG("Error!, device cant create _depthGreaterAndDisableDepthWrite");
+
+		desc.DepthFunc			= D3D11_COMPARISON_GREATER_EQUAL;
+		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthGreaterEqualAndDisableDepthWrite)) )
+			ASSERT_MSG("Error!, device cant create _depthGreaterEqualAndDisableDepthWrite");
 
 		desc.DepthFunc			= D3D11_COMPARISON_EQUAL;
 		if( FAILED(_device->CreateDepthStencilState( &desc, &_depthEqualAndDisableDepthWrite)) )
@@ -506,4 +510,5 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
 	SAFE_RELEASE(_coneTracingSamplerState);
+	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
 }
