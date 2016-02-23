@@ -8,6 +8,7 @@
 #include <ResourceManager.h>
 
 #include <PhysicallyBasedMaterial.h>
+#include <SkyBox.h>
 
 using namespace Rendering;
 using namespace Core;
@@ -16,6 +17,7 @@ using namespace Rendering::Geometry;
 using namespace Rendering::Light;
 using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
+using namespace Rendering::Sky;
 using namespace Resource;
 using namespace Device;
 using namespace Math;
@@ -33,6 +35,9 @@ TestScene::~TestScene(void)
 void TestScene::OnInitialize()
 {
 //	ActivateGI(true, 256, 40.0f);
+
+	// SkyBox
+	// ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
@@ -54,8 +59,8 @@ void TestScene::OnInitialize()
 //	_testObject = gen.CreatePlane(0.5f, 0.5f, 4, 4, flag);
 //	_testObject = gen.CreateCylinder(0.5f, 0.5f, 0.5f, 30, 30, flag);
 //	_testObject = gen.CreateBox(Vector3(0.5f, 0.5f, 0.5f), flag);
-	_testObject = gen.CreateSphere(1.0f, 30, 30, flag);
-//	_testObject = importer->Load("./Resources/Sphere/sphere.obj", false);
+//	_testObject = gen.CreateSphere(1.0f, 30, 30, flag);
+	_testObject = importer->Load("./Resources/Sphere/sphere.obj", false);
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0.3f, 11.0f));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));
 	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
@@ -181,7 +186,7 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	Transform* control = _testObject->GetTransform();//_testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
+	Transform* control = _camera->GetTransform();//_testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
 	const float scale = 0.1f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
