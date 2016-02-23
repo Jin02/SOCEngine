@@ -10,7 +10,7 @@ using namespace Rendering::Shader;
 PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 {
 	mainColor.r = mainColor.g = mainColor.b = 1.0f;
-	alpha_metallic_roughness_emission = 0;
+	alpha_metallic_roughness_flag = 0;
 
 	uvTiling0.x = uvTiling0.y = uvTiling1.x = uvTiling1.y = 1.0f;
 	uvOffset0.x = uvOffset0.y = uvOffset1.x = uvOffset1.y = 0.0f;
@@ -53,19 +53,21 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		GBufferParam param;
 		GetMainColor(param.mainColor);
 
-		float metallic = 0.0f, roughness = 0.0f, emission = 0.0f;
+		float	metallic = 0.0f, roughness = 0.0f;
+		uint	flag = 0;
+
 		GetMetallic(metallic);
 		GetRoughness(roughness);
-		GetEmission(emission);		
+		GetFlag(flag);
 
 		uint scaledMetallic		= (uint)(metallic	* 255);
 		uint scaledRoughness	= (uint)(roughness	* 255);
-		uint scaledEmission		= (uint)(emission	* 255);
 		uint scaledAlpha		= (uint)(_alpha		* 255);
 
-		param.alpha_metallic_roughness_emission =
-			(scaledAlpha << 24 )	| (scaledMetallic << 16 ) | 
-			(scaledRoughness << 8 )	| (scaledEmission);
+		param.alpha_metallic_roughness_flag =	(scaledAlpha << 24 )	| 
+												(scaledMetallic << 16 ) |
+												(scaledRoughness << 8)	|
+												(flag);
 
 		GetUVTiling0(param.uvTiling0);
 		GetUVOffset0(param.uvOffset0);

@@ -24,7 +24,7 @@ namespace Rendering
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
-			Texture::RenderTexture*						_albedo_emission;
+			Texture::RenderTexture*						_albedo_sunOcclusion;
 			Texture::RenderTexture*						_normal_roughness;
 			Texture::RenderTexture*						_specular_metallic;
 
@@ -77,18 +77,18 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(TBRParamConstBuffer,		const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
+			GET_ACCESSOR(TBRParamConstBuffer,			const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
 
-			GET_ACCESSOR(GBufferAlbedoEmission,		const Texture::RenderTexture*,		_albedo_emission);
-			GET_ACCESSOR(GBufferNormalRoughness,	const Texture::RenderTexture*,		_normal_roughness);
-			GET_ACCESSOR(GBufferSpecularMetallic,	const Texture::RenderTexture*,		_specular_metallic);
+			GET_ACCESSOR(GBufferAlbedoSunOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
+			GET_ACCESSOR(GBufferNormalRoughness,		const Texture::RenderTexture*,		_normal_roughness);
+			GET_ACCESSOR(GBufferSpecularMetallic,		const Texture::RenderTexture*,		_specular_metallic);
 
-			GET_ACCESSOR(OpaqueDepthBuffer,			const Texture::DepthBuffer*,		_opaqueDepthBuffer);
-			GET_ACCESSOR(BlendedDepthBuffer,		const Texture::DepthBuffer*,		_blendedDepthBuffer);
+			GET_ACCESSOR(OpaqueDepthBuffer,				const Texture::DepthBuffer*,		_opaqueDepthBuffer);
+			GET_ACCESSOR(BlendedDepthBuffer,			const Texture::DepthBuffer*,		_blendedDepthBuffer);
 
-			GET_ACCESSOR(OffScreen,					const Texture::RenderTexture*,		_renderTarget);
-			GET_ACCESSOR(UncompressedOffScreen,		const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
-			GET_ACCESSOR(UseIndirectColorMap,		bool,								_offScreen->GetUseIndirectColorMap());
+			GET_ACCESSOR(OffScreen,						const Texture::RenderTexture*,		_renderTarget);
+			GET_ACCESSOR(UncompressedOffScreen,			const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
+			GET_ACCESSOR(UseIndirectColorMap,			bool,								_offScreen->GetUseIndirectColorMap());
 		};
 	}
 

@@ -26,7 +26,7 @@ cbuffer CameraMat : register( b2 )
 cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 {
 	float3	material_mainColor;
-	uint	material_alpha_metallic_roughness_emission;
+	uint	material_alpha_metallic_roughness_flag;
 
 	float4	material_emissionColor;
 
@@ -41,22 +41,24 @@ Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
 Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
-void Parse_Metallic_Roughness_Emission(out float metallic,
-									   out float roughness,
-									   out float emission)
+void Parse_Metallic_Roughness( out float metallic,
+							   out float roughness)
 {
-	uint scaledMetallic		= (material_alpha_metallic_roughness_emission & 0x00ff0000) >> 16;
-	uint scaledRoughness	= (material_alpha_metallic_roughness_emission & 0x0000ff00) >> 8;
-	uint scaledEmission		= (material_alpha_metallic_roughness_emission & 0x000000ff) >> 0;
+	uint scaledMetallic		= (material_alpha_metallic_roughness_flag & 0x00ff0000) >> 16;
+	uint scaledRoughness	= (material_alpha_metallic_roughness_flag & 0x0000ff00) >> 8;
 
 	metallic	= (float)scaledMetallic		/ 255.0f;
 	roughness	= (float)scaledRoughness	/ 255.0f;
-	emission	= (float)scaledEmission		/ 255.0f;
 }
 
 float ParseMaterialAlpha()
 {
-	return ( (float)((material_alpha_metallic_roughness_emission & 0xff000000) >> 24) / 255.0f );
+	return ( (float)((material_alpha_metallic_roughness_flag & 0xff000000) >> 24) / 255.0f );
+}
+
+uint ParseMaterialFlag()
+{
+	return material_alpha_metallic_roughness_flag & 0x000000ff;
 }
 
 bool HasDiffuseTexture()

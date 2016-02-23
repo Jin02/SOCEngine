@@ -22,8 +22,8 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float4 diffuseTex	= diffuseTexture.Sample(defaultSampler, uv);
 	float4 specularTex	= specularTexture.Sample(defaultSampler, uv);
 
-	float metallic, emission, roughness;
-	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
+	float metallic, roughness;
+	Parse_Metallic_Roughness(metallic, roughness);
 
 #if defined(USE_PBR_TEXTURE)
 	metallic = specularTex.a;

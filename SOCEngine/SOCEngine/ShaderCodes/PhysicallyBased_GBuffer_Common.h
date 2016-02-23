@@ -8,7 +8,7 @@
 
 struct GBuffer
 {
-	float4 albedo_emission			: SV_Target0;
+	float4 albedo_sunOcclusion		: SV_Target0;
 	float4 specular_metallic		: SV_Target1;
 	float4 normal_roughness 		: SV_Target2;
 };
@@ -18,10 +18,10 @@ SamplerState GBufferDefaultSampler 	: register( s0 );
 
 #if defined(USE_PBR_TEXTURE)
 void MakeGBuffer(float4 diffuseTex, float4 normalWithRoughness, float4 specularTex,
-				 out float4 albedo_emission, out float4 specular_metallic, float4 normal_roughness)
+				 out float4 albedo_sunOcclusion, out float4 specular_metallic, float4 normal_roughness)
 #else
 void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
-				 out float4 albedo_emission, out float4 specular_metallic, out float4 normal_roughness)
+				 out float4 albedo_sunOcclusion, out float4 specular_metallic, out float4 normal_roughness)
 #endif
 {
 #if defined(USE_PBR_TEXTURE)
@@ -31,13 +31,13 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	bool hasDiffuseMap		= HasDiffuseTexture();
 	bool hasSpecularMap		= HasSpecularTexture();
 	
-	float metallic, roughness, emission;
-	Parse_Metallic_Roughness_Emission(metallic, roughness, emission);
+	float metallic, roughness;
+	Parse_Metallic_Roughness(metallic, roughness);
 
 	float3 emissionColor	= material_emissionColor.rgb;
 	float3 mainColor		= abs(material_mainColor);
 	float3 albedo			= diffuseTex.rgb * mainColor + emissionColor;
-	albedo_emission.rgb		= lerp(mainColor + emissionColor, albedo, hasDiffuseMap);
+	albedo_sunOcclusion.rgb	= lerp(mainColor + emissionColor, albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
 	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
@@ -46,11 +46,11 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	normal_roughness.rgb	= compressedNormal;
 
 #if defined(USE_PBR_TEXTURE)
-	albedo_emission.a		= diffuseTex.a;
+	albedo_sunOcclusion.a	= diffuseTex.a;
 	specular_metallic.a 	= specularTex.a;
 	normal_roughness.a		= normalWithRoughness.a;
 #else
-	albedo_emission.a		= emission;
+	albedo_sunOcclusion.a	= 0.0f;
 	specular_metallic.a 	= metallic;
 	normal_roughness.a		= roughness;
 #endif

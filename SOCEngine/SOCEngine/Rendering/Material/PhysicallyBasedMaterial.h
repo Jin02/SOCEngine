@@ -11,7 +11,7 @@ namespace Rendering
 		{
 			struct MainColor { float r, g, b; };
 			MainColor		mainColor;
-			uint			alpha_metallic_roughness_emission;
+			uint			alpha_metallic_roughness_flag;
 
 			Color			emissionColor;;
 
@@ -52,7 +52,7 @@ namespace Rendering
 		GET_SET_ACCESSOR_MATERIAL(EmissionColor,Color);
 		GET_SET_ACCESSOR_MATERIAL(Metallic,		float);
 		GET_SET_ACCESSOR_MATERIAL(Roughness,	float);
-		GET_SET_ACCESSOR_MATERIAL(Emission,		float);
+		GET_SET_ACCESSOR_MATERIAL(Flag,			uint);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling0,	Math::Vector2);
 		GET_SET_ACCESSOR_MATERIAL(UVOffset0,	Math::Vector2);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling1,	Math::Vector2);

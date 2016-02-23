@@ -12,7 +12,7 @@ struct Surface
 	float	depth;
 
 	float3	albedo;
-	float	emission;
+	float	sunOcclusion;
 
 	float3	normal;
 	float	roughness;
@@ -48,13 +48,13 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.worldPos	= worldPosition.xyz;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( globalIdx, sampleIdx );
+	float4 albedo_sunOcclusion = g_tGBufferAlbedo_sunOcclusion.Load( globalIdx, sampleIdx );
 #else
-	float4 albedo_emission = g_tGBufferAlbedo_emission.Load( uint3(globalIdx, 0) );
+	float4 albedo_sunOcclusion = g_tGBufferAlbedo_sunOcclusion.Load( uint3(globalIdx, 0) );
 #endif
 
-	outSurface.albedo	= albedo_emission.rgb;
-	outSurface.emission	= albedo_emission.a;
+	outSurface.albedo		= albedo_sunOcclusion.rgb;
+	outSurface.sunOcclusion = albedo_sunOcclusion.a;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( globalIdx, sampleIdx );

@@ -12,7 +12,7 @@ namespace Rendering
 		public:
 			struct GBuffers
 			{
-				const Texture::RenderTexture* albedo_emission;
+				const Texture::RenderTexture* albedo_sunOcclusion;
 				const Texture::RenderTexture* specular_metallic;
 				const Texture::RenderTexture* normal_roughness;
 			};

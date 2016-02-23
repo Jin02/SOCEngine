@@ -18,7 +18,7 @@ using namespace Rendering::TBDR;
 using namespace Rendering;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
-	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
+	_blendedDepthBuffer(nullptr), _albedo_sunOcclusion(nullptr),
 	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
@@ -36,10 +36,10 @@ void MeshCamera::OnInitialize()
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
-	_albedo_emission = new Texture::RenderTexture;
+	_albedo_sunOcclusion = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create albedo_emission render texture" 
+		_albedo_sunOcclusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create albedo_sunOcclusion render texture" 
 		);
 
 	_specular_metallic = new Texture::RenderTexture;
@@ -63,7 +63,7 @@ void MeshCamera::OnInitialize()
 	{
 		ShadingWithLightCulling::GBuffers gbuffer;
 		{
-			gbuffer.albedo_emission		= _albedo_emission;
+			gbuffer.albedo_sunOcclusion	= _albedo_sunOcclusion;
 			gbuffer.normal_roughness	= _normal_roughness;
 			gbuffer.specular_metallic	= _specular_metallic;
 		}
@@ -82,7 +82,7 @@ void MeshCamera::OnDestroy()
 {
 	SAFE_DELETE(_tbrParamConstBuffer);
 
-	SAFE_DELETE(_albedo_emission);
+	SAFE_DELETE(_albedo_sunOcclusion);
 	SAFE_DELETE(_specular_metallic);
 	SAFE_DELETE(_normal_roughness);
 
@@ -369,7 +369,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
-		_albedo_emission->Clear(context, allZeroColor);
+		_albedo_sunOcclusion->Clear(context, allZeroColor);
 		_specular_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
 	}
@@ -420,7 +420,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	//GBuffer
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
-			_albedo_emission->GetRenderTargetView(),
+			_albedo_sunOcclusion->GetRenderTargetView(),
 			_specular_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
 			nullptr
