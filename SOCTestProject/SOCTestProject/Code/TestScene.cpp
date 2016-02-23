@@ -37,7 +37,7 @@ void TestScene::OnInitialize()
 //	ActivateGI(true, 256, 40.0f);
 
 	// SkyBox
-	// ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
+	ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
