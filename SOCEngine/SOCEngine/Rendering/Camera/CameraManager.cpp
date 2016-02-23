@@ -59,18 +59,24 @@ void CameraManager::SetMainCamera(Camera::CameraForm* cam)
 	// Swap Vector Element
 	{
 		if(vecSwapIdx != -1)
-			std::swap(_vector.begin(), _vector.begin() + vecSwapIdx);
+			std::iter_swap(_vector.begin(), _vector.begin() + vecSwapIdx);
 		else
 		{
 			Add(cam);
-			std::swap(_vector.begin(), _vector.end() - 1);
+			std::iter_swap(_vector.begin(), _vector.end() - 1);
 		}
 	}
 
 	// Swap Map Element
 	{
 		uint mainCamKey		= reinterpret_cast<address>(GetMainCamera());
-		std::swap(_map.find(mainCamKey), _map.find(key));
+
+		auto mainCamIter	= _map.find(mainCamKey);
+		auto swapCamIter	= _map.find(key);
+
+		uint t = mainCamIter->second;
+		mainCamIter->second = swapCamIter->second;
+		swapCamIter->second = t;
 	}
 }
 
