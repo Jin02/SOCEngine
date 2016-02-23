@@ -158,7 +158,7 @@ void Scene::Render()
 
 	auto SkyPass = [&](const MeshCamera* meshCam)
 	{
-		const RenderTexture* renderTarget = meshCam->GetRenderTarget();
+		const RenderTexture* renderTarget = meshCam->GetGBufferEmission();
 		const DepthBuffer* opaqueDepthBuffer = meshCam->GetOpaqueDepthBuffer();
 
 		_sky->Render(_dx, meshCam, renderTarget, opaqueDepthBuffer);
