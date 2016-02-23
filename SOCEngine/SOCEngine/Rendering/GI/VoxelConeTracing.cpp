@@ -105,7 +105,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 	};
 
 	CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelMap,				injectedColorMap->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Emission,			meshCam->GetGBufferAlbedoEmission()->GetShaderResourceView());
+	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_SunOcclusion,		meshCam->GetGBufferAlbedoEmission()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Specular_Metallic,		meshCam->GetGBufferSpecularMetallic()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,		meshCam->GetGBufferNormalRoughness()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,					meshCam->GetOpaqueDepthBuffer()->GetShaderResourceView());
@@ -133,7 +133,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
 
 		CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelMap,				nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Emission,			nullptr);
+		CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_SunOcclusion,		nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Specular_Metallic,		nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,		nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,					nullptr);
