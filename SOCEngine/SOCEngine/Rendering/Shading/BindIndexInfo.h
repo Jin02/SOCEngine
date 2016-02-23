@@ -71,6 +71,8 @@ namespace Rendering
 
 		Mipmap_InfoCB					= 0,
 		VCT_GlobalInfoCB				= 1,
+
+		SkyBoxWVP						= 0,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
