@@ -37,8 +37,8 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 
 	float3 emissionColor	= material_emissionColor.rgb;
 	float3 mainColor		= abs(material_mainColor);
-	float3 albedo			= diffuseTex.rgb * mainColor + emissionColor;
-	albedo_sunOcclusion.rgb	= lerp(mainColor + emissionColor, albedo, hasDiffuseMap);
+	float3 albedo			= diffuseTex.rgb * mainColor;
+	albedo_sunOcclusion.rgb	= lerp(mainColor, albedo, hasDiffuseMap);
 
 	float3 specular			= specularTex.rgb;
 	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
