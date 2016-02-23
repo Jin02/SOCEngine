@@ -27,13 +27,11 @@ namespace Rendering
 
 	private:
 		Buffer::ConstBuffer*	_gbufferCB;
-
-	private:
 		uint					_constBufferUpdateCounter;
 
 	public:
 		PhysicallyBasedMaterial(const std::string& name);
-		~PhysicallyBasedMaterial(void);
+		virtual ~PhysicallyBasedMaterial(void);
 
 	public:
 		virtual void Initialize();
