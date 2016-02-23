@@ -97,7 +97,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
 		uint idx = (uint)ConstBufferBindIndex::PhysicallyBasedMaterial;
-		SetConstBufferUseShaderSlotIndex(idx, _gbufferCB, ShaderForm::Usage(false, false, false, true));
+		SetConstBufferUseBindIndex(idx, _gbufferCB, ShaderForm::Usage(false, false, false, true));
 	}
 }
 
@@ -117,23 +117,23 @@ void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
 
 void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::DiffuseTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::DiffuseTex, tex, ShaderForm::Usage(false, false, false, true));
 	_hasAlpha = tex->GetHasAlpha();
 }
 
 void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::NormalTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::NormalTex, tex, ShaderForm::Usage(false, false, false, true));
 }
 
 void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::SpecularTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::SpecularTex, tex, ShaderForm::Usage(false, false, false, true));
 }
 
 void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::OpacityTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::OpacityTex, tex, ShaderForm::Usage(false, false, false, true));
 
 	_hasAlpha = tex != nullptr;
 }
