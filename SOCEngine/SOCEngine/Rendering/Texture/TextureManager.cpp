@@ -76,20 +76,6 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 		ID3D11Texture2D* texture2d = nullptr;
 		resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2d);
 
-		D3D11_TEXTURE2D_DESC texture2dDesc;
-		texture2d->GetDesc(&texture2dDesc);
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		{
-			srvDesc.Format = texture2dDesc.Format;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Texture2D.MostDetailedMip = 0;
-			srvDesc.Texture2D.MipLevels = texture2dDesc.MipLevels;
-		}
-
-		device->CreateShaderResourceView(texture2d, &srvDesc, &srv);
-		SAFE_RELEASE(resource);
-
 		Texture::Texture2D* tex = new Texture::Texture2D(srv, texture2d, hasAlpha);
 		_hash.insert(std::make_pair(name + format, tex));
 
