@@ -3,6 +3,8 @@
 
 #include "EngineShaderFactory.hpp"
 
+#include "SkyBox.h"
+
 using namespace Core;
 using namespace std;
 using namespace Structure;
@@ -17,11 +19,13 @@ using namespace Rendering::Camera;
 using namespace Rendering::Texture;
 using namespace Rendering::Shadow;
 using namespace Rendering::GI;
+using namespace Rendering::Sky;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
 	_renderMgr(nullptr), _backBufferMaker(nullptr),
-	_shadowRenderer(nullptr), _globalIllumination(nullptr)
+	_shadowRenderer(nullptr), _globalIllumination(nullptr),
+	_sky(nullptr), _ableDeallocSky(false)
 {
 	_state = State::Init;
 }
@@ -152,14 +156,27 @@ void Scene::Render()
 		return indirectColorMap;
 	};
 
+	auto SkyPass = [&](const MeshCamera* meshCam)
+	{
+		const RenderTexture* renderTarget = meshCam->GetRenderTarget();
+		const DepthBuffer* opaqueDepthBuffer = meshCam->GetOpaqueDepthBuffer();
+
+		_sky->Render(_dx, meshCam, renderTarget, opaqueDepthBuffer);
+	};
+	auto skyPassNull = std::function<void(const MeshCamera*)>(nullptr);
+	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
+
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
-			// const Buffer::ConstBuffer* 코드 길어져서 걍 auto로 대체
 			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM(), GIPass);
+			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
+			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
+							_shadowRenderer->GetNeverUseVSM(),
+							_globalIllumination ? GIPass : giPassNull,
+							_sky ? SkyPass : skyPassNull);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
@@ -263,4 +280,33 @@ void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 		_globalIllumination = new GlobalIllumination;
 		_globalIllumination->Initialize(_dx, dimension, giSize);
 	}
+}
+
+void Scene::ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	SkyBox* skyBox = new SkyBox;
+	skyBox->Initialize(materialName, cubeMapFilePath);
+
+	_sky = skyBox;
+	_ableDeallocSky = true;
+}
+
+void Scene::ActiveCustomSky(Sky::SkyForm* sky)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	_sky = sky;
+	_ableDeallocSky = false;
+}
+
+void Scene::DeactivateSky()
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	_sky = nullptr;
 }

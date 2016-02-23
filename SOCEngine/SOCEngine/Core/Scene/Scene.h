@@ -17,6 +17,7 @@
 #include "GlobalIllumination.h"
 
 #include "BasicGeometryGenerator.h"
+#include "SkyForm.h"
 
 namespace Core
 {
@@ -34,6 +35,9 @@ namespace Core
 		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
+
+		Rendering::Sky::SkyForm*							_sky;
+		bool												_ableDeallocSky;
 
 		State							_state;
 		Intersection::BoundBox			_boundBox;
@@ -72,6 +76,10 @@ namespace Core
 
 		void ActivateGI(bool activate, uint dimension, float giSize);
 
+		void ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath);
+		void ActiveCustomSky(Rendering::Sky::SkyForm* sky);
+		void DeactivateSky();
+
 	public:
 		void NextState();
 		void StopState();
@@ -84,5 +92,6 @@ namespace Core
 		GET_ACCESSOR(LightManager,		Rendering::Manager::LightManager*,		_lightManager);
 		GET_ACCESSOR(MaterialManager,	Rendering::Manager::MaterialManager*,	_materialMgr);
 		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
+		GET_ACCESSOR(Sky,				Rendering::Sky::SkyForm*,				_sky);
 	};
 }
