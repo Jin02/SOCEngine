@@ -26,7 +26,7 @@ void CameraForm::Initialize(const Math::Rect<float>& renderRect, uint mainRTSamp
 {
 	_fieldOfViewDegree	= 45.0f;
 	_clippingNear		= 0.1f;
-	_clippingFar		= 5000.0f;
+	_clippingFar		= 1000.0f;
 
 	const Size<unsigned int>& backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
