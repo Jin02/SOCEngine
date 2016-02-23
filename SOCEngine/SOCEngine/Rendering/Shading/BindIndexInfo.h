@@ -17,6 +17,7 @@ namespace Rendering
 		GBuffer_Specular_Metallic				= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
+		GBuffer_Emission						= 31,
 
 		DiffuseTex								= 8,
 		NormalTex								= 9,
@@ -56,6 +57,7 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
+//		GBuffer_Emission						= 31, 위에 있음
 	};
 
 	enum class ConstBufferBindIndex : unsigned int

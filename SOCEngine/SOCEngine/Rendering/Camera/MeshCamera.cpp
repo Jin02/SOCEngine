@@ -22,7 +22,7 @@ MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_specular_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission(nullptr)
 {
 }
 
@@ -54,6 +54,12 @@ void MeshCamera::OnInitialize()
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
+	_emission = new Texture::RenderTexture;
+	ASSERT_COND_MSG(
+		_emission->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _emission render texture"
+		);
+
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
 	_opaqueDepthBuffer->Initialize(backBufferSize, true);
 
@@ -66,6 +72,7 @@ void MeshCamera::OnInitialize()
 			gbuffer.albedo_sunOcclusion	= _albedo_sunOcclusion;
 			gbuffer.normal_roughness	= _normal_roughness;
 			gbuffer.specular_metallic	= _specular_metallic;
+			gbuffer.emission			= _emission;
 		}
 
 		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize);
@@ -85,6 +92,7 @@ void MeshCamera::OnDestroy()
 	SAFE_DELETE(_albedo_sunOcclusion);
 	SAFE_DELETE(_specular_metallic);
 	SAFE_DELETE(_normal_roughness);
+	SAFE_DELETE(_emission);
 
 	SAFE_DELETE(_deferredShadingWithLightCulling);
 	SAFE_DELETE(_opaqueDepthBuffer);
@@ -372,6 +380,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		_albedo_sunOcclusion->Clear(context, allZeroColor);
 		_specular_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
+		_emission->Clear(context, allZeroColor);
 	}
 
 	//inverted depth, so clear value is 0
@@ -423,6 +432,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			_albedo_sunOcclusion->GetRenderTargetView(),
 			_specular_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
+			_emission->GetRenderTargetView(),
 			nullptr
 		};
 
@@ -497,7 +507,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			}
 		}
 
-		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
+		ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr, nullptr };
 		ID3D11DepthStencilView* nullDSV = nullptr;
 		context->OMSetRenderTargets(NumOfRenderTargets, nullRTVs, nullDSV);
 		context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0);

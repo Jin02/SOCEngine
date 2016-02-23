@@ -15,6 +15,7 @@ namespace Rendering
 				const Texture::RenderTexture* albedo_sunOcclusion;
 				const Texture::RenderTexture* specular_metallic;
 				const Texture::RenderTexture* normal_roughness;
+				const Texture::RenderTexture* emission;
 			};
 
 		private:

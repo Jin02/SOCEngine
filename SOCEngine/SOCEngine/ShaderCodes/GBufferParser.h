@@ -19,6 +19,8 @@ struct Surface
 
 	float3	specular;
 	float	metallic;
+
+	float4	emission;
 };
 
 void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx)
@@ -64,6 +66,14 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 
 	outSurface.specular	= specular_metallic.rgb;
 	outSurface.metallic	= specular_metallic.a;
+
+#if (MSAA_SAMPLES_COUNT > 1) // MSAA
+	float4 emission = g_tGBufferEmission.Load(globalIdx, sampleIdx);
+#else
+	float4 emission = g_tGBufferEmission.Load(uint3(globalIdx, 0));
+#endif
+
+	outSurface.emission = emission;
 }
 
 #endif

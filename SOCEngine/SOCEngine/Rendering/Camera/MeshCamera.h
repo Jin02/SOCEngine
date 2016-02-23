@@ -16,7 +16,7 @@ namespace Rendering
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
-			static const uint NumOfRenderTargets = 3;
+			static const uint NumOfRenderTargets = 4;
 
 		private:
 			bool _useTransparent;
@@ -27,6 +27,7 @@ namespace Rendering
 			Texture::RenderTexture*						_albedo_sunOcclusion;
 			Texture::RenderTexture*						_normal_roughness;
 			Texture::RenderTexture*						_specular_metallic;
+			Texture::RenderTexture*						_emission;
 
 			TBDR::ShadingWithLightCulling*				_deferredShadingWithLightCulling;
 			Texture::DepthBuffer*						_opaqueDepthBuffer;
@@ -82,6 +83,7 @@ namespace Rendering
 			GET_ACCESSOR(GBufferAlbedoSunOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
 			GET_ACCESSOR(GBufferNormalRoughness,		const Texture::RenderTexture*,		_normal_roughness);
 			GET_ACCESSOR(GBufferSpecularMetallic,		const Texture::RenderTexture*,		_specular_metallic);
+			GET_ACCESSOR(GBufferEmission,				const Texture::RenderTexture*,		_emission);
 
 			GET_ACCESSOR(OpaqueDepthBuffer,				const Texture::DepthBuffer*,		_opaqueDepthBuffer);
 			GET_ACCESSOR(BlendedDepthBuffer,			const Texture::DepthBuffer*,		_blendedDepthBuffer);

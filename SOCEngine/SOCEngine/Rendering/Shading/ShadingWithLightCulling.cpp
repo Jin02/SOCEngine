@@ -76,6 +76,7 @@ void ShadingWithLightCulling::Initialize(
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Albedo_SunOcclusion),	geometryBuffers.albedo_sunOcclusion);
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Specular_Metallic),		geometryBuffers.specular_metallic);
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Normal_Roughness),		geometryBuffers.normal_roughness);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Emission),				geometryBuffers.emission);
 
 		// ShadowMap Atlas
 		{
