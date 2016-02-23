@@ -57,6 +57,37 @@ bool BufferManager::Find(const void** outBuffer, const std::string& file, const 
 	return buffer != nullptr;
 }
 
+bool BufferManager::Find(const VertexBuffer** outBuffer, const std::string& file, const std::string& key) const
+{
+	const VertexBuffer* const* buffer = _vertexBuffers.Find(file, key);
+
+	if (outBuffer && buffer != nullptr)
+		(*outBuffer) = (*buffer);
+
+	return buffer != nullptr;
+}
+
+bool BufferManager::Find(const IndexBuffer** outBuffer, const std::string& file, const std::string& key) const
+{
+	const IndexBuffer* const* buffer = _indexBuffers.Find(file, key);
+
+	if (outBuffer && buffer != nullptr)
+		(*outBuffer) = (*buffer);
+
+	return buffer != nullptr;
+}
+
+bool BufferManager::Find(const void** outBuffer, const std::string& file, const std::string& key) const
+{
+	const void* buffer = _originVertexBufferDatas.Find(file, key);
+
+	if (outBuffer && buffer != nullptr)
+		(*outBuffer) = buffer;
+
+	return buffer != nullptr;
+}
+
+
 void BufferManager::DeleteVertexBuffer(const std::string& file, const std::string& key)
 {
 	VertexBuffer** vb = _vertexBuffers.Find(file, key);

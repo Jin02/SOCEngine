@@ -30,6 +30,10 @@ namespace Rendering
 			bool Find(Buffer::IndexBuffer** outBuffer, const std::string& file, const std::string& key);
 			bool Find(const void** outBuffer, const std::string& file, const std::string& key);
 
+			bool Find(const Buffer::VertexBuffer** outBuffer, const std::string& file, const std::string& key) const;
+			bool Find(const Buffer::IndexBuffer** outBuffer, const std::string& file, const std::string& key) const;
+			bool Find(const void** outBuffer, const std::string& file, const std::string& key) const;
+
 			void DeleteVertexBuffer(const std::string& file, const std::string& key);
 			void DeleteIndexBuffer(const std::string& file, const std::string& key);
 			void DeleteOriginVBData(const std::string& file, const std::string& key);
