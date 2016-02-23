@@ -105,7 +105,9 @@
     <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h" />
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h" />
-    <ClInclude Include="Rendering\Sky\SkyDome.h" />
+    <ClInclude Include="Rendering\Sky\SkyForm.h" />
+    <ClInclude Include="Rendering\Sky\SkyBox.h" />
+    <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
@@ -239,6 +241,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -351,7 +354,9 @@
     <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyDome.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyForm.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyBox.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
@@ -492,14 +497,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory &amp; python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
       <Message>ShaderParser</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>HeaderOrganizer</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <FxCompile>
       <EntryPointName />
