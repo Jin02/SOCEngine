@@ -74,8 +74,9 @@ def MakeDirectoryPiramid(path):
 
 # Clear Output Header Folder
 if os.path.exists(outputPath):
-	shutil.rmtree(outputPath)
-	os.makedirs(outputPath)
+	shutil.rmtree(outputPath, ignore_errors=True)
+
+os.makedirs(outputPath)
 
 targetDir = os.path.normpath(searchStartDir)
 for (path, dirs, files) in os.walk(targetDir):
