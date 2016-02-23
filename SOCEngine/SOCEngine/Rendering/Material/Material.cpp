@@ -36,11 +36,11 @@ void Material::Initialize(){}
 void Material::Destroy(){}
 void Material::UpdateConstBuffer(const Device::DirectX* dx){}
 
-const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int bindIndex)
 {	
 	for(unsigned int i=0; i<_textures.size(); ++i)
 	{		
-		if(_textures[i].bindIndex == shaderSlotIndex)
+		if(_textures[i].bindIndex == bindIndex)
 		{
 			outArrayIndex = i;
 			return dynamic_cast<const Texture2D*>(_textures[i].texture);
@@ -51,10 +51,10 @@ const Texture2D* Material::FindTexture(unsigned int& outArrayIndex, unsigned int
 	return nullptr;
 }
 
-bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
+void Material::SetTextureUseBindIndex(unsigned int bindIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
-	auto hasTexture = FindTexture(arrayIdx, shaderSlotIndex);
+	auto hasTexture = FindTexture(arrayIdx, bindIndex);
 
 	if(hasTexture)
 	{
@@ -62,26 +62,22 @@ bool Material::SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const 
 	}
 	else
 	{
-		_textures.push_back(ShaderForm::InputTexture(shaderSlotIndex, texture, usage));
+		_textures.push_back(ShaderForm::InputTexture(bindIndex, texture, usage));
 	}
-
-	return hasTexture != nullptr;
 }
 
-bool Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
+void Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
 {
-	if(arrayIndex >= _textures.size())
-		return false;
+	ASSERT_COND_MSG(arrayIndex < _textures.size(), "Error, Invalid arrayIdx");
 
 	_textures[arrayIndex].texture = texture;
 	_textures[arrayIndex].SetUsage(usage);
-	return true;
 }
 
-bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
+void Material::SetConstBufferUseBindIndex(uint bindIndex, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
-	auto has = FindConstBuffer(arrayIdx, shaderSlotIdx);
+	auto has = FindConstBuffer(arrayIdx, bindIndex);
 
 	if(has)
 	{
@@ -89,27 +85,23 @@ bool Material::SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer
 	}
 	else
 	{
-		_constBuffers.push_back(ShaderForm::InputConstBuffer(shaderSlotIdx, cb, usage));
+		_constBuffers.push_back(ShaderForm::InputConstBuffer(bindIndex, cb, usage));
 	}
-
-	return has != nullptr;
 }
 
-bool Material::SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
+void Material::SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
 {
-	if(arrayIdx >= _constBuffers.size())
-		return false;
+	ASSERT_COND_MSG(arrayIdx < _constBuffers.size(), "Error, Invalid arrayIdx");
 
 	_constBuffers[arrayIdx].buffer = cb;
 	_constBuffers[arrayIdx].SetUsage(usage);
-	return true;
 }
 
-const Buffer::ConstBuffer* Material::FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+const Buffer::ConstBuffer* Material::FindConstBuffer(unsigned int& outArrayIndex, unsigned int bindIndex)
 {
 	for(unsigned int i=0; i<_constBuffers.size(); ++i)
 	{		
-		if(_constBuffers[i].bindIndex == shaderSlotIndex)
+		if(_constBuffers[i].bindIndex == bindIndex)
 		{
 			outArrayIndex = i;
 			return dynamic_cast<const Buffer::ConstBuffer*>(_constBuffers[i].buffer);
@@ -120,11 +112,11 @@ const Buffer::ConstBuffer* Material::FindConstBuffer(unsigned int& outArrayIndex
 	return nullptr;
 }
 
-const ShaderResourceBuffer* Material::FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex)
+const ShaderResourceBuffer* Material::FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int bindIndex)
 {
 	for(unsigned int i=0; i<_srBuffers.size(); ++i)
 	{		
-		if(_srBuffers[i].bindIndex == shaderSlotIndex)
+		if(_srBuffers[i].bindIndex == bindIndex)
 		{
 			outArrayIndex = i;
 			return dynamic_cast<const ShaderResourceBuffer*>(_srBuffers[i].srBuffer);
@@ -135,10 +127,10 @@ const ShaderResourceBuffer* Material::FindShaderResourceBuffer(unsigned int& out
 	return nullptr;
 }
 
-bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
+void Material::SetShaderResourceBufferUseBindIndex(unsigned int bindIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
 {
 	unsigned int arrayIdx = 0;
-	auto has = FindConstBuffer(arrayIdx, shaderSlotIndex);
+	auto has = FindConstBuffer(arrayIdx, bindIndex);
 
 	if(has)
 	{
@@ -146,19 +138,14 @@ bool Material::SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlot
 	}
 	else
 	{
-		_srBuffers.push_back(ShaderForm::InputShaderResourceBuffer(shaderSlotIndex, srBuffer, usage));
+		_srBuffers.push_back(ShaderForm::InputShaderResourceBuffer(bindIndex, srBuffer, usage));
 	}
-
-	return has != nullptr;
 }
 
-bool Material::SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
+void Material::SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
 {
-	if(arrayIndex >= _srBuffers.size())
-		return false;
+	ASSERT_COND_MSG(arrayIndex < _srBuffers.size(), "Error, Invalid arrayIdx");
 
 	_srBuffers[arrayIndex].srBuffer = srBuffer;
 	_srBuffers[arrayIndex].SetUsage(usage);
-
-	return true;
 }
