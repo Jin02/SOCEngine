@@ -12,6 +12,7 @@ struct VS_OUTPUT
 {
 	float4 position 	 	: SV_POSITION;
 	float2 uv				: TEXCOORD0;
+	float3 worldPos			: WORLD_POS;
 
 	float3 normal 			: NORMAL;
 	float3 tangent 			: TANGENT;
@@ -21,8 +22,8 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( float4(input.position, 1.0f),	transform_world );
-	ps.position 	= mul( ps.position,						cameraMat_viewProj );
+	ps.worldPos 	= mul( float4(input.position, 1.0f),	transform_world );
+	ps.position 	= mul( ps.worldPos,						cameraMat_viewProj );
 
 	ps.normal 		= normalize( mul(input.normal, (float3x3)transform_worldInvTranspose ) );
 	ps.tangent 		= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
@@ -52,9 +53,11 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 
 #if defined(USE_PBR_TEXTURE)
 	float roughness = normalMap.a;
-	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
+	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, input.worldPos,
+		outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
 #else
-	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
+	MakeGBuffer(diffuseTex, normal, specular, input.worldPos,
+	outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
 #endif
 
 	return outGBuffer;
