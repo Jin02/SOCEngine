@@ -158,13 +158,14 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 
 		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
 
-		tbrParam.viewportSize = Director::SharedInstance()->GetBackBufferSize().Cast<float>();
-		tbrParam.packedNumOfLights = lightManager->GetPackedLightCount();
+		Size<uint> viewportSize = Director::SharedInstance()->GetBackBufferSize();
+		tbrParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
+		tbrParam.packedNumOfLights		= lightManager->GetPackedLightCount();
+		tbrParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
 
-		tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
-
-		tbrParam.camWorldPosition 
-			= Math::Vector4(worldMat._41, worldMat._42, worldMat._43, worldMat._44);
+		tbrParam.camWorldPosition		= Math::Vector3(worldMat._41, worldMat._42, worldMat._43);
+		tbrParam.cameraNear				= _clippingNear;
+		tbrParam.cameraFar				= _clippingFar;
 	}
 
 	if( memcmp(&_prevParamData, &tbrParam, sizeof(LightCulling::TBRParam)) != 0 )

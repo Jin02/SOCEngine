@@ -91,12 +91,21 @@ cbuffer TBRParam : register( b0 )
 	matrix 	tbrParam_invProjMat;
 	matrix	tbrParam_invViewProjViewportMat;
 
-	float2	tbrParam_viewPortSize;
+	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
 	
-	float4	tbrParam_cameraWorldPosition;
+	float3	tbrParam_cameraWorldPosition;
+
+	float	tbrParam_cameraNear;
+	float	tbrParam_cameraFar;
 };
+
+float2 GetViewportSize()
+{
+	return float2(	tbrParam_packedViewportSize >> 16,
+					tbrParam_packedViewportSize & 0x0000ffff	);
+}
 
 // b1, b2, b3은 PhysicallyBased_Common에 있음
 

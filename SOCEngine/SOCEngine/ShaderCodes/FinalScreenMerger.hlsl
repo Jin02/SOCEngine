@@ -20,7 +20,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 {
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 #if (MSAA_SAMPLES_COUNT > 1)
-	int2 texCoord = int2((int)(input.uv.x * tbrParam_viewPortSize.x), (int)(input.uv.y * tbrParam_viewPortSize.y));
+	int2 texCoord = int2((int)(input.uv.x * GetViewportSize().x), (int)(input.uv.y * GetViewportSize().y));
 	float4 renderSceneColor = renderScene.Load(texCoord.xy, input.sampleIdx);
 #else
 	float4 renderSceneColor = renderScene.Sample(renderSceneSamplerState, input.uv);

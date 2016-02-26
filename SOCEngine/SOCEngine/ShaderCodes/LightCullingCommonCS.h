@@ -18,12 +18,12 @@ groupshared uint	s_lightIdx[LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE];
 
 uint GetNumTilesX()
 {
-	return (uint)((tbrParam_viewPortSize.x + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
+	return (uint)((GetViewportSize().x + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 }
 
 uint GetNumTilesY()
 {
-	return (uint)((tbrParam_viewPortSize.y + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
+	return (uint)((GetViewportSize().y + LIGHT_CULLING_TILE_RES - 1) / (float)LIGHT_CULLING_TILE_RES);
 }
 
 float4 CreatePlaneNormal( float4 b, float4 c )

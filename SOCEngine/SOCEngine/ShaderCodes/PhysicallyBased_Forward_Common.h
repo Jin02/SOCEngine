@@ -38,7 +38,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 
 	LightingParams lightParams;
 
-	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition.xyz - vtxWorldPos );
+	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition - vtxWorldPos );
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
 	lightParams.diffuseColor	= diffuseColor;

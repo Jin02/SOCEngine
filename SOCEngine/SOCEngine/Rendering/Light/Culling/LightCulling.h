@@ -25,11 +25,14 @@ namespace Rendering
 				Math::Matrix 		invProjMat;
 				Math::Matrix 		invViewProjViewport;
 
-				Math::Size<float>	viewportSize;
+				uint				packedViewportSize;
 				unsigned int 		packedNumOfLights;
 				unsigned int 		maxNumOfperLightInTile;
 
-				Math::Vector4		camWorldPosition;
+				Math::Vector3		camWorldPosition;
+
+				float				cameraNear;
+				float				cameraFar;
 
 				TBRParam(){}
 				~TBRParam(){}
