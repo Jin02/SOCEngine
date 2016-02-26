@@ -397,6 +397,9 @@
     <Filter Include="ShaderCodes\Sky">
       <UniqueIdentifier>{e9b307de-8291-41c2-a22a-183cf29d8761}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\Enviroment">
+      <UniqueIdentifier>{8ea1ed8e-5a25-4d0a-9afb-945278292a5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -802,6 +805,9 @@
     <ClInclude Include="Rendering\Sky\SkyForm.h">
       <Filter>Rendering\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\EnvCubeMapFilter.h">
+      <Filter>ShaderCodes\Enviroment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1168,6 +1174,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\SkyBox.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
