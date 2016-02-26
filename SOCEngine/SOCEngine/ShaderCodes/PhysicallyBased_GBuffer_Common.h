@@ -5,6 +5,7 @@
 
 #include "ShaderCommon.h"
 #include "PhysicallyBased_Common.h"
+#include "EnvCubeMapFilter.h"
 
 struct GBuffer
 {
@@ -18,10 +19,10 @@ SamplerState GBufferDefaultSampler 	: register( s0 );
 
 
 #if defined(USE_PBR_TEXTURE)
-void MakeGBuffer(float4 diffuseTex, float4 normalWithRoughness, float4 specularTex,
+void MakeGBuffer(float4 diffuseTex, float4 normalWithRoughness, float4 specularTex, float3 worldPos,
 				out float4 albedo_sunOcclusion, out float4 specular_metallic, out float4 normal_roughness, out float4 emission)
 #else
-void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
+void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex, float3 worldPos,
 				 out float4 albedo_sunOcclusion, out float4 specular_metallic, out float4 normal_roughness, out float4 emission)
 #endif
 {
@@ -35,13 +36,23 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex,
 	float metallic, roughness;
 	Parse_Metallic_Roughness(metallic, roughness);
 
+
+#ifdef ENABLE_SKY_LIGHT
+	float3 viewDir			= camera_worldPos.xyz - worldPos;
+	float3 reflectDir		= reflect(-viewDir, normal);
+	float3 skyLighting		= GetSkyLightReflection(reflectDir, roughness, true);
+#else
+	float3 skyLighting		= float3(0.0f, 0.0f, 0.0f);
+#endif
+
 	float3 emissionColor	= material_emissionColor.rgb;
 	float3 mainColor		= abs(material_mainColor);
-	float3 albedo			= diffuseTex.rgb * mainColor;
-	albedo_sunOcclusion.rgb	= lerp(mainColor, albedo, hasDiffuseMap);
+	float3 albedo			= lerp(mainColor, diffuseTex.rgb * mainColor, hasDiffuseMap);
 
-	float3 specular			= specularTex.rgb;
-	specular_metallic.rgb	= lerp(float3(0.05f, 0.05f, 0.05f), specular, hasSpecularMap);
+	albedo_sunOcclusion.rgb	= albedo * skyLighting;
+
+	float3 specular			= lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, hasSpecularMap);
+	specular_metallic.rgb	= specular;
 
 	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
 	normal_roughness.rgb	= compressedNormal;

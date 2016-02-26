@@ -42,6 +42,10 @@ Texture2D normalTexture				: register( t9 );
 Texture2D specularTexture			: register( t10 );
 Texture2D opacityTexture			: register( t11 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
 
+// 아래는 EnvCubeMapFilter.h에 있음
+// SamplerState skyCubeMapSampler	: register( s4  );
+// TextureCube	skyCubeMap			: register( t12 );
+
 void Parse_Metallic_Roughness( out float metallic,
 							   out float roughness)
 {
