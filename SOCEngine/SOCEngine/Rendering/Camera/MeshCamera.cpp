@@ -119,6 +119,8 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		GetProjectionMatrix(projMat, true);
 		viewProjMat = viewMat * projMat;
 
+		camConstBufferData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
+
 		bool updatedVP = memcmp(&_prevCamMatCBData, &camConstBufferData, sizeof(CameraCBData)) != 0;
 		if(updatedVP)
 		{

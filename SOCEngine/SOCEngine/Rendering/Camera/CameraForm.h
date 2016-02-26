@@ -19,8 +19,9 @@ namespace Rendering
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
 			struct CameraCBData
 			{
-				Math::Matrix viewMat;
-				Math::Matrix viewProjMat;
+				Math::Matrix	viewMat;
+				Math::Matrix	viewProjMat;
+				Math::Vector4	worldPos;		
 			};
 
 		public:

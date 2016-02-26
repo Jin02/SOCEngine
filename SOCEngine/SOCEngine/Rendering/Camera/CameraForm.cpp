@@ -168,12 +168,17 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 {
 	CameraCBData cbData;
 	{
+		Matrix worldMat;
+		_owner->GetTransform()->FetchWorldMatrix(worldMat);
+
 		Matrix& viewMat = cbData.viewMat;
-		GetViewMatrix(cbData.viewMat);
+		GetViewMatrix(cbData.viewMat, worldMat);
 
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
 		cbData.viewProjMat = viewMat * projMat;
+
+		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
 	}
 
 	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CameraCBData)) != 0;
