@@ -7,10 +7,18 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class TextureManager;
+	}
+
 	namespace Texture
 	{
 		class Texture2D : public TextureForm
 		{
+		public:
+			friend class Manager::TextureManager;
+
 		protected:
 			ID3D11Texture2D*			_texture;
 			bool						_hasAlpha;

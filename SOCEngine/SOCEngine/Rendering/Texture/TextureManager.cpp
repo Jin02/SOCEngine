@@ -50,6 +50,9 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	std::wstring wFilePath = converter.from_bytes(fileDir);
 
+	uint texW = 0;
+	uint texH = 0;
+
 	if(format == "tga")	
 	{
 		hr = LoadFromTGAFile(wFilePath.c_str(), &metaData, image);
@@ -66,6 +69,8 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 	if(notCreatedSRV && SUCCEEDED(hr))
 	{
 		hr = CreateShaderResourceView(device, image.GetImages(), image.GetImageCount(), metaData, &srv);
+		texH = image.GetImages()[0].height;
+		texW = image.GetImages()[0].width;
 		srv->GetResource(&resource);
 	}
 	else if(notCreatedSRV)
@@ -78,6 +83,9 @@ Texture2D* TextureManager::LoadTextureFromFile(const std::string& fileDir, bool 
 
 		Texture::Texture2D* tex = new Texture::Texture2D(srv, texture2d, hasAlpha);
 		_hash.insert(std::make_pair(name + format, tex));
+
+		tex->_size.w = texW;
+		tex->_size.h = texH;
 
 		return tex;
 	}
