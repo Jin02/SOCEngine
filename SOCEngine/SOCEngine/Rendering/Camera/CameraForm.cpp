@@ -43,7 +43,7 @@ void CameraForm::Initialize(const Math::Rect<float>& renderRect, uint mainRTSamp
 	_renderRect = renderRect;
 
 	_camMatConstBuffer = new ConstBuffer;
-	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
+	_camMatConstBuffer->Initialize(sizeof(CameraCBData));
 
 	Device::Director::SharedInstance()->GetCurrentScene()->GetCameraManager()->Add(this);
 }
@@ -166,7 +166,7 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
-	CamMatCBData cbData;
+	CameraCBData cbData;
 	{
 		Matrix& viewMat = cbData.viewMat;
 		GetViewMatrix(cbData.viewMat);
@@ -176,7 +176,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CamMatCBData)) != 0;
+	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CameraCBData)) != 0;
 	if(updatedVP)
 	{
 		// Make Frustum
