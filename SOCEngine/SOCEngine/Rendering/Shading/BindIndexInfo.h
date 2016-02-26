@@ -23,6 +23,7 @@ namespace Rendering
 		NormalTex								= 9,
 		SpecularTex								= 10,
 		OpacityTex								= 11,
+		SkyCubeMap								= 12,
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,
@@ -71,6 +72,8 @@ namespace Rendering
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
 
+		SkyMapInfoParam					= 7,
+
 		Mipmap_InfoCB					= 0,
 		VCT_GlobalInfoCB				= 1,
 
@@ -83,6 +86,7 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
+		SkyCubeMapSamplerState			= 4,
 	};
 
 	enum class UAVBindIndex : unsigned int
