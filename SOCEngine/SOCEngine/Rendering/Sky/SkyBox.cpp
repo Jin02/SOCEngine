@@ -32,6 +32,13 @@ void SkyBox::Initialize(const std::string& materialName, const std::string& cube
 	Texture2D* cubeMap = texMgr->LoadTextureFromFile(cubeMapFilePath, false);
 	_material->UpdateCubeMap(cubeMap);
 
+	auto log2 = [](float f) -> float
+	{
+		return log(f) / log(2.0f);
+	};
+
+	_maxMipCount = log2(cubeMap->GetSize().w);
+
 	SkyForm::Initialize(_material);
 }
 
@@ -47,7 +54,7 @@ void SkyBox::Destroy()
 	SkyForm::Destroy();
 }
 
-void SkyBox::Render(const DirectX* dx, const CameraForm* camera, const Texture::RenderTexture*& renderTarget, const Texture::DepthBuffer*& opaqueDepthBuffer)
+void SkyBox::Render(const DirectX* dx, const CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer)
 {
 	Matrix worldViewProj;
 	{

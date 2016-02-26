@@ -35,10 +35,10 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture*& renderTarget, const Texture::DepthBuffer*& opaqueDepthBuffer);
+			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer);
 
 		public:
-			GET_SET_ACCESSOR(Material, SkyBoxMaterial*, _material);
+			GET_SET_ACCESSOR(Material,		SkyBoxMaterial*,	_material);
 		};
 	}
 }
