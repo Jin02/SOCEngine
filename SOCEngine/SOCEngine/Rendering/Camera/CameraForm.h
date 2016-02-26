@@ -17,7 +17,7 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
-			struct CamMatCBData
+			struct CameraCBData
 			{
 				Math::Matrix viewMat;
 				Math::Matrix viewProjMat;
@@ -52,7 +52,7 @@ namespace Rendering
 			Color							_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CamMatCBData					_prevCamMatCBData;
+			CameraCBData					_prevCamMatCBData;
 
 			Math::Rect<float>				_renderRect;
 
