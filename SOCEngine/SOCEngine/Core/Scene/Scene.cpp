@@ -124,6 +124,8 @@ void Scene::RenderPreview()
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
+
+	_sky->UpdateConstBuffer(_dx);
 }
 
 void Scene::Render()
@@ -156,13 +158,6 @@ void Scene::Render()
 		return indirectColorMap;
 	};
 
-	auto SkyPass = [&](const MeshCamera* meshCam)
-	{
-		const RenderTexture* renderTarget = meshCam->GetGBufferEmission();
-		const DepthBuffer* opaqueDepthBuffer = meshCam->GetOpaqueDepthBuffer();
-
-		_sky->Render(_dx, meshCam, renderTarget, opaqueDepthBuffer);
-	};
 	auto skyPassNull = std::function<void(const MeshCamera*)>(nullptr);
 	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
 
@@ -175,8 +170,8 @@ void Scene::Render()
 			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
 			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
 							_shadowRenderer->GetNeverUseVSM(),
-							_globalIllumination ? GIPass : giPassNull,
-							_sky ? SkyPass : skyPassNull);
+							_sky,
+							_globalIllumination ? GIPass : giPassNull);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
