@@ -69,4 +69,9 @@ void ParseShadowParam(out ParsedShadowParam outParam, uint2 shadowParam)
 	outParam.color		= RGBA8UintColorToFloat4(shadowParam.y);
 }
 
+float Luminance(float3 linearColor)
+{
+	return dot(linearColor, float3(0.3f, 0.59f, 0.11f));
+}
+
 #endif
