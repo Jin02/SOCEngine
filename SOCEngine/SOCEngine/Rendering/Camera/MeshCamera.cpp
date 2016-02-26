@@ -183,7 +183,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 void MeshCamera::RenderMeshWithoutIASetVB(
 	const Device::DirectX* dx, const RenderManager* renderManager,
 	const Geometry::Mesh* mesh, RenderType renderType, 
-	const ConstBuffer* camMatConstBuffer)
+	const ConstBuffer* camMatConstBuffer, const Sky::SkyForm* sky)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -247,6 +247,20 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 		if(ps && (renderType != RenderType::Forward_OnlyDepth) )
 		{
 			ps->BindShaderToContext(context);
+
+			if((((renderType == RenderType::Forward_MomentDepth) ||
+				 (renderType == RenderType::Forward_MomentDepthWithAlphaTest)) == false) && sky)
+			{
+				ID3D11ShaderResourceView* srv = sky->GetSkyCubeMap()->GetShaderResourceView()->GetView();
+				context->PSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
+
+				ID3D11Buffer* cb = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
+				context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &cb);
+
+				ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
+				context->PSSetSamplers(uint(TextureBindIndex::SkyCubeMap), 1, &sampler);
+			}
+
 			ps->BindResourcesToContext(context, &constBuffers, &textures, &srBuffers);
 		}
 		else
@@ -272,6 +286,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
 	const Buffer::ConstBuffer* camMatConstBuffer,
+	const Sky::SkyForm* sky,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -308,7 +323,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, sky);
 				}
 			}
 		}
@@ -319,6 +334,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
 	RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
+	const Sky::SkyForm* sky,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -348,7 +364,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer, sky);
 			}
 		}
 	}
@@ -357,9 +373,11 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 void MeshCamera::Render(const Device::DirectX* dx,
 						const RenderManager* renderManager, const LightManager* lightManager,
 						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
-						std::function<const RenderTexture*(MeshCamera*)> giPass,
-						std::function<void(const MeshCamera*)> skyPass)
+						Sky::SkyForm* sky,
+						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
+	const Texture2D* skyCubeMap = sky ? sky->GetSkyCubeMap() : nullptr;
+
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
 		D3D11_VIEWPORT viewport;
@@ -453,7 +471,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			context->RSSetState( nullptr );
 
 			if(count > 0)
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer, sky);
 		}
 
 		//Alpha Test Mesh
@@ -470,7 +488,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camMatConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camMatConstBuffer, sky);
 
 				context->RSSetState( nullptr );
 
@@ -488,11 +506,11 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
 		}
 
-		if (skyPass)
-			skyPass(this);
+		if(sky->GetIsSkyOn())
+			sky->Render(dx, this, _emission, _opaqueDepthBuffer);
 	}
 
 	// Light Culling and Deferred Shading
@@ -582,7 +600,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
 			context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
 
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer, sky);
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
