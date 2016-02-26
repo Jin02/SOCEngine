@@ -10,10 +10,12 @@ using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Camera;
+using namespace Rendering::Texture;
 using namespace Resource;
 using namespace Math;
 
-SkyForm::SkyForm() : _mesh(nullptr)
+SkyForm::SkyForm() : _mesh(nullptr), _skyMapInfoCB(nullptr),
+	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(7.0f)
 {
 }
 
@@ -45,16 +47,39 @@ void SkyForm::Initialize(const Rendering::Material* skyMaterial)
 
 //	gen.CreateBox(CreateMeshContent, Vector3(5000, 5000, 5000), flag);
 	gen.CreateSphere(CreateMeshContent, 1.0f, 30, 30, flag);
+
+	_skyMapInfoCB = new ConstBuffer;
+	_skyMapInfoCB->Initialize(sizeof(SkyMapInfoCBData));
 }
 
 void SkyForm::Destroy()
 {
 	SAFE_DELETE(_mesh);
+	SAFE_DELETE(_skyMapInfoCB);
+}
+
+void SkyForm::UpdateConstBuffer(const Device::DirectX* dx)
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	SkyMapInfoCBData cbData;
+	{
+		cbData.maxMipCount			= _maxMipCount;
+		cbData.isSkyLightOn			= uint(_isSkyLightOn);
+		cbData.isDynamicSkyLight	= _isDynamicSkyLight;
+		cbData.blendFraction		= _blendFraction;
+	}
+	bool isChanged = memcmp(&cbData, &_prevCBData, sizeof(SkyMapInfoCBData)) != 0;
+	if(isChanged)
+	{
+		_skyMapInfoCB->UpdateSubResource(context, &cbData);
+		_prevCBData = cbData;
+	}
 }
 
 void SkyForm::_Render(const Device::DirectX* dx,
-	const Rendering::Texture::RenderTexture*& renderTarget,
-	const Rendering::Texture::DepthBuffer*& opaqueDepthBuffer)
+	const Rendering::Texture::RenderTexture* renderTarget,
+	const Rendering::Texture::DepthBuffer* opaqueDepthBuffer)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -116,4 +141,12 @@ void SkyForm::_Render(const Device::DirectX* dx,
 				context->GSSetShader(nullptr, nullptr, 0);
 		}
 	}
+}
+
+
+const Texture2D* SkyForm::GetSkyCubeMap() const
+{
+	// 임시로 처리.
+	// 나중에 명확하게 다시 작성해야 함.
+	return dynamic_cast<const Texture2D*>(_mesh->GetMeshRenderer()->GetMaterials()[0]->GetTextures()[0].texture);
 }
