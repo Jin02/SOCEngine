@@ -2,11 +2,18 @@
 #define __SOC_ENV_CUBE_MAP_FILTER_H__
 
 #include "../GlobalDefine.h"
-#include "MonteCarlo.h"
 #include "ShaderCommon.h"
 
 SamplerState skyCubeMapSampler	: register( s4  );
 TextureCube	skyCubeMap			: register( t12 );
+
+cbuffer SkyMapInfoParam			: register( b7 )
+{
+	float	skyMapInfoParam_maxMipCount;
+	uint	skyMapInfoParam_isSkyLightOn;
+	uint	skyMapInfoParam_isDynamicSkyLight;
+	float	skyMapInfoParam_blendFraction;
+};
 
 float ComputeReflectionCaptureRoughnessFromMip( float Mip )
 {
@@ -24,14 +31,15 @@ half ComputeReflectionCaptureMipFromRoughness(half Roughness)
 	return HardcodedNumCaptureArrayMips - 1 - LevelFrom1x1;
 }
 
-float3 GetSkyLightReflection(float3 reflectDir, float roughnessm, uniform bool isDynamicSkyLight)
+float3 GetSkyLightReflection(float3 reflectDir, float roughness, uniform bool isDynamicSkyLight)
 {
 	float absSpecularMip	= ComputeReflectionCaptureMipFromRoughness(roughness);
-	float3 reflection		= cubeMap.SampleLevel(skyCubeMapSampler, reflectDir, absSpecularMip);
+	float3 reflection		= skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, absSpecularMip).rgb;
 
 	if(isDynamicSkyLight)
 	{
-		float3 LowFrequencyReflection = skyCubeMap.SampleLevel(reflectDir, skyCubeMapSampler, maxMip).rgb;
+		const float MaxMip = skyMapInfoParam_maxMipCount;
+		float3 LowFrequencyReflection = skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, MaxMip).rgb;
 		float LowFrequencyBrightness = Luminance(LowFrequencyReflection);
 		reflection /= max(LowFrequencyBrightness, 0.00001f);
 	}
