@@ -18,7 +18,7 @@ VS_OUTPUT VS( VS_INPUT input )
 	VS_OUTPUT ps;
 
 	ps.worldPos 	= mul( float4(input.position, 1.0f),	transform_world );
-	ps.position 	= mul( ps.worldPos,						cameraMat_viewProj );
+	ps.position 	= mul( ps.worldPos,						camera_viewProjMat );
 
 	ps.uv			= input.uv;
 

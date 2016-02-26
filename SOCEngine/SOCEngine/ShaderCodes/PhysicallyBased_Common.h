@@ -17,10 +17,11 @@ cbuffer Transform : register( b1 )		//Object World
 	matrix transform_worldInvTranspose;
 };
 
-cbuffer CameraMat : register( b2 )
+cbuffer Camera : register( b2 )
 {
-	matrix	cameraMat_view;				// or InvNearFarViewProj
-	matrix	cameraMat_viewProj;
+	matrix	camera_viewMat;				// or InvNearFarViewProj
+	matrix	camera_viewProjMat;
+	float4	camera_worldPos;
 };
 
 cbuffer Material : register( b3 )		//PhysicallyBasedMaterial

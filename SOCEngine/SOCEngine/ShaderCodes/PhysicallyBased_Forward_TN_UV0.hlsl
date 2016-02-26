@@ -23,7 +23,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 {
 	PS_SCENE_INPUT ps;
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position 		= mul(posWorld,						cameraMat_viewProj);
+	ps.position 		= mul(posWorld,						camera_viewProjMat);
 	ps.positionWorld	= posWorld.xyz;
 
 	ps.uv				= input.uv;
