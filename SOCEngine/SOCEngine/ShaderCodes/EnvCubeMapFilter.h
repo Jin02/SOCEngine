@@ -15,7 +15,7 @@ cbuffer SkyMapInfoParam			: register( b7 )
 	float	skyMapInfoParam_blendFraction;
 };
 
-float ComputeReflectionCaptureRoughnessFromMip( float Mip )
+float ComputeReflectionCaptureRoughnessFromMip( float Mip , float maxMipCount)
 {
 	const float HardcodedNumCaptureArrayMips = 7;
 	float LevelFrom1x1 = HardcodedNumCaptureArrayMips - 1 - Mip;
@@ -23,7 +23,7 @@ float ComputeReflectionCaptureRoughnessFromMip( float Mip )
 	return exp2( ( 1.0f - LevelFrom1x1 ) / 1.2f );
 }
 
-half ComputeReflectionCaptureMipFromRoughness(half Roughness)
+half ComputeReflectionCaptureMipFromRoughness(half Roughness, float maxMipCount)
 {
 	float LevelFrom1x1 = 1.0f - 1.2f * log2(Roughness);
 
@@ -31,15 +31,16 @@ half ComputeReflectionCaptureMipFromRoughness(half Roughness)
 	return HardcodedNumCaptureArrayMips - 1 - LevelFrom1x1;
 }
 
-float3 GetSkyLightReflection(float3 reflectDir, float roughness, uniform bool isDynamicSkyLight)
+float3 GetSkyLightReflection(float3 reflectDir, float roughness, bool isDynamicSkyLight)
 {
-	float absSpecularMip	= ComputeReflectionCaptureMipFromRoughness(roughness);
+	const float maxMipCount = skyMapInfoParam_maxMipCount;
+
+	float absSpecularMip	= ComputeReflectionCaptureMipFromRoughness(roughness, maxMipCount);
 	float3 reflection		= skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, absSpecularMip).rgb;
 
 	if(isDynamicSkyLight)
 	{
-		const float MaxMip = skyMapInfoParam_maxMipCount;
-		float3 LowFrequencyReflection = skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, MaxMip).rgb;
+		float3 LowFrequencyReflection = skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, maxMipCount).rgb;
 		float LowFrequencyBrightness = Luminance(LowFrequencyReflection);
 		reflection /= max(LowFrequencyBrightness, 0.00001f);
 	}
