@@ -125,7 +125,8 @@ void Scene::RenderPreview()
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
 
-	_sky->UpdateConstBuffer(_dx);
+	if(_sky)
+		_sky->UpdateConstBuffer(_dx);
 }
 
 void Scene::Render()

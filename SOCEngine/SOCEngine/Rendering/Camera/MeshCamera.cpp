@@ -509,8 +509,11 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
 		}
 
-		if(sky->GetIsSkyOn())
-			sky->Render(dx, this, _emission, _opaqueDepthBuffer);
+		if(sky)
+		{
+			if(sky->GetIsSkyOn())
+				sky->Render(dx, this, _emission, _opaqueDepthBuffer);
+		}
 	}
 
 	// Light Culling and Deferred Shading
