@@ -35,7 +35,7 @@ void PhysicallyBasedMaterial::Initialize()
 {
 	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
-	SetRoughness(0.0f);
+	SetRoughness(1.0f);
 
 	_gbufferCB = new ConstBuffer;
 	_gbufferCB->Initialize(sizeof(GBufferParam));

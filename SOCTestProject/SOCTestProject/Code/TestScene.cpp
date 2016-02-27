@@ -59,8 +59,8 @@ void TestScene::OnInitialize()
 //	_testObject = gen.CreatePlane(0.5f, 0.5f, 4, 4, flag);
 //	_testObject = gen.CreateCylinder(0.5f, 0.5f, 0.5f, 30, 30, flag);
 //	_testObject = gen.CreateBox(Vector3(0.5f, 0.5f, 0.5f), flag);
-//	_testObject = gen.CreateSphere(1.0f, 30, 30, flag);
-	_testObject = importer->Load("./Resources/Sphere/sphere.obj", false);
+	_testObject = gen.CreateSphere(1.0f, 30, 30, flag);
+//	_testObject = importer->Load("./Resources/Sphere/sphere.obj", false);
 	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0.0f, 11.0f));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));
 	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
@@ -136,7 +136,7 @@ void TestScene::OnInitialize()
 	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
 //	light->SetProjectionSize(10);
 //	light->SetProjectionSize(30);
-	light->SetIntensity(2.0f);
+	light->SetIntensity(8.0f);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(false);
 #elif 0
