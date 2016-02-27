@@ -236,10 +236,13 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	float roughness		= lightingParams.roughness; //0.6f
 
 	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
-	resultDiffuseColor = saturate(Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL)) * commonParamas.lightColor * diffuseEnergyConservation;
+	float3 diffuseTerm = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL);
+	resultDiffuseColor = diffuseTerm * commonParamas.lightColor * diffuseEnergyConservation;
+	resultDiffuseColor = saturate(resultDiffuseColor);
 
-	float3 Fr = Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
-	resultSpecularColor	= saturate(Fr) * commonParamas.lightColor;
+	float3 Fr = Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH);
+	resultSpecularColor	= Fr * commonParamas.lightColor;
+	resultSpecularColor	= saturate(resultSpecularColor);
 }
 
 // Unreal4의 ReflectionEnvironmentShared.usf에 있는
