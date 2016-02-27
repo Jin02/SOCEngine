@@ -163,7 +163,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 	}
 
-	float3	result = accumulativeDiffuse + accumulativeSpecular;
+	float3	result = saturate(accumulativeDiffuse + accumulativeSpecular);
 	result += surface.emission.rgb;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA

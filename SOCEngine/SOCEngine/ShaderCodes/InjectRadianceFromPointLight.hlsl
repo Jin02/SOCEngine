@@ -52,7 +52,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float4 lightColorWithLm = g_inputPointLightColorBuffer[lightIndex];
 
 		float3 lightColor	= lightColorWithLm.rgb;
-		float lumen			= lightColorWithLm.a * 12750.0f; //maximum lumen is 12,750f
+		float lumen			= lightColorWithLm.a * float(MAXIMUM_LUMEN);
 		float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 

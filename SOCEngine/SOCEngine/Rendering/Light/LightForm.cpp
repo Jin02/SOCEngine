@@ -53,13 +53,13 @@ void LightForm::OnDestroy()
 
 void LightForm::SetIntensity(float intensity)
 {
-	_lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 5.0f));
+	_lumen = (uint)(intensity * (float)(MAXIMUM_LUMEN / 8.0f));
 	AddOwnerUpdateCounter();
 }
 
 float LightForm::GetIntensity() const
 {
-	return (float)_lumen * 5.0f / ((float)MAXIMUM_LUMEN);
+	return (float)_lumen * 8.0f / ((float)MAXIMUM_LUMEN);
 }
 
 void LightForm::SetRadius(float r)
