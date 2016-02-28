@@ -808,14 +808,14 @@
     <ClInclude Include="Rendering\Sky\SkyBox.h">
       <Filter>Rendering\Sky\SkyMesh\Box</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\EnvCubeMapFilter.h">
-      <Filter>ShaderCodes\Enviroment</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyForm.h">
       <Filter>Rendering\Sky\SkyMesh</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <Filter>Rendering\Offline</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\EnvIBL.h">
+      <Filter>ShaderCodes\Enviroment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

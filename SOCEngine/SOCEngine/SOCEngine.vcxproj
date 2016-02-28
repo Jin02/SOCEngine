@@ -144,7 +144,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <ClInclude Include="ShaderCodes\DynamicLighting.h" />
-    <ClInclude Include="ShaderCodes\EnvCubeMapFilter.h" />
+    <ClInclude Include="ShaderCodes\EnvIBL.h" />
     <ClInclude Include="ShaderCodes\GBufferParser.h" />
     <ClInclude Include="ShaderCodes\GICommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h">
