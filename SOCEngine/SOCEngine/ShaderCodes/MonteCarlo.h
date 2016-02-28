@@ -69,5 +69,13 @@ float4 CosineSampleHemisphere( float2 e )
 	return float4( dirInCartesian, PDF );
 }
 
+// 그 곳에서 참고
+float3 TangentToWorld( float3 vec, float3 tangentZ )
+{
+	float3 upVector = abs(tangentZ.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
+	float3 tangentX = normalize( cross( upVector, tangentZ ) );
+	float3 tangentY = cross( tangentZ, tangentX );
+	return tangentX * vec.x + tangentY * vec.y + tangentZ * vec.z;
+}
 
 #endif
