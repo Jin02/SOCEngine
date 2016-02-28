@@ -36,20 +36,11 @@ void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex, float3 wo
 	float metallic, roughness;
 	Parse_Metallic_Roughness(metallic, roughness);
 
-
-#ifdef ENABLE_SKY_LIGHT
-	float3 viewDir			= camera_worldPos.xyz - worldPos;
-	float3 reflectDir		= reflect(-viewDir, normal);
-	float3 skyLighting		= GetSkyLightReflection(reflectDir, roughness, true);
-#else
-	float3 skyLighting		= float3(0.0f, 0.0f, 0.0f);
-#endif
-
 	float3 emissionColor	= material_emissionColor.rgb;
 	float3 mainColor		= abs(material_mainColor);
 	float3 albedo			= lerp(mainColor, diffuseTex.rgb * mainColor, hasDiffuseMap);
 
-	albedo_sunOcclusion.rgb	= albedo * skyLighting;
+	albedo_sunOcclusion.rgb	= albedo;
 
 	float3 specular			= lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, hasSpecularMap);
 	specular_metallic.rgb	= specular;
