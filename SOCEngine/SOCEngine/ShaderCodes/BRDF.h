@@ -221,6 +221,7 @@ float3 DiffuseEnergyConservation(float3 f0, float NdotL)
 #endif
 }
 
+#ifndef NOT_USE_BRDF_LIGHTING
 void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 				  in LightingParams lightingParams, in LightingCommonParams commonParamas)
 {
@@ -244,6 +245,7 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	resultSpecularColor	= Fr * commonParamas.lightColor;
 	resultSpecularColor	= saturate(resultSpecularColor);
 }
+#endif
 
 // Unreal4의 ReflectionEnvironmentShared.usf에 있는
 // ComputeReflectionCaptureMipFromRoughness 이거임. 그리고, 약간 수정함
