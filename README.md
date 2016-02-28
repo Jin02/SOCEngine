@@ -17,6 +17,7 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
   + + Variance Shadow Mapping
 5. Voxel Cone Tracing
 6. Shader Parser with Code Generator
+  + [KOR | ShaderFactory Doc](https://github.com/Jin02/SOCEngine/wiki/%5BKOR%5D-ShaderFactory-Generator-(Shader-Parser))
 7. Simple 2D Rendering
 
 ![Test_Image](http://i.imgur.com/lCluQ1q.png)
