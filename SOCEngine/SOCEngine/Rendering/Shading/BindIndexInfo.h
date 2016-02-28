@@ -59,6 +59,7 @@ namespace Rendering
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
 //		GBuffer_Emission						= 31, 위에 있음
+		PreIntegrateEnvBRDFMap					= 32,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
