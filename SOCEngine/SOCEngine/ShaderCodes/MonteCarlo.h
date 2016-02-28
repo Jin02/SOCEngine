@@ -30,7 +30,7 @@ float2 Hammersley( uint index, uint numSamples, uint2 random )
 
 // Unreal4 MonteCarlo.usf 참고
 // Used for Cone or Specular
-float4 ImportanceSampleGGX( float2 hammersley, float roughness )
+float4 ImportanceSampleGGX( float2 e, float roughness )
 {
 	float m = roughness * roughness;
 	float m2 = m * m;
@@ -53,10 +53,10 @@ float4 ImportanceSampleGGX( float2 hammersley, float roughness )
 
 // Unreal4 MonteCarlo.usf 참고
 // Used For diffuse
-float4 CosineSampleHemisphere( float2 hammersley )
+float4 CosineSampleHemisphere( float2 e )
 {
-	float phi = 2 * PI * hammersley.x;
-	float cosTheta = sqrt( hammersley.y );
+	float phi = 2 * PI * e.x;
+	float cosTheta = sqrt( e.y );
 	float sinTheta = sqrt( 1 - cosTheta * cosTheta );
 
 	float3 dirInCartesian;
