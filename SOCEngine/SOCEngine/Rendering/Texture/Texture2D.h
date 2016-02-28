@@ -30,7 +30,7 @@ namespace Rendering
 			Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha);
 			virtual ~Texture2D();
 
-		protected:
+		public:
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
 			void Destroy();
