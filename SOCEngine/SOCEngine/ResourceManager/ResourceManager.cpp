@@ -8,11 +8,13 @@ using namespace Rendering;
 using namespace Resource;
 using namespace Importer;
 using namespace Rendering::Manager;
+using namespace Rendering::Offline;
 using namespace UI;
 
 ResourceManager::ResourceManager()
 	:	_meshImporter(nullptr), _shaderMgr(nullptr), _fontLoader(nullptr),
-		_textureMgr(nullptr), _bufferManager(nullptr)
+		_textureMgr(nullptr), _bufferManager(nullptr),
+		_preIntergrateEnvBRDF(nullptr)
 {
 }
 
@@ -31,6 +33,9 @@ void ResourceManager::Initialize()
 
 	_fontLoader		= new SimpleFontLoader;
 	//_fontLoader->Initialize(TEMP_FONT_DATA_PATH, TEMP_FONT_TEXTURE_PATH);
+
+	_preIntergrateEnvBRDF = new PreIntegrateEnvBRDF;
+	_preIntergrateEnvBRDF->FetchPreBRDFMap();
 }
 
 void ResourceManager::DestroyManagers()
@@ -46,4 +51,5 @@ void ResourceManager::DestroyManagers()
 	SAFE_DELETE(_bufferManager);
 	SAFE_DELETE(_meshImporter);
 	SAFE_DELETE(_fontLoader);
+	SAFE_DELETE(_preIntergrateEnvBRDF);
 }

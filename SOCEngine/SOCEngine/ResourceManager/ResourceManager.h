@@ -10,6 +10,7 @@
 #include "UIManager.h"
 #include "MeshImporter.h"
 #include "SimpleFontLoader.h"
+#include "PreIntegrateEnvBRDF.h"
 
 namespace Resource
 {
@@ -19,11 +20,13 @@ namespace Resource
 		friend class Singleton<ResourceManager>;
 
 	private:
-		Rendering::Manager::ShaderManager*		_shaderMgr;
-		Rendering::Manager::TextureManager*		_textureMgr;
-		Rendering::Manager::BufferManager*		_bufferManager;
-		Importer::MeshImporter*					_meshImporter;
-		UI::SimpleFontLoader*					_fontLoader;
+		Rendering::Manager::ShaderManager*			_shaderMgr;
+		Rendering::Manager::TextureManager*			_textureMgr;
+		Rendering::Manager::BufferManager*			_bufferManager;
+		Importer::MeshImporter*						_meshImporter;
+		UI::SimpleFontLoader*						_fontLoader;
+
+		Rendering::Offline::PreIntegrateEnvBRDF*	_preIntergrateEnvBRDF;
 
 	private:
 		ResourceManager();
@@ -34,10 +37,11 @@ namespace Resource
 		void DestroyManagers();
 
 	public:
-		GET_ACCESSOR(TextureManager,	Rendering::Manager::TextureManager*,	_textureMgr);
-		GET_ACCESSOR(ShaderManager,		Rendering::Manager::ShaderManager*,		_shaderMgr);
-		GET_ACCESSOR(BufferManager,		Rendering::Manager::BufferManager*,		_bufferManager);
-		GET_ACCESSOR(MeshImporter,		Importer::MeshImporter*,				_meshImporter);
-		GET_ACCESSOR(SimpleFontLoader,	UI::SimpleFontLoader*,					_fontLoader);
+		GET_ACCESSOR(TextureManager,			Rendering::Manager::TextureManager*,	_textureMgr);
+		GET_ACCESSOR(ShaderManager,				Rendering::Manager::ShaderManager*,		_shaderMgr);
+		GET_ACCESSOR(BufferManager,				Rendering::Manager::BufferManager*,		_bufferManager);
+		GET_ACCESSOR(MeshImporter,				Importer::MeshImporter*,				_meshImporter);
+		GET_ACCESSOR(SimpleFontLoader,			UI::SimpleFontLoader*,					_fontLoader);
+		GET_ACCESSOR(PreIntegrateEnvBRDFMap,	const Rendering::Texture::Texture2D*,	_preIntergrateEnvBRDF->GetPreIntegrateEnvBRDFMap());
 	};
 }
