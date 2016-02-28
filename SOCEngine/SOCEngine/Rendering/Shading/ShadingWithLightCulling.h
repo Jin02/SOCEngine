@@ -2,6 +2,7 @@
 
 #include "LightCulling.h"
 #include "RenderTexture.h"
+#include "SkyForm.h"
 
 namespace Rendering
 {
@@ -29,7 +30,7 @@ namespace Rendering
 			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const GBuffers& geometryBuffers, const Math::Size<uint>& backBufferSize, bool useDebugMode = false);
 			void Destory();
 
-			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
+			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer, const Sky::SkyForm* sky);
 
 		public:
 			GET_ACCESSOR(UncompressedOffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
