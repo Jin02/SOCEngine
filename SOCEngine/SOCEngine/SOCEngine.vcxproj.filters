@@ -388,17 +388,23 @@
     <Filter Include="Rendering\Mesh\BasicGeometryGenerator">
       <UniqueIdentifier>{9ef1bbf1-d189-45c6-895b-7da79b40b373}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sky\Box">
-      <UniqueIdentifier>{4f0d5449-2436-4c6b-9cf7-a09d5511aef2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Sky\Box\Material">
-      <UniqueIdentifier>{ce7a339b-e61e-47df-8e09-66a2c884fce8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Sky">
       <UniqueIdentifier>{e9b307de-8291-41c2-a22a-183cf29d8761}</UniqueIdentifier>
     </Filter>
     <Filter Include="ShaderCodes\Enviroment">
       <UniqueIdentifier>{8ea1ed8e-5a25-4d0a-9afb-945278292a5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\SkyMesh">
+      <UniqueIdentifier>{bef08373-3505-48b5-8fb7-309358cfb9ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\SkyMesh\Box">
+      <UniqueIdentifier>{4f0d5449-2436-4c6b-9cf7-a09d5511aef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\SkyMesh\Box\Material">
+      <UniqueIdentifier>{ce7a339b-e61e-47df-8e09-66a2c884fce8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Offline">
+      <UniqueIdentifier>{e969a8ce-13cf-426e-8195-6e305a61e4a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -797,16 +803,19 @@
       <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
-      <Filter>Rendering\Sky\Box\Material</Filter>
+      <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBox.h">
-      <Filter>Rendering\Sky\Box</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyForm.h">
-      <Filter>Rendering\Sky</Filter>
+      <Filter>Rendering\Sky\SkyMesh\Box</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\EnvCubeMapFilter.h">
       <Filter>ShaderCodes\Enviroment</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyForm.h">
+      <Filter>Rendering\Sky\SkyMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
+      <Filter>Rendering\Offline</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1087,13 +1096,16 @@
       <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
-      <Filter>Rendering\Sky\Box\Material</Filter>
+      <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBox.cpp">
-      <Filter>Rendering\Sky\Box</Filter>
+      <Filter>Rendering\Sky\SkyMesh\Box</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyForm.cpp">
-      <Filter>Rendering\Sky</Filter>
+      <Filter>Rendering\Sky\SkyMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
+      <Filter>Rendering\Offline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1177,6 +1189,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
       <Filter>ShaderCodes\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl">
+      <Filter>ShaderCodes\Enviroment</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
