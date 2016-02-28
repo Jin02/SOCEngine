@@ -100,7 +100,7 @@ float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 
 		{
 			float3 SampleColor = skyCubeMap.SampleLevel( skyCubeMapSampler, lightDir, 0 ).rgb;
 
-			float Vis	= GeometrySmithJoinApproximately( roughness, NdotV, NdotL );
+			float Vis	= GeometrySmithJointApproximately( roughness, NdotV, NdotL );
 			float Fc	= pow( 1 - VdotH, 5 );
 			float3 F	= (1 - Fc) * specularColor + Fc;
 
