@@ -4,6 +4,7 @@
 #define __SOC_BRDF_H__
 
 #include "ShaderCommon.h"
+#include "MonteCarlo.h"
 
 /*
 DIFFUSE_LAMBERT
@@ -115,7 +116,17 @@ float GeometrySmith(float NdotV, float NdotL, float roughness)
 	return rcp(V * L);
 }
 
+// Appoximation of joint Smith term for GGX
+// [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
+float GeometrySmithJointApproximately(float roughness, float NdotV, float NdotL)
+{
+	float a = roughness * roughness;
 
+	float smithV = NdotL * ( NdotV * ( 1.0f - a ) + a );
+	float smithL = NdotV * ( NdotL * ( 1.0f - a ) + a );
+
+	return 0.5 * rcp( smithV + smithL );
+}
 
 float3 FresnelSchlick(float3 f0, float VdotH)
 {
@@ -254,7 +265,40 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
 	float mip = (float)mipCount - 1 - levelFrom1x1;
 
-	return (mip < 0) ? 0 : mip;
+	return max(mip, 0.0f);
 }
+
+float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
+{
+	float3 V;
+	V.x = sqrt(1.0f - NoV * NoV); // sin
+	V.y = 0;
+	V.z = NoV; // cos
+	float A = 0;
+	float B = 0;
+
+	const uint NumSamples = sampleCount;
+
+	for (uint i = 0; i < NumSamples; i++)
+	{
+		float2 Xi = Hammersley(i, NumSamples, uint2(0, 0));
+		float3 H = ImportanceSampleGGX(Xi.xy, Roughness).xyz;
+		float3 L = 2 * dot(V, H) * H - V;
+		float NoL = saturate(L.z);
+		float NoH = saturate(H.z);
+		float VoH = saturate(dot(V, H));
+		if (NoL > 0)
+		{
+			float G = GeometrySmith(NoV, NoL, Roughness);
+			float G_Vis = G * VoH / (NoH * NoV);
+			float Fc = pow(1 - VoH, 5);
+			A += (1 - Fc) * G_Vis;
+			B += Fc * G_Vis;
+		}
+	}
+
+	return float2(A, B) / NumSamples;
+}
+
 
 #endif
