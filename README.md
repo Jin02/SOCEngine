@@ -3,7 +3,7 @@ SOCEngine
 
 Simple 3D real-time rendering engine
 
-Required : python 2.7.x, VS2013, FBXSDK2014.1
+Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 
 -----------
 
@@ -12,7 +12,7 @@ Required : python 2.7.x, VS2013, FBXSDK2014.1
   - Transparent Object
   - Dynamic Lighting (Directional, Spot, Point)
 2. Microfacet BRDF, Physically Based Material
-3. Model load using fbx-conv(obj, fbx, dae, etc..)
+3. Model loading (obj, fbx, dae, etc..)
 4. Shadow Mapping (Directional, Spot, Point)
   + + Variance Shadow Mapping
 5. Voxel Cone Tracing
