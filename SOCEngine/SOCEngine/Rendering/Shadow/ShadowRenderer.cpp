@@ -436,7 +436,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes,
 			opaqueRenderType,
-			camConstBuffer, nullptr, &intersectFunc);
+			camConstBuffer, &intersectFunc);
 
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
@@ -444,7 +444,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
 			alphaBlendRenderType,
-			camConstBuffer, nullptr, &intersectFunc);
+			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( nullptr );
 	}
@@ -521,13 +521,13 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, opaqueMeshes,
 				opaqueRenderType,
-				camConstBuffer, nullptr, &intersectFunc);
+				camConstBuffer, &intersectFunc);
 
 			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 				dx, renderManager, alphaTestMeshes,
 				alphaBlendRenderType,
-				camConstBuffer, nullptr, &intersectFunc);
+				camConstBuffer, &intersectFunc);
 			context->RSSetState( nullptr );
 		}
 	}
@@ -600,13 +600,13 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, opaqueMeshes, 
 			opaqueRenderType,
-			camConstBuffer, nullptr, &intersectFunc);
+			camConstBuffer, &intersectFunc);
 
 		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 			dx, renderManager, alphaTestMeshes,
 			alphaBlendRenderType,
-			camConstBuffer, nullptr, &intersectFunc);
+			camConstBuffer, &intersectFunc);
 		context->RSSetState( nullptr );
 	}
 
