@@ -1,5 +1,5 @@
-#ifndef __SOC_ENV_CUBE_MAP_FILTER_H__
-#define __SOC_ENV_CUBE_MAP_FILTER_H__
+#ifndef __SOC_ENV_IBL_H__
+#define __SOC_ENV_IBL_H__
 
 #define NOT_USE_BRDF_LIGHTING
 
@@ -58,7 +58,7 @@ float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSampl
 	return filteredColor / max( weight, 0.001 );
 }
 
-float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float mipLevel, float3 specularColor, float roughness, float3 normal, float3 viewDir, uniform bool usePreIntegrateEnvMap)
+float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specularColor, float roughness, float3 normal, float3 viewDir, uniform bool usePreIntegrateEnvMap)
 {
 	float NdotV			= abs(dot(normal, viewDir));
 	float3 reflectDir	= 2.0f * dot(normal, viewDir) * normal - viewDir;
