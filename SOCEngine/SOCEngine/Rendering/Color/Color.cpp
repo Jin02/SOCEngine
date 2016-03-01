@@ -18,6 +18,10 @@ namespace Rendering
 	{
 	}
 
+	Color::Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b), a(1.0f)
+	{
+	}
+
 	Color Color::operator -(Color c)
 	{
 		Color color = (*this);
