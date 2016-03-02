@@ -1193,5 +1193,8 @@
     <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl">
       <Filter>ShaderCodes\Enviroment</Filter>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\IBLPass.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
