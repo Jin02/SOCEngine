@@ -13,17 +13,20 @@ namespace Rendering
 		DirectionalLightColor					= 6,
 		DirectionalLightParam					= 7,
 
-		GBuffer_Albedo_SunOcclusion				= 8,
-		GBuffer_Specular_Metallic				= 9,
+		GBuffer_Albedo_Occlusion				= 8,
+		GBuffer_MotionXY_Height_Metallic		= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
-		GBuffer_Emission						= 31,
+		GBuffer_Emission_Specularity						= 31,
 
-		DiffuseTex								= 8,
-		NormalTex								= 9,
-		SpecularTex								= 10,
-		OpacityTex								= 11,
-		SkyCubeMap								= 12,
+		DiffuseMap								= 8,
+		NormalMap								= 9,
+		OpacityMap								= 10,
+		HeightMap								= 11,
+		MetallicMap								= 12,
+		OcclusionMap							= 13,
+		RoughnessMap							= 14,
+		EmissionMap								= 15,
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,
@@ -58,7 +61,7 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
-//		GBuffer_Emission						= 31, 위에 있음
+//		GBuffer_Emission_Specularity						= 31, 위에 있음
 		PreIntegrateEnvBRDFMap					= 29,
 	};
 

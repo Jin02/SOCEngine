@@ -19,10 +19,10 @@ using namespace Rendering;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_blendedDepthBuffer(nullptr), _albedo_sunOcclusion(nullptr),
-	_specular_metallic(nullptr), _normal_roughness(nullptr),
+	_motionXY_height_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr), _emission(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission_specularity(nullptr)
 {
 }
 
@@ -39,13 +39,13 @@ void MeshCamera::OnInitialize()
 	_albedo_sunOcclusion = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
 		_albedo_sunOcclusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create albedo_sunOcclusion render texture" 
+		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
-	_specular_metallic = new Texture::RenderTexture;
+	_motionXY_height_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create _specular_metallic render texture"
+		_motionXY_height_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _motionXY_height_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
@@ -54,10 +54,10 @@ void MeshCamera::OnInitialize()
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
-	_emission = new Texture::RenderTexture;
+	_emission_specularity = new Texture::RenderTexture;
 	ASSERT_COND_MSG(
-		_emission->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create _emission render texture"
+		_emission_specularity->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _emission_specularity render texture"
 		);
 
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
@@ -69,10 +69,10 @@ void MeshCamera::OnInitialize()
 	{
 		ShadingWithLightCulling::GBuffers gbuffer;
 		{
-			gbuffer.albedo_sunOcclusion	= _albedo_sunOcclusion;
-			gbuffer.normal_roughness	= _normal_roughness;
-			gbuffer.specular_metallic	= _specular_metallic;
-			gbuffer.emission			= _emission;
+			gbuffer.albedo_occlusion			= _albedo_sunOcclusion;
+			gbuffer.normal_roughness			= _normal_roughness;
+			gbuffer.motionXY_height_metallic	= _motionXY_height_metallic;
+			gbuffer.emission					= _emission_specularity;
 		}
 
 		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize);
@@ -90,9 +90,9 @@ void MeshCamera::OnDestroy()
 	SAFE_DELETE(_tbrParamConstBuffer);
 
 	SAFE_DELETE(_albedo_sunOcclusion);
-	SAFE_DELETE(_specular_metallic);
+	SAFE_DELETE(_motionXY_height_metallic);
 	SAFE_DELETE(_normal_roughness);
-	SAFE_DELETE(_emission);
+	SAFE_DELETE(_emission_specularity);
 
 	SAFE_DELETE(_deferredShadingWithLightCulling);
 	SAFE_DELETE(_opaqueDepthBuffer);
@@ -383,9 +383,9 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
 		_albedo_sunOcclusion->Clear(context, allZeroColor);
-		_specular_metallic->Clear(context, allZeroColor);
+		_motionXY_height_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
-		_emission->Clear(context, allZeroColor);
+		_emission_specularity->Clear(context, allZeroColor);
 	}
 
 	//inverted depth, so clear value is 0
@@ -435,9 +435,9 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
 			_albedo_sunOcclusion->GetRenderTargetView(),
-			_specular_metallic->GetRenderTargetView(),
+			_motionXY_height_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
-			_emission->GetRenderTargetView(),
+			_emission_specularity->GetRenderTargetView(),
 			nullptr
 		};
 
@@ -496,7 +496,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		if(sky)
 		{
 			if(sky->GetIsSkyOn())
-				sky->Render(dx, this, _emission, _opaqueDepthBuffer);
+				sky->Render(dx, this, _emission_specularity, _opaqueDepthBuffer);
 		}
 	}
 

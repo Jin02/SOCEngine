@@ -197,7 +197,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11Unorde
 								{
 									material = new PhysicallyBasedMaterial(name);
 									material->Initialize();
-									material->UpdateMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
+									material->SetMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
 
 									matMgr->Add(matKey, material);
 								}
@@ -248,7 +248,7 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11Unorde
 						{
 							material = new PhysicallyBasedMaterial(name);
 							material->Initialize();
-							material->UpdateMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
+							material->SetMainColor(Color(voxelColor.r, voxelColor.g, voxelColor.b, 1.0f));
 
 							matMgr->Add(matKey, material);
 						}

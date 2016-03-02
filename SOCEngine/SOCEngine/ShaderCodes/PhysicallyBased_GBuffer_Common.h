@@ -9,58 +9,69 @@
 
 struct GBuffer
 {
-	float4 albedo_sunOcclusion		: SV_Target0;
-	float4 specular_metallic		: SV_Target1;
+	float4 albedo_occlusion			: SV_Target0;
+	float4 motionXY_height_metallic	: SV_Target1;
 	float4 normal_roughness 		: SV_Target2;
-	float4 emission					: SV_Target3;
+	float4 emission_specularity		: SV_Target3;
 };
 
 SamplerState GBufferDefaultSampler 	: register( s0 );
 
 
-#if defined(USE_PBR_TEXTURE)
-void MakeGBuffer(float4 diffuseTex, float4 normalWithRoughness, float4 specularTex, float3 worldPos,
-				out float4 albedo_sunOcclusion, out float4 specular_metallic, out float4 normal_roughness, out float4 emission)
-#else
-void MakeGBuffer(float4 diffuseTex, float3 normal, float4 specularTex, float3 worldPos,
-				 out float4 albedo_sunOcclusion, out float4 specular_metallic, out float4 normal_roughness, out float4 emission)
-#endif
+void MakeGBuffer(float3 worldNormal, float2 uv,
+				 out float4 albedo_occlusion, out float4 motionXY_height_metallic, out float4 normal_roughness, out float4 emission_specularity)
 {
-#if defined(USE_PBR_TEXTURE)
-	float3 normal = normalWithRoughness.rgb;
-#endif
+	float3 albedo = float3(0.0f, 0.0f, 0.0f);
+	{
+		float3 mtlMainColor	= GetMaterialMainColor().rgb;
+		float3 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, uv).rgb;
 
-	bool hasDiffuseMap		= HasDiffuseTexture();
-	bool hasSpecularMap		= HasSpecularTexture();
+		albedo = lerp(mtlMainColor, diffuseTex * mtlMainColor, HasDiffuseMap());
+	}
+	float occlusion = occlusionMap.Sample(GBufferDefaultSampler, uv).x;
+
+	float3 normal = normalize(worldNormal) * 0.5f + 0.5f;
+	float roughness = 0.0f;
+	{
+		float roughnessTex = roughnessMap.Sample(GBufferDefaultSampler, uv).x;
+		float matRoughness = GetMaterialRoughness();
+
+		roughness = lerp(matRoughness, roughnessTex, HasRoughnessMap());
+	}
+
+	float specularity = GetMaterialSpecularity();
+	float3 emissiveColor = float3(0.0f, 0.0f, 0.0f);
+	{
+		float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
+		float3 emissiveTex		= emissionMap.Sample(GBufferDefaultSampler, uv).rgb;
+
+		emissiveColor = lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
+	}
+
+	float height = heightMap.Sample(GBufferDefaultSampler, uv).x;
+
+	float2 motion = float2(0.0f, 0.0f);
+	{
+
+	}
 	
-	float metallic, roughness;
-	Parse_Metallic_Roughness(metallic, roughness);
+	float metallic = 0.0f;
+	{
+		float metallicTex = metallicMap.Sample(GBufferDefaultSampler, uv).x;
+		float mtlMetallic = GetMaterialMetallic();
 
-	float3 emissionColor	= material_emissionColor.rgb;
-	float3 mainColor		= abs(material_mainColor);
-	float3 albedo			= lerp(mainColor, diffuseTex.rgb * mainColor, hasDiffuseMap);
+		metallic = lerp(mtlMetallic, metallicTex, HasMetallicMap());
+	}
 
-	albedo_sunOcclusion.rgb	= albedo;
-
-	float3 specular			= lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, hasSpecularMap);
-	specular_metallic.rgb	= specular;
-
-	float3 compressedNormal = normalize(normal) * 0.5f + 0.5f;
-	normal_roughness.rgb	= compressedNormal;
-
-	emission.rgb			= material_emissionColor.rgb;
-
-#if defined(USE_PBR_TEXTURE)
-	albedo_sunOcclusion.a	= 0.0f;
-	specular_metallic.a 	= specularTex.a;
-	normal_roughness.a		= normalWithRoughness.a;
-	emission.a				= 0.0f;
-#else
-	albedo_sunOcclusion.a	= 0.0f;
-	specular_metallic.a 	= metallic;
-	normal_roughness.a		= roughness;
-	emission.a				= 0.0f;
-#endif
+	albedo_occlusion.rgb		= albedo;
+	albedo_occlusion.a			= occlusion;
+	motionXY_height_metallic.rg	= motion;
+	motionXY_height_metallic.b	= height;
+	motionXY_height_metallic.a	= metallic;
+	normal_roughness.rgb		= normal;
+	normal_roughness.a			= roughness;
+	emission_specularity.rgb	= emissiveColor;
+	emission_specularity.a		= specularity;
 }
 
 #endif

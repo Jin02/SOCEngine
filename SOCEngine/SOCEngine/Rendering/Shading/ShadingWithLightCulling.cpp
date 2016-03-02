@@ -77,11 +77,10 @@ void ShadingWithLightCulling::Initialize(
 	{
 		ResourceManager* resMgr = ResourceManager::SharedInstance();
 
-		AddTextureToInputTextureList(uint(TextureBindIndex::PreIntegrateEnvBRDFMap),		resMgr->GetPreIntegrateEnvBRDFMap());
-		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Albedo_SunOcclusion),	geometryBuffers.albedo_sunOcclusion);
-		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Specular_Metallic),		geometryBuffers.specular_metallic);
-		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Normal_Roughness),		geometryBuffers.normal_roughness);
-		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Emission),				geometryBuffers.emission);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Albedo_Occlusion),			geometryBuffers.albedo_occlusion);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_MotionXY_Height_Metallic),	geometryBuffers.motionXY_height_metallic);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Normal_Roughness),			geometryBuffers.normal_roughness);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Emission_Specularity),					geometryBuffers.emission);
 
 		// ShadowMap Atlas
 		{
@@ -150,25 +149,25 @@ void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
 
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	if(sky)
-	{
-		additionalConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::SkyMapInfoParam), sky->GetSkyMapInfoConstBuffer()));
+	//if(sky)
+	//{
+	//	additionalConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::SkyMapInfoParam), sky->GetSkyMapInfoConstBuffer()));
 
-		ID3D11ShaderResourceView* srv = sky->GetSkyCubeMap()->GetShaderResourceView()->GetView();
-		context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
-		
-		ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
-		context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
-	}
+	//	ID3D11ShaderResourceView* srv = sky->GetSkyCubeMap()->GetShaderResourceView()->GetView();
+	//	context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
+	//	
+	//	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
+	//	context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
+	//}
 
 	LightCulling::Dispatch(dx, tbrConstBuffer, &additionalConstBuffers);
 
-	if(sky)
-	{
-		ID3D11ShaderResourceView* srv = nullptr;
-		context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
-		
-		ID3D11SamplerState* sampler = nullptr;
-		context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
-	}
+	//if(sky)
+	//{
+	//	ID3D11ShaderResourceView* srv = nullptr;
+	//	context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
+	//	
+	//	ID3D11SamplerState* sampler = nullptr;
+	//	context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
+	//}
 }
