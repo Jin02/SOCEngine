@@ -12,7 +12,7 @@ struct Surface
 	float	depth;
 
 	float3	albedo;
-	float	sunOcclusion;
+	float	occlusion;
 
 	float3	normal;
 	float	roughness;
@@ -20,7 +20,11 @@ struct Surface
 	float3	specular;
 	float	metallic;
 
-	float4	emission;
+	float3	emission;
+	float	specularity;
+
+	float2	motion;
+	float	height;
 };
 
 void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx)
@@ -50,30 +54,30 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.worldPos	= worldPosition.xyz;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_sunOcclusion = g_tGBufferAlbedo_sunOcclusion.Load( globalIdx, sampleIdx );
+	float4 albedo_occlusion = g_tGBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
+	float4 motionXY_height_metallic = g_tGBufferMotionXY_height_metallic.Load( globalIdx, sampleIdx );
+	float4 emission_specularity = g_tGBufferEmission_specularity.Load(globalIdx, sampleIdx);
 #else
-	float4 albedo_sunOcclusion = g_tGBufferAlbedo_sunOcclusion.Load( uint3(globalIdx, 0) );
+	float4 albedo_occlusion = g_tGBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
+	float4 motionXY_height_metallic = g_tGBufferMotionXY_height_metallic.Load( uint3(globalIdx, 0) );
+	float4 emission_specularity = g_tGBufferEmission_specularity.Load(uint3(globalIdx, 0));
 #endif
 
-	outSurface.albedo		= albedo_sunOcclusion.rgb;
-	outSurface.sunOcclusion = albedo_sunOcclusion.a;
+	float specularity		= emission_specularity.a;
+	float3 baseColor		= albedo_occlusion.rgb;
+	float metallic			= motionXY_height_metallic.a;
 
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( globalIdx, sampleIdx );
-#else
-	float4 specular_metallic = g_tGBufferSpecular_metallic.Load( uint3(globalIdx, 0) );
-#endif
+	outSurface.albedo		= baseColor - baseColor * metallic;
+	outSurface.occlusion	= albedo_occlusion.a;
 
-	outSurface.specular	= specular_metallic.rgb;
-	outSurface.metallic	= specular_metallic.a;
+	outSurface.specular		= lerp(0.08f * specularity.xxx, baseColor, metallic);
+	outSurface.metallic		= metallic;
 
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 emission = g_tGBufferEmission.Load(globalIdx, sampleIdx);
-#else
-	float4 emission = g_tGBufferEmission.Load(uint3(globalIdx, 0));
-#endif
+	outSurface.emission		= emission_specularity.rgb;
+	outSurface.specularity	= specularity;
 
-	outSurface.emission = emission;
+	outSurface.motion		= (motionXY_height_metallic.xy * 2.0f) - float2(1.0f, 1.0f);
+	outSurface.height		= motionXY_height_metallic.z;
 }
 
 #endif
