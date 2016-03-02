@@ -13,36 +13,25 @@ Buffer<uint> g_perLightIndicesInTile	: register( t13 );
 SamplerState defaultSampler				: register( s0 );
 
 
-#if defined(USE_PBR_TEXTURE)
-float4 Lighting(float3 normal, float roughnessInTex, float3 vtxWorldPos, float2 SVPosition, float2 uv)
-#else
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
-#endif
 {
-	float4 diffuseTex	= diffuseTexture.Sample(defaultSampler, uv);
-	float4 specularTex	= specularTexture.Sample(defaultSampler, uv);
+	float4 diffuseTex			= diffuseMap.Sample(defaultSampler, uv);
 
-	float metallic, roughness;
-	Parse_Metallic_Roughness(metallic, roughness);
+	float metallic				= GetMaterialMetallic();
+	float roughness				= GetMaterialRoughness();
+	float specularity			= GetMaterialSpecularity();
 
-#if defined(USE_PBR_TEXTURE)
-	metallic = specularTex.a;
-	roughness = roughnessInTex;
-#endif
-
-	float3 specularColor = lerp(float3(0.05f, 0.05f, 0.05f), specularTex.rgb, HasSpecularTexture());
-
-	float3 emissionColor	= material_emissionColor.rgb;
-	float3 mainColor		= abs(material_mainColor);
-	float3 diffuseColor		= lerp(mainColor + emissionColor, diffuseTex.rgb * mainColor + emissionColor, HasDiffuseTexture());
+	float3 emissionColor		= GetMaterialEmissiveColor().rgb;
+	float3 mainColor			= GetMaterialMainColor().rgb;
+	float3 diffuseColor			= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition - vtxWorldPos );
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
-	lightParams.diffuseColor	= diffuseColor;
-	lightParams.specularColor	= specularColor;
+	lightParams.diffuseColor	= diffuseColor - diffuseColor * metallic;
+	lightParams.specularColor	= lerp(0.08f * specularity.xxx, diffuseColor, metallic);
 
 	uint tileIdx				= GetTileIndex(SVPosition);
 	uint startIdx				= tileIdx * tbrParam_maxNumOfPerLightInTile + 1;
@@ -152,8 +141,8 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 
 	float3	result = front + back;
 
-	float	diffuseTexAlpha = lerp(1.0f, diffuseTex.a, HasDiffuseTexture());
-	float	alpha = diffuseTexAlpha * (1.0f - opacityTexture.Sample(defaultSampler, uv).x) * ParseMaterialAlpha();
+	float	diffuseTexAlpha = lerp(1.0f, diffuseTex.a, HasDiffuseMap());
+	float	alpha = diffuseTexAlpha * (1.0f - opacityMap.Sample(defaultSampler, uv).x) * GetMaterialMainColor().a;
 #else
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	float	alpha = 1.0f;

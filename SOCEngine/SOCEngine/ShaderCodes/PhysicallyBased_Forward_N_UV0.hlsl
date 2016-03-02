@@ -33,13 +33,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
 	float3 normal	= normalize(input.normal);
-
-#if defined(USE_PBR_TEXTURE)
-	float roughness = normalTexture.Sample(defaultSampler, input.uv).a;
-	return Lighting(normal, roughness, input.positionWorld, input.position.xy, input.uv);
-#else
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
-#endif
 }
 
 #include "OptionalRendering_Forward.h"
