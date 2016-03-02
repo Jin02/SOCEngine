@@ -8,7 +8,7 @@
 #include "BRDF.h"
 
 SamplerState skyCubeMapSampler	: register( s4  );
-TextureCube	skyCubeMap			: register( t12 );
+TextureCube	skyCubeMap			: register( t30 );
 
 cbuffer SkyMapInfoParam			: register( b7 )
 {

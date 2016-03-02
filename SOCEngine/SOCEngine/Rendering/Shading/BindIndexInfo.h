@@ -63,6 +63,7 @@ namespace Rendering
 		VCT_InputDirectColorMap					= 30,
 //		GBuffer_Emission_Specularity						= 31, 위에 있음
 		PreIntegrateEnvBRDFMap					= 29,
+		SkyCubeMap								= 30,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
