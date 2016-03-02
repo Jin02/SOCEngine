@@ -136,7 +136,7 @@ void TestScene::OnInitialize()
 	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
 //	light->SetProjectionSize(10);
 //	light->SetProjectionSize(30);
-	light->SetIntensity(8.0f);
+	light->SetIntensity(2.0f);
 	light->SetUseAutoProjectionLocation(true);
 	light->ActiveShadow(false);
 #elif 0
@@ -260,10 +260,10 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
-	//Transform* tf = _testObject->GetTransform();
+	Transform* tf = _testObject->GetTransform();
 
-	//Vector3 euler = tf->GetLocalEulerAngle();
-	//tf->UpdateEulerAngles(euler - Vector3(0, 0.1f, 0));
+	Vector3 euler = tf->GetLocalEulerAngle();
+	tf->UpdateEulerAngles(euler - Vector3(0, 0.1f, 0));
 
 	//Vector3 pos = tf->GetLocalPosition();
 	//tf->UpdatePosition(pos - Vector3(0, 0.2f, 0));
