@@ -105,7 +105,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 	};
 
 	CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelMap,					injectedColorMap->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			meshCam->GetGBufferAlbedoSunOcclusion()->GetShaderResourceView());
+	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			meshCam->GetGBufferAlbedoOcclusion()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_MotionXY_Height_Metallic,	meshCam->GetGBufferMotionXYHeightMetallic()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,			meshCam->GetGBufferNormalRoughness()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,						meshCam->GetOpaqueDepthBuffer()->GetShaderResourceView());

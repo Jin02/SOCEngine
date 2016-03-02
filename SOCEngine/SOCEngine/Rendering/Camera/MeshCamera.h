@@ -81,7 +81,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(TBRParamConstBuffer,			const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
 
-			GET_ACCESSOR(GBufferAlbedoSunOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
+			GET_ACCESSOR(GBufferAlbedoOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
 			GET_ACCESSOR(GBufferNormalRoughness,		const Texture::RenderTexture*,		_normal_roughness);
 			GET_ACCESSOR(GBufferMotionXYHeightMetallic,	const Texture::RenderTexture*,		_motionXY_height_metallic);
 			GET_ACCESSOR(GBufferEmissionSpecularity,	const Texture::RenderTexture*,		_emission_specularity);
