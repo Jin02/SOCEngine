@@ -14,9 +14,12 @@ namespace Rendering
 			IBLPass();
 			virtual ~IBLPass();
 
+		private:
+			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT){}
+
 		public:
-			void Initialize(const Camera::MeshCamera* meshCam, const Sky::SkyForm* sky);
-			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT);
+			void Initialize(const Sky::SkyForm* sky);
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Camera::MeshCamera* meshCam);
 		};
 	}
 }

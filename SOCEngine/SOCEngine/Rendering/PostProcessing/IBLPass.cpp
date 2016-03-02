@@ -21,7 +21,7 @@ IBLPass::~IBLPass()
 {
 }
 
-void IBLPass::Initialize(const MeshCamera* meshCam, const SkyForm* sky)
+void IBLPass::Initialize(const SkyForm* sky)
 {
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
@@ -30,12 +30,6 @@ void IBLPass::Initialize(const MeshCamera* meshCam, const SkyForm* sky)
 	{
 		#define AddInputTexture(bind, texture)	inputTextures.push_back(ShaderForm::InputTexture(uint(bind), texture, false, false, false, true));
 
-		AddInputTexture(TextureBindIndex::GBuffer_Albedo_Occlusion, meshCam->GetGBufferAlbedoOcclusion());
-		AddInputTexture(TextureBindIndex::GBuffer_Emission_Specularity, meshCam->GetGBufferEmissionSpecularity());
-		AddInputTexture(TextureBindIndex::GBuffer_MotionXY_Height_Metallic, meshCam->GetGBufferMotionXYHeightMetallic());
-		AddInputTexture(TextureBindIndex::GBuffer_Normal_Roughness, meshCam->GetGBufferNormalRoughness());	
-		AddInputTexture(TextureBindIndex::GBuffer_Depth, meshCam->GetOpaqueDepthBuffer());
-
 		const Texture2D* preIntegrateEnvBRDFMap = ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 		AddInputTexture(TextureBindIndex::PreIntegrateEnvBRDFMap, preIntegrateEnvBRDFMap);
 		AddInputTexture(TextureBindIndex::SkyCubeMap, sky->GetSkyCubeMap());
@@ -43,16 +37,30 @@ void IBLPass::Initialize(const MeshCamera* meshCam, const SkyForm* sky)
 
 	std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
 	{
-		inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::TBRParam), meshCam->GetTBRParamConstBuffer(),		false, false, false, true));
 		inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::SkyMapInfoParam), sky->GetSkyMapInfoConstBuffer(),	false, false, false, true));
 	}
 
 	FullScreen::Initialize("IBLPass", "PS", &macros);
 }
 
-void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT)
+void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const Camera::MeshCamera* meshCam)
 {
+	auto BindTexturesToPixelShader = [](ID3D11DeviceContext* context, TextureBindIndex bind, const Texture2D* tex)
+	{
+		ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+		context->PSSetShaderResources(uint(bind), 1, &srv);
+	};
+
 	ID3D11DeviceContext* context	= dx->GetContext();
+
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			meshCam->GetGBufferAlbedoOcclusion());
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Emission_Specularity,		meshCam->GetGBufferEmissionSpecularity());
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_MotionXY_Height_Metallic,	meshCam->GetGBufferMotionXYHeightMetallic());
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Normal_Roughness,			meshCam->GetGBufferNormalRoughness());	
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,						meshCam->GetOpaqueDepthBuffer());
+
+	ID3D11Buffer* buffer = meshCam->GetTBRParamConstBuffer()->GetBuffer();
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
 
 	ID3D11SamplerState* sampler		= dx->GetSamplerStateLinear();
 	context->PSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
@@ -61,4 +69,13 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 
 	sampler = nullptr;
 	context->PSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
+
+	buffer = nullptr;
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
+
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			nullptr);
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Emission_Specularity,		nullptr);
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_MotionXY_Height_Metallic,	nullptr);
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Normal_Roughness,			nullptr);	
+	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,						nullptr);
 }
