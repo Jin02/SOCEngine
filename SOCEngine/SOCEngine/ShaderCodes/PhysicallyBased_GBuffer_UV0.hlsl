@@ -29,25 +29,18 @@ VS_OUTPUT VS( VS_INPUT input )
 GBuffer PS( VS_OUTPUT input) : SV_Target
 {
 	GBuffer outGBuffer;
-	float4 diffuseTex = diffuseTexture.Sample(GBufferDefaultSampler, input.uv);
 
 #ifdef ENABLE_ALPHA_TEST
-	float opacityMap = 1.0f - opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
-	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
+	float4 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, input.uv);
+	float opacityTex	= 1.0f - opacityMap.Sample(GBufferDefaultSampler, input.uv).x;
+	float alpha			= diffuseTex.a * opacityTex * GetMaterialMainColor().a;
+
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
-	float3 normal	= float3(0.f, 0.f, 0.f);
-	float4 specular	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
 
-#if defined(USE_PBR_TEXTURE)
-	float roughness = normalTexture.Sample(GBufferDefaultSampler, input.uv).a;
-	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, input.worldPos,
-		outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
-#else
-	MakeGBuffer(diffuseTex, normal, specular, input.worldPos,
-	outGBuffer.albedo_sunOcclusion, outGBuffer.specular_metallic, outGBuffer.normal_roughness, outGBuffer.emission);
-#endif
+	float3 normal	= float3(0.f, 0.f, 0.f);
+	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_height_metallic, outGBuffer.normal_roughness, outGBuffer.emission_specularity);
 
 	return outGBuffer;
 }
