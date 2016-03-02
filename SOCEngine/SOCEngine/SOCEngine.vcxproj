@@ -207,7 +207,7 @@
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
     <FxCompile Include="ShaderCodes\IBLPass.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

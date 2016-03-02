@@ -44,15 +44,15 @@ float4 PS( PS_INPUT input ) : SV_Target
 	// Specular
 	{
 #ifdef USE_APPROXIMATE_SPECULAR_IBL
-		specular = ApproximateSpecularIBL(preIntegrateEnvBRDFMap, specularColor,
+		specular = ApproximateSpecularIBL(preIntegrateEnvBRDFMap, surface.specular,
 											surface.roughness, surface.normal, viewDir, true);
 #else
-		specular = SpecularIBL(specularColor, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES);
+		specular = SpecularIBL(surface.specular, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES);
 #endif
 	}
 
 	// float ao = surface.ao * screenSpace.ao;
 
 	float3 result = (diffuse + specular);
-	return result;
+	return float4(result, 1.0f);
 }
