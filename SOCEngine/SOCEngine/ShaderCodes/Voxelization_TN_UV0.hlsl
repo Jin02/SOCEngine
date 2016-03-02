@@ -72,11 +72,9 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 void PS( GS_OUTPUT input )
 {
-	float4 normalMap = normalTexture.Sample(defaultSampler, input.uv);
-	bool hasNormalMap = HasNormalTexture();
-
-	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
-	float3 normal		= lerp(input.normal, bumpedNormal, hasNormalMap);
+	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
+	float3 bumpedNormal = NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 normal		= lerp(input.normal, bumpedNormal, HasNormalMap());
 
 	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos);
 }

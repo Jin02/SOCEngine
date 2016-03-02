@@ -54,12 +54,12 @@ void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3], 
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 {
-	float4 diffuseTex	= diffuseTexture.Sample(defaultSampler, uv);
-	float3 mainColor	= abs(material_mainColor);
-	albedo				= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseTexture());
+	float4 diffuseTex	= diffuseMap.Sample(defaultSampler, uv);
+	float3 mainColor	= GetMaterialMainColor().rgb;
+	albedo				= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
 
-	//float opacityMap	= 1.0f - opacityTexture.Sample(defaultSampler, input.uv).x;
-	alpha				= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseTexture()) * opacityMap * ParseMaterialAlpha();
+	//float opacityMap	= 1.0f - opacityMap.Sample(defaultSampler, input.uv).x;
+	alpha				= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
 }
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
@@ -110,7 +110,7 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
 
 		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, worldPos);
-		radiosity += material_emissionColor.rgb;
+		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 
 	StoreRadiosity(OutInjectionColorMap, radiosity, alpha, normal, voxelIdx, voxelization_currentCascade);
