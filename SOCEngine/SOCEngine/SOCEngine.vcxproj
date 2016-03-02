@@ -85,6 +85,7 @@
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
+    <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
@@ -347,6 +348,7 @@
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp" />
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
