@@ -8,7 +8,7 @@
 #include "BRDF.h"
 
 SamplerState skyCubeMapSampler	: register( s4  );
-TextureCube	skyCubeMap			: register( t30 );
+TextureCube	skyCubeMap			: register( t32 );
 
 cbuffer SkyMapInfoParam			: register( b7 )
 {
@@ -43,7 +43,7 @@ float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSampl
 		
 	for( uint i = 0; i < numSample; i++ )
 	{
-		float2 e		= Hammersley( i, numSample, uint2(0, 0) );
+		float2 e		= Hammersley( i, numSample );
 		float3 halfVec	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, reflectDir );
 		float3 lightDir	= 2 * dot( reflectDir, halfVec ) * halfVec - reflectDir;
 
@@ -66,16 +66,19 @@ float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specu
 
 	float3 prefilteredColor	= float3(0.0f, 0.0f, 0.0f);
 	float2 envBRDF			= float2(0.0f, 0.0f);
+
+//	roughness	= saturate(roughness - 0.0002f);
+//	NdotV		= saturate(NdotV - 0.0002f);
 	
 	if(usePreIntegrateEnvMap)
 	{
 		prefilteredColor	= skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, mip).rgb;
-		envBRDF				= saturate(preIntegrateEnvMap.SampleLevel(skyCubeMapSampler, saturate(float2(roughness - 0.002, NdotV - 0.002)), 0));
+		envBRDF				= saturate(preIntegrateEnvMap.SampleLevel(skyCubeMapSampler, float2(roughness, NdotV), 0));
 	}
 	else
 	{
 		prefilteredColor	= PreFilterEnvMap(roughness, reflectDir, BRDF_SAMPLES).rgb;
-		envBRDF				= IntegrateBRDF(roughness, NdotV, BRDF_SAMPLES);
+		envBRDF				= saturate(IntegrateBRDF(roughness, NdotV, BRDF_SAMPLES));
 	}
 
 	return prefilteredColor * (specularColor * envBRDF.x + envBRDF.y);
@@ -87,7 +90,7 @@ float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 
 
 	for( uint i = 0; i < numSamples; i++ )
 	{
-		float2 e		= Hammersley( i, numSamples, uint2(0, 0) );
+		float2 e		= Hammersley( i, numSamples );
 		float3 halfVec	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, normal );
 		float3 lightDir	= 2 * dot( viewDir, halfVec ) * halfVec - viewDir;
 
@@ -100,14 +103,14 @@ float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 
 		{
 			float3 SampleColor = skyCubeMap.SampleLevel( skyCubeMapSampler, lightDir, 0 ).rgb;
 
-			float Vis	= GeometrySmithJointApproximately( roughness, NdotV, NdotL );
-			float Fc	= pow( 1 - VdotH, 5 );
-			float3 F	= (1 - Fc) * specularColor + Fc;
+			float Vis	= GeometrySmithJointApproximately( NdotV, NdotL, roughness );
+			float Fc	= pow( 1.0f - VdotH, 5.0f );
+			float3 F	= (1.0f - Fc) * specularColor + Fc;
 
 			// Incident light = SampleColor * NdotL
 			// Microfacet specular = D*G*F / (4*NdotL*NdotV) = D*Vis*F
 			// pdf = D * NdotH / (4 * VdotH)
-			specularLighting += SampleColor * F * ( NdotL * Vis * (4 * VdotH / NdotH) );
+			specularLighting += SampleColor * F * ( NdotL * Vis * (4.0f * VdotH / NdotH) );
 		}
 	}
 
@@ -125,7 +128,7 @@ float3 DiffuseIBL(float3 diffuseColor, float roughness, float3 normal, float3 vi
 
 	for( uint i = 0; i < numSamples; i++ )
 	{
-		float2 e		= Hammersley( i, numSamples, uint2(0, 0) );
+		float2 e		= Hammersley( i, numSamples );
 		float3 lightDir	= TangentToWorld( CosineSampleHemisphere( e ).xyz, normal );
 		float3 halfVec	= normalize(viewDir + lightDir);
 
