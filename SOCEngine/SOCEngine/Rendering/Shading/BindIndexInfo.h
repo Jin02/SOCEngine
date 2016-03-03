@@ -17,7 +17,7 @@ namespace Rendering
 		GBuffer_MotionXY_Height_Metallic		= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
-		GBuffer_Emission_Specularity						= 31,
+		GBuffer_Emission_Specularity			= 31,
 
 		DiffuseMap								= 8,
 		NormalMap								= 9,
@@ -61,9 +61,10 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
-//		GBuffer_Emission_Specularity						= 31, 위에 있음
-		PreIntegrateEnvBRDFMap					= 29,
-		SkyCubeMap								= 30,
+//		GBuffer_Emission_Specularity			31, 위에 있음
+		IBLPass_PreIntegrateEnvBRDFMap			= 29,
+		IBLPass_IlluminationMap					= 30,
+		SkyCubeMap								= 32,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
