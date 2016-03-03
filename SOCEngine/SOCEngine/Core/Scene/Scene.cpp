@@ -23,9 +23,10 @@ using namespace Rendering::Sky;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _backBufferMaker(nullptr),
+	_renderMgr(nullptr),
 	_shadowRenderer(nullptr), _globalIllumination(nullptr),
-	_sky(nullptr), _ableDeallocSky(false)
+	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
+	_postProcessingSystem(nullptr)
 {
 	_state = State::Init;
 }
@@ -37,9 +38,10 @@ Scene::~Scene(void)
 	SAFE_DELETE(_uiManager);
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
-	SAFE_DELETE(_backBufferMaker);
 	SAFE_DELETE(_shadowRenderer);
 	SAFE_DELETE(_globalIllumination);
+	SAFE_DELETE(_backBuffer);
+	SAFE_DELETE(_postProcessingSystem);
 }
 
 void Scene::Initialize()
@@ -59,9 +61,6 @@ void Scene::Initialize()
 	_materialMgr	= new MaterialManager;
 	_materialMgr->Initialize();
 
-	_backBufferMaker = new BackBufferMaker;
-	_backBufferMaker->Initialize(false);
-
 	_shadowRenderer = new ShadowRenderer;
 	_shadowRenderer->Initialize(false);
 
@@ -73,6 +72,12 @@ void Scene::Initialize()
 
 	_boundBox.SetMinMax(Vector3(fltMax, fltMax, fltMax), Vector3(fltMin, fltMin, fltMin));
 	Matrix::Identity(_localMat);
+
+	_backBuffer = new RenderTexture;
+	_backBuffer->Initialize(_dx->GetBackBufferRTV(), _dx->GetBackBufferSize());
+
+	_postProcessingSystem = new PostProcessPipeline;
+	_postProcessingSystem->Initialize(_dx->GetBackBufferSize());
 
 	NextState();
 	OnInitialize();
@@ -159,7 +164,6 @@ void Scene::Render()
 		return indirectColorMap;
 	};
 
-	auto skyPassNull = std::function<void(const MeshCamera*)>(nullptr);
 	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
@@ -178,15 +182,8 @@ void Scene::Render()
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
 
-	CameraForm* mainCam = _cameraMgr->GetMainCamera();
-	if(mainCam)
-	{
-		ID3D11RenderTargetView* backBufferRTV	= _dx->GetBackBufferRTV();
-		const RenderTexture* camRT				= mainCam->GetRenderTarget();
-
-		MeshCamera* mainMeshCam = dynamic_cast<MeshCamera*>(mainCam);
-		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainMeshCam->GetTBRParamConstBuffer());
-	}
+	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
+	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
 
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
@@ -198,13 +195,13 @@ void Scene::Destroy()
 	DeleteAllObject();
 
 	_materialMgr->DeleteAll();
-	_backBufferMaker->Destroy();
 	_shadowRenderer->Destroy();
 	_renderMgr->Destroy();
 	_uiManager->Destroy();
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
 	_globalIllumination->Destroy();
+	_postProcessingSystem->Destroy();
 }
 
 void Scene::NextState()

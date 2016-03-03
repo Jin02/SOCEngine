@@ -19,6 +19,8 @@
 #include "BasicGeometryGenerator.h"
 #include "SkyForm.h"
 
+#include "PostProcessPipeline.h"
+
 namespace Core
 {
 	class Scene
@@ -32,17 +34,20 @@ namespace Core
 		UI::Manager::UIManager*								_uiManager;
 		Rendering::Manager::LightManager*					_lightManager;
 		Rendering::Manager::MaterialManager*				_materialMgr;
-		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
 
 		Rendering::Sky::SkyForm*							_sky;
 		bool												_ableDeallocSky;
 
-		State							_state;
-		Intersection::BoundBox			_boundBox;
-		Math::Matrix					_localMat;
-		std::function<void()>			_exitFunc;
+		Rendering::Texture::RenderTexture*					_backBuffer;
+
+		State												_state;
+		Intersection::BoundBox								_boundBox;
+		Math::Matrix										_localMat;
+		std::function<void()>								_exitFunc;
+
+		Rendering::PostProcessPipeline*						_postProcessingSystem;
 
 	protected:
 		Rendering::GI::GlobalIllumination*					_globalIllumination;
