@@ -3,6 +3,7 @@
 
 #define USE_SHADOW_INVERTED_DEPTH
 #define USE_ANISOTROPIC_INJECTION_MAP
+#define ENABLE_SKY_LIGHT
 //#define USE_UI
 
 #define LIGHT_CULLING_TILE_RES						16
@@ -10,7 +11,10 @@
 #define INJECTION_TILE_RES							16
 #define MIPMAPPING_TILE_RES_HALF					8
 #define VOXEL_CONE_TRACING_TILE_RES					16
-
+#define NUM_ENV_FILTER_SAMPLER						32	
+#define MAXIMUM_LUMEN								25500
+#define PRE_INTEGRATE_TILE_RES						16
+#define BRDF_SAMPLES								64
 
 // Math
 #define PI											3.141592654f

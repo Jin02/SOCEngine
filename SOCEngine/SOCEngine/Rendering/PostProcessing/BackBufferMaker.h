@@ -23,7 +23,7 @@ namespace Rendering
 			virtual ~BackBufferMaker();
 
 		private:
-			void Render(const Texture::RenderTexture* outResultRT, ID3D11SamplerState* sampler){}
+			virtual void Render(const Texture::RenderTexture* outResultRT, ID3D11SamplerState* sampler){}
 
 		public:
 			void Initialize(bool useUI);

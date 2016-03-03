@@ -16,7 +16,7 @@ void MaterialManager::Initialize()
 {
 	PhysicallyBasedMaterial* material = new PhysicallyBasedMaterial("@Default");
 	material->Initialize();
-	material->UpdateMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+	material->SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 	Add("@Default", material);
 }

@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "RenderTypes.h"
+#include "SkyForm.h"
 
 namespace Rendering
 {
@@ -16,7 +17,7 @@ namespace Rendering
 		{
 		public:
 			static const Usage GetUsage() {	return Usage::MeshRender; }
-			static const uint NumOfRenderTargets = 3;
+			static const uint NumOfRenderTargets = 4;
 
 		private:
 			bool _useTransparent;
@@ -24,9 +25,10 @@ namespace Rendering
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
-			Texture::RenderTexture*						_albedo_emission;
+			Texture::RenderTexture*						_albedo_sunOcclusion;
 			Texture::RenderTexture*						_normal_roughness;
-			Texture::RenderTexture*						_specular_metallic;
+			Texture::RenderTexture*						_motionXY_height_metallic;
+			Texture::RenderTexture*						_emission_specularity;
 
 			TBDR::ShadingWithLightCulling*				_deferredShadingWithLightCulling;
 			Texture::DepthBuffer*						_opaqueDepthBuffer;
@@ -50,6 +52,7 @@ namespace Rendering
 				const Device::DirectX* dx,
 				const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager,
 				const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+				Sky::SkyForm* sky,
 				std::function<const Texture::RenderTexture*(MeshCamera*)> giPass);
 
 		public:
@@ -76,18 +79,19 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(TBRParamConstBuffer,		const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
+			GET_ACCESSOR(TBRParamConstBuffer,			const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
 
-			GET_ACCESSOR(GBufferAlbedoEmission,		const Texture::RenderTexture*,		_albedo_emission);
-			GET_ACCESSOR(GBufferNormalRoughness,	const Texture::RenderTexture*,		_normal_roughness);
-			GET_ACCESSOR(GBufferSpecularMetallic,	const Texture::RenderTexture*,		_specular_metallic);
+			GET_ACCESSOR(GBufferAlbedoOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
+			GET_ACCESSOR(GBufferNormalRoughness,		const Texture::RenderTexture*,		_normal_roughness);
+			GET_ACCESSOR(GBufferMotionXYHeightMetallic,	const Texture::RenderTexture*,		_motionXY_height_metallic);
+			GET_ACCESSOR(GBufferEmissionSpecularity,	const Texture::RenderTexture*,		_emission_specularity);
 
-			GET_ACCESSOR(OpaqueDepthBuffer,			const Texture::DepthBuffer*,		_opaqueDepthBuffer);
-			GET_ACCESSOR(BlendedDepthBuffer,		const Texture::DepthBuffer*,		_blendedDepthBuffer);
+			GET_ACCESSOR(OpaqueDepthBuffer,				const Texture::DepthBuffer*,		_opaqueDepthBuffer);
+			GET_ACCESSOR(BlendedDepthBuffer,			const Texture::DepthBuffer*,		_blendedDepthBuffer);
 
-			GET_ACCESSOR(OffScreen,					const Texture::RenderTexture*,		_renderTarget);
-			GET_ACCESSOR(UncompressedOffScreen,		const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
-			GET_ACCESSOR(UseIndirectColorMap,		bool,								_offScreen->GetUseIndirectColorMap());
+			GET_ACCESSOR(OffScreen,						const Texture::RenderTexture*,		_renderTarget);
+			GET_ACCESSOR(UncompressedOffScreen,			const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
+			GET_ACCESSOR(UseIndirectColorMap,			bool,								_offScreen->GetUseIndirectColorMap());
 		};
 	}
 

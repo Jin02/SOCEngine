@@ -825,8 +825,8 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 			if(materialType == Rendering::Material::Type::PhysicallyBasedModel)
 			{
 				PhysicallyBasedMaterial* pbm = dynamic_cast<PhysicallyBasedMaterial*>(material);
-				pbm->UpdateMainColor(Color(impMat.diffuse[0], impMat.diffuse[1], impMat.diffuse[2], impMat.opacity));
-				pbm->SetEmissionColor(Color(impMat.emissive[0], impMat.emissive[1], impMat.emissive[2], 0.0f));
+				pbm->SetMainColor(Color(impMat.diffuse[0], impMat.diffuse[1], impMat.diffuse[2], impMat.opacity));
+				pbm->SetEmissiveColor(Color(impMat.emissive[0], impMat.emissive[1], impMat.emissive[2], 0.0f));
 
 				const auto& textures = impMat.textures;
 				for(auto iter = textures.begin(); iter != textures.end(); ++iter)
@@ -835,15 +835,16 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 
 					if(texture)
 					{
-						if(iter->type == Material::Texture::Type::Diffuse)
-							pbm->UpdateDiffuseMap(texture);
+						if(iter->type == Material::Texture::Type::Diffuse)			 pbm->UpdateDiffuseMap(texture);
+						else if(iter->type == Material::Texture::Type::Specular)	 pbm->UpdateMetallicMap(texture);
+						else if(iter->type == Material::Texture::Type::Emissive)	 pbm->UpdateEmissionMap(texture);
+						else if(iter->type == Material::Texture::Type::Reflection)	 pbm->UpdateRoughnessMap(texture);
+						else if(iter->type == Material::Texture::Type::Transparency) pbm->UpdateOpacityMap(texture);
 						else if( (iter->type == Material::Texture::Type::Normal) )
 						{
 							pbm->UpdateNormalMap(texture);
 							outNormalMapMaterialKeys.insert(materialName);
 						}
-						else if(iter->type == Material::Texture::Type::Specular)
-							pbm->UpdateSpecularMap(texture);
 						else
 						{
 							DEBUG_LOG("Warning, Unsupported Texture Type.");
@@ -866,26 +867,26 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 				if( impMat.shininess > 0.0f )
 					material->SetVariable("Shininess", impMat.shininess);
 
+				auto SetTextureToMaterial =[](Rendering::Material* material, Texture2D* texture, TextureBindIndex bind)
+				{
+					const uint bindIndex = uint(bind);
+					material->SetTextureUseBindIndex(bindIndex, texture, ShaderForm::Usage(false, false, false, true));
+				};
+
 				const auto& textures = impMat.textures;
 				for(auto iter = textures.begin(); iter != textures.end(); ++iter)
 				{
 					Texture::Texture2D* texture = textureMgr->LoadTextureFromFile(meshFileName + ":" + iter->fileName, false);
 
-					if(iter->type == Material::Texture::Type::Diffuse)
-					{
-						const uint shaderSlotIndex = (uint)TextureBindIndex::DiffuseTex;
-						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
-					}
+					if(iter->type == Material::Texture::Type::Diffuse)			 SetTextureToMaterial(material, texture, TextureBindIndex::DiffuseMap);
+					else if(iter->type == Material::Texture::Type::Specular)	 SetTextureToMaterial(material, texture, TextureBindIndex::MetallicMap);
+					else if(iter->type == Material::Texture::Type::Emissive)	 SetTextureToMaterial(material, texture, TextureBindIndex::EmissionMap);
+					else if(iter->type == Material::Texture::Type::Reflection)	 SetTextureToMaterial(material, texture, TextureBindIndex::RoughnessMap);
+					else if(iter->type == Material::Texture::Type::Transparency) SetTextureToMaterial(material, texture, TextureBindIndex::OpacityMap);
 					else if( (iter->type == Material::Texture::Type::Normal) )
 					{
-						const uint shaderSlotIndex = (uint)TextureBindIndex::NormalTex;
-						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
+						SetTextureToMaterial(material, texture, TextureBindIndex::NormalMap);
 						outNormalMapMaterialKeys.insert(materialName);
-					}
-					else if(iter->type == Material::Texture::Type::Specular)
-					{
-						const uint shaderSlotIndex = (uint)TextureBindIndex::SpecularTex;
-						material->SetTextureUseShaderSlotIndex(shaderSlotIndex, texture, ShaderForm::Usage(false, false, false, true));
 					}
 					else
 					{

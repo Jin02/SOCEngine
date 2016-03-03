@@ -18,11 +18,11 @@ using namespace Rendering::TBDR;
 using namespace Rendering;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
-	_blendedDepthBuffer(nullptr), _albedo_emission(nullptr),
-	_specular_metallic(nullptr), _normal_roughness(nullptr),
+	_blendedDepthBuffer(nullptr), _albedo_sunOcclusion(nullptr),
+	_motionXY_height_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission_specularity(nullptr)
 {
 }
 
@@ -36,22 +36,28 @@ void MeshCamera::OnInitialize()
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
-	_albedo_emission = new Texture::RenderTexture;
+	_albedo_sunOcclusion = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_emission->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create albedo_emission render texture" 
+		_albedo_sunOcclusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
-	_specular_metallic = new Texture::RenderTexture;
+	_motionXY_height_metallic = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_specular_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create _specular_metallic render texture"
+		_motionXY_height_metallic->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _motionXY_height_metallic render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
 		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
+		);
+
+	_emission_specularity = new Texture::RenderTexture;
+	ASSERT_COND_MSG(
+		_emission_specularity->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _emission_specularity render texture"
 		);
 
 	_opaqueDepthBuffer = new Texture::DepthBuffer;
@@ -63,9 +69,10 @@ void MeshCamera::OnInitialize()
 	{
 		ShadingWithLightCulling::GBuffers gbuffer;
 		{
-			gbuffer.albedo_emission		= _albedo_emission;
-			gbuffer.normal_roughness	= _normal_roughness;
-			gbuffer.specular_metallic	= _specular_metallic;
+			gbuffer.albedo_occlusion			= _albedo_sunOcclusion;
+			gbuffer.normal_roughness			= _normal_roughness;
+			gbuffer.motionXY_height_metallic	= _motionXY_height_metallic;
+			gbuffer.emission					= _emission_specularity;
 		}
 
 		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize);
@@ -82,9 +89,10 @@ void MeshCamera::OnDestroy()
 {
 	SAFE_DELETE(_tbrParamConstBuffer);
 
-	SAFE_DELETE(_albedo_emission);
-	SAFE_DELETE(_specular_metallic);
+	SAFE_DELETE(_albedo_sunOcclusion);
+	SAFE_DELETE(_motionXY_height_metallic);
 	SAFE_DELETE(_normal_roughness);
+	SAFE_DELETE(_emission_specularity);
 
 	SAFE_DELETE(_deferredShadingWithLightCulling);
 	SAFE_DELETE(_opaqueDepthBuffer);
@@ -98,7 +106,7 @@ void MeshCamera::OnDestroy()
 
 void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	CamMatCBData camConstBufferData;
+	CameraCBData camConstBufferData;
 
 	Matrix	worldMat;
 	Matrix& viewMat = camConstBufferData.viewMat;
@@ -111,7 +119,9 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		GetProjectionMatrix(projMat, true);
 		viewProjMat = viewMat * projMat;
 
-		bool updatedVP = memcmp(&_prevCamMatCBData, &camConstBufferData, sizeof(CamMatCBData)) != 0;
+		camConstBufferData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
+
+		bool updatedVP = memcmp(&_prevCamMatCBData, &camConstBufferData, sizeof(CameraCBData)) != 0;
 		if(updatedVP)
 		{
 			// Make Frustum
@@ -150,13 +160,14 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 
 		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
 
-		tbrParam.viewportSize = Director::SharedInstance()->GetBackBufferSize().Cast<float>();
-		tbrParam.packedNumOfLights = lightManager->GetPackedLightCount();
+		Size<uint> viewportSize = Director::SharedInstance()->GetBackBufferSize();
+		tbrParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
+		tbrParam.packedNumOfLights		= lightManager->GetPackedLightCount();
+		tbrParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
 
-		tbrParam.maxNumOfperLightInTile = LightCulling::CalcMaxNumLightsInTile();
-
-		tbrParam.camWorldPosition 
-			= Math::Vector4(worldMat._41, worldMat._42, worldMat._43, worldMat._44);
+		tbrParam.camWorldPosition		= Math::Vector3(worldMat._41, worldMat._42, worldMat._43);
+		tbrParam.cameraNear				= _clippingNear;
+		tbrParam.cameraFar				= _clippingFar;
 	}
 
 	if( memcmp(&_prevParamData, &tbrParam, sizeof(LightCulling::TBRParam)) != 0 )
@@ -188,7 +199,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 	const auto& materials				= renderer->GetMaterials();
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 	{					
-		Material* material = (*iter);
+		const Material* material = (*iter);
 		const Material::CustomShader& customShader = material->GetCustomShader();
 		PixelShader* ps		= shaders.ps;
 		VertexShader* vs	= shaders.vs;
@@ -346,8 +357,11 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 void MeshCamera::Render(const Device::DirectX* dx,
 						const RenderManager* renderManager, const LightManager* lightManager,
 						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+						Sky::SkyForm* sky,
 						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
+	const Texture2D* skyCubeMap = sky ? sky->GetSkyCubeMap() : nullptr;
+
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
 		D3D11_VIEWPORT viewport;
@@ -368,9 +382,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
-		_albedo_emission->Clear(context, allZeroColor);
-		_specular_metallic->Clear(context, allZeroColor);
+		_albedo_sunOcclusion->Clear(context, allZeroColor);
+		_motionXY_height_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
+		_emission_specularity->Clear(context, allZeroColor);
 	}
 
 	//inverted depth, so clear value is 0
@@ -419,9 +434,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	//GBuffer
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
-			_albedo_emission->GetRenderTargetView(),
-			_specular_metallic->GetRenderTargetView(),
+			_albedo_sunOcclusion->GetRenderTargetView(),
+			_motionXY_height_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
+			_emission_specularity->GetRenderTargetView(),
 			nullptr
 		};
 
@@ -474,7 +490,13 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			//context->PSSetShader(nullptr, nullptr, 0);
 
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer);
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
+		}
+
+		if(sky)
+		{
+			if(sky->GetIsSkyOn())
+				sky->Render(dx, this, _emission_specularity, _opaqueDepthBuffer);
 		}
 	}
 
@@ -496,7 +518,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			}
 		}
 
-		ID3D11RenderTargetView* nullRTVs[] = {nullptr, nullptr, nullptr};
+		ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr, nullptr };
 		ID3D11DepthStencilView* nullDSV = nullptr;
 		context->OMSetRenderTargets(NumOfRenderTargets, nullRTVs, nullDSV);
 		context->OMSetDepthStencilState(dx->GetDepthStateDisableDepthTest(), 0);
@@ -506,7 +528,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		ID3D11SamplerState* nullSampler = nullptr;
 		context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB, sky);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);

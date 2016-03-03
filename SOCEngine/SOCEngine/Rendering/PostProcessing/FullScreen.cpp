@@ -59,9 +59,10 @@ void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT)
 
 	_vertexShader->BindShaderToContext(context);
 	_vertexShader->BindInputLayoutToContext(context);
+	_vertexShader->BindResourcesToContext(context, &_inputConstBuffers, &_inputTextures, &_inputSRBuffers);
 	
 	_pixelShader->BindShaderToContext(context);
-	_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
+	_pixelShader->BindResourcesToContext(context, &_inputConstBuffers, &_inputTextures, &_inputSRBuffers);
 
 	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
 	context->PSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &sampler);
@@ -88,5 +89,7 @@ void FullScreen::Destroy()
 		_pixelShader	= nullptr;
 	}
 
-	_inputPSTextures.clear();
+	_inputTextures.clear();
+	_inputConstBuffers.clear();
+	_inputSRBuffers.clear();
 }

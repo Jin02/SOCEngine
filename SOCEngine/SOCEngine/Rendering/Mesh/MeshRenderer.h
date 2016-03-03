@@ -20,8 +20,8 @@ namespace Rendering
 			};
 
 		private:
-			std::vector<Material*>		_materials;
-			bool						_useAlphaBlending;
+			std::vector<const Material*>		_materials;
+			bool								_useAlphaBlending;
 
 		public:
 			MeshRenderer();
@@ -29,15 +29,15 @@ namespace Rendering
 
 		public:
 			bool HasMaterial(const Material* material) const;
-			bool AddMaterial(Material* material);
+			bool AddMaterial(const Material* material);
 			void DeleteMaterial(uint index);
 
 			Type GetCurrentRenderType() const;
 			bool IsTransparent() const;
 		
 		public:
-			GET_ACCESSOR(Materials, const std::vector<Material*>&, _materials);
-			GET_SET_ACCESSOR(UseAlphaBlending, bool, _useAlphaBlending);
+			GET_ACCESSOR(Materials,				const std::vector<const Material*>&,	_materials);
+			GET_SET_ACCESSOR(UseAlphaBlending,	bool,									_useAlphaBlending);
 		};
 	}
 }

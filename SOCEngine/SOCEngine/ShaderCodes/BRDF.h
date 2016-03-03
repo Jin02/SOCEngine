@@ -4,6 +4,7 @@
 #define __SOC_BRDF_H__
 
 #include "ShaderCommon.h"
+#include "MonteCarlo.h"
 
 /*
 DIFFUSE_LAMBERT
@@ -103,19 +104,29 @@ float GeometrySchlick(float NdotL, float NdotV, float roughness)
 	return (NdotL * NdotV) / (NoVTerm * NoLTerm);
 }
 
-// Smith 1967, Geometrical shadowing of a random rough surface
-float GeometrySmith(float NdotV, float NdotL, float roughness)
+float GGX(float NdotV, float a)
 {
-	float a	 = (roughness * roughness);
-	float a2 = a * a;
-
-	float V = NdotV + sqrt(NdotV * (NdotV - NdotV * a2) + a2);
-	float L = NdotL + sqrt(NdotL * (NdotL - NdotL * a2) + a2);
-
-	return rcp(V * L);
+	float k = a / 2.0f;
+	return NdotV / (NdotV * (1.0f - k) + k);
 }
 
+float GeometrySmith(float NdotV, float NdotL, float roughness)
+{
+	float a = (roughness * roughness);
+	return GGX(NdotV, a) * GGX(NdotL, a);
+}
 
+// Appoximation of joint Smith term for GGX
+// [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
+float GeometrySmithJointApproximately(float NdotV, float NdotL, float roughness)
+{
+	float a = roughness * roughness;
+
+	float smithV = NdotL * ( NdotV * ( 1.0f - a ) + a );
+	float smithL = NdotV * ( NdotL * ( 1.0f - a ) + a );
+
+	return 0.5 * rcp( smithV + smithL );
+}
 
 float3 FresnelSchlick(float3 f0, float VdotH)
 {
@@ -221,6 +232,7 @@ float3 DiffuseEnergyConservation(float3 f0, float NdotL)
 #endif
 }
 
+#ifndef NOT_USE_BRDF_LIGHTING
 void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 				  in LightingParams lightingParams, in LightingCommonParams commonParamas)
 {
@@ -236,11 +248,15 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	float roughness		= lightingParams.roughness; //0.6f
 
 	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
-	resultDiffuseColor = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL) * commonParamas.lightColor * diffuseEnergyConservation;
+	float3 diffuseTerm = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL);
+	resultDiffuseColor = diffuseTerm * commonParamas.lightColor * diffuseEnergyConservation;
+	resultDiffuseColor = saturate(resultDiffuseColor);
 
-	float3 Fr = Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) / (4.0f * NdotL * NdotV);
+	float3 Fr = Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH);
 	resultSpecularColor	= Fr * commonParamas.lightColor;
+	resultSpecularColor	= saturate(resultSpecularColor);
 }
+#endif
 
 // Unreal4의 ReflectionEnvironmentShared.usf에 있는
 // ComputeReflectionCaptureMipFromRoughness 이거임. 그리고, 약간 수정함
@@ -249,7 +265,41 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
 	float mip = (float)mipCount - 1 - levelFrom1x1;
 
-	return (mip < 0) ? 0 : mip;
+	return max(mip, 0.0f);
 }
+
+float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
+{
+	float3 V = float3(	sqrt(1.0f - NoV * NoV), // sin
+						0.0f,
+						NoV	);					// cos
+	float A = 0;
+	float B = 0;
+
+	const uint NumSamples = sampleCount;
+
+	for (uint i = 0; i < sampleCount; i++)
+	{
+		float2 Xi = Hammersley(i, sampleCount);
+		float3 H = TangentToWorld(ImportanceSampleGGX(Xi, Roughness).xyz, float3(0.0f, 0.0f, 1.0f));
+		float3 L = 2 * dot(V, H) * H - V;
+
+		float NoL = saturate(L.z);
+		float NoH = saturate(H.z);
+		float VoH = saturate(dot(V, H));
+
+		if (NoL > 0)
+		{
+			float G = GeometrySmith(NoV, NoL, Roughness);
+			float G_Vis = G * VoH / (NoH * NoV);
+			float Fc = pow(1.0f - VoH, 5.0f);
+			A += (1.0f - Fc) * G_Vis;
+			B += Fc * G_Vis;
+		}
+	}
+
+	return float2(A, B) / float(sampleCount);
+}
+
 
 #endif

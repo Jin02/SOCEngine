@@ -20,7 +20,7 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
 
-	float3 viewDir = normalize( tbrParam_cameraWorldPosition.xyz - surface.worldPos );
+	float3 viewDir = normalize( tbrParam_cameraWorldPosition - surface.worldPos );
 
 	LightingParams lightParams;
 	lightParams.viewDir			= viewDir;
@@ -69,7 +69,9 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	float3	result = accumulativeDiffuse + accumulativeSpecular;
+	float3 result = accumulativeDiffuse + accumulativeSpecular;
+	result += surface.emission.rgb;
+	
 	return float4(result, 1.0f);
 }
 #endif
@@ -109,7 +111,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	float3 viewDir				= normalize( tbrParam_cameraWorldPosition.xyz - surface.worldPos );
+	float3 viewDir				= normalize( tbrParam_cameraWorldPosition - surface.worldPos );
 
 	LightingParams lightParams;
 	lightParams.viewDir			= viewDir;
@@ -161,7 +163,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 	}
 
-	float3	result = accumulativeDiffuse + accumulativeSpecular;
+	float3	result = saturate(accumulativeDiffuse + accumulativeSpecular);
+	result += surface.emission.rgb;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 

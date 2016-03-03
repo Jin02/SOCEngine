@@ -28,7 +28,7 @@ bool MeshRenderer::HasMaterial(const Material* material) const
 	return false;
 }
 
-bool MeshRenderer::AddMaterial(Material* material)
+bool MeshRenderer::AddMaterial(const Material* material)
 {
 	if( HasMaterial(material) )
 		return false;

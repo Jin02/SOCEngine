@@ -27,8 +27,10 @@ namespace Rendering
 		public:
 			// if SampleCount = 0, sampleCount = msaa.count
 			bool Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0);
+			bool Initialize(ID3D11RenderTargetView* rtv, const Math::Size<uint>& size);
 			void Destroy();
-			//void SetRenderTarget(ID3D11DeviceContext* context, const DepthBuffer* depthBuffer);
+
+		public:
 			void Clear(ID3D11DeviceContext* context, const Color& color);
 
 		public:

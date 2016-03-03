@@ -12,6 +12,7 @@ struct VS_OUTPUT
 {
 	float4 position 	 	: SV_POSITION;
 	float2 uv				: TEXCOORD0;
+	float3 worldPos			: WORLD_POS;
 
 	float3 normal 			: NORMAL;
 	float3 tangent 			: TANGENT;
@@ -21,8 +22,9 @@ VS_OUTPUT VS( VS_INPUT input )
 {
 	VS_OUTPUT ps;
 
-	ps.position 	= mul( float4(input.position, 1.0f),	transform_world );
-	ps.position 	= mul( ps.position,						cameraMat_viewProj );
+	float4 worldPos	= mul( float4(input.position, 1.0f),	transform_world );
+	ps.position 	= mul( worldPos,						camera_viewProjMat );
+	ps.worldPos		= worldPos.xyz;
 
 	ps.normal 		= normalize( mul(input.normal, (float3x3)transform_worldInvTranspose ) );
 	ps.tangent 		= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
@@ -33,29 +35,21 @@ VS_OUTPUT VS( VS_INPUT input )
 GBuffer PS( VS_OUTPUT input ) : SV_Target
 {
 	GBuffer outGBuffer;
-	float4 diffuseTex = diffuseTexture.Sample(GBufferDefaultSampler, input.uv);
 
 #ifdef ENABLE_ALPHA_TEST
-	float opacityMap = 1.0f - opacityTexture.Sample(GBufferDefaultSampler, input.uv).x;
-	float alpha = diffuseTex.a * opacityMap * ParseMaterialAlpha();
+	float4 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, input.uv);
+	float opacityTex	= 1.0f - opacityMap.Sample(GBufferDefaultSampler, input.uv).x;
+	float alpha			= diffuseTex.a * opacityTex * GetMaterialMainColor().a;
+
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
 
-	float4 normalMap = normalTexture.Sample(GBufferDefaultSampler, input.uv);
-	bool hasNormalMap = HasNormalTexture();
+	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 normal		= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
 
-	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
-	float3 normal = lerp(input.normal, bumpedNormal, hasNormalMap);
-
-	float4 specular	= specularTexture.Sample(GBufferDefaultSampler, input.uv);
-
-#if defined(USE_PBR_TEXTURE)
-	float roughness = normalMap.a;
-	MakeGBuffer(diffuseTex, float4(normal, roughness), specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
-#else
-	MakeGBuffer(diffuseTex, normal, specular, outGBuffer.albedo_emission, outGBuffer.specular_metallic,	outGBuffer.normal_roughness);
-#endif
+	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_height_metallic, outGBuffer.normal_roughness, outGBuffer.emission_specularity);
 
 	return outGBuffer;
 }

@@ -68,6 +68,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h" />
+    <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h" />
     <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
     <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
     <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
@@ -84,6 +85,8 @@
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
+    <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
+    <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
@@ -105,7 +108,9 @@
     <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h" />
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h" />
-    <ClInclude Include="Rendering\Sky\SkyDome.h" />
+    <ClInclude Include="Rendering\Sky\SkyForm.h" />
+    <ClInclude Include="Rendering\Sky\SkyBox.h" />
+    <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
@@ -141,6 +146,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <ClInclude Include="ShaderCodes\DynamicLighting.h" />
+    <ClInclude Include="ShaderCodes\EnvIBL.h" />
     <ClInclude Include="ShaderCodes\GBufferParser.h" />
     <ClInclude Include="ShaderCodes\GICommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h">
@@ -202,6 +208,9 @@
     <ClInclude Include="Device\Director.h" />
     <ClInclude Include="Device\DirectX.h" />
     <ClInclude Include="Device\Win32.h" />
+    <FxCompile Include="ShaderCodes\IBLPass.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -239,6 +248,11 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl" />
+    <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -332,8 +346,11 @@
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
+    <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp" />
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />
@@ -351,7 +368,9 @@
     <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyDome.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyForm.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyBox.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
@@ -446,7 +465,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -470,7 +489,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Offline;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
@@ -492,14 +511,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineFactory &amp; python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
       <Message>ShaderParser</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>HeaderOrganizer</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <FxCompile>
       <EntryPointName />

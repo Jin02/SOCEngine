@@ -21,7 +21,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 	PS_SCENE_INPUT ps;
 
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position			= mul(posWorld,						cameraMat_viewProj);
+	ps.position			= mul(posWorld,						camera_viewProjMat);
 	ps.positionWorld	= posWorld.xyz;
 	
 	ps.uv				= input.uv;
@@ -33,13 +33,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
 	float3 normal	= normalize(input.normal);
-
-#if defined(USE_PBR_TEXTURE)
-	float roughness = normalTexture.Sample(defaultSampler, input.uv).a;
-	return Lighting(normal, roughness, input.positionWorld, input.position.xy, input.uv);
-#else
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
-#endif
 }
 
 #include "OptionalRendering_Forward.h"

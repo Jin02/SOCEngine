@@ -72,7 +72,7 @@ float4 SampleAnisotropicVoxelTex
 	(float3 samplePos, float3 dir, uint cascade, float lod)
 {
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition.xyz);
+	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition);
 
 #ifdef USE_ANISOTROPIC_INJECTION_MAP
 	uint3 dirIdx;
@@ -106,14 +106,14 @@ float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfCone
 	float3 sampleStartPos	= samplePos;// + worldNormal * gi_initVoxelSize * 2.0f;
 
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition.xyz);
+	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition);
 
 	float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
 	float aoAccumInCone		= 0.0f;
 
 	for(uint i=0; i<sampleCount; ++i)
 	{
-		uint cascade		= ComputeCascade(samplePos, tbrParam_cameraWorldPosition.xyz);
+		uint cascade		= ComputeCascade(samplePos, tbrParam_cameraWorldPosition);
 		float voxelSize		= ComputeVoxelSize(cascade);
 		float mipLevel		= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
 		
@@ -137,7 +137,7 @@ float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfCone
 
 float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
 {
-	float3 viewDir			= normalize(tbrParam_cameraWorldPosition.xyz - worldPos);
+	float3 viewDir			= normalize(tbrParam_cameraWorldPosition - worldPos);
 	float3 reflectDir		= reflect(-viewDir, worldNormal);
 
 	float4 colorAccum = TraceCone(worldPos, worldNormal, reflectDir, halfConeAngleRad, SPECULAR_OCCLUSION, SPECULAR_SAMPLING_COUNT);

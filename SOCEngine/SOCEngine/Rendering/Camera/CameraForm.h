@@ -17,10 +17,11 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::Camera;	}
-			struct CamMatCBData
+			struct CameraCBData
 			{
-				Math::Matrix viewMat;
-				Math::Matrix viewProjMat;
+				Math::Matrix	viewMat;
+				Math::Matrix	viewProjMat;
+				Math::Vector4	worldPos;		
 			};
 
 		public:
@@ -52,7 +53,7 @@ namespace Rendering
 			Color							_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CamMatCBData					_prevCamMatCBData;
+			CameraCBData					_prevCamMatCBData;
 
 			Math::Rect<float>				_renderRect;
 
@@ -77,8 +78,7 @@ namespace Rendering
 			static void GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect);
 
 		protected:
-			// if mainRTSampleCount = 0, mainRTSampleCount = msaa.count
-			void Initialize(const Math::Rect<float>& renderRect, uint mainRTSampleCount = 0);
+			void Initialize(const Math::Rect<float>& renderRect);
 			void Destroy();
 
 		public:
@@ -88,15 +88,15 @@ namespace Rendering
 			void _Clone(CameraForm* newCam) const;
 
 		public:
-			GET_SET_ACCESSOR(Near,				float,						_clippingNear);
-			GET_SET_ACCESSOR(Far,				float,						_clippingFar);
-			GET_SET_ACCESSOR(FieldOfViewDegree,	float,						_fieldOfViewDegree);
-			GET_SET_ACCESSOR(RenderRect,		const Math::Rect<float>&,	_renderRect);
+			GET_SET_ACCESSOR(Near,				float,							_clippingNear);
+			GET_SET_ACCESSOR(Far,				float,							_clippingFar);
+			GET_SET_ACCESSOR(FieldOfViewDegree,	float,							_fieldOfViewDegree);
+			GET_SET_ACCESSOR(RenderRect,		const Math::Rect<float>&,		_renderRect);
 
-			GET_ACCESSOR(ProjectionType, ProjectionType, _projectionType);
-			GET_ACCESSOR(RenderTarget, const Texture::RenderTexture*, _renderTarget);
+			GET_ACCESSOR(ProjectionType,		ProjectionType,					_projectionType);
+			GET_ACCESSOR(RenderTarget,			const Texture::RenderTexture*,	_renderTarget);
 
-			GET_ACCESSOR(Usage, const Usage, _usage);
+			GET_ACCESSOR(Usage,					Usage,							_usage);
 		};
 	}
 }

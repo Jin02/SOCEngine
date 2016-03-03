@@ -3,6 +3,8 @@
 
 #include "EngineShaderFactory.hpp"
 
+#include "SkyBox.h"
+
 using namespace Core;
 using namespace std;
 using namespace Structure;
@@ -17,11 +19,14 @@ using namespace Rendering::Camera;
 using namespace Rendering::Texture;
 using namespace Rendering::Shadow;
 using namespace Rendering::GI;
+using namespace Rendering::Sky;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
-	_renderMgr(nullptr), _backBufferMaker(nullptr),
-	_shadowRenderer(nullptr), _globalIllumination(nullptr)
+	_renderMgr(nullptr),
+	_shadowRenderer(nullptr), _globalIllumination(nullptr),
+	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
+	_postProcessingSystem(nullptr)
 {
 	_state = State::Init;
 }
@@ -33,9 +38,10 @@ Scene::~Scene(void)
 	SAFE_DELETE(_uiManager);
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
-	SAFE_DELETE(_backBufferMaker);
 	SAFE_DELETE(_shadowRenderer);
 	SAFE_DELETE(_globalIllumination);
+	SAFE_DELETE(_backBuffer);
+	SAFE_DELETE(_postProcessingSystem);
 }
 
 void Scene::Initialize()
@@ -55,9 +61,6 @@ void Scene::Initialize()
 	_materialMgr	= new MaterialManager;
 	_materialMgr->Initialize();
 
-	_backBufferMaker = new BackBufferMaker;
-	_backBufferMaker->Initialize(false);
-
 	_shadowRenderer = new ShadowRenderer;
 	_shadowRenderer->Initialize(false);
 
@@ -69,6 +72,12 @@ void Scene::Initialize()
 
 	_boundBox.SetMinMax(Vector3(fltMax, fltMax, fltMax), Vector3(fltMin, fltMin, fltMin));
 	Matrix::Identity(_localMat);
+
+	_backBuffer = new RenderTexture;
+	_backBuffer->Initialize(_dx->GetBackBufferRTV(), _dx->GetBackBufferSize());
+
+	_postProcessingSystem = new PostProcessPipeline;
+	_postProcessingSystem->Initialize(_dx->GetBackBufferSize());
 
 	NextState();
 	OnInitialize();
@@ -120,6 +129,9 @@ void Scene::RenderPreview()
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
+
+	if(_sky)
+		_sky->UpdateConstBuffer(_dx);
 }
 
 void Scene::Render()
@@ -152,28 +164,26 @@ void Scene::Render()
 		return indirectColorMap;
 	};
 
+	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
+
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
 		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
 		{
-			// const Buffer::ConstBuffer* 코드 길어져서 걍 auto로 대체
 			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
-			dynamic_cast<MeshCamera*>(*iter)->Render(_dx, _renderMgr, _lightManager, shadowCB, _shadowRenderer->GetNeverUseVSM(), GIPass);
+			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
+			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
+							_shadowRenderer->GetNeverUseVSM(),
+							_sky,
+							_globalIllumination ? GIPass : giPassNull);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
 
-	CameraForm* mainCam = _cameraMgr->GetMainCamera();
-	if(mainCam)
-	{
-		ID3D11RenderTargetView* backBufferRTV	= _dx->GetBackBufferRTV();
-		const RenderTexture* camRT				= mainCam->GetRenderTarget();
-
-		MeshCamera* mainMeshCam = dynamic_cast<MeshCamera*>(mainCam);
-		_backBufferMaker->Render(backBufferRTV, camRT, nullptr, mainMeshCam->GetTBRParamConstBuffer());
-	}
+	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
+	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
 
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
@@ -185,13 +195,13 @@ void Scene::Destroy()
 	DeleteAllObject();
 
 	_materialMgr->DeleteAll();
-	_backBufferMaker->Destroy();
 	_shadowRenderer->Destroy();
 	_renderMgr->Destroy();
 	_uiManager->Destroy();
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
 	_globalIllumination->Destroy();
+	_postProcessingSystem->Destroy();
 }
 
 void Scene::NextState()
@@ -263,4 +273,33 @@ void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 		_globalIllumination = new GlobalIllumination;
 		_globalIllumination->Initialize(_dx, dimension, giSize);
 	}
+}
+
+void Scene::ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	SkyBox* skyBox = new SkyBox;
+	skyBox->Initialize(materialName, cubeMapFilePath);
+
+	_sky = skyBox;
+	_ableDeallocSky = true;
+}
+
+void Scene::ActiveCustomSky(Sky::SkyForm* sky)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	_sky = sky;
+	_ableDeallocSky = false;
+}
+
+void Scene::DeactivateSky()
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	_sky = nullptr;
 }

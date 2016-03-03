@@ -66,7 +66,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		innerOuterAttenuation = lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
 
 		float4 lightColorWithLm = g_inputPointLightColorBuffer[lightIndex];
-		float lumen = lightColorWithLm.w * 12750.0f; //maximum lumen is 12750.0f
+		float lumen = lightColorWithLm.w * float(MAXIMUM_LUMEN); //maximum lumen is float(MAXIMUM_LUMEN)
 
 		float plAttenuation = 1.0f / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 		float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;

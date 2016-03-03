@@ -9,11 +9,10 @@ namespace Rendering
 	public:
 		struct GBufferParam
 		{
-			struct MainColor { float r, g, b; };
-			MainColor		mainColor;
-			uint			alpha_metallic_roughness_emission;
-
-			Color			emissionColor;;
+			uint			mainColor_alpha;
+			uint			emissiveColor_Metallic;
+			uint			roughness_specularity_existTextureFlag;
+			uint			flag;
 
 			Math::Vector2	uvTiling0;
 			Math::Vector2	uvOffset0;
@@ -27,13 +26,11 @@ namespace Rendering
 
 	private:
 		Buffer::ConstBuffer*	_gbufferCB;
-
-	private:
 		uint					_constBufferUpdateCounter;
 
 	public:
 		PhysicallyBasedMaterial(const std::string& name);
-		~PhysicallyBasedMaterial(void);
+		virtual ~PhysicallyBasedMaterial(void);
 
 	public:
 		virtual void Initialize();
@@ -41,23 +38,27 @@ namespace Rendering
 		virtual void UpdateConstBuffer(const Device::DirectX* dx);
 
 	public:
-		void UpdateMainColor(const Color& color);
+		void SetMainColor(const Color& color);
 
 		void UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex);
 		void UpdateNormalMap(const Rendering::Texture::Texture2D* tex);
-		void UpdateSpecularMap(const Rendering::Texture::Texture2D* tex);
 		void UpdateOpacityMap(const Rendering::Texture::Texture2D* tex);
+		void UpdateHeightMap(const Rendering::Texture::Texture2D* tex);
+		void UpdateMetallicMap(const Rendering::Texture::Texture2D* tex);
+		void UpdateOcclusionMap(const Rendering::Texture::Texture2D* tex);
+		void UpdateRoughnessMap(const Rendering::Texture::Texture2D* tex);
+		void UpdateEmissionMap(const Rendering::Texture::Texture2D* tex);
 
 	public:
-		GET_ACCESSOR_MATERIAL(MainColor,		GBufferParam::MainColor);
-
-		GET_SET_ACCESSOR_MATERIAL(EmissionColor,Color);
-		GET_SET_ACCESSOR_MATERIAL(Metallic,		float);
-		GET_SET_ACCESSOR_MATERIAL(Roughness,	float);
-		GET_SET_ACCESSOR_MATERIAL(Emission,		float);
-		GET_SET_ACCESSOR_MATERIAL(UVTiling0,	Math::Vector2);
-		GET_SET_ACCESSOR_MATERIAL(UVOffset0,	Math::Vector2);
-		GET_SET_ACCESSOR_MATERIAL(UVTiling1,	Math::Vector2);
-		GET_SET_ACCESSOR_MATERIAL(UVOffset1,	Math::Vector2);
+		GET_ACCESSOR_MATERIAL(MainColor,			Color);
+		GET_SET_ACCESSOR_MATERIAL(EmissiveColor,	Color);
+		GET_SET_ACCESSOR_MATERIAL(Metallic,			float);
+		GET_SET_ACCESSOR_MATERIAL(Specularity,		float);
+		GET_SET_ACCESSOR_MATERIAL(Roughness,		float);
+		GET_SET_ACCESSOR_MATERIAL(Flag,				uint);
+		GET_SET_ACCESSOR_MATERIAL(UVTiling0,		Math::Vector2);
+		GET_SET_ACCESSOR_MATERIAL(UVOffset0,		Math::Vector2);
+		GET_SET_ACCESSOR_MATERIAL(UVTiling1,		Math::Vector2);
+		GET_SET_ACCESSOR_MATERIAL(UVOffset1,		Math::Vector2);
 	};
 }

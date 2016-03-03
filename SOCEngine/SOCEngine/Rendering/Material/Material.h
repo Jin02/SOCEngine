@@ -30,6 +30,7 @@ namespace Rendering
 			UnknownModel,
 			PhysicallyBasedModel,
 			UI,
+			Sky,
 			Users
 		};
 
@@ -65,7 +66,7 @@ namespace Rendering
 
 	public:
 		Material(const std::string& name, Type type);
-		~Material(void);
+		virtual ~Material(void);
 
 	public:
 		virtual void Initialize();
@@ -73,22 +74,22 @@ namespace Rendering
 		virtual void UpdateConstBuffer(const Device::DirectX* dx);
 
 	public:
-		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+		const Buffer::ConstBuffer* FindConstBuffer(unsigned int& outArrayIndex, unsigned int bindIndex);
 
-		bool SetConstBufferUseShaderSlotIndex(uint shaderSlotIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
-		bool SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
-
-	public:
-		const Rendering::Texture::Texture2D* FindTexture(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
-
-		bool SetTextureUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
-		bool SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
+		void SetConstBufferUseBindIndex(uint bindIndex, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
+		void SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, Rendering::Shader::ShaderForm::Usage usage);
 
 	public:
-		const Rendering::Buffer::ShaderResourceBuffer* FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int shaderSlotIndex);
+		const Rendering::Texture::Texture2D* FindTexture(unsigned int& outArrayIndex, unsigned int bindIndex);
 
-		bool SetShaderResourceBufferUseShaderSlotIndex(unsigned int shaderSlotIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
-		bool SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
+		void SetTextureUseBindIndex(unsigned int bindIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
+		void SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, Rendering::Shader::ShaderForm::Usage usage);
+
+	public:
+		const Rendering::Buffer::ShaderResourceBuffer* FindShaderResourceBuffer(unsigned int& outArrayIndex, unsigned int bindIndex);
+
+		void SetShaderResourceBufferUseBindIndex(unsigned int bindIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
+		void SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, Rendering::Shader::ShaderForm::Usage usage);
 
 
 	public:

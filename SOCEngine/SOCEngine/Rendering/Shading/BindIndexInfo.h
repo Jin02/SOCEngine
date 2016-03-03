@@ -13,15 +13,20 @@ namespace Rendering
 		DirectionalLightColor					= 6,
 		DirectionalLightParam					= 7,
 
-		GBuffer_Albedo_Emission					= 8,
-		GBuffer_Specular_Metallic				= 9,
+		GBuffer_Albedo_Occlusion				= 8,
+		GBuffer_MotionXY_Height_Metallic		= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
+		GBuffer_Emission_Specularity			= 31,
 
-		DiffuseTex								= 8,
-		NormalTex								= 9,
-		SpecularTex								= 10,
-		OpacityTex								= 11,
+		DiffuseMap								= 8,
+		NormalMap								= 9,
+		OpacityMap								= 10,
+		HeightMap								= 11,
+		MetallicMap								= 12,
+		OcclusionMap							= 13,
+		RoughnessMap							= 14,
+		EmissionMap								= 15,
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,
@@ -56,6 +61,10 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
+//		GBuffer_Emission_Specularity			31, 위에 있음
+		IBLPass_PreIntegrateEnvBRDFMap			= 29,
+		IBLPass_IlluminationMap					= 30,
+		SkyCubeMap								= 32,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -69,8 +78,12 @@ namespace Rendering
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
 
+		SkyMapInfoParam					= 7,
+
 		Mipmap_InfoCB					= 0,
 		VCT_GlobalInfoCB				= 1,
+
+		SkyBoxWVP						= 0,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
@@ -79,6 +92,7 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
+		SkyCubeMapSamplerState			= 4,
 	};
 
 	enum class UAVBindIndex : unsigned int

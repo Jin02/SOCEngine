@@ -23,7 +23,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 {
 	PS_SCENE_INPUT ps;
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position 		= mul(posWorld,						cameraMat_viewProj);
+	ps.position 		= mul(posWorld,						camera_viewProjMat);
 	ps.positionWorld	= posWorld.xyz;
 
 	ps.uv				= input.uv;
@@ -35,18 +35,11 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
-	float4 normalMap = normalTexture.Sample(defaultSampler, input.uv);
-	bool hasNormalMap = HasNormalTexture();
+	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
 
-	float3 bumpedNormal = NormalMapping(normalMap.rgb, input.normal, input.tangent, input.uv);
-	float3 normal = lerp(normalize(input.normal), bumpedNormal, hasNormalMap);
-
-#if defined(USE_PBR_TEXTURE)
-	float roughness = normalMap.a;
-	return Lighting(normal, roughness, input.positionWorld, input.position.xy, input.uv);
-#else
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
-#endif
 }
 
 #include "OptionalRendering_Forward.h"

@@ -8,8 +8,6 @@
 #include "BoundBox.h"
 #include <functional>
 
-#define MAXIMUM_LUMEN 12750
-
 namespace Rendering
 {
 	namespace Light

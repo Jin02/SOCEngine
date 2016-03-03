@@ -17,6 +17,9 @@
 #include "GlobalIllumination.h"
 
 #include "BasicGeometryGenerator.h"
+#include "SkyForm.h"
+
+#include "PostProcessPipeline.h"
 
 namespace Core
 {
@@ -31,14 +34,20 @@ namespace Core
 		UI::Manager::UIManager*								_uiManager;
 		Rendering::Manager::LightManager*					_lightManager;
 		Rendering::Manager::MaterialManager*				_materialMgr;
-		Rendering::PostProcessing::BackBufferMaker*			_backBufferMaker;
 		const Device::DirectX*								_dx;
 		Rendering::Shadow::ShadowRenderer*					_shadowRenderer;
 
-		State							_state;
-		Intersection::BoundBox			_boundBox;
-		Math::Matrix					_localMat;
-		std::function<void()>			_exitFunc;
+		Rendering::Sky::SkyForm*							_sky;
+		bool												_ableDeallocSky;
+
+		Rendering::Texture::RenderTexture*					_backBuffer;
+
+		State												_state;
+		Intersection::BoundBox								_boundBox;
+		Math::Matrix										_localMat;
+		std::function<void()>								_exitFunc;
+
+		Rendering::PostProcessPipeline*						_postProcessingSystem;
 
 	protected:
 		Rendering::GI::GlobalIllumination*					_globalIllumination;
@@ -72,6 +81,10 @@ namespace Core
 
 		void ActivateGI(bool activate, uint dimension, float giSize);
 
+		void ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath);
+		void ActiveCustomSky(Rendering::Sky::SkyForm* sky);
+		void DeactivateSky();
+
 	public:
 		void NextState();
 		void StopState();
@@ -84,5 +97,6 @@ namespace Core
 		GET_ACCESSOR(LightManager,		Rendering::Manager::LightManager*,		_lightManager);
 		GET_ACCESSOR(MaterialManager,	Rendering::Manager::MaterialManager*,	_materialMgr);
 		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
+		GET_ACCESSOR(Sky,				Rendering::Sky::SkyForm*,				_sky);
 	};
 }

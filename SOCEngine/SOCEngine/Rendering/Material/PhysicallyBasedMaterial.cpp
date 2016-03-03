@@ -9,13 +9,13 @@ using namespace Rendering::Shader;
 
 PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 {
-	mainColor.r = mainColor.g = mainColor.b = 1.0f;
-	alpha_metallic_roughness_emission = 0;
+	mainColor_alpha							= 0;
+	emissiveColor_Metallic					= 0;
+	roughness_specularity_existTextureFlag	= 0;
+	flag									= 0;
 
 	uvTiling0.x = uvTiling0.y = uvTiling1.x = uvTiling1.y = 1.0f;
 	uvOffset0.x = uvOffset0.y = uvOffset1.x = uvOffset1.y = 0.0f;
-
-	emissionColor.r = emissionColor.g = emissionColor.b = emissionColor.a = 0.0f;
 }
 
 PhysicallyBasedMaterial::GBufferParam::~GBufferParam(){}
@@ -35,7 +35,12 @@ void PhysicallyBasedMaterial::Initialize()
 {
 	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
+	SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+	SetEmissiveColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+
 	SetRoughness(0.5f);
+	SetMetallic(0.5f);
+	SetSpecularity(0.5f);
 
 	_gbufferCB = new ConstBuffer;
 	_gbufferCB->Initialize(sizeof(GBufferParam));
@@ -51,65 +56,85 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 	if( _constBufferUpdateCounter < GetVariableUpdateCounter() )
 	{
 		GBufferParam param;
-		GetMainColor(param.mainColor);
 
-		float metallic = 0.0f, roughness = 0.0f, emission = 0.0f;
-		GetMetallic(metallic);
-		GetRoughness(roughness);
-		GetEmission(emission);		
+		// mainColor_alpha
+		{
+			Color mainColor;
+			GetMainColor(mainColor);
 
-		uint scaledMetallic		= (uint)(metallic	* 255);
-		uint scaledRoughness	= (uint)(roughness	* 255);
-		uint scaledEmission		= (uint)(emission	* 255);
-		uint scaledAlpha		= (uint)(_alpha		* 255);
+			param.mainColor_alpha =	((uint(mainColor.r * 255.0f) & 0xff) << 24	|
+									 (uint(mainColor.g * 255.0f) & 0xff) << 16	|
+									 (uint(mainColor.b * 255.0f) & 0xff) << 8	|
+									 (uint(mainColor.a * 255.0f) & 0xff) );
+		}
 
-		param.alpha_metallic_roughness_emission =
-			(scaledAlpha << 24 )	| (scaledMetallic << 16 ) | 
-			(scaledRoughness << 8 )	| (scaledEmission);
+		// emissvieColor_metallic
+		{
+			Color emissiveColor;
+			GetEmissiveColor(emissiveColor);
+	
+			float metallic = 0.0f;
+			GetMetallic(metallic);
+
+			param.emissiveColor_Metallic = ((uint(emissiveColor.r * 255.0f) & 0xff) << 24	|
+											(uint(emissiveColor.g * 255.0f) & 0xff) << 16	|
+											(uint(emissiveColor.b * 255.0f) & 0xff) << 8	|
+											(uint(metallic * 255.0f) & 0xff) );
+		}
+
+		// Roughness, Flag, ExistTextureFlag
+		{
+			float specularity = 0.0f;
+			GetSpecularity(specularity);
+			uint scaledSpecularity = uint(specularity * 255.0f) & 0xff;
+
+			float roughness = 0.0f;
+			GetRoughness(roughness);
+			uint scaledRoughness = uint(roughness * 255.0f) & 0xff;
+
+			// Exist Texture Flag
+			uint existTextureFlag = 0;
+			{
+				auto GetExistTextureFlag = [](PhysicallyBasedMaterial* mat, TextureBindIndex bind, uint flagPos)
+				{
+					uint dummy = 0;
+					bool hasTexture = mat->FindTexture(dummy, uint(bind)) != nullptr;	
+
+					return uint(hasTexture) << flagPos;
+				};
+
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::DiffuseMap,		0);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::NormalMap,		1);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::OpacityMap,		2);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::HeightMap,		3);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::MetallicMap,	4);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::OcclusionMap,	5);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::RoughnessMap,	6);
+				existTextureFlag |= GetExistTextureFlag(this, TextureBindIndex::EmissionMap,	7);
+			}
+
+			uint resultFlag = (scaledRoughness << 24) | (scaledSpecularity << 16) | (existTextureFlag & 0xffff);
+			param.roughness_specularity_existTextureFlag = resultFlag;
+		}
+
+		GetFlag(param.flag);
 
 		GetUVTiling0(param.uvTiling0);
 		GetUVOffset0(param.uvOffset0);
 		GetUVTiling1(param.uvTiling1);
 		GetUVOffset1(param.uvOffset1);
 
-		uint dummy = 0;
-
-		// diffuse tex
-		{
-			bool hasTexture = FindTexture(dummy, (uint)TextureBindIndex::DiffuseTex) != nullptr;
-			if(hasTexture)
-				param.mainColor.r *= -1.0f;
-		}
-		// normal tex
-		{
-			bool hasTexture = FindTexture(dummy, (uint)TextureBindIndex::NormalTex) != nullptr;
-			if(hasTexture)
-				param.mainColor.g *= -1.0f;
-		}
-		// specular tex
-		{
-			bool hasTexture = FindTexture(dummy, (uint)TextureBindIndex::SpecularTex) != nullptr;
-			if(hasTexture)
-				param.mainColor.b *= -1.0f;
-		}
-
 		_gbufferCB->UpdateSubResource(dx->GetContext(), &param);
 		_constBufferUpdateCounter = GetVariableUpdateCounter();
 
 		uint idx = (uint)ConstBufferBindIndex::PhysicallyBasedMaterial;
-		SetConstBufferUseShaderSlotIndex(idx, _gbufferCB, ShaderForm::Usage(false, false, false, true));
+		SetConstBufferUseBindIndex(idx, _gbufferCB, ShaderForm::Usage(false, false, false, true));
 	}
 }
 
-void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
+void PhysicallyBasedMaterial::SetMainColor(const Color& color)
 {
-	GBufferParam::MainColor mainColor;
-	{
-		mainColor.r = color.r;
-		mainColor.g = color.g;
-		mainColor.b = color.b;
-	}
-	SetVariable("MainColor", mainColor);
+	SetVariable("MainColor", color);
 
 	_hasAlpha = (color.a < 1.0f);
 	_alpha = color.a;
@@ -117,23 +142,42 @@ void PhysicallyBasedMaterial::UpdateMainColor(const Color& color)
 
 void PhysicallyBasedMaterial::UpdateDiffuseMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::DiffuseTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::DiffuseMap, tex, ShaderForm::Usage(false, false, false, true));
 	_hasAlpha = tex->GetHasAlpha();
 }
 
 void PhysicallyBasedMaterial::UpdateNormalMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::NormalTex, tex, ShaderForm::Usage(false, false, false, true));
-}
-
-void PhysicallyBasedMaterial::UpdateSpecularMap(const Rendering::Texture::Texture2D* tex)
-{
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::SpecularTex, tex, ShaderForm::Usage(false, false, false, true));
+	SetTextureUseBindIndex( (uint)TextureBindIndex::NormalMap, tex, ShaderForm::Usage(false, false, false, true));
 }
 
 void PhysicallyBasedMaterial::UpdateOpacityMap(const Rendering::Texture::Texture2D* tex)
 {
-	SetTextureUseShaderSlotIndex( (uint)TextureBindIndex::OpacityTex, tex, ShaderForm::Usage(false, false, false, true));
-
+	SetTextureUseBindIndex( (uint)TextureBindIndex::OpacityMap, tex, ShaderForm::Usage(false, false, false, true));
 	_hasAlpha = tex != nullptr;
+}
+
+void PhysicallyBasedMaterial::UpdateHeightMap(const Rendering::Texture::Texture2D* tex)
+{
+	SetTextureUseBindIndex( (uint)TextureBindIndex::HeightMap, tex, ShaderForm::Usage(false, false, false, true));
+}
+
+void PhysicallyBasedMaterial::UpdateMetallicMap(const Rendering::Texture::Texture2D* tex)
+{
+	SetTextureUseBindIndex( (uint)TextureBindIndex::MetallicMap, tex, ShaderForm::Usage(false, false, false, true));
+}
+
+void PhysicallyBasedMaterial::UpdateOcclusionMap(const Rendering::Texture::Texture2D* tex)
+{
+	SetTextureUseBindIndex( (uint)TextureBindIndex::OcclusionMap, tex, ShaderForm::Usage(false, false, false, true));
+}
+
+void PhysicallyBasedMaterial::UpdateRoughnessMap(const Rendering::Texture::Texture2D* tex)
+{
+	SetTextureUseBindIndex( (uint)TextureBindIndex::RoughnessMap, tex, ShaderForm::Usage(false, false, false, true));
+}
+
+void PhysicallyBasedMaterial::UpdateEmissionMap(const Rendering::Texture::Texture2D* tex)
+{
+	SetTextureUseBindIndex( (uint)TextureBindIndex::EmissionMap, tex, ShaderForm::Usage(false, false, false, true));
 }

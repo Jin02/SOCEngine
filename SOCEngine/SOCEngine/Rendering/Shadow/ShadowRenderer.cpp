@@ -289,7 +289,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 	const SpotLight* light			= static_cast<const SpotLight*>(ownerLight);
 	const SpotLightShadow* shadow	= shadowCastingLight.shadow;
 
-	CameraForm::CamMatCBData cbData;
+	CameraForm::CameraCBData cbData;
 	{
 		cbData.viewMat		= shadow->GetInvNearFarViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 		cbData.viewProjMat	= shadow->GetViewProjectionMatrix();
@@ -330,7 +330,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 
 		for(uint i=0; i<6; ++i)
 		{
-			CameraForm::CamMatCBData cb;
+			CameraForm::CameraCBData cb;
 			{
 				cb.viewMat		= invNearFarViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 				cb.viewProjMat	= viewProjMatrices[i];
@@ -353,7 +353,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
 	const DirectionalLight* light	= static_cast<const DirectionalLight*>(ownerLight);
 	
-	CameraForm::CamMatCBData cbData;
+	CameraForm::CameraCBData cbData;
 	{
 		cbData.viewMat = light->GetInvNearFarViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
@@ -628,7 +628,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		for(uint i=0; i<6; ++i)
 		{
 			scl.camConstBuffers[i] = new ConstBuffer;
-			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CamMatCBData));
+			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CameraCBData));
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
@@ -641,7 +641,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		ShadowCastingSpotLight scl;
 		scl.shadow			= static_cast<const SpotLight*>(light)->GetShadow();;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamMatCBData));
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CameraCBData));
 
 		_shadowCastingSpotLights.Add(lightAddress, scl);
 	}
@@ -653,7 +653,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		ShadowCastingDirectionalLight scl;
 		scl.shadow			= static_cast<const DirectionalLight*>(light)->GetShadow();;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CamMatCBData));
+		scl.camConstBuffer->Initialize(sizeof(CameraForm::CameraCBData));
 
 		_shadowCastingDirectionalLights.Add(lightAddress, scl);
 	}

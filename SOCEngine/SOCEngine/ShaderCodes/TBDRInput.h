@@ -20,10 +20,11 @@ Buffer<float2>								g_inputDirectionalLightParamBuffer					: register( t7 ); /
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferAlbedo_emission							: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferSpecular_metallic							: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferAlbedo_occlusion							: register( t8 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferMotionXY_height_metallic					: register( t9 );
 Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferNormal_roughness							: register( t10 );
 Texture2DMS<float,	MSAA_SAMPLES_COUNT>		g_tDepth											: register( t11 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		g_tGBufferEmission_specularity						: register( t31 );
 
 #if defined(ENABLE_BLEND)
 Texture2DMS<float,  MSAA_SAMPLES_COUNT>		g_tBlendedDepth										: register( t12 );
@@ -31,10 +32,11 @@ Texture2DMS<float,  MSAA_SAMPLES_COUNT>		g_tBlendedDepth										: register( t1
 
 #else //Turn off MSAA
 
-Texture2D<float4>							g_tGBufferAlbedo_emission							: register( t8 );
-Texture2D<float4>							g_tGBufferSpecular_metallic							: register( t9 );
+Texture2D<float4>							g_tGBufferAlbedo_occlusion							: register( t8 );
+Texture2D<float4>							g_tGBufferMotionXY_height_metallic					: register( t9 );
 Texture2D<float4>							g_tGBufferNormal_roughness							: register( t10 );
 Texture2D<float>							g_tDepth											: register( t11 );
+Texture2D<float4>							g_tGBufferEmission_specularity						: register( t31 );
 
 #if defined(ENABLE_BLEND)
 Texture2D<float>							g_tBlendedDepth		 								: register( t12 );
@@ -89,12 +91,21 @@ cbuffer TBRParam : register( b0 )
 	matrix 	tbrParam_invProjMat;
 	matrix	tbrParam_invViewProjViewportMat;
 
-	float2	tbrParam_viewPortSize;
+	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
 	
-	float4	tbrParam_cameraWorldPosition;
+	float3	tbrParam_cameraWorldPosition;
+
+	float	tbrParam_cameraNear;
+	float	tbrParam_cameraFar;
 };
+
+float2 GetViewportSize()
+{
+	return float2(	tbrParam_packedViewportSize >> 16,
+					tbrParam_packedViewportSize & 0x0000ffff	);
+}
 
 // b1, b2, b3은 PhysicallyBased_Common에 있음
 

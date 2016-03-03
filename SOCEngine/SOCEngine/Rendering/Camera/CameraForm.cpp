@@ -22,11 +22,11 @@ CameraForm::~CameraForm(void)
 	Destroy();
 }
 
-void CameraForm::Initialize(const Math::Rect<float>& renderRect, uint mainRTSampleCount)
+void CameraForm::Initialize(const Math::Rect<float>& renderRect)
 {
 	_fieldOfViewDegree	= 45.0f;
 	_clippingNear		= 0.1f;
-	_clippingFar		= 5000.0f;
+	_clippingFar		= 1000.0f;
 
 	const Size<unsigned int>& backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	_aspect = (float)backBufferSize.w / (float)backBufferSize.h;
@@ -37,13 +37,13 @@ void CameraForm::Initialize(const Math::Rect<float>& renderRect, uint mainRTSamp
 	_frustum = new Frustum(0.0f);		
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, mainRTSampleCount);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 	_renderRect = renderRect;
 
 	_camMatConstBuffer = new ConstBuffer;
-	_camMatConstBuffer->Initialize(sizeof(CamMatCBData));
+	_camMatConstBuffer->Initialize(sizeof(CameraCBData));
 
 	Device::Director::SharedInstance()->GetCurrentScene()->GetCameraManager()->Add(this);
 }
@@ -166,17 +166,22 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
-	CamMatCBData cbData;
+	CameraCBData cbData;
 	{
+		Matrix worldMat;
+		_owner->GetTransform()->FetchWorldMatrix(worldMat);
+
 		Matrix& viewMat = cbData.viewMat;
-		GetViewMatrix(cbData.viewMat);
+		GetViewMatrix(cbData.viewMat, worldMat);
 
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
 		cbData.viewProjMat = viewMat * projMat;
+
+		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
 	}
 
-	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CamMatCBData)) != 0;
+	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CameraCBData)) != 0;
 	if(updatedVP)
 	{
 		// Make Frustum
