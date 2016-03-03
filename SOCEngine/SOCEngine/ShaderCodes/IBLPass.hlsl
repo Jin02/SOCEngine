@@ -63,6 +63,6 @@ float4 PS( PS_INPUT input ) : SV_Target
 	bool existDepth = surface.depth > 0.0f;
 
 	float4 illumination = illuminationMap.Sample(linerSamplerState, input.uv);
-	float3 result = (diffuse + specular) * float(existDepth);
+	float3 result = illumination.rgb + (diffuse + specular) * float(existDepth);
 	return float4(result, 1.0f);
 }
