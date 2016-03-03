@@ -39,7 +39,7 @@ void PhysicallyBasedMaterial::Initialize()
 	SetEmissiveColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
 
 	SetRoughness(0.5f);
-	SetMetallic(0.0f);
+	SetMetallic(0.5f);
 	SetSpecularity(0.5f);
 
 	_gbufferCB = new ConstBuffer;
