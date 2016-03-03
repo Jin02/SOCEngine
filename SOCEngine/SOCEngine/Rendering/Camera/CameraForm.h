@@ -78,8 +78,7 @@ namespace Rendering
 			static void GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect);
 
 		protected:
-			// if mainRTSampleCount = 0, mainRTSampleCount = msaa.count
-			void Initialize(const Math::Rect<float>& renderRect, uint mainRTSampleCount = 0);
+			void Initialize(const Math::Rect<float>& renderRect);
 			void Destroy();
 
 		public:
