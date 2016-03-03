@@ -412,6 +412,9 @@
     <Filter Include="Rendering\PostProcessing\Pipeline">
       <UniqueIdentifier>{9e3297c2-10b7-4e88-b305-0493465d1543}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Texture\Cube">
+      <UniqueIdentifier>{402a4b81-b705-4e33-a781-f9e77c82098b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -829,6 +832,9 @@
     <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h">
       <Filter>Rendering\PostProcessing\Pipeline</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureCube.h">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1124,6 +1130,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp">
       <Filter>Rendering\PostProcessing\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureCube.cpp">
+      <Filter>Rendering\Texture\Cube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
