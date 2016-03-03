@@ -21,7 +21,7 @@ UICamera::~UICamera(void)
 void UICamera::OnInitialize()
 {
 	Size<float> backBufferSize = Director::SharedInstance()->GetBackBufferSize().Cast<float>();
-	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, backBufferSize.w, backBufferSize.h), 1);
+	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, backBufferSize.w, backBufferSize.h));
 
 	_depthBuffer =  new DepthBuffer;
 	_depthBuffer->Initialize(Director::SharedInstance()->GetBackBufferSize(), false, 1);
