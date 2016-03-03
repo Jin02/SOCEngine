@@ -18,8 +18,9 @@ namespace Rendering
 			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT){}
 
 		public:
-			void Initialize(const Sky::SkyForm* sky);
-			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Camera::MeshCamera* meshCam);
+			void Initialize();
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT,
+						const Camera::MeshCamera* meshCam, const Sky::SkyForm* sky);
 		};
 	}
 }
