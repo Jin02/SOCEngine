@@ -339,10 +339,6 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
 		desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		desc.MinLOD			= 0;
-		desc.MaxLOD			= 0;
-		desc.MaxAnisotropy	= 1;
-
 		hr = _device ->CreateSamplerState( &desc, &_linearSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
