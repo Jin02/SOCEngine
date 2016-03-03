@@ -104,21 +104,21 @@ float GeometrySchlick(float NdotL, float NdotV, float roughness)
 	return (NdotL * NdotV) / (NoVTerm * NoLTerm);
 }
 
-// Smith 1967, Geometrical shadowing of a random rough surface
+float GGX(float NdotV, float a)
+{
+	float k = a / 2.0f;
+	return NdotV / (NdotV * (1.0f - k) + k);
+}
+
 float GeometrySmith(float NdotV, float NdotL, float roughness)
 {
-	float a	 = (roughness * roughness);
-	float a2 = a * a;
-
-	float V = NdotV + sqrt(NdotV * (NdotV - NdotV * a2) + a2);
-	float L = NdotL + sqrt(NdotL * (NdotL - NdotL * a2) + a2);
-
-	return rcp(V * L);
+	float a = (roughness * roughness);
+	return GGX(NdotV, a) * GGX(NdotL, a);
 }
 
 // Appoximation of joint Smith term for GGX
 // [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
-float GeometrySmithJointApproximately(float roughness, float NdotV, float NdotL)
+float GeometrySmithJointApproximately(float NdotV, float NdotL, float roughness)
 {
 	float a = roughness * roughness;
 
@@ -270,34 +270,35 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 
 float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
 {
-	float3 V;
-	V.x = sqrt(1.0f - NoV * NoV); // sin
-	V.y = 0;
-	V.z = NoV; // cos
+	float3 V = float3(	sqrt(1.0f - NoV * NoV), // sin
+						0.0f,
+						NoV	);					// cos
 	float A = 0;
 	float B = 0;
 
 	const uint NumSamples = sampleCount;
 
-	for (uint i = 0; i < NumSamples; i++)
+	for (uint i = 0; i < sampleCount; i++)
 	{
-		float2 Xi = Hammersley(i, NumSamples, uint2(0, 0));
-		float3 H = ImportanceSampleGGX(Xi.xy, Roughness).xyz;
+		float2 Xi = Hammersley(i, sampleCount);
+		float3 H = TangentToWorld(ImportanceSampleGGX(Xi, Roughness).xyz, float3(0.0f, 0.0f, 1.0f));
 		float3 L = 2 * dot(V, H) * H - V;
+
 		float NoL = saturate(L.z);
 		float NoH = saturate(H.z);
 		float VoH = saturate(dot(V, H));
+
 		if (NoL > 0)
 		{
 			float G = GeometrySmith(NoV, NoL, Roughness);
 			float G_Vis = G * VoH / (NoH * NoV);
-			float Fc = pow(1 - VoH, 5);
-			A += (1 - Fc) * G_Vis;
+			float Fc = pow(1.0f - VoH, 5.0f);
+			A += (1.0f - Fc) * G_Vis;
 			B += Fc * G_Vis;
 		}
 	}
 
-	return float2(A, B) / NumSamples;
+	return float2(A, B) / float(sampleCount);
 }
 
 
