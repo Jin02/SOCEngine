@@ -409,6 +409,9 @@
     <Filter Include="Rendering\PostProcessing\IBLPass">
       <UniqueIdentifier>{9e86ae1b-2019-4d0e-8642-14184be81489}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\PostProcessing\Pipeline">
+      <UniqueIdentifier>{9e3297c2-10b7-4e88-b305-0493465d1543}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -823,6 +826,9 @@
     <ClInclude Include="Rendering\PostProcessing\IBLPass.h">
       <Filter>Rendering\PostProcessing\IBLPass</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h">
+      <Filter>Rendering\PostProcessing\Pipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1115,6 +1121,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp">
       <Filter>Rendering\PostProcessing\IBLPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp">
+      <Filter>Rendering\PostProcessing\Pipeline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
