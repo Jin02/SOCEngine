@@ -15,8 +15,8 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 	uint2 size;
 	OutMap.GetDimensions(size.x, size.y);
 
-	float2 sampleUV		= float2(globalIdx.xy) / float2(size);
+	float2 sampleUV		= (float2(globalIdx.xy) + float2(0.5f, 0.5f)) / float2(size);
 	float2 sampledBRDF	= IntegrateBRDF(sampleUV.x, sampleUV.y, BRDF_SAMPLES);
 
-	OutMap[sampleUV] = sampledBRDF;
+	OutMap[globalIdx.xy] = sampledBRDF;
 }
