@@ -43,6 +43,17 @@ bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT
 	return true;
 }
 
+bool RenderTexture::Initialize(ID3D11RenderTargetView* rtv, const Math::Size<uint>& size)
+{
+	ASSERT_COND_MSG(rtv, "Error, rtv is null");
+	{
+		_renderTargetView	= rtv;
+		_size				= size;
+	}
+	
+	return true;
+}
+
 void RenderTexture::Destroy()
 {
 	SAFE_RELEASE(_texture);
