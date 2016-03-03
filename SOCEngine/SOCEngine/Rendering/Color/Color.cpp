@@ -101,7 +101,7 @@ namespace Rendering
 
 	Color Color::Clear()
 	{
-		return Color(0.0f, 0.0f, 0.0f, 1.0f);
+		return Color(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	Color Color::Cyan()
