@@ -6,14 +6,18 @@ namespace Rendering
 	{
 		GBuffer_Opaque,
 		GBuffer_AlphaBlend,
+
 		Forward_Transparency,
 		Forward_OnlyDepth,
 		Forward_AlphaTestWithDiffuse,
 		Forward_MomentDepth,
 		Forward_MomentDepthWithAlphaTest,
-		Forward_ReflectionProbe,
-		Forward_ReflectionProbeWithAlphaTest,
-		Forward_ReflectionProbeTransparency,
+
+		ReflectionProbe_Transparency,
+		ReflectionProbe_OnlyDepth,
+		ReflectionProbe_AlphaTestWithDiffuse,
+		ReflectionProbe_OnlyFrontFace,
+
 		Voxelization,
 		MAX_NUM
 	};
