@@ -152,7 +152,10 @@ void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncNam
 	std::string gsMain = "";
 
 	if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
+	{
+		vsMain = "OnlyAlpaTestWithDiffuseVS";
 		psMain = "OnlyAlpaTestWithDiffusePS";
+	}
 	else if(renderType == RenderType::Voxelization)
 		gsMain = "GS";
 	else if(renderType == RenderType::Forward_OnlyDepth)
