@@ -101,6 +101,9 @@ void ReflectionProbe::UpdateReflectionProbeCB(const Device::DirectX*& dx, uint p
 	RPInfo info;
 	info.camWorldPos		= _worldPos;
 	info.packedNumOfLights	= packedNumOfLights;
+	info.range				= _range;
+	info.projNear			= _projNear;
+	info.dummy1 = info.dummy2 = 0.0f;
 
 	Matrix& frontZViewProj = info.viewProjs[0];
 	ComputeViewProj(frontZViewProj, _worldPos, forwards[0], ups[0], proj);

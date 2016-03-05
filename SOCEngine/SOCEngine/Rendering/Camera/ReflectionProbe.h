@@ -25,6 +25,10 @@ namespace Rendering
 				Math::Matrix	viewProjs[6];
 				uint			packedNumOfLights;
 				Math::Vector3	camWorldPos;
+
+				float			range;
+				float			projNear;
+				float			dummy1, dummy2;
 			};
 			enum Type { Baked, RealTime };
 
