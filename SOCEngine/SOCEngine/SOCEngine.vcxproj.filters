@@ -415,6 +415,9 @@
     <Filter Include="Rendering\Texture\Cube">
       <UniqueIdentifier>{402a4b81-b705-4e33-a781-f9e77c82098b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Camera\ReflectionProbe">
+      <UniqueIdentifier>{3f0fa944-721d-409b-b93a-ac83601ea28a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -835,6 +838,9 @@
     <ClInclude Include="Rendering\Texture\TextureCube.h">
       <Filter>Rendering\Texture\Cube</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Camera\ReflectionProbe.h">
+      <Filter>Rendering\Camera\ReflectionProbe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1133,6 +1139,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\TextureCube.cpp">
       <Filter>Rendering\Texture\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\ReflectionProbe.cpp">
+      <Filter>Rendering\Camera\ReflectionProbe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
