@@ -15,10 +15,10 @@ TextureCube::~TextureCube()
 {
 }
 
-void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useMipmap)
+void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useDSV, bool useMipmap)
 {
 	_useMipmap = useMipmap;
-	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | (useRTV ? D3D11_BIND_RENDER_TARGET : 0);
 
 	uint bigSize = max(size.w, size.h);
 	auto Log2 = [](float f) { return log(f) / log(2.0f); };
@@ -48,6 +48,7 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create texture");
 
 	// Depth
+	if(useDSV)
 	{
 		texDesc.Format		= DXGI_FORMAT_D32_FLOAT;
 	
@@ -72,6 +73,7 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 	}
 
 	// render target
+	if(useRTV)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 		memset(&rtvDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
@@ -99,4 +101,20 @@ void TextureCube::Destroy()
 	SAFE_RELEASE(_rtv);
 
 	Texture2D::Destroy();
+}
+
+void TextureCube::Clear(const Device::DirectX* dx)
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	if(_rtv)
+	{
+		float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+		context->ClearRenderTargetView(_rtv, clearColor);
+	}
+
+	if(_dsv)
+	{
+		context->ClearDepthStencilView(_dsv, D3D11_CLEAR_DEPTH, 0.0f, 0x0);
+	}
 }

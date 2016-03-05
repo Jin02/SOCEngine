@@ -19,8 +19,11 @@ namespace Rendering
 			virtual ~TextureCube();
 
 		public:
-			void Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useMipmap);
+			void Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useDSV, bool useMipmap);
 			void Destroy();
+
+		public:
+			void Clear(const Device::DirectX* dx);
 
 		public:
 			GET_ACCESSOR(UseMipmap,			bool,						_useMipmap);
