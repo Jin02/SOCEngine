@@ -57,9 +57,7 @@ float4 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 	float4 outColor = DistributePrecision(moment);
 
 #if defined(ENABLE_ALPHA_TEST)
-	float4 diffuseTex = diffuseMap.Sample(defaultSampler, input.uv);
-	float opacityTex = 1.0f - opacityMap.Sample(defaultSampler, input.uv).x;
-	float alpha = diffuseTex.a * opacityTex * GetMaterialMainColor().a;
+	float alpha = GetAlpha(defaultSampler, input.uv);
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
