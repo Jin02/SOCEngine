@@ -35,6 +35,7 @@ namespace Core
 			Mesh,
 			Camera,
 			Light,
+			ReflectionProbe,
 			User
 		};
 
