@@ -2,6 +2,7 @@
 #include "Director.h"
 #include "BindIndexInfo.h"
 #include "ResourceManager.h"
+#include "SkyBox.h"
 
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
@@ -46,8 +47,19 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_MotionXY_Height_Metallic,	meshCam->GetGBufferMotionXYHeightMetallic());
 	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Normal_Roughness,			meshCam->GetGBufferNormalRoughness());	
 	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,						meshCam->GetOpaqueDepthBuffer());
-	BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap,					sky->GetSkyCubeMap());
 	BindTexturesToPixelShader(context, TextureBindIndex::IBLPass_IlluminationMap,			meshCam->GetRenderTarget());
+
+	// Sky Cube Map
+	{
+		const Texture2D* cubeMap = nullptr;
+
+		if(sky->GetType() == SkyForm::Type::Box)
+			cubeMap = dynamic_cast<const SkyBox*>(sky)->GetSkyCubeMap();
+		else
+			ASSERT_MSG("cant support");
+
+		BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap,				cubeMap);
+	}
 
 	ID3D11Buffer* buffer = meshCam->GetTBRParamConstBuffer()->GetBuffer();
 	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
