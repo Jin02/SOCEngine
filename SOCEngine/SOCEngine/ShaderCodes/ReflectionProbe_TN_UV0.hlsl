@@ -27,6 +27,8 @@ GS_REFLECTION_PROBE_INPUT VS(VS_INPUT input)
 	output.normal	= mul(input.normal, (float3x3)transform_worldInvTranspose);
 	output.tangent	= mul(input.tangent, (float3x3)transform_worldInvTranspose);
 	output.uv		= input.uv;
+
+	return output;
 }
 
 struct PS_REFLECTION_PROBE_INPUT
@@ -67,7 +69,7 @@ void GS(triangle GS_REFLECTION_PROBE_INPUT input[3], inout TriangleStream<PS_REF
     }
 }
 
-float4 RenderScenePS(GS_REFLECTION_PROBE_INPUT input) : SV_TARGET
+float4 PS(GS_REFLECTION_PROBE_INPUT input) : SV_TARGET
 {
 	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);

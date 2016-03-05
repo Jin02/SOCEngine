@@ -135,10 +135,8 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 	float3 back		= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
-	float3	result = front + back;
-
-	float	diffuseTexAlpha = lerp(1.0f, diffuseTex.a, HasDiffuseMap());
-	float	alpha = diffuseTexAlpha * (1.0f - opacityMap.Sample(defaultSampler, uv).x) * GetMaterialMainColor().a;
+	float3	result	= front + back;
+	float	alpha	= GetAlpha(defaultSampler, uv);
 #else
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	float	alpha = 1.0f;
@@ -163,10 +161,10 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 		param.roughness = GetRoughness(defaultSampler, uv);
 	}
 #if defined(RENDER_TRANSPARENCY)
-	float3 frontFaceIBL	= ApproximateIBL(param);
+	float3 frontFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param);
 
 	param.normal = -normal;
-	float3 backFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap,param) * TRANSPARENCY_BACK_FACE_WEIGHT;
+	float3 backFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param) * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float3 result = frontFaceIBL + backFaceIBL;
 #else
 	float3 result = ApproximateIBL(preIntegrateEnvBRDFMap, param);

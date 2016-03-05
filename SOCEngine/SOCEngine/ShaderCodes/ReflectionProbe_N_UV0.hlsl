@@ -23,6 +23,8 @@ GS_REFLECTION_PROBE_INPUT VS(VS_INPUT input)
 	output.worldPos	= mul(float4(input.position, 1.0f), transform_world).xyz;
 	output.normal	= mul(input.normal, (float3x3)transform_worldInvTranspose);
 	output.uv		= input.uv;
+
+	return output;
 }
 
 struct PS_SCENE_INPUT
@@ -60,7 +62,7 @@ void GS(triangle GS_REFLECTION_PROBE_INPUT input[3], inout TriangleStream<PS_SCE
     }
 }
 
-float4 RenderScenePS(PS_SCENE_INPUT input) : SV_TARGET
+float4 PS(PS_SCENE_INPUT input) : SV_TARGET
 {
 	float3 normal	= normalize(input.normal);
 	return ReflectionProbeLighting(normal, input.worldPos, input.uv);
