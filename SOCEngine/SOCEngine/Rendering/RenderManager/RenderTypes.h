@@ -11,6 +11,9 @@ namespace Rendering
 		Forward_AlphaTestWithDiffuse,
 		Forward_MomentDepth,
 		Forward_MomentDepthWithAlphaTest,
+		Forward_ReflectionProbe,
+		Forward_ReflectionProbeWithAlphaTest,
+		Forward_ReflectionProbeTransparency,
 		Voxelization,
 		MAX_NUM
 	};
