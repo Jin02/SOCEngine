@@ -26,6 +26,8 @@ namespace Rendering
 				uint			packedNumOfLights;
 				Math::Vector3	camWorldPos;
 			};
+			enum Type { Baked, RealTime };
+
 
 		private:
 			Texture::TextureCube*		_cubeMap;
@@ -44,6 +46,9 @@ namespace Rendering
 			bool						_useTransparent;
 			CameraForm::RenderQueue		_transparentMeshQueue;
 
+			uint						_skipFrame;
+			Type						_type;
+
 		public:
 			ReflectionProbe();
 			virtual ~ReflectionProbe();
@@ -59,9 +64,13 @@ namespace Rendering
 			void Render(const Device::DirectX*& dx, const Core::Scene* scene);
 
 		public:
-			GET_SET_ACCESSOR(ProjNear,			float,		_projNear);
-			GET_SET_ACCESSOR(Range,				float,		_range);
-			GET_SET_ACCESSOR(UseTransparent,	bool,		_useTransparent);
+			GET_SET_ACCESSOR(ProjNear,			float,							_projNear);
+			GET_SET_ACCESSOR(Range,				float,							_range);
+			GET_SET_ACCESSOR(UseTransparent,	bool,							_useTransparent);
+			GET_SET_ACCESSOR(SkipFrame,			uint,							_skipFrame);		// not working
+			GET_ACCESSOR(Type,					Type,							_type);				// not working
+
+			GET_ACCESSOR(CubeMap,				const Texture::TextureCube*,	_cubeMap);
 		};
 	}
 }

@@ -20,7 +20,7 @@ using namespace Rendering::Shadow;
 
 ReflectionProbe::ReflectionProbe()
 	: Component(), _cubeMap(nullptr), _rpInfoCB(nullptr), _opaqueDepthBuffer(nullptr),
-	_useTransparent(true), _projNear(0.01f), _range(10.0f)
+	_useTransparent(true), _projNear(0.01f), _range(10.0f), _type(Type::RealTime)
 {
 }
 
