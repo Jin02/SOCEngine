@@ -15,6 +15,10 @@ cbuffer RPInfo : register( b5 )
 
 	uint	rpInfo_packedNumOfLights;
 	float3	rpInfo_camWorldPos;
+
+	float	rpInfo_range;
+	float	rpInfo_near;
+	float2	dummy;
 };
 
 SamplerState		defaultSampler			: register( s0 );
