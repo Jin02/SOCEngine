@@ -395,7 +395,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		//inverted depth, so clear value is 0
 		_blendedDepthBuffer->Clear(context, 0.0f, 0);
-		SortTransparentMeshRenderQueue(renderManager);
+		SortTransparentMeshRenderQueue(_transparentMeshQueue, _owner->GetTransform(), renderManager);
 	}
 
 	// off alpha blending
