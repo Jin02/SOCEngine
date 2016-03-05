@@ -134,6 +134,7 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 
 	ID3D11Buffer* buffer = _rpInfoCB->GetBuffer();
 	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
 
 	BoundBox boundBox(_worldPos, Vector3(_range, _range, _range));
 	auto Intersect = [&](const Intersection::Sphere& sphere) -> bool
@@ -294,4 +295,5 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 
 	buffer = nullptr;
 	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
 }
