@@ -91,6 +91,8 @@ namespace Rendering
 			void Destroy();
 
 			uint GetPackedLightCount() const;
+			void BindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
+			void UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
 
 		public:
 			GET_ACCESSOR(PointLightTransformSRBuffer,			const Buffer::ShaderResourceBuffer*,	_pointLightTransformSRBuffer);

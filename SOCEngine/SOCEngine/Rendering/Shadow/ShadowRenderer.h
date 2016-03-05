@@ -160,6 +160,8 @@ namespace Rendering
 
 			uint FetchShadowIndexInEachShadowLights(const Light::LightForm* light);
 			uint GetPackedShadowAtlasCapacity() const;
+			void BindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
+			void UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
 
 		private: //friend class Scene
 			void UpdateConstBuffer(const Device::DirectX*& dx);

@@ -678,3 +678,53 @@ void LightManager::ComputeDirectionalLightViewProj(const Intersection::BoundBox&
 	for(auto iter = lights.begin(); iter != lights.end(); ++iter)
 		(*iter)->ComputeViewProjMatrix(sceneBoundBox, invViewport);
 }
+
+void LightManager::BindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	auto SetShaderResources = [](ID3D11DeviceContext* context, TextureBindIndex bind, ID3D11ShaderResourceView* const* srv, bool bindVS, bool bindGS, bool bindPS)
+	{
+		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, srv);
+		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, srv);
+		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, srv);
+	};
+
+	SetShaderResources(context, TextureBindIndex::PointLightRadiusWithCenter,		_pointLightTransformSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::PointLightColor,					_pointLightColorSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::PointLightShadowIndex,			_pointLightShadowIndexSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightCenterWithDirZ,	_directionalLightTransformSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightParam,			_directionalLightParamSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightColor,			_directionalLightColorSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightShadowIndex,		_directionalLightShadowIndexSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightRadiusWithCenter,		_spotLightTransformSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightParam,					_spotLightParamSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightColor,					_spotLightColorSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightShadowIndex,				_spotLightShadowIndexSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+}
+
+void LightManager::UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	auto SetShaderResources = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
+	{
+		ID3D11ShaderResourceView* srv = nullptr;
+
+		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, &srv);
+		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, &srv);
+		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, &srv);
+	};
+
+	SetShaderResources(context, TextureBindIndex::PointLightRadiusWithCenter,		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::PointLightColor,					bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::PointLightShadowIndex,			bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightCenterWithDirZ,	bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightParam,			bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightColor,			bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::DirectionalLightShadowIndex,		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightRadiusWithCenter,		bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightParam,					bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightColor,					bindVS, bindGS, bindPS);
+	SetShaderResources(context, TextureBindIndex::SpotLightShadowIndex,				bindVS, bindGS, bindPS);
+}
