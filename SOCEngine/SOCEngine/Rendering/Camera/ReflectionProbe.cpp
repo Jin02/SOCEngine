@@ -276,6 +276,17 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			}
 		}
 
+		// Sky
+		{
+			Sky::SkyForm* sky = scene->GetSky();
+			if(sky)
+			{
+				if(sky->GetIsSkyOn())
+					sky->Render(dx, this, _cubeMap, _opaqueDepthBuffer);
+			}
+
+		}
+
 		// Transparency
 		{
 			context->RSSetState(dx->GetRasterizerStateCWDisableCulling());

@@ -71,6 +71,7 @@ namespace Rendering
 			GET_ACCESSOR(Type,					Type,							_type);				// not working
 
 			GET_ACCESSOR(CubeMap,				const Texture::TextureCube*,	_cubeMap);
+			GET_ACCESSOR(InfoConstBuffer,		const Buffer::ConstBuffer*,		_rpInfoCB);
 		};
 	}
 }
