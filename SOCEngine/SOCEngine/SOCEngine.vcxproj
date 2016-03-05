@@ -52,6 +52,7 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h" />
     <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Camera\ReflectionProbe.h" />
+    <ClInclude Include="Rendering\Camera\ReflectionProbeManager.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
     <ClInclude Include="Rendering\GI\VoxelMap.h" />
     <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
@@ -321,6 +322,7 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
     <ClCompile Include="Rendering\Camera\ReflectionProbe.cpp" />
+    <ClCompile Include="Rendering\Camera\ReflectionProbeManager.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
     <ClCompile Include="Rendering\GI\VoxelMap.cpp" />
     <ClCompile Include="Rendering\GI\GlobalIllumination.cpp" />
