@@ -203,13 +203,13 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		(*iter)->Culling(_frustum);
 }
 
-void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
+void CameraForm::SortTransparentMeshRenderQueue(RenderQueue& inoutTranparentMeshQ, const Transform* ownerTF, const RenderManager* renderMgr)
 {
 	const RenderManager::MeshList& transparentList = renderMgr->GetTransparentMeshes();
-	if( transparentList.updateCounter != _transparentMeshQueue.updateCounter )
+	if( transparentList.updateCounter != inoutTranparentMeshQ.updateCounter )
 	{
 		const auto& transparentMeshAddrSet = transparentList.meshes.GetVector();
-		auto& thisCamMeshes = _transparentMeshQueue.meshes;
+		auto& thisCamMeshes = inoutTranparentMeshQ.meshes;
 
 		thisCamMeshes.clear();
 		for(auto addrSetIter = transparentMeshAddrSet.begin();
@@ -224,13 +224,11 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 			}
 		}
 
-		_transparentMeshQueue.updateCounter = transparentList.updateCounter;
+		inoutTranparentMeshQ.updateCounter = transparentList.updateCounter;
 	}
 
-	const Transform* transform = _owner->GetTransform();
-
 	Math::Vector3 camPos;
-	transform->FetchWorldPosition(camPos);
+	ownerTF->FetchWorldPosition(camPos);
 
 	auto SortingByDistance = [&](const Geometry::Mesh*& left, const Geometry::Mesh*& right) -> bool
 	{
@@ -251,7 +249,7 @@ void CameraForm::SortTransparentMeshRenderQueue(const RenderManager* renderMgr)
 		return leftDistance < rightDistance;
 	};
 
-	std::sort(_transparentMeshQueue.meshes.begin(), _transparentMeshQueue.meshes.end(), SortingByDistance);
+	std::sort(inoutTranparentMeshQ.meshes.begin(), inoutTranparentMeshQ.meshes.end(), SortingByDistance);
 }
 
 void CameraForm::_Clone(CameraForm* newCam) const

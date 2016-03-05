@@ -13,6 +13,8 @@ namespace Rendering
 {
 	namespace Camera
 	{
+		class ReflectionProbe;
+
 		class CameraForm : public Core::Component
 		{
 		public:
@@ -23,6 +25,7 @@ namespace Rendering
 				Math::Matrix	viewProjMat;
 				Math::Vector4	worldPos;		
 			};
+			friend class ReflectionProbe;
 
 		public:
 			enum class ProjectionType	{ Perspective, Orthographic };
@@ -63,7 +66,7 @@ namespace Rendering
 
 		protected:
 			void CalcAspect();
-			void SortTransparentMeshRenderQueue(const Manager::RenderManager* renderMgr);
+			static void SortTransparentMeshRenderQueue(RenderQueue& inoutTranparentMeshQ, const Core::Transform* ownerTF, const Manager::RenderManager* renderMgr);
 
 		public:
 			void GetPerspectiveMatrix(Math::Matrix &outMatrix, bool isInverted) const;
