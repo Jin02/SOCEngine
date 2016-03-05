@@ -75,6 +75,8 @@ namespace Rendering
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
 
+		ReflectionProbe_ViewProjs		= 5,	
+
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
 
