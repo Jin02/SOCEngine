@@ -561,43 +561,23 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
 			context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
 			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
-				
-			context->PSSetShaderResources((uint)TextureBindIndex::PointLightRadiusWithCenter, 
-				1, lightManager->GetPointLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::PointLightColor, 
-				1, lightManager->GetPointLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightRadiusWithCenter, 
-				1, lightManager->GetSpotLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightColor, 
-				1, lightManager->GetSpotLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightParam,
-				1, lightManager->GetSpotLightParamSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightCenterWithDirZ,
-				1, lightManager->GetDirectionalLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightColor,
-				1, lightManager->GetDirectionalLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightParam,
-				1, lightManager->GetDirectionalLightParamSRBuffer()->GetShaderResourceView());
 
-			// Light Culling Buffer
-			context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
-				1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
-
-			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
-			context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
-			context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
-
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+			lightManager->BindResources(dx, false, false, true);
+			{
+				// Light Culling Buffer
+				context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
+					1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
+	
+				ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
+				context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+				context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+	
+				MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+			}
+			lightManager->UnbindResources(dx, false, false, true);		
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
-
-			const uint startIdx	= (uint)TextureBindIndex::PointLightRadiusWithCenter;
-			const uint srvNum	= (uint)TextureBindIndex::DirectionalLightParam - (uint)TextureBindIndex::PointLightRadiusWithCenter + 1;
-
-			ID3D11ShaderResourceView* nullSRV[srvNum] = {nullptr, };
-			context->PSSetShaderResources(startIdx,	srvNum, nullSRV);
-		
 			context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 		}
 	}
