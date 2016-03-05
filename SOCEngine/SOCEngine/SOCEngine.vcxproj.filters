@@ -418,6 +418,12 @@
     <Filter Include="Rendering\Camera\ReflectionProbe">
       <UniqueIdentifier>{3f0fa944-721d-409b-b93a-ac83601ea28a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\Mesh\ReflectionProbe">
+      <UniqueIdentifier>{b9561eae-b548-4a58-bc0f-d6bf69654cae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Mesh\ReflectionProbe\Optional">
+      <UniqueIdentifier>{82578e9c-1654-4316-8492-14fdb400f0bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -847,6 +853,12 @@
     <ClInclude Include="Rendering\Camera\ReflectionProbeManager.h">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
+      <Filter>ShaderCodes\Mesh\ReflectionProbe</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h">
+      <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1155,6 +1167,9 @@
     <ClCompile Include="Rendering\Camera\ReflectionProbeManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp">
+      <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1175,16 +1190,10 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV0.hlsl">
-      <Filter>ShaderCodes\Mesh\GBuffer</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl">
-      <Filter>ShaderCodes\Mesh\Forward</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
@@ -1243,6 +1252,21 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\IBLPass.hlsl">
       <Filter>ShaderCodes\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\ReflectionProbe</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
+      <Filter>ShaderCodes\Mesh\ReflectionProbe</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
+      <Filter>ShaderCodes\Mesh\ReflectionProbe\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
+      <Filter>ShaderCodes\Mesh\ReflectionProbe\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

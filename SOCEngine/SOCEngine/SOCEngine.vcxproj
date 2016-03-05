@@ -110,6 +110,7 @@
     <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h" />
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h" />
+    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h" />
     <ClInclude Include="Rendering\Sky\SkyForm.h" />
     <ClInclude Include="Rendering\Sky\SkyBox.h" />
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
@@ -157,6 +158,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="ShaderCodes\NormalMapping.h" />
+    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="ShaderCodes\TBDRInput.h" />
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -253,10 +257,23 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl" />
+    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
+    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -374,6 +391,7 @@
     <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp" />
     <ClCompile Include="Rendering\Sky\SkyForm.cpp" />
     <ClCompile Include="Rendering\Sky\SkyBox.cpp" />
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
@@ -426,12 +444,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -439,12 +451,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_UV0.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
