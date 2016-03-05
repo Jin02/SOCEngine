@@ -360,8 +360,6 @@ void MeshCamera::Render(const Device::DirectX* dx,
 						Sky::SkyForm* sky,
 						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
-	const Texture2D* skyCubeMap = sky ? sky->GetSkyCubeMap() : nullptr;
-
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
 		D3D11_VIEWPORT viewport;
