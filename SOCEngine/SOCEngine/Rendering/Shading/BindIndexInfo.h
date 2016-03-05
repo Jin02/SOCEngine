@@ -64,7 +64,8 @@ namespace Rendering
 //		GBuffer_Emission_Specularity			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
-		SkyCubeMap								= 32,
+		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
+		AmbientCubeMap							= 32,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
