@@ -2,6 +2,7 @@
 
 #include "SkyForm.h"
 #include "SkyBoxMaterial.h"
+#include "SkyBoxCubeMaterial.h"
 
 namespace Rendering
 {
@@ -21,8 +22,12 @@ namespace Rendering
 			};
 
 		private:
-			SkyBoxMaterial*		_material;
-			Math::Matrix		_prevWorldViewProjMat;
+			Math::Matrix			_prevWorldViewProjMat;
+
+			SkyBoxMaterial*			_skyBoxMaterial;
+			SkyBoxCubeMaterial*		_skyBoxMaterialForReflectionProbe;
+
+			Texture::Texture2D*		_cubeMap;
 
 		public:
 			SkyBox();
@@ -30,15 +35,14 @@ namespace Rendering
 
 		public:
 			void Initialize(const std::string& materialName, const std::string& cubeMapFilePath);
-			void Initialize(SkyBoxMaterial* material);
-
 			virtual void Destroy();
 
 		public:
 			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer);
+			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe, const Texture::TextureCube* renderTarget, const Texture::DepthBufferCube* opaqueDepthBuffer);
 
 		public:
-			GET_SET_ACCESSOR(Material,		SkyBoxMaterial*,	_material);
+			GET_ACCESSOR(SkyCubeMap, const Texture::Texture2D*, _cubeMap);
 		};
 	}
 }

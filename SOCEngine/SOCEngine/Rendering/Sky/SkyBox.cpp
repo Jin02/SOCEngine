@@ -1,5 +1,6 @@
 #include "SkyBox.h"
 #include "ResourceManager.h"
+#include "BindIndexInfo.h"
 
 using namespace Rendering;
 using namespace Rendering::Sky;
@@ -11,7 +12,7 @@ using namespace Math;
 using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 
-SkyBox::SkyBox() : SkyForm(), _material(nullptr)
+SkyBox::SkyBox() : SkyForm(Type::Box), _skyBoxMaterialForReflectionProbe(nullptr), _skyBoxMaterial(nullptr), _cubeMap(nullptr)
 {
 	memset(&_prevWorldViewProjMat, 0, sizeof(Math::Matrix));
 }
@@ -23,14 +24,19 @@ SkyBox::~SkyBox()
 
 void SkyBox::Initialize(const std::string& materialName, const std::string& cubeMapFilePath)
 {
-	_material = new SkyBoxMaterial(materialName);
-	_material->Initialize();
+	_skyBoxMaterial = new SkyBoxMaterial(materialName);
+	_skyBoxMaterial->Initialize();
+
+	_skyBoxMaterialForReflectionProbe = new SkyBoxCubeMaterial(materialName + " Cube");
+	_skyBoxMaterialForReflectionProbe->Initialize();
 
 	const ResourceManager* resMgr	= ResourceManager::SharedInstance();
 	TextureManager* texMgr			= resMgr->GetTextureManager();
 
 	Texture2D* cubeMap = texMgr->LoadTextureFromFile(cubeMapFilePath, false);
-	_material->UpdateCubeMap(cubeMap);
+	_skyBoxMaterial->UpdateCubeMap(cubeMap);
+	_skyBoxMaterialForReflectionProbe->UpdateCubeMap(cubeMap);
+	_cubeMap = cubeMap;
 
 	auto log2 = [](float f) -> float
 	{
@@ -39,18 +45,14 @@ void SkyBox::Initialize(const std::string& materialName, const std::string& cube
 
 	_maxMipCount = log2(cubeMap->GetSize().w);
 
-	SkyForm::Initialize(_material);
-}
-
-void SkyBox::Initialize(SkyBoxMaterial* material)
-{
-	_material = material;
-	SkyForm::Initialize(_material);
+	SkyForm::Initialize();
 }
 
 void SkyBox::Destroy()
 {
-	SAFE_DELETE(_material);
+	SAFE_DELETE(_skyBoxMaterial);
+	SAFE_DELETE(_skyBoxMaterialForReflectionProbe);
+
 	SkyForm::Destroy();
 }
 
@@ -88,9 +90,24 @@ void SkyBox::Render(const DirectX* dx, const CameraForm* camera, const Texture::
 	{
 		_prevWorldViewProjMat = worldViewProj;
 		Matrix::Transpose(worldViewProj, worldViewProj);
-
-		_material->UpdateWVPMatrix(dx, worldViewProj);
+		
+		_skyBoxMaterial->UpdateWVPMatrix(dx, worldViewProj);
 	}
 
-	SkyForm::_Render(dx, renderTarget, opaqueDepthBuffer);
+	SkyForm::_Render(dx, _skyBoxMaterial, renderTarget->GetRenderTargetView(), opaqueDepthBuffer->GetDepthStencilView());
+}
+
+void SkyBox::Render(const DirectX* dx, const ReflectionProbe* probe, const TextureCube* renderTarget, const DepthBufferCube* opaqueDepthBuffer)
+{
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	ID3D11Buffer* buffer = probe->GetInfoConstBuffer()->GetBuffer();
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+
+	SkyForm::_Render(dx, _skyBoxMaterialForReflectionProbe, renderTarget->GetRenderTargetView(), opaqueDepthBuffer->GetDepthStencilView());
+
+	buffer = nullptr;
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
 }
