@@ -6,8 +6,7 @@ using namespace Rendering;
 using namespace Rendering::Texture;
 using namespace Rendering::View;
 
-TextureCube::TextureCube() : Texture2D(nullptr, nullptr, false),
-	_depthMap(nullptr), _dsv(nullptr), _rtv(nullptr)
+TextureCube::TextureCube() : Texture2D(nullptr, nullptr, false), _rtv(nullptr)
 {
 }
 
@@ -15,7 +14,7 @@ TextureCube::~TextureCube()
 {
 }
 
-void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useDSV, bool useMipmap)
+void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useMipmap)
 {
 	_useMipmap = useMipmap;
 	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | (useRTV ? D3D11_BIND_RENDER_TARGET : 0);
@@ -47,31 +46,6 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &_texture);
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create texture");
 
-	// Depth
-	if(useDSV)
-	{
-		texDesc.Format		= DXGI_FORMAT_D32_FLOAT;
-	
-		texDesc.BindFlags	= D3D11_BIND_DEPTH_STENCIL;
-		texDesc.MiscFlags	= D3D11_RESOURCE_MISC_TEXTURECUBE;
-		texDesc.MipLevels	= 1;
-	
-		hr = device->CreateTexture2D(&texDesc, nullptr, &_depthMap);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create texture");
-
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-		memset(&dsvDesc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-		dsvDesc.Format			= DXGI_FORMAT_D32_FLOAT;
-		dsvDesc.ViewDimension	= D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-
-		dsvDesc.Texture2DArray.FirstArraySlice	= 0;
-		dsvDesc.Texture2DArray.ArraySize		= 6;
-		dsvDesc.Texture2DArray.MipSlice			= 0;
-
-		hr = device->CreateDepthStencilView(_depthMap, &dsvDesc, &_dsv);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create dsv");
-	}
-
 	// render target
 	if(useRTV)
 	{
@@ -96,8 +70,6 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 
 void TextureCube::Destroy()
 {
-	SAFE_RELEASE(_depthMap);
-	SAFE_RELEASE(_dsv);
 	SAFE_RELEASE(_rtv);
 
 	Texture2D::Destroy();
@@ -111,10 +83,5 @@ void TextureCube::Clear(const Device::DirectX* dx)
 	{
 		float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		context->ClearRenderTargetView(_rtv, clearColor);
-	}
-
-	if(_dsv)
-	{
-		context->ClearDepthStencilView(_dsv, D3D11_CLEAR_DEPTH, 0.0f, 0x0);
 	}
 }
