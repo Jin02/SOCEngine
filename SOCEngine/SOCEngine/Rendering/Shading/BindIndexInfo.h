@@ -25,8 +25,8 @@ namespace Rendering
 		HeightMap								= 11,
 		MetallicMap								= 12,
 		OcclusionMap							= 13,
-		RoughnessMap							= 14,
-		EmissionMap								= 15,
+		RoughnessMap							= 33,
+		EmissionMap								= 34,
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,

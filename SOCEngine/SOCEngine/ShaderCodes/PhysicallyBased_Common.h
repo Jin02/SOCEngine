@@ -43,8 +43,8 @@ Texture2D opacityMap			: register( t10 ); // 0 is opcity 100%, 1 is 0%. used in 
 Texture2D heightMap				: register( t11 );
 Texture2D metallicMap			: register( t12 );
 Texture2D occlusionMap			: register( t13 );
-Texture2D roughnessMap			: register( t14 );
-Texture2D emissionMap			: register( t15 );
+Texture2D roughnessMap			: register( t33 );
+Texture2D emissionMap			: register( t34 );
 
 float4 GetMaterialMainColor()
 {
