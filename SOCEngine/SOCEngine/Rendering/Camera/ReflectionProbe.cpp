@@ -8,6 +8,7 @@
 
 using namespace Core;
 using namespace Math;
+using namespace Intersection;
 using namespace Rendering;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
@@ -17,40 +18,41 @@ using namespace Rendering::Shadow;
 
 #define REFLECTION_PROBE_SIZE 512.0f
 
-ReflectionProbe::ReflectionProbe() : Component(), _cubeMap(nullptr), _viewProjMatCB(nullptr)
+ReflectionProbe::ReflectionProbe()
+	: Component(), _cubeMap(nullptr), _rpInfoCB(nullptr), _opaqueDepthBuffer(nullptr),
+	_useTransparent(true), _projNear(0.01f), _range(10.0f)
 {
 }
 
 ReflectionProbe::~ReflectionProbe()
 {
 	SAFE_DELETE(_cubeMap);
-	SAFE_DELETE(_viewProjMatCB);
+	SAFE_DELETE(_rpInfoCB);
+	SAFE_DELETE(_opaqueDepthBuffer);
 }
 
 void ReflectionProbe::OnInitialize()
 {
-	// CubeMap
-	{
-		_cubeMap = new TextureCube;
-	
-		const Size<uint> size = Size<uint>((uint)REFLECTION_PROBE_SIZE, (uint)REFLECTION_PROBE_SIZE);
-		_cubeMap->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, true, true, true);
-	}
+	const Size<uint> size = Size<uint>((uint)REFLECTION_PROBE_SIZE, (uint)REFLECTION_PROBE_SIZE);
 
-	// view proj cb
-	{
-		_viewProjMatCB = new ConstBuffer;
-		_viewProjMatCB->Initialize(sizeof(Matrix) * 6);
-	}
+	_cubeMap = new TextureCube;
+	_cubeMap->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, true, true);
+
+	_rpInfoCB = new ConstBuffer;
+	_rpInfoCB->Initialize(sizeof(RPInfo));
+
+	_opaqueDepthBuffer = new DepthBufferCube;
+	_opaqueDepthBuffer->Initialize(size, false);
 }
 
 void ReflectionProbe::OnDestroy()
 {
 	_cubeMap->Destroy();
-	_viewProjMatCB->Destory();
+	_rpInfoCB->Destory();
+	_opaqueDepthBuffer->Destroy();
 }
 
-void ReflectionProbe::OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB)
+void ReflectionProbe::UpdateReflectionProbeCB(const Device::DirectX*& dx, uint packedNumOfLights)
 {
 	Vector3 forwards[6] = 
 	{
@@ -94,31 +96,80 @@ void ReflectionProbe::OnUpdateTransformCB(const Device::DirectX*& dx, const Rend
 	Matrix proj;
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), projNear, projFar);
 
-	Vector3 worldPos;
-	_owner->GetTransform()->FetchWorldPosition(worldPos);
+	_owner->GetTransform()->FetchWorldPosition(_worldPos);
 
-	Matrix viewProjs[6];
-	Matrix& frontZViewProj = viewProjs[0];
-	ComputeViewProj(frontZViewProj, worldPos, forwards[0], ups[0], proj);
+	RPInfo info;
+	info.camWorldPos		= _worldPos;
+	info.packedNumOfLights	= packedNumOfLights;
 
-	bool isDifferent = memcmp(&_prevFrontZViewProjMat, &frontZViewProj, sizeof(Matrix)) != 0;
-	if(isDifferent == false)
+	Matrix& frontZViewProj = info.viewProjs[0];
+	ComputeViewProj(frontZViewProj, _worldPos, forwards[0], ups[0], proj);
+
+	bool isSameMat = memcmp(&_prevFrontZViewProjMat, &frontZViewProj, sizeof(Matrix)) == 0;
+	if( isSameMat && (_prevPackedNumOfLights == packedNumOfLights) )
 		return;
 
-	_prevFrontZViewProjMat = frontZViewProj;
-
 	for(uint i=1; i<6; ++i)
-		ComputeViewProj(viewProjs[i], worldPos, forwards[i], ups[i], proj);
+		ComputeViewProj(info.viewProjs[i], _worldPos, forwards[i], ups[i], proj);
 
-	_viewProjMatCB->UpdateSubResource(dx->GetContext(), &viewProjs);
+	_rpInfoCB->UpdateSubResource(dx->GetContext(), &info);
+
+	_prevFrontZViewProjMat = frontZViewProj;
+	_prevPackedNumOfLights = packedNumOfLights;
 }
 
 void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scene)
 {
+	const RenderManager* renderManager	= scene->GetRenderManager();
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	ID3D11RenderTargetView* rtv = _cubeMap->GetRenderTargetView();
-	context->OMSetRenderTargets(1, &rtv, _cubeMap->GetDepthStencilView());
+	if(_useTransparent)
+		CameraForm::SortTransparentMeshRenderQueue(_transparentMeshQueue, _owner->GetTransform(), renderManager);
+
+	// Clear
+	{
+		_cubeMap->Clear(dx);
+		_opaqueDepthBuffer->Clear(context, 0.0f, 0);
+	}
+
+	ID3D11Buffer* buffer = _rpInfoCB->GetBuffer();
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+
+	BoundBox boundBox(_worldPos, Vector3(_range, _range, _range));
+	auto Intersect = [&](const Intersection::Sphere& sphere) -> bool
+	{
+		float squaredDistance = 0.0f;
+		{
+			auto Check = [](float p, float bMin, float bMax) -> float
+			{
+				float out	= 0.0f;
+				float v		= p;
+
+				if(v < bMin)
+				{
+					float val = bMin - v;
+					out += val * val;
+				}
+				if(v > bMax)
+				{
+					float val = v - bMax;
+					out += val * val;
+				}
+
+				return out;
+			};
+
+			const Vector3& bMin = boundBox.GetMin();
+			const Vector3& bMax = boundBox.GetMax();
+
+			squaredDistance += Check(sphere.center.x, bMin.x, bMax.x);
+			squaredDistance += Check(sphere.center.y, bMin.y, bMax.y);
+			squaredDistance += Check(sphere.center.z, bMin.z, bMax.z);
+		}
+
+		return squaredDistance <= (sphere.radius * sphere.radius);
+	};
+	std::function<bool(const Intersection::Sphere&)> intersectFunc = Intersect;
 
 	D3D11_VIEWPORT viewport;
 	{
@@ -131,75 +182,116 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 	}
 	context->RSSetViewports(1, &viewport);
 
-	_cubeMap->Clear(dx);
-
-	ID3D11Buffer* buffer = _viewProjMatCB->GetBuffer();
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_ViewProjs), 1, &buffer);
-
-	// Render Scene
+	// early z culling
 	{
-		auto Intersect = [&](const Intersection::Sphere& sphere) -> bool
-		{
-			float squaredDistance = 0.0f;
-			{
-				auto Check = [](float p, float bMin, float bMax) -> float
-				{
-					float out	= 0.0f;
-					float v		= p;
-
-					if(v < bMin)
-					{
-						float val = bMin - v;
-						out += val * val;
-					}
-					if(v > bMax)
-					{
-						float val = v - bMax;
-						out += val * val;
-					}
-
-					return out;
-				};
-
-				const Vector3& bMin = _boundBox.GetMin();
-				const Vector3& bMax = _boundBox.GetMax();
-
-				squaredDistance += Check(sphere.center.x, bMin.x, bMax.x);
-				squaredDistance += Check(sphere.center.y, bMin.y, bMax.y);
-				squaredDistance += Check(sphere.center.z, bMin.z, bMax.z);
-			}
-
-			return squaredDistance <= (sphere.radius * sphere.radius);
-		};
-		std::function<bool(const Intersection::Sphere&)> intersectFunc = Intersect;
-
-		const RenderManager* renderManager	= scene->GetRenderManager();
-
-		const LightManager* lightManager	= scene->GetLightManager();
-		lightManager->BindResources(dx, false, false, true);
-
-		const ShadowRenderer* shadowManager	= scene->GetShadowManager();
-		shadowManager->BindResources(dx, false, false, true);
+		ID3D11RenderTargetView* rtv = nullptr;
+		context->OMSetRenderTargets(1, &rtv, _opaqueDepthBuffer->GetDepthStencilView());
 
 		// Opaque
 		{
+			const auto& meshes = renderManager->GetOpaqueMeshes();
+			uint count = meshes.meshes.GetVector().size();
+
+			context->RSSetState( nullptr );
+
+			if(count > 0)
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::ReflectionProbe_OnlyDepth, nullptr, &intersectFunc);
+		}
+
+		rtv = _cubeMap->GetRenderTargetView();
+		context->OMSetRenderTargets(1, &rtv, _opaqueDepthBuffer->GetDepthStencilView());
+
+		// AlphaTest
+		{
+			const auto& meshes = renderManager->GetAlphaTestMeshes();
+			uint count = meshes.meshes.GetVector().size();
+
+			if(count > 0)
+			{
+				bool useMSAA = dx->GetMSAADesc().Count > 1;
+
+				float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+				if(useMSAA) //on alpha blending
+					context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
+
+				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+		
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::ReflectionProbe_AlphaTestWithDiffuse, nullptr, &intersectFunc);
+
+				context->RSSetState( nullptr );
+
+				if(useMSAA) //off alpha blending
+					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+			}
+		}
+	}
+
+	// Render Scene
+	{
+		const LightManager* lightManager	= scene->GetLightManager();
+		const ShadowRenderer* shadowManager	= scene->GetShadowManager();
+
+		lightManager->BindResources(dx, false, false, true);
+		shadowManager->BindResources(dx, false, false, true);
+
+		ID3D11RenderTargetView* rtv = _cubeMap->GetRenderTargetView();
+		context->OMSetRenderTargets(1, &rtv, _opaqueDepthBuffer->GetDepthStencilView());
+	
+		// off alpha blending
+		float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+		// Opaque
+		{
+			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+
+			ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
+			context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
+			context->OMSetDepthStencilState(dx->GetDepthStateEqualAndDisableDepthWrite(), 0);
+			context->RSSetState(dx->GetRasterizerStateCWDefaultState());
+
 			const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Forward_ReflectionProbe, nullptr, &intersectFunc);
+			if(opaqueMeshes.meshes.GetSize() > 0)
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::ReflectionProbe_OnlyFrontFace, nullptr, &intersectFunc);
 		}
 
 		// AlphaTest
 		{
 			const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Forward_ReflectionProbeWithAlphaTest, nullptr, &intersectFunc);
+			if(alphaTestMeshes.meshes.GetSize() > 0)
+			{
+				bool useMSAA = dx->GetMSAADesc().Count > 1;
+
+				if(useMSAA) //on alpha blending
+					context->OMSetBlendState(dx->GetBlendStateAlphaToCoverage(), blendFactor, 0xffffffff);
+
+				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::ReflectionProbe_AlphaTestWithDiffuse, nullptr, &intersectFunc);
+
+				context->RSSetState( nullptr );
+
+				if(useMSAA) //off alpha blending
+					context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+			}
 		}
 
-		//const auto& transparencyMeshes = renderManager->GetTransparentMeshes();
-		//MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Forward_ReflectionProbeTransparency, nullptr, &intersectFunc);
+		// Transparency
+		{
+			context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
+			context->OMSetBlendState(dx->GetBlendStateAlpha(), blendFactor, 0xffffffff);
+			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0);
+
+			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
+			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::ReflectionProbe_Transparency, nullptr, &intersectFunc);
+
+			context->RSSetState(nullptr);
+			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
+		}
 
 		lightManager->UnbindResources(dx, false, false, true);
 		shadowManager->UnbindResources(dx, false, false, true);
 	}
 
 	buffer = nullptr;
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_ViewProjs), 1, &buffer);
+	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
 }

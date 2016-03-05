@@ -4,6 +4,8 @@
 #include "TextureCube.h"
 #include "ConstBuffer.h"
 #include "BoundBox.h"
+#include "CameraForm.h"
+#include "DepthBufferCube.h"
 
 namespace Core
 {
@@ -18,18 +20,29 @@ namespace Rendering
 		{
 		public:
 			static const Core::Component::Type GetComponentType() {	return Core::Component::Type::ReflectionProbe;	}
+			struct RPInfo
+			{
+				Math::Matrix	viewProjs[6];
+				uint			packedNumOfLights;
+				Math::Vector3	camWorldPos;
+			};
 
 		private:
-			Texture::TextureCube*	_cubeMap;
+			Texture::TextureCube*		_cubeMap;
+			Texture::DepthBufferCube*	_opaqueDepthBuffer;
 
-			Buffer::ConstBuffer*	_viewProjMatCB;
-			Math::Matrix			_prevFrontZViewProjMat;
+			Buffer::ConstBuffer*		_rpInfoCB;
+			
+			Math::Matrix				_prevFrontZViewProjMat;
+			uint						_prevPackedNumOfLights;
 
 		private:
-			float					_projNear;
-			float					_range;
-			Color					_clearColor;
-			Intersection::BoundBox	_boundBox;
+			float						_projNear;
+			float						_range;
+			Math::Vector3				_worldPos;
+
+			bool						_useTransparent;
+			CameraForm::RenderQueue		_transparentMeshQueue;
 
 		public:
 			ReflectionProbe();
@@ -39,10 +52,16 @@ namespace Rendering
 			virtual void OnInitialize();
 			virtual void OnDestroy();
 
-			virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB);
+			virtual void OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB){}
 
 		public:
+			void UpdateReflectionProbeCB(const Device::DirectX*& dx, uint packedNumOfLights);
 			void Render(const Device::DirectX*& dx, const Core::Scene* scene);
+
+		public:
+			GET_SET_ACCESSOR(ProjNear,			float,		_projNear);
+			GET_SET_ACCESSOR(Range,				float,		_range);
+			GET_SET_ACCESSOR(UseTransparent,	bool,		_useTransparent);
 		};
 	}
 }
