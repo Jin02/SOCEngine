@@ -841,6 +841,9 @@
     <ClInclude Include="Rendering\Camera\ReflectionProbe.h">
       <Filter>Rendering\Camera\ReflectionProbe</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBufferCube.h">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1142,6 +1145,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\ReflectionProbe.cpp">
       <Filter>Rendering\Camera\ReflectionProbe</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp">
+      <Filter>Rendering\Texture\Cube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
