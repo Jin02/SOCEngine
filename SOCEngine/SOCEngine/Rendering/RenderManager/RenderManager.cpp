@@ -103,9 +103,6 @@ void RenderManager::Initialize()
 	{
 		RenderType type = (RenderType)i;
 
-		if(type != RenderType::Voxelization)
-			LoadDefaultSahder(type, (uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
-
 		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
