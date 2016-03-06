@@ -71,7 +71,7 @@ namespace Device
 		}
 		else if(msg == WM_DESTROY || msg == WM_CLOSE)
 		{
-			director->Exit();
+			director->SetExit(true);
 			return 0;
 		}
 

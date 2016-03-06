@@ -234,7 +234,6 @@ void RenderManager::DeleteDefaultShader(RenderType renderType)
 		}
 	};
 
-	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0);
 	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0 | (uint)DefaultVertexInputTypeFlag::NORMAL);
 	DeleteShaderByBufferFlag((uint)DefaultVertexInputTypeFlag::UV0 | (uint)DefaultVertexInputTypeFlag::NORMAL | (uint)DefaultVertexInputTypeFlag::TANGENT);
 }

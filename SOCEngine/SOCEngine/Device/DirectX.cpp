@@ -480,7 +480,6 @@ Math::Size<uint> DirectX::FetchBackBufferSize()
 
 void DirectX::Destroy()
 {
-	SAFE_RELEASE(_renderTargetView);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCullingWithClip);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
 	SAFE_RELEASE(_rasterizerClockwiseDefault);
@@ -502,9 +501,9 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_shadowGreaterEqualCompState);
 	SAFE_RELEASE(_shadowLinearSamplerState);
 	SAFE_RELEASE(_depthLessEqual);
+	SAFE_RELEASE(_coneTracingSamplerState);
+	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
 	SAFE_RELEASE(_immediateContext);
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
-	SAFE_RELEASE(_coneTracingSamplerState);
-	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
 }
