@@ -67,12 +67,12 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
 
 	ID3D11SamplerState* sampler		= dx->GetSamplerStateLinear();
-	context->PSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
+	context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
 
 	FullScreen::Render(dx, outResultRT);
 
 	sampler = nullptr;
-	context->PSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
+	context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
 	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
 
 	buffer = nullptr;

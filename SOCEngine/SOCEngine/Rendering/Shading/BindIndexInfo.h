@@ -95,7 +95,7 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
-		SkyCubeMapSamplerState			= 4,
+		AmbientCubeMapSamplerState		= 4,
 	};
 
 	enum class UAVBindIndex : unsigned int
