@@ -25,7 +25,7 @@ namespace Rendering
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
-			Texture::RenderTexture*						_albedo_sunOcclusion;
+			Texture::RenderTexture*						_albedo_occlusion;
 			Texture::RenderTexture*						_normal_roughness;
 			Texture::RenderTexture*						_motionXY_height_metallic;
 			Texture::RenderTexture*						_emission_specularity;
@@ -81,7 +81,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(TBRParamConstBuffer,			const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
 
-			GET_ACCESSOR(GBufferAlbedoOcclusion,		const Texture::RenderTexture*,		_albedo_sunOcclusion);
+			GET_ACCESSOR(GBufferAlbedoOcclusion,		const Texture::RenderTexture*,		_albedo_occlusion);
 			GET_ACCESSOR(GBufferNormalRoughness,		const Texture::RenderTexture*,		_normal_roughness);
 			GET_ACCESSOR(GBufferMotionXYHeightMetallic,	const Texture::RenderTexture*,		_motionXY_height_metallic);
 			GET_ACCESSOR(GBufferEmissionSpecularity,	const Texture::RenderTexture*,		_emission_specularity);
