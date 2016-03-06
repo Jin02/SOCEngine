@@ -100,29 +100,23 @@ void Director::Run()
 		}
 	}
 
+	// Delete Scene
+	{
+		if(_scene)
+		{
+			_scene->Destroy();
+			delete _scene;
+		}
+		if(_nextScene)
+		{
+			_nextScene->Destroy();
+			delete _nextScene;
+		}
+	}
+
 	Resource::ResourceManager* resourceMgr = Resource::ResourceManager::SharedInstance();
 	resourceMgr->DestroyManagers();
 	Resource::ResourceManager::Destroy();
-}
-
-void Director::Exit()
-{
-	if(_exit) return;
-	_exit = true;
-
-	_scene->StopState();
-
-	if(_scene)
-	{
-		_scene->Destroy();
-		delete _scene;
-	}
-
-	if(_nextScene)
-	{
-		_nextScene->Destroy();
-		delete _nextScene;
-	}
 
 	SAFE_DELETE(_directX);
 	SAFE_DELETE(_win);
