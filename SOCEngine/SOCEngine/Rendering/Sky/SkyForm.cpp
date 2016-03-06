@@ -14,8 +14,8 @@ using namespace Rendering::Texture;
 using namespace Resource;
 using namespace Math;
 
-SkyForm::SkyForm() : _mesh(nullptr), _skyMapInfoCB(nullptr),
-	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(7.0f)
+SkyForm::SkyForm(Type type) : _meshFilter(nullptr), _skyMapInfoCB(nullptr),
+	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(7.0f), _type(type)
 {
 }
 
@@ -24,7 +24,7 @@ SkyForm::~SkyForm()
 	Destroy();
 }
 
-void SkyForm::Initialize(const Rendering::Material* skyMaterial)
+void SkyForm::Initialize()
 {
 	const ResourceManager* resMgr	= ResourceManager::SharedInstance();
 	BufferManager* bufferMgr		= resMgr->GetBufferManager();
@@ -33,16 +33,10 @@ void SkyForm::Initialize(const Rendering::Material* skyMaterial)
 	uint flag = 0;	//uint(RenderManager::DefaultVertexInputTypeFlag::NORMAL) |
 					//uint(RenderManager::DefaultVertexInputTypeFlag::UV0);
 
-	_mesh = new Mesh;
+	_meshFilter = new MeshFilter;
 	auto CreateMeshContent = [&](const Mesh::CreateFuncArguments& args)
 	{
-		_mesh->Initialize(args, false, false);
-
-		MeshRenderer* renderer = _mesh->GetMeshRenderer();
-		if (renderer->GetMaterials().empty() == false)
-			renderer->DeleteMaterial(0);
-
-		renderer->AddMaterial(skyMaterial);
+		_meshFilter->Initialize(args);
 	};
 
 //	gen.CreateBox(CreateMeshContent, Vector3(5000, 5000, 5000), flag);
@@ -54,7 +48,7 @@ void SkyForm::Initialize(const Rendering::Material* skyMaterial)
 
 void SkyForm::Destroy()
 {
-	SAFE_DELETE(_mesh);
+	SAFE_DELETE(_meshFilter);
 	SAFE_DELETE(_skyMapInfoCB);
 }
 
@@ -77,9 +71,7 @@ void SkyForm::UpdateConstBuffer(const Device::DirectX* dx)
 	}
 }
 
-void SkyForm::_Render(const Device::DirectX* dx,
-	const Rendering::Texture::RenderTexture* renderTarget,
-	const Rendering::Texture::DepthBuffer* opaqueDepthBuffer)
+void SkyForm::_Render(const Device::DirectX* dx, const Rendering::Material* material, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -91,22 +83,16 @@ void SkyForm::_Render(const Device::DirectX* dx,
 		context->PSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &linearSampler);
 	
 		context->OMSetDepthStencilState(dx->GetDepthStateGreaterEqualAndDisableDepthWrite(), 0);
-
-		ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView();
-		ID3D11DepthStencilView* dsv = opaqueDepthBuffer->GetDepthStencilView();
 		context->OMSetRenderTargets(1, &rtv, dsv);
 	
 		float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 	}
 
-	MeshFilter* filter = _mesh->GetMeshFilter();
-	filter->GetIndexBuffer()->IASetBuffer(context);
-	filter->GetVertexBuffer()->IASetBuffer(context);
+	_meshFilter->GetIndexBuffer()->IASetBuffer(context);
+	_meshFilter->GetVertexBuffer()->IASetBuffer(context);
 
-	MeshRenderer* renderer = _mesh->GetMeshRenderer();
-	const auto& materials = renderer->GetMaterials();
-	for (const auto& material : materials)
+	// Render Sky
 	{
 		const auto& customShader = material->GetCustomShader().shaderGroup;
 
@@ -132,7 +118,7 @@ void SkyForm::_Render(const Device::DirectX* dx,
 				gs->BindResourcesToContext(context, &cbs, &texs, &srbs);
 			}
 
-			context->DrawIndexed(filter->GetIndexCount(), 0, 0);
+			context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
 
 			context->VSSetShader(nullptr, nullptr, 0);
 			context->PSSetShader(nullptr, nullptr, 0);
@@ -141,12 +127,4 @@ void SkyForm::_Render(const Device::DirectX* dx,
 				context->GSSetShader(nullptr, nullptr, 0);
 		}
 	}
-}
-
-
-const Texture2D* SkyForm::GetSkyCubeMap() const
-{
-	// 임시로 처리.
-	// 나중에 명확하게 다시 작성해야 함.
-	return dynamic_cast<const Texture2D*>(_mesh->GetMeshRenderer()->GetMaterials()[0]->GetTextures()[0].texture);
 }

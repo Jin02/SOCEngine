@@ -25,8 +25,8 @@ namespace Rendering
 		HeightMap								= 11,
 		MetallicMap								= 12,
 		OcclusionMap							= 13,
-		RoughnessMap							= 14,
-		EmissionMap								= 15,
+		RoughnessMap							= 33,
+		EmissionMap								= 34,
 
 		GBuffer_BlendedDepth					= 12,
 		LightIndexBuffer						= 13,
@@ -64,7 +64,8 @@ namespace Rendering
 //		GBuffer_Emission_Specularity			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
-		SkyCubeMap								= 32,
+		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
+		AmbientCubeMap							= 32,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -74,6 +75,8 @@ namespace Rendering
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
+
+		ReflectionProbe_Info			= 5,	
 
 		Voxelization_InfoCB				= 5,
 		GlobalIIllumination_InfoCB		= 6,
@@ -92,7 +95,7 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
-		SkyCubeMapSamplerState			= 4,
+		AmbientCubeMapSamplerState		= 4,
 	};
 
 	enum class UAVBindIndex : unsigned int

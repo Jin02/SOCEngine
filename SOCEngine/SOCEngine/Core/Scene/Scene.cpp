@@ -2,7 +2,7 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
-
+#include "ResourceManager.h"
 #include "SkyBox.h"
 
 using namespace Core;
@@ -26,7 +26,7 @@ Scene::Scene(void) :
 	_renderMgr(nullptr),
 	_shadowRenderer(nullptr), _globalIllumination(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
-	_postProcessingSystem(nullptr)
+	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr)
 {
 	_state = State::Init;
 }
@@ -42,23 +42,24 @@ Scene::~Scene(void)
 	SAFE_DELETE(_globalIllumination);
 	SAFE_DELETE(_backBuffer);
 	SAFE_DELETE(_postProcessingSystem);
+	SAFE_DELETE(_reflectionManager);
 }
 
 void Scene::Initialize()
 {
-	_cameraMgr		= new CameraManager;
+	_dx	= Device::Director::SharedInstance()->GetDirectX();
 
-	_renderMgr		= new RenderManager;
+	_cameraMgr			= new CameraManager;
+	_reflectionManager	= new ReflectionProbeManager;
+	_uiManager			= new UIManager;
+
+	_renderMgr = new RenderManager;
 	_renderMgr->Initialize();
 
-	_uiManager		= new UIManager;
-
-	_dx				= Device::Director::SharedInstance()->GetDirectX();
-
-	_lightManager	= new LightManager;	
+	_lightManager = new LightManager;	
 	_lightManager->InitializeAllShaderResourceBuffer();
 
-	_materialMgr	= new MaterialManager;
+	_materialMgr = new MaterialManager;
 	_materialMgr->Initialize();
 
 	_shadowRenderer = new ShadowRenderer;
@@ -78,6 +79,8 @@ void Scene::Initialize()
 
 	_postProcessingSystem = new PostProcessPipeline;
 	_postProcessingSystem->Initialize(_dx->GetBackBufferSize());
+
+	_prevIntegrateBRDFMap = Resource::ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 
 	NextState();
 	OnInitialize();
@@ -129,6 +132,10 @@ void Scene::RenderPreview()
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
+
+	const std::vector<ReflectionProbe*>& rps = _reflectionManager->GetReflectionProbeVector();
+	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
+		(*iter)->UpdateReflectionProbeCB(_dx, _lightManager->GetPackedLightCount());
 
 	if(_sky)
 		_sky->UpdateConstBuffer(_dx);
@@ -182,6 +189,10 @@ void Scene::Render()
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
 
+	const auto& rps = _reflectionManager->GetReflectionProbeVector();
+	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
+		(*iter)->Render(_dx, this, _prevIntegrateBRDFMap);
+
 	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
 	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
 
@@ -202,6 +213,7 @@ void Scene::Destroy()
 	_cameraMgr->Destroy();
 	_globalIllumination->Destroy();
 	_postProcessingSystem->Destroy();
+	_reflectionManager->Destroy();
 }
 
 void Scene::NextState()

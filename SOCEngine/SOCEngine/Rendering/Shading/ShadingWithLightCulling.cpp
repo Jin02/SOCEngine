@@ -80,7 +80,7 @@ void ShadingWithLightCulling::Initialize(
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Albedo_Occlusion),			geometryBuffers.albedo_occlusion);
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_MotionXY_Height_Metallic),	geometryBuffers.motionXY_height_metallic);
 		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Normal_Roughness),			geometryBuffers.normal_roughness);
-		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Emission_Specularity),					geometryBuffers.emission);
+		AddTextureToInputTextureList(uint(TextureBindIndex::GBuffer_Emission_Specularity),		geometryBuffers.emission);
 
 		// ShadowMap Atlas
 		{
@@ -135,7 +135,7 @@ void ShadingWithLightCulling::Destory()
 
 void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
 									   const Buffer::ConstBuffer* tbrConstBuffer,
-									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer, const Sky::SkyForm* sky)
+									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer)
 {
 	std::vector<ShaderForm::InputConstBuffer> additionalConstBuffers;
 	if(shadowGlobalParamConstBuffer)
@@ -147,27 +147,5 @@ void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
 		additionalConstBuffers.push_back(icb);
 	}
 
-	ID3D11DeviceContext* context = dx->GetContext();
-
-	//if(sky)
-	//{
-	//	additionalConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::SkyMapInfoParam), sky->GetSkyMapInfoConstBuffer()));
-
-	//	ID3D11ShaderResourceView* srv = sky->GetSkyCubeMap()->GetShaderResourceView()->GetView();
-	//	context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
-	//	
-	//	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
-	//	context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
-	//}
-
 	LightCulling::Dispatch(dx, tbrConstBuffer, &additionalConstBuffers);
-
-	//if(sky)
-	//{
-	//	ID3D11ShaderResourceView* srv = nullptr;
-	//	context->CSSetShaderResources(uint(TextureBindIndex::SkyCubeMap), 1, &srv);
-	//	
-	//	ID3D11SamplerState* sampler = nullptr;
-	//	context->CSSetSamplers(uint(SamplerStateBindIndex::SkyCubeMapSamplerState), 1, &sampler);
-	//}
 }

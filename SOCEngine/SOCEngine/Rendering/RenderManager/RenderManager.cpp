@@ -36,13 +36,15 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 
 	repo = &(_renderShaders[(uint)renderType]);
 
-	if(renderType == RenderType::GBuffer_AlphaBlend || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
+	if(	renderType == RenderType::GBuffer_AlphaBlend ||
+		renderType == RenderType::Forward_MomentDepthWithAlphaTest ||
+		renderType == RenderType::ReflectionProbe_AlphaTestWithDiffuse	)
 	{
 		ShaderMacro alphaTestMacro;
 		alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 		targetShaderMacros.push_back(alphaTestMacro);
 	}
-	if(renderType == RenderType::Forward_Transparency)// || renderType == RenderType::Forward_OnlyDepth)
+	if(renderType == RenderType::Forward_Transparency || renderType == RenderType::ReflectionProbe_Transparency)
 	{
 		ShaderMacro useTransparencyMacro;
 		useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
@@ -103,9 +105,6 @@ void RenderManager::Initialize()
 	{
 		RenderType type = (RenderType)i;
 
-		if(type != RenderType::Voxelization)
-			LoadDefaultSahder(type, (uint)DefaultVertexInputTypeFlag::UV0, nullptr, &macros);
-
 		LoadDefaultSahder(type,
 			(uint)DefaultVertexInputTypeFlag::UV0 | 
 			(uint)DefaultVertexInputTypeFlag::NORMAL, nullptr, &macros);
@@ -152,7 +151,10 @@ void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncNam
 	std::string gsMain = "";
 
 	if(renderType == RenderType::Forward_AlphaTestWithDiffuse)
+	{
+		vsMain = "OnlyAlpaTestWithDiffuseVS";
 		psMain = "OnlyAlpaTestWithDiffusePS";
+	}
 	else if(renderType == RenderType::Voxelization)
 		gsMain = "GS";
 	else if(renderType == RenderType::Forward_OnlyDepth)
@@ -164,6 +166,28 @@ void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncNam
 	{
 		vsMain = "MomentDepthVS";
 		psMain = "MomentDepthPS";
+	}
+	else if(renderType == RenderType::ReflectionProbe_OnlyFrontFace			||
+			renderType == RenderType::ReflectionProbe_Transparency			||
+			renderType == RenderType::ReflectionProbe_AlphaTestWithDiffuse	||
+			renderType == RenderType::ReflectionProbe_OnlyDepth)
+	{
+		if(renderType == RenderType::ReflectionProbe_AlphaTestWithDiffuse)
+		{
+			vsMain = "OnlyAlpaTestWithDiffuseVS";
+			gsMain = "OnlyAlpaTestWithDiffuseGS";
+			psMain = "OnlyAlpaTestWithDiffusePS";
+		}
+		else if(renderType == RenderType::ReflectionProbe_OnlyDepth)
+		{
+			vsMain = "DepthOnlyVS";
+			gsMain = "DepthOnlyGS";
+			psMain = "";
+		}
+		else
+		{
+			gsMain = "GS";
+		}
 	}
 
 	ShaderMainFuncName pair;
@@ -379,6 +403,12 @@ void RenderManager::MakeDefaultSahderFileName(std::string& outFileName, RenderTy
 		break;
 	case RenderType::Voxelization:
 		frontFileName = "Voxelization_";
+		break;
+	case RenderType::ReflectionProbe_AlphaTestWithDiffuse:
+	case RenderType::ReflectionProbe_OnlyDepth:
+	case RenderType::ReflectionProbe_OnlyFrontFace:
+	case RenderType::ReflectionProbe_Transparency:
+		frontFileName = "ReflectionProbe_";
 		break;
 	default:
 		ASSERT_MSG("Error, unsupported mesh type");

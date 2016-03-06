@@ -18,7 +18,7 @@ using namespace Rendering::TBDR;
 using namespace Rendering;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
-	_blendedDepthBuffer(nullptr), _albedo_sunOcclusion(nullptr),
+	_blendedDepthBuffer(nullptr), _albedo_occlusion(nullptr),
 	_motionXY_height_metallic(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
@@ -36,9 +36,9 @@ void MeshCamera::OnInitialize()
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
-	_albedo_sunOcclusion = new Texture::RenderTexture;
+	_albedo_occlusion = new Texture::RenderTexture;
 	ASSERT_COND_MSG( 
-		_albedo_sunOcclusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		_albedo_occlusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
@@ -69,7 +69,7 @@ void MeshCamera::OnInitialize()
 	{
 		ShadingWithLightCulling::GBuffers gbuffer;
 		{
-			gbuffer.albedo_occlusion			= _albedo_sunOcclusion;
+			gbuffer.albedo_occlusion			= _albedo_occlusion;
 			gbuffer.normal_roughness			= _normal_roughness;
 			gbuffer.motionXY_height_metallic	= _motionXY_height_metallic;
 			gbuffer.emission					= _emission_specularity;
@@ -89,7 +89,7 @@ void MeshCamera::OnDestroy()
 {
 	SAFE_DELETE(_tbrParamConstBuffer);
 
-	SAFE_DELETE(_albedo_sunOcclusion);
+	SAFE_DELETE(_albedo_occlusion);
 	SAFE_DELETE(_motionXY_height_metallic);
 	SAFE_DELETE(_normal_roughness);
 	SAFE_DELETE(_emission_specularity);
@@ -360,8 +360,6 @@ void MeshCamera::Render(const Device::DirectX* dx,
 						Sky::SkyForm* sky,
 						std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
-	const Texture2D* skyCubeMap = sky ? sky->GetSkyCubeMap() : nullptr;
-
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
 		D3D11_VIEWPORT viewport;
@@ -382,7 +380,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
-		_albedo_sunOcclusion->Clear(context, allZeroColor);
+		_albedo_occlusion->Clear(context, allZeroColor);
 		_motionXY_height_metallic->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
 		_emission_specularity->Clear(context, allZeroColor);
@@ -395,7 +393,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		//inverted depth, so clear value is 0
 		_blendedDepthBuffer->Clear(context, 0.0f, 0);
-		SortTransparentMeshRenderQueue(renderManager);
+		SortTransparentMeshRenderQueue(_transparentMeshQueue, _owner->GetTransform(), renderManager);
 	}
 
 	// off alpha blending
@@ -434,7 +432,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	//GBuffer
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
-			_albedo_sunOcclusion->GetRenderTargetView(),
+			_albedo_occlusion->GetRenderTargetView(),
 			_motionXY_height_metallic->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
 			_emission_specularity->GetRenderTargetView(),
@@ -528,7 +526,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		ID3D11SamplerState* nullSampler = nullptr;
 		context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB, sky);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
@@ -561,43 +559,23 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			ID3D11RenderTargetView* thisCamRTV = _renderTarget->GetRenderTargetView();	
 			context->OMSetRenderTargets(1, &thisCamRTV, _opaqueDepthBuffer->GetDepthStencilView());
 			context->OMSetDepthStencilState(dx->GetDepthStateGreaterAndDisableDepthWrite(), 0x00);
-				
-			context->PSSetShaderResources((uint)TextureBindIndex::PointLightRadiusWithCenter, 
-				1, lightManager->GetPointLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::PointLightColor, 
-				1, lightManager->GetPointLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightRadiusWithCenter, 
-				1, lightManager->GetSpotLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightColor, 
-				1, lightManager->GetSpotLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::SpotLightParam,
-				1, lightManager->GetSpotLightParamSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightCenterWithDirZ,
-				1, lightManager->GetDirectionalLightTransformSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightColor,
-				1, lightManager->GetDirectionalLightColorSRBuffer()->GetShaderResourceView());
-			context->PSSetShaderResources((uint)TextureBindIndex::DirectionalLightParam,
-				1, lightManager->GetDirectionalLightParamSRBuffer()->GetShaderResourceView());
 
-			// Light Culling Buffer
-			context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
-				1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
-
-			ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
-			context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
-			context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
-
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+			lightManager->BindResources(dx, false, false, true);
+			{
+				// Light Culling Buffer
+				context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
+					1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
+	
+				ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
+				context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+				context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+	
+				MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+			}
+			lightManager->UnbindResources(dx, false, false, true);		
 
 			context->RSSetState(nullptr);
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
-
-			const uint startIdx	= (uint)TextureBindIndex::PointLightRadiusWithCenter;
-			const uint srvNum	= (uint)TextureBindIndex::DirectionalLightParam - (uint)TextureBindIndex::PointLightRadiusWithCenter + 1;
-
-			ID3D11ShaderResourceView* nullSRV[srvNum] = {nullptr, };
-			context->PSSetShaderResources(startIdx,	srvNum, nullSRV);
-		
 			context->OMSetDepthStencilState(dx->GetDepthStateGreater(), 0);
 		}
 	}

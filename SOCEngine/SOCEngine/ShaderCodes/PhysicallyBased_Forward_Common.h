@@ -15,23 +15,20 @@ SamplerState defaultSampler				: register( s0 );
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 {
-	float4 diffuseTex			= diffuseMap.Sample(defaultSampler, uv);
-
-	float metallic				= GetMaterialMetallic();
-	float roughness				= GetMaterialRoughness();
+	float metallic				= GetMetallic(defaultSampler, uv);
+	float roughness				= GetRoughness(defaultSampler, uv);
 	float specularity			= GetMaterialSpecularity();
 
-	float3 emissionColor		= GetMaterialEmissiveColor().rgb;
-	float3 mainColor			= GetMaterialMainColor().rgb;
-	float3 diffuseColor			= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
+	float3 emissiveColor		= GetEmissiveColor(defaultSampler, uv);
+	float3 albedo				= GetAlbedo(defaultSampler, uv);
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition - vtxWorldPos );
 	lightParams.normal			= normal;
 	lightParams.roughness		= roughness;
-	lightParams.diffuseColor	= diffuseColor - diffuseColor * metallic;
-	lightParams.specularColor	= lerp(0.08f * specularity.xxx, diffuseColor, metallic);
+	lightParams.diffuseColor	= albedo - albedo * metallic;
+	lightParams.specularColor	= lerp(0.08f * specularity.xxx, albedo, metallic);
 
 	uint tileIdx				= GetTileIndex(SVPosition);
 	uint startIdx				= tileIdx * tbrParam_maxNumOfPerLightInTile + 1;
@@ -139,16 +136,14 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3 back		= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
-	float3	result = front + back;
-
-	float	diffuseTexAlpha = lerp(1.0f, diffuseTex.a, HasDiffuseMap());
-	float	alpha = diffuseTexAlpha * (1.0f - opacityMap.Sample(defaultSampler, uv).x) * GetMaterialMainColor().a;
+	float3	result	= front + back;
+	float	alpha	= GetAlpha(defaultSampler, uv);
 #else
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	float	alpha = 1.0f;
 #endif
 
-	return float4(result, alpha);
+	return float4(result + emissiveColor, alpha);
 }
 
 #endif

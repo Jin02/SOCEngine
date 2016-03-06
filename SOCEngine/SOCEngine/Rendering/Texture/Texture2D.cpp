@@ -146,3 +146,8 @@ void Texture2D::Destroy()
 	if(_uav)
 		_uav->Destroy();
 }
+
+void Texture2D::GenerateMips(const Device::DirectX* dx)
+{
+	dx->GetContext()->GenerateMips(_srv->GetView());
+}

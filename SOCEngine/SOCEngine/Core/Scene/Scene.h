@@ -20,6 +20,7 @@
 #include "SkyForm.h"
 
 #include "PostProcessPipeline.h"
+#include "ReflectionProbeManager.h"
 
 namespace Core
 {
@@ -30,6 +31,8 @@ namespace Core
 
 	private:
 		Rendering::Manager::CameraManager*					_cameraMgr;
+		Rendering::Manager::ReflectionProbeManager*			_reflectionManager;
+
 		Rendering::Manager::RenderManager*					_renderMgr;	
 		UI::Manager::UIManager*								_uiManager;
 		Rendering::Manager::LightManager*					_lightManager;
@@ -41,6 +44,7 @@ namespace Core
 		bool												_ableDeallocSky;
 
 		Rendering::Texture::RenderTexture*					_backBuffer;
+		const  Rendering::Texture::Texture2D*				_prevIntegrateBRDFMap;
 
 		State												_state;
 		Intersection::BoundBox								_boundBox;
