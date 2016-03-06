@@ -11,7 +11,7 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
   - MSAA(only 4x)
   - Transparent Object
   - Dynamic Lighting (Directional, Spot, Point)
-2. Microfacet BRDF, Physically Based Material
+2. Physically Based Rendering
 3. Model loading (obj, fbx, dae, etc..)
 4. Shadow Mapping (Directional, Spot, Point)
   + + Variance Shadow Mapping
