@@ -23,7 +23,6 @@ namespace Rendering
 			Buffer::IndexBuffer*	_indexBuffer;
 
 		private:
-			bool			_alloc;
 			uint			_bufferFlag;
 
 		public:
