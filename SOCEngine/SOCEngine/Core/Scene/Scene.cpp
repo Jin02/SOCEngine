@@ -2,7 +2,7 @@
 #include "Director.h"
 
 #include "EngineShaderFactory.hpp"
-
+#include "ResourceManager.h"
 #include "SkyBox.h"
 
 using namespace Core;
@@ -26,7 +26,7 @@ Scene::Scene(void) :
 	_renderMgr(nullptr),
 	_shadowRenderer(nullptr), _globalIllumination(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
-	_postProcessingSystem(nullptr), _reflectionManager(nullptr)
+	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr)
 {
 	_state = State::Init;
 }
@@ -79,6 +79,8 @@ void Scene::Initialize()
 
 	_postProcessingSystem = new PostProcessPipeline;
 	_postProcessingSystem->Initialize(_dx->GetBackBufferSize());
+
+	_prevIntegrateBRDFMap = Resource::ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 
 	NextState();
 	OnInitialize();
@@ -189,7 +191,7 @@ void Scene::Render()
 
 	const auto& rps = _reflectionManager->GetReflectionProbeVector();
 	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
-		(*iter)->Render(_dx, this);
+		(*iter)->Render(_dx, this, _prevIntegrateBRDFMap);
 
 	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
 	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);

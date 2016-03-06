@@ -44,6 +44,7 @@ namespace Core
 		bool												_ableDeallocSky;
 
 		Rendering::Texture::RenderTexture*					_backBuffer;
+		const  Rendering::Texture::Texture2D*				_prevIntegrateBRDFMap;
 
 		State												_state;
 		Intersection::BoundBox								_boundBox;
