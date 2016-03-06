@@ -32,7 +32,11 @@ namespace Device
 		void CalculateFPS();
 
 	public:
-		void Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle = NULL);
+		void Initialize(const Math::Rect<unsigned int>& windowRect,
+						const Math::Rect<unsigned int>& renderScreenRect,
+						HINSTANCE instance,
+						const char* name, bool windowMode, bool isChild,
+						HWND parentHandle, bool useMSAA);
 		void Run();
 
 	public:
