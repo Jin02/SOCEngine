@@ -15,7 +15,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 
 #ifdef USE_GI
 	float4 indirect	= indirectLightColorMap.Sample(linerSamplerState, input.uv);
-	return direct + indirect;
+	return direct * 0.3f + indirect;
 #else
 	return direct;
 #endif

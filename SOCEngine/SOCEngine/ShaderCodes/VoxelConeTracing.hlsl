@@ -1,6 +1,6 @@
 //EMPTY_META_DATA
 
-#define USE_VOXEL_CONE_TRACING_TEST
+//#define USE_VOXEL_CONE_TRACING_TEST
 //
 
 #define VOXEL_CONE_TRACING
@@ -16,7 +16,7 @@ RWTexture2D<float4> g_outIndirectColorMap				: register(u0);
 SamplerState linearSampler								: register(s0);
 
 #define MAXIMUM_CONE_COUNT				6
-#define SAMPLE_START_OFFSET_RATE		1.5f
+#define SAMPLE_START_OFFSET_RATE		2.0f
 
 #define AMBIENT_OCCLUSION_K				8.0f
 
