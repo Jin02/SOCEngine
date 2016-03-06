@@ -9,17 +9,14 @@ using namespace Rendering::Manager;
 using namespace Resource;
 
 MeshFilter::MeshFilter() 
-	:	_vertexBuffer(nullptr), _indexBuffer(nullptr), _alloc(false)
+	:	_vertexBuffer(nullptr), _indexBuffer(nullptr)
 {
 }
 
 MeshFilter::~MeshFilter()
 {
-	if(_alloc == false)
-		return;
-
-	SAFE_DELETE(_vertexBuffer);
-	SAFE_DELETE(_indexBuffer);
+//	SAFE_DELETE(_vertexBuffer);	BufferManager에서 알아서 해제 된다.
+//	SAFE_DELETE(_indexBuffer); 	BufferManager에서 알아서 해제 된다.
 }
 
 bool MeshFilter::Initialize(const CreateFuncArguments& args)

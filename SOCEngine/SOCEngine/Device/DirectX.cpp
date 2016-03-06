@@ -46,7 +46,7 @@ bool DirectX::CreateRenderTargetView()
 	return true;
 }
 
-bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC* multiSampler)
+bool DirectX::CreateDeviceAndSwapChain(const Win32* win, bool useMSAA)
 {
 	//swapChain setting
 	DXGI_SWAP_CHAIN_DESC	sd;
@@ -68,16 +68,8 @@ bool DirectX::CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC*
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	//msaa
-	if(multiSampler == nullptr)
-	{
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
-	}
-	else
-	{
-		sd.SampleDesc = (*multiSampler);
-	}
+	sd.SampleDesc.Count		= useMSAA ? 4 : 1;
+	sd.SampleDesc.Quality	= 0;
 
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
@@ -209,9 +201,9 @@ void DirectX::CreateBlendStates()
 		ASSERT_MSG("Error!, device cant create _alphaBlend blend state");
 }
 
-bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect)
+bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect, bool useMSAA)
 {
-	if( CreateDeviceAndSwapChain(win) == false )
+	if( CreateDeviceAndSwapChain(win, useMSAA) == false )
 		return false;
 
 	if( CreateRenderTargetView() == false )
@@ -480,7 +472,6 @@ Math::Size<uint> DirectX::FetchBackBufferSize()
 
 void DirectX::Destroy()
 {
-	SAFE_RELEASE(_renderTargetView);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCullingWithClip);
 	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
 	SAFE_RELEASE(_rasterizerClockwiseDefault);
@@ -502,9 +493,9 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_shadowGreaterEqualCompState);
 	SAFE_RELEASE(_shadowLinearSamplerState);
 	SAFE_RELEASE(_depthLessEqual);
+	SAFE_RELEASE(_coneTracingSamplerState);
+	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
 	SAFE_RELEASE(_immediateContext);
 	SAFE_RELEASE(_swapChain);
 	SAFE_RELEASE(_device);
-	SAFE_RELEASE(_coneTracingSamplerState);
-	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
 }

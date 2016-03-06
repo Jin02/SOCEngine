@@ -29,18 +29,14 @@ void SkyForm::Initialize()
 	const ResourceManager* resMgr	= ResourceManager::SharedInstance();
 	BufferManager* bufferMgr		= resMgr->GetBufferManager();
 
-	BasicGeometryGenerator gen;
-	uint flag = 0;	//uint(RenderManager::DefaultVertexInputTypeFlag::NORMAL) |
-					//uint(RenderManager::DefaultVertexInputTypeFlag::UV0);
-
 	_meshFilter = new MeshFilter;
 	auto CreateMeshContent = [&](const Mesh::CreateFuncArguments& args)
 	{
 		_meshFilter->Initialize(args);
 	};
 
-//	gen.CreateBox(CreateMeshContent, Vector3(5000, 5000, 5000), flag);
-	gen.CreateSphere(CreateMeshContent, 1.0f, 30, 30, flag);
+	BasicGeometryGenerator gen;
+	gen.CreateSphere(CreateMeshContent, 1.0f, 30, 30, 0);
 
 	_skyMapInfoCB = new ConstBuffer;
 	_skyMapInfoCB->Initialize(sizeof(SkyMapInfoCBData));

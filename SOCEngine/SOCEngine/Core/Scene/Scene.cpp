@@ -26,7 +26,8 @@ Scene::Scene(void) :
 	_renderMgr(nullptr),
 	_shadowRenderer(nullptr), _globalIllumination(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
-	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr)
+	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr),
+	_lightManager(nullptr), _materialMgr(nullptr)
 {
 	_state = State::Init;
 }
@@ -195,7 +196,7 @@ void Scene::Render()
 
 	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
 	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
-
+	
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
 }
@@ -211,9 +212,14 @@ void Scene::Destroy()
 	_uiManager->Destroy();
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
-	_globalIllumination->Destroy();
+	
+	if(_globalIllumination)
+		_globalIllumination->Destroy();
+	
 	_postProcessingSystem->Destroy();
 	_reflectionManager->Destroy();
+
+	DeactivateSky();
 }
 
 void Scene::NextState()

@@ -67,7 +67,7 @@ namespace Device
 
 	private:
 		bool CreateRenderTargetView();
-		bool CreateDeviceAndSwapChain(const Win32* win, const DXGI_SAMPLE_DESC* multiSampler = nullptr);
+		bool CreateDeviceAndSwapChain(const Win32* win, bool useMSAA);
 		bool InitViewport(const Math::Rect<uint>& rect);
 		bool CreateSwapChain(const Win32* win);
 	
@@ -75,7 +75,7 @@ namespace Device
 		void CreateBlendStates();
 
 	public:
-		bool InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect);
+		bool InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenRect, bool useMSAA);
 		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
 		void ClearDeviceContext() const;
 		Math::Size<uint> FetchBackBufferSize();

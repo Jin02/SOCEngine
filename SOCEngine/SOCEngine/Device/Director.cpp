@@ -50,13 +50,13 @@ void Director::CalculateFPS()
 	//Utility::Debug::Log(fpsStr);
 }
 
-void Director::Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle)
+void Director::Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle, bool useMSAA)
 {
 	_win = new Win32(windowRect, instance, name, windowMode, isChild, parentHandle);
 	ASSERT_COND_MSG(_win->Initialize(), "Error, can not create windows");
 
 	_directX = new DirectX();
-	ASSERT_COND_MSG(_directX->InitDevice(_win, renderScreenRect), "Error, can not create directX device");
+	ASSERT_COND_MSG(_directX->InitDevice(_win, renderScreenRect, useMSAA), "Error, can not create directX device");
 
 	ResourceManager::SharedInstance()->Initialize();
 }
@@ -100,29 +100,23 @@ void Director::Run()
 		}
 	}
 
+	// Delete Scene
+	{
+		if(_scene)
+		{
+			_scene->Destroy();
+			delete _scene;
+		}
+		if(_nextScene)
+		{
+			_nextScene->Destroy();
+			delete _nextScene;
+		}
+	}
+
 	Resource::ResourceManager* resourceMgr = Resource::ResourceManager::SharedInstance();
 	resourceMgr->DestroyManagers();
 	Resource::ResourceManager::Destroy();
-}
-
-void Director::Exit()
-{
-	if(_exit) return;
-	_exit = true;
-
-	_scene->StopState();
-
-	if(_scene)
-	{
-		_scene->Destroy();
-		delete _scene;
-	}
-
-	if(_nextScene)
-	{
-		_nextScene->Destroy();
-		delete _nextScene;
-	}
 
 	SAFE_DELETE(_directX);
 	SAFE_DELETE(_win);

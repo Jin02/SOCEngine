@@ -31,9 +31,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
-
-	float3 localDiffuse		= float3(0.0f, 0.0f, 0.0f);
-	float3 localSpecular	= float3(0.0f, 0.0f, 0.0f);
+	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
+	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
 	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
 	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
@@ -57,19 +56,19 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	uint directionalLightCount = GetNumOfDirectionalLight();
+	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
 	uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
-		RenderDirectionalLight(localDiffuse, localSpecular, lightParams);
+		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	float3 result = accumulativeDiffuse + accumulativeSpecular;
+	float3 result = saturate(accumulativeDiffuse + accumulativeSpecular);
 	result += surface.emission.rgb;
 	
 	return float4(result, 1.0f);
@@ -197,7 +196,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	uint edgePixelIdx			= 0;
-	uint sampleIdx				= 0;
+		 sampleIdx				= 0;
 	uint2 scale_sample_coord	= uint2(0, 0);
 	float4 lightResult			= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -207,7 +206,9 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
 		sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1부터 시작
 
-		packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
+		uint packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
+
+		uint2 edge_globalIdx_inThisTile;
 		edge_globalIdx_inThisTile.x = packedIdxValue & 0x0000ffff;
 		edge_globalIdx_inThisTile.y = packedIdxValue >> 16;
 
