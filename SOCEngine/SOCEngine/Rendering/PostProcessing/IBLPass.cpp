@@ -49,7 +49,11 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,						meshCam->GetOpaqueDepthBuffer());
 	BindTexturesToPixelShader(context, TextureBindIndex::IBLPass_IlluminationMap,			meshCam->GetRenderTarget());
 
+	ID3D11Buffer* buffer = meshCam->GetTBRParamConstBuffer()->GetBuffer();
+	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
+
 	// Sky Cube Map
+	if(sky)
 	{
 		const Texture2D* cubeMap = nullptr;
 
@@ -58,13 +62,11 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 		else
 			ASSERT_MSG("cant support");
 
-		BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap,				cubeMap);
-	}
+		BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap, cubeMap);
 
-	ID3D11Buffer* buffer = meshCam->GetTBRParamConstBuffer()->GetBuffer();
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
-	buffer = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+		buffer = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
+		context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+	}
 
 	ID3D11SamplerState* sampler		= dx->GetSamplerStateLinear();
 	context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);

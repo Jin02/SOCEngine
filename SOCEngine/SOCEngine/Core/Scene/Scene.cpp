@@ -218,6 +218,8 @@ void Scene::Destroy()
 	
 	_postProcessingSystem->Destroy();
 	_reflectionManager->Destroy();
+
+	DeactivateSky();
 }
 
 void Scene::NextState()
