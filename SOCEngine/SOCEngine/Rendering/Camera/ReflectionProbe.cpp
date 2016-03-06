@@ -5,12 +5,14 @@
 #include "Object.h"
 #include "BindIndexInfo.h"
 #include "Scene.h"
+#include "SkyBox.h"
 
 using namespace Core;
 using namespace Math;
 using namespace Intersection;
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Sky;
 using namespace Rendering::Texture;
 using namespace Rendering::Buffer;
 using namespace Rendering::Manager;
@@ -121,7 +123,7 @@ void ReflectionProbe::UpdateReflectionProbeCB(const Device::DirectX*& dx, uint p
 	_prevPackedNumOfLights = packedNumOfLights;
 }
 
-void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scene)
+void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scene, const Texture::Texture2D* preIntegrateBRDFMap)
 {
 	const RenderManager* renderManager	= scene->GetRenderManager();
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -239,6 +241,39 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 		lightManager->BindResources(dx, false, false, true);
 		shadowManager->BindResources(dx, false, false, true);
 
+		// Bind sky resource
+		{
+			SkyForm* sky = scene->GetSky();
+			if(sky)
+			{
+				ID3D11Buffer* buffer = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
+				context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+				
+				ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
+				context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
+
+				ID3D11ShaderResourceView* srv = nullptr;
+				{
+					const Texture2D* skyMap = nullptr;
+					if(sky->GetType() == SkyForm::Type::Box)		skyMap = dynamic_cast<SkyBox*>(sky)->GetSkyCubeMap();
+					else											ASSERT_MSG("cant support");
+
+					if(skyMap)
+					{
+						srv = skyMap->GetShaderResourceView()->GetView();
+						context->PSSetShaderResources(uint(TextureBindIndex::AmbientCubeMap), 1, &srv);
+					}
+
+					if(preIntegrateBRDFMap)
+					{
+						srv = preIntegrateBRDFMap->GetShaderResourceView()->GetView();
+						context->PSSetShaderResources(uint(TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap), 1, &srv);
+					}
+				}
+			}
+		}
+
+
 		ID3D11RenderTargetView* rtv = _cubeMap->GetRenderTargetView();
 		context->OMSetRenderTargets(1, &rtv, _opaqueDepthBuffer->GetDepthStencilView());
 	
@@ -303,8 +338,21 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 		}
 
-		lightManager->UnbindResources(dx, false, false, true);
-		shadowManager->UnbindResources(dx, false, false, true);
+		// Unbind Resources
+		{
+			lightManager->UnbindResources(dx, false, false, true);
+			shadowManager->UnbindResources(dx, false, false, true);
+	
+			ID3D11Buffer* buffer = nullptr;
+			context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+	
+			ID3D11SamplerState* sampler = nullptr;
+			context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
+	
+			ID3D11ShaderResourceView* srv = nullptr;
+			context->PSSetShaderResources(uint(TextureBindIndex::AmbientCubeMap), 1, &srv);
+			context->PSSetShaderResources(uint(TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap), 1, &srv);		
+		}
 	}
 
 	buffer = nullptr;

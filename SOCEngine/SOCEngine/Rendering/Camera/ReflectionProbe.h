@@ -65,7 +65,7 @@ namespace Rendering
 
 		public:
 			void UpdateReflectionProbeCB(const Device::DirectX*& dx, uint packedNumOfLights);
-			void Render(const Device::DirectX*& dx, const Core::Scene* scene);
+			void Render(const Device::DirectX*& dx, const Core::Scene* scene, const Texture::Texture2D* preIntegrateBRDFMap);
 
 		public:
 			GET_SET_ACCESSOR(ProjNear,			float,							_projNear);
