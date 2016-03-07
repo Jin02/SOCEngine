@@ -37,7 +37,7 @@ void TestScene::OnInitialize()
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 
-#if 1 //GI Test
+#if 0 //GI Test
 	ActivateGI(true, 256, 50.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
@@ -60,7 +60,7 @@ void TestScene::OnInitialize()
 
 #else //IBL Test
 	// SkyBox
-	// ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
+	ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
 	cam->SetFieldOfViewDegree(60.0f);	
 
