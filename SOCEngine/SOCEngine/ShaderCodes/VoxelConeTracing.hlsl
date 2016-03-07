@@ -16,7 +16,7 @@ RWTexture2D<float4> g_outIndirectColorMap				: register(u0);
 SamplerState linearSampler								: register(s0);
 
 #define MAXIMUM_CONE_COUNT				6
-#define SAMPLE_START_OFFSET_RATE		2.0f
+#define SAMPLE_START_OFFSET_RATE		1.2f
 
 #define AMBIENT_OCCLUSION_K				8.0f
 
@@ -173,11 +173,6 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-#ifdef USE_VOXEL_CONE_TRACING_TEST
-	surface.metallic	= 0.9f;
-	surface.roughness	= 0.1f;
-#endif
-
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 
 	float halfConeAngle =	(sin(1.7f * sqrt( pow(surface.roughness, 1.5f) )) +			// 그냥.. roughness를 적당한 값으로 변경해준다.
@@ -211,7 +206,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 #else
 
-	float4 directColor	= g_inputDirectColorMap.Load( uint3(globalIdx.xy, 0) );
+	float4 directColor	= g_inputDirectColorMap.Load( uint3(globalIdx.xy, 0) ) * 1.5f;
 	float3 baseColor	= directColor.rgb;
 
 	// Metallic 값을 이용해서 대충 섞는다.

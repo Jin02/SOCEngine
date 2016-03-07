@@ -43,7 +43,7 @@ void TestScene::OnInitialize()
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, -4.8f, 17.5f));
+	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
 	_testObject->GetTransform()->UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
 	AddObject(_testObject);
@@ -91,7 +91,7 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	Transform* control = _light->GetTransform();//_testObject2 ? _testObject2->GetTransform() : _camera->GetTransform();
+	Transform* control = _testObject->GetTransform();
 	const float scale = 0.1f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
