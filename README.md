@@ -22,7 +22,7 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 8. Image Based Rendering
 
 <p>참고 자료 : https://github.com/Jin02/SOCEngine/wiki/%EC%B0%B8%EA%B3%A0-%EC%9E%90%EB%A3%8C</p>
-2018년에 신입 일자리 찾습니다.
+2018년에 신입 일자리 찾습니다.(군복무중)
 
 ![VCT](http://i.imgur.com/T480Sy1.png)
 ![VCT2](http://i.imgur.com/D10RQMR.png)
