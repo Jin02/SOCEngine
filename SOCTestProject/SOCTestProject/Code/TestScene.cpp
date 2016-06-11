@@ -37,8 +37,8 @@ void TestScene::OnInitialize()
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 
-#if 0 //GI Test
-	ActivateGI(true, 256, 50.0f);
+#if 1 //GI Test
+	ActivateGI(true, 128, 50.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
@@ -87,6 +87,31 @@ void TestScene::OnInitialize()
 
 void TestScene::OnRenderPreview()
 {
+	if(_globalIllumination)
+	{
+		auto voxelViwer = _globalIllumination->GetDebugVoxelViewer();
+		
+		if(voxelViwer)
+		{
+			Object* debugVoxels = voxelViwer->GetVoxelsParent();
+			if(debugVoxels)
+			{
+				Object* exist = FindObject(debugVoxels->GetName());
+				if( exist == nullptr )
+				{
+					_testObject->SetUse(false);
+
+					AddObject(debugVoxels);
+					_testObject2 = debugVoxels;
+//#ifndef USE_ANISOTROPIC_VOXELIZATION
+					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
+//#else
+//					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+//#endif
+				}
+			}
+		}
+	}
 }
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)

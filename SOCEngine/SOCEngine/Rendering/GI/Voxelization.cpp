@@ -325,37 +325,19 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 
 		Vector3 center = bbMid;
 
-		Matrix viewAxisX, viewAxisY, viewAxisZ;
-		//LookAtView(viewAxisX, Vector3(bbMin.x, bbMid.y, bbMid.z), Vector3(bbMax.x, bbMid.y, bbMid.z), Vector3(0.0f, 1.0f, 0.0f)); //x
-		//LookAtView(viewAxisY, Vector3(bbMid.x, bbMin.y, bbMid.z), Vector3(bbMid.x, bbMax.y, bbMid.z), Vector3(0.0f, 0.0f,-1.0f)); //y
-		//LookAtView(viewAxisZ, Vector3(bbMid.x, bbMid.y, bbMin.z), Vector3(bbMid.x, bbMid.y, bbMax.z), Vector3(0.0f, 1.0f, 0.0f)); //z
+		Matrix toVoxel;
+		{
+			Matrix::Identity(toVoxel);
 
-		float halfWorldSize = worldSize / 2.0f;
-		LookAtView(viewAxisX, center + Vector3(halfWorldSize, 0.0f, 0.0f), center, Vector3(0.0f, 1.0f, 0.0f)); //x
-		LookAtView(viewAxisY, center + Vector3(0.0f, halfWorldSize, 0.0f), center, Vector3(0.0f, 0.0f,-1.0f)); //y
-		LookAtView(viewAxisZ, center + Vector3(0.0f, 0.0f, halfWorldSize), center, Vector3(0.0f, 1.0f, 0.0f)); //z
+			toVoxel._11 = 1.0f / worldSize;
+			toVoxel._22 = 1.0f / worldSize;
+			toVoxel._33 = 1.0f / worldSize;
 
-		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
-		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
-		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
-
-		Matrix::Transpose(currentVoxelizeInfo.viewProjX, currentVoxelizeInfo.viewProjX);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
-
-		//Matrix worldToVoxel;
-		//{
-		//	Matrix::Identity(worldToVoxel);
-
-		//	worldToVoxel._11 = 1.0f / worldSize;
-		//	worldToVoxel._22 = 1.0f / worldSize;
-		//	worldToVoxel._33 = 1.0f / worldSize;
-
-		//	worldToVoxel._41 = bbMin.x;
-		//	worldToVoxel._42 = bbMin.y;
-		//	worldToVoxel._43 = bbMin.z;
-		//}
-		//Matrix::Transpose(currentVoxelizeInfo.worldToVoxel, worldToVoxel);
+			toVoxel._41 = -bbMin.x;
+			toVoxel._42 = -bbMin.y;
+			toVoxel._43 = -bbMin.z;
+		}
+		Matrix::Transpose(currentVoxelizeInfo.toVoxel, toVoxel);
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);

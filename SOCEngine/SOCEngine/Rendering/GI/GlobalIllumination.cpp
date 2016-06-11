@@ -148,8 +148,8 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
 
-	//_debugVoxelViewer = new Debug::VoxelViewer;
-	//_debugVoxelViewer->Initialize(dimension, 1);
+	_debugVoxelViewer = new Debug::VoxelViewer;
+	_debugVoxelViewer->Initialize(dimension, 0);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
@@ -167,7 +167,8 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	return;
 
 	const ShadowRenderer* shadowRenderer = scene->GetShadowManager();
 
