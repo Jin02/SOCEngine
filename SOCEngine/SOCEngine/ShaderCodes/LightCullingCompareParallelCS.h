@@ -196,8 +196,8 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 									LIGHT_CULLING_TILE_RES * groupIdx.y);
 		uint2 br =					uint2(	LIGHT_CULLING_TILE_RES * (groupIdx.x + 1), 
 									LIGHT_CULLING_TILE_RES * (groupIdx.y + 1));
-		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
-							(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
+		float2 totalThreadLength =			float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
+									(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
 											//스크린 픽셀 사이즈라 생각해도 좋고,
 											//현재 돌아가는 전체 가로x세로 스레드 수?
 		float4 frustum[4];
