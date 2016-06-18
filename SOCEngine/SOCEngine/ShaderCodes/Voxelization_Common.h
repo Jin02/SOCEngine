@@ -44,6 +44,7 @@ void ComputeVoxelizationProjPos(
 	float4 scale = float4( 2.0f,  2.0f, 1.0f, 1.0f);
 	float4 shift = float4(-1.0f, -1.0f, 0.0f, 0.0f);
 
+	/*
 	float4 reCalcWorldPos;
 	
 	if(dominant == axis.x)
@@ -79,21 +80,40 @@ void ComputeVoxelizationProjPos(
 			position[i]	= position[i] * scale + shift;
 		}
 	}
+	*/
 	
-	/*
+	
+	float3 reCalcLocalPos[3];
+
+	if(dominant == axis.x)
+	{
+		axisIndex[0]		= axisIndex[1]		= axisIndex[2]		= 0u;
+		reCalcLocalPos[0]	= inputLocalPos[0].yzx;
+		reCalcLocalPos[1]	= inputLocalPos[1].yzx;
+		reCalcLocalPos[2]	= inputLocalPos[2].yzx;
+	}
+	else if(dominant == axis.y)
+	{
+		axisIndex[0]		= axisIndex[1]		= axisIndex[2]		= 1u;
+		reCalcLocalPos[0]	= inputLocalPos[0].zxy;
+		reCalcLocalPos[1]	= inputLocalPos[1].zxy;
+		reCalcLocalPos[2]	= inputLocalPos[2].zxy;
+	}	
+	else if(dominant == axis.z)
+	{
+		axisIndex[0]		= axisIndex[1]		= axisIndex[2]		= 2u;
+		reCalcLocalPos[0]	= inputLocalPos[0].xyz;
+		reCalcLocalPos[1]	= inputLocalPos[1].xyz;
+		reCalcLocalPos[2]	= inputLocalPos[2].xyz;
+	}
+	
 	[unroll]
 	for(uint i=0; i<3; ++i)
 	{
-		float3 reCalcLocalPos;
-
-		if(dominant == axis.x)		{ reCalcLocalPos = inputLocalPos[i].yzx; axisIndex[i] = 0u; }
-		else if(dominant == axis.y)	{ reCalcLocalPos = inputLocalPos[i].zxy; axisIndex[i] = 1u; }	
-		else if(dominant == axis.z)	{ reCalcLocalPos = inputLocalPos[i].xyz; axisIndex[i] = 2u; }
-
-		float4 reCalcWorldPos = mul(float4(reCalcLocalPos, 1.0f), transform_world);
+		float4 reCalcWorldPos = mul(float4(reCalcLocalPos[i], 1.0f), transform_world);
 		position[i] = mul(reCalcWorldPos, voxelization_toVoxelSpace);
 		position[i] = position[i] * scale + shift;
-	}*/
+	}
 }
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
