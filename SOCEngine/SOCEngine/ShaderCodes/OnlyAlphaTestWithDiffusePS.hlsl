@@ -2,17 +2,17 @@
 
 struct PS_ALPHA_TEST_DIFFUSE_INPUT //used in writing depth buffer
 {
-	float4 position 	 			: SV_POSITION;
-	float2 uv						: TEXCOORD0;
+	float4 position : SV_POSITION;
+	float2 uv	: TEXCOORD0;
 };
 
 PS_ALPHA_TEST_DIFFUSE_INPUT OnlyAlpaTestWithDiffuseVS(VS_INPUT input)
 {
 	PS_ALPHA_TEST_DIFFUSE_INPUT output;
 
-	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	output.position		= mul(posWorld,						camera_viewProjMat);
-	output.uv			= input.uv;
+	float4 posWorld		= mul(float4(input.position, 1.0f),	transform_world);
+	output.position		= mul(posWorld,				camera_viewProjMat);
+	output.uv		= input.uv;
 
 	return output;
 }
