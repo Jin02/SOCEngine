@@ -60,7 +60,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	}
 	radiosity = saturate(radiosity + emission.rgb);
 
-	StoreRadiosity(OutVoxelColorTexture, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
+	StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
 }
 
 #endif
