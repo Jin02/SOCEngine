@@ -44,45 +44,6 @@ void ComputeVoxelizationProjPos(
 	float4 scale = float4( 2.0f,  2.0f, 1.0f, 1.0f);
 	float4 shift = float4(-1.0f, -1.0f, 0.0f, 0.0f);
 
-	/*
-	float4 reCalcWorldPos;
-	
-	if(dominant == axis.x)
-	{
-		for(uint i=0; i<3; ++i)
-		{
-			axisIndex[i]	= 0u;
-			
-			reCalcWorldPos	= mul(float4(inputLocalPos[i].yzx, 1.0f), transform_world);
-			position[i] 	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
-			position[i]	= position[i] * scale + shift;
-		}
-	}
-	else if(dominant == axis.y)
-	{
-		for(uint i=0; i<3; ++i)
-		{
-			axisIndex[i]	= 1u;
-		
-			reCalcWorldPos	= mul(float4(inputLocalPos[i].zxy, 1.0f), transform_world);
-			position[i]	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
-			position[i	= position[i] * scale + shift;
-		}
-	}
-	else if(dominant == axis.z)
-	{
-		for(uint i=0; i<3; ++i)
-		{
-			axisIndex[i]	= 2u;
-
-			reCalcWorldPos	= mul(float4(inputLocalPos[i].xyz, 1.0f), transform_world);
-			position[i]	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
-			position[i]	= position[i] * scale + shift;
-		}
-	}
-	*/
-	
-	
 	float3 reCalcLocalPos[3];
 
 	if(dominant == axis.x)
