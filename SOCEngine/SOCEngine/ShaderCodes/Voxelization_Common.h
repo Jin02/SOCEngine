@@ -26,7 +26,7 @@ RWTexture3D<uint> OutInjectionColorMap		: register( u3 );
 
 void ComputeVoxelizationProjPos(
 	out float4 position[3], out float3 worldPos[3], out uint axisIndex[3],
-	float3 inputLocalPos[3])
+	in float3 inputLocalPos[3] )
 {
 	worldPos[0] = mul(float4(inputLocalPos[0], 1.0f), transform_world).xyz;
 	worldPos[1] = mul(float4(inputLocalPos[1], 1.0f), transform_world).xyz;
@@ -44,6 +44,43 @@ void ComputeVoxelizationProjPos(
 	float4 scale = float4( 2.0f,  2.0f, 1.0f, 1.0f);
 	float4 shift = float4(-1.0f, -1.0f, 0.0f, 0.0f);
 
+	float4 reCalcWorldPos;
+	
+	if(dominant == axis.x)
+	{
+		for(uint i=0; i<3; ++i)
+		{
+			axisIndex[i]	= 0u;
+			
+			reCalcWorldPos	= mul(float4(inputLocalPos[i].yzx, 1.0f), transform_world);
+			position[i] 	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
+			position[i]	= position[i] * scale + shift;
+		}
+	}
+	else if(dominant == axis.y)
+	{
+		for(uint i=0; i<3; ++i)
+		{
+			axisIndex[i]	= 1u;
+		
+			reCalcWorldPos	= mul(float4(inputLocalPos[i].zxy, 1.0f), transform_world);
+			position[i]	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
+			position[i	= position[i] * scale + shift;
+		}
+	}
+	else if(dominant == axis.z)
+	{
+		for(uint i=0; i<3; ++i)
+		{
+			axisIndex[i]	= 2u;
+
+			reCalcWorldPos	= mul(float4(inputLocalPos[i].xyz, 1.0f), transform_world);
+			position[i]	= mul(reCalcWorldPos, voxelization_toVoxelSpace);
+			position[i]	= position[i] * scale + shift;
+		}
+	}
+	
+	/*
 	[unroll]
 	for(uint i=0; i<3; ++i)
 	{
@@ -56,7 +93,7 @@ void ComputeVoxelizationProjPos(
 		float4 reCalcWorldPos = mul(float4(reCalcLocalPos, 1.0f), transform_world);
 		position[i] = mul(reCalcWorldPos, voxelization_toVoxelSpace);
 		position[i] = position[i] * scale + shift;
-	}
+	}*/
 }
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
@@ -90,17 +127,17 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 
 void ComputeVoxelIdx(out int3 outVoxelIdx, float3 position, uint axis)
 {
-	float3 scale = float3(0.5f, 0.5f, 1.0f);
-	float3 shift = float3(1.0f, 1.0f, 0.0f);
+	float3 scale	= float3(0.5f, 0.5f, 1.0f);
+	float3 shift	= float3(1.0f, 1.0f, 0.0f);
 
-	int dimension = int(GetDimension());
-	int3 idxInVoxels = dimension * scale * (position + shift);
+	int dimension	= int( GetDimension() );
+	int3 voxelIdx	= dimension * scale * (position + shift);
 
-	if(axis == 0)		idxInVoxels = idxInVoxels.yzx;
-	else if(axis == 1)	idxInVoxels = idxInVoxels.zxy;
-	else if(axis == 2)	{}
+	if(axis == 0)		voxelIdx = voxelIdx.yzx;	// x
+	else if(axis == 1)	voxelIdx = voxelIdx.zxy;	// y
+	else if(axis == 2)	{}				// z
 
-	outVoxelIdx = idxInVoxels;
+	outVoxelIdx	= voxelIdx;
 }
 
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
@@ -113,15 +150,15 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 	{
 		ParsedShadowParam shadowParam;
 		ParseShadowParam(shadowParam, g_inputDirectionalLightShadowParams[dlShadowIdx]);
-		uint lightIndex		= shadowParam.lightIndex;
+		uint lightIndex			= shadowParam.lightIndex;
 
 		float4 lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
-		float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];
-		float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		float2 lightParam		= g_inputDirectionalLightParamBuffer[lightIndex];
+		float3 lightDir			= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-		float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
-		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
-		float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float3 lightColor		= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
+		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
+		float intensity			= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
 
 		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, worldPos);
 		radiosity += GetMaterialEmissiveColor().rgb;
