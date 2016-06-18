@@ -6,14 +6,14 @@
 struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 	uint sampleIdx				: SV_SAMPLEINDEX;
 #endif
 };
 
-// id´Â 0, 1, 2 ÀÌ 3°³ÀÇ °ª¸¸ µé¾î¿Â´Ù.
+// idÂ´Ã‚ 0, 1, 2 Ã€ÃŒ 3Â°Â³Ã€Ã‡ Â°ÂªÂ¸Â¸ ÂµÃ©Â¾Ã®Â¿Ã‚Â´Ã™.
 PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 {
 	PS_INPUT ps = (PS_INPUT)0;
