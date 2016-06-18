@@ -2,11 +2,11 @@
 
 #include "FullScreenShader.h"
 
-SamplerState linerSamplerState			: register( s0 );
-Texture2D<float4>						directLightColorMap	: register( t0 );
+SamplerState		linerSamplerState	: register( s0 );
+Texture2D<float4>	directLightColorMap	: register( t0 );
 
 #ifdef USE_GI
-Texture2D<float4> indirectLightColorMap	: register( t1 );
+Texture2D<float4>	indirectLightColorMap	: register( t1 );
 #endif
 
 float4 PS( PS_INPUT input ) : SV_Target
