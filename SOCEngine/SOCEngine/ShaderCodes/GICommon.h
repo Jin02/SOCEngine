@@ -5,9 +5,9 @@
 
 #ifndef VOXEL_CONE_TRACING
 
-Texture3D<float4>	g_inputVoxelAlbedoTexture	: register( t29 );
-Texture3D<float4>	g_inputVoxelEmissionTexture	: register( t31 );
-Texture3D<float4>	g_inputVoxelNormalTexture	: register( t30 );
+Texture3D<float4>	g_inputVoxelAlbedoMap	: register( t29 );
+Texture3D<float4>	g_inputVoxelEmissionMap	: register( t31 );
+Texture3D<float4>	g_inputVoxelNormalMap	: register( t30 );
 
 cbuffer GIInfoCB : register( b6 )
 #else
@@ -30,11 +30,11 @@ uint GetMaximumCascade()
 
 uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
 {
-	//x, y, z Ãà Áß¿¡ °¡Àå Å«°É °í¸§
+	//x, y, z ì¶• ì¤‘ì— ê°€ì¥ í°ê±¸ ê³ ë¦„
 	float	dist = max(	abs(worldPos.x - cameraWorldPos.x),
-						abs(worldPos.y - cameraWorldPos.y));
-			dist = max(	dist,
-						abs(worldPos.z - cameraWorldPos.z) );
+				abs(worldPos.y - cameraWorldPos.y));
+		dist = max(	dist,
+				abs(worldPos.z - cameraWorldPos.z) );
 
 	return (uint)sqrt(dist / (gi_initWorldSize * 0.5f));
 }
@@ -47,7 +47,7 @@ float GetVoxelizeSize(uint cascade)
 
 void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
 {
-	float cascadeScale = float(cascade + 1);
+	float cascadeScal	= float(cascade + 1);
 
 	float worldSize		= GetVoxelizeSize(cascade);
 	float halfWorldSize	= worldSize * 0.5f;
@@ -83,35 +83,36 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 uint encUnsignedNibble(uint m, uint n)
 {
   return	(m & 0xFEFEFEFE)		|
-			(n & 0x00000001)		|
-			(n & 0x00000002) << 7U	|
-			(n & 0x00000004) << 14U	|
-			(n & 0x00000008) << 21U;
+		(n & 0x00000001)		|
+		(n & 0x00000002) << 7U		|
+		(n & 0x00000004) << 14U		|
+		(n & 0x00000008) << 21U;
 }
 
 uint decUnsignedNibble(uint m)
 {
   return	(m & 0x00000001)		|
-			(m & 0x00000100) >> 7U	|
-			(m & 0x00010000) >> 14U	|
-			(m & 0x01000000) >> 21U;
+		(m & 0x00000100) >> 7U		|
+		(m & 0x00010000) >> 14U		|
+		(m & 0x01000000) >> 21U;
 }
 
 void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
 {
-	// ³ªµµ ÀÌ°Ô ¿Ö µ¹¾Æ°¡´ÂÁö ¸ğ¸£°Ú´Ù.
-	// ±×·±µ¥ °á°ú¹°ÀÌ °¡Àå ÁÁÀ½ -_-.. 
+	// ë‚˜ë„ ì´ê²Œ ì™œ ëŒì•„ê°€ëŠ”ì§€ ëª¨ë¥´ê² ë‹¤.
+	// ê·¸ëŸ°ë° ê²°ê³¼ë¬¼ì´ ê°€ì¥ ì¢‹ìŒ -_-.. 
 
-	// value *= 255.0f;
-	// uint newValue = ToUint(value);
-	uint newValue			= Float4ColorToUint(value);
+	value 		*= 255.0f;
+	uint newValue 	= ToUint(value);
+//	uint newValue	= Float4ColorToUint(value); ì›ë˜ëŠ” ìœ„ 2ì¤„ì´ ì£¼ì„ì´ë‹¤. ë¬¼ë¡  ì´ê±´ ì£¼ì„ í’€ë¦° ìƒíƒœì˜€ê³ ,
+						//	ë¬¸ì œëŠ”, 107ë²ˆ ì¤„ì´ ë²„ê·¸ê°€ ë‚˜ëŠ” ì½”ë“œë¼ëŠ” ê²ƒ?
 
 	uint prevStoredValue	= 0;
 	uint currentStoredValue	= 0;
 
 	uint count = 0;
-	// ÇöÀç °³¹ßÈ¯°æ¿¡¼­ while°ú for´Â ÀÛµ¿ÀÌ µÇÁú ¾Ê´Â´Ù.
-	// ¿Ö ±×·±Áö´Â ¸ğ¸£°ÚÁö¸¸, À¯ÀÏÇÏ°Ô do-while¸¸ ÀÛµ¿ÀÌ µÇ´Â »óÅÂ.
+	// í˜„ì¬ ê°œë°œí™˜ê²½ì—ì„œ whileê³¼ forëŠ” ì‘ë™ì´ ë˜ì§ˆ ì•ŠëŠ”ë‹¤.
+	// ì™œ ê·¸ëŸ°ì§€ëŠ” ëª¨ë¥´ê² ì§€ë§Œ, ìœ ì¼í•˜ê²Œ do-whileë§Œ ì‘ë™ì´ ë˜ëŠ” ìƒíƒœ.
 	do//while( (!useLimit) || (count++ < 8) )
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
@@ -120,13 +121,13 @@ void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, flo
 			break;
 		prevStoredValue = currentStoredValue;
 
-		float4 rval = ToFloat4(currentStoredValue & 0xFEFEFEFE);
-		uint n = decUnsignedNibble(currentStoredValue);
+		float4 rval 		= ToFloat4(currentStoredValue & 0xFEFEFEFE);
+		uint n 			= decUnsignedNibble(currentStoredValue);
 
-		rval = rval * n + value;
-		rval /= ++n;
-		rval = round(rval / 2) * 2;
-		newValue = encUnsignedNibble(ToUint(rval), n);
+		rval 			= rval * n + value;
+		rval 			/= ++n;
+		rval 			= round(rval / 2) * 2;
+		newValue 		= encUnsignedNibble(ToUint(rval), n);
 
 	}while(++count < 16);
 }
@@ -136,13 +137,13 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 	value *= 255.0f;
 
 	uint newValue			= ToUint(value);
-	uint prevStoredValue	= 0;
-	uint currentStoredValue	= 0;
+	uint prevStoredValue		= 0;
+	uint currentStoredValue		= 0;
 
 	uint count = 0;
 
-	// ÇöÀç °³¹ßÈ¯°æ¿¡¼­ while°ú for´Â ÀÛµ¿ÀÌ µÇÁú ¾Ê´Â´Ù.
-	// ¿Ö ±×·±Áö´Â ¸ğ¸£°ÚÁö¸¸, À¯ÀÏÇÏ°Ô do-while¸¸ ÀÛµ¿ÀÌ µÇ´Â »óÅÂ.
+	// í˜„ì¬ ê°œë°œí™˜ê²½ì—ì„œ whileê³¼ forëŠ” ì‘ë™ì´ ë˜ì§ˆ ì•ŠëŠ”ë‹¤.
+	// ì™œ ê·¸ëŸ°ì§€ëŠ” ëª¨ë¥´ê² ì§€ë§Œ, ìœ ì¼í•˜ê²Œ do-whileë§Œ ì‘ë™ì´ ë˜ëŠ” ìƒíƒœ.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
@@ -150,19 +151,19 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 		if(prevStoredValue == currentStoredValue)
 			break;
 
-		prevStoredValue = currentStoredValue;
+		prevStoredValue 	= currentStoredValue;
 
-		float4 curFlt4 = ToFloat4(currentStoredValue);
-		curFlt4.xyz = (curFlt4.xyz * curFlt4.w);
+		float4 curFlt4		= ToFloat4(currentStoredValue);
+		curFlt4.xyz		= (curFlt4.xyz * curFlt4.w);
 
-		float4 reCompute = curFlt4 + value;
-		reCompute.xyz /= reCompute.w;
+		float4 reCompute	= curFlt4 + value;
+		reCompute.xyz		/= reCompute.w;
 
-		newValue = ToUint(reCompute);
+		newValue		= ToUint(reCompute);
 	}while(++count < 16);
 }
 
-void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
+void StoreRadiosity(RWTexture3D<uint> outVoxelColorMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
 {
 	float anisotropicNormals[6] = {
 		-normal.x,
@@ -173,19 +174,19 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, fl
 		 normal.z
 	};
 
-	uint dimension = (uint)GetDimension();
-	voxelIdx.y += curCascade * dimension;
+	uint dimension	= (uint)GetDimension();
+	voxelIdx.y	+= curCascade * dimension;
 
 	for(int faceIndex=0; faceIndex<6; ++faceIndex)
 	{
-		uint3 index = voxelIdx;
-		index.x += (faceIndex * dimension);
+		uint3 index		= voxelIdx;
+		index.x			+= (faceIndex * dimension);
 
-		float rate = max(anisotropicNormals[faceIndex], 0.0f);
-		float4 storeValue = float4(radiosity * rate, alpha);
+		float rate		= max(anisotropicNormals[faceIndex], 0.0f);
+		float4 storeValue	= float4(radiosity * rate, alpha);
 
 //		StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
-		outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
+		outVoxelColorMap[index] = Float4ColorToUint(storeValue);
 	}
 }
 
