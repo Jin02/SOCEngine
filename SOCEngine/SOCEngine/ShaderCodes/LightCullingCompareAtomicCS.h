@@ -18,10 +18,10 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 
 	for(uint sampleIdx=0; sampleIdx<MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
-		float opaqueDepth			= g_tDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float opaqueDepth		= g_tDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
 		float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
 #if defined(ENABLE_BLEND)
-		float blendedDepth			= g_tBlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float blendedDepth		= g_tBlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
 		float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
 
 		if(blendedDepth != 0.0f)
@@ -49,11 +49,11 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 void CalcDepthBound(uint2 globalIdx)
 {
 	float opaqueDepth		= g_tDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
-	float opaqueDepthToView	= InvertProjDepthToView(opaqueDepth);
-	uint opaqueZ = asuint(opaqueDepthToView);
+	float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
+	uint opaqueZ			= asuint(opaqueDepthToView);
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth			= g_tBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+	float blendedDepth		= g_tBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
 	float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
 
 	uint blendedZ = asuint(blendedDepthToView);
@@ -83,28 +83,26 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	
 	float4 frustumPlaneNormal[4];
 	{
-		float2 tl =					float2(	(float)(LIGHT_CULLING_TILE_RES * groupIdx.x),
-											(float)(LIGHT_CULLING_TILE_RES * groupIdx.y));
-		float2 br =					float2(	(float)(LIGHT_CULLING_TILE_RES * (groupIdx.x + 1)), 
-											(float)(LIGHT_CULLING_TILE_RES * (groupIdx.y + 1)));
-		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
-											(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
-											//½ºÅ©¸° ÇÈ¼¿ »çÀÌÁî¶ó »ý°¢ÇØµµ ÁÁ°í,
-											//ÇöÀç µ¹¾Æ°¡´Â ÀüÃ¼ °¡·Îx¼¼·Î ½º·¹µå ¼ö?
-
+		float2 tl =			float2(	(float)(LIGHT_CULLING_TILE_RES * groupIdx.x),
+							(float)(LIGHT_CULLING_TILE_RES * groupIdx.y));
+		float2 br =			float2(	(float)(LIGHT_CULLING_TILE_RES * (groupIdx.x + 1)), 
+							(float)(LIGHT_CULLING_TILE_RES * (groupIdx.y + 1)));
+		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),	//ìŠ¤í¬ë¦° í”½ì…€ ì‚¬ì´ì¦ˆë¼ ìƒê°í•´ë„ ì¢‹ê³ ,
+							(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );	//í˜„ìž¬ ëŒì•„ê°€ëŠ” ì „ì²´ ê°€ë¡œxì„¸ë¡œ ìŠ¤ë ˆë“œ ìˆ˜?
+											
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
-												1.f, 1.f) ); //TL
+					(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
+					1.f, 1.f) ); //TL
 		frustum[1] = ProjToView( float4( br.x / totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
-												1.f, 1.f) ); //TR
+					(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
+					1.f, 1.f) ); //TR
 		frustum[2] = ProjToView( float4( br.x / totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
-												1.f, 1.f) ); //BR
+					(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
+					1.f, 1.f) ); //BR
 		frustum[3] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
-												(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
-												1.f, 1.f) ); //BL
+					(totalThreadLength.y - br.y) / totalThreadLength.y * 2.f - 1.f,
+					1.f, 1.f) ); //BL
 
 		for(uint i=0; i<4; ++i)
 			frustumPlaneNormal[i] = CreatePlaneNormal(frustum[i], frustum[(i+1) & 3]);
@@ -125,14 +123,14 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	uint pointLightCount = GetNumOfPointLight(tbrParam_packedNumOfLights);
     for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
     {
-		float4 center = g_inputPointLightTransformBuffer[pointLightIdx];
-		float r = center.w;
+		float4 center	= g_inputPointLightTransformBuffer[pointLightIdx];
+		float r		= center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xy	= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
-			if( InFrustum(center, frustumPlaneNormal[0], r) &&
+			if( 	InFrustum(center, frustumPlaneNormal[0], r) &&
 				InFrustum(center, frustumPlaneNormal[1], r) &&
 				InFrustum(center, frustumPlaneNormal[2], r) &&
 				InFrustum(center, frustumPlaneNormal[3], r) )
@@ -147,20 +145,20 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 
 	GroupMemoryBarrierWithGroupSync();
 
-	outPointLightCountInTile = s_lightIndexCounter;
-	uint pointLightCountInTile = s_lightIndexCounter;
+	outPointLightCountInTile	= s_lightIndexCounter;
+	uint pointLightCountInTile	= s_lightIndexCounter;
 
 	uint spotLightCount = GetNumOfSpotLight(tbrParam_packedNumOfLights);
 	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=THREAD_COUNT)
 	{
-		float4 center = g_inputSpotLightTransformBuffer[spotLightIdx];
-		float r = center.w;
+		float4 center	= g_inputSpotLightTransformBuffer[spotLightIdx];
+		float r		= center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz	= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
-			if( InFrustum(center, frustumPlaneNormal[0], r) &&
+			if(	InFrustum(center, frustumPlaneNormal[0], r) &&
 				InFrustum(center, frustumPlaneNormal[1], r) &&
 				InFrustum(center, frustumPlaneNormal[2], r) &&
 				InFrustum(center, frustumPlaneNormal[3], r) )
