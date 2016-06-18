@@ -1,4 +1,4 @@
-#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
+#define USE_OUT_VOXEL_MAP
 
 #include "Voxelization_Common.h"
 
@@ -6,7 +6,7 @@ struct VS_INPUT
 {
 	float3 position 			: POSITION;
 	float3 normal				: NORMAL;
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 };
 
 struct VS_OUTPUT
@@ -14,7 +14,7 @@ struct VS_OUTPUT
 	float3 localPos				: LOCAL_POSITION;
 	float3 normal 				: NORMAL;
 
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 };
 
 VS_OUTPUT VS( VS_INPUT input )
@@ -22,7 +22,7 @@ VS_OUTPUT VS( VS_INPUT input )
 	VS_OUTPUT output;
 
 	output.localPos		= input.position;
-	output.uv			= input.uv;
+	output.uv		= input.uv;
 	output.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
  
     return output;
@@ -35,7 +35,7 @@ struct GS_OUTPUT
 	float3	worldPos			: WORLD_POSITION;
 
 	float3	normal				: NORMAL;
-	float2	uv					: TEXCOORD0;
+	float2	uv				: TEXCOORD0;
 	uint	axis				: AXIS_INDEX;
 };
 
@@ -63,9 +63,9 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		output.position_sv	= position[i];
 		output.worldPos		= worldPos[i];
 
-		output.axis			= axis[i];
+		output.axis		= axis[i];
 
-		output.uv			= input[i].uv;
+		output.uv		= input[i].uv;
 		output.normal		= input[i].normal;
 
 		outputStream.Append(output);
