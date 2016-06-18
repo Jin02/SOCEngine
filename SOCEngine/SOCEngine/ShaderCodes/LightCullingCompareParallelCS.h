@@ -144,8 +144,15 @@ void ClacMinMaxWithCheckEdgeDetection(uint2 halfGlobalIdx, uint2 halfLocalIdx, u
 #if defined(USE_EDGE_CHECK_COMPARE_DISTANCE)
 	CornerMinMax cornerMinMax;
 	{
-		cornerMinMax.min_tl = FLOAT_MAX;	cornerMinMax.min_tr = FLOAT_MAX;	cornerMinMax.min_bl = FLOAT_MAX;	cornerMinMax.min_br = FLOAT_MAX;
-		cornerMinMax.max_tl = 0;		cornerMinMax.max_tr = 0;		cornerMinMax.max_bl = 0;			cornerMinMax.max_br = 0;
+		cornerMinMax.min_tl = FLOAT_MAX;
+		cornerMinMax.min_tr = FLOAT_MAX;
+		cornerMinMax.min_bl = FLOAT_MAX;
+		cornerMinMax.min_br = FLOAT_MAX;
+		
+		cornerMinMax.max_tl = 0;
+		cornerMinMax.max_tr = 0;
+		cornerMinMax.max_bl = 0;
+		cornerMinMax.max_br = 0;
 	}
 #endif
 
@@ -192,14 +199,13 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 
 	float4 frustumPlaneNormal[4];
 	{
-		uint2 tl =					uint2(	LIGHT_CULLING_TILE_RES * groupIdx.x,
-									LIGHT_CULLING_TILE_RES * groupIdx.y);
-		uint2 br =					uint2(	LIGHT_CULLING_TILE_RES * (groupIdx.x + 1), 
-									LIGHT_CULLING_TILE_RES * (groupIdx.y + 1));
-		float2 totalThreadLength =			float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
-									(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
-											//스크린 픽셀 사이즈라 생각해도 좋고,
-											//현재 돌아가는 전체 가로x세로 스레드 수?
+		uint2 tl =			uint2(	LIGHT_CULLING_TILE_RES * groupIdx.x,
+							LIGHT_CULLING_TILE_RES * groupIdx.y);
+		uint2 br =			uint2(	LIGHT_CULLING_TILE_RES * (groupIdx.x + 1), 
+							LIGHT_CULLING_TILE_RES * (groupIdx.y + 1));
+		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),	//스크린 픽셀 사이즈라 생각해도 좋고,
+							(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );	//현재 돌아가는 전체 가로x세로 스레드 수?
+							
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
 						(totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
