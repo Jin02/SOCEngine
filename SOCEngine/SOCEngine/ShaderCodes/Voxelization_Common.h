@@ -17,7 +17,7 @@ cbuffer Voxelization_Info_CB : register( b5 )
 
 SamplerState defaultSampler			: register( s0 );
 
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
+#if defined(USE_OUT_VOXEL_MAP)
 RWTexture3D<uint> OutVoxelAlbedoTexture		: register( u0 );
 RWTexture3D<uint> OutVoxelNormalTexture		: register( u1 );
 RWTexture3D<uint> OutVoxelEmissionTexture	: register( u2 );
@@ -89,7 +89,7 @@ void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 {
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
+#if defined(USE_OUT_VOXEL_MAP)
 	int dimension = int(GetDimension());
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
@@ -123,7 +123,7 @@ void ComputeVoxelIdx(out int3 outVoxelIdx, float3 position, uint axis)
 
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
 {
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
+#if defined(USE_OUT_VOXEL_MAP)
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 
 	uint dlShadowCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadows);
