@@ -1,4 +1,12 @@
 SOCEngine
+
+[![Build Status](https://travis-ci.org/Jin02/SOCEngine.svg?branch=master)](https://travis-ci.org/Jin02/SOCEngine)
+[![todofy](https://todofy.org/b/Jin02/SOCEngine/master)](https://todofy.org/r/Jin02/SOCEngine/master)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+<b>I can't build this project since 2016.03.07.</b><br>
+<b>Sorry.</b>
+
 =========
 
 Simple 3D real-time rendering engine
