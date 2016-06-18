@@ -333,9 +333,9 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 			toVoxel._22 = 1.0f / worldSize;
 			toVoxel._33 = 1.0f / worldSize;
 
-			toVoxel._41 = -bbMin.x;
-			toVoxel._42 = -bbMin.y;
-			toVoxel._43 = -bbMin.z;
+			toVoxel._41 = toVoxel._11 * -bbMin.x;
+			toVoxel._42 = toVoxel._22 * -bbMin.y;
+			toVoxel._43 = toVoxel._33 * -bbMin.z;
 		}
 		Matrix::Transpose(currentVoxelizeInfo.toVoxel, toVoxel);
 	}
