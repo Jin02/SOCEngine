@@ -15,7 +15,7 @@ cbuffer Voxelization_Info_CB : register( b5 )
 	uint	voxelization_currentCascade;
 };
 
-SamplerState defaultSampler			: register( s0 );
+SamplerState DefaultSampler			: register( s0 );
 
 #if defined(USE_OUT_VOXEL_MAP)
 RWTexture3D<uint> OutVoxelAlbedoTexture		: register( u0 );
@@ -79,12 +79,12 @@ void ComputeVoxelizationProjPos(
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 {
-	float4 diffuseTex	= diffuseMap.Sample(defaultSampler, uv);
+	float4 diffuseTex	= diffuseMap.Sample(DefaultSampler, uv);
 	float3 mainColor	= GetMaterialMainColor().rgb;
-	albedo				= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
+	albedo			= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
 
-	//float opacityMap	= 1.0f - opacityMap.Sample(defaultSampler, input.uv).x;
-	alpha				= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
+	//float opacityMap	= 1.0f - opacityMap.Sample(DefaultSampler, input.uv).x;
+	alpha			= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
 }
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
