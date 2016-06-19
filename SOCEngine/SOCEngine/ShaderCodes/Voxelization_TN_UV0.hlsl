@@ -83,7 +83,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 void PS( GS_OUTPUT input )
 {
-	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
+	float4 normalTex	= NormalMap.Sample(DefaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
 	float3 normal		= lerp(input.normal, bumpedNormal, HasNormalMap());
 
