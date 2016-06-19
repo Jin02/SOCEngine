@@ -24,16 +24,16 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 	float3 albedo = float3(0.0f, 0.0f, 0.0f);
 	{
 		float3 mtlMainColor	= GetMaterialMainColor().rgb;
-		float3 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, uv).rgb;
+		float3 diffuseTex	= DiffuseMap.Sample(GBufferDefaultSampler, uv).rgb;
 
 		albedo = lerp(mtlMainColor, diffuseTex * mtlMainColor, HasDiffuseMap());
 	}
-	float occlusion = occlusionMap.Sample(GBufferDefaultSampler, uv).x;
+	float occlusion = OcclusionMap.Sample(GBufferDefaultSampler, uv).x;
 
 	float3 normal = normalize(worldNormal) * 0.5f + 0.5f;
 	float roughness = 0.0f;
 	{
-		float roughnessTex = roughnessMap.Sample(GBufferDefaultSampler, uv).x;
+		float roughnessTex = RoughnessMap.Sample(GBufferDefaultSampler, uv).x;
 		float matRoughness = GetMaterialRoughness();
 
 		roughness = lerp(matRoughness, roughnessTex, HasRoughnessMap());
@@ -43,12 +43,12 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 	float3 emissiveColor	= float3(0.0f, 0.0f, 0.0f);
 	{
 		float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
-		float3 emissiveTex	= emissionMap.Sample(GBufferDefaultSampler, uv).rgb;
+		float3 emissiveTex	= EmissionMap.Sample(GBufferDefaultSampler, uv).rgb;
 
 		emissiveColor = lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
 	}
 
-	float height = heightMap.Sample(GBufferDefaultSampler, uv).x;
+	float height = HeightMap.Sample(GBufferDefaultSampler, uv).x;
 
 	float2 motion = float2(0.0f, 0.0f);
 	{
@@ -57,7 +57,7 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 	
 	float metallic = 0.0f;
 	{
-		float metallicTex = metallicMap.Sample(GBufferDefaultSampler, uv).x;
+		float metallicTex = MetallicMap.Sample(GBufferDefaultSampler, uv).x;
 		float mtlMetallic = GetMaterialMetallic();
 
 		metallic = lerp(mtlMetallic, metallicTex, HasMetallicMap());
