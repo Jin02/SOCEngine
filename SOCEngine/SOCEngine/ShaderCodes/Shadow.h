@@ -6,12 +6,12 @@
 #include "TBDRInput.h"
 #include "ShaderCommon.h"
 
-#define SHADOW_KERNEL_LEVEL				4
-#define SHADOW_KERNEL_WIDTH				2 * SHADOW_KERNEL_LEVEL + 1
+#define SHADOW_KERNEL_LEVEL			4
+#define SHADOW_KERNEL_WIDTH			2 * SHADOW_KERNEL_LEVEL + 1
 #define SHADOW_PARAM_FLAG_USE_VSM		1
 
-SamplerComparisonState shadowSamplerCmpState	:	register( s2 );
-SamplerState shadowSamplerState					:	register( s3 );
+SamplerComparisonState shadowSamplerCmpState	: register( s2 );
+SamplerState shadowSamplerState			: register( s3 );
 
 float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 {
@@ -30,13 +30,13 @@ float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 
 float ChebyshevUpperBound(float2 moments, float t)
 {
-	float p = (t <= moments.x);
+	float p		= (t <= moments.x);
 
-	float variance = moments.y - (moments.x * moments.x);
-	variance = max(variance, 0.00002f);
+	float variance	= moments.y - (moments.x * moments.x);
+	variance	= max(variance, 0.00002f);
 
-	float d = t - moments.x;
-	float pMax = smoothStep(0.2f, 1.0f, variance / (variance + d * d));
+	float d		= t - moments.x;
+	float pMax	= smoothStep(0.2f, 1.0f, variance / (variance + d * d));
 
 	return max(p, pMax);
 }
@@ -49,8 +49,8 @@ float2 RecombinePrecision(float4 value)
 
 float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float depth)
 {
-	float shadow = 0.0f;
-	float2 moment = float2(0.0f, 0.0f);
+	float shadow	= 0.0f;
+	float2 moment	= float2(0.0f, 0.0f);
 
 	[unroll] for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
 	{
@@ -67,14 +67,14 @@ float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float de
 
 float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
 {
-	uint shadowIndex = g_inputSpotLightShadowIndex[lightIndex];
+	uint shadowIndex	= g_inputSpotLightShadowIndex[lightIndex];
 
-	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), g_inputSpotLightShadowViewProjMatrix[shadowIndex].mat);
-	shadowUV /= shadowUV.w;
+	float4 shadowUV		= mul( float4(vertexWorldPos, 1.0f), g_inputSpotLightShadowViewProjMatrix[shadowIndex].mat);
+	shadowUV		/= shadowUV.w;
 
-	uint lightCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
-	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
+	uint lightCount	= GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
+	shadowUV.x	= ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
+	shadowUV.y	= (shadowUV.y /-2.0f) + 0.5f;
 
 	ParsedShadowParam shadowParam;
 	ParseShadowParam(shadowParam, g_inputSpotLightShadowParams[shadowIndex]);
@@ -94,8 +94,8 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 		shadow = saturate( Shadowing(g_inputSpotLightShadowMapAtlas, shadowUV.xy, depth - bias) );
 #endif
 
-	float3 shadowColor = shadowParam.color.rgb;
-	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+	float3 shadowColor	= shadowParam.color.rgb;
+	float3 result		= lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
 	float shadowStrength = shadowParam.color.a;
 	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
@@ -103,15 +103,15 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 
 float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
-	uint shadowIndex = g_inputDirectionalLightShadowIndex[lightIndex];
+	uint shadowIndex 	= g_inputDirectionalLightShadowIndex[lightIndex];
 
-	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), g_inputDirectionalLightShadowViewProjMatrix[shadowIndex].mat );
-	shadowUV /= shadowUV.w;
+	float4 shadowUV		= mul( float4(vertexWorldPos, 1.0f), g_inputDirectionalLightShadowViewProjMatrix[shadowIndex].mat );
+	shadowUV		/= shadowUV.w;
 
-	uint lightCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
+	uint lightCount	= GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
-	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
+	shadowUV.x	= ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
+	shadowUV.y	= (shadowUV.y /-2.0f) + 0.5f;
 
 	ParsedShadowParam shadowParam;
 	ParseShadowParam(shadowParam, g_inputDirectionalLightShadowParams[shadowIndex]);
@@ -119,7 +119,7 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float bias	= shadowParam.bias;
 	float depth	= shadowUV.z;
 	
-	float shadow = 1.0f;
+	float shadow	= 1.0f;
 #ifndef NEVER_USE_VSM
 	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
 		shadow = saturate( VarianceShadow(g_inputDirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
@@ -131,8 +131,8 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 		shadow = saturate( Shadowing(g_inputDirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias) );
 #endif
 
-	float3 shadowColor = shadowParam.color.rgb;
-	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+	float3 shadowColor	= shadowParam.color.rgb;
+	float3 result		= lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
 	float shadowStrength = shadowParam.color.a;
 	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
@@ -140,10 +140,10 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 uint ComputeFaceIndex(float3 dir)
 {
-	// ¹¹, º°°Ç ¾ø°í
-	// PointLight::ComputeViewProjMatrix¿¡¼­ »ç¿ëµÇ´Â forwards, ups ÀÌ°Å ÀÎµ¦½º Á¤ÇÏ´Â ÇÔ¼öÀÌ´Ù.
-	// ´ëÃ¼ ¹º ¹æ½ÄÀ¸·Î °è»êÇÏ´ÂÁö ±Ã±İÇÏ´Ù¸é, 0, 0, 1ÀÌ³ª 1, 0, 0 Á÷Á¢ ¸Ó¸®¼Ó¿¡ ³Ö¾î¼­ °è»êÇÏ¸éµÈ´Ù.
-	// ±×·³ PointLight::ComputeViewProjMatrix¿¡¼­ »ç¿ë ÁßÀÎ ÀÎµ¦½º¿Í µ¿ÀÏÇÏ°Ô ¶á´Ù.
+	// ë­, ë³„ê±´ ì—†ê³ 
+	// PointLight::ComputeViewProjMatrixì—ì„œ ì‚¬ìš©ë˜ëŠ” forwards, ups ì´ê±° ì¸ë±ìŠ¤ ì •í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+	// ëŒ€ì²´ ë­” ë°©ì‹ìœ¼ë¡œ ê³„ì‚°í•˜ëŠ”ì§€ ê¶ê¸ˆí•˜ë‹¤ë©´, 0, 0, 1ì´ë‚˜ 1, 0, 0 ì§ì ‘ ë¨¸ë¦¬ì†ì— ë„£ì–´ì„œ ê³„ì‚°í•˜ë©´ëœë‹¤.
+	// ê·¸ëŸ¼ PointLight::ComputeViewProjMatrixì—ì„œ ì‚¬ìš© ì¤‘ì¸ ì¸ë±ìŠ¤ì™€ ë™ì¼í•˜ê²Œ ëœ¬ë‹¤.
 
 	uint res = 0;
 
@@ -169,7 +169,7 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
 	float oneShadowMapSize	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	float underScanSize		= asfloat(g_inputPointLightShadowParams[shadowIndex].z);
+	float underScanSize	= asfloat(g_inputPointLightShadowParams[shadowIndex].z);
 
 	ParsedShadowParam shadowParam;
 	ParseShadowParam(shadowParam, g_inputPointLightShadowParams[shadowIndex].xy);
