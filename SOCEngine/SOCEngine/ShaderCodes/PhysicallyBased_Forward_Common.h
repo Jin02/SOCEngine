@@ -9,18 +9,18 @@
 #include "LightCullingCommonCS.h"
 #include "DynamicLighting.h"
 
-Buffer<uint> g_perLightIndicesInTile	: register( t13 );
-SamplerState defaultSampler		: register( s0 );
+Buffer<uint> PerLightIndicesInTile	: register( t13 );
+SamplerState DefaultSampler		: register( s0 );
 
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 {
-	float metallic			= GetMetallic(defaultSampler, uv);
-	float roughness			= GetRoughness(defaultSampler, uv);
+	float metallic			= GetMetallic(DefaultSampler, uv);
+	float roughness			= GetRoughness(DefaultSampler, uv);
 	float specularity		= GetMaterialSpecularity();
 
-	float3 emissiveColor		= GetEmissiveColor(defaultSampler, uv);
-	float3 albedo			= GetAlbedo(defaultSampler, uv);
+	float3 emissiveColor		= GetEmissiveColor(DefaultSampler, uv);
+	float3 albedo			= GetAlbedo(DefaultSampler, uv);
 
 	LightingParams lightParams;
 
@@ -33,7 +33,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	uint tileIdx			= GetTileIndex(SVPosition);
 	uint startIdx			= tileIdx * tbrParam_maxNumOfPerLightInTile + 1;
 
-	uint packedLightCountValue	= g_perLightIndicesInTile[startIdx - 1];
+	uint packedLightCountValue	= PerLightIndicesInTile[startIdx - 1];
 	uint pointLightCount		= packedLightCountValue & 0x0000ffff;
 	uint spotLightCount		= packedLightCountValue >> 16;
 
@@ -50,7 +50,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	uint endIdx = startIdx + pointLightCount;
 	for(uint pointLightIdx=startIdx; pointLightIdx<endIdx; ++pointLightIdx)
 	{
-		lightParams.lightIndex = g_perLightIndicesInTile[pointLightIdx];
+		lightParams.lightIndex = PerLightIndicesInTile[pointLightIdx];
 
 #if defined(RENDER_TRANSPARENCY)
 		float3 frontFaceDiffuseColor, frontFaceSpecularColor;
@@ -78,7 +78,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	endIdx += spotLightCount;
 	for(uint spotLightIdx=startIdx; spotLightIdx<endIdx; ++spotLightIdx)
 	{
-		lightParams.lightIndex = g_perLightIndicesInTile[spotLightIdx];
+		lightParams.lightIndex = PerLightIndicesInTile[spotLightIdx];
 
 #if defined(RENDER_TRANSPARENCY)
 		float3 frontFaceDiffuseColor, frontFaceSpecularColor;
@@ -137,7 +137,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
 	float3	result	= front + back;
-	float	alpha	= GetAlpha(defaultSampler, uv);
+	float	alpha	= GetAlpha(DefaultSampler, uv);
 #else
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	float	alpha = 1.0f;
