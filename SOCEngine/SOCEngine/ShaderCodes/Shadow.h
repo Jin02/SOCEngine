@@ -10,8 +10,8 @@
 #define SHADOW_KERNEL_WIDTH			2 * SHADOW_KERNEL_LEVEL + 1
 #define SHADOW_PARAM_FLAG_USE_VSM		1
 
-SamplerComparisonState ShadowSamplerCmpState	: register( s2 );
-SamplerState ShadowSamplerState			: register( s3 );
+SamplerComparisonState	ShadowSamplerCmpState	: register( s2 );
+SamplerState		ShadowSamplerState	: register( s3 );
 
 float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 {
