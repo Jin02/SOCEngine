@@ -19,10 +19,10 @@ PS_ALPHA_TEST_DIFFUSE_INPUT OnlyAlpaTestWithDiffuseVS(VS_INPUT input)
 
 float4 OnlyAlpaTestWithDiffusePS( PS_ALPHA_TEST_DIFFUSE_INPUT input ) : SV_TARGET
 { 
-	float alpha = GetAlpha(defaultSampler, input.uv);
+	float alpha = GetAlpha(DefaultSampler, input.uv);
 
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 
-	return float4(GetAlbedo(defaultSampler, input.uv), alpha);
+	return float4(GetAlbedo(DefaultSampler, input.uv), alpha);
 }
