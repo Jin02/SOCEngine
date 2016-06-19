@@ -12,7 +12,7 @@ groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TIL
 #endif
 
 // Output
-RWTexture2D<float4> g_tOutScreen : register( u0 );
+RWTexture2D<float4> OutScreen : register( u0 );
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
@@ -81,8 +81,8 @@ groupshared bool isRenderDL;
 
 [numthreads(LIGHT_CULLING_TILE_RES, LIGHT_CULLING_TILE_RES, 1)]
 void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID, 
-								uint3 localIdx	: SV_GroupThreadID,
-								uint3 groupIdx	: SV_GroupID)
+				uint3 localIdx	: SV_GroupThreadID,
+				uint3 groupIdx	: SV_GroupID)
 {
 	uint pointLightCountInThisTile = 0;
 
@@ -167,13 +167,13 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
-	uint2 scale_2_idx		= globalIdx.xy * 2;
-	g_tOutScreen[scale_2_idx]	= float4(result, 1.0f);
+	uint2 scale_2_idx	= globalIdx.xy * 2;
+	OutScreen[scale_2_idx]	= float4(result, 1.0f);
 
 	float3 sampleNormal = float3(0.0f, 0.0f, 0.0f);
 	for(uint sampleIdx = 1; sampleIdx < MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
-		sampleNormal = g_tGBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
+		sampleNormal = GBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
 		sampleNormal *= 2; sampleNormal -= float3(1.0f, 1.0f, 1.0f);
 
 		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, surface.normal) < DEG_2_RAD(60.0f) );
@@ -188,9 +188,9 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 	else
 	{
-		g_tOutScreen[scale_2_idx + uint2(1, 0)] = float4(result, 1.0f);
-		g_tOutScreen[scale_2_idx + uint2(0, 1)] = float4(result, 1.0f);
-		g_tOutScreen[scale_2_idx + uint2(1, 1)] = float4(result, 1.0f);
+		OutScreen[scale_2_idx + uint2(1, 0)] = float4(result, 1.0f);
+		OutScreen[scale_2_idx + uint2(0, 1)] = float4(result, 1.0f);
+		OutScreen[scale_2_idx + uint2(1, 1)] = float4(result, 1.0f);
 	}
 
 	GroupMemoryBarrierWithGroupSync();
@@ -217,7 +217,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		scale_sample_coord.y += sampleIdx > 1;
 		
 		lightResult = MSAALighting(edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
-		g_tOutScreen[scale_sample_coord] = lightResult;
+		OutScreen[scale_sample_coord] = lightResult;
 	}
 
 #else // off MSAA
@@ -239,9 +239,9 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	if(debugLightCount > 5)
 		debugTiles = float3(1, 1, 1);	
 
-	g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
+	OutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+	OutScreen[globalIdx.xy] = float4(result, 1.0f);
 #endif
 
 #endif
