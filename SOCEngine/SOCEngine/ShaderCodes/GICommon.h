@@ -5,9 +5,9 @@
 
 #ifndef VOXEL_CONE_TRACING
 
-Texture3D<float4>	g_inputVoxelAlbedoMap	: register( t29 );
-Texture3D<float4>	g_inputVoxelEmissionMap	: register( t31 );
-Texture3D<float4>	g_inputVoxelNormalMap	: register( t30 );
+Texture3D<float4>	VoxelAlbedoMap		: register( t29 );
+Texture3D<float4>	VoxelEmissionMap	: register( t31 );
+Texture3D<float4>	VoxelNormalMap		: register( t30 );
 
 cbuffer GIInfoCB : register( b6 )
 #else
