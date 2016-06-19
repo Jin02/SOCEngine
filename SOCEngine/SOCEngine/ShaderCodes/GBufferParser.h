@@ -42,9 +42,9 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.roughness	= normal_roughness.w;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	float depth = Depth.Load( globalIdx, sampleIdx ).x;
+	float depth = GBufferDepth.Load( globalIdx, sampleIdx ).x;
 #else
-	float depth = Depth.Load( uint3(globalIdx, 0) ).x;
+	float depth = GBufferDepth.Load( uint3(globalIdx, 0) ).x;
 #endif
 
 	float4 worldPosition	= mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
