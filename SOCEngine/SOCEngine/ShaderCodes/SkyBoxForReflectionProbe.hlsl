@@ -12,8 +12,8 @@ cbuffer RPInfo : register( b5 )
 	float2	dummy;
 };
 
-TextureCube	cubeMap			: register(t0);
-SamplerState	linearSampler		: register(s0);
+TextureCube	CubeMap			: register(t0);
+SamplerState	LinearSampler		: register(s0);
 
 struct VS_INPUT
 {
@@ -76,5 +76,5 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	return cubeMap.Sample(linearSampler, input.localPos);
+	return CubeMap.Sample(LinearSampler, input.localPos);
 }
