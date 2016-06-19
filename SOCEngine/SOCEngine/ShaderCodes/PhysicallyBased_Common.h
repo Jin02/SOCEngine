@@ -37,14 +37,14 @@ cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 	float2 	material_uvOffset1;
 };
 
-Texture2D diffuseMap			: register( t8 );
-Texture2D normalMap			: register( t9 );
-Texture2D opacityMap			: register( t10 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
-Texture2D heightMap			: register( t11 );
-Texture2D metallicMap			: register( t12 );
-Texture2D occlusionMap			: register( t13 );
-Texture2D roughnessMap			: register( t33 );
-Texture2D emissionMap			: register( t34 );
+Texture2D DiffuseMap			: register( t8 );
+Texture2D NormalMap			: register( t9 );
+Texture2D OpacityMap			: register( t10 ); // 0 is opcity 100%, 1 is 0%. used in Transparency Rendering
+Texture2D HeightMap			: register( t11 );
+Texture2D MetallicMap			: register( t12 );
+Texture2D OcclusionMap			: register( t13 );
+Texture2D RoughnessMap			: register( t33 );
+Texture2D EmissionMap			: register( t34 );
 
 float4 GetMaterialMainColor()
 {
@@ -98,19 +98,19 @@ bool HasEmissionMap()	{	return (GetMaterialExistMapFlag() & (1 << 7));	}
 float3 GetAlbedo(SamplerState samplerState, float2 uv)
 {
 	float3 mtlMainColor	= GetMaterialMainColor().rgb;
-	float3 diffuseTex	= diffuseMap.Sample(samplerState, uv).rgb;
+	float3 diffuseTex	= DiffuseMap.Sample(samplerState, uv).rgb;
 
 	return lerp(mtlMainColor, diffuseTex * mtlMainColor, HasDiffuseMap());
 }
 
 float3 GetOcclusion(SamplerState samplerState, float2 uv)
 {
-	return occlusionMap.Sample(samplerState, uv).x;
+	return OcclusionMap.Sample(samplerState, uv).x;
 }
 
 float GetRoughness(SamplerState samplerState, float2 uv)
 {
-	float roughnessTex = roughnessMap.Sample(samplerState, uv).x;
+	float roughnessTex = RoughnessMap.Sample(samplerState, uv).x;
 	float matRoughness = GetMaterialRoughness();
 
 	return lerp(matRoughness, roughnessTex, HasRoughnessMap());
@@ -119,14 +119,14 @@ float GetRoughness(SamplerState samplerState, float2 uv)
 float3 GetEmissiveColor(SamplerState samplerState, float2 uv)
 {
 	float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
-	float3 emissiveTex	= emissionMap.Sample(samplerState, uv).rgb;
+	float3 emissiveTex	= EmissionMap.Sample(samplerState, uv).rgb;
 
 	return lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
 }
 
 float GetMetallic(SamplerState samplerState, float2 uv)
 {
-	float metallicTex = metallicMap.Sample(samplerState, uv).x;
+	float metallicTex = MetallicMap.Sample(samplerState, uv).x;
 	float mtlMetallic = GetMaterialMetallic();
 
 	return lerp(mtlMetallic, metallicTex, HasMetallicMap());
@@ -134,7 +134,7 @@ float GetMetallic(SamplerState samplerState, float2 uv)
 
 float GetHeight(SamplerState samplerState, float2 uv)
 {
-	return heightMap.Sample(samplerState, uv).x;
+	return HeightMap.Sample(samplerState, uv).x;
 }
 
 void GetDiffuseSpecularColor(out float3 outDiffuseColor, out float3 outSpecularColor, float3 baseColor, float specularity, float metallic)
@@ -145,8 +145,8 @@ void GetDiffuseSpecularColor(out float3 outDiffuseColor, out float3 outSpecularC
 
 float GetAlpha(SamplerState samplerState, float2 uv)
 {
-	float diffuseMapAlpha	= lerp(1.0f, diffuseMap.Sample(samplerState, uv).a, HasDiffuseMap());
-	float alpha		= diffuseMapAlpha * (1.0f - opacityMap.Sample(samplerState, uv).x) * GetMaterialMainColor().a;
+	float DiffuseMapAlpha	= lerp(1.0f, DiffuseMap.Sample(samplerState, uv).a, HasDiffuseMap());
+	float alpha		= DiffuseMapAlpha * (1.0f - OpacityMap.Sample(samplerState, uv).x) * GetMaterialMainColor().a;
 
 	return alpha;
 }
