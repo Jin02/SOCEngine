@@ -79,7 +79,7 @@ void ComputeVoxelizationProjPos(
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 {
-	float4 diffuseTex	= diffuseMap.Sample(DefaultSampler, uv);
+	float4 diffuseTex	= DiffuseMap.Sample(DefaultSampler, uv);
 	float3 mainColor	= GetMaterialMainColor().rgb;
 	albedo			= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
 
