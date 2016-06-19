@@ -16,26 +16,26 @@ void RenderDirectionalLight(
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
 #if defined(RENDER_TRANSPARENCY)
-	resultFrontFaceDiffuseColor	= resultFrontFaceSpecularColor = float3(0, 0, 0);
-	resultBackFaceDiffuseColor	= resultBackFaceSpecularColor = float3(0, 0, 0);
+	resultFrontFaceDiffuseColor	= resultFrontFaceSpecularColor	= float3(0.0f, 0.0f, 0.0f);
+	resultBackFaceDiffuseColor	= resultBackFaceSpecularColor	= float3(0.0f, 0.0f, 0.0f);
 #else
-	resultDiffuseColor		= float3(0, 0, 0);
-	resultSpecularColor		= float3(0, 0, 0);
+	resultDiffuseColor		= float3(0.0f, 0.0f, 0.0f);
+	resultSpecularColor		= float3(0.0f, 0.0f, 0.0f);
 #endif
 
 	uint lightIndex = lightingParams.lightIndex;
 
-	float4	lightCenterWithDirZ		= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
+	float4	lightCenterWithDirZ		= DirectionalLightTransformWithDirZBuffer[lightIndex];
 	float3	lightCenterWorldPosition	= lightCenterWithDirZ.xyz;
 
 	LightingCommonParams commonParams;
 	{
-		commonParams.lightColor		= g_inputDirectionalLightColorBuffer[lightIndex].xyz;
+		commonParams.lightColor		= DirectionalLightColorBuffer[lightIndex].xyz;
 
-		float2	lightParam		= g_inputDirectionalLightParamBuffer[lightIndex];
+		float2	lightParam		= DirectionalLightParamBuffer[lightIndex];
 		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-		float intensity = g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float intensity			= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 		resultFrontFaceDiffuseColor	*= intensity;
@@ -50,7 +50,7 @@ void RenderDirectionalLight(
 		resultDiffuseColor		*= intensity;
 		resultSpecularColor		*= intensity;
 
-		uint shadowIndex = g_inputDirectionalLightShadowIndex[lightIndex];
+		uint shadowIndex = DirectionalLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor	= RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
@@ -79,7 +79,7 @@ void RenderPointLight(
 	resultSpecularColor		= float3(0, 0, 0);
 #endif
 	uint lightIndex = lightingParams.lightIndex;
-	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightIndex];
+	float4 lightCenterWithRadius	= PointLightTransformBuffer[lightIndex];
 
 	float3 lightCenterWorldPosition	= lightCenterWithRadius.xyz;
 	float lightRadius		= lightCenterWithRadius.w;
@@ -91,10 +91,10 @@ void RenderPointLight(
 	if( distanceOfLightWithVertex < lightRadius )
 	{
 		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputPointLightColorBuffer[lightIndex].xyz;
+		commonParams.lightColor		= PointLightColorBuffer[lightIndex].xyz;
 		commonParams.lightDir		= lightDir;
 
-		float lumen			= g_inputPointLightColorBuffer[lightIndex].w * float(MAXIMUM_LUMEN);
+		float lumen			= PointLightColorBuffer[lightIndex].w * float(MAXIMUM_LUMEN);
 		float attenuation		= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 
 #if defined(RENDER_TRANSPARENCY)
@@ -112,7 +112,7 @@ void RenderPointLight(
 		resultDiffuseColor		*= attenuation;
 		resultSpecularColor		*= attenuation;
 
-		uint shadowIndex = g_inputPointLightShadowIndex[lightIndex];
+		uint shadowIndex = PointLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
@@ -143,11 +143,11 @@ void RenderSpotLight(
 
 	uint lightIndex			= lightingParams.lightIndex;
 
-	float4 lightCenterPosWithRadius	= g_inputSpotLightTransformBuffer[lightIndex];
+	float4 lightCenterPosWithRadius	= SpotLightTransformBuffer[lightIndex];
 	float3 lightPos			= lightCenterPosWithRadius.xyz;
 	float radiusWithMinusZDirBit	= lightCenterPosWithRadius.w;
 
-	float4 spotParam		= g_inputSpotLightParamBuffer[lightIndex];
+	float4 spotParam		= SpotLightParamBuffer[lightIndex];
 	float3 lightDir			= -float3(spotParam.x, spotParam.y, 0.0f);
 	lightDir.z 			= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y);
 	lightDir.z 			= (radiusWithMinusZDirBit < 0.0f) ? -lightDir.z : lightDir.z;
@@ -167,7 +167,7 @@ void RenderSpotLight(
 		(outerCosineConeAngle < currentCosineConeAngle) )
 	{
 		LightingCommonParams commonParams;
-		commonParams.lightColor		= g_inputSpotLightColorBuffer[lightIndex].xyz;
+		commonParams.lightColor		= SpotLightColorBuffer[lightIndex].xyz;
 		commonParams.lightDir		= vtxToLightDir;
 
 		float innerOuterAttenuation	= saturate(	(currentCosineConeAngle - outerCosineConeAngle) / 
@@ -176,7 +176,7 @@ void RenderSpotLight(
 		innerOuterAttenuation		= innerOuterAttenuation * innerOuterAttenuation;
 		innerOuterAttenuation		= lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
 
-		float lumen			= g_inputSpotLightColorBuffer[lightIndex].w * float(MAXIMUM_LUMEN); //maximum lumen is float(MAXIMUM_LUMEN)
+		float lumen			= SpotLightColorBuffer[lightIndex].w * float(MAXIMUM_LUMEN); //maximum lumen is float(MAXIMUM_LUMEN)
 
 		float plAttenuation		= 1.0f / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 		float totalAttenTerm		= lumen * plAttenuation * innerOuterAttenuation;
@@ -197,7 +197,7 @@ void RenderSpotLight(
 		resultDiffuseColor		*= totalAttenTerm;
 		resultSpecularColor		*= totalAttenTerm;
 
-		uint shadowIndex = g_inputPointLightShadowIndex[lightIndex];
+		uint shadowIndex = PointLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float3 shadowColor	= RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);
