@@ -21,17 +21,17 @@ cbuffer RPInfo : register( b5 )
 	float2	dummy;
 };
 
-SamplerState		defaultSampler		: register( s0 );
-Texture2D<float2>	preIntegrateEnvBRDFMap	: register( t29 );
+SamplerState		DefaultSampler		: register( s0 );
+Texture2D<float2>	PreIntegrateEnvBRDFMap	: register( t29 );
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 {
-	float metallic				= GetMetallic(defaultSampler, uv);
-	float roughness				= GetRoughness(defaultSampler, uv);
+	float metallic				= GetMetallic(DefaultSampler, uv);
+	float roughness				= GetRoughness(DefaultSampler, uv);
 	float specularity			= GetMaterialSpecularity();
 
-	float3 emissiveColor			= GetEmissiveColor(defaultSampler, uv);
-	float3 albedo				= GetAlbedo(defaultSampler, uv);
+	float3 emissiveColor			= GetEmissiveColor(DefaultSampler, uv);
+	float3 albedo				= GetAlbedo(DefaultSampler, uv);
 
 	LightingParams lightParams;
 
@@ -140,7 +140,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
 	float3	result	= front + back;
-	float	alpha	= GetAlpha(defaultSampler, uv);
+	float	alpha	= GetAlpha(DefaultSampler, uv);
 #else
 	float3	result	= accumulativeDiffuse + accumulativeSpecular;
 	float	alpha	= 1.0f;
@@ -153,25 +153,25 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 {
 	ApproximateIBLParam param;
 	{
-		float3 baseColor	= GetAlbedo(defaultSampler, uv);
+		float3 baseColor	= GetAlbedo(DefaultSampler, uv);
 
-		float metallic		= GetMetallic(defaultSampler, uv);
+		float metallic		= GetMetallic(DefaultSampler, uv);
 		float specularity	= GetMaterialSpecularity();
 
 		GetDiffuseSpecularColor(param.diffuseColor, param.specularColor, baseColor, specularity, metallic);
 
 		param.normal		= normal;
 		param.viewDir		= rpInfo_camWorldPos  - worldPos;
-		param.roughnes		= GetRoughness(defaultSampler, uv);
+		param.roughnes		= GetRoughness(DefaultSampler, uv);
 	}
 #if defined(RENDER_TRANSPARENCY)
-	float3 frontFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param);
+	float3 frontFaceIBL	= ApproximateIBL(PreIntegrateEnvBRDFMap, param);
 
 	param.normal 		= -normal;
-	float3 backFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param) * TRANSPARENCY_BACK_FACE_WEIGHT;
+	float3 backFaceIBL	= ApproximateIBL(PreIntegrateEnvBRDFMap, param) * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float3 result 		= frontFaceIBL + backFaceIBL;
 #else
-	float3 result		= ApproximateIBL(preIntegrateEnvBRDFMap, param);
+	float3 result		= ApproximateIBL(PreIntegrateEnvBRDFMap, param);
 #endif
 
 	return result;
