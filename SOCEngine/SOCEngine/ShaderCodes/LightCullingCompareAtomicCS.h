@@ -18,10 +18,10 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 
 	for(uint sampleIdx=0; sampleIdx<MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
-		float opaqueDepth		= g_tDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float opaqueDepth		= Depth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
 		float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
 #if defined(ENABLE_BLEND)
-		float blendedDepth		= g_tBlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
+		float blendedDepth		= BlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
 		float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
 
 		if(blendedDepth != 0.0f)
@@ -48,12 +48,12 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 #else
 void CalcDepthBound(uint2 globalIdx)
 {
-	float opaqueDepth		= g_tDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+	float opaqueDepth		= Depth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
 	float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
 	uint opaqueZ			= asuint(opaqueDepthToView);
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth		= g_tBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
+	float blendedDepth		= BlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
 	float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
 
 	uint blendedZ = asuint(blendedDepthToView);
