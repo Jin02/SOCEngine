@@ -4,8 +4,8 @@ cbuffer WVPMat : register(b0)
 	matrix worldViewProjMat;
 };
 
-TextureCube	cubeMap		: register(t0);
-SamplerState	linearSampler	: register(s0);
+TextureCube	CubeMap		: register(t0);
+SamplerState	LinearSampler	: register(s0);
 
 struct VS_INPUT
 {
@@ -30,5 +30,5 @@ VS_OUTPUT VS(VS_INPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	return cubeMap.Sample(linearSampler, input.localPos);
+	return CubeMap.Sample(LinearSampler, input.localPos);
 }
