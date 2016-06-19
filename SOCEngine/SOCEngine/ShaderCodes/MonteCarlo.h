@@ -21,7 +21,7 @@ float2 Hammersley(uint index, uint numSamples)
 	return float2(float(index) / float(numSamples), RadicalInverse_VdC(index));
 }
 
-// Unreal4 MonteCarlo.usf 참고
+// Unreal4 MonteCarlo.usf 횂체째챠
 // Used for Cone or Specular
 float4 ImportanceSampleGGX( float2 e, float roughness )
 {
@@ -44,7 +44,7 @@ float4 ImportanceSampleGGX( float2 e, float roughness )
 	return float4( dirInCartesian, PDF );
 }
 
-// Unreal4 MonteCarlo.usf 참고
+// Unreal4 MonteCarlo.usf
 // Used For diffuse
 float4 CosineSampleHemisphere( float2 e )
 {
@@ -62,7 +62,6 @@ float4 CosineSampleHemisphere( float2 e )
 	return float4( dirInCartesian, PDF );
 }
 
-// 그 곳에서 참고
 float3 TangentToWorld( float3 vec, float3 tangentZ )
 {
 	float3 upVector = abs(tangentZ.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
