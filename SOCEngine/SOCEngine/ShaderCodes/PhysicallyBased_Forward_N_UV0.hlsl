@@ -32,7 +32,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
-	float3 normal	= normalize(input.normal);
+	float3 normal = normalize(input.normal);
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
 }
 
