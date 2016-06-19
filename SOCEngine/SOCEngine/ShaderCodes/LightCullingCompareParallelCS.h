@@ -30,29 +30,29 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	uint2 idx = halfGlobalIdx * 2;
 	
 #if (MSAA_SAMPLES_COUNT > 1)
-	float depth_tl = DepthBuffer.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
-	float depth_tr = DepthBuffer.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_bl = DepthBuffer.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
-	float depth_br = DepthBuffer.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_tl = GBufferDepth.Load( uint2(idx.x,			idx.y),		depthBufferSamplerIdx ).x;
+	float depth_tr = GBufferDepth.Load( uint2(idx.x+1,			idx.y),		depthBufferSamplerIdx ).x;
+	float depth_bl = GBufferDepth.Load( uint2(idx.x,			idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_br = GBufferDepth.Load( uint2(idx.x+1,			idx.y+1),	depthBufferSamplerIdx ).x;
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth_tl = BlendedDepthBuffer.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_tr = BlendedDepthBuffer.Load( uint2(idx.x+1, 	idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_br = BlendedDepthBuffer.Load( uint2(idx.x+1, 	idx.y+1),	depthBufferSamplerIdx ).x;
-	float blendedDepth_bl = BlendedDepthBuffer.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_tl = GBufferBlendedDepth.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_tr = GBufferBlendedDepth.Load( uint2(idx.x+1, 	idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_br = GBufferBlendedDepth.Load( uint2(idx.x+1, 	idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_bl = GBufferBlendedDepth.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
 #endif
 
 #else
-	float depth_tl = DepthBuffer.Load( uint3(idx.x,		idx.y,		0) ).x;
-	float depth_tr = DepthBuffer.Load( uint3(idx.x+1,	idx.y,		0) ).x;
-	float depth_bl = DepthBuffer.Load( uint3(idx.x,		idx.y+1,	0) ).x;
-	float depth_br = DepthBuffer.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
+	float depth_tl = GBufferDepth.Load( uint3(idx.x,	idx.y,		0) ).x;
+	float depth_tr = GBufferDepth.Load( uint3(idx.x+1,	idx.y,		0) ).x;
+	float depth_bl = GBufferDepth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
+	float depth_br = GBufferDepth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth_tl = BlendedDepthBuffer.Load( uint3(idx.x,	idx.y,		0) ).x;
-	float blendedDepth_tr = BlendedDepthBuffer.Load( uint3(idx.x+1	idx.y,		0) ).x;
-	float blendedDepth_br = BlendedDepthBuffer.Load( uint3(idx.x+1, idx.y+1,	0) ).x;
-	float blendedDepth_bl = BlendedDepthBuffer.Load( uint3(idx.x,	idx.y+1,	0) ).x;
+	float blendedDepth_tl = GBufferBlendedDepth.Load( uint3(idx.x,		idx.y,		0) ).x;
+	float blendedDepth_tr = GBufferBlendedDepth.Load( uint3(idx.x+1,	idx.y,		0) ).x;
+	float blendedDepth_br = GBufferBlendedDepth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
+	float blendedDepth_bl = GBufferBlendedDepth.Load( uint3(idx.x,		idx.y+1,	0) ).x;
 #endif
 
 #endif
