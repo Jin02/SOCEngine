@@ -30,29 +30,29 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	uint2 idx = halfGlobalIdx * 2;
 	
 #if (MSAA_SAMPLES_COUNT > 1)
-	float depth_tl = g_tDepth.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_tr = g_tDepth.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
-	float depth_bl = g_tDepth.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
-	float depth_br = g_tDepth.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_tl = Depth.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_tr = Depth.Load( uint2(idx.x+1,	idx.y),		depthBufferSamplerIdx ).x;
+	float depth_bl = Depth.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float depth_br = Depth.Load( uint2(idx.x+1,	idx.y+1),	depthBufferSamplerIdx ).x;
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth_tl = g_tBlendedDepth.Load( uint2(idx.x,	idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_tr = g_tBlendedDepth.Load( uint2(idx.x+1, 	idx.y),		depthBufferSamplerIdx ).x;
-	float blendedDepth_br = g_tBlendedDepth.Load( uint2(idx.x+1, 	idx.y+1),	depthBufferSamplerIdx ).x;
-	float blendedDepth_bl = g_tBlendedDepth.Load( uint2(idx.x,	idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_tl = BlendedDepth.Load( uint2(idx.x,		idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_tr = BlendedDepth.Load( uint2(idx.x+1, 	idx.y),		depthBufferSamplerIdx ).x;
+	float blendedDepth_br = BlendedDepth.Load( uint2(idx.x+1, 	idx.y+1),	depthBufferSamplerIdx ).x;
+	float blendedDepth_bl = BlendedDepth.Load( uint2(idx.x,		idx.y+1),	depthBufferSamplerIdx ).x;
 #endif
 
 #else
-	float depth_tl = g_tDepth.Load( uint3(idx.x,	idx.y,		0) ).x;
-	float depth_tr = g_tDepth.Load( uint3(idx.x+1,	idx.y,		0) ).x;
-	float depth_bl = g_tDepth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
-	float depth_br = g_tDepth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
+	float depth_tl = Depth.Load( uint3(idx.x,	idx.y,		0) ).x;
+	float depth_tr = Depth.Load( uint3(idx.x+1,	idx.y,		0) ).x;
+	float depth_bl = Depth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
+	float depth_br = Depth.Load( uint3(idx.x+1,	idx.y+1,	0) ).x;
 
 #if defined(ENABLE_BLEND)
-	float blendedDepth_tl = g_tBlendedDepth.Load( uint3(idx.x,	idx.y,		0) ).x;
-	float blendedDepth_tr = g_tBlendedDepth.Load( uint3(idx.x+1	idx.y,		0) ).x;
-	float blendedDepth_br = g_tBlendedDepth.Load( uint3(idx.x+1, 	idx.y+1,	0) ).x;
-	float blendedDepth_bl = g_tBlendedDepth.Load( uint3(idx.x,	idx.y+1,	0) ).x;
+	float blendedDepth_tl = BlendedDepth.Load( uint3(idx.x,		idx.y,		0) ).x;
+	float blendedDepth_tr = BlendedDepth.Load( uint3(idx.x+1	idx.y,		0) ).x;
+	float blendedDepth_br = BlendedDepth.Load( uint3(idx.x+1, 	idx.y+1,	0) ).x;
+	float blendedDepth_bl = BlendedDepth.Load( uint3(idx.x	,	idx.y+1,	0) ).x;
 #endif
 
 #endif
@@ -233,9 +233,9 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	GroupMemoryBarrierWithGroupSync();
 
 	uint pointLightCount = GetNumOfPointLight();
-    for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
-    {
-		float4 center	= g_inputPointLightTransformBuffer[pointLightIdx];
+	for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
+	{
+		float4 center	= PointLightTransformBuffer[pointLightIdx];
 		float r		= center.w;
 
 		center.xyz	= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
@@ -263,7 +263,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	uint spotLightCount = GetNumOfSpotLight();
 	for(uint spotLightIdx=idxInTile; spotLightIdx<spotLightCount; spotLightIdx+=THREAD_COUNT)
 	{
-		float4 center	= g_inputSpotLightTransformBuffer[spotLightIdx];
+		float4 center	= SpotLightTransformBuffer[spotLightIdx];
 		float r		= center.w;
 
 		center.xyz	= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
