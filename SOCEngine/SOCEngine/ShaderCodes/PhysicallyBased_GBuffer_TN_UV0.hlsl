@@ -37,7 +37,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	GBuffer outGBuffer;
 
 #ifdef ENABLE_ALPHA_TEST
-	float4 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, input.uv);
+	float4 diffuseTex	= DiffuseMap.Sample(GBufferDefaultSampler, input.uv);
 	float opacityTex	= 1.0f - opacityMap.Sample(GBufferDefaultSampler, input.uv).x;
 	float alpha		= diffuseTex.a * opacityTex * GetMaterialMainColor().a;
 
@@ -45,7 +45,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
-	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
+	float4 normalTex	= NormalMap.Sample(GBufferDefaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
 	float3 normal		= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
 
