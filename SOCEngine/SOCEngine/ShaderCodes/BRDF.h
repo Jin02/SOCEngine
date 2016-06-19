@@ -92,7 +92,7 @@ float GeometryKelemen(float NdotL, float NdotV, float VdotH)
 	return NdotL * NdotV / (VdotH * VdotH);
 }
 
-// Smith¿Í µ¿ÀÛÀÌ ÀÏÄ¡ÇÏµµ·Ï Á¶Á¤ µÊ
+// Smithì™€ ë™ì‘ì´ ì¼ì¹˜í•˜ë„ë¡ ì¡°ì • ë¨
 // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
 float GeometrySchlick(float NdotL, float NdotV, float roughness)
 {
@@ -217,7 +217,7 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 
 float3 Fresnel(float3 f0, float VdotH)
 {
-	//³ª¸ÓÁö´Â ±¸ÇöÇÏ±â ±ÍÂúÀ¸´Ï ³ªÁß¿¡ »ı°¢³¯¶§ ÇÏ¸é µÉ °Í °°´Ù
+	//ë‚˜ë¨¸ì§€ëŠ” êµ¬í˜„í•˜ê¸° ê·€ì°®ìœ¼ë‹ˆ ë‚˜ì¤‘ì— ìƒê°ë‚ ë•Œ í•˜ë©´ ë  ê²ƒ ê°™ë‹¤
 	return FresnelSchlick(f0, VdotH); //Default
 }
 
@@ -238,11 +238,11 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 {
 	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
 
-	float NdotL			= saturate( dot(lightingParams.normal,	commonParamas.lightDir) );
-	float NdotH			= saturate( dot(lightingParams.normal,	halfVector) );
-	float NdotV			= saturate( dot(lightingParams.normal,	lightingParams.viewDir) );
-	float VdotH			= saturate( dot(lightingParams.viewDir,	halfVector) );
-	float VdotL			= saturate( dot(lightingParams.viewDir,	commonParamas.lightDir) );
+	float NdotL		= saturate( dot(lightingParams.normal,	commonParamas.lightDir) );
+	float NdotH		= saturate( dot(lightingParams.normal,	halfVector) );
+	float NdotV		= saturate( dot(lightingParams.normal,	lightingParams.viewDir) );
+	float VdotH		= saturate( dot(lightingParams.viewDir,	halfVector) );
+	float VdotL		= saturate( dot(lightingParams.viewDir,	commonParamas.lightDir) );
 
 	float3 fresnel0		= float3(0.05f, 0.05f, 0.05f); //float3(0.05f, 0.05f, 0.05f);
 	float roughness		= lightingParams.roughness; //0.6f
@@ -258,8 +258,8 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 }
 #endif
 
-// Unreal4ÀÇ ReflectionEnvironmentShared.usf¿¡ ÀÖ´Â
-// ComputeReflectionCaptureMipFromRoughness ÀÌ°ÅÀÓ. ±×¸®°í, ¾à°£ ¼öÁ¤ÇÔ
+// Unreal4ì˜ ReflectionEnvironmentShared.usfì— ìˆëŠ”
+// ComputeReflectionCaptureMipFromRoughness ì´ê±°ì„. ê·¸ë¦¬ê³ , ì•½ê°„ ìˆ˜ì •í•¨
 float ComputeRoughnessLOD(float roughness, uint mipCount)
 {
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
@@ -271,8 +271,8 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
 {
 	float3 V = float3(	sqrt(1.0f - NoV * NoV), // sin
-						0.0f,
-						NoV	);					// cos
+				0.0f,
+				NoV	);		// cos
 	float A = 0;
 	float B = 0;
 
