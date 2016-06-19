@@ -20,52 +20,52 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
 
-	float3 viewDir = normalize( tbrParam_cameraWorldPosition - surface.worldPos );
+	float3 viewDir			= normalize( tbrParam_cameraWorldPosition - surface.worldPos );
 
 	LightingParams lightParams;
-	lightParams.viewDir			= viewDir;
-	lightParams.normal			= surface.normal;
+	lightParams.viewDir		= viewDir;
+	lightParams.normal		= surface.normal;
 	lightParams.roughness		= surface.roughness;
 	lightParams.diffuseColor	= surface.albedo;
 	lightParams.specularColor	= surface.specular;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
-	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
+	float3 localDiffuse		= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
 	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
 	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
-		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
+		lightParams.lightIndex	= s_lightIdx[pointLightIdx];
 
 		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
+		accumulativeDiffuse	+= localDiffuse;
+		accumulativeSpecular	+= localSpecular;
 	}
 
 	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
-		lightParams.lightIndex = s_lightIdx[spotLightIdx];
+		lightParams.lightIndex	= s_lightIdx[spotLightIdx];
 
 		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
+		accumulativeDiffuse	+= localDiffuse;
+		accumulativeSpecular	+= localSpecular;
 	}
 
 	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
 	uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
 	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
 	{
-		lightParams.lightIndex = directionalLightIdx;
+		lightParams.lightIndex	= directionalLightIdx;
 
 		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
+		accumulativeDiffuse	+= localDiffuse;
+		accumulativeSpecular	+= localSpecular;
 	}
 
 	float3 result = saturate(accumulativeDiffuse + accumulativeSpecular);
@@ -90,14 +90,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	if(idxInTile == 0)
 	{
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-		s_edgePixelCounter = 0;
+		s_edgePixelCounter	= 0;
 #endif
 #if defined(DEBUG_MODE)
-		isRenderDL = false;
+		isRenderDL		= false;
 #endif
 		s_lightIndexCounter	= 0;
-		s_minZ = 0x7f7fffff; //float max as uint
-		s_maxZ = 0;
+		s_minZ			= 0x7f7fffff; //float max as uint
+		s_maxZ			= 0;
 	}
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
@@ -110,18 +110,18 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	float3 viewDir				= normalize( tbrParam_cameraWorldPosition - surface.worldPos );
+	float3 viewDir			= normalize( tbrParam_cameraWorldPosition - surface.worldPos );
 
 	LightingParams lightParams;
-	lightParams.viewDir			= viewDir;
-	lightParams.normal			= surface.normal;
+	lightParams.viewDir		= viewDir;
+	lightParams.normal		= surface.normal;
 	lightParams.roughness		= surface.roughness;
 	lightParams.diffuseColor	= surface.albedo;
 	lightParams.specularColor	= surface.specular;
 
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
-	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
+	float3 localDiffuse		= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
 	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
@@ -131,18 +131,18 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
+		accumulativeDiffuse		+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
 	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
-		lightParams.lightIndex = s_lightIdx[spotLightIdx];
+		lightParams.lightIndex		= s_lightIdx[spotLightIdx];
 
 		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
+		accumulativeDiffuse		+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
@@ -154,7 +154,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
 
-		accumulativeDiffuse			+= localDiffuse;
+		accumulativeDiffuse		+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 
 #if defined(DEBUG_MODE)
@@ -162,13 +162,13 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #endif
 	}
 
-	float3	result = saturate(accumulativeDiffuse + accumulativeSpecular);
-	result += surface.emission.rgb;
+	float3 result	= saturate(accumulativeDiffuse + accumulativeSpecular);
+	result		+= surface.emission.rgb;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
-	uint2 scale_2_idx = globalIdx.xy * 2;
-	g_tOutScreen[scale_2_idx] = float4(result, 1.0f);
+	uint2 scale_2_idx		= globalIdx.xy * 2;
+	g_tOutScreen[scale_2_idx]	= float4(result, 1.0f);
 
 	float3 sampleNormal = float3(0.0f, 0.0f, 0.0f);
 	for(uint sampleIdx = 1; sampleIdx < MSAA_SAMPLES_COUNT; ++sampleIdx)
@@ -195,16 +195,16 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	GroupMemoryBarrierWithGroupSync();
 
-	uint edgePixelIdx			= 0;
-		 sampleIdx				= 0;
+	uint edgePixelIdx		= 0;
+	sampleIdx			= 0;
 	uint2 scale_sample_coord	= uint2(0, 0);
-	float4 lightResult			= float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 lightResult		= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	uint sample_mul_LightCount = (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
 	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
 	{
-		edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
-		sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1부터 시작
+		edgePixelIdx	= i / (MSAA_SAMPLES_COUNT - 1);
+		sampleIdx	= (i % (MSAA_SAMPLES_COUNT - 1)) + 1;
 
 		uint packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
 
