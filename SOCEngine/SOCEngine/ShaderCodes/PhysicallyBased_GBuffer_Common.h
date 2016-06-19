@@ -10,16 +10,16 @@
 struct GBuffer
 {
 	float4 albedo_occlusion			: SV_Target0;
-	float4 motionXY_height_metallic	: SV_Target1;
+	float4 motionXY_height_metallic		: SV_Target1;
 	float4 normal_roughness 		: SV_Target2;
 	float4 emission_specularity		: SV_Target3;
 };
 
-SamplerState GBufferDefaultSampler 	: register( s0 );
+SamplerState GBufferDefaultSampler 		: register( s0 );
 
 
 void MakeGBuffer(float3 worldNormal, float2 uv,
-				 out float4 albedo_occlusion, out float4 motionXY_height_metallic, out float4 normal_roughness, out float4 emission_specularity)
+		 out float4 albedo_occlusion, out float4 motionXY_height_metallic, out float4 normal_roughness, out float4 emission_specularity)
 {
 	float3 albedo = float3(0.0f, 0.0f, 0.0f);
 	{
@@ -39,11 +39,11 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 		roughness = lerp(matRoughness, roughnessTex, HasRoughnessMap());
 	}
 
-	float specularity = GetMaterialSpecularity();
-	float3 emissiveColor = float3(0.0f, 0.0f, 0.0f);
+	float specularity	= GetMaterialSpecularity();
+	float3 emissiveColor	= float3(0.0f, 0.0f, 0.0f);
 	{
 		float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
-		float3 emissiveTex		= emissionMap.Sample(GBufferDefaultSampler, uv).rgb;
+		float3 emissiveTex	= emissionMap.Sample(GBufferDefaultSampler, uv).rgb;
 
 		emissiveColor = lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
 	}
@@ -64,12 +64,12 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 	}
 
 	albedo_occlusion.rgb		= albedo;
-	albedo_occlusion.a			= occlusion;
+	albedo_occlusion.a		= occlusion;
 	motionXY_height_metallic.rg	= motion;
 	motionXY_height_metallic.b	= height;
 	motionXY_height_metallic.a	= metallic;
 	normal_roughness.rgb		= normal;
-	normal_roughness.a			= roughness;
+	normal_roughness.a		= roughness;
 	emission_specularity.rgb	= emissiveColor;
 	emission_specularity.a		= specularity;
 }
