@@ -5,7 +5,7 @@ struct VS_INPUT
 	float3 position				: POSITION;
 	float3 normal				: NORMAL;
 	float3 tangent				: TANGENT;
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 };
 
 struct GS_REFLECTION_PROBE_INPUT
@@ -14,7 +14,7 @@ struct GS_REFLECTION_PROBE_INPUT
 	float3 worldPos				: WORLD_POSITION;
 	float3 normal 				: NORMAL;
 	float3 tangent				: TANGENT;
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 };
 
 GS_REFLECTION_PROBE_INPUT VS(VS_INPUT input)
@@ -26,7 +26,7 @@ GS_REFLECTION_PROBE_INPUT VS(VS_INPUT input)
 
 	output.normal	= mul(input.normal, (float3x3)transform_worldInvTranspose);
 	output.tangent	= mul(input.tangent, (float3x3)transform_worldInvTranspose);
-	output.uv		= input.uv;
+	output.uv	= input.uv;
 
 	return output;
 }
@@ -39,7 +39,7 @@ struct PS_REFLECTION_PROBE_INPUT
 	float3 worldPos				: WORLD_POS;
 	float3 normal 				: NORMAL;
 	float3 tangent				: TANGENT;
-	float2 uv					: TEXCOORD0;
+	float2 uv				: TEXCOORD0;
 
 	uint rtIndex				: SV_RenderTargetArrayIndex;
 };
@@ -61,7 +61,7 @@ void GS(triangle GS_REFLECTION_PROBE_INPUT input[3], inout TriangleStream<PS_REF
 
 			output.normal	= input[i].normal;
 			output.tangent	= input[i].tangent;
-			output.uv		= input[i].uv;
+			output.uv	= input[i].uv;
 
 			stream.Append(output);
 		}
@@ -71,8 +71,8 @@ void GS(triangle GS_REFLECTION_PROBE_INPUT input[3], inout TriangleStream<PS_REF
 
 float4 PS(GS_REFLECTION_PROBE_INPUT input) : SV_TARGET
 {
-	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float4 normalMapXYZ	= normalMap.Sample(defaultSampler, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalMapXYZ.rgb, input.normal, input.tangent, input.uv);
 	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
 
 	return ReflectionProbeLighting(normal, input.worldPos, input.uv);
