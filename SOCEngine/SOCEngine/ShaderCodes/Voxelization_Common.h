@@ -130,16 +130,16 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 	for(uint dlShadowIdx=0; dlShadowIdx<dlShadowCount; ++dlShadowIdx)
 	{
 		ParsedShadowParam shadowParam;
-		ParseShadowParam(shadowParam, g_inputDirectionalLightShadowParams[dlShadowIdx]);
+		ParseShadowParam(shadowParam, directionalLightShadowParams[dlShadowIdx]);
 		uint lightIndex			= shadowParam.lightIndex;
 
-		float4 lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
-		float2 lightParam		= g_inputDirectionalLightParamBuffer[lightIndex];
+		float4 lightCenterWithDirZ	= directionalLightTransformWithDirZBuffer[lightIndex];
+		float2 lightParam		= directionalLightParamBuffer[lightIndex];
 		float3 lightDir			= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-		float3 lightColor		= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
+		float3 lightColor		= directionalLightColorBuffer[lightIndex].rgb;
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
-		float intensity			= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float intensity			= directionalLightColorBuffer[lightIndex].a * 10.0f;
 
 		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, worldPos);
 		radiosity += GetMaterialEmissiveColor().rgb;
