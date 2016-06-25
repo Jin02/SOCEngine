@@ -2,21 +2,7 @@
 // #16_0 기반으로 작업 중..
 
 #include "TBDRInput.h"
-
-cbuffer SSLR : register(b?)
-{
-	float	sslr_thickness;
-	float	sslr_maxStep;
-	float	sslr_maxDistance;
-	float	sslr_strideZCutoff;
-
-	float	sslr_maxMipLevel;
-	float	sslr_fadeStart;
-	float	sslr_fadeEnd;
-	
-//	float	sslr_dummy;
-	float	sslr_padding;
-};
+#include "RayTracing.h"
 
 #define MAX_SPECULAR_EXP 64
 
