@@ -107,7 +107,7 @@ float2 GetViewportSize()
 					tbrParam_packedViewportSize & 0x0000ffff	);
 }
 
-// b1, b2, b3Àº PhysicallyBased_Common¿¡ ÀÖÀ½
+// b1, b2, b3Ã€Âº PhysicallyBased_CommonÂ¿Â¡ Ã€Ã–Ã€Â½
 
 cbuffer ShadowGlobalParam : register( b4 )
 {	
@@ -117,6 +117,31 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint	shadowGlobalParam_dummy;
 };
 
-// b5, b6, b7 Àº GI °ü·Ã
+// b5, b6, b7 Ã€Âº GI Â°Ã¼Â·Ãƒ
+
+float4 ProjToView( float4 p )
+{
+    p = mul( p, tbrParam_invProjMat );
+    p /= p.w;
+    return p;
+}
+
+float InvertProjDepthToView(float depth)
+{
+	/*
+	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
+	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
+		
+	if you dont understand, calculate inverse projection matrix.
+	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
+	*/
+
+	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
+}
+
+float LinearizeDepth(float depth)
+{
+	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
+}
 
 #endif
