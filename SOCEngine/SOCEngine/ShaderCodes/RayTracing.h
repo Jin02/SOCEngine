@@ -6,15 +6,12 @@ cbuffer ScreenSpaceRayTracing : register(b?)
 	matrix	ssrt_viewToTextureSpace;
 	
 	float	ssrt_thickness;
-	float	ssrt_maxStep;
+	uint	ssrt_maxStepCount;
 	float	ssrt_maxDistance;
 	float	ssrt_strideZCutoff;	
 
 	float	ssrt_maxMipLevel;
-	float	ssrt_fadeStart;
-	float	ssrt_fadeEnd;
 	float	ssrt_padding;
-	
 	float	ssrt_stride;
 };
 
@@ -31,28 +28,10 @@ bool IntersectDepth(float z, float minZ, float maxZ)
 {
 	// thickness를 통해 약간의 artifact를 수정 가능
 	// 그렇다고 너무 올리면 더 잘 안돌아가고..
-    float scale = min(1.0f, z * ssrt_strideZCutoff);
-    z += ssrt_thickness + lerp(0.0f, 2.0f, scale);
+	float scale = min(1.0f, z * ssrt_strideZCutoff);
+	z += ssrt_thickness + lerp(0.0f, 2.0f, scale);
     
     return (maxZ >= z) && (minZ - ssrt_thickness <= z);
-}
-
-float InvertProjDepthToView(float depth)
-{
-	/*
-	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
-	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
-		
-	if you dont understand, calculate inverse projection matrix.
-	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
-	*/
-
-	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
-}
-
-float LinearizeDepth(float depth)
-{
-	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
 }
 
 float FetchLinerDepthFromGBuffer(int2 screenPos)
@@ -61,8 +40,8 @@ float FetchLinerDepthFromGBuffer(int2 screenPos)
 	return LinearizeDepth(depth);
 }
 
-bool TraceScreenSpaceRay(	out float2 hitScreenPos, out float3 hitPos,
-				float3 rayOrigin, float3 rayDir, float jitter	)
+bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
+							float3 rayOrigin, float3 rayDir, float jitter	)
 {
 	float rayLength		= ((rayOrigin.z + rayDir.z * ssrt_maxDistance) < tbrParam_cameraNear) ?
 			   	   (tbrParam_cameraNear - rayOrigin.z) / rayDir.z : ssrt_maxDistance;
@@ -80,31 +59,27 @@ bool TraceScreenSpaceRay(	out float2 hitScreenPos, out float3 hitPos,
 	h1.xy		*= viewportSize;
 	float k1	= 1.0f / h1.w;
 	
-	
-	// 
 	float3 q0	= rayOrigin * k0;
 	float3 q1	= rayEndPos * k1;
 	
-	// p0, p1 = screen space end points
 	float2 p0	= h0.xy * k0;
-
 	float2 p1	= h1.xy * k1;
 	// line이 생성되지 않았다면, 픽셀하나 정도만 되도록 수정
 	p1		+= (Distance_2(p0, p1) < 0.001f) ? float2(0.01f, 0.01f) : 0.0f;
 
+
 	float2 delta = p1 - p0;
-	
 	bool permute = false;
 	if(abs(delta.x) < abs(delta.y))
 	{
 		delta	= delta.yx;
-		p0	= p0.yx;
-		p1	= p1.yx;
+		p0		= p0.yx;
+		p1		= p1.yx;
 		
 		permute	= true;
 	}
 
-	float stepDir		= sign(delta.x);
+	float stepDir	= sign(delta.x);
 	float invdx		= stepDir / delta.x;
 	
 	float3 dq		= (q1 - q0) * invdx;
@@ -126,16 +101,20 @@ bool TraceScreenSpaceRay(	out float2 hitScreenPos, out float3 hitPos,
 	float4 dpqk	= float4(dp, dq.z, dk);
 	float3 q	= q0;
 	
-	float end	= p1.x * stepDir;
+	float end		= p1.x * stepDir;
 	float prevMaxZ	= rayOrigin.z;
 	float rayMinZ	= prevMaxZ;
 	float rayMaxZ	= prevMaxZ;
 	float sceneMaxZ	= rayMaxZ + 100.0f;
-	float stepCount	= 0.0f;
-	for(;	((pqk.x * stepDir) <= end) && (stepCount < ssrt_maxSteps) &&
+	uint stepCount	= 0u;
+	for(;
+
+		((pqk.x * stepDir) <= end) &&
+		(stepCount < ssrt_maxStepCount) &&
 		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &&
 		(sceneMaxZ != 0.0f);
-		stepCount += 1.0f	)
+
+		++stepCount)
 		{
 			rayMinZ 	= prevMaxZ;
 			rayMaxZ		= (dpqk.z * 0.5f + pqk.z) / (dpqk.w * 0.5f, + pqk.w);
@@ -144,13 +123,13 @@ bool TraceScreenSpaceRay(	out float2 hitScreenPos, out float3 hitPos,
 			if(rayMinZ > rayMaxZ)
 				swap(rayMinZ, rayMaxZ);
 			
-			outHitScreenPos = permute ? pqk.yx : pqk.xy;
-			sceneMaxZ	= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
+			outHitScreenPos	= permute ? pqk.yx : pqk.xy;
+			sceneMaxZ		= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
 			
 			pqk += dpqk;
 		}
 
-	q.xy		+= dq.xy * stepCount;
+	q.xy		+= dq.xy * float(stepCount);
 	outHitPos	= q * (1.0f / pqk.w);
 	
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
