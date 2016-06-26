@@ -3,6 +3,8 @@
 
 cbuffer ScreenSpaceRayTracing : register(b?)
 {
+	matrix	ssrt_viewToTextureSpace;
+	
 	float	ssrt_thickness;
 	float	ssrt_maxStep;
 	float	ssrt_maxDistance;
@@ -11,9 +13,9 @@ cbuffer ScreenSpaceRayTracing : register(b?)
 	float	ssrt_maxMipLevel;
 	float	ssrt_fadeStart;
 	float	ssrt_fadeEnd;
-	
-//	float	ssrt_dummy;
 	float	ssrt_padding;
+	
+	float	ssrt_stride;
 };
 
 void Swap(inout float a, inout float b)	{	float t = a;	a = b;    b = t;	}
@@ -35,11 +37,6 @@ bool IntersectDepth(float z, float minZ, float maxZ)
     return (maxZ >= z) && (minZ - ssrt_thickness <= z);
 }
 
-// LightCullingCommonCS.h에 있던 함수 그대로 긁어옴.
-// 라이트 컬링 파일을 수정해서, 좀 여기서도 자유롭게 쓸 수 있도록 수정해야함.
-// TBDRInput에 넣든가, 뭐 그건 알아서 하면 된다고 생각
-
-// 특히, 이 프로젝트는 다른 방식과 같은 LinearDepth를 작성하지 않기에, 이 방식을 꼭 사용해야 함
 float InvertProjDepthToView(float depth)
 {
 	/*
@@ -58,3 +55,103 @@ float LinearizeDepth(float depth)
 	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
 }
 
+float FetchLinerDepthFromGBuffer(int2 screenPos)
+{
+	float depth = GBufferDepth.Load(int3(screenPos, 0).r;
+	return LinearizeDepth(depth);
+}
+
+bool TraceScreenSpaceRay(	out float2 hitScreenPos, out float3 hitPos,
+				float3 rayOrigin, float3 rayDir, float jitter	)
+{
+	float rayLength		= ((rayOrigin.z + rayDir.z * ssrt_maxDistance) < tbrParam_cameraNear) ?
+			   	   (tbrParam_cameraNear - rayOrigin.z) / rayDir.z : ssrt_maxDistance;
+	float3 rayEndPos	= rayOrigin + rayDir * rayLength;
+	
+	float2 viewportSize	= GetViewportSize();
+
+
+	// homogeneous 공간으로 투영
+	float4 h0	= mul( float4(rayOrigin, 1.0f), ssrt_viewToTextureSpace );
+	h0.xy		*= viewportSize;
+	float k0	= 1.0f / h0.w;
+	
+	float4 h1	= mul( float4(rayEndPos, 1.0f), ssrt_viewToTextureSpace );
+	h1.xy		*= viewportSize;
+	float k1	= 1.0f / h1.w;
+	
+	
+	// 
+	float3 q0	= rayOrigin * k0;
+	float3 q1	= rayEndPos * k1;
+	
+	// p0, p1 = screen space end points
+	float2 p0	= h0.xy * k0;
+
+	float2 p1	= h1.xy * k1;
+	// line이 생성되지 않았다면, 픽셀하나 정도만 되도록 수정
+	p1		+= (Distance_2(p0, p1) < 0.001f) ? float2(0.01f, 0.01f) : 0.0f;
+
+	float2 delta = p1 - p0;
+	
+	bool permute = false;
+	if(abs(delta.x) < abs(delta.y))
+	{
+		delta	= delta.yx;
+		p0	= p0.yx;
+		p1	= p1.yx;
+		
+		permute	= true;
+	}
+
+	float stepDir		= sign(delta.x);
+	float invdx		= stepDir / delta.x;
+	
+	float3 dq		= (q1 - q0) * invdx;
+	float  dk		= (k1 - k0) * invdx;
+	float2 dp		= float2(stepDir, delta.y * invdx);
+	
+	float strideScale	= 1.0f - min(1.0f, rayOrigin.z * ssrt_strideZCutoff);
+	float stride		= 1.0f + strideScale * ssrt_stride;
+	
+	dq		*= stride;
+	dk		*= stride;
+	dp		*= stride;
+	
+	p0		+= dp * jitter;
+	q0		+= dq * jitter;
+	k0		+= dk * jitter;
+	
+	float4 pqk	= float4(p0, q0.z, k0);
+	float4 dpqk	= float4(dp, dq.z, dk);
+	float3 q	= q0;
+	
+	float end	= p1.x * stepDir;
+	float prevMaxZ	= rayOrigin.z;
+	float rayMinZ	= prevMaxZ;
+	float rayMaxZ	= prevMaxZ;
+	float sceneMaxZ	= rayMaxZ + 100.0f;
+	float stepCount	= 0.0f;
+	for(;	((pqk.x * stepDir) <= end) && (stepCount < ssrt_maxSteps) &&
+		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &&
+		(sceneMaxZ != 0.0f);
+		stepCount += 1.0f	)
+		{
+			rayMinZ 	= prevMaxZ;
+			rayMaxZ		= (dpqk.z * 0.5f + pqk.z) / (dpqk.w * 0.5f, + pqk.w);
+			prevMaxZ	= rayMaxZ;
+			
+			if(rayMinZ > rayMaxZ)
+				swap(rayMinZ, rayMaxZ);
+			
+			outHitScreenPos = permute ? pqk.yx : pqk.xy;
+			sceneMaxZ	= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
+			
+			pqk += dpqk;
+		}
+
+	q.xy		+= dq.xy * stepCount;
+	outHitPos	= q * (1.0f / pqk.w);
+	
+	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
+}
