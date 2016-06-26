@@ -1,18 +1,22 @@
 //EMPTY_META_DATA
 // #16_0 기반으로 작업 중..
 
-cbuffer ScreenSpaceRayTracing : register(b?)
+cbuffer ScreenSpaceRayTracing_ViewToTexSpace	: register(b?)
 {
 	matrix	ssrt_viewToTextureSpace;
-	
-	float	ssrt_thickness;
-	uint	ssrt_maxStepCount;
-	float	ssrt_maxDistance;
-	float	ssrt_strideZCutoff;	
+}
 
-	float	ssrt_maxMipLevel;
-	float	ssrt_padding;
+cbuffer ScreenSpaceRayTracing			: register(b?)
+{
+	float	ssrt_thickness;
+	float	ssrt_maxDistance;
+	float	ssrt_strideZCutoff;
 	float	ssrt_stride;
+
+	float	ssrt_maxStepCount;
+	float	ssrt_maxMipLevel;	// use for SSLR
+	float	ssrt_fadeStart;		// use for SSLR
+	float	ssrt_fadeEnd;		// use for SSLR
 };
 
 void Swap(inout float a, inout float b)	{	float t = a;	a = b;    b = t;	}
@@ -73,13 +77,13 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	if(abs(delta.x) < abs(delta.y))
 	{
 		delta	= delta.yx;
-		p0		= p0.yx;
-		p1		= p1.yx;
+		p0	= p0.yx;
+		p1	= p1.yx;
 		
 		permute	= true;
 	}
 
-	float stepDir	= sign(delta.x);
+	float stepDir		= sign(delta.x);
 	float invdx		= stepDir / delta.x;
 	
 	float3 dq		= (q1 - q0) * invdx;
@@ -101,12 +105,13 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	float4 dpqk	= float4(dp, dq.z, dk);
 	float3 q	= q0;
 	
-	float end		= p1.x * stepDir;
+	float end	= p1.x * stepDir;
 	float prevMaxZ	= rayOrigin.z;
 	float rayMinZ	= prevMaxZ;
 	float rayMaxZ	= prevMaxZ;
 	float sceneMaxZ	= rayMaxZ + 100.0f;
-	uint stepCount	= 0u;
+	float stepCount	= 0.0f;
+	
 	for(;
 
 		((pqk.x * stepDir) <= end) &&
@@ -114,7 +119,7 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &&
 		(sceneMaxZ != 0.0f);
 
-		++stepCount)
+		stepCount += 1.0f)
 		{
 			rayMinZ 	= prevMaxZ;
 			rayMaxZ		= (dpqk.z * 0.5f + pqk.z) / (dpqk.w * 0.5f, + pqk.w);
@@ -124,7 +129,7 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 				swap(rayMinZ, rayMaxZ);
 			
 			outHitScreenPos	= permute ? pqk.yx : pqk.xy;
-			sceneMaxZ		= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
+			sceneMaxZ	= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
 			
 			pqk += dpqk;
 		}
