@@ -3,11 +3,19 @@
 #ifndef __SOC_FULL_SCREEN_H__
 #define __SOC_FULL_SCREEN_H__
 
+#ifdef USE_VIEW_INFORMATION
+#include "TBDRInput.h"
+#endif
+
 struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
 	float2 uv				: TEXCOORD0;
+
+#ifdef USE_VIEW_INFORMATION
+	float3 viewPosition			: VIEW_POSITION;
 	float3 viewRay				: VIEW_RAY;
+#endif
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 	uint sampleIdx				: SV_SAMPLEINDEX;
@@ -26,8 +34,14 @@ PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 	ps.uv.x = (float)(id / 2) * 2.0f;
 	ps.uv.y = 1.0f - (float)(id % 2) * 2.0f;
 	
-	float3 viewRay	= normalize(mul(ps.position, ???_inv_view_notInvertedProj).xyz);
-	ps.viewRay	= viewRay;
+	
+#ifdef USE_VIEW_INFORMATION
+	float4	viewSpacePosition	= mul(ps.position, tbrParam_invProjMat);
+	ps.viewPosition			= viewSpacePosition.xyz;
+
+	float4	worldSpaceViewRay	= mul(ps.position, tbrParam_invViewProjMat);
+	ps.viewRay			= worldSpaceViewRay.xyz / worldSpaceViewRay.w;
+#endif
 
 	return ps;
 }
