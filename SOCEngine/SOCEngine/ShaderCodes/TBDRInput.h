@@ -89,6 +89,7 @@ cbuffer TBRParam : register( b0 )
 {
 	matrix	tbrParam_viewMat;
 	matrix 	tbrParam_invProjMat;
+	matrix	tbrParam_invViewProjMat;
 	matrix	tbrParam_invViewProjViewportMat;
 
 	uint	tbrParam_packedViewportSize;
