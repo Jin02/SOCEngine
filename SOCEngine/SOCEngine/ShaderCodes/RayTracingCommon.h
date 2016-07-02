@@ -38,7 +38,7 @@ bool IntersectDepth(float z, float minZ, float maxZ)
     return (maxZ >= z) && (minZ - ssrt_thickness <= z);
 }
 
-float FetchLinerDepthFromGBuffer(int2 screenPos)
+float FetchLinearDepthFromGBuffer(int2 screenPos)
 {
 	float depth = GBufferDepth.Load(int3(screenPos, 0).r;
 	return LinearizeDepth(depth);
@@ -129,7 +129,7 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 				swap(rayMinZ, rayMaxZ);
 			
 			outHitScreenPos	= permute ? pqk.yx : pqk.xy;
-			sceneMaxZ	= FetchLinerDepthFromGBuffer( int2(outHitScreenPos) );
+			sceneMaxZ	= FetchLinearDepthFromGBuffer( int2(outHitScreenPos) );
 			
 			pqk += dpqk;
 		}
