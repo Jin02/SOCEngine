@@ -5,7 +5,7 @@
 #include "FullScreenShader.h"
 #include "RayTracingCommon.h"
 
-float4 SSRT_InPS(PS_INPUT input) : SV_Target
+float4 SSRT_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
     int3 screenPos = int3(input.position.xy, 0);
 
