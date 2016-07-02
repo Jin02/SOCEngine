@@ -1,6 +1,9 @@
 //EMPTY_META_DATA
 // #16_0 기반으로 작업 중..
 
+#ifndef __RAY_TRACING_COMMON_H__
+#define __RAY_TRACING_COMMON_H__
+
 cbuffer ScreenSpaceRayTracing_ViewToTexSpace	: register(b?)
 {
 	matrix	ssrt_viewToTextureSpace;
@@ -139,3 +142,5 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
 }
+
+#endif
