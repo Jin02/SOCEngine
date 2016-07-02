@@ -40,7 +40,7 @@ PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 	ps.viewPosition			= viewSpacePosition.xyz;
 
 	float4	worldSpaceViewRay	= mul(ps.position, tbrParam_invViewProjMat);
-	ps.viewRay			= worldSpaceViewRay.xyz / worldSpaceViewRay.w;
+	ps.viewRay			= normalize(worldSpaceViewRay.xyz / worldSpaceViewRay.w);
 #endif
 
 	return ps;
