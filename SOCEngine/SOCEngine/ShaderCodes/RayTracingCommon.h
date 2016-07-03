@@ -143,4 +143,19 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
 }
 
+float3 ComputeViewNormalFromGBuffer(int2 screenPos, uint sampleIdx)
+{
+#if (MSAA_SAMPLES_COUNT > 1) //MSAA
+    float3 worldNormal = GBufferNormal_roughness.Load( screenPos, sampleIdx ).xyz;
+#else
+    float3 worldNormal = GBufferNormal_roughness.Load( int3(screenPos, 0) ).xyz;
+#endif
+    
+    worldNormal *= 2.0f;
+    worldNormal -= float3(1.0f, 1.0f, 1.0f);
+    
+    float3 viewNormal = mul(float4(worldNormal, 0.0f), tbrParam_viewMat).xyz;
+    return normalize( viewNormal );
+}
+
 #endif
