@@ -9,8 +9,8 @@ RWTexture2D<float2> OutMap : register( u0 );
 
 [numthreads(PRE_INTEGRATE_TILE_RES, PRE_INTEGRATE_TILE_RES, 1)]
 void CS(uint3 globalIdx : SV_DispatchThreadID, 
-		uint3 localIdx	: SV_GroupThreadID,
-		uint3 groupIdx	: SV_GroupID)
+	uint3 localIdx	: SV_GroupThreadID,
+	uint3 groupIdx	: SV_GroupID)
 {
 	uint2 size;
 	OutMap.GetDimensions(size.x, size.y);

@@ -3,14 +3,14 @@
 struct GS_ALPHA_TEST_DIFFUSE_INPUT //used in writing depth buffer
 {
 	float4 worldPos : WORLD_POS;
-	float2 uv		: TEXCOORD0;
+	float2 uv	: TEXCOORD0;
 };
 
 GS_ALPHA_TEST_DIFFUSE_INPUT OnlyAlpaTestWithDiffuseVS(VS_INPUT input)
 {
 	GS_ALPHA_TEST_DIFFUSE_INPUT output;
 	output.worldPos = mul(float4(input.position, 1.0f), transform_world);
-	output.uv		= input.uv;
+	output.uv	= input.uv;
 
 	return output;
 }
@@ -18,7 +18,7 @@ GS_ALPHA_TEST_DIFFUSE_INPUT OnlyAlpaTestWithDiffuseVS(VS_INPUT input)
 struct PS_ALPHA_TEST_DIFFUSE_INPUT
 {
 	float4 position : SV_POSITION;
-	float2 uv		: TEXCOORD0;
+	float2 uv	: TEXCOORD0;
 
 	uint rtIndex	: SV_RenderTargetArrayIndex;
 };
@@ -34,7 +34,7 @@ void OnlyAlpaTestWithDiffuseGS(triangle GS_ALPHA_TEST_DIFFUSE_INPUT input[3], in
 		for(uint i=0; i<3; ++i)
 		{
 			output.position	= mul(input[i].worldPos, rpInfo_viewProjs[faceIdx]);
-			output.uv		= input[i].uv;
+			output.uv	= input[i].uv;
 
 			stream.Append(output);
 		}
@@ -44,10 +44,10 @@ void OnlyAlpaTestWithDiffuseGS(triangle GS_ALPHA_TEST_DIFFUSE_INPUT input[3], in
 
 float4 OnlyAlpaTestWithDiffusePS( PS_ALPHA_TEST_DIFFUSE_INPUT input ) : SV_TARGET
 { 
-	float alpha = GetAlpha(defaultSampler, input.uv);
+	float alpha = GetAlpha(DefaultSampler, input.uv);
 
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 
-	return float4(GetAlbedo(defaultSampler, input.uv), alpha);
+	return float4(GetAlbedo(DefaultSampler, input.uv), alpha);
 }

@@ -7,7 +7,7 @@
 #include "TBDRInput.h"
 
 #define EDGE_DETECTION_COMPARE_DISTANCE			10.0f
-#define TILE_RES_HALF							(LIGHT_CULLING_TILE_RES / 2)
+#define TILE_RES_HALF					(LIGHT_CULLING_TILE_RES / 2)
 
 #if defined(USE_COMPUTE_SHADER)
 
@@ -29,8 +29,8 @@ uint GetNumTilesY()
 float4 CreatePlaneNormal( float4 b, float4 c )
 {
     float4 n;
-    //b.xyz - a.xyz, c.xyz - a.xyzÀÌ´Ù.
-    //¿©±â¼­, a´Â ¿øÁ¡ÀÌ´Ù. Áï, ab´Â ¿øÁ¡¿¡¼­ ÇØ´ç Å¸ÀÏÀÇ ²ÀÁşÁ¡±îÁö ¶³¾îÁø ¹æÇâÀ» ¶æÇÑ´Ù.
+    //b.xyz - a.xyz, c.xyz - a.xyzì´ë‹¤.
+    //ì—¬ê¸°ì„œ, aëŠ” ì›ì ì´ë‹¤. ì¦‰, abëŠ” ì›ì ì—ì„œ í•´ë‹¹ íƒ€ì¼ì˜ ê¼­ì§“ì ê¹Œì§€ ë–¨ì–´ì§„ ë°©í–¥ì„ ëœ»í•œë‹¤.
     n.xyz = normalize(cross( b.xyz, c.xyz ));
     n.w = 0;
 
@@ -39,28 +39,8 @@ float4 CreatePlaneNormal( float4 b, float4 c )
 
 bool InFrustum( float4 p, float4 frusutmNormal, float r )
 {
-	//¿©±â¼­ µÚ¿¡ + frusutmNormal.w ÇØ¾ßÇÏÁö¸¸, ÀÌ °ªÀº 0ÀÌ¶ó ´õÇÒ ÇÊ¿ä ¾øÀ½
+	//ì—¬ê¸°ì„œ ë’¤ì— + frusutmNormal.w í•´ì•¼í•˜ì§€ë§Œ, ì´ ê°’ì€ 0ì´ë¼ ë”í•  í•„ìš” ì—†ìŒ
 	return (dot( frusutmNormal.xyz, p.xyz )/*+ frusutmNormal.w*/ < r);
-}
-
-float4 ProjToView( float4 p )
-{
-    p = mul( p, tbrParam_invProjMat );
-    p /= p.w;
-    return p;
-}
-
-float InvertProjDepthToView(float depth)
-{
-	/*
-	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
-	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
-		
-	if you dont understand, calculate inverse projection matrix.
-	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
-	*/
-
-	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
 }
 
 uint GetTileIndex(float2 screenPos)

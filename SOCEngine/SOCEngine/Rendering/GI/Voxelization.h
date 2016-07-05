@@ -25,7 +25,6 @@ namespace Rendering
 				Math::Matrix	viewProjX;
 				Math::Matrix	viewProjY;
 				Math::Matrix	viewProjZ;
-//				Math::Matrix	worldToVoxel;
 
 				Math::Vector3	voxelizeMinPos;
 				uint			currentCascade;

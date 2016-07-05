@@ -21,34 +21,34 @@ cbuffer RPInfo : register( b5 )
 	float2	dummy;
 };
 
-SamplerState		defaultSampler			: register( s0 );
-Texture2D<float2>	preIntegrateEnvBRDFMap	: register( t29 );
+SamplerState		DefaultSampler		: register( s0 );
+Texture2D<float2>	PreIntegrateEnvBRDFMap	: register( t29 );
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 {
-	float metallic				= GetMetallic(defaultSampler, uv);
-	float roughness				= GetRoughness(defaultSampler, uv);
+	float metallic				= GetMetallic(DefaultSampler, uv);
+	float roughness				= GetRoughness(DefaultSampler, uv);
 	float specularity			= GetMaterialSpecularity();
 
-	float3 emissiveColor		= GetEmissiveColor(defaultSampler, uv);
-	float3 albedo				= GetAlbedo(defaultSampler, uv);
+	float3 emissiveColor			= GetEmissiveColor(DefaultSampler, uv);
+	float3 albedo				= GetAlbedo(DefaultSampler, uv);
 
 	LightingParams lightParams;
 
 	lightParams.viewDir			= normalize( tbrParam_cameraWorldPosition - vtxWorldPos );
 	lightParams.normal			= normal;
-	lightParams.roughness		= roughness;
-	lightParams.diffuseColor	= albedo - albedo * metallic;
-	lightParams.specularColor	= lerp(0.08f * specularity.xxx, albedo, metallic);
+	lightParams.roughness			= roughness;
+	lightParams.diffuseColor		= albedo - albedo * metallic;
+	lightParams.specularColor		= lerp(0.08f * specularity.xxx, albedo, metallic);
 
 #if defined(RENDER_TRANSPARENCY)
-	float3 accumulativeFrontFaceDiffuse		= float3(0.0f, 0.0f, 0.0f);
+	float3 accumulativeFrontFaceDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeFrontFaceSpecular	= float3(0.0f, 0.0f, 0.0f);
-	float3 accumulativeBackFaceDiffuse		= float3(0.0f, 0.0f, 0.0f);
-	float3 accumulativeBackFaceSpecular		= float3(0.0f, 0.0f, 0.0f);
+	float3 accumulativeBackFaceDiffuse	= float3(0.0f, 0.0f, 0.0f);
+	float3 accumulativeBackFaceSpecular	= float3(0.0f, 0.0f, 0.0f);
 #else
-	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
-	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
+	float3 accumulativeDiffuse		= float3(0.0f, 0.0f, 0.0f);
+	float3 accumulativeSpecular		= float3(0.0f, 0.0f, 0.0f);
 #endif
 
 	uint pointLightCount = GetNumOfPointLight(rpInfo_packedNumOfLights);
@@ -67,13 +67,13 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 
 		accumulativeFrontFaceDiffuse	+= frontFaceDiffuseColor;
 		accumulativeFrontFaceSpecular	+= frontFaceSpecularColor;
-		accumulativeBackFaceDiffuse		+= backFaceDiffuseColor;
+		accumulativeBackFaceDiffuse	+= backFaceDiffuseColor;
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
 		RenderPointLight(diffuse, specular, lightParams, vtxWorldPos);
 
-		accumulativeDiffuse		+= diffuse;
+		accumulativeDiffuse	+= diffuse;
 		accumulativeSpecular	+= specular;
 #endif
 	}
@@ -94,13 +94,13 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 
 		accumulativeFrontFaceDiffuse	+= frontFaceDiffuseColor;
 		accumulativeFrontFaceSpecular	+= frontFaceSpecularColor;
-		accumulativeBackFaceDiffuse		+= backFaceDiffuseColor;
+		accumulativeBackFaceDiffuse	+= backFaceDiffuseColor;
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
 		RenderSpotLight(diffuse, specular, lightParams, vtxWorldPos);
 
-		accumulativeDiffuse		+= diffuse;
+		accumulativeDiffuse	+= diffuse;
 		accumulativeSpecular	+= specular;
 #endif
 	}
@@ -121,29 +121,29 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 uv)
 
 		accumulativeFrontFaceDiffuse	+= frontFaceDiffuseColor;
 		accumulativeFrontFaceSpecular	+= frontFaceSpecularColor;
-		accumulativeBackFaceDiffuse		+= backFaceDiffuseColor;
+		accumulativeBackFaceDiffuse	+= backFaceDiffuseColor;
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
 		RenderDirectionalLight(diffuse, specular, lightParams, vtxWorldPos);
 
-		accumulativeDiffuse		+= diffuse;
+		accumulativeDiffuse	+= diffuse;
 		accumulativeSpecular	+= specular;
 #endif
 	}
 
 #if defined(RENDER_TRANSPARENCY)
-	accumulativeFrontFaceSpecular = saturate(accumulativeFrontFaceSpecular);
-	accumulativeBackFaceSpecular = saturate(accumulativeBackFaceSpecular);
+	accumulativeFrontFaceSpecular	= saturate(accumulativeFrontFaceSpecular);
+	accumulativeBackFaceSpecular	= saturate(accumulativeBackFaceSpecular);
 
-	float3 back		= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) * TRANSPARENCY_BACK_FACE_WEIGHT;
+	float3 back	= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular) * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
 	float3	result	= front + back;
-	float	alpha	= GetAlpha(defaultSampler, uv);
+	float	alpha	= GetAlpha(DefaultSampler, uv);
 #else
-	float3	result = accumulativeDiffuse + accumulativeSpecular;
-	float	alpha = 1.0f;
+	float3	result	= accumulativeDiffuse + accumulativeSpecular;
+	float	alpha	= 1.0f;
 #endif
 
 	return float4(result + emissiveColor, alpha);
@@ -153,25 +153,25 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 {
 	ApproximateIBLParam param;
 	{
-		float3 baseColor	= GetAlbedo(defaultSampler, uv);
+		float3 baseColor	= GetAlbedo(DefaultSampler, uv);
 
-		float metallic		= GetMetallic(defaultSampler, uv);
+		float metallic		= GetMetallic(DefaultSampler, uv);
 		float specularity	= GetMaterialSpecularity();
 
 		GetDiffuseSpecularColor(param.diffuseColor, param.specularColor, baseColor, specularity, metallic);
 
-		param.normal	= normal;
-		param.viewDir	= rpInfo_camWorldPos  - worldPos;
-		param.roughness = GetRoughness(defaultSampler, uv);
+		param.normal		= normal;
+		param.viewDir		= rpInfo_camWorldPos  - worldPos;
+		param.roughness		= GetRoughness(DefaultSampler, uv);
 	}
 #if defined(RENDER_TRANSPARENCY)
-	float3 frontFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param);
+	float3 frontFaceIBL	= ApproximateIBL(PreIntegrateEnvBRDFMap, param);
 
-	param.normal = -normal;
-	float3 backFaceIBL	= ApproximateIBL(preIntegrateEnvBRDFMap, param) * TRANSPARENCY_BACK_FACE_WEIGHT;
-	float3 result = frontFaceIBL + backFaceIBL;
+	param.normal 		= -normal;
+	float3 backFaceIBL	= ApproximateIBL(PreIntegrateEnvBRDFMap, param) * TRANSPARENCY_BACK_FACE_WEIGHT;
+	float3 result 		= frontFaceIBL + backFaceIBL;
 #else
-	float3 result = ApproximateIBL(preIntegrateEnvBRDFMap, param);
+	float3 result		= ApproximateIBL(PreIntegrateEnvBRDFMap, param);
 #endif
 
 	return result;
@@ -180,7 +180,7 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 float4 ReflectionProbeLighting(float3 normal, float3 worldPos, float2 uv)
 {
 	float4 lighting	= Lighting(normal, worldPos, uv);
-	float3 ibl		= IBLPass(uv, worldPos, normal);
+	float3 ibl	= IBLPass(uv, worldPos, normal);
 
 	return float4(lighting.rgb + ibl, lighting.a);
 }

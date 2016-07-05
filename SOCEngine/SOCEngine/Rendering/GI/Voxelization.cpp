@@ -343,19 +343,19 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCas
 		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
 		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
 
-		//Matrix worldToVoxel;
+		//Matrix toVoxel;
 		//{
-		//	Matrix::Identity(worldToVoxel);
+		//	Matrix::Identity(toVoxel);
 
-		//	worldToVoxel._11 = 1.0f / worldSize;
-		//	worldToVoxel._22 = 1.0f / worldSize;
-		//	worldToVoxel._33 = 1.0f / worldSize;
+		//	toVoxel._11 = 1.0f / worldSize;
+		//	toVoxel._22 = 1.0f / worldSize;
+		//	toVoxel._33 = 1.0f / worldSize;
 
-		//	worldToVoxel._41 = bbMin.x;
-		//	worldToVoxel._42 = bbMin.y;
-		//	worldToVoxel._43 = bbMin.z;
+		//	toVoxel._41 = toVoxel._11 * -bbMin.x;
+		//	toVoxel._42 = toVoxel._22 * -bbMin.y;
+		//	toVoxel._43 = toVoxel._33 * -bbMin.z;
 		//}
-		//Matrix::Transpose(currentVoxelizeInfo.worldToVoxel, worldToVoxel);
+		//Matrix::Transpose(currentVoxelizeInfo.toVoxel, toVoxel);
 	}
 
 	_constBuffers[currentCascade]->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);

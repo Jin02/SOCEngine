@@ -11,18 +11,18 @@
 #include "Voxelization_Common.h"
 #include "GICommon.h"
 
-StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
-StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
-StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
+StructuredBuffer<DSLightVPMat>	DirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+StructuredBuffer<PLightVPMat>	PointLightShadowInvVPVMatBuffer			: register( t33 );
+StructuredBuffer<DSLightVPMat>	SpotLightShadowInvVPVMatBuffer			: register( t34 );
 
-RWTexture3D<uint> OutVoxelColorTexture									: register( u0 );
+RWTexture3D<uint> OutVoxelColorMap						: register( u0 );
 
-float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, uint cascade)
+float4 GetColor(Texture3D<float4> voxelMap, uint3 voxelIdx, uint cascade)
 {
 	uint3 idx = voxelIdx;
 	idx.y += cascade * uint(GetDimension());
 
-	return voxelTexture.Load(int4(idx, 0));
+	return voxelMap.Load(int4(idx, 0));
 }
 
 float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)

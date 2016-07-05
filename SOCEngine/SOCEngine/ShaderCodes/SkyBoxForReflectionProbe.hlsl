@@ -1,5 +1,5 @@
 
-// #include "ReflectionProbe_Common.h" ¿¡ ÀÖÀ½
+// #include "ReflectionProbe_Common.h" Â¿Â¡ Ã€Ã–Ã€Â½
 cbuffer RPInfo : register( b5 )
 {
 	matrix	rpInfo_viewProjs[6];
@@ -12,17 +12,17 @@ cbuffer RPInfo : register( b5 )
 	float2	dummy;
 };
 
-TextureCube		cubeMap			: register(t0);
-SamplerState	linearSampler	: register(s0);
+TextureCube	CubeMap			: register(t0);
+SamplerState	LinearSampler		: register(s0);
 
 struct VS_INPUT
 {
-	float3 position 			: POSITION;
+	float3 position 		: POSITION;
 };
 
 struct VS_OUTPUT
 {
-	float3 localPos				: LOCAL_POSITION;
+	float3 localPos			: LOCAL_POSITION;
 };
 
 VS_OUTPUT VS(VS_INPUT input)
@@ -36,10 +36,10 @@ VS_OUTPUT VS(VS_INPUT input)
 
 struct PS_INPUT
 {
-	float4 position 	 		: SV_POSITION;
-	float3 localPos				: LOCAL_POSITION;
+	float4 position 	 	: SV_POSITION;
+	float3 localPos			: LOCAL_POSITION;
 
-	uint rtIndex				: SV_RenderTargetArrayIndex;
+	uint rtIndex			: SV_RenderTargetArrayIndex;
 };
 
 [maxvertexcount(18)]
@@ -76,5 +76,5 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	return cubeMap.Sample(linearSampler, input.localPos);
+	return CubeMap.Sample(LinearSampler, input.localPos);
 }

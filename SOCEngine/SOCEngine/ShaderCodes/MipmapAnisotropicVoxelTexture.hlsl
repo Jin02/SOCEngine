@@ -4,19 +4,19 @@
 
 cbuffer MipMapInfoCB : register(b0)
 {
-	uint mipmapInfo_sourceDimension;
-	uint mipmapInfo_currentCascade;
-	uint2 mipmapInfo_dummy;
+	uint	mipmapInfo_sourceDimension;
+	uint	mipmapInfo_currentCascade;
+	uint2	mipmapInfo_dummy;
 };
 
-RWTexture3D<uint> g_inputVoxelMap		: register(u0);
-RWTexture3D<uint> g_outputMipMap		: register(u1);
+RWTexture3D<uint> VoxelMap		: register(u0);
+RWTexture3D<uint> OutMipMap		: register(u1);
 
 float4 AlphaBlending(float4 front, float4 back)
 {
 	float3 blending = front.rgb + back.rgb * (1.0f - front.a);
 
-	//æÀ∆ƒ¥¬ ∫Ì∑£µ˘ Ω√≈∞¡ˆ æ ¿Ω.
+	//ÏïåÌååÎäî Î∏îÎûúÎî© ÏãúÌÇ§ÏßÄ ÏïäÏùå.
 	float alpha = (front.a + back.a) / 2.0f;
 
 	return float4(blending, alpha);
@@ -48,13 +48,13 @@ float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
 	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
-	return RGBA8UintColorToFloat4(g_inputVoxelMap[voxelIdx]);
+	return RGBA8UintColorToFloat4(VoxelMap[voxelIdx]);
 }
 
 [numthreads(MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF)]
 void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID, 
-								 uint3 localIdx	 : SV_GroupThreadID,
-								 uint3 groupIdx	 : SV_GroupID)
+				 uint3 localIdx	 : SV_GroupThreadID,
+				 uint3 groupIdx	 : SV_GroupID)
 {
 	uint3 lowerMipIdx = globalIdx * 2; // or source
 
@@ -104,10 +104,10 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint destDimension = mipmapInfo_sourceDimension / 2;
 	globalIdx.y += mipmapInfo_currentCascade * destDimension;
 
-	g_outputMipMap[uint3(globalIdx.x,						globalIdx.yz)]	= negx;
-	g_outputMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= posx;
-	g_outputMipMap[uint3(globalIdx.x + (2 * destDimension),	globalIdx.yz)]	= negy;
-	g_outputMipMap[uint3(globalIdx.x + (3 * destDimension),	globalIdx.yz)]	= posy;
-	g_outputMipMap[uint3(globalIdx.x + (4 * destDimension),	globalIdx.yz)]	= negz;
-	g_outputMipMap[uint3(globalIdx.x + (5 * destDimension),	globalIdx.yz)]	= posz;
+	OutMipMap[uint3(globalIdx.x,				globalIdx.yz)]	= negx;
+	OutMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= posx;
+	OutMipMap[uint3(globalIdx.x + (2 * destDimension),	globalIdx.yz)]	= negy;
+	OutMipMap[uint3(globalIdx.x + (3 * destDimension),	globalIdx.yz)]	= posy;
+	OutMipMap[uint3(globalIdx.x + (4 * destDimension),	globalIdx.yz)]	= negz;
+	OutMipMap[uint3(globalIdx.x + (5 * destDimension),	globalIdx.yz)]	= posz;
 }

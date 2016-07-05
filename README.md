@@ -1,4 +1,12 @@
 SOCEngine
+
+[![Build Status](https://travis-ci.org/Jin02/SOCEngine.svg?branch=master)](https://travis-ci.org/Jin02/SOCEngine)
+[![todofy](https://todofy.org/b/Jin02/SOCEngine/master)](https://todofy.org/r/Jin02/SOCEngine/master)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+<b>I can't build this project since 2016.03.07.</b><br>
+<b>Sorry.</b>
+
 =========
 
 Simple 3D real-time rendering engine
@@ -22,14 +30,3 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 8. Image Based Rendering
 
 <p>참고 자료 : https://github.com/Jin02/SOCEngine/wiki/%EC%B0%B8%EA%B3%A0-%EC%9E%90%EB%A3%8C</p>
-2018년에 신입 일자리 찾습니다.(군복무중)
-
-![VCT](http://i.imgur.com/T480Sy1.png)
-![VCT2](http://i.imgur.com/D10RQMR.png)
-![IBLPass](http://i.imgur.com/HEGuINm.png)
-![Test_Image](http://i.imgur.com/lCluQ1q.png)
-![ShadowTest](http://i.imgur.com/3NYNdy0.png)
-![Voxelization](http://i.imgur.com/NJX7Yoj.png)
-![2D](http://i.imgur.com/eFNBAvo.png)
-![hmdgpy](http://i.imgur.com/ANiWU6l.png)
-![sfcgpy](http://i.imgur.com/CqYoaAE.png)

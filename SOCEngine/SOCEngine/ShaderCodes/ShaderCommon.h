@@ -25,9 +25,9 @@ uint GetNumOfDirectionalLight(uint packedNumOfLights)
 uint ToUint(float4 value)
 {
 	return	(uint(value.w) & 0x000000FF) << 24	|
-			(uint(value.z) & 0x000000FF) << 16	|
-			(uint(value.y) & 0x000000FF) << 8	|
-			(uint(value.x) & 0x000000FF);
+		(uint(value.z) & 0x000000FF) << 16	|
+		(uint(value.y) & 0x000000FF) << 8	|
+		(uint(value.x) & 0x000000FF);
 }
 
 uint Float4ColorToUint(float4 value)
@@ -38,9 +38,9 @@ uint Float4ColorToUint(float4 value)
 float4 ToFloat4(uint value)
 {
 	return float4(	float((value & 0x000000FF) >> 0),
-					float((value & 0x0000FF00) >> 8),
-					float((value & 0x00FF0000) >> 16),
-					float((value & 0xFF000000) >> 24)	);
+			float((value & 0x0000FF00) >> 8),
+			float((value & 0x00FF0000) >> 16),
+			float((value & 0xFF000000) >> 24) );
 }
 
 float4 RGBA8UintColorToFloat4(uint value)

@@ -5,7 +5,7 @@ struct PS_MOMENT_DEPTH_INPUT
 	float4	position 	 	: SV_POSITION;
 	float	depth			: DEPTH;
 #if defined(ENABLE_ALPHA_TEST)
-	float2	uv				: TEXCOORD0;
+	float2	uv			: TEXCOORD0;
 #endif
 };
 
@@ -14,17 +14,17 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 	PS_MOMENT_DEPTH_INPUT ps;
 
 	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position			= mul(posWorld, camera_viewProjMat);
+	ps.position		= mul(posWorld, camera_viewProjMat);
 
 #if defined(USE_SHADOW_INVERTED_DEPTH)
-	float4 invPos		= mul(posWorld, camera_viewMat); // ShadowMapø°º≠ ªÁøÎ«œ¥¬ viewMat¿∫ invertedViewProjMat¿”.
-	ps.depth			= invPos.z / invPos.w;
+	float4 invPos		= mul(posWorld, camera_viewMat); // ShadowMapÏóêÏÑú ÏÇ¨Ïö©ÌïòÎäî viewMatÏùÄ invertedViewProjMatÏûÑ.
+	ps.depth		= invPos.z / invPos.w;
 #else
-	ps.depth			= ps.position.z / ps.position.w;
+	ps.depth		= ps.position.z / ps.position.w;
 #endif
 
 #if defined(ENABLE_ALPHA_TEST)
-	ps.uv				= input.uv;
+	ps.uv			= input.uv;
 #endif
 
 	return ps;
@@ -33,11 +33,11 @@ PS_MOMENT_DEPTH_INPUT MomentDepthVS(VS_INPUT input)
 float4 DistributePrecision(float2 moment)
 {  
 	float distFactor	= 256.0f;
-	float invFactor		= 1 / distFactor;  
+	float invFactor		= 1.0f / distFactor;  
 
 	// Split precision  
 	float2 intPart;  
-	float2 fracPart = modf(moment * distFactor, intPart); // ¡§ºˆ, º“ºˆ¡°∫Œ∫–¿ª ∫–∏Æ
+	float2 fracPart		= modf(moment * distFactor, intPart); // Ï†ïÏàò, ÏÜåÏàòÏ†êÎ∂ÄÎ∂ÑÏùÑ Î∂ÑÎ¶¨
 
 	// Compose outputs to make reconstruction cheap.  
 	return float4(intPart * invFactor, fracPart);  
@@ -57,7 +57,7 @@ float4 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 	float4 outColor = DistributePrecision(moment);
 
 #if defined(ENABLE_ALPHA_TEST)
-	float alpha = GetAlpha(defaultSampler, input.uv);
+	float alpha = GetAlpha(DefaultSampler, input.uv);
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
