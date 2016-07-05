@@ -241,7 +241,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	OutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-	OutScreen[globalIdx.xy] = float4(result, 1.0f);
+	OutScreen[globalIdx.xy] = float4(surface.albedo, 1.0f);
+//	OutScreen[globalIdx.xy] = float4(result, 1.0f);
 #endif
 
 #endif
