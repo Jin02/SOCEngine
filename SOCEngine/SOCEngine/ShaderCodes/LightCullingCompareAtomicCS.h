@@ -124,9 +124,9 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
 	{
 		float4 center	= PointLightTransformBuffer[pointLightIdx];
-		float r		= center.w;
+		float r			= center.w;
 
-		center.xy	= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz		= mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{

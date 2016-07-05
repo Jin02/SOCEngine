@@ -21,15 +21,15 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float2 shadowMapPos		= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y % uint(perShadowMapRes));
 	float2 shadowMapUV		= shadowMapPos.xy / perShadowMapRes;
 
-	float dept			= SpotLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
+	float depth				= SpotLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
 	float4 worldPos			= mul( float4(shadowMapPos.xy, depth, 1.0f), SpotLightShadowInvVPVMatBuffer[shadowIndex].mat );
 	worldPos /= worldPos.w;
 
-	float voxelizeSize		= GetVoxelizeSize(voxelization_currentCascade);
-	float3 voxelSpaceU		= (worldPos.xyz - voxelization_minPos) / voxelizeSize;
-	int dimension			= (int)GetDimension();
-	int3 voxelIdx			= int3(voxelSpaceUV * dimension);
+	float	voxelizeSize		= GetVoxelizeSize(voxelization_currentCascade);
+	float3	voxelSpaceUV		= (worldPos.xyz - voxelization_minPos) / voxelizeSize;
+	int		dimension			= (int)GetDimension();
+	int3	voxelIdx			= int3(voxelSpaceUV * dimension);
 
 	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;

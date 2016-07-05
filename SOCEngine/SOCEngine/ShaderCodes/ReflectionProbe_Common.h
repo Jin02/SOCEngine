@@ -162,7 +162,7 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 
 		param.normal		= normal;
 		param.viewDir		= rpInfo_camWorldPos  - worldPos;
-		param.roughnes		= GetRoughness(DefaultSampler, uv);
+		param.roughness		= GetRoughness(DefaultSampler, uv);
 	}
 #if defined(RENDER_TRANSPARENCY)
 	float3 frontFaceIBL	= ApproximateIBL(PreIntegrateEnvBRDFMap, param);

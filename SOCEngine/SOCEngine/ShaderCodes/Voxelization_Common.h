@@ -18,9 +18,9 @@ cbuffer Voxelization_Info_CB : register( b5 )
 SamplerState DefaultSampler			: register( s0 );
 
 #if defined(USE_OUT_VOXEL_MAP)
-RWTexture3D<uint> OutVoxelAlbedoTexture		: register( u0 );
-RWTexture3D<uint> OutVoxelNormalTexture		: register( u1 );
-RWTexture3D<uint> OutVoxelEmissionTexture	: register( u2 );
+RWTexture3D<uint> OutVoxelAlbedoMap			: register( u0 );
+RWTexture3D<uint> OutVoxelNormalMap			: register( u1 );
+RWTexture3D<uint> OutVoxelEmissionMap		: register( u2 );
 RWTexture3D<uint> OutInjectionColorMap		: register( u3 );
 #endif
 
@@ -96,12 +96,12 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 		int3 index = voxelIdx;
 		index.y += voxelization_currentCascade * dimension;
 
-		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoTexture,	index,	albedoWithAlpha, false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,	index,	albedoWithAlpha, false);
 
-		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionTexture,	index,	float4(material_emissionColor.xyz, 1.0f));
+		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(material_emissionColor.xyz, 1.0f));
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorAvg(OutVoxelNormalTexture,	index,	float4(storeNormal, 1.0f), false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f), false);
 	}
 #endif
 }

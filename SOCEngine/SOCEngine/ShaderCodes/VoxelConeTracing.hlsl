@@ -25,7 +25,7 @@ SamplerState LinearSampler					: register(s0);
 #define DIFFUSE_SAMPLING_COUNT					32
 #define SPECULAR_SAMPLING_COUNT					64
 
-// 콘의 각도에 관련한 데이터 값은 아래 글 참고했음.
+// 콘의 각도??관?�한 ?�이??값�? ?�래 글 참고?�음.
 // http://simonstechblog.blogspot.kr/2013/01/implementing-voxel-cone-tracing.html
 static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Space
 {
@@ -37,7 +37,7 @@ static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Sp
 	float3(-0.823639f, 0.5f, 0.267617f)
 };
 
-// 이것도 위의 링크 참고
+// ?�것???�의 링크 참고
 static const float ConeWeights[MAXIMUM_CONE_COUNT] =
 {
 	PI / 4.0f,	//45 degree
@@ -174,8 +174,8 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal);
 
-	float halfConeAngle	= (sin(1.7f * sqrt( pow(surface.roughness, 1.5f) )) +			// 그냥.. roughness를 적당한 값으로 변경해준다.
-					0.2f * sin(surface.roughness * surface.roughness)) * 0.5f;	// 나중에 해결 방안을 찾으면 고쳐야한다.
+	float halfConeAngle	= (sin(1.7f * sqrt( pow(surface.roughness, 1.5f) )) +			// 그냥.. roughness�??�당??값으�?변경해준??
+					0.2f * sin(surface.roughness * surface.roughness)) * 0.5f;	// ?�중???�결 방안??찾으�?고쳐?�한??
 
 	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle);
 
@@ -196,7 +196,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 		float4 directColor	= DirectColorMap.Load( uint3(texIndex[i], 0) );
 		float3 baseColor	= directColor.rgb;
 	
-		// Metallic 값을 이용해서 대충 섞는다.
+		// Metallic 값을 ?�용?�서 ?��??�는??
 		float3 indirectDiffuse	= diffuseVCT * baseColor * (1.0f - surface.metallic);
 		float3 indirectSpecular	= specularVCT * surface.metallic;
 		float3 indirectColor	= indirectDiffuse + indirectSpecular;
@@ -208,7 +208,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float4 directColor	= DirectColorMap.Load( uint3(globalIdx.xy, 0) ) * 1.5f;
 	float3 baseColor	= directColor.rgb;
 
-	// Metallic 값을 이용해서 대충 섞는다.
+	// Metallic 값을 ?�용?�서 ?��??�는??
 	float3 indirectDiffuse	= diffuseVCT * baseColor * (1.0f - surface.metallic);
 	float3 indirectSpecular	= specularVCT * surface.metallic;
 	float3 indirectColor	= indirectDiffuse + indirectSpecular;

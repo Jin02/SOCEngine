@@ -5,7 +5,7 @@
 cbuffer MipMapInfoCB : register(b0)
 {
 	uint	mipmapInfo_sourceDimension;
-	uin	mipmapInfo_currentCascade;
+	uint	mipmapInfo_currentCascade;
 	uint2	mipmapInfo_dummy;
 };
 
