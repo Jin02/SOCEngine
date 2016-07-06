@@ -24,7 +24,7 @@ struct Surface
 	float	specularity;
 
 	float2	motion;
-	float	height;
+	uint	materialFlag;
 };
 
 void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx)
@@ -54,18 +54,18 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.worldPos	= worldPosition.xyz;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_occlusion = GBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
-	float4 motionXY_height_metallic = GBufferMotionXY_height_metallic.Load( globalIdx, sampleIdx );
-	float4 emission_specularity = GBufferEmission_specularity.Load(globalIdx, sampleIdx);
+	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
+	float4 motionXY_metallic_specularity	= GBufferMotionXY_metallic_specularity.Load( globalIdx, sampleIdx );
+	float3 emission							= GBufferEmission_materialFlag.Load(globalIdx, sampleIdx).rgb;
 #else
-	float4 albedo_occlusion = GBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
-	float4 motionXY_height_metallic = GBufferMotionXY_height_metallic.Load( uint3(globalIdx, 0) );
-	float4 emission_specularity = GBufferEmission_specularity.Load(uint3(globalIdx, 0));
+	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
+	float4 motionXY_metallic_specularity	= GBufferMotionXY_metallic_specularity.Load( uint3(globalIdx, 0) );
+	float3 emission							= GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).rgb;
 #endif
-
-	float specularity		= emission_specularity.a;
-	float3 baseColor		= albedo_occlusion.rgb;
-	float metallic			= motionXY_height_metallic.a;
+	uint	matFlag			= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
+	float	specularity		= motionXY_metallic_specularity.a;
+	float3	baseColor		= albedo_occlusion.rgb;
+	float	metallic		= motionXY_metallic_specularity.b;
 
 	outSurface.albedo		= baseColor - baseColor * metallic;
 	outSurface.occlusion	= albedo_occlusion.a;
@@ -73,11 +73,11 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.specular		= lerp(0.08f * specularity.xxx, baseColor, metallic);
 	outSurface.metallic		= metallic;
 
-	outSurface.emission		= emission_specularity.rgb;
+	outSurface.emission		= emission;
 	outSurface.specularity	= specularity;
 
-	outSurface.motion		= (motionXY_height_metallic.xy * 2.0f) - float2(1.0f, 1.0f);
-	outSurface.height		= motionXY_height_metallic.z;
+	outSurface.motion		= (motionXY_metallic_specularity.xy * 2.0f) - float2(1.0f, 1.0f);
+	outSurface.materialFlag	= matFlag;
 }
 
 #endif

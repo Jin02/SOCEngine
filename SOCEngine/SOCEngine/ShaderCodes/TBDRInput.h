@@ -21,10 +21,10 @@ Buffer<float2>								DirectionalLightParamBuffer					: register( t7 ); // all h
 #if (MSAA_SAMPLES_COUNT > 1)
 
 Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferAlbedo_occlusion								: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_height_metallic						: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_metallic_specularity						: register( t9 );
 Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferNormal_roughness								: register( t10 );
 Texture2DMS<float,	MSAA_SAMPLES_COUNT>		GBufferDepth										: register( t11 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_specularity							: register( t31 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_materialFlag							: register( t31 );
 
 #if defined(ENABLE_BLEND)
 Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth									: register( t12 );
@@ -33,10 +33,10 @@ Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth									: register(
 #else //Turn off MSAA
 
 Texture2D<float4>							GBufferAlbedo_occlusion								: register( t8 );
-Texture2D<float4>							GBufferMotionXY_height_metallic						: register( t9 );
+Texture2D<float4>							GBufferMotionXY_metallic_specularity						: register( t9 );
 Texture2D<float4>							GBufferNormal_roughness								: register( t10 );
 Texture2D<float>							GBufferDepth										: register( t11 );
-Texture2D<float4>							GBufferEmission_specularity							: register( t31 );
+Texture2D<float4>							GBufferEmission_materialFlag							: register( t31 );
 
 #if defined(ENABLE_BLEND)
 Texture2D<float>							GBufferBlendedDepth		 							: register( t12 );

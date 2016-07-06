@@ -9,17 +9,17 @@
 
 struct GBuffer
 {
-	float4 albedo_occlusion			: SV_Target0;
-	float4 motionXY_height_metallic	: SV_Target1;
-	float4 normal_roughness 		: SV_Target2;
-	float4 emission_specularity		: SV_Target3;
+	float4 albedo_occlusion					: SV_Target0;
+	float4 motionXY_metallic_specularity	: SV_Target1;
+	float4 normal_roughness 				: SV_Target2;
+	float4 emission_materialFlag				: SV_Target3;
 };
 
 SamplerState GBufferDefaultSampler 	: register( s0 );
 
 
 void MakeGBuffer(float3 worldNormal, float2 uv,
-				 out float4 albedo_occlusion, out float4 motionXY_height_metallic, out float4 normal_roughness, out float4 emission_specularity)
+				 out float4 albedo_occlusion, out float4 motionXY_metallic_specularity, out float4 normal_roughness, out float4 emission_materialFlag)
 {
 	float3 albedo = float3(0.0f, 0.0f, 0.0f);
 	{
@@ -63,15 +63,15 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 		metallic = lerp(mtlMetallic, metallicTex, HasMetallicMap());
 	}
 
-	albedo_occlusion.rgb		= albedo;
-	albedo_occlusion.a			= occlusion;
-	motionXY_height_metallic.rg	= motion;
-	motionXY_height_metallic.b	= height;
-	motionXY_height_metallic.a	= metallic;
-	normal_roughness.rgb		= normal;
-	normal_roughness.a			= roughness;
-	emission_specularity.rgb	= emissiveColor;
-	emission_specularity.a		= specularity;
+	albedo_occlusion.rgb				= albedo;
+	albedo_occlusion.a					= occlusion;
+	motionXY_metallic_specularity.rg	= motion;
+	motionXY_metallic_specularity.b		= metallic;
+	motionXY_metallic_specularity.a		= specularity;
+	normal_roughness.rgb				= normal;
+	normal_roughness.a					= roughness;
+	emission_materialFlag.rgb			= emissiveColor;
+	emission_materialFlag.a				= float(GetMaterialFlag()) / 255.0f;
 }
 
 #endif

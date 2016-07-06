@@ -45,7 +45,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 #endif
 
 	float3 normal = normalize(input.normal);
-	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_height_metallic, outGBuffer.normal_roughness, outGBuffer.emission_specularity);
+	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;
 }

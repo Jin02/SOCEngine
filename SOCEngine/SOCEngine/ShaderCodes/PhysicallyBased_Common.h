@@ -83,7 +83,7 @@ uint GetMaterialExistTextureFlag()
 
 uint GetMaterialFlag()
 {
-	return material_flag;
+	return material_flag & 0xff;
 }
 
 bool HasDiffuseMap()	{	return (GetMaterialExistTextureFlag() & (1 << 0));	}

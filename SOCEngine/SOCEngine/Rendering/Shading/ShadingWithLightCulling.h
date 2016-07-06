@@ -14,9 +14,9 @@ namespace Rendering
 			struct GBuffers
 			{
 				const Texture::RenderTexture* albedo_occlusion;
-				const Texture::RenderTexture* motionXY_height_metallic;
+				const Texture::RenderTexture* motionXY_metallic_specularity;
 				const Texture::RenderTexture* normal_roughness;
-				const Texture::RenderTexture* emission;
+				const Texture::RenderTexture* emission_materialFlag;
 			};
 
 		private:
