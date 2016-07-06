@@ -86,6 +86,7 @@
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
+    <ClInclude Include="Rendering\PostProcessing\BilateralFiltering.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
     <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h" />
@@ -131,6 +132,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </ClInclude>
+    <FxCompile Include="ShaderCodes\BilateralFiltering_Near.hlsl" />
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
@@ -371,6 +373,7 @@
     <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\BilateralFiltering.cpp" />
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
     <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
