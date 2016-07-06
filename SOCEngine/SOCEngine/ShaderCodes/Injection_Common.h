@@ -11,9 +11,9 @@
 #include "Voxelization_Common.h"
 #include "GICommon.h"
 
-StructuredBuffer<DSLightVPMat>	g_inputDirectionalLightShadowInvVPVMatBuffer		: register( t32 );
-StructuredBuffer<PLightVPMat>	g_inputPointLightShadowInvVPVMatBuffer				: register( t33 );
-StructuredBuffer<DSLightVPMat>	g_inputSpotLightShadowInvVPVMatBuffer				: register( t34 );
+StructuredBuffer<DSLightVPMat>	DirectionalLightShadowInvVPVMatBuffer		: register( t32 );
+StructuredBuffer<PLightVPMat>	PointLightShadowInvVPVMatBuffer				: register( t33 );
+StructuredBuffer<DSLightVPMat>	SpotLightShadowInvVPVMatBuffer				: register( t34 );
 
 RWTexture3D<uint> OutVoxelColorTexture									: register( u0 );
 

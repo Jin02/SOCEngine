@@ -14,15 +14,15 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 
 	uint shadowIndex		= globalIdx.x / (uint)perShadowMapRes;
 	ParsedShadowParam shadowParam;
-	ParseShadowParam(shadowParam, g_inputDirectionalLightShadowParams[shadowIndex]);
+	ParseShadowParam(shadowParam, DirectionalLightShadowParams[shadowIndex]);
 	uint lightIndex			= shadowParam.lightIndex;
 
 	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y);
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
-	float depth = g_inputDirectionalLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
+	float depth = DirectionalLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputDirectionalLightShadowInvVPVMatBuffer[shadowIndex].mat );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), DirectionalLightShadowInvVPVMatBuffer[shadowIndex].mat );
 	worldPos /= worldPos.w;
 
 	float voxelizeSize	= GetVoxelizeSize(voxelization_currentCascade);
@@ -33,17 +33,17 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;
 
-	float4 lightCenterWithDirZ	= g_inputDirectionalLightTransformWithDirZBuffer[lightIndex];
-	float2 lightParam			= g_inputDirectionalLightParamBuffer[lightIndex];
+	float4 lightCenterWithDirZ	= DirectionalLightTransformWithDirZBuffer[lightIndex];
+	float2 lightParam			= DirectionalLightParamBuffer[lightIndex];
 	float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
-	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
-	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
+	float3 normal	= GetNormal(VoxelNormalTexture, voxelIdx, voxelization_currentCascade);
+	float4 albedo	= GetColor(VoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
+	float4 emission	= GetColor(VoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
 
-	float3 lightColor	= g_inputDirectionalLightColorBuffer[lightIndex].rgb;
+	float3 lightColor	= DirectionalLightColorBuffer[lightIndex].rgb;
 	float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
-	float intensity		= g_inputDirectionalLightColorBuffer[lightIndex].a * 10.0f;
+	float intensity		= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 	float3 radiosity	= lambert * lightColor * intensity;
 
 	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);

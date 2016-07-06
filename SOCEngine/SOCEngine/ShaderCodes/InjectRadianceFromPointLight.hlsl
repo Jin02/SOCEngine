@@ -15,15 +15,15 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	uint shadowIndex	= globalIdx.x / (uint)perShadowMapRes;
 	uint faceIndex		= globalIdx.y / (uint)perShadowMapRes;
 	ParsedShadowParam shadowParam;
-	ParseShadowParam(shadowParam, g_inputPointLightShadowParams[shadowIndex].xy);
+	ParseShadowParam(shadowParam, PointLightShadowParams[shadowIndex].xy);
 	uint lightIndex		= shadowParam.lightIndex;
 
 	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y % uint(perShadowMapRes));
 	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
 
-	float depth = g_inputPointLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
+	float depth = PointLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
 
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), g_inputPointLightShadowInvVPVMatBuffer[shadowIndex].mat[faceIndex] );
+	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), PointLightShadowInvVPVMatBuffer[shadowIndex].mat[faceIndex] );
 	worldPos /= worldPos.w;
 
 	float voxelizeSize	= GetVoxelizeSize(voxelization_currentCascade);
@@ -34,7 +34,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	if( any(voxelIdx < 0) || any(dimension <= voxelIdx) )
 		return;
 
-	float4 lightCenterWithRadius	= g_inputPointLightTransformBuffer[lightIndex];
+	float4 lightCenterWithRadius	= PointLightTransformBuffer[lightIndex];
 	float3 lightCenterWorldPos		= lightCenterWithRadius.xyz;
 	float lightRadius				= lightCenterWithRadius.a;
 
@@ -42,14 +42,14 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float distanceOfLightWithVertex	= length(lightDir);
 	lightDir = normalize(lightDir);
 
-	float3 normal	= GetNormal(g_inputVoxelNormalTexture, voxelIdx, voxelization_currentCascade);
-	float4 albedo	= GetColor(g_inputVoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
-	float4 emission	= GetColor(g_inputVoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
+	float3 normal	= GetNormal(VoxelNormalTexture, voxelIdx, voxelization_currentCascade);
+	float4 albedo	= GetColor(VoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
+	float4 emission	= GetColor(VoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
 
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 	if( distanceOfLightWithVertex < lightRadius )
 	{
-		float4 lightColorWithLm = g_inputPointLightColorBuffer[lightIndex];
+		float4 lightColorWithLm = PointLightColorBuffer[lightIndex];
 
 		float3 lightColor	= lightColorWithLm.rgb;
 		float lumen			= lightColorWithLm.a * float(MAXIMUM_LUMEN);

@@ -9,8 +9,8 @@
 #include "GICommon.h"
 #include "TBDRInput.h"
 
-Texture3D<float4> g_inputVoxelMap						: register(t29);
-Texture2D<float4> g_inputDirectColorMap					: register(t30);
+Texture3D<float4> VoxelMap						: register(t29);
+Texture2D<float4> DirectColorMap					: register(t30);
 
 RWTexture2D<float4> g_outIndirectColorMap				: register(u0);
 SamplerState linearSampler								: register(s0);
@@ -80,16 +80,16 @@ float4 SampleAnisotropicVoxelTex
 	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;
 	dirIdx.z = (dir.z < 0.0f) ? 4 : 5;
 
-	float4 colorAxisX = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.x, cascade, bbMin), lod);
-	float4 colorAxisY = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, cascade, bbMin), lod);
-	float4 colorAxisZ = g_inputVoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, cascade, bbMin), lod);
+	float4 colorAxisX = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.x, cascade, bbMin), lod);
+	float4 colorAxisY = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, cascade, bbMin), lod);
+	float4 colorAxisZ = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, cascade, bbMin), lod);
 
 	dir = abs(dir);
 	float4 result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 
 	return result;
 #else
-	return g_inputVoxelMap.SampleLevel(linearSampler, GetVoxelUV(samplePos, cascade, bbMin), lod);
+	return VoxelMap.SampleLevel(linearSampler, GetVoxelUV(samplePos, cascade, bbMin), lod);
 #endif
 }
 
@@ -194,7 +194,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	[unroll] for(uint i=0; i<4; ++i)
 	{
-		float4 directColor	= g_inputDirectColorMap.Load( uint3(texIndex[i], 0) );
+		float4 directColor	= DirectColorMap.Load( uint3(texIndex[i], 0) );
 		float3 baseColor	= directColor.rgb;
 	
 		// Metallic 값을 이용해서 대충 섞는다.
@@ -206,7 +206,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 #else
 
-	float4 directColor	= g_inputDirectColorMap.Load( uint3(globalIdx.xy, 0) ) * 1.5f;
+	float4 directColor	= DirectColorMap.Load( uint3(globalIdx.xy, 0) ) * 1.5f;
 	float3 baseColor	= directColor.rgb;
 
 	// Metallic 값을 이용해서 대충 섞는다.

@@ -9,7 +9,7 @@ cbuffer MipMapInfoCB : register(b0)
 	uint2 mipmapInfo_dummy;
 };
 
-RWTexture3D<uint> g_inputVoxelMap		: register(u0);
+RWTexture3D<uint> VoxelMap		: register(u0);
 RWTexture3D<uint> g_outputMipMap		: register(u1);
 
 float4 AlphaBlending(float4 front, float4 back)
@@ -48,7 +48,7 @@ float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
 	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
-	return RGBA8UintColorToFloat4(g_inputVoxelMap[voxelIdx]);
+	return RGBA8UintColorToFloat4(VoxelMap[voxelIdx]);
 }
 
 [numthreads(MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF, MIPMAPPING_TILE_RES_HALF)]
