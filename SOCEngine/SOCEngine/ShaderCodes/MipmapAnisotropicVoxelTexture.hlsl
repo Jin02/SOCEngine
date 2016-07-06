@@ -10,7 +10,7 @@ cbuffer MipMapInfoCB : register(b0)
 };
 
 RWTexture3D<uint> VoxelMap		: register(u0);
-RWTexture3D<uint> g_outputMipMap		: register(u1);
+RWTexture3D<uint> OutMipMap		: register(u1);
 
 float4 AlphaBlending(float4 front, float4 back)
 {
@@ -104,10 +104,10 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint destDimension = mipmapInfo_sourceDimension / 2;
 	globalIdx.y += mipmapInfo_currentCascade * destDimension;
 
-	g_outputMipMap[uint3(globalIdx.x,						globalIdx.yz)]	= negx;
-	g_outputMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= posx;
-	g_outputMipMap[uint3(globalIdx.x + (2 * destDimension),	globalIdx.yz)]	= negy;
-	g_outputMipMap[uint3(globalIdx.x + (3 * destDimension),	globalIdx.yz)]	= posy;
-	g_outputMipMap[uint3(globalIdx.x + (4 * destDimension),	globalIdx.yz)]	= negz;
-	g_outputMipMap[uint3(globalIdx.x + (5 * destDimension),	globalIdx.yz)]	= posz;
+	OutMipMap[uint3(globalIdx.x,						globalIdx.yz)]	= negx;
+	OutMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= posx;
+	OutMipMap[uint3(globalIdx.x + (2 * destDimension),	globalIdx.yz)]	= negy;
+	OutMipMap[uint3(globalIdx.x + (3 * destDimension),	globalIdx.yz)]	= posy;
+	OutMipMap[uint3(globalIdx.x + (4 * destDimension),	globalIdx.yz)]	= negz;
+	OutMipMap[uint3(globalIdx.x + (5 * destDimension),	globalIdx.yz)]	= posz;
 }

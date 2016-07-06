@@ -1,6 +1,6 @@
 //EMPTY_META_DATA
 
-RWBuffer<uint> g_outPerLightIndicesInTile : register(u0);
+RWBuffer<uint> OutPerLightIndicesInTile : register(u0);
 
 #define USE_ATOMIC
 
@@ -43,12 +43,12 @@ void OnlyLightCullingCS(uint3 globalIdx : SV_DispatchThreadID,
 	{
 		uint spotLightCount		= s_lightIndexCounter - pointLightCountInThisTile;
 		uint pointLightCount	= pointLightCountInThisTile & 0x0000ffff;
-		g_outPerLightIndicesInTile[startOffset - 1] = (spotLightCount << 16) | pointLightCount;
+		OutPerLightIndicesInTile[startOffset - 1] = (spotLightCount << 16) | pointLightCount;
 	}
 
 	for(uint i=localTileIdx; i<pointLightCountInThisTile; i+=THREAD_COUNT)
-		g_outPerLightIndicesInTile[startOffset + i] = s_lightIdx[i];
+		OutPerLightIndicesInTile[startOffset + i] = s_lightIdx[i];
 
 	for(uint j=(localTileIdx + pointLightCountInThisTile); j<s_lightIndexCounter; j+=THREAD_COUNT)
-		g_outPerLightIndicesInTile[startOffset + j] = s_lightIdx[j];
+		OutPerLightIndicesInTile[startOffset + j] = s_lightIdx[j];
 }

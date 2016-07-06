@@ -9,10 +9,10 @@
 #include "GICommon.h"
 #include "TBDRInput.h"
 
-Texture3D<float4> VoxelMap						: register(t29);
-Texture2D<float4> DirectColorMap					: register(t30);
+Texture3D<float4> VoxelMap								: register(t29);
+Texture2D<float4> DirectColorMap						: register(t30);
 
-RWTexture2D<float4> g_outIndirectColorMap				: register(u0);
+RWTexture2D<float4> OutIndirectColorMap					: register(u0);
 SamplerState linearSampler								: register(s0);
 
 #define MAXIMUM_CONE_COUNT				6
@@ -202,7 +202,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 		float3 indirectSpecular	= specularVCT * surface.metallic;
 		float3 indirectColor	= indirectDiffuse + indirectSpecular;
 
-		g_outIndirectColorMap[texIndex[i]] = float4(indirectColor, 1.0f);
+		OutIndirectColorMap[texIndex[i]] = float4(indirectColor, 1.0f);
 	}
 #else
 
@@ -214,6 +214,6 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 indirectSpecular	= specularVCT * surface.metallic;
 	float3 indirectColor	= indirectDiffuse + indirectSpecular;
 
-	g_outIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
+	OutIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
 #endif
 }
