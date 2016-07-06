@@ -72,11 +72,13 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 		index.y += voxelization_currentCascade * dimension;
 
 		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,	index,	albedoWithAlpha, false);
+		//OutVoxelAlbedoMap[index] = Float4ColorToUint(albedoWithAlpha);
 
 		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(material_emissionColor.xyz, 1.0f));
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
 		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f), false);
+		//OutVoxelNormalMap[index] = Float4ColorToUint( float4(storeNormal, 1.0f) );
 	}
 #endif
 }
@@ -109,7 +111,7 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 		float intensity		= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 
-		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, worldPos);
+		radiosity += lambert * lightColor * intensity;// * RenderDirectionalLightShadow(lightIndex, worldPos);
 		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 

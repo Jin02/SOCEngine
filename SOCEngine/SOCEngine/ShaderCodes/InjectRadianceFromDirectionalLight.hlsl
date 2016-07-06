@@ -46,7 +46,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float intensity		= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 	float3 radiosity	= lambert * lightColor * intensity;
 
-	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
+//	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
 	radiosity += emission.rgb;
 
 	StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
