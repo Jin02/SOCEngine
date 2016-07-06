@@ -157,6 +157,7 @@
     <ClInclude Include="ShaderCodes\Injection_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\IsoscelesTriangle.h" />
     <ClInclude Include="ShaderCodes\NormalMapping.h" />
     <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

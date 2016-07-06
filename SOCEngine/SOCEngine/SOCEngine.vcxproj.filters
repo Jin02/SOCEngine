@@ -859,6 +859,9 @@
     <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h">
       <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\IsoscelesTriangle.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
