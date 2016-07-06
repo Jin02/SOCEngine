@@ -42,7 +42,7 @@ float DistanceSquared(float2 a, float2 b)
 float LinearDepthTexelFetch(int2 hitPixel)
 {
 	// Load returns 0 for any value accessed out of bounds
-	return LinearizeDepth(g_tDepth.Load(int3(hitPixel, 0)).r);
+	return LinearizeDepth(GBufferDepth.Load(int3(hitPixel, 0)).r);
 }
 
 bool IntersectsDepthBuffer(float z, float minZ, float maxZ)
@@ -157,10 +157,10 @@ float4 ScreenSpaceReflectionPS( PS_INPUT input ) : SV_Target
 {
 	int3 pixelIdx = int3(input.position.xy, 0);
 
-	float depth			= g_tDepth.Load(pixelIdx).x;
+	float depth			= GBufferDepth.Load(pixelIdx).x;
 	float3 rayOrigin	= input.cameraRayInViewSpace * LinearizeDepth(depth);
 
-	float3 normal = g_tGBufferNormal_roughness.Sample(GBufferDefaultSampler, input.uv);
+	float3 normal = GBufferNormal_roughness.Sample(GBufferDefaultSampler, input.uv);
 	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 	if(any(normal == 0.0f)) discard;
 
@@ -172,7 +172,7 @@ float4 ScreenSpaceReflectionPS( PS_INPUT input ) : SV_Target
 	float jitter = (ssrParam_stride > 1.0f) ? float(int(input.position.x + input.position.y) & 1) * 0.5f : 0.0f;
 	bool intersection = RayTracing(rayOrigin, rayDir, jitter, hitPixel, hitPoint);
 
-	depth = g_tDepth.Load(int3(hitPixel, 0)).x;
+	depth = GBufferDepth.Load(int3(hitPixel, 0)).x;
 	hitPixel *= float2(texelWidth, texelHeight);
 
 	if(	hitPixel.x > 1.0f || hitPixel.x < 0.0f ||

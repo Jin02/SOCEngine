@@ -173,7 +173,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 sampleNormal = float3(0.0f, 0.0f, 0.0f);
 	for(uint sampleIdx = 1; sampleIdx < MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
-		sampleNormal = g_tGBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
+		sampleNormal = GBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
 		sampleNormal *= 2; sampleNormal -= float3(1.0f, 1.0f, 1.0f);
 
 		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, surface.normal) < DEG_2_RAD(60.0f) );

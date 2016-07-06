@@ -30,9 +30,9 @@ struct Surface
 void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx)
 {
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 normal_roughness = g_tGBufferNormal_roughness.Load( globalIdx, sampleIdx );
+	float4 normal_roughness = GBufferNormal_roughness.Load( globalIdx, sampleIdx );
 #else // non-MSAA
-	float4 normal_roughness = g_tGBufferNormal_roughness.Load( uint3(globalIdx, 0) );
+	float4 normal_roughness = GBufferNormal_roughness.Load( uint3(globalIdx, 0) );
 #endif
 
 	float3 normal = normal_roughness.xyz;
@@ -42,9 +42,9 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.roughness	= normal_roughness.w;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	float depth = g_tDepth.Load( globalIdx, sampleIdx ).x;
+	float depth = GBufferDepth.Load( globalIdx, sampleIdx ).x;
 #else
-	float depth = g_tDepth.Load( uint3(globalIdx, 0) ).x;
+	float depth = GBufferDepth.Load( uint3(globalIdx, 0) ).x;
 #endif
 
 	float4 worldPosition = mul( float4((float)globalIdx.x, (float)globalIdx.y, depth, 1.0), tbrParam_invViewProjViewportMat );
@@ -54,13 +54,13 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.worldPos	= worldPosition.xyz;
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
-	float4 albedo_occlusion = g_tGBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
-	float4 motionXY_height_metallic = g_tGBufferMotionXY_height_metallic.Load( globalIdx, sampleIdx );
-	float4 emission_specularity = g_tGBufferEmission_specularity.Load(globalIdx, sampleIdx);
+	float4 albedo_occlusion = GBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
+	float4 motionXY_height_metallic = GBufferMotionXY_height_metallic.Load( globalIdx, sampleIdx );
+	float4 emission_specularity = GBufferEmission_specularity.Load(globalIdx, sampleIdx);
 #else
-	float4 albedo_occlusion = g_tGBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
-	float4 motionXY_height_metallic = g_tGBufferMotionXY_height_metallic.Load( uint3(globalIdx, 0) );
-	float4 emission_specularity = g_tGBufferEmission_specularity.Load(uint3(globalIdx, 0));
+	float4 albedo_occlusion = GBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
+	float4 motionXY_height_metallic = GBufferMotionXY_height_metallic.Load( uint3(globalIdx, 0) );
+	float4 emission_specularity = GBufferEmission_specularity.Load(uint3(globalIdx, 0));
 #endif
 
 	float specularity		= emission_specularity.a;
