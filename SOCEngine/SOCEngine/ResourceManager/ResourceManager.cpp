@@ -8,7 +8,7 @@ using namespace Rendering;
 using namespace Resource;
 using namespace Importer;
 using namespace Rendering::Manager;
-using namespace Rendering::Offline;
+using namespace Rendering::Precompute;
 using namespace UI;
 
 ResourceManager::ResourceManager()

@@ -403,9 +403,6 @@
     <Filter Include="Rendering\Sky\SkyMesh\Box\Material">
       <UniqueIdentifier>{ce7a339b-e61e-47df-8e09-66a2c884fce8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Offline">
-      <UniqueIdentifier>{e969a8ce-13cf-426e-8195-6e305a61e4a9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\PostProcessing\IBLPass">
       <UniqueIdentifier>{9e86ae1b-2019-4d0e-8642-14184be81489}</UniqueIdentifier>
     </Filter>
@@ -423,6 +420,9 @@
     </Filter>
     <Filter Include="ShaderCodes\Mesh\ReflectionProbe\Optional">
       <UniqueIdentifier>{82578e9c-1654-4316-8492-14fdb400f0bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Precompute">
+      <UniqueIdentifier>{e969a8ce-13cf-426e-8195-6e305a61e4a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -830,7 +830,7 @@
       <Filter>Rendering\Sky\SkyMesh</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
-      <Filter>Rendering\Offline</Filter>
+      <Filter>Rendering\Precompute</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\EnvIBL.h">
       <Filter>ShaderCodes\Enviroment</Filter>
@@ -1147,7 +1147,7 @@
       <Filter>Rendering\Sky\SkyMesh</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
-      <Filter>Rendering\Offline</Filter>
+      <Filter>Rendering\Precompute</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp">
       <Filter>Rendering\PostProcessing\IBLPass</Filter>

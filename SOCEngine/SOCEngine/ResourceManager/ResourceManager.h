@@ -26,7 +26,7 @@ namespace Resource
 		Importer::MeshImporter*						_meshImporter;
 		UI::SimpleFontLoader*						_fontLoader;
 
-		Rendering::Offline::PreIntegrateEnvBRDF*	_preIntergrateEnvBRDF;
+		Rendering::Precompute::PreIntegrateEnvBRDF*	_preIntergrateEnvBRDF;
 
 	private:
 		ResourceManager();

@@ -11,7 +11,7 @@ using namespace Device;
 using namespace Core;
 using namespace Resource;
 using namespace Rendering;
-using namespace Rendering::Offline;
+using namespace Rendering::Precompute;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 using namespace Rendering::Factory;

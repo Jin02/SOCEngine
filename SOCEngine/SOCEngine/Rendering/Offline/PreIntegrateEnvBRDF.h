@@ -4,7 +4,7 @@
 
 namespace Rendering
 {
-	namespace Offline
+	namespace Precompute
 	{
 		class PreIntegrateEnvBRDF
 		{
