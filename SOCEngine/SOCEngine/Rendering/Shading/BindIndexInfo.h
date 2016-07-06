@@ -108,6 +108,7 @@ namespace Rendering
 	{
 		TBDR_OutDiffuseLightBuffer		= 0,
 		TBDR_OutSpecularLightBuffer		= 1,
+		TBDR_OutPerLightIndicesInTile	= 2,
 		
 		Lightculling_LightIndexBuffer	= 0,
 

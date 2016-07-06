@@ -12,8 +12,12 @@ groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TIL
 #endif
 
 // Output
-RWTexture2D<float4> OutDiffuseLightBuffer	: register( u0 );
-RWTexture2D<float4> OutSpecularLightBuffer	: register( u1 );
+RWTexture2D<float4> OutDiffuseLightBuffer		: register( u0 );
+RWTexture2D<float4> OutSpecularLightBuffer		: register( u1 );
+
+#if defined(STORE_PER_LIGHT_INDICES_IN_TILE)
+RWBuffer<uint>		OutPerLightIndicesInTile	: register( u2 );
+#endif
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 void MSAALighting(
@@ -125,42 +129,45 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
-	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
-	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
+	// Lighting Pass
 	{
-		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
-
-		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
-
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
-	}
-
-	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
-	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
-	{
-		lightParams.lightIndex = s_lightIdx[spotLightIdx];
-
-		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
-
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
-	}
-
-	uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
-	uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
-	for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
-	{
-		lightParams.lightIndex = directionalLightIdx;
-
-		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
-
-		accumulativeDiffuse			+= localDiffuse;
-		accumulativeSpecular		+= localSpecular;
-
+		uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
+		for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
+		{
+			lightParams.lightIndex		= s_lightIdx[pointLightIdx];
+	
+			RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+	
+			accumulativeDiffuse			+= localDiffuse;
+			accumulativeSpecular		+= localSpecular;
+		}
+	
+		uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
+		for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
+		{
+			lightParams.lightIndex = s_lightIdx[spotLightIdx];
+	
+			RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+	
+			accumulativeDiffuse			+= localDiffuse;
+			accumulativeSpecular		+= localSpecular;
+		}
+	
+		uint directionalLightCount = GetNumOfDirectionalLight(tbrParam_packedNumOfLights);
+		uint directionalLightIdx = (int)(surface.depth == 0.0f) * directionalLightCount;
+		for(; directionalLightIdx<directionalLightCount; ++directionalLightIdx)
+		{
+			lightParams.lightIndex = directionalLightIdx;
+	
+			RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+	
+			accumulativeDiffuse			+= localDiffuse;
+			accumulativeSpecular		+= localSpecular;
+	
 #if defined(DEBUG_MODE)
-		isRenderDL = true;
+			isRenderDL = true;
 #endif
+		}
 	}
 	
 	accumulativeDiffuse += surface.emission.rgb;
@@ -252,5 +259,23 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
 #endif
 
+#endif
+
+#if defined(STORE_PER_LIGHT_INDICES_IN_TILE)
+	uint globalTileIdx = groupIdx.x + groupIdx.y * GetNumTilesX();
+	uint startOffset = tbrParam_maxNumOfPerLightInTile * globalTileIdx + 1;
+
+	if(idxInTile == 0)
+	{
+		uint spotLightCount		= s_lightIndexCounter - pointLightCountInThisTile;
+		uint pointLightCount	= pointLightCountInThisTile & 0x0000ffff;
+		OutPerLightIndicesInTile[startOffset - 1] = (spotLightCount << 16) | pointLightCount;
+	}
+
+	for(uint i=idxInTile; i<pointLightCountInThisTile; i+=THREAD_COUNT)
+		OutPerLightIndicesInTile[startOffset + i] = s_lightIdx[i];
+
+	for(uint j=(idxInTile + pointLightCountInThisTile); j<s_lightIndexCounter; j+=THREAD_COUNT)
+		OutPerLightIndicesInTile[startOffset + j] = s_lightIdx[j];
 #endif
 }
