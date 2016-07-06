@@ -20,7 +20,8 @@ namespace Rendering
 			};
 
 		private:
-			Rendering::Texture::RenderTexture*				_offScreen;
+			Rendering::Texture::RenderTexture*	_diffuseLightBuffer;
+			Rendering::Texture::RenderTexture*	_specularLightBuffer;
 
 		public:
 			ShadingWithLightCulling();
@@ -33,7 +34,8 @@ namespace Rendering
 			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
 
 		public:
-			GET_ACCESSOR(UncompressedOffScreen, const Rendering::Texture::RenderTexture*, _offScreen);
+			GET_ACCESSOR(DiffuseLightBuffer,	const Rendering::Texture::RenderTexture*,	_diffuseLightBuffer);
+			GET_ACCESSOR(SpecularLightBuffer,	const Rendering::Texture::RenderTexture*,	_specularLightBuffer);
 		};
 	}
 }

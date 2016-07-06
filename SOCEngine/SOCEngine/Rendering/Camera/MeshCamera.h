@@ -90,7 +90,10 @@ namespace Rendering
 			GET_ACCESSOR(BlendedDepthBuffer,					const Texture::DepthBuffer*,		_blendedDepthBuffer);
 
 			GET_ACCESSOR(OffScreen,								const Texture::RenderTexture*,		_renderTarget);
-			GET_ACCESSOR(UncompressedOffScreen,					const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetUncompressedOffScreen());
+
+			GET_ACCESSOR(DiffuseLightBuffer,					const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetDiffuseLightBuffer());
+			GET_ACCESSOR(SpecularLightBuffer,					const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetSpecularLightBuffer());
+
 			GET_ACCESSOR(UseIndirectColorMap,					bool,								_offScreen->GetUseIndirectColorMap());
 		};
 	}

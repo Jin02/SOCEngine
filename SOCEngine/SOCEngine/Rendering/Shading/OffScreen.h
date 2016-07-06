@@ -16,7 +16,9 @@ namespace Rendering
 			virtual ~OffScreen();
 
 		public:			
-			void Initialize(const Texture::RenderTexture* directColorMap, bool useIndirectColorMap);
+			void Initialize(const Texture::RenderTexture* diffuseLightBuffer,
+							const Texture::RenderTexture* specularLightBuffer,
+							bool useIndirectColorMap);
 			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Texture::RenderTexture* indirectColorMap);
 			void ReCompile(bool useIndirectColorMap);
 

@@ -1,5 +1,6 @@
 #include "OffScreen.h"
 #include "Utility.h"
+#include "BindIndexInfo.h"
 
 using namespace Device;
 using namespace Rendering::TBDR;
@@ -33,10 +34,11 @@ void OffScreen::ReCompile(bool useIndirectColorMap)
 	_useIndirectColorMap = useIndirectColorMap;
 }
 
-void OffScreen::Initialize(const RenderTexture* directColorMap, bool useIndirectColorMap)
+void OffScreen::Initialize(const RenderTexture* diffuseLightBuffer, const RenderTexture* specularLightBuffer, bool useIndirectColorMap)
 {
 	ReCompile(useIndirectColorMap);
-	_inputTextures.push_back(ShaderForm::InputTexture(0, directColorMap, false, false, false, true));
+	_inputTextures.push_back(ShaderForm::InputTexture(uint( TextureBindIndex::OffScreen_DirectDiffuseLightBuffer ), diffuseLightBuffer, false, false, false, true));
+	_inputTextures.push_back(ShaderForm::InputTexture(uint( TextureBindIndex::OffScreen_DirectSpecularLightBuffer), specularLightBuffer, false, false, false, true));
 }
 
 void OffScreen::Render(const DirectX* dx,
@@ -47,7 +49,7 @@ void OffScreen::Render(const DirectX* dx,
 	{
 		ID3D11DeviceContext* context = dx->GetContext();
 		ID3D11ShaderResourceView* srv = indirectColorMap->GetShaderResourceView()->GetView();
-		context->PSSetShaderResources(1, 1, &srv);
+		context->PSSetShaderResources( uint(TextureBindIndex::OffScreen_InDirectLightBuffer), 1, &srv);
 	}
 
 	FullScreen::Render(dx, outResultRT);

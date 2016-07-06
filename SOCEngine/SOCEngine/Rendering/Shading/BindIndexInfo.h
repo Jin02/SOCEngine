@@ -60,12 +60,18 @@ namespace Rendering
 		SpotLightShadowInvVPVMat				= 34,
 
 		VCT_InputVoxelMap						= 29,
-		VCT_InputDirectColorMap					= 30,
+		VCT_InputDiffuseLightMap				= 30,
+		VCT_InputSpecularLightMap				= 31,	// 31은 GBuffer_Emission_MaterialFlag과 겹침
+
 //		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
 		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
 		AmbientCubeMap							= 32,
+
+		OffScreen_DirectDiffuseLightBuffer		= 0,
+		OffScreen_DirectSpecularLightBuffer		= 1,
+		OffScreen_InDirectLightBuffer			= 2,
 	};
 
 	enum class ConstBufferBindIndex : unsigned int
@@ -100,7 +106,8 @@ namespace Rendering
 
 	enum class UAVBindIndex : unsigned int
 	{
-		TBDR_OutScreen					= 0,
+		TBDR_OutDiffuseLightBuffer		= 0,
+		TBDR_OutSpecularLightBuffer		= 1,
 		
 		Lightculling_LightIndexBuffer	= 0,
 
