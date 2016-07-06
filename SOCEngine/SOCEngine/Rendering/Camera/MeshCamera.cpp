@@ -492,12 +492,6 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
 			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
 		}
-
-		if(sky)
-		{
-			if(sky->GetIsSkyOn())
-				sky->Render(dx, this, _emission_materialFlag, _opaqueDepthBuffer);
-		}
 	}
 
 	// Light Culling and Deferred Shading
@@ -547,6 +541,12 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	// Main RT
 	SetCurrentViewport(context, _renderRect); 
 	_offScreen->Render(	dx, _renderTarget, indirectColorMap);
+
+	if(sky)
+	{
+		if(sky->GetIsSkyOn())
+			sky->Render(dx, this, _renderTarget, _opaqueDepthBuffer);
+	}
 
 	// Transparency
 	if(_useTransparent)
