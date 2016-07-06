@@ -40,7 +40,6 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(DiffuseLightBuffer,		const Rendering::Texture::RenderTexture*,	_diffuseLightBuffer);
 			GET_ACCESSOR(SpecularLightBuffer,		const Rendering::Texture::RenderTexture*,	_specularLightBuffer);
-			GET_ACCESSOR(PerLightIndicesBufferUAV,	const View::UnorderedAccessView*,			_perLightIndicesBufferUAV);
 			GET_ACCESSOR(PerLightIndicesSRBuffer,	const Buffer::ShaderResourceBuffer*,		_perLightIndicesBuffer);
 		};
 	}
