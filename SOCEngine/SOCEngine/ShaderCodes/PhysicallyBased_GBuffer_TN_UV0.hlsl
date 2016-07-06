@@ -49,7 +49,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
 	float3 normal		= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
 
-	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_height_metallic, outGBuffer.normal_roughness, outGBuffer.emission_specularity);
+	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;
 }

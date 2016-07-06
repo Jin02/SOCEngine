@@ -14,10 +14,10 @@ namespace Rendering
 		DirectionalLightParam					= 7,
 
 		GBuffer_Albedo_Occlusion				= 8,
-		GBuffer_MotionXY_Height_Metallic		= 9,
+		GBuffer_MotionXY_Metallic_Specularity	= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
-		GBuffer_Emission_Specularity			= 31,
+		GBuffer_Emission_MaterialFlag			= 31,
 
 		DiffuseMap								= 8,
 		NormalMap								= 9,
@@ -61,7 +61,7 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDirectColorMap					= 30,
-//		GBuffer_Emission_Specularity			31, 위에 있음
+//		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
 		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
