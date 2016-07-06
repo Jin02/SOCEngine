@@ -37,9 +37,9 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float2 lightParam			= DirectionalLightParamBuffer[lightIndex];
 	float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-	float3 normal	= GetNormal(VoxelNormalTexture, voxelIdx, voxelization_currentCascade);
-	float4 albedo	= GetColor(VoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
-	float4 emission	= GetColor(VoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
+	float3 normal	= GetNormal(VoxelNormalMap, voxelIdx, voxelization_currentCascade);
+	float4 albedo	= GetColor(VoxelAlbedoMap, voxelIdx, voxelization_currentCascade);
+	float4 emission	= GetColor(VoxelEmissionMap, voxelIdx, voxelization_currentCascade);
 
 	float3 lightColor	= DirectionalLightColorBuffer[lightIndex].rgb;
 	float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
@@ -49,7 +49,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	radiosity *= RenderDirectionalLightShadow(lightIndex, worldPos.xyz);
 	radiosity += emission.rgb;
 
-	StoreRadiosity(OutVoxelColorTexture, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
+	StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
 }
 
 #endif

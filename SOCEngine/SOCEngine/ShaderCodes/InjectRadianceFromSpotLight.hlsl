@@ -52,9 +52,9 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float distanceOfLightWithVertex = length(vtxToLight);
 	float currentCosineConeAngle	= dot(-vtxToLightDir, lightDir);
 
-	float3 normal	= GetNormal(VoxelNormalTexture, voxelIdx, voxelization_currentCascade);
-	float4 albedo	= GetColor(VoxelAlbedoTexture, voxelIdx, voxelization_currentCascade);
-	float4 emission	= GetColor(VoxelEmissionTexture, voxelIdx, voxelization_currentCascade);
+	float3 normal	= GetNormal(VoxelNormalMap, voxelIdx, voxelization_currentCascade);
+	float4 albedo	= GetColor(VoxelAlbedoMap, voxelIdx, voxelization_currentCascade);
+	float4 emission	= GetColor(VoxelEmissionMap, voxelIdx, voxelization_currentCascade);
 
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 	if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
@@ -78,7 +78,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	}
 	radiosity += emission.rgb;
 
-	StoreRadiosity(OutVoxelColorTexture, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
+	StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIdx, voxelization_currentCascade);
 }
 
 #endif

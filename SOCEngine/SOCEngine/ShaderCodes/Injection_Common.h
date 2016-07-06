@@ -15,7 +15,7 @@ StructuredBuffer<DSLightVPMat>	DirectionalLightShadowInvVPVMatBuffer		: register
 StructuredBuffer<PLightVPMat>	PointLightShadowInvVPVMatBuffer				: register( t33 );
 StructuredBuffer<DSLightVPMat>	SpotLightShadowInvVPVMatBuffer				: register( t34 );
 
-RWTexture3D<uint> OutVoxelColorTexture									: register( u0 );
+RWTexture3D<uint> OutVoxelColorMap											: register( u0 );
 
 float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, uint cascade)
 {
