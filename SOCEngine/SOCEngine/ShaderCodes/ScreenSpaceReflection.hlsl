@@ -26,11 +26,6 @@ PS_INPUT FullScreenVS(VS_INPUT input)
 	return ps;
 }
 
-float LinearizeDepth(float depth)
-{
-	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
-}
-
 void swap(inout float a, inout float b)	{ float t = a; a = b; b = t; }
 
 float DistanceSquared(float2 a, float2 b)
