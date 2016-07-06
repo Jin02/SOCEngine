@@ -37,7 +37,7 @@ void TestScene::OnInitialize()
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 
-#if 0 //GI Test
+#if 1 //GI Test
 	ActivateGI(true, 256, 50.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
