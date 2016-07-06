@@ -9,12 +9,13 @@
 #include "GICommon.h"
 #include "TBDRInput.h"
 
-Texture3D<float4> VoxelMap								: register(t29);
-Texture2D<float4> DiffuseLightBuffer					: register(t30);
-Texture2D<float4> SpecularLightBuffer					: register(t31);
+Texture3D<float4>	VoxelMap							: register( t29 );
+Texture2D<float4>	DiffuseLightBuffer					: register( t30 );
+Texture2D<float4>	SpecularLightBuffer					: register( t31 );
+Buffer<uint>		PerLightIndicesBuffer				: register( t32 );
 
-RWTexture2D<float4> OutIndirectColorMap					: register(u0);
-SamplerState linearSampler								: register(s0);
+RWTexture2D<float4>	OutIndirectColorMap					: register( u0 );
+SamplerState		linearSampler						: register( s0 );
 
 #define MAXIMUM_CONE_COUNT				6
 #define SAMPLE_START_OFFSET_RATE		1.2f

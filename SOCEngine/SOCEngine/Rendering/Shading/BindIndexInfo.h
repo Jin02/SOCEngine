@@ -61,7 +61,8 @@ namespace Rendering
 
 		VCT_InputVoxelMap						= 29,
 		VCT_InputDiffuseLightMap				= 30,
-		VCT_InputSpecularLightMap				= 31,	// 31은 GBuffer_Emission_MaterialFlag과 겹침
+		VCT_InputSpecularLightMap				= 31,
+		VCT_InputPerLightIndicesBuffer			= 32,
 
 //		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,

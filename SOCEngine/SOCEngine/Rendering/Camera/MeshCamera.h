@@ -79,22 +79,23 @@ namespace Rendering
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(TBRParamConstBuffer,					const Buffer::ConstBuffer*,			_tbrParamConstBuffer);
+			GET_ACCESSOR(TBRParamConstBuffer,					const Buffer::ConstBuffer*,				_tbrParamConstBuffer);
 
-			GET_ACCESSOR(GBufferAlbedoOcclusion,				const Texture::RenderTexture*,		_albedo_occlusion);
-			GET_ACCESSOR(GBufferNormalRoughness,				const Texture::RenderTexture*,		_normal_roughness);
-			GET_ACCESSOR(GBufferMotionXYMetallicSpecularity,	const Texture::RenderTexture*,		_motionXY_metallic_specularity);
-			GET_ACCESSOR(GBufferEmissionMaterialFlag,			const Texture::RenderTexture*,		_emission_materialFlag);
+			GET_ACCESSOR(GBufferAlbedoOcclusion,				const Texture::RenderTexture*,			_albedo_occlusion);
+			GET_ACCESSOR(GBufferNormalRoughness,				const Texture::RenderTexture*,			_normal_roughness);
+			GET_ACCESSOR(GBufferMotionXYMetallicSpecularity,	const Texture::RenderTexture*,			_motionXY_metallic_specularity);
+			GET_ACCESSOR(GBufferEmissionMaterialFlag,			const Texture::RenderTexture*,			_emission_materialFlag);
 
-			GET_ACCESSOR(OpaqueDepthBuffer,						const Texture::DepthBuffer*,		_opaqueDepthBuffer);
-			GET_ACCESSOR(BlendedDepthBuffer,					const Texture::DepthBuffer*,		_blendedDepthBuffer);
+			GET_ACCESSOR(OpaqueDepthBuffer,						const Texture::DepthBuffer*,			_opaqueDepthBuffer);
+			GET_ACCESSOR(BlendedDepthBuffer,					const Texture::DepthBuffer*,			_blendedDepthBuffer);
 
-			GET_ACCESSOR(OffScreen,								const Texture::RenderTexture*,		_renderTarget);
+			GET_ACCESSOR(OffScreen,								const Texture::RenderTexture*,			_renderTarget);
 
-			GET_ACCESSOR(DiffuseLightBuffer,					const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetDiffuseLightBuffer());
-			GET_ACCESSOR(SpecularLightBuffer,					const Texture::RenderTexture*,		_deferredShadingWithLightCulling->GetSpecularLightBuffer());
+			GET_ACCESSOR(DiffuseLightBuffer,					const Texture::RenderTexture*,			_deferredShadingWithLightCulling->GetDiffuseLightBuffer());
+			GET_ACCESSOR(SpecularLightBuffer,					const Texture::RenderTexture*,			_deferredShadingWithLightCulling->GetSpecularLightBuffer());
+			GET_ACCESSOR(PerLightIndicesBuffer,					const Buffer::ShaderResourceBuffer*,	_deferredShadingWithLightCulling->GetPerLightIndicesSRBuffer());
 
-			GET_ACCESSOR(UseIndirectColorMap,					bool,								_offScreen->GetUseIndirectColorMap());
+			GET_ACCESSOR(UseIndirectColorMap,					bool,									_offScreen->GetUseIndirectColorMap());
 		};
 	}
 
