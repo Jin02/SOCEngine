@@ -12,10 +12,13 @@ groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TIL
 #endif
 
 // Output
-RWTexture2D<float4> g_tOutScreen : register( u0 );
+RWTexture2D<float4> OutDiffuseLightBuffer	: register( u0 );
+RWTexture2D<float4> OutSpecularLightBuffer	: register( u1 );
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
+void MSAALighting(
+	out float4 outAccumulativeDiffuse, out float4 outAccumulativeSpecular,
+	uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
 {
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
@@ -68,10 +71,8 @@ float4 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	float3 result = saturate(accumulativeDiffuse + accumulativeSpecular);
-	result += surface.emission.rgb;
-	
-	return float4(result, 1.0f);
+	outAccumulativeDiffuse	= accumulativeDiffuse + surface.emission.rgb;
+	outAccumulativeSpecular	= accumulativeSpecular;
 }
 #endif
 
@@ -161,14 +162,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		isRenderDL = true;
 #endif
 	}
-
-	float3	result = saturate(accumulativeDiffuse + accumulativeSpecular);
-	result += surface.emission.rgb;
+	
+	accumulativeDiffuse += surface.emission.rgb;
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
 	uint2 scale_2_idx = globalIdx.xy * 2;
-	g_tOutScreen[scale_2_idx] = float4(result, 1.0f);
+	OutDiffuseLightBuffer[scale_2_idx]	= float4(accumulativeDiffuse, 1.0f);
+	OutSpecularLightBuffer[scale_2_idx]	= float4(accumulativeSpecular, 1.0f);
 
 	float3 sampleNormal = float3(0.0f, 0.0f, 0.0f);
 	for(uint sampleIdx = 1; sampleIdx < MSAA_SAMPLES_COUNT; ++sampleIdx)
@@ -188,9 +189,13 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 	else
 	{
-		g_tOutScreen[scale_2_idx + uint2(1, 0)] = float4(result, 1.0f);
-		g_tOutScreen[scale_2_idx + uint2(0, 1)] = float4(result, 1.0f);
-		g_tOutScreen[scale_2_idx + uint2(1, 1)] = float4(result, 1.0f);
+		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 0)] = float4(accumulativeDiffuse, 1.0f);
+		OutDiffuseLightBuffer[scale_2_idx + uint2(0, 1)] = float4(accumulativeDiffuse, 1.0f);
+		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 1)] = float4(accumulativeDiffuse, 1.0f);
+
+		OutSpecularLightBuffer[scale_2_idx + uint2(1, 0)] = float4(accumulativeSpecular, 1.0f);
+		OutSpecularLightBuffer[scale_2_idx + uint2(0, 1)] = float4(accumulativeSpecular, 1.0f);
+		OutSpecularLightBuffer[scale_2_idx + uint2(1, 1)] = float4(accumulativeSpecular, 1.0f);
 	}
 
 	GroupMemoryBarrierWithGroupSync();
@@ -198,8 +203,6 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint edgePixelIdx			= 0;
 		 sampleIdx				= 0;
 	uint2 scale_sample_coord	= uint2(0, 0);
-	float4 lightResult			= float4(0.0f, 0.0f, 0.0f, 0.0f);
-
 	uint sample_mul_LightCount = (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
 	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
 	{
@@ -216,8 +219,12 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		scale_sample_coord.x += sampleIdx % 2;
 		scale_sample_coord.y += sampleIdx > 1;
 		
-		lightResult = MSAALighting(edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
-		g_tOutScreen[scale_sample_coord] = lightResult;
+		float4 diffuse	= float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 specular	= float4(0.0f, 0.0f, 0.0f, 0.0f);
+		MSAALighting(edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
+
+		OutDiffuseLightBuffer[scale_sample_coord]	= diffuse;
+		OutSpecularLightBuffer[scale_sample_coord]	= specular;
 	}
 
 #else // off MSAA
@@ -239,9 +246,10 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	if(debugLightCount > 5)
 		debugTiles = float3(1, 1, 1);	
 
-	g_tOutScreen[globalIdx.xy] = float4(debugTiles, 1.0f);
+	OutDiffuseLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-	g_tOutScreen[globalIdx.xy] = float4(result, 1.0f);
+	OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
+	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
 #endif
 
 #endif

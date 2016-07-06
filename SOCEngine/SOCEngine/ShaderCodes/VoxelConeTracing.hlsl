@@ -10,7 +10,8 @@
 #include "TBDRInput.h"
 
 Texture3D<float4> VoxelMap								: register(t29);
-Texture2D<float4> DirectColorMap						: register(t30);
+Texture2D<float4> DiffuseLightBuffer					: register(t30);
+Texture2D<float4> SpecularLightBuffer					: register(t31);
 
 RWTexture2D<float4> OutIndirectColorMap					: register(u0);
 SamplerState linearSampler								: register(s0);
@@ -206,7 +207,11 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 #else
 
-	float4 directColor	= DirectColorMap.Load( uint3(globalIdx.xy, 0) ) * 1.5f;
+	// 임시 처리
+	float4 directDiffuse	= DiffuseLightBuffer.Load( uint3(globalIdx.xy, 0) );
+	float4 directSpecular	= SpecularLightBuffer.Load( uint3(globalIdx.xy, 0) );
+
+	float4 directColor	= (directDiffuse + directSpecular) * 1.5f;
 	float3 baseColor	= directColor.rgb;
 
 	// Metallic 값을 이용해서 대충 섞는다.

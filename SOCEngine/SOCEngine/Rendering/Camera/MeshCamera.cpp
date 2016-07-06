@@ -82,7 +82,9 @@ void MeshCamera::OnInitialize()
 	_tbrParamConstBuffer->Initialize(sizeof(LightCulling::TBRParam));
 
 	_offScreen = new OffScreen;
-	_offScreen->Initialize(_deferredShadingWithLightCulling->GetUncompressedOffScreen(), false);
+	_offScreen->Initialize(	_deferredShadingWithLightCulling->GetDiffuseLightBuffer(),
+							_deferredShadingWithLightCulling->GetSpecularLightBuffer(),
+							false);
 }
 
 void MeshCamera::OnDestroy()

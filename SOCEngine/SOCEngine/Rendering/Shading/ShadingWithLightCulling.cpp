@@ -14,7 +14,8 @@ using namespace Rendering::Texture;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::TBDR;
 
-ShadingWithLightCulling::ShadingWithLightCulling() : _offScreen(nullptr)
+ShadingWithLightCulling::ShadingWithLightCulling()
+	: _diffuseLightBuffer(nullptr), _specularLightBuffer(nullptr)
 {
 
 }
@@ -109,17 +110,17 @@ void ShadingWithLightCulling::Initialize(
 			}
 		}
 
-		_offScreen = new RenderTexture;
-		_offScreen->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
+		_diffuseLightBuffer = new RenderTexture;
+		_diffuseLightBuffer->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
 
-		ShaderForm::InputUnorderedAccessView output;
-		{
-			output.bindIndex	= (uint)UAVBindIndex::TBDR_OutScreen;
-			output.uav			= _offScreen->GetUnorderedAccessView();
-		}
+		_specularLightBuffer = new RenderTexture;
+		_specularLightBuffer->Initialize(bufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
 
 		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
-		outputs.push_back(output);
+		{
+			outputs.push_back( ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::TBDR_OutDiffuseLightBuffer), _diffuseLightBuffer->GetUnorderedAccessView()) );
+			outputs.push_back( ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::TBDR_OutSpecularLightBuffer), _specularLightBuffer->GetUnorderedAccessView()) );
+		}
 
 		SetOuputBuferToCS(outputs);
 	}
@@ -129,7 +130,9 @@ void ShadingWithLightCulling::Initialize(
 
 void ShadingWithLightCulling::Destory()
 {
-	SAFE_DELETE(_offScreen);
+	SAFE_DELETE(_diffuseLightBuffer);
+	SAFE_DELETE(_specularLightBuffer);
+
 	LightCulling::Destroy();
 }
 
