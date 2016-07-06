@@ -40,9 +40,9 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 
 	dx->ClearDeviceContext();
 
-	_iblPass->Render(dx, _result, mainMeshCamera, sky);
+//	_iblPass->Render(dx, _result, mainMeshCamera, sky);
 
-	const RenderTexture* resultRT = _result;
+	const RenderTexture* resultRT = mainMeshCamera->GetRenderTarget();
 	_backBufferMaker->Render(backBuffer->GetRenderTargetView(),
 							resultRT, nullptr, mainMeshCamera->GetTBRParamConstBuffer());
 }
