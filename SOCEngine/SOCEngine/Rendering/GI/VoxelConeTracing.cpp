@@ -110,9 +110,9 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,				meshCam->GetGBufferNormalRoughness()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,							meshCam->GetOpaqueDepthBuffer()->GetShaderResourceView());
 	CSSetShaderResource(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				meshCam->GetDiffuseLightBuffer()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				meshCam->GetSpecularLightBuffer()->GetShaderResourceView());
-	context->CSSetShaderResources(uint(TextureBindIndex::VCT_InputPerLightIndicesBuffer), 1,meshCam->GetPerLightIndicesBuffer()->GetShaderResourceView());
+//	CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				meshCam->GetDiffuseLightBuffer()->GetShaderResourceView());
+//	CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				meshCam->GetSpecularLightBuffer()->GetShaderResourceView());
+//	context->CSSetShaderResources(uint(TextureBindIndex::VCT_InputPerLightIndicesBuffer), 1,meshCam->GetPerLightIndicesBuffer()->GetShaderResourceView());
 
 	ID3D11Buffer* tbrParamCB = meshCam->GetTBRParamConstBuffer()->GetBuffer();
 	context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
@@ -141,8 +141,8 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,				nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			nullptr);
 		CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,							nullptr);
-		CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				nullptr);
-		CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				nullptr);
-		CSSetShaderResource(context, TextureBindIndex::VCT_InputPerLightIndicesBuffer,			nullptr);
+//		CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				nullptr);
+//		CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				nullptr);
+//		CSSetShaderResource(context, TextureBindIndex::VCT_InputPerLightIndicesBuffer,			nullptr);
 	}
 }
