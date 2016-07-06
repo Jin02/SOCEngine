@@ -10,9 +10,6 @@
 #include "TBDRInput.h"
 
 Texture3D<float4>	VoxelMap							: register( t29 );
-Texture2D<float4>	DiffuseLightBuffer					: register( t30 );
-Texture2D<float4>	SpecularLightBuffer					: register( t31 );
-Buffer<uint>		PerLightIndicesBuffer				: register( t32 );
 
 RWTexture2D<float4>	OutIndirectColorMap					: register( u0 );
 SamplerState		linearSampler						: register( s0 );
@@ -182,6 +179,11 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle);
 
+	float3 indirectDiffuse	= diffuseVCT	* surface.albedo;
+	float3 indirectSpecular	= specularVCT	* surface.specular;
+
+	float3 indirectColor	= max(indirectDiffuse + indirectSpecular, 0.0f);
+
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA only 4x
 	uint2 scaledGlobalIdx = globalIdx.xy * 2;
@@ -194,32 +196,20 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 		scaledGlobalIdx + uint2(1, 1)
 	};
 
-	[unroll] for(uint i=0; i<4; ++i)
-	{
-		float4 directColor	= DirectColorMap.Load( uint3(texIndex[i], 0) );
-		float3 baseColor	= directColor.rgb;
-	
-		// Metallic 값을 이용해서 대충 섞는다.
-		float3 indirectDiffuse	= diffuseVCT * baseColor * (1.0f - surface.metallic);
-		float3 indirectSpecular	= specularVCT * surface.metallic;
-		float3 indirectColor	= indirectDiffuse + indirectSpecular;
+	OutIndirectColorMap[ texIndex[0] ] = indirectColor;
 
-		OutIndirectColorMap[texIndex[i]] = float4(indirectColor, 1.0f);
+	[unroll] for(uint i=1; i<4; ++i)
+	{
+		Surface sampledSurface;
+		ParseGBufferSurface(sampledSurface, globalIdx.xy, i);
+		
+		float3 sampledIndirectDiffuse	= diffuseVCT	* sampledSurface.albedo;
+		float3 sampledIndirectSpecular	= specularVCT	* sampledSurface.specular;
+		float3 sampledIndirectColor		= max(sampledIndirectDiffuse + sampledIndirectSpecular, 0.0f);
+
+		OutIndirectColorMap[ texIndex[i] ] = float4(sampledIndirectColor, 1.0f);
 	}
 #else
-
-	// 임시 처리
-	float4 directDiffuse	= DiffuseLightBuffer.Load( uint3(globalIdx.xy, 0) );
-	float4 directSpecular	= SpecularLightBuffer.Load( uint3(globalIdx.xy, 0) );
-
-	float4 directColor	= (directDiffuse + directSpecular) * 1.5f;
-	float3 baseColor	= directColor.rgb;
-
-	// Metallic 값을 이용해서 대충 섞는다.
-	float3 indirectDiffuse	= diffuseVCT * baseColor * (1.0f - surface.metallic);
-	float3 indirectSpecular	= specularVCT * surface.metallic;
-	float3 indirectColor	= indirectDiffuse + indirectSpecular;
-
 	OutIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
 #endif
 }
