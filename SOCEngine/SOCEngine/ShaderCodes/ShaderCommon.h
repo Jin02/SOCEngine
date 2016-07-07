@@ -74,4 +74,9 @@ float Luminance(float3 linearColor)
 	return dot(linearColor, float3(0.3f, 0.59f, 0.11f));
 }
 
+float SimpleNoise(in float3 co)
+{
+    return frac(sin(dot(co, float3(12.9898f, 78.233f, 31.323f))) * 43758.5453f);
+}
+
 #endif

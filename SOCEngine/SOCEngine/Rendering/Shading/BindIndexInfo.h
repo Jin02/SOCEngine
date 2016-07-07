@@ -60,8 +60,6 @@ namespace Rendering
 		SpotLightShadowInvVPVMat				= 34,
 
 		VCT_InputVoxelMap						= 29,
-		VCT_InputDiffuseLightMap				= 30,
-		VCT_InputSpecularLightMap				= 31,	// 31은 GBuffer_Emission_MaterialFlag과 겹침
 
 //		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
@@ -108,6 +106,7 @@ namespace Rendering
 	{
 		TBDR_OutDiffuseLightBuffer		= 0,
 		TBDR_OutSpecularLightBuffer		= 1,
+		TBDR_OutPerLightIndicesInTile	= 2,
 		
 		Lightculling_LightIndexBuffer	= 0,
 

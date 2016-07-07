@@ -56,7 +56,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 
-		radiosity = lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, distanceOfLightWithVertex / lightRadius);
+		radiosity = lambert * attenuation * lightColor;// * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, distanceOfLightWithVertex / lightRadius);
 	}
 	radiosity = saturate(radiosity + emission.rgb);
 

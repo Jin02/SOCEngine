@@ -9,13 +9,15 @@ using namespace Rendering;
 using namespace Resource;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
+using namespace Rendering::View;
 using namespace Rendering::Shader;
 using namespace Rendering::Texture;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::TBDR;
 
 ShadingWithLightCulling::ShadingWithLightCulling()
-	: _diffuseLightBuffer(nullptr), _specularLightBuffer(nullptr)
+	: _diffuseLightBuffer(nullptr), _specularLightBuffer(nullptr),
+	_perLightIndicesBuffer(nullptr), _perLightIndicesBufferUAV(nullptr)
 {
 
 }
@@ -29,6 +31,7 @@ void ShadingWithLightCulling::Initialize(
 	const Texture::DepthBuffer* opaqueDepthBuffer,
 	const GBuffers& geometryBuffers,
 	const Math::Size<uint>& backBufferSize,
+	bool fetchLightIndexBuffer,
 	bool useDebugMode)
 {
 	const Core::Scene* scene				= Director::SharedInstance()->GetCurrentScene();
@@ -50,6 +53,9 @@ void ShadingWithLightCulling::Initialize(
 
 		if(shadowMgr->GetNeverUseVSM())
 			macros.push_back(ShaderMacro("NEVER_USE_VSM", ""));
+
+		if(fetchLightIndexBuffer)
+			macros.push_back(ShaderMacro("STORE_PER_LIGHT_INDICES_IN_TILE", ""));
 	}
 
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
@@ -98,7 +104,7 @@ void ShadingWithLightCulling::Initialize(
 		}
 	}
 
-	// Offscreen
+	// Outputs
 	{
 		Math::Size<uint> bufferSize = backBufferSize;
 		{
@@ -120,6 +126,20 @@ void ShadingWithLightCulling::Initialize(
 		{
 			outputs.push_back( ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::TBDR_OutDiffuseLightBuffer), _diffuseLightBuffer->GetUnorderedAccessView()) );
 			outputs.push_back( ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::TBDR_OutSpecularLightBuffer), _specularLightBuffer->GetUnorderedAccessView()) );
+		}
+
+		if(fetchLightIndexBuffer)
+		{
+			Math::Size<unsigned int> size = CalcThreadGroupSize();
+			uint num = CalcMaxNumLightsInTile() * size.w * size.h;
+	
+			_perLightIndicesBuffer = new ShaderResourceBuffer;
+			_perLightIndicesBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+	
+			_perLightIndicesBufferUAV = new UnorderedAccessView;
+			_perLightIndicesBufferUAV->Initialize(DXGI_FORMAT_R32_UINT, num, _perLightIndicesBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
+
+			outputs.push_back( ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::TBDR_OutPerLightIndicesInTile), _perLightIndicesBufferUAV) );
 		}
 
 		SetOuputBuferToCS(outputs);

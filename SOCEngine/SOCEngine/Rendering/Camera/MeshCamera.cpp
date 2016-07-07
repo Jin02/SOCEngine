@@ -75,7 +75,7 @@ void MeshCamera::OnInitialize()
 			gbuffer.emission_materialFlag			= _emission_materialFlag;
 		}
 
-		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize);
+		_deferredShadingWithLightCulling->Initialize(_opaqueDepthBuffer, gbuffer, backBufferSize, false);
 	}
 
 	_tbrParamConstBuffer = new ConstBuffer;

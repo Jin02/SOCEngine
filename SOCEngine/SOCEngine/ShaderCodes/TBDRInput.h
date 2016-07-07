@@ -119,4 +119,31 @@ cbuffer ShadowGlobalParam : register( b4 )
 
 // b5, b6, b7 Àº GI °ü·Ã
 
+
+float4 ProjToView( float4 p )
+{
+    p = mul( p, tbrParam_invProjMat );
+    p /= p.w;
+    return p;
+}
+
+float InvertProjDepthToView(float depth)
+{
+	/*
+	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
+	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
+		
+	if you dont understand, calculate inverse projection matrix.
+	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
+	*/
+
+	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
+}
+
+
+float LinearizeDepth(float depth)
+{
+	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
+}
+
 #endif

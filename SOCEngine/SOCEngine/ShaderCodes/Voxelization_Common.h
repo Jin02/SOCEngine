@@ -9,62 +9,54 @@
 
 cbuffer Voxelization_Info_CB : register( b5 )
 {
-	matrix	voxelization_vp_axisX;
-	matrix	voxelization_vp_axisY;
-	matrix	voxelization_vp_axisZ;
+	matrix	voxelization_vp_axis[3];
+//	matrix	voxelization_vp_axisY;
+//	matrix	voxelization_vp_axisZ;
 
 	float3	voxelization_minPos;
 	uint	voxelization_currentCascade;
 };
 
-SamplerState defaultSampler			: register( s0 );
+SamplerState DefaultSampler			: register( s0 );
 
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
-RWTexture3D<uint> OutVoxelAlbedoMap		: register( u0 );
-RWTexture3D<uint> OutVoxelNormalMap		: register( u1 );
-RWTexture3D<uint> OutVoxelEmissionMap	: register( u2 );
+#if defined(USE_OUT_VOXEL_MAP)
+RWTexture3D<uint> OutVoxelAlbedoMap			: register( u0 );
+RWTexture3D<uint> OutVoxelNormalMap			: register( u1 );
+RWTexture3D<uint> OutVoxelEmissionMap		: register( u2 );
 RWTexture3D<uint> OutInjectionColorMap		: register( u3 );
 #endif
 
-void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3], float3 inputLocalPos[3])
+void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3], out uint outAxisIndex,
+								float3 inputLocalPos[3])
 {
 	worldPos[0] = mul(float4(inputLocalPos[0], 1.0f), transform_world);
 	worldPos[1] = mul(float4(inputLocalPos[1], 1.0f), transform_world);
 	worldPos[2] = mul(float4(inputLocalPos[2], 1.0f), transform_world);
 
-	float3 faceNormal = cross(normalize(worldPos[1].xyz - worldPos[0].xyz), normalize(worldPos[2].xyz - worldPos[0].xyz));
+	float3 NdotAxis = abs( normalize( cross(worldPos[1].xyz - worldPos[0].xyz, worldPos[2].xyz - worldPos[0].xyz) ) );
 
-	float3 axis;
-	axis.x = abs( dot(float3(1, 0, 0), faceNormal) );
-	axis.y = abs( dot(float3(0, 1, 0), faceNormal) );
-	axis.z = abs( dot(float3(0, 0, 1), faceNormal) );
+	if(		NdotAxis.x > max(NdotAxis.y, NdotAxis.z) )	outAxisIndex = 0;
+	else if(NdotAxis.y > max(NdotAxis.x, NdotAxis.z) )	outAxisIndex = 1;
+	else												outAxisIndex = 2;
 
-	matrix viewProjMat;
-	if(		axis.x > max(axis.y, axis.z))
-		viewProjMat = voxelization_vp_axisX;
-	else if(axis.y > max(axis.x, axis.z))
-		viewProjMat = voxelization_vp_axisY;
-	else if(axis.z > max(axis.x, axis.y))
-		viewProjMat = voxelization_vp_axisZ;
-
-	position[0] = mul(worldPos[0], viewProjMat);
-	position[1] = mul(worldPos[1], viewProjMat);
-	position[2] = mul(worldPos[2], viewProjMat);
+	position[0] = mul(worldPos[0], voxelization_vp_axis[outAxisIndex]);
+	position[1] = mul(worldPos[1], voxelization_vp_axis[outAxisIndex]);
+	position[2] = mul(worldPos[2], voxelization_vp_axis[outAxisIndex]);
 }
 
 void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 {
-	float4 diffuseTex	= diffuseMap.Sample(defaultSampler, uv);
+	float4 diffuseTex	= diffuseMap.Sample(DefaultSampler, uv);
 	float3 mainColor	= GetMaterialMainColor().rgb;
 	albedo				= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
 
-	//float opacityMap	= 1.0f - opacityMap.Sample(defaultSampler, input.uv).x;
-	alpha				= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
+	//float opacityMap	= 1.0f - opacityMap.Sample(DefaultSampler, input.uv).x;
+	alpha			= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
 }
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 {
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
+#if defined(USE_OUT_VOXEL_MAP)
 	int dimension = int(GetDimension());
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
@@ -72,11 +64,14 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 		index.y += voxelization_currentCascade * dimension;
 
 		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,	index,	albedoWithAlpha, false);
+		//OutVoxelAlbedoMap[index] = Float4ColorToUint(albedoWithAlpha);
 
 		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(material_emissionColor.xyz, 1.0f));
+		//OutVoxelEmissionMap[index] = float4(material_emissionColor.xyz, 1.0f);
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
 		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f), false);
+		//OutVoxelNormalMap[index] = Float4ColorToUint(float4(storeNormal, 1.0f));
 	}
 #endif
 }
@@ -91,7 +86,7 @@ void ComputeVoxelIdx(out int3 outVoxelIdx, float3 worldPos)
 
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
 {
-#if defined(USE_OUT_ANISOTROPIC_VOXEL_TEXTURES)
+#if defined(USE_OUT_VOXEL_MAP)
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 
 	uint dlShadowCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadows);
@@ -99,17 +94,17 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 	{
 		ParsedShadowParam shadowParam;
 		ParseShadowParam(shadowParam, DirectionalLightShadowParams[dlShadowIdx]);
-		uint lightIndex		= shadowParam.lightIndex;
+		uint lightIndex			= shadowParam.lightIndex;
 
 		float4 lightCenterWithDirZ	= DirectionalLightTransformWithDirZBuffer[lightIndex];
-		float2 lightParam			= DirectionalLightParamBuffer[lightIndex];
-		float3 lightDir				= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		float2 lightParam		= DirectionalLightParamBuffer[lightIndex];
+		float3 lightDir			= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
 
-		float3 lightColor	= DirectionalLightColorBuffer[lightIndex].rgb;
-		float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
-		float intensity		= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float3 lightColor		= DirectionalLightColorBuffer[lightIndex].rgb;
+		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
+		float intensity			= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 
-		radiosity += lambert * lightColor * intensity * RenderDirectionalLightShadow(lightIndex, worldPos);
+		radiosity += lambert * lightColor * intensity;// * RenderDirectionalLightShadow(lightIndex, worldPos);
 		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 
@@ -117,7 +112,7 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 #endif
 }
 
-void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos)
+void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos, uint axisIndex)
 {
 	float	alpha;
 	float3	albedo;

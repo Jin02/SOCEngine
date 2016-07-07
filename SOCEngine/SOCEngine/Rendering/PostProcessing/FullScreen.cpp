@@ -38,7 +38,7 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	{
 		std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
 		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, "FullScreenVS");
-		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, nullptr);
+		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, macros);
 	}
 
 	// Setting Pixel Shader
@@ -73,6 +73,9 @@ void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT)
 
 	//context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	rtv = nullptr;
+	context->OMSetRenderTargets(1, &rtv, nullDSV);
 }
 
 void FullScreen::Destroy()

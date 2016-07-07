@@ -1,4 +1,4 @@
-#define USE_OUT_ANISOTROPIC_VOXEL_TEXTURES
+#define USE_OUT_VOXEL_MAP 
 
 #include "Voxelization_Common.h"
 #include "NormalMapping.h"
@@ -39,6 +39,7 @@ struct GS_OUTPUT
 	float3 normal				: NORMAL;
 	float3 tangent				: TANGENT;
 	float2 uv					: TEXCOORD0;
+	uint axis					: AXIS_INDEX;
 };
 
 [maxvertexcount(3)]
@@ -51,8 +52,9 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		input[2].localPos,
 	};
 
+	uint axisIndex = 0;
 	float4 position[3], worldPos[3];
-	ComputeVoxelizationProjPos(position, worldPos, localPos);
+	ComputeVoxelizationProjPos(position, worldPos, axisIndex, localPos);
 
 	[unroll]
 	for(uint i=0; i<3; ++i)
@@ -63,6 +65,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		output.normal	= input[i].normal;
 		output.tangent	= input[i].tangent;
 		output.worldPos	= worldPos[i].xyz;
+		output.axis		= axisIndex;
 
 		outputStream.Append(output);
 	}
@@ -72,9 +75,9 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 void PS( GS_OUTPUT input )
 {
-	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
+	float4 normalTex	= normalMap.Sample(DefaultSampler, input.uv);
 	float3 bumpedNormal = NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
 	float3 normal		= lerp(input.normal, bumpedNormal, HasNormalMap());
 
-	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos);
+	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos, input.axis);
 }

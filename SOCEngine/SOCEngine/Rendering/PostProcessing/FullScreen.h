@@ -22,7 +22,7 @@ namespace Rendering
 			FullScreen();
 			virtual ~FullScreen();
 
-		protected:
+		public:
 			void Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<Shader::ShaderMacro>* macros);
 
 		public:
