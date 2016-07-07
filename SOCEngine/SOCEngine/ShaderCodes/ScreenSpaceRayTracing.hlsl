@@ -31,7 +31,7 @@ float4 SSRT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float jitter				= ssrt_stride > 1.0f ? float( (screenPos.x + screenPos.y) & 1 ) * 0.5f : 0.0f;
 	bool intersect				= TraceScreenSpaceRay(hitScreenPos, hitPos, viewRayOrigin, rayDir, jitter);
 	
-	depth						= FetchLinearDepthFromGBuffer(hitScreenPos);
+	depth						= GBufferDepth.Load(int3(hitScreenPos, 0)).r;
 
     float2 viewportSize			= GetViewportSize();
     float2 texelSize			= float2(1.0f, 1.0f) / viewportSize;
