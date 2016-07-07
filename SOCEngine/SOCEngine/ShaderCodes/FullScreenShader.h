@@ -10,7 +10,7 @@
 struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
-	float2 uv				: TEXCOORD0;
+	float2 uv					: TEXCOORD0;
 
 #ifdef USE_VIEW_INFORMATION
 	float3 viewPosition			: VIEW_POSITION;
@@ -37,10 +37,10 @@ PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 	
 #ifdef USE_VIEW_INFORMATION
 	float4	viewSpacePosition	= mul(ps.position, tbrParam_invProjMat);
-	ps.viewPosition			= viewSpacePosition.xyz;
+	ps.viewPosition				= viewSpacePosition.xyz;
 
 	float4	worldSpaceViewRay	= mul(ps.position, tbrParam_invViewProjMat);
-	ps.viewRay			= normalize(worldSpaceViewRay.xyz / worldSpaceViewRay.w);
+	ps.viewRay					= normalize(worldSpaceViewRay.xyz / worldSpaceViewRay.w);
 #endif
 
 	return ps;

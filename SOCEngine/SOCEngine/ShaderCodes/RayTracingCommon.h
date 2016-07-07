@@ -1,15 +1,17 @@
 //EMPTY_META_DATA
-// #16_0 기반으로 작업 중..
 
-#ifndef __RAY_TRACING_COMMON_H__
-#define __RAY_TRACING_COMMON_H__
+#ifndef __SOC_RAY_TRACING_COMMON_H__
+#define __SOC_RAY_TRACING_COMMON_H__
 
-cbuffer ScreenSpaceRayTracing_ViewToTexSpace	: register(b?)
+#define USE_VIEW_INFORMATION
+#include "FullScreenShader.h"
+
+cbuffer ScreenSpaceRayTracing_ViewToTexSpace			: register( b5 )
 {
 	matrix	ssrt_viewToTextureSpace;
 }
 
-cbuffer ScreenSpaceRayTracing			: register(b?)
+cbuffer ScreenSpaceRayTracing							: register( b6 )
 {
 	float	ssrt_thickness;
 	float	ssrt_maxDistance;
@@ -43,7 +45,7 @@ bool IntersectDepth(float z, float minZ, float maxZ)
 
 float FetchLinearDepthFromGBuffer(int2 screenPos)
 {
-	float depth = GBufferDepth.Load(int3(screenPos, 0).r;
+	float depth = GBufferDepth.Load(int3(screenPos, 0)).r;
 	return LinearizeDepth(depth);
 }
 
@@ -129,7 +131,7 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 			prevMaxZ	= rayMaxZ;
 			
 			if(rayMinZ > rayMaxZ)
-				swap(rayMinZ, rayMaxZ);
+				Swap(rayMinZ, rayMaxZ);
 			
 			outHitScreenPos	= permute ? pqk.yx : pqk.xy;
 			sceneMaxZ	= FetchLinearDepthFromGBuffer( int2(outHitScreenPos) );
@@ -143,19 +145,20 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
 }
 
-float3 ComputeViewNormalFromGBuffer(int2 screenPos, uint sampleIdx)
+void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, out float outRoughness,
+													int2 screenPos, uint sampleIdx)
 {
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-    float3 worldNormal = GBufferNormal_roughness.Load( screenPos, sampleIdx ).xyz;
+    float4 normal_roughness = GBufferNormal_roughness.Load( screenPos, sampleIdx );
 #else
-    float3 worldNormal = GBufferNormal_roughness.Load( int3(screenPos, 0) ).xyz;
+    float4 normal_roughness = GBufferNormal_roughness.Load( int3(screenPos, 0) );
 #endif
     
-    worldNormal *= 2.0f;
-    worldNormal -= float3(1.0f, 1.0f, 1.0f);
-    
-    float3 viewNormal = mul(float4(worldNormal, 0.0f), tbrParam_viewMat).xyz;
-    return normalize( viewNormal );
+	float3 worldNormal	= normal_roughness.xyz * 2.0f - float3(1.0f, 1.0f, 1.0f);
+    float3 viewNormal	= mul(float4(worldNormal, 0.0f), tbrParam_viewMat).xyz;
+
+	outViewNormal	= normalize( viewNormal );
+	outRoughness	= normal_roughness.a;
 }
 
 #endif

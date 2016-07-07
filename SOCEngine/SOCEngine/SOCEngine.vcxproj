@@ -91,6 +91,11 @@
     <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h" />
     <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
     <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h" />
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.h" />
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceRayTracing.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
@@ -135,7 +140,7 @@
     </ClInclude>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -165,6 +170,7 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\IsoscelesTriangle.h" />
     <ClInclude Include="ShaderCodes\NormalMapping.h" />
+    <ClInclude Include="ShaderCodes\RayTracingCommon.h" />
     <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -276,9 +282,10 @@
     <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
@@ -383,6 +390,11 @@
     <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp" />
     <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
     <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceRayTracing.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />

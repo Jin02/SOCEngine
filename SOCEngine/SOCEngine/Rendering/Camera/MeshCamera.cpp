@@ -160,6 +160,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix::Inverse(invViewProj, viewProjMat);
 		Matrix invViewProjViewport = invViewportMat * invViewProj;
 
+		Matrix::Transpose(tbrParam.invViewProjMat, invViewProj);
 		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
 
 		Size<uint> viewportSize = Director::SharedInstance()->GetBackBufferSize();
