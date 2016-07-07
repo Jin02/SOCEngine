@@ -32,7 +32,6 @@ void GaussianBlur::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format)
 
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
-	macros.push_back(ShaderMacro("IN_QUAD_SCREEN", ""));
 
 	// Init Shader
 	{
