@@ -165,6 +165,7 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\IsoscelesTriangle.h" />
     <ClInclude Include="ShaderCodes\NormalMapping.h" />
+    <ClInclude Include="ShaderCodes\RayTracingCommon.h" />
     <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -276,9 +277,10 @@
     <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">

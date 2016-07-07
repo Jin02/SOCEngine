@@ -433,6 +433,15 @@
     <Filter Include="Rendering\PostProcessing\Blur\BilateralFiltering">
       <UniqueIdentifier>{bd165714-ee75-474d-8b6c-eb70919dbff2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCodes\PostProcessing\Blur">
+      <UniqueIdentifier>{0ae09155-161e-4958-aea5-08e6de68ac9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PostProcessing\OffScreen">
+      <UniqueIdentifier>{8daedb35-3af9-46cf-b985-e132c855f3c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PostProcessing\SSLR">
+      <UniqueIdentifier>{a2b3598f-2788-4712-a35d-4b5807682904}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -877,6 +886,9 @@
     <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h">
       <Filter>Rendering\PostProcessing\Blur\GaussianBlur</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\RayTracingCommon.h">
+      <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1199,14 +1211,8 @@
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
       <Filter>ShaderCodes\UI</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
-      <Filter>ShaderCodes\PostProcessing</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\TBDR.hlsl">
       <Filter>ShaderCodes\Deferred</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
-      <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\GBuffer</Filter>
@@ -1268,9 +1274,6 @@
     <FxCompile Include="ShaderCodes\SkyBox.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceReflection.hlsl">
-      <Filter>ShaderCodes\PostProcessing</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl">
       <Filter>ShaderCodes\Enviroment</Filter>
     </FxCompile>
@@ -1293,10 +1296,22 @@
       <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
-      <Filter>ShaderCodes\PostProcessing</Filter>
+      <Filter>ShaderCodes\PostProcessing\Blur</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
-      <Filter>ShaderCodes\PostProcessing</Filter>
+      <Filter>ShaderCodes\PostProcessing\Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
+      <Filter>ShaderCodes\PostProcessing\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
+      <Filter>ShaderCodes\PostProcessing\OffScreen</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl">
+      <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
+      <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
