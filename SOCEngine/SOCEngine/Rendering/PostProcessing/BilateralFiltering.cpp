@@ -15,7 +15,7 @@ using namespace Device;
 using namespace Resource;
 
 BilateralFiltering::BilateralFiltering()
-	: _vertical(nullptr), _horizontal(nullptr)
+	: _vertical(nullptr), _horizontal(nullptr), _tempBuffer(nullptr)
 {
 }
 
@@ -23,10 +23,13 @@ BilateralFiltering::~BilateralFiltering()
 {
 	SAFE_DELETE(_vertical);
 	SAFE_DELETE(_horizontal);
+	SAFE_DELETE(_tempBuffer);
 }
 
-void BilateralFiltering::Initialize(BilateralFiltering::Type type)
+void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::Size<uint>& size, DXGI_FORMAT format)
 {
+	_filteringSize = size;
+
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
 
@@ -45,6 +48,9 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type)
 		_horizontal	= new FullScreen;
 		macros.back().SetName("BLUR_HORIZONTAL");
 		_horizontal->Initialize("BilateralFiltering", psName, &macros);
+
+		_tempBuffer = new RenderTexture;
+		_tempBuffer->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);
 	}
 }
 
@@ -59,6 +65,23 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 
 
 	ID3D11DeviceContext* context	= dx->GetContext();
+
+	uint originViewportCount = 0;
+	D3D11_VIEWPORT originViewports[8];
+	context->RSGetViewports(&originViewportCount, originViewports);
+	{
+		D3D11_VIEWPORT vp;
+
+		vp.TopLeftX	= 0.0f;
+		vp.TopLeftY	= 0.0f;
+		vp.Width	= _filteringSize.Cast<float>().w;
+		vp.Height	= _filteringSize.Cast<float>().h;
+		vp.MinDepth	= 0.0f;
+		vp.MaxDepth	= 1.0f;
+
+		context->RSSetViewports( 1, &vp );
+	}
+
 	BindTexturesToPixelShader(context, 0, inputColorMap );
 	BindTexturesToPixelShader(context, 1, depthBuffer );
 
@@ -68,8 +91,10 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 	ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
 	context->PSSetSamplers(1, 1, &shadowSamplerState);
 
-	_vertical->Render(dx, nullptr);
-	_horizontal->Render(dx, nullptr);
+	_vertical->Render(dx, _tempBuffer);
+
+	BindTexturesToPixelShader(context, 0, _tempBuffer );
+	_horizontal->Render(dx, outResultRT);
 
 	BindTexturesToPixelShader(context, 0, nullptr );
 	BindTexturesToPixelShader(context, 1, nullptr );
@@ -77,4 +102,6 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 	samplerState = nullptr;
 	context->PSSetSamplers(0, 1, &samplerState);
 	context->PSSetSamplers(1, 1, &samplerState);
+
+	context->RSSetViewports( originViewportCount, originViewports );
 }
