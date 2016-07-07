@@ -23,6 +23,7 @@ namespace Rendering
 			{	
 				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
+				Math::Matrix 		invViewProjMat;
 				Math::Matrix 		invViewProjViewport;
 
 				uint				packedViewportSize;
