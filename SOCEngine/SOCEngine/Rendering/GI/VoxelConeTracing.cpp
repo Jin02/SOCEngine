@@ -21,6 +21,7 @@ using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
+
 VoxelConeTracing::VoxelConeTracing()
 	: _shader(nullptr), _indirectColorMap(nullptr), _blur(nullptr)
 {
@@ -87,8 +88,13 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx,
 	_indirectColorMap->Initialize(mapSize,
 								  DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 1);
 
+#if defined(USE_GAUSSIAN_BLUR)
 	_blur = new GaussianBlur;
 	_blur->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+#elif defined(USE_BILATERAL_FILTERING)
+	_blur = new BilateralFiltering;
+	_blur->Initialize(BilateralFiltering::Type::Near, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+#endif
 }
 
 void VoxelConeTracing::Destroy()
@@ -152,5 +158,9 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 //		CSSetShaderResource(context, TextureBindIndex::VCT_InputPerLightIndicesBuffer,			nullptr);
 	}
 
+#if defined(USE_GAUSSIAN_BLUR)
 	_blur->Render(dx, _indirectColorMap, _indirectColorMap);
+#elif defined(USE_BILATERAL_FILTERING)
+	_blur->Render(dx, _indirectColorMap, meshCam->GetOpaqueDepthBuffer(), _indirectColorMap);
+#endif
 }

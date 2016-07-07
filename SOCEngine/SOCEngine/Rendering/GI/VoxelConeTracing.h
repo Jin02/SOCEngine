@@ -12,6 +12,8 @@
 #include "BilateralFiltering.h"
 #include "GaussianBlur.h"
 
+#define USE_BILATERAL_FILTERING
+
 namespace Rendering
 {
 	namespace GI
@@ -21,7 +23,12 @@ namespace Rendering
 		private:
 			GPGPU::DirectCompute::ComputeShader*	_shader;
 			Texture::RenderTexture*					_indirectColorMap;
+
+#if defined(USE_GAUSSIAN_BLUR)
 			PostProcessing::GaussianBlur*			_blur;
+#elif defined(USE_BILATERAL_FILTERING)
+			PostProcessing::BilateralFiltering*		_blur;
+#endif
 
 		public:
 			VoxelConeTracing();
