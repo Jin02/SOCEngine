@@ -9,6 +9,9 @@
 
 #include "MeshCamera.h"
 
+#include "BilateralFiltering.h"
+#include "GaussianBlur.h"
+
 namespace Rendering
 {
 	namespace GI
@@ -18,6 +21,7 @@ namespace Rendering
 		private:
 			GPGPU::DirectCompute::ComputeShader*	_shader;
 			Texture::RenderTexture*					_indirectColorMap;
+			PostProcessing::GaussianBlur*			_blur;
 
 		public:
 			VoxelConeTracing();

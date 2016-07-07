@@ -10,6 +10,7 @@ using namespace Core;
 using namespace Rendering;
 using namespace Math;
 using namespace Rendering::Shadow;
+using namespace Rendering::PostProcessing;
 using namespace Rendering::Factory;
 using namespace Rendering::Manager;
 using namespace Rendering::Texture;
@@ -21,7 +22,7 @@ using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
 VoxelConeTracing::VoxelConeTracing()
-	: _shader(nullptr), _indirectColorMap(nullptr)
+	: _shader(nullptr), _indirectColorMap(nullptr), _blur(nullptr)
 {
 }
 
@@ -31,6 +32,7 @@ VoxelConeTracing::~VoxelConeTracing()
 
 	SAFE_DELETE(_shader);
 	SAFE_DELETE(_indirectColorMap);
+	SAFE_DELETE(_blur);
 }
 
 void VoxelConeTracing::Initialize(const Device::DirectX* dx,
@@ -84,11 +86,15 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx,
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,
 								  DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 1);
+
+	_blur = new GaussianBlur;
+	_blur->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 }
 
 void VoxelConeTracing::Destroy()
 {
 	_indirectColorMap->Destroy();
+	_blur->Destroy();
 }
 
 void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam)
@@ -145,4 +151,6 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedCo
 //		CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				nullptr);
 //		CSSetShaderResource(context, TextureBindIndex::VCT_InputPerLightIndicesBuffer,			nullptr);
 	}
+
+	_blur->Render(dx, _indirectColorMap, _indirectColorMap);
 }
