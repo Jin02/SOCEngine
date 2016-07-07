@@ -28,6 +28,8 @@ BilateralFiltering::~BilateralFiltering()
 
 void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::Size<uint>& size, DXGI_FORMAT format)
 {
+	ASSERT_COND_MSG(type != Type::Far, "Cant support this type");
+
 	_filteringSize = size;
 
 	std::vector<ShaderMacro> macros;
@@ -41,15 +43,15 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::S
 
 	ASSERT_COND_MSG(psName.empty() == false, "Error, psName is null");
 	{
-		_vertical	= new FullScreen;
+		if(_vertical == nullptr)	_vertical	= new FullScreen;
 		macros.push_back(ShaderMacro("BLUR_VERTICAL", ""));
 		_vertical->Initialize("BilateralFiltering", psName, &macros);
 	
-		_horizontal	= new FullScreen;
+		if(_horizontal == nullptr)	_horizontal	= new FullScreen;
 		macros.back().SetName("BLUR_HORIZONTAL");
 		_horizontal->Initialize("BilateralFiltering", psName, &macros);
 
-		_tempBuffer = new RenderTexture;
+		if(_tempBuffer == nullptr)	_tempBuffer = new RenderTexture;
 		_tempBuffer->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);
 	}
 }
@@ -66,19 +68,17 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 
 	ID3D11DeviceContext* context	= dx->GetContext();
 
-	uint originViewportCount = 0;
-	D3D11_VIEWPORT originViewports[8];
-	context->RSGetViewports(&originViewportCount, originViewports);
+	// Setting Viewport
 	{
 		D3D11_VIEWPORT vp;
-
+	
 		vp.TopLeftX	= 0.0f;
 		vp.TopLeftY	= 0.0f;
 		vp.Width	= _filteringSize.Cast<float>().w;
 		vp.Height	= _filteringSize.Cast<float>().h;
 		vp.MinDepth	= 0.0f;
 		vp.MaxDepth	= 1.0f;
-
+	
 		context->RSSetViewports( 1, &vp );
 	}
 
@@ -102,6 +102,11 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 	samplerState = nullptr;
 	context->PSSetSamplers(0, 1, &samplerState);
 	context->PSSetSamplers(1, 1, &samplerState);
+}
 
-	context->RSSetViewports( originViewportCount, originViewports );
+void BilateralFiltering::Destroy()
+{
+	_vertical->Destroy();
+	_horizontal->Destroy();
+	_tempBuffer->Destroy();
 }
