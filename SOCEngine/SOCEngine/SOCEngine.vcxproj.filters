@@ -442,6 +442,15 @@
     <Filter Include="ShaderCodes\PostProcessing\SSLR">
       <UniqueIdentifier>{a2b3598f-2788-4712-a35d-4b5807682904}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\PostProcessing\SSLR">
+      <UniqueIdentifier>{6cb87d24-47f5-4ef9-b79d-29a676357853}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\SSLR\RayTracing">
+      <UniqueIdentifier>{19aa1abb-5843-4818-8ca3-beb39df39dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\SSLR\ConeTracing">
+      <UniqueIdentifier>{261ab9af-d818-4990-890f-3655c490b4d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -889,6 +898,15 @@
     <ClInclude Include="ShaderCodes\RayTracingCommon.h">
       <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.h">
+      <Filter>Rendering\PostProcessing\SSLR</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceRayTracing.h">
+      <Filter>Rendering\PostProcessing\SSLR\RayTracing</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
+      <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1205,6 +1223,15 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp">
       <Filter>Rendering\PostProcessing\Blur\GaussianBlur</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.cpp">
+      <Filter>Rendering\PostProcessing\SSLR</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceRayTracing.cpp">
+      <Filter>Rendering\PostProcessing\SSLR\RayTracing</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
+      <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
