@@ -8,13 +8,13 @@ Texture2D<float4> DepthBuffer			: register( t1 );
 SamplerState DefaultSampler				: register( s0 );
 SamplerState ShadowSampler				: register( s1 );
 
-float GaussWeight(in int sampleDist, in float sigma)
+float GaussWeight(int sampleDist, float sigma)
 {
 	float g = 1.0f / sqrt(2.0f * 3.14159f * sigma * sigma);
 	return (g * exp( -(sampleDist * sampleDist) / (2 * sigma * sigma)) );
 }
 
-float4 BilateralGaussNear(float2 uv, float2 uvScale, float sigma)
+float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma)
 {
     float4 accum		= 0;
     float accumWeight	= 0;
@@ -23,7 +23,7 @@ float4 BilateralGaussNear(float2 uv, float2 uvScale, float sigma)
 	InputColorMap.GetDimensions(w,h);
 
     float4 centerTapColor	= InputColorMap.Sample(DefaultSampler, uv);
-    float centerDepthTap	= DepthBuffer.Sample(ShadowSampler, uv).x;
+    float centerDepthTap	= 1.0f - DepthBuffer.Sample(ShadowSampler, uv).x;
 
     float dw,dh;
 	DepthBuffer.GetDimensions(dw,dh);
@@ -36,7 +36,7 @@ float4 BilateralGaussNear(float2 uv, float2 uvScale, float sigma)
 
         // fetch tap
 		float4 tap			= InputColorMap.Sample(ShadowSampler, tc);
-        float depth_tap		= DepthBuffer.Sample(ShadowSampler, dtc).x;
+        float depth_tap		= 1.0f - DepthBuffer.Sample(ShadowSampler, dtc).x;
 
         float depth_diff	= abs(depth_tap - centerDepthTap);
         float r2			= depth_diff * 100.0 / centerDepthTap;
@@ -58,11 +58,11 @@ float4 BilateralGaussNear(float2 uv, float2 uvScale, float sigma)
 #if defined(BLUR_VERTICAL)
 float4 BilateralGaussNear_InFullScreen_PS(PS_INPUT input) : SV_TARGET
 {
-    return BilateralGaussNear(input.uv, float2(0.0f, 1.0f), 2.5f);
+    return BilateralGaussNear(input.uv, float2(0.0f, 2.0f), 2.5f);
 }
 #elif defined(BLUR_HORIZONTAL)
 float4 BilateralGaussNear_InFullScreen_PS(PS_INPUT input) : SV_TARGET
 {
-    return BilateralGaussNear(input.uv, float2(1.0f, 0.0f), 2.5f);
+    return BilateralGaussNear(input.uv, float2(2.0f, 0.0f), 2.5f);
 }
 #endif
