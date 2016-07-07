@@ -73,6 +73,9 @@ void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT)
 
 	//context->RSSetState( dx->GetRasterizerStateCCWDefaultState() );
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	rtv = nullptr;
+	context->OMSetRenderTargets(1, &rtv, nullDSV);
 }
 
 void FullScreen::Destroy()
