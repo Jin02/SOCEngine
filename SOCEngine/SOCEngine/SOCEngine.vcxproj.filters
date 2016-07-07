@@ -424,7 +424,13 @@
     <Filter Include="Rendering\Precompute">
       <UniqueIdentifier>{e969a8ce-13cf-426e-8195-6e305a61e4a9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\PostProcessing\BilateralFiltering">
+    <Filter Include="Rendering\PostProcessing\Blur">
+      <UniqueIdentifier>{87d68259-936e-4dae-8794-e669da81fa26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\Blur\GaussianBlur">
+      <UniqueIdentifier>{b0e9959c-96ff-4c8f-b791-a417e3df0b4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PostProcessing\Blur\BilateralFiltering">
       <UniqueIdentifier>{bd165714-ee75-474d-8b6c-eb70919dbff2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -866,7 +872,10 @@
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\BilateralFiltering.h">
-      <Filter>Rendering\PostProcessing\BilateralFiltering</Filter>
+      <Filter>Rendering\PostProcessing\Blur\BilateralFiltering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h">
+      <Filter>Rendering\PostProcessing\Blur\GaussianBlur</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1180,7 +1189,10 @@
       <Filter>Rendering\Sky\SkyMesh\Box\Material</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\BilateralFiltering.cpp">
-      <Filter>Rendering\PostProcessing\BilateralFiltering</Filter>
+      <Filter>Rendering\PostProcessing\Blur\BilateralFiltering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp">
+      <Filter>Rendering\PostProcessing\Blur\GaussianBlur</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1280,7 +1292,10 @@
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\BilateralFiltering_Near.hlsl">
+    <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
       <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
