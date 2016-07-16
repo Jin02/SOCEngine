@@ -26,7 +26,7 @@ ScreenSpaceRayTracing::~ScreenSpaceRayTracing()
 	SAFE_DELETE(_viewToTexSpaceCB);
 }
 
-void ScreenSpaceRayTracing::Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* ssrtParam)
+void ScreenSpaceRayTracing::Initialize(const Device::DirectX* dx, const ConstBuffer* ssrtParam)
 {
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
