@@ -108,3 +108,9 @@ void PixelShader::Clear(
 		}
 	}
 }
+
+void PixelShader::BindTextureToContext(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+{
+	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->PSSetShaderResources(uint(bind), 1, &srv);
+}
