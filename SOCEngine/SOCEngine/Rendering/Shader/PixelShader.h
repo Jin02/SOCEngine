@@ -19,15 +19,18 @@ namespace Rendering
 			bool Create(ID3D11Device* device);
 			
 			void BindShaderToContext(ID3D11DeviceContext* context);
-			void BindResourcesToContext(ID3D11DeviceContext* context, 
-				const std::vector<InputConstBuffer>*			constBuffers, 
-				const std::vector<InputTexture>*				textures,
+			void BindResourcesToContext(ID3D11DeviceContext*	context, 
+				const std::vector<InputConstBuffer>*		constBuffers, 
+				const std::vector<InputTexture>*		textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);
 
-			void Clear(ID3D11DeviceContext* context,
-				const std::vector<InputConstBuffer>*			constBuffers, 
-				const std::vector<InputTexture>*				textures,
+			void Clear(ID3D11DeviceContext*				context,
+				const std::vector<InputConstBuffer>*		constBuffers, 
+				const std::vector<InputTexture>*		textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);
+			
+			static void BindTextureToContext(ID3D11DeviceContext* context,
+							TextureBindIndex bind, const Texture::Texture2D* texture);
 		};
 	}
 }
