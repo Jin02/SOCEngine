@@ -26,8 +26,7 @@ ScreenSpaceRayTracing::~ScreenSpaceRayTracing()
 	SAFE_DELETE(_viewToTexSpaceCB);
 }
 
-void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx,
-					const Buffer::ConstBuffer* ssrtParam, const Buffer::ConstBuffer* tbrParam )
+void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx, const Buffer::ConstBuffer* ssrtParam )
 {
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
@@ -37,7 +36,7 @@ void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx,
 	_viewToTexSpaceCB = new ConstBuffer;
 	_viewToTexSpaceCB->Initialize(sizeof(Matrix));
 
-	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer(0, tbrParam));
+//	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer(0, tbrParam));
 	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer(5, _viewToTexSpaceCB));
 	_inputConstBuffers.push_back(ShaderForm::InputConstBuffer(6, ssrtParam));
 
