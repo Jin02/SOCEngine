@@ -46,6 +46,21 @@ void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx, const Buffer:
 	_rayTracingBuffer->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
 }
 
+void ScreenSpaceRayTracing::UpdateConstBuffer(const Device::DirectX* dx)
+{
+}
+
+void ScreenSpaceRayTracing::Render(const DirectX* dx, const GBufferInfo& gbuffer)
+{
+	ID3D11DeviceContext* context	= dx->GetContext();
+
+	// GBuffer Setting
+	{
+	}
+	
+	FullScreen::Render(dx, _rayTracingBuffer);
+}
+
 void ScreenSpaceRayTracing::Destroy()
 {
 	_rayTracingBuffer->Destroy();
