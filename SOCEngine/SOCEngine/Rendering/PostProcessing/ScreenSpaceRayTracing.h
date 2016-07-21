@@ -25,8 +25,7 @@ namespace Rendering
 			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT){}
 
 		public:
-			void Initialize(const Device::DirectX* dx,
-					const Buffer::ConstBuffer* ssrtParam, const Buffer::ConstBuffer* tbrParam);
+			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* ssrtParam);
 			void Destroy();
 		};
 	}
