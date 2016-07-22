@@ -109,8 +109,25 @@ void PixelShader::Clear(
 	}
 }
 
-void PixelShader::BindTextureToContext(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+void PixelShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
 {
 	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->PSSetShaderResources(uint(bind), 1, &srv);
+}
+
+void PixelShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+{
+	context->PSSetSamplers(uint(bind), 1, &samplerState);
+}
+
+void PixelShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+{
+	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
+	context->PSSetConstantBuffers(uint(bind), 1, &buf);
+}
+
+void PixelShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+{
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
 	context->PSSetShaderResources(uint(bind), 1, &srv);
 }
