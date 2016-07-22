@@ -29,8 +29,14 @@ namespace Rendering
 				const std::vector<InputTexture>*		textures,
 				const std::vector<InputShaderResourceBuffer>*	srBuffers);
 			
-			static void BindTextureToContext(ID3D11DeviceContext* context,
-							TextureBindIndex bind, const Texture::Texture2D* texture);
+			static void BindTexture(ID3D11DeviceContext* context,
+							TextureBindIndex bind,		const Texture::Texture2D* tex);
+			static void BindSamplerState(ID3D11DeviceContext* context,
+							SamplerStateBindIndex bind,	ID3D11SamplerState* samplerState);
+			static void BindConstBuffer(ID3D11DeviceContext* context,
+							ConstBufferBindIndex bind,	const Buffer::ConstBuffer* cb);
+			static void BindShaderResourceBuffer(ID3D11DeviceContext* context,
+							TextureBindIndex bind,		const Buffer::ShaderResourceBuffer* srBuffer);
 		};
 	}
 }
