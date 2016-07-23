@@ -150,7 +150,7 @@ void VertexShader::Clear(
 	}
 }
 
-void VertexShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+void VertexShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
 {
 	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
 	context->VSSetShaderResources(uint(bind), 1, &srv);
