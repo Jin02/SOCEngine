@@ -89,7 +89,7 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 	context->CSSetShader(nullptr, nullptr, 0);
 }
 
-void ComputeShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+void ComputeShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
 {
 	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
 	context->CSSetShaderResources(uint(bind), 1, &srv);
