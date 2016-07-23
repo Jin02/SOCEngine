@@ -82,7 +82,7 @@ void PixelShader::Clear(
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -93,7 +93,7 @@ void PixelShader::Clear(
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -104,7 +104,7 @@ void PixelShader::Clear(
 		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
+				context->PSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
 }
