@@ -79,19 +79,16 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
-
-	ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
-	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, dx->GetShadowGreaterEqualSamplerComparisonState());
 
 	for(auto iter = voxelizationInfoConstBuffers.begin(); iter != voxelizationInfoConstBuffers.end(); ++iter)
 	{
-		ID3D11Buffer* cb = (*iter)->GetBuffer();
-		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
+		ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::Voxelization_InfoCB, (*iter));
 		_shader->Dispatch(context);
 	}
 
-	ID3D11SamplerState* nullSamplerState = nullptr;
-	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSamplerState);
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, nullptr);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::Voxelization_InfoCB, nullptr);
 }
 
 void InjectRadiance::Destroy()
