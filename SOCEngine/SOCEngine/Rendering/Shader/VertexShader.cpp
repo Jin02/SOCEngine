@@ -149,3 +149,26 @@ void VertexShader::Clear(
 		}
 	}
 }
+
+void VertexShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+{
+	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->VSSetShaderResources(uint(bind), 1, &srv);
+}
+
+void VertexShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+{
+	context->VSSetSamplers(uint(bind), 1, &samplerState);
+}
+
+void VertexShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+{
+	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
+	context->VSSetConstantBuffers(uint(bind), 1, &buf);
+}
+
+void VertexShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+{
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	context->VSSetShaderResources(uint(bind), 1, &srv);
+}
