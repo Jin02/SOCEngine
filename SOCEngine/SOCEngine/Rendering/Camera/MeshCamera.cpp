@@ -343,9 +343,9 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				isCulled |= (*intersectFunc)(sphere) == false;
 			}
 
-			// VB±âÁØÀ¸·Î Á¤·ÄµÇ¾î ÀÖÁö ¾Ê±â ¶§¹®¿¡,
-			// RenderMeshesUsingSortedMeshVectorByVB¿Í ´Þ¸® ±×³É ¸Å ¿ÀºêÁ§Æ®¸¶´Ù IASetBuffer¸¦ ÇØÁØ´Ù.
-			// ¹¹ ÀÌ°ÍÀú°Í µûÁö¸é¼­ ÇÏÀÚ¸é ´õ È¿À²ÀûÀ¸·Î °íÄ¥ ¼ö ÀÖ°Ú´Ù¸¸, ¸¹ÀÌ ±ÍÂú´Ù.
+			// VBê¸°ì¤€ìœ¼ë¡œ ì •ë ¬ë˜ì–´ ìžˆì§€ ì•Šê¸° ë•Œë¬¸ì—,
+			// RenderMeshesUsingSortedMeshVectorByVBì™€ ë‹¬ë¦¬ ê·¸ëƒ¥ ë§¤ ì˜¤ë¸Œì íŠ¸ë§ˆë‹¤ IASetBufferë¥¼ í•´ì¤€ë‹¤.
+			// ë­ ì´ê²ƒì €ê²ƒ ë”°ì§€ë©´ì„œ í•˜ìžë©´ ë” íš¨ìœ¨ì ìœ¼ë¡œ ê³ ì¹  ìˆ˜ ìžˆê² ë‹¤ë§Œ, ë§Žì´ ê·€ì°®ë‹¤.
 			if(isCulled == false)
 			{
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
@@ -430,7 +430,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	//};
 		
 	ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, samplerState);
 
 	//GBuffer
 	{
@@ -505,11 +505,11 @@ void MeshCamera::Render(const Device::DirectX* dx,
 #else
 			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
 #endif
-			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, shadowSamplerState);
 			if(neverUseVSM == false)
 			{
 				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
-				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &shadowSamplerState);
+				ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, shadowSamplerState);
 			}
 		}
 
@@ -520,8 +520,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 		context->VSSetShader(nullptr, nullptr, 0);
 		context->PSSetShader(nullptr, nullptr, 0);
-		ID3D11SamplerState* nullSampler = nullptr;
-		context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &nullSampler);
+		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 
 		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
 
@@ -530,10 +529,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 		//if(useShadow)
 		{
-			context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSampler);
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, nullptr);
 
 			if(neverUseVSM == false)
-				context->CSSetSamplers((uint)SamplerStateBindIndex::VSMShadowSamplerState, 1, &nullSampler);
+				ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, nullptr);
 		}
 	}
 
@@ -566,12 +565,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			lightManager->BindResources(dx, false, false, true);
 			{
 				// Light Culling Buffer
-				context->PSSetShaderResources((uint)TextureBindIndex::LightIndexBuffer,
-					1, _blendedMeshLightCulling->GetLightIndexSRBuffer()->GetShaderResourceView());
+				PixelShader::BindShaderResourceBuffer(context, TextureBindIndex::LightIndexBuffer, _blendedMeshLightCulling->GetLightIndexSRBuffer());
 	
-				ID3D11Buffer* tbrCB = _tbrParamConstBuffer->GetBuffer();
-				context->VSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
-				context->PSSetConstantBuffers((uint)ConstBufferBindIndex::TBRParam, 1, &tbrCB);
+				VertexShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, _tbrParamConstBuffer);
+				PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, _tbrParamConstBuffer);
 	
 				MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
 			}
