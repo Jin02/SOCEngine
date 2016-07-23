@@ -42,7 +42,7 @@ namespace GPGPU
 			static void BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState);
 			static void BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb);
 			static void BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer);
-
+			static void BindUnorderedAccessView(ID3D11DeviceContext* context, UAVBindIndex bind, const View::UnorderedAccessView* uav, const uint* initialCounts = nullptr);
 		public:
 			inline void ClearUAVSlot()						{ _uavs.clear();		}
 			inline void ClearInputShaderResourceBufferSlot()			{ _inputSRBuffers.clear();	}
