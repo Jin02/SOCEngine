@@ -111,3 +111,9 @@ void ComputeShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, Textu
 	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
 	context->CSSetShaderResources(uint(bind), 1, &srv);
 }
+
+void ComputeShader::BindUnorderedAccessView(ID3D11DeviceContext* context, UAVBindIndex bind, const View::UnorderedAccessView* uav, const uint* initialCounts)
+{
+	ID3D11UnorderedAccessView* view = uav ? uav->GetView() : nullptr;
+	context->CSSetUnorderedAccessViews(uint(bind), 1, &view, initialCounts);
+}
