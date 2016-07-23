@@ -107,25 +107,25 @@ void GeometryShader::Clear(ID3D11DeviceContext* context,
 	}
 }
 
-void ComputeShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+void GeometryShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
 {
 	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
-	context->CSSetShaderResources(uint(bind), 1, &srv);
+	context->GSSetShaderResources(uint(bind), 1, &srv);
 }
 
-void ComputeShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+void GeometryShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
 {
-	context->CSSetSamplers(uint(bind), 1, &samplerState);
+	context->GSSetSamplers(uint(bind), 1, &samplerState);
 }
 
-void ComputeShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+void GeometryShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
 {
 	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
-	context->CSSetConstantBuffers(uint(bind), 1, &buf);
+	context->GSSetConstantBuffers(uint(bind), 1, &buf);
 }
 
-void ComputeShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+void GeometryShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
 	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
-	context->CSSetShaderResources(uint(bind), 1, &srv);
+	context->GSSetShaderResources(uint(bind), 1, &srv);
 }
