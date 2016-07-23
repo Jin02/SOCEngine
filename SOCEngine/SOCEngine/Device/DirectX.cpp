@@ -217,7 +217,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 	{
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.CullMode				= D3D11_CULL_NONE;		//Ã„ÃƒÂ¸Âµ Â²Ã»
 		desc.FrontCounterClockwise	= true;
 		desc.DepthBias				= 0;
 		desc.DepthBiasClamp			= 0.0f;
@@ -244,7 +244,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.CullMode				= D3D11_CULL_NONE;		//Ã„ÃƒÂ¸Âµ Â²Ã»
 		desc.DepthClipEnable		= false;
 		desc.FrontCounterClockwise	= false;
 		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCullingWithClip)) )
@@ -427,16 +427,19 @@ void DirectX::ClearDeviceContext() const
     _immediateContext->VSSetConstantBuffers( 0, 14, pBuffers );
     _immediateContext->PSSetConstantBuffers( 0, 14, pBuffers );
     _immediateContext->CSSetConstantBuffers( 0, 14, pBuffers );
+    _immediateContext->GSSetConstantBuffers( 0, 14, pBuffers );
 
     // Resources
     _immediateContext->VSSetShaderResources( 0, 16, pSRVs );
     _immediateContext->PSSetShaderResources( 0, 16, pSRVs );
     _immediateContext->CSSetShaderResources( 0, 16, pSRVs );
+    _immediateContext->GSSetShaderResources( 0, 16, pSRVs );
 
     // Samplers
     _immediateContext->VSSetSamplers( 0, 16, pSamplers );
     _immediateContext->PSSetSamplers( 0, 16, pSamplers );
     _immediateContext->CSSetSamplers( 0, 16, pSamplers );
+    _immediateContext->GSSetSamplers( 0, 16, pSamplers );
 
     // Render targets
     _immediateContext->OMSetRenderTargets( 8, pRTVs, pDSV );
