@@ -88,3 +88,26 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 	}
 	context->CSSetShader(nullptr, nullptr, 0);
 }
+
+void ComputeShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+{
+	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->CSSetShaderResources(uint(bind), 1, &srv);
+}
+
+void ComputeShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+{
+	context->CSSetSamplers(uint(bind), 1, &samplerState);
+}
+
+void ComputeShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+{
+	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
+	context->CSSetConstantBuffers(uint(bind), 1, &buf);
+}
+
+void ComputeShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+{
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	context->CSSetShaderResources(uint(bind), 1, &srv);
+}
