@@ -107,7 +107,7 @@ void GeometryShader::Clear(ID3D11DeviceContext* context,
 	}
 }
 
-void GeometryShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::Texture2D* tex)
+void GeometryShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
 {
 	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
 	context->GSSetShaderResources(uint(bind), 1, &srv);
