@@ -175,7 +175,7 @@ bool UpdateBuffer(ID3D11DeviceContext* context,
 	uint uintColor		= light->Get32BitMainColor();
 
 	LightForm::LightTransformBuffer* existTransform = transformBuffer.Find(key);
-	if(existTransform == nullptr) // ÇÏ³ª¸¸ °Ë»öÇØµµ µÊ
+	if(existTransform == nullptr) // í•˜ë‚˜ë§Œ ê²€ìƒ‰í•´ë„ ë¨
 	{
 		transformBuffer.Add(key, transformElem);
 		paramBuffer.Add(key, param);
@@ -188,8 +188,8 @@ bool UpdateBuffer(ID3D11DeviceContext* context,
 		(*colorBuffer.Find(key))		= uintColor;
 		(*shadowIndexBuffer.Find(key))	= shadowIndex;
 
-		// Point Light´Â ParamÀ» ½ÇÁúÀûÀ¸·Î °¡Áö°í ÀÖÁö ¾Ê´Ù.
-		// ±×·¡¼­ ÀÌ ºÎºÐ¸¸ ¿¹¿Ü·Î ÀÌ·±½ÄÀ¸·Î Ã³¸®ÇÑ´Ù.
+		// Point LightëŠ” Paramì„ ì‹¤ì§ˆì ìœ¼ë¡œ ê°€ì§€ê³  ìžˆì§€ ì•Šë‹¤.
+		// ê·¸ëž˜ì„œ ì´ ë¶€ë¶„ë§Œ ì˜ˆì™¸ë¡œ ì´ëŸ°ì‹ìœ¼ë¡œ ì²˜ë¦¬í•œë‹¤.
 		LightType::Param* existParam = paramBuffer.Find(key);
 		if(existParam)
 			(*existParam) = param;
@@ -373,7 +373,7 @@ void LightManager::UpdateSRBufferUsingMapNoOverWrite(ID3D11DeviceContext* contex
 
 			uint lightIdx = 0;
 			LightForm::LightTransformBuffer* transform = _directionalLightTransformBuffer.Find(key, &lightIdx);
-			if( transform == nullptr ) //ÇÏ³ª¸¸ °Ë»öÇØµµ µÊ
+			if( transform == nullptr ) //í•˜ë‚˜ë§Œ ê²€ìƒ‰í•´ë„ ë¨
 			{
 				_directionalLightTransformBuffer.Add(key, transformElem);
 				_directionalLightParamBuffer.Add(key, param);
@@ -534,12 +534,12 @@ void LightManager::UpdateSRBufferUsingMapNoOverWrite(ID3D11DeviceContext* contex
 	}
 
 
-	// transform, color, param Áß,
-	// ¹» »ç¿ëÇÏµç °¹¼ö´Â °°´Ù.
+	// transform, color, param ì¤‘,
+	// ë­˜ ì‚¬ìš©í•˜ë“  ê°¯ìˆ˜ëŠ” ê°™ë‹¤.
 
-	// ´ÙÀ½ ¹öÆÛ ¾÷µ¥ÀÌÆ® Å¸ÀÔ °è»ê
-	// ÁöÁ¤ÇÑ °¹¼öº¸´Ù º¯°æµÈ È½¼ö°¡ ¸¹À¸¸é MapUnMapÀ» ÇÑ¹ø¸¸ »ç¿ëÇÏ´Â ´ë½Å ¸¶Áö¸·¿¡ ¹öÆÛ¸¦ ¾÷µ¥ÀÌÆ®ÇÑ´Ù.
-	// ±×°Ô ¾Æ´Ï¶ó¸é, CPU¿¡ ¹öÆÛ ³»¿ëÀ» ¾÷µ¥ÀÌÆ® ÇÏ¸é¼­ MapUnMapÀ» ÅëÇØ ¹öÆÛ¸¦ ¾÷µ¥ÀÌÆ® ÇÑ´Ù. (MapUnMap ¿©·¯¹ø)
+	// ë‹¤ìŒ ë²„í¼ ì—…ë°ì´íŠ¸ íƒ€ìž… ê³„ì‚°
+	// ì§€ì •í•œ ê°¯ìˆ˜ë³´ë‹¤ ë³€ê²½ëœ íšŸìˆ˜ê°€ ë§Žìœ¼ë©´ MapUnMapì„ í•œë²ˆë§Œ ì‚¬ìš©í•˜ëŠ” ëŒ€ì‹  ë§ˆì§€ë§‰ì— ë²„í¼ë¥¼ ì—…ë°ì´íŠ¸í•œë‹¤.
+	// ê·¸ê²Œ ì•„ë‹ˆë¼ë©´, CPUì— ë²„í¼ ë‚´ìš©ì„ ì—…ë°ì´íŠ¸ í•˜ë©´ì„œ MapUnMapì„ í†µí•´ ë²„í¼ë¥¼ ì—…ë°ì´íŠ¸ í•œë‹¤. (MapUnMap ì—¬ëŸ¬ë²ˆ)
 	{
 		uint standard = (uint)((float)_directionalLightColorBuffer.GetSize() * LIGHT_BUFFER_OVERALL_UPDATE_RATE);
 		_directionalLightBufferUpdateType = dlChangeCount > standard ? BufferUpdateType::Overall : BufferUpdateType::Selective;
@@ -654,8 +654,8 @@ uint LightManager::FetchLightIndexInEachLights(const LightForm* inputLight) cons
 
 uint LightManager::GetPackedLightCount() const
 {
-	// transform, color, param Áß,
-	// ¹» »ç¿ëÇÏµç Å©±â´Â °°´Ù.
+	// transform, color, param ì¤‘,
+	// ë­˜ ì‚¬ìš©í•˜ë“  í¬ê¸°ëŠ” ê°™ë‹¤.
 	uint directionalLightCount	= _directionalLightColorBuffer.GetSize() & 0x3FF;
 	uint pointLightCount		= _pointLightColorBuffer.GetSize() & 0x7FF;
 	uint spotLightCount			= _spotLightColorBuffer.GetSize() & 0x7FF;
@@ -683,48 +683,48 @@ void LightManager::BindResources(const Device::DirectX* dx, bool bindVS, bool bi
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto SetShaderResources = [](ID3D11DeviceContext* context, TextureBindIndex bind, ID3D11ShaderResourceView* const* srv, bool bindVS, bool bindGS, bool bindPS)
+	auto BindSRBufferToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, const ShaderResourceBuffer* srBuffer, bool bindVS, bool bindGS, bool bindPS)
 	{
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, srv);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, srv);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, srv);
+		if(bindVS)	VertexShader::BindShaderResourceBuffer(context, bind, srBuffer);
+		if(bindGS)	GeometryShader::BindShaderResourceBuffer(context, bind, srBuffer);
+		if(bindPS)	PixelShader::BindShaderResourceBuffer(context, bind, srBuffer);
 	};
 
-	SetShaderResources(context, TextureBindIndex::PointLightRadiusWithCenter,		_pointLightTransformSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::PointLightColor,					_pointLightColorSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::PointLightShadowIndex,			_pointLightShadowIndexSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightCenterWithDirZ,	_directionalLightTransformSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightParam,			_directionalLightParamSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightColor,			_directionalLightColorSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightShadowIndex,		_directionalLightShadowIndexSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightRadiusWithCenter,		_spotLightTransformSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightParam,					_spotLightParamSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightColor,					_spotLightColorSRBuffer->GetShaderResourceView(),				bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightShadowIndex,				_spotLightShadowIndexSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::PointLightRadiusWithCenter,		_pointLightTransformSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::PointLightColor,				_pointLightColorSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::PointLightShadowIndex,			_pointLightShadowIndexSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::DirectionalLightCenterWithDirZ,		_directionalLightTransformSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::DirectionalLightParam,			_directionalLightParamSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::DirectionalLightColor,			_directionalLightColorSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::DirectionalLightShadowIndex,		_directionalLightShadowIndexSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::SpotLightRadiusWithCenter,			_spotLightTransformSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::SpotLightParam,				_spotLightParamSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::SpotLightColor,				_spotLightColorSRBuffer,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context, TextureBindIndex::SpotLightShadowIndex,			_spotLightShadowIndexSRBuffer,		bindVS, bindGS, bindPS);
 }
 
 void LightManager::UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto SetShaderResources = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
+	auto UnbindSRBufferToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
 	{
 		ID3D11ShaderResourceView* srv = nullptr;
 
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, &srv);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, &srv);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, &srv);
+		if(bindVS)	VertexShader::BindShaderResourceBuffer(context, bind, nullptr);
+		if(bindGS)	GeometryShader::BindShaderResourceBuffer(context, bind, nullptr);
+		if(bindPS)	PixelShader::BindShaderResourceBuffer(context, bind, nullptr);
 	};
 
-	SetShaderResources(context, TextureBindIndex::PointLightRadiusWithCenter,		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::PointLightColor,					bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::PointLightShadowIndex,			bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightCenterWithDirZ,	bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightParam,			bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightColor,			bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::DirectionalLightShadowIndex,		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightRadiusWithCenter,		bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightParam,					bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightColor,					bindVS, bindGS, bindPS);
-	SetShaderResources(context, TextureBindIndex::SpotLightShadowIndex,				bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::PointLightRadiusWithCenter,		bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::PointLightColor,				bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::PointLightShadowIndex,			bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::DirectionalLightCenterWithDirZ,		bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::DirectionalLightParam,			bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::DirectionalLightColor,			bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::DirectionalLightShadowIndex,		bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::SpotLightRadiusWithCenter,			bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::SpotLightParam,				bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::SpotLightColor,				bindVS, bindGS, bindPS);
+	UnbindSRBufferToVGP(context, TextureBindIndex::SpotLightShadowIndex,			bindVS, bindGS, bindPS);
 }
