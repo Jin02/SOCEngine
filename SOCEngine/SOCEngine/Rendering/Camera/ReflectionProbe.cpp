@@ -137,9 +137,8 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 		_opaqueDepthBuffer->Clear(context, 0.0f, 0);
 	}
 
-	ID3D11Buffer* buffer = _rpInfoCB->GetBuffer();
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, _rpInfoCB);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, _rpInfoCB);
 
 	BoundBox boundBox(_worldPos, Vector3(_range, _range, _range));
 	auto Intersect = [&](const Intersection::Sphere& sphere) -> bool
@@ -246,29 +245,18 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			SkyForm* sky = scene->GetSky();
 			if(sky)
 			{
-				ID3D11Buffer* buffer = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
-				context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+				PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, sky->GetSkyMapInfoConstBuffer());
+				PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());
 				
-				ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
-				context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
-
 				ID3D11ShaderResourceView* srv = nullptr;
+				ASSERT_COND_MSG(sky->GetType() == SkyForm::Type::Box, "cant support");
 				{
-					const Texture2D* skyMap = nullptr;
-					if(sky->GetType() == SkyForm::Type::Box)		skyMap = dynamic_cast<SkyBox*>(sky)->GetSkyCubeMap();
-					else											ASSERT_MSG("cant support");
-
+					const Texture2D* skyMap = dynamic_cast<SkyBox*>(sky)->GetSkyCubeMap();
 					if(skyMap)
-					{
-						srv = skyMap->GetShaderResourceView()->GetView();
-						context->PSSetShaderResources(uint(TextureBindIndex::AmbientCubeMap), 1, &srv);
-					}
+						PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap, skyMap);
 
 					if(preIntegrateBRDFMap)
-					{
-						srv = preIntegrateBRDFMap->GetShaderResourceView()->GetView();
-						context->PSSetShaderResources(uint(TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap), 1, &srv);
-					}
+						PixelShader::BindTexture(context, TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap, preIntegrateBRDFMap);
 				}
 			}
 		}
@@ -284,8 +272,7 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 		{
 			context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-			ID3D11SamplerState* samplerState = dx->GetSamplerStateAnisotropic();
-			context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &samplerState);
+			PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateAnisotropic());
 			context->OMSetDepthStencilState(dx->GetDepthStateEqualAndDisableDepthWrite(), 0);
 			context->RSSetState(dx->GetRasterizerStateCWDefaultState());
 
@@ -343,19 +330,13 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			lightManager->UnbindResources(dx, false, false, true);
 			shadowManager->UnbindResources(dx, false, false, true);
 	
-			ID3D11Buffer* buffer = nullptr;
-			context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
-	
-			ID3D11SamplerState* sampler = nullptr;
-			context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
-	
-			ID3D11ShaderResourceView* srv = nullptr;
-			context->PSSetShaderResources(uint(TextureBindIndex::AmbientCubeMap), 1, &srv);
-			context->PSSetShaderResources(uint(TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap), 1, &srv);		
+			PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, nullptr);
+			PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, nullptr);
+			PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap, nullptr);
+			PixelShader::BindTexture(context, TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap, nullptr);
 		}
 	}
 
-	buffer = nullptr;
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);
+	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);
 }
