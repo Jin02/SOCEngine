@@ -59,13 +59,6 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::S
 void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* outResultRT,
 								const DepthBuffer* depthBuffer, const RenderTexture* inputColorMap)
 {
-	auto BindTexturesToPixelShader = [](ID3D11DeviceContext* context, uint bindIndex, const Texture2D* tex)
-	{
-		ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
-		context->PSSetShaderResources(bindIndex, 1, &srv);
-	};
-
-
 	ID3D11DeviceContext* context	= dx->GetContext();
 
 	// Setting Viewport
@@ -82,26 +75,22 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 		context->RSSetViewports( 1, &vp );
 	}
 
-	BindTexturesToPixelShader(context, 0, inputColorMap );
-	BindTexturesToPixelShader(context, 1, depthBuffer );
+	PixelShader::BindTexture(context, TextureBindIndex(0), inputColorMap);
+	PixelShader::BindTexture(context, TextureBindIndex(1), depthBuffer);
 
-	ID3D11SamplerState* samplerState = dx->GetSamplerStateLinear();
-	context->PSSetSamplers(0, 1, &samplerState);
-	
-	ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
-	context->PSSetSamplers(1, 1, &shadowSamplerState);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),			dx->GetShadowSamplerState());
 
 	_vertical->Render(dx, _tempBuffer);
 
-	BindTexturesToPixelShader(context, 0, _tempBuffer );
+	PixelShader::BindTexture(context, TextureBindIndex(0), _tempBuffer);
 	_horizontal->Render(dx, outResultRT);
 
-	BindTexturesToPixelShader(context, 0, nullptr );
-	BindTexturesToPixelShader(context, 1, nullptr );
+	PixelShader::BindTexture(context, TextureBindIndex(0), nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex(1), nullptr);
 
-	samplerState = nullptr;
-	context->PSSetSamplers(0, 1, &samplerState);
-	context->PSSetSamplers(1, 1, &samplerState);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState,	nullptr);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),			nullptr);
 }
 
 void BilateralFiltering::Destroy()
