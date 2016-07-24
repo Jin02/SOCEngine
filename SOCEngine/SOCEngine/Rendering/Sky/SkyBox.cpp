@@ -101,13 +101,11 @@ void SkyBox::Render(const DirectX* dx, const ReflectionProbe* probe, const Textu
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	ID3D11Buffer* buffer = probe->GetInfoConstBuffer()->GetBuffer();
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, probe->GetInfoConstBuffer());
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, probe->GetInfoConstBuffer());
 
 	SkyForm::_Render(dx, _skyBoxMaterialForReflectionProbe, renderTarget->GetRenderTargetView(), opaqueDepthBuffer->GetDepthStencilView());
 
-	buffer = nullptr;
-	context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ReflectionProbe_Info), 1, &buffer);
+	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);
 }
