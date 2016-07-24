@@ -2,6 +2,7 @@
 #include "Director.h"
 #include "BindIndexInfo.h"
 
+using namespace Rendering;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
@@ -63,10 +64,7 @@ void UICamera::Render(const Device::DirectX* dx)
 	_depthBuffer->Clear(context, 1.0f, 0);
 	_renderTarget->Clear(context, _clearColor);
 
-	ID3D11SamplerState* sampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers(
-		(uint)Rendering::SamplerStateBindIndex::DefaultSamplerState,
-		1, &sampler);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 
 	Math::Matrix viewProjMat;
 	{
@@ -89,10 +87,7 @@ void UICamera::Render(const Device::DirectX* dx)
 		}
 	}
 
-	ID3D11SamplerState* nullSampler = nullptr;
-	context->PSSetSamplers(
-		(uint)Rendering::SamplerStateBindIndex::DefaultSamplerState,
-		1, &nullSampler);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 }
 
 Core::Component* UICamera::Clone() const 
