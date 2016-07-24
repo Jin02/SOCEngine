@@ -50,13 +50,6 @@ void GaussianBlur::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format)
 
 void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const RenderTexture* inputColorMap)
 {
-	auto BindTexturesToPixelShader = [](ID3D11DeviceContext* context, uint bindIndex, const Texture2D* tex)
-	{
-		ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
-		context->PSSetShaderResources(bindIndex, 1, &srv);
-	};
-
-
 	ID3D11DeviceContext* context	= dx->GetContext();
 
 	// Setting Viewport
@@ -73,20 +66,18 @@ void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outRes
 		context->RSSetViewports( 1, &vp );
 	}
 
-	BindTexturesToPixelShader(context, 0, inputColorMap );
 
-	ID3D11SamplerState* samplerState = dx->GetSamplerStateLinear();
-	context->PSSetSamplers(0, 1, &samplerState);
+	PixelShader::BindTexture(context, TextureBindIndex(0), inputColorMap);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 	
 	_vertical->Render(dx, _tempBuffer);
 
-	BindTexturesToPixelShader(context, 0, _tempBuffer );
+	PixelShader::BindTexture(context, TextureBindIndex(0), _tempBuffer);
+
 	_horizontal->Render(dx, outResultRT);
 
-	BindTexturesToPixelShader(context, 0, nullptr );
-
-	samplerState = nullptr;
-	context->PSSetSamplers(0, 1, &samplerState);
+	PixelShader::BindTexture(context, TextureBindIndex(0), nullptr);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 }
 
 void GaussianBlur::Destroy()
