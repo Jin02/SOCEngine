@@ -75,8 +75,7 @@ void SkyForm::_Render(const Device::DirectX* dx, const Rendering::Material* mate
 	{
 		context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
 	
-		ID3D11SamplerState* linearSampler = dx->GetSamplerStateLinear();
-		context->PSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &linearSampler);
+		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 	
 		context->OMSetDepthStencilState(dx->GetDepthStateGreaterEqualAndDisableDepthWrite(), 0);
 		context->OMSetRenderTargets(1, &rtv, dsv);
