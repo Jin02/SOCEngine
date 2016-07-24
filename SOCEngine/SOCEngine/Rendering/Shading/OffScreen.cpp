@@ -48,8 +48,7 @@ void OffScreen::Render(const DirectX* dx,
 	if(_useIndirectColorMap)
 	{
 		ID3D11DeviceContext* context = dx->GetContext();
-		ID3D11ShaderResourceView* srv = indirectColorMap->GetShaderResourceView()->GetView();
-		context->PSSetShaderResources( uint(TextureBindIndex::OffScreen_InDirectLightBuffer), 1, &srv);
+		PixelShader::BindTexture(context, TextureBindIndex::OffScreen_InDirectLightBuffer, indirectColorMap);
 	}
 
 	FullScreen::Render(dx, outResultRT);
