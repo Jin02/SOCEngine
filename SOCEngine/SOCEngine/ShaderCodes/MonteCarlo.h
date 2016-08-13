@@ -7,11 +7,11 @@
 
 float RadicalInverse_VdC( uint bits )
 {
-	bits = ( bits << 16) | ( bits >> 16);
-	bits = ( (bits & 0x00ff00ff) << 8 ) | ( (bits & 0xff00ff00) >> 8 );
-	bits = ( (bits & 0x0f0f0f0f) << 4 ) | ( (bits & 0xf0f0f0f0) >> 4 );
-	bits = ( (bits & 0x33333333) << 2 ) | ( (bits & 0xcccccccc) >> 2 );
-	bits = ( (bits & 0x55555555) << 1 ) | ( (bits & 0xaaaaaaaa) >> 1 );
+	bits = ( bits << 16u) | ( bits >> 16u);
+	bits = ( (bits & 0x00ff00ff) << 8u ) | ( (bits & 0xff00ff00) >> 8u );
+	bits = ( (bits & 0x0f0f0f0f) << 4u ) | ( (bits & 0xf0f0f0f0) >> 4u );
+	bits = ( (bits & 0x33333333) << 2u ) | ( (bits & 0xcccccccc) >> 2u );
+	bits = ( (bits & 0x55555555) << 1u ) | ( (bits & 0xaaaaaaaa) >> 1u);
 
 	return float(bits) * 2.3283064365386963e-10;
 }
@@ -21,34 +21,34 @@ float2 Hammersley(uint index, uint numSamples)
 	return float2(float(index) / float(numSamples), RadicalInverse_VdC(index));
 }
 
-// Unreal4 MonteCarlo.usf Âü°í
+// Unreal4 MonteCarlo.usf ì°¸ê³ 
 // Used for Cone or Specular
 float4 ImportanceSampleGGX( float2 e, float roughness )
 {
 	float m = roughness * roughness;
 	float m2 = m * m;
 
-	float phi = 2 * PI * e.x;
-	float cosTheta = sqrt( (1 - e.y) / ( 1 + (m2 - 1) * e.y ) );
-	float sinTheta = sqrt( 1 - cosTheta * cosTheta );
+	float phi = 2.0f * PI * e.x;
+	float cosTheta = sqrt( (1.0f - e.y) / ( 1.0f + (m2 - 1.0f) * e.y ) );
+	float sinTheta = sqrt( 1.0f - cosTheta * cosTheta );
 
 	float3 dirInCartesian;
 	dirInCartesian.x = sinTheta * cos( phi );
 	dirInCartesian.y = sinTheta * sin( phi );
 	dirInCartesian.z = cosTheta;
 	
-	float d = ( cosTheta * m2 - cosTheta ) * cosTheta + 1;
+	float d = ( cosTheta * m2 - cosTheta ) * cosTheta + 1.0f;
 	float D = m2 / ( PI*d*d );
 	float PDF = D * cosTheta;
 
 	return float4( dirInCartesian, PDF );
 }
 
-// Unreal4 MonteCarlo.usf Âü°í
+// Unreal4 MonteCarlo.usf ì°¸ê³ 
 // Used For diffuse
 float4 CosineSampleHemisphere( float2 e )
 {
-	float phi = 2 * PI * e.x;
+	float phi = 2.0f * PI * e.x;
 	float cosTheta = sqrt( e.y );
 	float sinTheta = sqrt( 1 - cosTheta * cosTheta );
 
@@ -62,7 +62,6 @@ float4 CosineSampleHemisphere( float2 e )
 	return float4( dirInCartesian, PDF );
 }
 
-// ±× °÷¿¡¼­ Âü°í
 float3 TangentToWorld( float3 vec, float3 tangentZ )
 {
 	float3 upVector = abs(tangentZ.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
