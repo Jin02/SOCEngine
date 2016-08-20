@@ -173,8 +173,11 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	// 2. Injection Pass
 	{
+		uint dimension	= 1 << (_globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
+		uint maxCascade	= _globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+
 		if(shadowRenderer->GetPointLightCount() > 0)
-			_injectPointLight->Inject(dx, shadowRenderer, _voxelization);
+			_injectPointLight->Inject(dx, shadowRenderer, _voxelization, dimension, maxCascade);
 
 		if(shadowRenderer->GetSpotLightCount() > 0)
 			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
