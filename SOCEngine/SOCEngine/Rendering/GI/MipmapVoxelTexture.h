@@ -29,7 +29,7 @@ namespace Rendering
 			~MipmapVoxelTexture();
 
 		public:
-			void Initialize(const GlobalInfo& giInfo);
+			void Initialize();
 			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade);
 			void Destroy();
 		};

@@ -30,7 +30,7 @@ MipmapVoxelTexture::~MipmapVoxelTexture()
 	SAFE_DELETE(_infoCB);
 }
 
-void MipmapVoxelTexture::Initialize(const GlobalInfo& giInfo)
+void MipmapVoxelTexture::Initialize()
 {
 	auto LoadComputeShader = [](const std::string& fileName, const std::string& mainFuncName) -> ComputeShader*
 	{
