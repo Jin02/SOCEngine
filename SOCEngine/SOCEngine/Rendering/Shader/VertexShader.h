@@ -2,6 +2,7 @@
 
 #include "ShaderForm.h"
 #include "ConstBuffer.h"
+#include "BindIndexInfo.h"
 
 namespace Rendering
 {

@@ -28,7 +28,7 @@ namespace Rendering
 		public:
 			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* ssrtParam);
 			void UpdateConstBuffer(const Device::DirectX* dx);
-			void Render(const Device::DirectX* dx, const GBufferInfo* gbuffer);
+			void Render(const Device::DirectX* dx, const GBuffers& gbuffer);
 			void Destroy();
 		};
 	}

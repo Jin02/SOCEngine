@@ -5,6 +5,7 @@
 using namespace Rendering;
 using namespace Rendering::Sky;
 using namespace Rendering::Camera;
+using namespace Rendering::Shader;
 using namespace Core;
 using namespace Device;
 using namespace Resource;

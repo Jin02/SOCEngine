@@ -7,6 +7,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
+using namespace Rendering;
 using namespace Device;
 
 BackBufferMaker::BackBufferMaker()
@@ -59,10 +60,10 @@ void BackBufferMaker::Render(
 	//_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
 	{
 		PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, tbrParamConstBuffer);
-		PixelShader::BindTexture(context, TextureBindIndex::RenderScene, renderScene);
+		PixelShader::BindTexture(context, Rendering::TextureBindIndex(TextureBindIndex::RenderScene), renderScene);
 
 		if(_useUI)
-			PixelShader::BindTexture(context, TextureBindIndex::UIScene, uiScene);
+			PixelShader::BindTexture(context, Rendering::TextureBindIndex(TextureBindIndex::UIScene), uiScene);
 	}
 
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());

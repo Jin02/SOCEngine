@@ -3,6 +3,7 @@
 #include "EngineShaderFactory.hpp"
 #include "ResourceManager.h"
 #include "PhysicallyBasedMaterial.h"
+#include "BindIndexInfo.h"
 
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
@@ -16,6 +17,8 @@ using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
 using namespace Rendering;
+using namespace Rendering::Shader;
+using namespace GPGPU::DirectCompute;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_blendedDepthBuffer(nullptr), _albedo_occlusion(nullptr),

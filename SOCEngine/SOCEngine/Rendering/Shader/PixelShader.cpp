@@ -1,5 +1,6 @@
 #include "PixelShader.h"
 
+using namespace Rendering;
 using namespace Rendering::Shader;
 
 PixelShader::PixelShader(ID3DBlob* blob, const std::string& key)
@@ -128,6 +129,6 @@ void PixelShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindI
 
 void PixelShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
 	context->PSSetShaderResources(uint(bind), 1, &srv);
 }

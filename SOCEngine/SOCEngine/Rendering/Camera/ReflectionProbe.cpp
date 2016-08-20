@@ -17,6 +17,8 @@ using namespace Rendering::Texture;
 using namespace Rendering::Buffer;
 using namespace Rendering::Manager;
 using namespace Rendering::Shadow;
+using namespace Rendering;
+using namespace Rendering::Shader;
 
 #define REFLECTION_PROBE_SIZE 512.0f
 

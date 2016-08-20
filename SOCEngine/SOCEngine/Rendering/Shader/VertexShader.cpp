@@ -2,7 +2,7 @@
 
 using namespace Device;
 using namespace Rendering::Shader;
-
+using namespace Rendering;
 
 VertexShader::VertexShader(ID3DBlob* blob, const std::string& key)
 	: ShaderForm(blob, key), _shader(nullptr), _layout(nullptr)
@@ -169,6 +169,6 @@ void VertexShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBind
 
 void VertexShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
 	context->VSSetShaderResources(uint(bind), 1, &srv);
 }

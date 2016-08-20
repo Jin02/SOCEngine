@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "SkyBox.h"
 
+using namespace Rendering;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
@@ -50,7 +51,7 @@ void ScreenSpaceRayTracing::UpdateConstBuffer(const Device::DirectX* dx)
 {
 }
 
-void ScreenSpaceRayTracing::Render(const DirectX* dx, const GBufferInfo& gbuffer)
+void ScreenSpaceRayTracing::Render(const DirectX* dx, const GBuffers& gbuffer)
 {
 	ID3D11DeviceContext* context	= dx->GetContext();
 

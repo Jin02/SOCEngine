@@ -2,6 +2,7 @@
 #include "Director.h"
 
 using namespace Rendering::Shader;
+using namespace Rendering;
 
 GeometryShader::GeometryShader(ID3DBlob* blob, const std::string& key)
 	: ShaderForm(blob, key), _shader(nullptr)
@@ -126,6 +127,6 @@ void GeometryShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBi
 
 void GeometryShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
 	context->GSSetShaderResources(uint(bind), 1, &srv);
 }

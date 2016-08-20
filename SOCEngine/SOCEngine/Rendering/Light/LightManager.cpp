@@ -13,6 +13,8 @@ using namespace Rendering::Manager;
 using namespace Rendering::Shadow;
 using namespace Rendering::Camera;
 using namespace Rendering::Buffer;
+using namespace Rendering;
+using namespace Rendering::Shader;
 
 LightManager::LightManager(void) 
 :	_pointLightTransformSRBuffer(nullptr), _pointLightColorSRBuffer(nullptr),

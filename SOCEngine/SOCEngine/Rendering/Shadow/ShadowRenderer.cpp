@@ -15,6 +15,8 @@ using namespace Rendering::Shadow;
 using namespace Rendering::Texture;
 using namespace Rendering::Light;
 using namespace Rendering::Manager;
+using namespace Rendering;
+using namespace Rendering::Shader;
 
 ShadowRenderer::ShadowRenderer() :
 	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
@@ -1150,27 +1152,27 @@ void ShadowRenderer::BindResources(const Device::DirectX* dx, bool bindVS, bool 
 		if(bindPS)	PixelShader::BindShaderResourceBuffer(context, bind, srBuffer);
 	};
 
-	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				_pointLightShadowMapAtlas,			bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,			_pointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				_pointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		_pointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				_pointLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,			_pointLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,				_pointLightInvVPVMatSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		_pointLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,			_pointLightInvVPVMatSRBuffer,			bindVS, bindGS, bindPS);
 
-	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				_spotLightShadowMapAtlas,			bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,			_spotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				_spotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		_spotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					_spotLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,			_spotLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		_spotLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowInvVPVMat,				_spotLightInvVPVMatSRBuffer,			bindVS, bindGS, bindPS);
 
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,			_directionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,			_directionalLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,				_directionalLightShadowParamSRBuffer,		bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,			_directionalLightViewProjMatSRBuffer,		bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,			_directionalLightInvVPVMatSRBuffer,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		_directionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	_directionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			_directionalLightShadowParamSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	_directionalLightViewProjMatSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,		_directionalLightInvVPVMatSRBuffer,		bindVS, bindGS, bindPS);
 
-	if(bindVS) VertexShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
-	if(bindGS) GeometryShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
-	if(bindPS) PixelShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
+	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
+	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
+	if(bindPS) PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
 }
 
 void ShadowRenderer::UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const
@@ -1191,24 +1193,24 @@ void ShadowRenderer::UnbindResources(const Device::DirectX* dx, bool bindVS, boo
 	};
 
 	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,				bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,			bindVS, bindGS, bindPS);
 
 	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowInvVPVMat,				bindVS, bindGS, bindPS);
 
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,			bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,				bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,			bindVS, bindGS, bindPS);
-	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,		bindVS, bindGS, bindPS);
 
-	if(bindVS) VertexShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
-	if(bindGS) GeometryShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
-	if(bindPS) PixelShader::BindConstBuffer(ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
+	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
+	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
+	if(bindPS) PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
 }

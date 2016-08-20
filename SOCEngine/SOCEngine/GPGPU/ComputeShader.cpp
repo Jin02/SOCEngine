@@ -4,6 +4,7 @@
 using namespace Device;
 using namespace GPGPU::DirectCompute;
 using namespace Rendering::Shader;
+using namespace Rendering;
 
 ComputeShader::ComputeShader(const ThreadGroup& threadGroup, ID3DBlob* blob)
 	: ShaderForm(blob, "CS"), _shader(nullptr), _threadGroup(threadGroup)
@@ -108,7 +109,7 @@ void ComputeShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBin
 
 void ComputeShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
 	context->CSSetShaderResources(uint(bind), 1, &srv);
 }
 
