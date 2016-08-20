@@ -4,24 +4,43 @@
 #include "ShaderCommon.h"
 
 #ifndef VOXEL_CONE_TRACING
-
-cbuffer GIInfoCB : register( b6 )
+cbuffer GIGlobalStaticInfo : register( b6 )
 #else
-cbuffer GIInfoCB : register( b1 )
+cbuffer GIGlobalStaticInfo : register( b1 )
 #endif
 {
 	// High 16 bit is cascade
 	// Low bits is voxel dimension
 	uint	gi_maxCascadeWithVoxelDimensionPowOf2;
-
-	float	gi_initVoxelSize;
-	float	gi_initWorldSize;
 	float	gi_maxMipLevel;
+
+	float	gi_occlusion;
+	float	gi_diffuseHalfConeMaxAngle;
+}
+
+#ifndef VOXEL_CONE_TRACING
+cbuffer GIGlobalDynamicInfo : register( b7 )
+#else
+cbuffer GIGlobalDynamicInfo : register( b2 )
+#endif
+{
+	float	gi_initVoxelSize;
+	float3	gi_startCenterWorldPos;
 }
 
 uint GetMaximumCascade()
 {
 	return (gi_maxCascadeWithVoxelDimensionPowOf2 >> 16);
+}
+
+float GetDimension()
+{
+	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
+}
+
+float GetInitWorldSize()
+{
+	return gi_initVoxelSize * GetDimension();
 }
 
 uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
@@ -32,13 +51,13 @@ uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
 			dist = max(	dist,
 						abs(worldPos.z - cameraWorldPos.z) );
 
-	return (uint)sqrt(dist / (gi_initWorldSize * 0.5f));
+	return (uint)sqrt(dist / (GetInitWorldSize() * 0.5f));
 }
 
 float GetVoxelizeSize(uint cascade)
 {
 	float cascadeScale = float(cascade + 1);
-	return gi_initWorldSize * (cascadeScale * cascadeScale);
+	return GetInitWorldSize() * (cascadeScale * cascadeScale);
 }
 
 void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
@@ -50,11 +69,6 @@ void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cas
 
 	outBBMin = cameraWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
-}
-
-float GetDimension()
-{
-	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
 }
 
 float ComputeVoxelSize(uint cascade)
