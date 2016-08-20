@@ -18,7 +18,7 @@ namespace Rendering
 			virtual ~ShaderResourceView();
 
 		public:
-			void Initialize(ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension);
+			void Initialize(ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension, uint numElements = -1);
 			void Destory();
 
 		public:

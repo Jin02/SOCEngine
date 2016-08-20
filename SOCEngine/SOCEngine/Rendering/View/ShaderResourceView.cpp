@@ -18,7 +18,8 @@ ShaderResourceView::~ShaderResourceView()
 void ShaderResourceView::Initialize(
 	ID3D11Resource* resource,
 	DXGI_FORMAT format, uint mipLevel,
-	D3D11_SRV_DIMENSION viewDimension)
+	D3D11_SRV_DIMENSION viewDimension,
+	uint numElements)
 {
 	ASSERT_COND_MSG(_srv == nullptr, "Error, SRV was already allocated");
 
@@ -45,6 +46,9 @@ void ShaderResourceView::Initialize(
 		srdesc.Texture3D.MipLevels = mipLevel;
 	else if(viewDimension == D3D11_SRV_DIMENSION_TEXTURE1D)
 		srdesc.Texture1D.MipLevels = mipLevel;
+
+	if( numElements != -1 )
+		srdesc.Buffer.NumElements = numElements;
 
 	HRESULT hr = device->CreateShaderResourceView(resource, &srdesc, &_srv);
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
