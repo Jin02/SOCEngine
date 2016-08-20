@@ -23,7 +23,7 @@ using namespace GPGPU::DirectCompute;
 
 Voxelization::Voxelization()
 :	_clearVoxelMapCS(nullptr),
-	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr), _globalInfoCB(nullptr)
+	_voxelAlbedoMapAtlas(nullptr), _voxelNormalMapAtlas(nullptr), _voxelEmissionMapAtlas(nullptr)
 {
 }
 
@@ -42,18 +42,14 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* globalInfoCB)
+void Voxelization::Initialize(uint maxNumOfCascade, uint dimension)
 {
-	uint maxNumOfCascade = globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
 	auto Log2 = [](float v) -> float
 	{
 		return log(v) / log(2.0f);
 	};
-
-
-	uint dimension = 1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
 
 	uint count = dimension * dimension * dimension * maxNumOfCascade;
 	_voxelAlbedoMapAtlas	= new RAWBuffer;
@@ -75,7 +71,6 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* g
 	}
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
-	_globalInfoCB = globalInfoCB;
 }
 
 void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
@@ -144,7 +139,8 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
 
 void Voxelization::Voxelize(const Device::DirectX*& dx,
 							const MeshCamera*& camera, const Core::Scene* scene,
-							const GlobalInfo& globalInfo, const VoxelMap* injectionColorMap,
+							float maxNumOfCascade, float initWorldSize, const VoxelMap* injectionColorMap,
+							const ConstBuffer* giGlobalStaticInfoCB, const ConstBuffer* giGlobalDynamicInfoCB,
 							bool onlyStaticMesh)
 {
 	Math::Matrix camWorldMat;
@@ -177,7 +173,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-	float dimension = float(1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff));
+	float dimension = static_cast<float>(dimension);
 
 	D3D11_VIEWPORT viewport;
 	{
@@ -210,21 +206,23 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				lightMgr->GetDirectionalLightShadowIndexSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 	
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::GlobalIIllumination_InfoCB,			_globalInfoCB);
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,					shadowMgr->GetShadowGlobalParamConstBuffer());
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::GI_GlobalStaticInfoCB,				giGlobalStaticInfoCB);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::GI_GlobalDynamicInfoCB,				giGlobalDynamicInfoCB);
 
-	PixelShader::BindTexture(context,		TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowMgr->GetDirectionalLightShadowMapAtlas());
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::ShadowGlobalParam,					shadowMgr->GetShadowGlobalParamConstBuffer());
 
-	PixelShader::BindSamplerState(context,		SamplerStateBindIndex::ShadowComprisonSamplerState,			dx->GetShadowGreaterEqualSamplerComparisonState());	
-	PixelShader::BindSamplerState(context,		SamplerStateBindIndex::DefaultSamplerState,					dx->GetSamplerStateAnisotropic());	
-	PixelShader::BindSamplerState(context,		SamplerStateBindIndex::VSMShadowSamplerState,				dx->GetShadowSamplerState());	
+	PixelShader::BindTexture(context,					TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowMgr->GetDirectionalLightShadowMapAtlas());
+
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowComprisonSamplerState,			dx->GetShadowGreaterEqualSamplerComparisonState());	
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,					dx->GetSamplerStateAnisotropic());	
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,				dx->GetShadowSamplerState());	
 
 	const RenderManager* renderManager = scene->GetRenderManager();
-	uint maxCascade = globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+	uint maxCascade = maxNumOfCascade;
 
 	for(uint currentCascade=0; currentCascade<maxCascade; ++currentCascade)
 	{
-		UpdateConstBuffer(dx, currentCascade, camWorldPos, globalInfo, dimension);
+		UpdateConstBuffer(dx, currentCascade, camWorldPos, initWorldSize, dimension);
 
 		// Render Voxel
 		{
@@ -239,24 +237,26 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 		}
 	}
 
-	GeometryShader::BindConstBuffer(context, 		ConstBufferBindIndex::Voxelization_InfoCB,		nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::Voxelization_InfoCB,		nullptr);
+	GeometryShader::BindConstBuffer(context, 			ConstBufferBindIndex::Voxelization_InfoCB,				nullptr);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::Voxelization_InfoCB,				nullptr);
 
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,	nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,		nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,		nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,		nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,		nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,		nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,			nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,			nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,	nullptr);
 
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::GlobalIIllumination_InfoCB,	nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::ShadowGlobalParam,		nullptr);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::GI_GlobalStaticInfoCB,			nullptr);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::GI_GlobalDynamicInfoCB,			nullptr);
 
-	PixelShader::BindTexture(context,			TextureBindIndex::DirectionalLightShadowMapAtlas,	nullptr);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::ShadowGlobalParam,				nullptr);
 
-	PixelShader::BindSamplerState(context,			SamplerStateBindIndex::ShadowComprisonSamplerState,	nullptr);
-	PixelShader::BindSamplerState(context,			SamplerStateBindIndex::DefaultSamplerState,		nullptr);	
-	PixelShader::BindSamplerState(context,			SamplerStateBindIndex::VSMShadowSamplerState,		nullptr);	
+	PixelShader::BindTexture(context,					TextureBindIndex::DirectionalLightShadowMapAtlas,		nullptr);
+
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowComprisonSamplerState,		nullptr);
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,				nullptr);	
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,			nullptr);	
 
 	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr, nullptr};
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
@@ -265,12 +265,12 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 }
 
 void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade,
-									 const Vector3& camWorldPos, const GlobalInfo& globalInfo, float dimension)
+									 const Vector3& camWorldPos, float initWorldSize, float dimension)
 {
 	// Compute Voxelize Bound
 	float worldSize;
 	Vector3 bbMin, bbMax, bbMid;
-	ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, currentCascade, camWorldPos, globalInfo.initWorldSize);
+	ComputeBound(&bbMin, &bbMid, &bbMax, &worldSize, currentCascade, camWorldPos, initWorldSize);
 
 	InfoCBData currentVoxelizeInfo;
 	currentVoxelizeInfo.currentCascade	= currentCascade;
