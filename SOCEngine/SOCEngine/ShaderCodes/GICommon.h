@@ -5,10 +5,6 @@
 
 #ifndef VOXEL_CONE_TRACING
 
-Texture3D<float4>	VoxelAlbedoMap	: register( t29 );
-Texture3D<float4>	VoxelEmissionMap	: register( t31 );
-Texture3D<float4>	VoxelNormalMap	: register( t30 );
-
 cbuffer GIInfoCB : register( b6 )
 #else
 cbuffer GIInfoCB : register( b1 )
@@ -80,58 +76,7 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 	return voxelCenter;
 }
 
-uint encUnsignedNibble(uint m, uint n)
-{
-  return	(m & 0xFEFEFEFE)		|
-			(n & 0x00000001)		|
-			(n & 0x00000002) << 7U	|
-			(n & 0x00000004) << 14U	|
-			(n & 0x00000008) << 21U;
-}
-
-uint decUnsignedNibble(uint m)
-{
-  return	(m & 0x00000001)		|
-			(m & 0x00000100) >> 7U	|
-			(m & 0x00010000) >> 14U	|
-			(m & 0x01000000) >> 21U;
-}
-
-void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
-{
-	// 나도 이게 왜 돌아가는지 모르겠다.
-	// 그런데 결과물이 가장 좋음 -_-.. 
-
-	// value *= 255.0f;
-	// uint newValue = ToUint(value);
-	uint newValue			= Float4ColorToUint(value);
-
-	uint prevStoredValue	= 0;
-	uint currentStoredValue	= 0;
-
-	uint count = 0;
-	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
-	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
-	do//while( (!useLimit) || (count++ < 8) )
-	{
-		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
-
-		if(prevStoredValue == currentStoredValue)
-			break;
-		prevStoredValue = currentStoredValue;
-
-		float4 rval = ToFloat4(currentStoredValue & 0xFEFEFEFE);
-		uint n = decUnsignedNibble(currentStoredValue);
-
-		rval = rval * n + value;
-		rval /= ++n;
-		rval = round(rval / 2) * 2;
-		newValue = encUnsignedNibble(ToUint(rval), n);
-
-	}while(++count < 16);
-}
-
-void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
+void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, int3 voxelIdx, float4 value, uniform bool useLimit)
 {
 	value *= 255.0f;
 
@@ -145,7 +90,10 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
-		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+		uint idx		= (voxelIdx.x << 2) + (voxelIdx.y << 1) + voxelIdx.z;
+		uint address	= idx * 4;
+
+		voxelMap.InterlockedCompareExchange(address, prevStoredValue, newValue, currentStoredValue);
 
 		if(prevStoredValue == currentStoredValue)
 			break;
@@ -162,7 +110,7 @@ void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 va
 	}while(++count < 16);
 }
 
-void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
+void StoreRadiosityUsingRawBuffer(RWByteAddressBuffer outVoxelColorMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
 {
 	float anisotropicNormals[6] = {
 		-normal.x,
@@ -184,10 +132,36 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, fl
 		float rate = max(anisotropicNormals[faceIndex], 0.0f);
 		float4 storeValue = float4(radiosity * rate, alpha);
 
-//		StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
-		outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
+		StoreVoxelMapAtomicColorAvg(outVoxelColorMap, index, storeValue, true);
 	}
 }
+
+void StoreRadiosityUsingRWTexture3D(RWTexture3D<uint> outVoxelColorMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
+{
+	float anisotropicNormals[6] = {
+		-normal.x,
+		 normal.x,
+		-normal.y,
+		 normal.y,
+		-normal.z,
+		 normal.z
+	};
+
+	uint dimension = (uint)GetDimension();
+	voxelIdx.y += curCascade * dimension;
+
+	for(int faceIndex=0; faceIndex<6; ++faceIndex)
+	{
+		uint3 index = voxelIdx;
+		index.x += (faceIndex * dimension);
+
+		float rate = max(anisotropicNormals[faceIndex], 0.0f);
+		float4 storeValue = float4(radiosity * rate, alpha);
+
+		outVoxelColorMap[index] = Float4ColorToUint(storeValue);
+	}
+}
+
 
 
 #endif

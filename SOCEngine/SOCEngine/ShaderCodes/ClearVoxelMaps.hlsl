@@ -1,6 +1,7 @@
 //EMPTY_META_DATA
 
 #define USE_OUT_VOXEL_MAP
+#define CLEAR_PASS
 
 #include "Voxelization_Common.h"
 

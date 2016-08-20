@@ -1,4 +1,4 @@
-#define USE_OUT_VOXEL_MAP 
+#define USE_OUT_RAW_BUFFER 
 
 #include "Voxelization_Common.h"
 #include "NormalMapping.h"

@@ -20,11 +20,17 @@ cbuffer Voxelization_Info_CB : register( b5 )
 SamplerState DefaultSampler			: register( s0 );
 
 #if defined(USE_OUT_VOXEL_MAP)
-RWTexture3D<uint> OutVoxelAlbedoMap			: register( u0 );
-RWTexture3D<uint> OutVoxelNormalMap			: register( u1 );
-RWTexture3D<uint> OutVoxelEmissionMap		: register( u2 );
-RWTexture3D<uint> OutInjectionColorMap		: register( u3 );
+RWTexture3D<uint> OutVoxelAlbedoMap			: register( u2 );
+RWTexture3D<uint> OutVoxelNormalMap			: register( u3 );
+RWTexture3D<uint> OutVoxelEmissionMap		: register( u4 );
+#elif defined(USE_OUT_RAW_BUFFER)
+RWByteAddressBuffer	OutVoxelAlbedoMap		: register( u2 );
+RWByteAddressBuffer	OutVoxelNormalMap		: register( u3 );
+RWByteAddressBuffer	OutVoxelEmissionMap		: register( u4 );
 #endif
+RWTexture3D<uint> OutInjectionColorMap		: register( u5 );
+
+#if defined(USE_OUT_VOXEL_MAP) || defined(USE_OUT_RAW_BUFFER)
 
 void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3], out uint outAxisIndex,
 								float3 inputLocalPos[3])
@@ -56,24 +62,24 @@ void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 {
-#if defined(USE_OUT_VOXEL_MAP)
 	int dimension = int(GetDimension());
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
 		int3 index = voxelIdx;
 		index.y += voxelization_currentCascade * dimension;
 
-		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,	index,	albedoWithAlpha, false);
-		//OutVoxelAlbedoMap[index] = Float4ColorToUint(albedoWithAlpha);
+		float3 compressedNormal = normal * 0.5f + 0.5f;
 
-		//StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(material_emissionColor.xyz, 1.0f));
-		//OutVoxelEmissionMap[index] = float4(material_emissionColor.xyz, 1.0f);
-
-		float3 storeNormal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f), false);
-		//OutVoxelNormalMap[index] = Float4ColorToUint(float4(storeNormal, 1.0f));
-	}
+#if defined(USE_OUT_RAW_BUFFER)
+		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,		index,	albedoWithAlpha, false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(GetMaterialEmissiveColor(), 1.0f), false);
+		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,		index,	float4(compressedNormal, 1.0f), false);
+#elif defined(USE_OUT_VOXEL_MAP)
+		OutVoxelAlbedoMap[index]		= Float4ColorToUint(albedoWithAlpha);
+		OutVoxelEmissionMap[index]		= Float4ColorToUint(float4(GetMaterialEmissiveColor(), 1.0f));
+		OutVoxelNormalMap[index]		= Float4ColorToUint(float4(compressedNormal, 1.0f));
 #endif
+	}
 }
 
 void ComputeVoxelIdx(out int3 outVoxelIdx, float3 worldPos)
@@ -86,7 +92,6 @@ void ComputeVoxelIdx(out int3 outVoxelIdx, float3 worldPos)
 
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
 {
-#if defined(USE_OUT_VOXEL_MAP)
 	float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 
 	uint dlShadowCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadows);
@@ -108,8 +113,7 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 
-	StoreRadiosity(OutInjectionColorMap, radiosity, alpha, normal, voxelIdx, voxelization_currentCascade);
-#endif
+	StoreRadiosityUsingRWTexture3D(OutInjectionColorMap, radiosity, alpha, normal, voxelIdx, voxelization_currentCascade);
 }
 
 void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos, uint axisIndex)
@@ -124,5 +128,7 @@ void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos, uint axisI
 	StoreVoxelMap(float4(albedo, alpha), normal, voxelIdx);
 	InjectRadianceFromDirectionalLight(voxelIdx, worldPos, albedo, alpha, normal);
 }
+
+#endif
 
 #endif
