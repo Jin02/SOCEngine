@@ -35,8 +35,8 @@ namespace Rendering
 			~VoxelConeTracing();
 
 		public:
-			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* giInfoCB);
-			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam);
+			void Initialize(const Device::DirectX* dx);
+			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam, const Buffer::ConstBuffer* giGlobalStaticInfoCB, const Buffer::ConstBuffer* giGlobalDynamicInfoCB);
 			void Destroy();
 
 		public:
