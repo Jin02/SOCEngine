@@ -83,9 +83,10 @@ namespace Rendering
 		ReflectionProbe_Info			= 5,	
 
 		Voxelization_InfoCB				= 5,
-		GlobalIIllumination_InfoCB		= 6,
+		GI_GlobalStaticInfoCB			= 6,
+		GI_GlobalDynamicInfoCB			= 7,
 
-		SkyMapInfoParam					= 7,
+		SkyMapInfoParam					= 8,
 
 		Mipmap_InfoCB					= 0,
 		VCT_GlobalInfoCB				= 1,
