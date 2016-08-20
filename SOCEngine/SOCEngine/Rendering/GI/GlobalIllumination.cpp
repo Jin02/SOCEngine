@@ -44,7 +44,7 @@ GlobalIllumination::~GlobalIllumination()
 	SAFE_DELETE(_debugVoxelViewer);
 }
 
-// ±ÍÂú¾Æ¼­ ±×³É º¹ºÙÇßÁö¸¸, Voxelization¿¡ ÀÖ´Â °Í°ú ÇÏ³ª·Î ÇÕÃÄ¼­ Á¤¸®ÇØ¾ßÇÔ
+// ê·€ì°®ì•„ì„œ ê·¸ëƒ¥ ë³µë¶™í–ˆì§€ë§Œ, Voxelizationì— ìžˆëŠ” ê²ƒê³¼ í•˜ë‚˜ë¡œ í•©ì³ì„œ ì •ë¦¬í•´ì•¼í•¨
 void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 {
 	std::string filePath = "";
@@ -79,7 +79,7 @@ void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCa
 	_clearVoxelMapCS->SetUAVs(uavs);
 }
 
-// ±ÍÂú¾Æ¼­ ±×³É º¹ºÙÇßÁö¸¸, Voxelization¿¡ ÀÖ´Â °Í°ú ÇÏ³ª·Î ÇÕÃÄ¼­ Á¤¸®ÇØ¾ßÇÔ
+// ê·€ì°®ì•„ì„œ ê·¸ëƒ¥ ë³µë¶™í–ˆì§€ë§Œ, Voxelizationì— ìžˆëŠ” ê²ƒê³¼ í•˜ë‚˜ë¡œ í•©ì³ì„œ ì •ë¦¬í•´ì•¼í•¨
 void GlobalIllumination::ClearInjectColorVoxelMap(const Device::DirectX* dx)
 {
 	_clearVoxelMapCS->Dispatch(dx->GetContext());
@@ -185,8 +185,10 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	// 1. Voxelization Pass
 	{
+		float initWorldSize = _globalDynamicInfo.initVoxelSize * static_cast<float>(dimension);
+
 		// Clear Voxel Map and voxelize
-		_voxelization->Voxelize(dx, camera, scene, maxCascade, 0, _injectionColorMap, _giGlobalStaticInfoCB, _giGlobalDynamicInfoCB, false);
+		_voxelization->Voxelize(dx, camera, scene, maxCascade, initWorldSize, _injectionColorMap, _giGlobalStaticInfoCB, _giGlobalDynamicInfoCB, false);
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
