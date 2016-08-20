@@ -1349,5 +1349,8 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
       <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelRawBuffers.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
