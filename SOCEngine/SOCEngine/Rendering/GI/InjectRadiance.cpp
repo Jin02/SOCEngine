@@ -50,7 +50,8 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 		std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
 		{
 			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::ShadowGlobalParam),				shadowMgr->GetShadowGlobalParamConstBuffer()));
-			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB),	param.giInfoConstBuffer));
+			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::GI_GlobalStaticInfoCB),			param.giStaticInfoCB));
+			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::GI_GlobalDynamicInfoCB),		param.giDynamicInfoCB));
 		}
 		_shader->SetInputConstBuffers(inputConstBuffers);
 
@@ -63,7 +64,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 		_shader->SetInputRAWBuffers(inputRawBuffers);
 	}
 
-	uint dimension = (1 << (param.globalInfo->maxCascadeWithVoxelDimensionPow2 & 0xffff));
+	uint dimension = param.dimension;
 
 	// Setting Output
 	{

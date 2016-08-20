@@ -17,14 +17,15 @@ namespace Rendering
 		public:
 			struct InitParam
 			{
-				const GlobalInfo*					globalInfo;
-				const Buffer::ConstBuffer*			giInfoConstBuffer;
+				uint								dimension;
+				const Buffer::ConstBuffer*			giStaticInfoCB;
+				const Buffer::ConstBuffer*			giDynamicInfoCB;
 				const VoxelMap*						outColorMap;
 				const Voxelization*					voxelization;
 
 				bool IsValid() const
 				{
-					return globalInfo && giInfoConstBuffer && voxelization && outColorMap;
+					return dimension && giStaticInfoCB && giDynamicInfoCB && voxelization && outColorMap;
 				}
 			};
 
