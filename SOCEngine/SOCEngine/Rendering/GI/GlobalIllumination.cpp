@@ -16,18 +16,22 @@ using namespace Rendering::Buffer;
 using namespace Rendering::GI;
 using namespace Rendering::Shader;
 using namespace GPGPU::DirectCompute;
+using namespace Math;
 
 GlobalIllumination::GlobalIllumination()
-	: _giGlobalInfoCB(nullptr), _voxelization(nullptr), _mipmap(nullptr),
+	: _giGlobalStaticInfoCB(nullptr), _giGlobalDynamicInfoCB(nullptr),
+	_voxelization(nullptr), _mipmap(nullptr),
 	_injectPointLight(nullptr), _injectSpotLight(nullptr),
 	_voxelConeTracing(nullptr), _injectionColorMap(nullptr), _clearVoxelMapCS(nullptr),
-	_debugVoxelViewer(nullptr)
+	_debugVoxelViewer(nullptr), _isAttachCamera(true)
 {
 }
 
 GlobalIllumination::~GlobalIllumination()
 {
-	SAFE_DELETE(_giGlobalInfoCB);
+	SAFE_DELETE(_giGlobalStaticInfoCB);
+	SAFE_DELETE(_giGlobalDynamicInfoCB);
+
 	SAFE_DELETE(_voxelization);
 
 	SAFE_DELETE(_injectPointLight);
@@ -97,21 +101,30 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	// Setting GlobalInfo
 	{
-		_giGlobalInfoCB = new ConstBuffer;
-		_giGlobalInfoCB->Initialize(sizeof(GlobalInfo));
+		// Static
+		{
+			_globalStaticInfo.maxCascadeWithVoxelDimensionPow2	= (maxNumOfCascade << 16) | (voxelDimensionPow2 & 0xffff);
+			_globalStaticInfo.maxMipLevel						= (float)mipmapLevels;
 
-		_globalInfo.maxCascadeWithVoxelDimensionPow2	= (maxNumOfCascade << 16) | (voxelDimensionPow2 & 0xffff);
-		_globalInfo.initVoxelSize						= minWorldSize / (float)dimension;
-		_globalInfo.initWorldSize						= minWorldSize;
-		_globalInfo.maxMipLevel							= (float)mipmapLevels;
+			_giGlobalStaticInfoCB = new ConstBuffer;
+			_giGlobalStaticInfoCB->Initialize(sizeof(GlboalStaticInfo));
+			_giGlobalStaticInfoCB->UpdateSubResource(dx->GetContext(), &_globalStaticInfo);
+		}
 
-		_giGlobalInfoCB->UpdateSubResource(dx->GetContext(), &_globalInfo);
+		// Dynamic
+		{
+			_globalDynamicInfo.initVoxelSize						= minWorldSize / (float)dimension;
+			_globalDynamicInfo.startCenterWorldPos					= Vector3(0.0f, 0.0f, 0.0f);
+			_giGlobalDynamicInfoCB = new ConstBuffer;
+			_giGlobalDynamicInfoCB->Initialize(sizeof(GlobalDynamicInfo));
+			_giGlobalDynamicInfoCB->UpdateSubResource(dx->GetContext(), &_globalDynamicInfo);
+		}
 	}
 
 	// Init Voxelization
 	{
 		_voxelization = new Voxelization;
-		_voxelization->Initialize(_globalInfo, _giGlobalInfoCB);
+		_voxelization->Initialize(maxNumOfCascade, dimension);
 	}
 
 	// Injection
@@ -121,8 +134,9 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 										DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels, true);
 		InjectRadiance::InitParam initParam;
 		{
-			initParam.globalInfo		= &_globalInfo;
-			initParam.giInfoConstBuffer	= _giGlobalInfoCB;
+			initParam.dimension			= dimension;
+			initParam.giStaticInfoCB	= _giGlobalStaticInfoCB;
+			initParam.giDynamicInfoCB	= _giGlobalDynamicInfoCB;
 			initParam.voxelization		= _voxelization;
 			initParam.outColorMap		= _injectionColorMap;
 		}
@@ -137,13 +151,13 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Mipmap
 	{
 		_mipmap = new MipmapVoxelTexture;
-		_mipmap->Initialize(_globalInfo);
+		_mipmap->Initialize();
 	}
 
 	// Voxel Cone Tracing
 	{
 		_voxelConeTracing = new VoxelConeTracing;
-		_voxelConeTracing->Initialize(dx, _giGlobalInfoCB);
+		_voxelConeTracing->Initialize(dx);
 	}
 
 	InitializeClearVoxelMap(dimension, maxNumOfCascade);
@@ -155,15 +169,24 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
+	if(_isAttachCamera)
+	{
+		GlobalDynamicInfo info = _globalDynamicInfo;
+		info.startCenterWorldPos = camera->GetWorldPosition();
+		UpdateGIDynamicInfo(dx, info);
+	}
 
 	ClearInjectColorVoxelMap(dx);
 
 	const RenderManager* renderManager = scene->GetRenderManager();
-	
+
+	uint dimension	= 1 << (_globalStaticInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
+	uint maxCascade	= _globalStaticInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+
 	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
-		_voxelization->Voxelize(dx, camera, scene, _globalInfo, _injectionColorMap, false);
+		_voxelization->Voxelize(dx, camera, scene, maxCascade, 0, _injectionColorMap, _giGlobalStaticInfoCB, _giGlobalDynamicInfoCB, false);
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
@@ -173,8 +196,6 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	// 2. Injection Pass
 	{
-		uint dimension	= 1 << (_globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
-		uint maxCascade	= _globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
 
 		if(shadowRenderer->GetPointLightCount() > 0)
 			_injectPointLight->Inject(dx, shadowRenderer, _voxelization, dimension, maxCascade);
@@ -185,18 +206,30 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 3. Mipmap Pass
-	_mipmap->Mipmapping(dx, _injectionColorMap, (_globalInfo.maxCascadeWithVoxelDimensionPow2 >> 16));
+	_mipmap->Mipmapping(dx, _injectionColorMap, maxCascade);
 	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(0)->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
 
 	// 4. Voxel Cone Tracing Pass
 	{
-		_voxelConeTracing->Run(dx, _injectionColorMap, camera);
+		_voxelConeTracing->Run(dx, _injectionColorMap, camera, _giGlobalStaticInfoCB, _giGlobalDynamicInfoCB);
+	}
+}
+
+void GlobalIllumination::UpdateGIDynamicInfo(const Device::DirectX* dx, const GlobalDynamicInfo& dynamicInfo)
+{
+	bool isChanged = memcmp(&_globalDynamicInfo, &dynamicInfo, sizeof(GlobalDynamicInfo)) != 0;
+	if(isChanged)
+	{
+		_giGlobalDynamicInfoCB->UpdateSubResource(dx->GetContext(), &dynamicInfo);
+		_globalDynamicInfo = dynamicInfo;
 	}
 }
 
 void GlobalIllumination::Destroy()
 {
-	_giGlobalInfoCB->Destory();
+	_giGlobalStaticInfoCB->Destory();
+	_giGlobalDynamicInfoCB->Destory();
+
 	_voxelization->Destroy();
 	_injectPointLight->Destroy();
 	_injectSpotLight->Destroy();
