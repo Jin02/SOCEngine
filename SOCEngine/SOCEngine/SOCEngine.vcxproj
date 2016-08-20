@@ -46,6 +46,7 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
     <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\RAWBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
@@ -347,6 +348,7 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="Rendering\Buffer\RAWBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />

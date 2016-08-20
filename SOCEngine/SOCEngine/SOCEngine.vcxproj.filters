@@ -451,6 +451,9 @@
     <Filter Include="Rendering\PostProcessing\SSLR\ConeTracing">
       <UniqueIdentifier>{261ab9af-d818-4990-890f-3655c490b4d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Buffer\RAW">
+      <UniqueIdentifier>{42f93ec5-b039-4bba-a7d3-a90e27605409}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -907,6 +910,9 @@
     <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
       <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Buffer\RAWBuffer.h">
+      <Filter>Rendering\Buffer\RAW</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1232,6 +1238,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
       <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\RAWBuffer.cpp">
+      <Filter>Rendering\Buffer\RAW</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
