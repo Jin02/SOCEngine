@@ -54,15 +54,16 @@ void Voxelization::Initialize(const GlobalInfo& globalInfo, const ConstBuffer* g
 
 
 	uint dimension = 1 << (globalInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
-	
-	_voxelAlbedoMapAtlas	= new VoxelMap;
-	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
 
-	_voxelEmissionMapAtlas	= new VoxelMap;
-	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+	uint count = dimension * dimension * dimension * maxNumOfCascade;
+	_voxelAlbedoMapAtlas	= new RAWBuffer;
+	_voxelAlbedoMapAtlas->Initialize(4, count);
 
-	_voxelNormalMapAtlas = new VoxelMap;
-	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+	_voxelEmissionMapAtlas	= new RAWBuffer;
+	_voxelEmissionMapAtlas->Initialize(4, count);
+
+	_voxelNormalMapAtlas	= new RAWBuffer;
+	_voxelNormalMapAtlas->Initialize(4, count);
 
 	// Setting Const Buffers
 	for(uint i=0; i<maxNumOfCascade; ++i)
@@ -82,7 +83,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
-		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMaps");
+		pathFind.FetchShaderFullPath(filePath, "ClearVoxelRawBuffers");
 
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
@@ -109,15 +110,15 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	{
 		ShaderForm::InputUnorderedAccessView uav;
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		uav.uav			= _voxelAlbedoMapAtlas->GetSourceMapUAV();
+		uav.uav			= _voxelAlbedoMapAtlas->GetUAV();
 		uavs.push_back(uav);
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		uav.uav			= _voxelEmissionMapAtlas->GetSourceMapUAV();
+		uav.uav			= _voxelEmissionMapAtlas->GetUAV();
 		uavs.push_back(uav);
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		uav.uav			= _voxelNormalMapAtlas->GetSourceMapUAV();
+		uav.uav			= _voxelNormalMapAtlas->GetUAV();
 		uavs.push_back(uav);
 	}
 
@@ -126,9 +127,9 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 
 void Voxelization::Destroy()
 {
-	_voxelAlbedoMapAtlas->Destory();
-	_voxelNormalMapAtlas->Destory();
-	_voxelEmissionMapAtlas->Destory();
+	_voxelAlbedoMapAtlas->Destroy();
+	_voxelNormalMapAtlas->Destroy();
+	_voxelEmissionMapAtlas->Destroy();
 
 	for(auto iter = _constBuffers.begin(); iter != _constBuffers.end(); ++iter)
 		(*iter)->Destory();
@@ -191,18 +192,13 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 
 	ID3D11UnorderedAccessView* uavs [] =
 	{
-		_voxelAlbedoMapAtlas->GetSourceMapUAV()->GetView(),
-		_voxelNormalMapAtlas->GetSourceMapUAV()->GetView(),
-		_voxelEmissionMapAtlas->GetSourceMapUAV()->GetView(),
+		_voxelAlbedoMapAtlas->GetUAV()->GetView(),
+		_voxelNormalMapAtlas->GetUAV()->GetView(),
+		_voxelEmissionMapAtlas->GetUAV()->GetView(),
 		injectionColorMap->GetSourceMapUAV()->GetView()
 	};
-
-	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	context->ClearRenderTargetView(_voxelAlbedoMapAtlas->GetRenderTargetView(), clearColor);
-	context->ClearRenderTargetView(_voxelNormalMapAtlas->GetRenderTargetView(), clearColor);
-	context->ClearRenderTargetView(_voxelEmissionMapAtlas->GetRenderTargetView(), clearColor);
 	
-	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
+	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 2, ARRAYSIZE(uavs), uavs, nullptr);
 
 	const LightManager*		lightMgr	= scene->GetLightManager();
 	const ShadowRenderer*	shadowMgr	= scene->GetShadowManager();

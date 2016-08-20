@@ -54,13 +54,13 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 		}
 		_shader->SetInputConstBuffers(inputConstBuffers);
 
-		std::vector<ShaderForm::InputTexture> inputTextures;
+		std::vector<ShaderForm::InputRAWBuffer> inputRawBuffers;
 		{
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
+			inputRawBuffers.push_back(ShaderForm::InputRAWBuffer(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
+			inputRawBuffers.push_back(ShaderForm::InputRAWBuffer(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
+			inputRawBuffers.push_back(ShaderForm::InputRAWBuffer(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
 		}
-		_shader->SetInputTextures(inputTextures);
+		_shader->SetInputRAWBuffers(inputRawBuffers);
 	}
 
 	uint dimension = (1 << (param.globalInfo->maxCascadeWithVoxelDimensionPow2 & 0xffff));

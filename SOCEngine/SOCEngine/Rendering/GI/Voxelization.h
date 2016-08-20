@@ -8,6 +8,8 @@
 #include "ComputeShader.h"
 #include "GlobalIlluminationCommon.h"
 
+#include "RAWBuffer.h"
+
 namespace Core
 {
 	class Scene;
@@ -32,9 +34,13 @@ namespace Rendering
 			};
 
 		private:
-			VoxelMap*								_voxelAlbedoMapAtlas;
-			VoxelMap*								_voxelNormalMapAtlas;
-			VoxelMap*								_voxelEmissionMapAtlas;
+			//VoxelMap*								_voxelAlbedoMapAtlas;
+			//VoxelMap*								_voxelNormalMapAtlas;
+			//VoxelMap*								_voxelEmissionMapAtlas;
+
+			Buffer::RAWBuffer*						_voxelAlbedoMapAtlas;
+			Buffer::RAWBuffer*						_voxelNormalMapAtlas;
+			Buffer::RAWBuffer*						_voxelEmissionMapAtlas;
 
 			Math::Matrix							_prevStaticMeshVoxelizeViewMat;
 
@@ -63,9 +69,9 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(ConstBuffers,							const std::vector<Buffer::ConstBuffer*>&,	_constBuffers);
-			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const VoxelMap*,							_voxelAlbedoMapAtlas);
-			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const VoxelMap*,							_voxelNormalMapAtlas);
-			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const VoxelMap*,							_voxelEmissionMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const Buffer::RAWBuffer*,					_voxelAlbedoMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const Buffer::RAWBuffer*,					_voxelNormalMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const Buffer::RAWBuffer*,					_voxelEmissionMapAtlas);
 		};
 	}
 }
