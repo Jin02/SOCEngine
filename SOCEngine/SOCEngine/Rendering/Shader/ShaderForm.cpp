@@ -138,3 +138,30 @@ ShaderForm::InputUnorderedAccessView::InputUnorderedAccessView(uint bindIndex, c
 	this->bindIndex	= bindIndex;
 	this->uav		= uav;
 }
+
+
+ShaderForm::InputRAWBuffer::InputRAWBuffer()
+	: Usage(), bindIndex(-1), rawBuffer(nullptr)
+{
+}
+
+ShaderForm::InputRAWBuffer::InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer)
+	: Usage(false, false, false, false)
+{
+	this->bindIndex = bindIndex;
+	this->rawBuffer = rawBuffer;
+}
+
+ShaderForm::InputRAWBuffer::InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer, bool useVS, bool useGS, bool useHS, bool usePS)
+	: Usage(useVS, useGS, useHS, usePS)
+{
+	this->bindIndex = bindIndex;
+	this->rawBuffer = rawBuffer;
+}
+
+ShaderForm::InputRAWBuffer::InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer, Usage usage)
+	: Usage(usage)
+{
+	this->bindIndex = bindIndex;
+	this->rawBuffer = rawBuffer;
+}

@@ -7,6 +7,7 @@
 #include "ShaderResourceBuffer.h"
 #include <vector>
 #include "BindIndexInfo.h"
+#include "RAWBuffer.h"
 
 #define BASIC_SHADER_NAME "Basic"
 #define BASIC_NORMAL_MAPPING_SHADER_NAME "BasicNormalMapping"
@@ -104,6 +105,17 @@ namespace Rendering
 				~InputUnorderedAccessView(){}
 			};
 
+			struct InputRAWBuffer : public Usage
+			{
+				uint bindIndex;
+				const Buffer::RAWBuffer* rawBuffer;
+
+				InputRAWBuffer();
+				InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer);
+				InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer, bool useVS, bool useGS, bool useHS, bool usePS);
+				InputRAWBuffer(uint bindIndex, const Buffer::RAWBuffer* rawBuffer, Usage usage);
+				~InputRAWBuffer(){}
+			};
 
 		public:
 			GET_ACCESSOR(Blob,			ID3DBlob*,				_blob);

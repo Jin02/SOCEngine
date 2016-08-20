@@ -61,6 +61,15 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 			context->CSSetShaderResources(iter->bindIndex, 1, &srv);
 		}
 	}
+	for(auto iter = _inputRawBuffers.begin(); iter != _inputRawBuffers.end(); ++iter)
+	{
+		auto buf = iter->rawBuffer;
+		if(buf)
+		{
+			auto srv = buf->GetSRV()->GetView();
+			context->CSSetShaderResources(iter->bindIndex, 1, &srv);
+		}
+	}
 
 	for(auto iter = _uavs.begin(); iter != _uavs.end(); ++iter)
 	{
