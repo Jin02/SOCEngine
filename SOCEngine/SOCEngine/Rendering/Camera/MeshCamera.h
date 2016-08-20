@@ -36,6 +36,7 @@ namespace Rendering
 			Light::OnlyLightCulling*					_blendedMeshLightCulling;
 			Texture::DepthBuffer*						_blendedDepthBuffer;
 			TBDR::OffScreen*							_offScreen;
+			Math::Vector3								_worldPosition;
 
 
 		public:
@@ -96,6 +97,7 @@ namespace Rendering
 			GET_ACCESSOR(PerLightIndicesBuffer,					const Buffer::ShaderResourceBuffer*,	_deferredShadingWithLightCulling->GetPerLightIndicesSRBuffer());
 
 			GET_ACCESSOR(UseIndirectColorMap,					bool,									_offScreen->GetUseIndirectColorMap());
+			GET_ACCESSOR(WorldPosition,							const Math::Vector3&,					_worldPosition);
 		};
 	}
 

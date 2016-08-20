@@ -25,7 +25,7 @@ MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_motionXY_metallic_specularity(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr), _worldPosition(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -172,6 +172,8 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		tbrParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
 
 		tbrParam.camWorldPosition		= Math::Vector3(worldMat._41, worldMat._42, worldMat._43);
+		_worldPosition					= tbrParam.camWorldPosition;
+
 		tbrParam.cameraNear				= _clippingNear;
 		tbrParam.cameraFar				= _clippingFar;
 	}
