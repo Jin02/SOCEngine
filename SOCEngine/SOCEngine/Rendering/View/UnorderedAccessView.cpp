@@ -15,17 +15,19 @@ UnorderedAccessView::~UnorderedAccessView()
 void UnorderedAccessView::Initialize(
 	DXGI_FORMAT format, uint numElements, ID3D11Resource* resource,
 	D3D11_UAV_DIMENSION viewDimension,
-	uint tex3dMipSlice, uint tex3dWSize)
+	uint tex3dMipSlice, uint tex3dWSize,
+	uint bufferFlags)
 {
 	ASSERT_COND_MSG(_uav == nullptr, "Error, _uav has already been allocated");
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
 
-	desc.Format = format;
-	desc.ViewDimension = viewDimension;
-	desc.Buffer.FirstElement = 0;
-	desc.Buffer.NumElements = numElements;
+	desc.Format					= format;
+	desc.ViewDimension			= viewDimension;
+	desc.Buffer.FirstElement	= 0;
+	desc.Buffer.NumElements		= numElements;
+	desc.Buffer.Flags			= bufferFlags;
 
 	if(viewDimension == D3D11_UAV_DIMENSION_TEXTURE3D)
 	{
