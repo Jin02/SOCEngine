@@ -6,12 +6,18 @@ namespace Rendering
 {
 	namespace GI
 	{
-		struct GlobalInfo
+		struct GlboalStaticInfo
 		{
 			unsigned int	maxCascadeWithVoxelDimensionPow2;
-			float			initVoxelSize;
-			float			initWorldSize;
 			float			maxMipLevel;
+			float			occlusion;					//dummy
+			float			diffuseHalfConeMaxAngle;	//dummy
+		};
+
+		struct GlobalDynamicInfo
+		{
+			float			initVoxelSize;
+			Math::Vector3	startCenterWorldPos;
 		};
 	}
 }
