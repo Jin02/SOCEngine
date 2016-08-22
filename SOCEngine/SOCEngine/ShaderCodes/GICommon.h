@@ -156,18 +156,13 @@ void StoreRadiosityUsingRawBuffer(RWByteAddressBuffer outVoxelColorMap, float3 r
 		 normal.z
 	};
 
-	uint dimension = (uint)GetDimension();
-	voxelIdx.y += curCascade * dimension;
-
 	for(int faceIndex=0; faceIndex<6; ++faceIndex)
 	{
-		uint3 index = voxelIdx;
-		index.x += (faceIndex * dimension);
-
 		float rate = max(anisotropicNormals[faceIndex], 0.0f);
 		float4 storeValue = float4(radiosity * rate, alpha);
 
-		StoreVoxelMapAtomicColorAvg(outVoxelColorMap, index, storeValue, true);
+		uint flattedIndex = GetFlattedVoxelIndexWithFaceIndex(voxelIdx, curCascade, faceIndex);
+		StoreVoxelMapAtomicColorAvg(outVoxelColorMap, flattedIndex, storeValue, true);
 	}
 }
 
