@@ -47,6 +47,20 @@ uint GetFlattedVoxelIndex(uint3 voxelIndex, uint cascade)
 	return offset + flat;
 }
 
+uint GetFlattedVoxelIndexWithFaceIndex(uint3 voxelIndex, uint cascade, uint faceIndex)
+{
+	uint dimension		= (uint)GetDimension();
+	uint sqDimension	= dimension * dimension;
+
+	uint fullLength		= (sqDimension * dimension);
+	uint faceOffset		= fullLength * faceIndex;
+	uint cascadeOffset	= fullLength * 6 * cascade;
+
+	uint localFlattedIdx	= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
+	return cascadeOffset + faceOffset  +  localFlattedIdx;
+}
+
+
 float GetInitWorldSize()
 {
 	return gi_initVoxelSize * GetDimension();
@@ -99,7 +113,7 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 	return voxelCenter;
 }
 
-void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, int3 voxelIdx, float4 value, uniform bool useLimit)
+void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, float4 value, uniform bool useLimit)
 {
 	value *= 255.0f;
 
@@ -113,9 +127,7 @@ void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, int3 voxelIdx, fl
 	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
-		uint idx		= (voxelIdx.x << 2) + (voxelIdx.y << 1) + voxelIdx.z;
-		uint address	= idx * 4;
-
+		uint address	= flattedVoxelIdx * 4;
 		voxelMap.InterlockedCompareExchange(address, prevStoredValue, newValue, currentStoredValue);
 
 		if(prevStoredValue == currentStoredValue)
