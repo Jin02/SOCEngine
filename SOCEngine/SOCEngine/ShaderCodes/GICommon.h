@@ -38,6 +38,15 @@ float GetDimension()
 	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
 }
 
+uint GetFlattedVoxelIndex(uint3 voxelIndex, uint cascade)
+{
+	uint dimension		= (uint)GetDimension();
+	uint sqDimension	= dimension * dimension;
+	uint offset		= (sqDimension * dimension) * cascade;
+	uint flat		= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
+	return offset + flat;
+}
+
 float GetInitWorldSize()
 {
 	return gi_initVoxelSize * GetDimension();
@@ -45,7 +54,7 @@ float GetInitWorldSize()
 
 uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
 {
-	//x, y, z Ãà Áß¿¡ °¡Àå Å«°É °í¸§
+	//x, y, z ì¶• ì¤‘ì— ê°€ìž¥ í°ê±¸ ê³ ë¦„
 	float	dist = max(	abs(worldPos.x - cameraWorldPos.x),
 						abs(worldPos.y - cameraWorldPos.y));
 			dist = max(	dist,
@@ -100,8 +109,8 @@ void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, int3 voxelIdx, fl
 
 	uint count = 0;
 
-	// ÇöÀç °³¹ßÈ¯°æ¿¡¼­ while°ú for´Â ÀÛµ¿ÀÌ µÇÁú ¾Ê´Â´Ù.
-	// ¿Ö ±×·±Áö´Â ¸ð¸£°ÚÁö¸¸, À¯ÀÏÇÏ°Ô do-while¸¸ ÀÛµ¿ÀÌ µÇ´Â »óÅÂ.
+	// í˜„ìž¬ ê°œë°œí™˜ê²½ì—ì„œ whileê³¼ forëŠ” ìž‘ë™ì´ ë˜ì§ˆ ì•ŠëŠ”ë‹¤.
+	// ì™œ ê·¸ëŸ°ì§€ëŠ” ëª¨ë¥´ê² ì§€ë§Œ, ìœ ì¼í•˜ê²Œ do-whileë§Œ ìž‘ë™ì´ ë˜ëŠ” ìƒíƒœ.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
 		uint idx		= (voxelIdx.x << 2) + (voxelIdx.y << 1) + voxelIdx.z;
