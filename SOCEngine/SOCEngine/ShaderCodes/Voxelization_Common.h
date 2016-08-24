@@ -65,9 +65,7 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 	int dimension = int(GetDimension());
 	if(all(0 <= voxelIdx) && all(voxelIdx < dimension))
 	{
-		int3 index = voxelIdx;
-		index.y += voxelization_currentCascade * dimension;
-
+		int3 index = GetFlattedVoxelIndex(voxelIdx, voxelization_currentCascade);
 		float3 compressedNormal = normal * 0.5f + 0.5f;
 
 #if defined(USE_OUT_RAW_BUFFER)
