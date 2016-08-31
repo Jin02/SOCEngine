@@ -11,7 +11,9 @@ ShaderResourceBuffer::ShaderResourceBuffer() : BaseBuffer(), _srv(nullptr)
 
 ShaderResourceBuffer::~ShaderResourceBuffer()
 {
-	SAFE_RELEASE(_srv);
+	_srv->Destroy();
+
+	SAFE_DELETE(_srv);
 	SAFE_RELEASE(_buffer);
 }
 
@@ -39,13 +41,7 @@ void ShaderResourceBuffer::Initialize(
 						: device->CreateBuffer(&desc, nullptr, &_buffer);
 
 	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.ElementOffset = 0;
-	srvDesc.Buffer.ElementWidth = num;
-
-	hr = device->CreateShaderResourceView(_buffer, &srvDesc, &_srv);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create shader resource view");
+	
+	if(_srv == nullptr)	_srv = new ShaderResourceView;
+	_srv->Initialize(_buffer, format, 0, D3D11_SRV_DIMENSION_BUFFER, num);
 }
