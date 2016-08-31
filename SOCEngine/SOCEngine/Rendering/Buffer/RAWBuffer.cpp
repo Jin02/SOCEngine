@@ -31,7 +31,7 @@ bool RAWBuffer::Initialize(uint stride, uint num)
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create buffer");
 
 	if(_srv == nullptr)	_srv = new ShaderResourceView;
-	_srv->Initialize(_buffer, DXGI_FORMAT_R32_UINT, 0, D3D11_SRV_DIMENSION_BUFFER, num);
+	_srv->Initialize(_buffer, DXGI_FORMAT_R32_UINT, 0, D3D11_SRV_DIMENSION_BUFFER, num, stride);
 
 	if(_uav == nullptr)	_uav = new UnorderedAccessView;
 	_uav->Initialize(DXGI_FORMAT_R32_TYPELESS, num, _buffer, D3D11_UAV_DIMENSION_BUFFER, 0, 0, D3D11_BUFFER_UAV_FLAG_RAW);
