@@ -8,7 +8,7 @@ namespace Rendering
 	{
 		class ShaderResourceBuffer : public Rendering::Buffer::BaseBuffer
 		{
-		private:
+		protected:
 			ID3D11ShaderResourceView*	_srv;
 
 		public:
