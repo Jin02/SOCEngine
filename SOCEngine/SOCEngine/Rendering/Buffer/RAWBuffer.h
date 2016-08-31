@@ -1,18 +1,15 @@
 #pragma once
 
-#include "BaseBuffer.h"
-#include <functional>
+#include "ShaderResourceBuffer.h"
 #include "UnorderedAccessView.h"
-#include "ShaderResourceView.h"
 
 namespace Rendering
 {
 	namespace Buffer
 	{
-		class RAWBuffer : private BaseBuffer
+		class RAWBuffer : public ShaderResourceBuffer
 		{
 		private:
-			View::ShaderResourceView*		_srv;
 			View::UnorderedAccessView*		_uav;
 
 		public:
@@ -24,8 +21,7 @@ namespace Rendering
 			void Destroy();
 
 		public:
-			GET_ACCESSOR(SRV, const View::ShaderResourceView*,	_srv);
-			GET_ACCESSOR(UAV, const View::UnorderedAccessView*,	_uav);
+			GET_ACCESSOR(UnorderedAccessView, const View::UnorderedAccessView*,	_uav);
 		};
 	}
 }
