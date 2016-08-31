@@ -6,15 +6,13 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Device;
 
-RAWBuffer::RAWBuffer() : BaseBuffer(), _srv(nullptr), _uav(nullptr)
+RAWBuffer::RAWBuffer() : ShaderResourceBuffer(), _uav(nullptr)
 {
 }
 
 RAWBuffer::~RAWBuffer()
 {
 	Destroy();
-
-	SAFE_DELETE(_srv);
 	SAFE_DELETE(_uav);
 }
 
@@ -22,10 +20,10 @@ bool RAWBuffer::Initialize(uint stride, uint num)
 {
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
-	desc.BindFlags				= D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
-	desc.MiscFlags				= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+	desc.BindFlags			= D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	desc.MiscFlags			= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
 	desc.StructureByteStride	= stride;
-	desc.ByteWidth				= stride * num;
+	desc.ByteWidth			= stride * num;
 
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
