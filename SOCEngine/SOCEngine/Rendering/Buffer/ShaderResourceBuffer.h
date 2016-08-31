@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseBuffer.h"
+#include "ShaderResourceView.h"
 
 namespace Rendering
 {
@@ -9,7 +10,7 @@ namespace Rendering
 		class ShaderResourceBuffer : public Rendering::Buffer::BaseBuffer
 		{
 		protected:
-			ID3D11ShaderResourceView*	_srv;
+			View::ShaderResourceView*	_srv;
 
 		public:
 			ShaderResourceBuffer();
