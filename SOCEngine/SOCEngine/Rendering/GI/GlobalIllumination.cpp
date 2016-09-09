@@ -45,7 +45,7 @@ GlobalIllumination::~GlobalIllumination()
 }
 
 // 귀찮아서 그냥 복붙했지만, Voxelization에 있는 것과 하나로 합쳐서 정리해야함
-void GlobalIllumination::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
+void GlobalIllumination::InitializeClearAnisotropicVoxelMap(uint dimension, uint maxNumOfCascade)
 {
 	std::string filePath = "";
 	{
@@ -124,7 +124,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 	// Init Voxelization
 	{
 		_voxelization = new Voxelization;
-		_voxelization->Initialize(maxNumOfCascade, dimension);
+		_voxelization->Initialize(maxNumOfCascade, dimension, _giGlobalStaticInfoCB);
 	}
 
 	// Injection
@@ -160,10 +160,10 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 		_voxelConeTracing->Initialize(dx);
 	}
 
-	InitializeClearVoxelMap(dimension, maxNumOfCascade);
+	InitializeClearAnisotropicVoxelMap(dimension, maxNumOfCascade);
 
-	//_debugVoxelViewer = new Debug::VoxelViewer;
-	//_debugVoxelViewer->Initialize(dimension, 1);
+	_debugVoxelViewer = new Debug::VoxelViewer;
+	_debugVoxelViewer->Initialize(dimension, false);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
@@ -180,19 +180,20 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 	const RenderManager* renderManager = scene->GetRenderManager();
 
-	uint dimension	= 1 << (_globalStaticInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
-	uint maxCascade	= _globalStaticInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+	uint dimension		= 1 << (_globalStaticInfo.maxCascadeWithVoxelDimensionPow2 & 0xffff);
+	uint maxCascade		= _globalStaticInfo.maxCascadeWithVoxelDimensionPow2 >> 16;
+
+	float initWorldSize = _globalDynamicInfo.initVoxelSize * static_cast<float>(dimension);
 
 	// 1. Voxelization Pass
 	{
-		float initWorldSize = _globalDynamicInfo.initVoxelSize * static_cast<float>(dimension);
-
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, camera, scene, maxCascade, initWorldSize, _injectionColorMap, _giGlobalStaticInfoCB, _giGlobalDynamicInfoCB, false);
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetUnorderedAccessView()->GetView(), 0, false, initWorldSize, materialMgr);
+	return;
 
 	const ShadowRenderer* shadowRenderer = scene->GetShadowManager();
 

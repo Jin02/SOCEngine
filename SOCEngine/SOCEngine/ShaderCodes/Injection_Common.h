@@ -24,13 +24,13 @@ RWTexture3D<uint> OutVoxelColorMap											: register( u0 );
 
 float4 GetColor(Buffer<uint> voxelMap, uint3 voxelIdx, uint cascade)
 {
-	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, cascade);
+	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, cascade, uint(GetDimension()));
 	return RGBA8UintColorToFloat4(voxelMap.Load(bufferIndex));
 }
 
 float3 GetNormal(Buffer<uint> voxelNormalMap, uint3 voxelIdx, uint cascade)
 {
-	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, cascade);
+	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, cascade, uint(GetDimension()));
 	float3 normal = RGBA8UintColorToFloat4(voxelNormalMap.Load(bufferIndex)).rgb;
 	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 

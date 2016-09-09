@@ -55,7 +55,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	if(bindFlag & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
+		_srv->Initialize(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D, 0, 0);
 	}
 
 	if(bindFlag & D3D11_BIND_RENDER_TARGET)

@@ -38,6 +38,8 @@ namespace Rendering
 			//VoxelMap*								_voxelNormalMapAtlas;
 			//VoxelMap*								_voxelEmissionMapAtlas;
 
+			uint									_dimension;
+
 			Buffer::RAWBuffer*						_voxelAlbedoMapAtlas;
 			Buffer::RAWBuffer*						_voxelNormalMapAtlas;
 			Buffer::RAWBuffer*						_voxelEmissionMapAtlas;
@@ -52,12 +54,12 @@ namespace Rendering
 			~Voxelization();
 
 		private:
-			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
+			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade, const Buffer::ConstBuffer* giStaticInfoCB);
 			void UpdateConstBuffer(const Device::DirectX*& dx, uint currentCascade, const Math::Vector3& camWorldPos, float initWorldSize, float dimension);
 			void ClearZeroVoxelMap(const Device::DirectX*& dx);
 
 		public:
-			void Initialize(uint maxNumOfCascade, uint dimension);
+			void Initialize(uint maxNumOfCascade, uint dimension, const Buffer::ConstBuffer* giStaticInfoCB);
 			void Voxelize(const Device::DirectX*& dx,
 				const Camera::MeshCamera*& camera, const Core::Scene* scene,
 				float maxNumOfCascade, float initWorldSize, const VoxelMap* injectionColorMap,

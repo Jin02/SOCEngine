@@ -12,7 +12,7 @@ ShaderResourceView::ShaderResourceView(ID3D11ShaderResourceView* srv)
 
 ShaderResourceView::~ShaderResourceView()
 {
-	Destory();
+	Destroy();
 }
 
 void ShaderResourceView::Initialize(
@@ -47,14 +47,14 @@ void ShaderResourceView::Initialize(
 	else if(viewDimension == D3D11_SRV_DIMENSION_TEXTURE1D)
 		srdesc.Texture1D.MipLevels = mipLevel;
 
-	if( numElements != -1 )		srdesc.Buffer.NumElements	= numElements;
-	if( stride != -1 )		srdesc.Buffer.ElementWidth	= stride;
+	if( srdesc.Buffer.NumElements == 0	)	srdesc.Buffer.NumElements	= numElements;
+	if( srdesc.Buffer.ElementWidth == 0 )	srdesc.Buffer.ElementWidth	= stride;
 
 	HRESULT hr = device->CreateShaderResourceView(resource, &srdesc, &_srv);
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
 }
 
-void ShaderResourceView::Destory()
+void ShaderResourceView::Destroy()
 {
 	SAFE_RELEASE(_srv);
 }

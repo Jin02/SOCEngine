@@ -2,6 +2,7 @@
 #define __SOC_GI_COMMON_H__
 
 #include "ShaderCommon.h"
+#include "VoxelRawBufferCommon.h"
 
 #ifndef VOXEL_CONE_TRACING
 cbuffer GIGlobalStaticInfo : register( b6 )
@@ -37,29 +38,6 @@ float GetDimension()
 {
 	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
 }
-
-uint GetFlattedVoxelIndex(uint3 voxelIndex, uint cascade)
-{
-	uint dimension		= (uint)GetDimension();
-	uint sqDimension	= dimension * dimension;
-	uint offset		= (sqDimension * dimension) * cascade;
-	uint flat		= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
-	return offset + flat;
-}
-
-uint GetFlattedVoxelIndexWithFaceIndex(uint3 voxelIndex, uint cascade, uint faceIndex)
-{
-	uint dimension		= (uint)GetDimension();
-	uint sqDimension	= dimension * dimension;
-
-	uint fullLength		= (sqDimension * dimension);
-	uint faceOffset		= fullLength * faceIndex;
-	uint cascadeOffset	= fullLength * 6 * cascade;
-
-	uint localFlattedIdx	= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
-	return cascadeOffset + faceOffset  +  localFlattedIdx;
-}
-
 
 float GetInitWorldSize()
 {
@@ -161,7 +139,7 @@ void StoreRadiosityUsingRawBuffer(RWByteAddressBuffer outVoxelColorMap, float3 r
 		float rate = max(anisotropicNormals[faceIndex], 0.0f);
 		float4 storeValue = float4(radiosity * rate, alpha);
 
-		uint flattedIndex = GetFlattedVoxelIndexWithFaceIndex(voxelIdx, curCascade, faceIndex);
+		uint flattedIndex = GetFlattedVoxelIndexWithFaceIndex(voxelIdx, curCascade, faceIndex, uint(GetDimension()));
 		StoreVoxelMapAtomicColorAvg(outVoxelColorMap, flattedIndex, storeValue, true);
 	}
 }

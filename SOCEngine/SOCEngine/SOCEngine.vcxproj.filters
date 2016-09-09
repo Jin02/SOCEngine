@@ -913,6 +913,9 @@
     <ClInclude Include="Rendering\Buffer\RAWBuffer.h">
       <Filter>Rendering\Buffer\RAW</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\VoxelRawBufferCommon.h">
+      <Filter>ShaderCodes\GI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

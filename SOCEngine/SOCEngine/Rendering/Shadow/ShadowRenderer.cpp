@@ -109,19 +109,19 @@ void ShadowRenderer::Initialize(bool neverUseVSM,
 	_pointLightShadowParamSRBuffer->Initialize(
 		sizeof(PointLightShadow::Param), POINT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_R32G32B32_UINT,
-		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_directionalLightShadowParamSRBuffer = new ShaderResourceBuffer;
 	_directionalLightShadowParamSRBuffer->Initialize(
 		sizeof(DirectionalLightShadow::Param), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_R32G32_UINT,
-		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_spotLightShadowParamSRBuffer = new ShaderResourceBuffer;
 	_spotLightShadowParamSRBuffer->Initialize(
 		sizeof(DirectionalLightShadow::Param), SPOT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_R32G32_UINT,
-		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyData, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 
 	Math::Matrix dummyMat[POINT_LIGHT_BUFFER_MAX_NUM * 6];
@@ -131,37 +131,37 @@ void ShadowRenderer::Initialize(bool neverUseVSM,
 	_directionalLightViewProjMatSRBuffer->Initialize(
 		sizeof(Math::Matrix), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_spotLightViewProjMatSRBuffer = new ShaderResourceBuffer;
 	_spotLightViewProjMatSRBuffer->Initialize(
 		sizeof(Math::Matrix), SPOT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_pointLightViewProjMatSRBuffer = new ShaderResourceBuffer;
 	_pointLightViewProjMatSRBuffer->Initialize(
 		sizeof(Math::Matrix) * 6, POINT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_directionalLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
 	_directionalLightInvVPVMatSRBuffer->Initialize(
 		sizeof(Math::Matrix), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_spotLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
 	_spotLightInvVPVMatSRBuffer->Initialize(
 		sizeof(Math::Matrix), SPOT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 	_pointLightInvVPVMatSRBuffer = new ShaderResourceBuffer;
 	_pointLightInvVPVMatSRBuffer->Initialize(
 		sizeof(Math::Matrix) * 6, POINT_LIGHT_BUFFER_MAX_NUM,
 		DXGI_FORMAT_UNKNOWN,
-		dummyMat, true, 0, D3D11_USAGE_DYNAMIC);
+		dummyMat, true, 0, D3D11_USAGE_DYNAMIC, D3D11_RESOURCE_MISC_FLAG(0));
 
 }
 

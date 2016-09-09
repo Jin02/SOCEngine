@@ -19,7 +19,7 @@ namespace Rendering
 
 		public:
 			void Initialize(ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension, uint numElements, uint stride);
-			void Destory();
+			void Destroy();
 
 		public:
 			GET_ACCESSOR(View, ID3D11ShaderResourceView*, _srv);

@@ -45,6 +45,6 @@ void ShaderResourceBuffer::Initialize(
 
 	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
 	
-	if(_srv == nullptr)	_srv = new ShaderResourceView;
+	if(_srv == nullptr)	_srv = new View::ShaderResourceView;
 	_srv->Initialize(_buffer, format, 0, D3D11_SRV_DIMENSION_BUFFER, num, stride);
 }

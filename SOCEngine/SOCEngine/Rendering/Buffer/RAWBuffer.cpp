@@ -18,7 +18,6 @@ RAWBuffer::~RAWBuffer()
 
 bool RAWBuffer::Initialize(uint stride, uint num)
 {
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create buffer");
 	ShaderResourceBuffer::Initialize(stride, num,
 	DXGI_FORMAT_R32_UINT, nullptr, false,
 	D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT, D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS);
@@ -31,6 +30,6 @@ bool RAWBuffer::Initialize(uint stride, uint num)
 
 void RAWBuffer::Destroy()
 {
-	_srv->Destory();
+	_srv->Destroy();
 	_uav->Destroy();
 }

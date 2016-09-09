@@ -55,7 +55,7 @@ void OnlyLightCulling::Initialize(
 		uint num = CalcMaxNumLightsInTile() * size.w * size.h;
 
 		_shaderResourceBuffer = new ShaderResourceBuffer;
-		_shaderResourceBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+		_shaderResourceBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT, D3D11_RESOURCE_MISC_FLAG(0));
 
 		_uav = new UnorderedAccessView;
 		_uav->Initialize(DXGI_FORMAT_R32_UINT, num, _shaderResourceBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);

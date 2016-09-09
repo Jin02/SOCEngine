@@ -42,7 +42,7 @@ Voxelization::~Voxelization()
 	SAFE_DELETE(_clearVoxelMapCS);
 }
 
-void Voxelization::Initialize(uint maxNumOfCascade, uint dimension)
+void Voxelization::Initialize(uint maxNumOfCascade, uint dimension, const ConstBuffer* giStaticInfoCB)
 {
 	ASSERT_COND_MSG(maxNumOfCascade != 0, "Error, voxelization cascade num is zero.");
 
@@ -70,10 +70,11 @@ void Voxelization::Initialize(uint maxNumOfCascade, uint dimension)
 		_constBuffers.push_back(infoConstBuffer);
 	}
 
-	InitializeClearVoxelMap(dimension, maxNumOfCascade);
+	InitializeClearVoxelMap(dimension, maxNumOfCascade, giStaticInfoCB);
+	_dimension = dimension;
 }
 
-void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
+void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade, const ConstBuffer* giStaticInfoCB)
 {
 	std::string filePath = "";
 	{
@@ -101,19 +102,29 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade)
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 
+	std::vector<ShaderForm::InputConstBuffer> icbs;
+	{
+		ShaderForm::InputConstBuffer cb;
+		cb.bindIndex	= (uint)ConstBufferBindIndex::GI_GlobalStaticInfoCB;
+		cb.buffer		= giStaticInfoCB;
+
+		icbs.push_back(cb);
+	}
+
+
 	std::vector<ShaderForm::InputUnorderedAccessView> uavs;
 	{
 		ShaderForm::InputUnorderedAccessView uav;
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		uav.uav			= _voxelAlbedoMapAtlas->GetUAV();
+		uav.uav			= _voxelAlbedoMapAtlas->GetUnorderedAccessView();
 		uavs.push_back(uav);
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		uav.uav			= _voxelEmissionMapAtlas->GetUAV();
+		uav.uav			= _voxelEmissionMapAtlas->GetUnorderedAccessView();
 		uavs.push_back(uav);
 
 		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		uav.uav			= _voxelNormalMapAtlas->GetUAV();
+		uav.uav			= _voxelNormalMapAtlas->GetUnorderedAccessView();
 		uavs.push_back(uav);
 	}
 
@@ -173,7 +184,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
 
-	float dimension = static_cast<float>(dimension);
+	float dimension = static_cast<float>(_dimension);
 
 	D3D11_VIEWPORT viewport;
 	{
@@ -188,9 +199,9 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 
 	ID3D11UnorderedAccessView* uavs [] =
 	{
-		_voxelAlbedoMapAtlas->GetUAV()->GetView(),
-		_voxelNormalMapAtlas->GetUAV()->GetView(),
-		_voxelEmissionMapAtlas->GetUAV()->GetView(),
+		_voxelAlbedoMapAtlas->GetUnorderedAccessView()->GetView(),
+		_voxelNormalMapAtlas->GetUnorderedAccessView()->GetView(),
+		_voxelEmissionMapAtlas->GetUnorderedAccessView()->GetView(),
 		injectionColorMap->GetSourceMapUAV()->GetView()
 	};
 	

@@ -211,6 +211,7 @@
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\VoxelRawBufferCommon.h" />
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\SimpleFontLoader.h" />

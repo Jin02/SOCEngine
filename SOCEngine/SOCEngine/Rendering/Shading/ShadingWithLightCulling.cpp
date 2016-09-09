@@ -134,7 +134,7 @@ void ShadingWithLightCulling::Initialize(
 			uint num = CalcMaxNumLightsInTile() * size.w * size.h;
 	
 			_perLightIndicesBuffer = new ShaderResourceBuffer;
-			_perLightIndicesBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+			_perLightIndicesBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT, D3D11_RESOURCE_MISC_FLAG(0));
 	
 			_perLightIndicesBufferUAV = new UnorderedAccessView;
 			_perLightIndicesBufferUAV->Initialize(DXGI_FORMAT_R32_UINT, num, _perLightIndicesBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);

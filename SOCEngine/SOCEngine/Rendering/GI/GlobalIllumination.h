@@ -57,7 +57,7 @@ namespace Rendering
 			~GlobalIllumination();
 
 		private:
-			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
+			void InitializeClearAnisotropicVoxelMap(uint dimension, uint maxNumOfCascade);
 			void ClearInjectColorVoxelMap(const Device::DirectX* dx);
 
 		public:
