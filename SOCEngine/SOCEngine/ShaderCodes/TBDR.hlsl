@@ -257,8 +257,11 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	OutDiffuseLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-	OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
-	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
+	//OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
+	//OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
+	OutDiffuseLightBuffer[globalIdx.xy]		= float4(surface.albedo,	1.0f);
+	OutSpecularLightBuffer[globalIdx.xy]	= float4(0,0,0,	1.0f);
+
 #endif
 
 #endif

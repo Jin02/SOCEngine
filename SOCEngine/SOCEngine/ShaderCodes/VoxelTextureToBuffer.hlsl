@@ -1,10 +1,11 @@
 //EMPTY_META_DATA
 
+#include "../GlobalDefine.h"
 #include "VoxelRawBufferCommon.h"
 
-#define RAW_BUFFER
+//#define RAW_BUFFER
 
-#ifndef RAW_BUFFER
+#if defined(USE_TEXTURE_VOXELIZATION)
 RWTexture3D<uint>	InputVoxelTexture	: register( u0 );
 #else
 RWByteAddressBuffer	InputVoxelTexture	: register( u0 );
@@ -37,7 +38,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 
 		uint idx = voxelIdx.x + (voxelIdx.y * dimension * 6) + (voxelIdx.z * dimension * dimension * 6);
 
-#ifndef RAW_BUFFER
+#ifdef USE_TEXTURE_VOXELIZATION
 		OutputBuffer[idx].x = InputVoxelTexture[voxelIdx];
 #else
 		OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx);
@@ -47,7 +48,7 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 #else
 	uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
 
-#ifndef RAW_BUFFER
+#ifdef USE_TEXTURE_VOXELIZATION
 	OutputBuffer[idx].x = InputVoxelTexture[globalIdx];
 #else
 	OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx);

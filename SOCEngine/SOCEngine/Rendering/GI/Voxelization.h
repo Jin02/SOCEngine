@@ -34,16 +34,16 @@ namespace Rendering
 			};
 
 		private:
-			//VoxelMap*								_voxelAlbedoMapAtlas;
-			//VoxelMap*								_voxelNormalMapAtlas;
-			//VoxelMap*								_voxelEmissionMapAtlas;
-
-			uint									_dimension;
-
+#ifdef USE_TEXTURE_VOXELIZATION
+			VoxelMap*								_voxelAlbedoMapAtlas;
+			VoxelMap*								_voxelNormalMapAtlas;
+			VoxelMap*								_voxelEmissionMapAtlas;
+#else
 			Buffer::RAWBuffer*						_voxelAlbedoMapAtlas;
 			Buffer::RAWBuffer*						_voxelNormalMapAtlas;
 			Buffer::RAWBuffer*						_voxelEmissionMapAtlas;
-
+#endif
+			uint									_dimension;
 			Math::Matrix							_prevStaticMeshVoxelizeViewMat;
 
 			std::vector<Buffer::ConstBuffer*>		_constBuffers;
@@ -75,9 +75,15 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(ConstBuffers,							const std::vector<Buffer::ConstBuffer*>&,	_constBuffers);
+#ifdef USE_TEXTURE_VOXELIZATION
+			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const VoxelMap*,							_voxelAlbedoMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const VoxelMap*,							_voxelNormalMapAtlas);
+			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const VoxelMap*,							_voxelEmissionMapAtlas);
+#else
 			GET_ACCESSOR(AnisotropicVoxelAlbedoMapAtlas,		const Buffer::RAWBuffer*,					_voxelAlbedoMapAtlas);
 			GET_ACCESSOR(AnisotropicVoxelNormalMapAtlas,		const Buffer::RAWBuffer*,					_voxelNormalMapAtlas);
 			GET_ACCESSOR(AnisotropicVoxelEmissionMapAtlas,		const Buffer::RAWBuffer*,					_voxelEmissionMapAtlas);
+#endif
 		};
 	}
 }

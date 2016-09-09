@@ -91,7 +91,7 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 	return voxelCenter;
 }
 
-void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, float4 value, uniform bool useLimit)
+void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, float4 value, uniform bool useLimit)
 {
 	value *= 255.0f;
 
@@ -123,6 +123,38 @@ void StoreVoxelMapAtomicColorAvg(RWByteAddressBuffer voxelMap, uint flattedVoxel
 	}while(++count < 16);
 }
 
+void StoreVoxelMapAtomicColorAvgUsingTexture3D(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
+{
+	value *= 255.0f;
+
+	uint newValue			= ToUint(value);
+	uint prevStoredValue	= 0;
+	uint currentStoredValue	= 0;
+
+	uint count = 0;
+
+	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
+	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
+	[allow_uav_condition]do//[allow_uav_condition]while(true)
+	{
+		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
+
+		if(prevStoredValue == currentStoredValue)
+			break;
+
+		prevStoredValue = currentStoredValue;
+
+		float4 curFlt4 = ToFloat4(currentStoredValue);
+		curFlt4.xyz = (curFlt4.xyz * curFlt4.w);
+
+		float4 reCompute = curFlt4 + value;
+		reCompute.xyz /= reCompute.w;
+
+		newValue = ToUint(reCompute);
+	}while(++count < 16);
+}
+
+
 void StoreRadiosityUsingRawBuffer(RWByteAddressBuffer outVoxelColorMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
 {
 	float anisotropicNormals[6] = {
@@ -140,7 +172,7 @@ void StoreRadiosityUsingRawBuffer(RWByteAddressBuffer outVoxelColorMap, float3 r
 		float4 storeValue = float4(radiosity * rate, alpha);
 
 		uint flattedIndex = GetFlattedVoxelIndexWithFaceIndex(voxelIdx, curCascade, faceIndex, uint(GetDimension()));
-		StoreVoxelMapAtomicColorAvg(outVoxelColorMap, flattedIndex, storeValue, true);
+		StoreVoxelMapAtomicColorAvgUsingRawBuffer(outVoxelColorMap, flattedIndex, storeValue, true);
 	}
 }
 

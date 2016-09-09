@@ -87,6 +87,31 @@ void TestScene::OnInitialize()
 
 void TestScene::OnRenderPreview()
 {
+	if(_globalIllumination)
+	{
+		auto voxelViwer = _globalIllumination->GetDebugVoxelViewer();
+		
+		if(voxelViwer)
+		{
+			Object* debugVoxels = voxelViwer->GetVoxelsParent();
+			if(debugVoxels)
+			{
+				Object* exist = FindObject(debugVoxels->GetName());
+				if( exist == nullptr )
+				{
+					_testObject->SetUse(false);
+
+					AddObject(debugVoxels);
+					_testObject2 = debugVoxels;
+//#ifndef USE_ANISOTROPIC_VOXELIZATION
+					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
+//#else
+//					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+//#endif
+				}
+			}
+		}
+	}
 }
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)

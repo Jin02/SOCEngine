@@ -51,6 +51,16 @@ void Voxelization::Initialize(uint maxNumOfCascade, uint dimension, const ConstB
 		return log(v) / log(2.0f);
 	};
 
+#ifdef USE_TEXTURE_VOXELIZATION
+	_voxelAlbedoMapAtlas	= new VoxelMap;
+	_voxelAlbedoMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+
+	_voxelEmissionMapAtlas	= new VoxelMap;
+	_voxelEmissionMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+
+	_voxelNormalMapAtlas	= new VoxelMap;
+	_voxelNormalMapAtlas->Initialize(dimension, maxNumOfCascade, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+#else
 	uint count = dimension * dimension * dimension * maxNumOfCascade;
 	_voxelAlbedoMapAtlas	= new RAWBuffer;
 	_voxelAlbedoMapAtlas->Initialize(4, count);
@@ -60,6 +70,7 @@ void Voxelization::Initialize(uint maxNumOfCascade, uint dimension, const ConstB
 
 	_voxelNormalMapAtlas	= new RAWBuffer;
 	_voxelNormalMapAtlas->Initialize(4, count);
+#endif
 
 	// Setting Const Buffers
 	for(uint i=0; i<maxNumOfCascade; ++i)
@@ -79,8 +90,11 @@ void Voxelization::InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade,
 	std::string filePath = "";
 	{
 		Factory::EngineFactory pathFind(nullptr);
+#ifndef USE_TEXTURE_VOXELIZATION
 		pathFind.FetchShaderFullPath(filePath, "ClearVoxelRawBuffers");
-
+#else
+		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMaps");
+#endif
 		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
 	}
 

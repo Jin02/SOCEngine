@@ -19,18 +19,18 @@ cbuffer Voxelization_Info_CB : register( b5 )
 
 SamplerState DefaultSampler			: register( s0 );
 
-#if defined(USE_OUT_VOXEL_MAP)
+#if defined(USE_OUT_VOXEL_MAP) || defined(USE_TEXTURE_VOXELIZATION)
 RWTexture3D<uint> OutVoxelAlbedoMap			: register( u2 );
 RWTexture3D<uint> OutVoxelNormalMap			: register( u3 );
 RWTexture3D<uint> OutVoxelEmissionMap		: register( u4 );
-#elif defined(USE_OUT_RAW_BUFFER)
+#elif defined(USE_RAW_BUFFER_VOXELIZATION)
 RWByteAddressBuffer	OutVoxelAlbedoMap		: register( u2 );
 RWByteAddressBuffer	OutVoxelNormalMap		: register( u3 );
 RWByteAddressBuffer	OutVoxelEmissionMap		: register( u4 );
 #endif
 RWTexture3D<uint> OutInjectionColorMap		: register( u5 );
 
-#if defined(USE_OUT_VOXEL_MAP) || defined(USE_OUT_RAW_BUFFER)
+#if defined(USE_OUT_VOXEL_MAP) || defined(USE_RAW_BUFFER_VOXELIZATION) || defined(USE_TEXTURE_VOXELIZATION)
 
 void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3], out uint outAxisIndex,
 								float3 inputLocalPos[3])
@@ -67,19 +67,20 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 	{
 		float3 compressedNormal = normal * 0.5f + 0.5f;
 
-#if defined(USE_OUT_RAW_BUFFER)
-		uint index = GetFlattedVoxelIndex(voxelIdx, voxelization_currentCascade, uint(GetDimension()));
-
-		StoreVoxelMapAtomicColorAvg(OutVoxelAlbedoMap,		index,	albedoWithAlpha, false);
-		StoreVoxelMapAtomicColorAvg(OutVoxelEmissionMap,	index,	float4(GetMaterialEmissiveColor(), 1.0f), false);
-		StoreVoxelMapAtomicColorAvg(OutVoxelNormalMap,		index,	float4(compressedNormal, 1.0f), false);
-#elif defined(USE_OUT_VOXEL_MAP)
+#if defined(USE_OUT_VOXEL_MAP) || defined(USE_TEXTURE_VOXELIZATION)
 		int3 index = voxelIdx;
 		index.y += voxelization_currentCascade * dimension;
 
 		OutVoxelAlbedoMap[index]		= Float4ColorToUint(albedoWithAlpha);
 		OutVoxelEmissionMap[index]		= Float4ColorToUint(float4(GetMaterialEmissiveColor(), 1.0f));
 		OutVoxelNormalMap[index]		= Float4ColorToUint(float4(compressedNormal, 1.0f));
+#else
+		uint index = GetFlattedVoxelIndex(voxelIdx, voxelization_currentCascade, uint(GetDimension()));
+
+		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelAlbedoMap,		index,	albedoWithAlpha, false);
+		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelEmissionMap,		index,	float4(GetMaterialEmissiveColor(), 1.0f), false);
+		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelNormalMap,		index,	float4(compressedNormal, 1.0f), false);
+
 #endif
 	}
 }

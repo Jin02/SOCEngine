@@ -55,6 +55,7 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 		}
 		_shader->SetInputConstBuffers(inputConstBuffers);
 
+#ifndef USE_TEXTURE_VOXELIZATION
 		std::vector<ShaderForm::InputRAWBuffer> inputRawBuffers;
 		{
 			inputRawBuffers.push_back(ShaderForm::InputRAWBuffer(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
@@ -62,6 +63,15 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 			inputRawBuffers.push_back(ShaderForm::InputRAWBuffer(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
 		}
 		_shader->SetInputRAWBuffers(inputRawBuffers);
+#else
+		std::vector<ShaderForm::InputTexture> inputTextures;
+		{
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
+			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
+		}
+		_shader->SetInputTextures(inputTextures);
+#endif
 	}
 
 	uint dimension = param.dimension;
