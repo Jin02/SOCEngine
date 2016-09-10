@@ -129,7 +129,7 @@ float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfCone
 		colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
 		aoAccumInCone		+= ((1.0f - aoAccumInCone) * sampleColor.a) / (1.0f + AMBIENT_OCCLUSION_K * currLength);
 
-		currLength			= diameter * 0.5f;
+		currLength			+= diameter * 0.5f;
 	}
 
 	return float4(colorAccumInCone.rgb, aoAccumInCone);
