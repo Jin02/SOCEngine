@@ -210,12 +210,13 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 		if(lightMgr->GetSpotLightCount() > 0)
 			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization, dimension, maxCascade);
 	}
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, initWorldSize, materialMgr);
-	//return;
+//	_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, initWorldSize, materialMgr);
+//	return;
 
 	// 3. Mipmap Pass
 	_mipmap->Mipmapping(dx, _injectionColorMap, maxCascade);
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(0)->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+//	_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetMipmapUAV(0)->GetView(), 0, false, initWorldSize, materialMgr);
+//	return;
 
 	// 4. Voxel Cone Tracing Pass
 	{

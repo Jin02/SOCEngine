@@ -3,7 +3,7 @@
 #include "../GlobalDefine.h"
 #include "VoxelRawBufferCommon.h"
 
-//#define USE_DEBUG_TEXTURE_INJECTION
+#define USE_DEBUG_TEXTURE_INJECTION
 
 #if defined(USE_TEXTURE_VOXELIZATION) || defined(USE_DEBUG_TEXTURE_INJECTION)
 RWTexture3D<uint>	InputVoxelTexture	: register( u0 );

@@ -36,7 +36,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float4 albedo	= GetColor(VoxelAlbedoMap, voxelIndex, voxelization_currentCascade);
 		float4 emission	= GetColor(VoxelEmissionMap, voxelIndex, voxelization_currentCascade);
 	
-		float3 radiosity = float3(0.0f, 0.0f, 0.0f);
+		float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
 		if( distanceOfLightWithVertex < lightRadius )
 		{
 			float4 lightColorWithLm = PointLightColorBuffer[lightIndex];
@@ -46,11 +46,11 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 			float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
 	
-			radiosity = lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
+			radiosity	= lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
 		}
 		radiosity = saturate(radiosity + emission.rgb);
 	
-		StoreRadiosityUsingRWTexture3D(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIndex, voxelization_currentCascade);
+		StoreRadiosityUsingRWTexture3D(OutVoxelColorMap, radiosity, 1.0f, normal, voxelIndex, voxelization_currentCascade);
 	}
 }
 
