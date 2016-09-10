@@ -83,7 +83,7 @@ float4 SampleAnisotropicVoxelTex
 	float4 colorAxisY = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, cascade, bbMin), lod);
 	float4 colorAxisZ = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, cascade, bbMin), lod);
 
-	dir = dir * dir;
+	dir = abs(dir);
 	float4 result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 
 	return result;
@@ -100,35 +100,36 @@ float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAng
 
 float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfConeAngleRad, uniform float occlusionBias, uniform uint sampleCount)
 {
-	float currLength		= 0.0f;
-	float3 samplePos		= worldPos + worldNormal * gi_initVoxelSize * SAMPLE_START_OFFSET_RATE;
-	float3 sampleStartPos	= samplePos;// + worldNormal * gi_initVoxelSize * 2.0f;
+	float currLength		= gi_initVoxelSize;
+	float3 sampleStartPos	= worldPos + worldNormal * currLength;
+	float maxLength			= sampleCount * ComputeVoxelSize(0);
 
 	float3 bbMin, bbMax;
 	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, gi_startCenterWorldPos);
 
 	float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
+	if(	worldPos.x < bbMin.x || worldPos.x >= bbMax.x ||
+		worldPos.y < bbMin.y || worldPos.x >= bbMax.x ||
+		worldPos.z < bbMin.z || worldPos.x >= bbMax.x )
+		colorAccumInCone.a = 1.0f;
+
 	float aoAccumInCone		= 0.0f;
 
-	for(uint i=0; i<sampleCount; ++i)
+	while(colorAccumInCone.a < 1.0f && currLength <= maxLength)
 	{
-		uint cascade		= ComputeCascade(samplePos, gi_startCenterWorldPos);
+		float3 samplePos	= sampleStartPos + worldNormal * currLength;
+		uint cascade		= 0;//ComputeCascade(samplePos, gi_startCenterWorldPos);
 		float voxelSize		= ComputeVoxelSize(cascade);
-		float mipLevel		= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
-		
+
+		float diameter		= 2.0f * halfConeAngleRad * currLength;
+		float mipLevel		= log2(diameter / voxelSize);//min(, ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad));
+
 		float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
 
 		colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
-		aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + AMBIENT_OCCLUSION_K * currLength));
+		aoAccumInCone		+= ((1.0f - aoAccumInCone) * sampleColor.a) / (1.0f + AMBIENT_OCCLUSION_K * currLength);
 
-		currLength			= max(currLength / (1.0f - halfConeAngleRad), currLength + voxelSize);
-		samplePos			= sampleStartPos + dir * currLength;
-
-		if(	samplePos.x < bbMin.x || samplePos.x >= bbMax.x ||
-			samplePos.y < bbMin.y || samplePos.x >= bbMax.x ||
-			samplePos.z < bbMin.z || samplePos.x >= bbMax.x ||
-			colorAccumInCone.a >= occlusionBias )
-			break;
+		currLength			= diameter * 0.5f;
 	}
 
 	return float4(colorAccumInCone.rgb, aoAccumInCone);
