@@ -80,6 +80,9 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelAlbedoMap,		index,	albedoWithAlpha, false);
 		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelEmissionMap,		index,	float4(GetMaterialEmissiveColor(), 1.0f), false);
 		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelNormalMap,		index,	float4(compressedNormal, 1.0f), false);
+//		OutVoxelAlbedoMap.Store(index,		Float4ColorToUint(albedoWithAlpha));
+//		OutVoxelEmissionMap.Store(index,	Float4ColorToUint(float4(GetMaterialEmissiveColor(), 1.0f)));
+//		OutVoxelNormalMap.Store(index,		Float4ColorToUint(float4(compressedNormal, 1.0f)));
 
 #endif
 	}

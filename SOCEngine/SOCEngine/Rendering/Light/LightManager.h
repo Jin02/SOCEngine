@@ -108,6 +108,10 @@ namespace Rendering
 			GET_ACCESSOR(SpotLightParamSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLightParamSRBuffer);
 			GET_ACCESSOR(SpotLightColorSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLightColorSRBuffer);
 			GET_ACCESSOR(SpotLightShadowIndexSRBuffer,			const Buffer::ShaderResourceBuffer*,	_spotLightShadowIndexSRBuffer);
+
+			GET_ACCESSOR(DirectionalLightCount, uint, _directionalLightColorBuffer.GetSize());
+			GET_ACCESSOR(PointLightCount, uint, _pointLightColorBuffer.GetSize());
+			GET_ACCESSOR(SpotLightCount, uint, _spotLightColorBuffer.GetSize());
 		};	
 	}
 }

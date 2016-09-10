@@ -115,6 +115,7 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 		{
 			_globalDynamicInfo.initVoxelSize						= minWorldSize / (float)dimension;
 			_globalDynamicInfo.startCenterWorldPos					= Vector3(0.0f, 0.0f, 0.0f);
+			_globalDynamicInfo.packedNumOfLights					= 0;
 			_giGlobalDynamicInfoCB = new ConstBuffer;
 			_giGlobalDynamicInfoCB->Initialize(sizeof(GlobalDynamicInfo));
 			_giGlobalDynamicInfoCB->UpdateSubResource(dx->GetContext(), &_globalDynamicInfo);
@@ -162,17 +163,21 @@ void GlobalIllumination::Initialize(const Device::DirectX* dx, uint dimension, f
 
 	InitializeClearAnisotropicVoxelMap(dimension, maxNumOfCascade);
 
-	_debugVoxelViewer = new Debug::VoxelViewer;
-	_debugVoxelViewer->Initialize(dimension, false);
+//	_debugVoxelViewer = new Debug::VoxelViewer;
+//	_debugVoxelViewer->Initialize(dimension, 1);
 }
 
 void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
 	ASSERT_COND_MSG(camera, "Error, camera is null");
-	if(_isAttachCamera)
+
+	const LightManager* lightMgr = scene->GetLightManager();
+	GlobalDynamicInfo info = _globalDynamicInfo;
 	{
-		GlobalDynamicInfo info = _globalDynamicInfo;
-		info.startCenterWorldPos = camera->GetWorldPosition();
+		if(_isAttachCamera)
+			info.startCenterWorldPos = camera->GetWorldPosition();
+	
+		info.packedNumOfLights = lightMgr->GetPackedLightCount();
 		UpdateGIDynamicInfo(dx, info);
 	}
 
@@ -192,21 +197,21 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
-	_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetUnorderedAccessView()->GetView(), 0, false, initWorldSize, materialMgr);
-	return;
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _voxelization->GetAnisotropicVoxelAlbedoMapAtlas()->GetUnorderedAccessView()->GetView(), 0, false, initWorldSize, materialMgr);
+	//return;
 
 	const ShadowRenderer* shadowRenderer = scene->GetShadowManager();
 
 	// 2. Injection Pass
 	{
-
-		if(shadowRenderer->GetPointLightCount() > 0)
+		if(lightMgr->GetPointLightCount() > 0)
 			_injectPointLight->Inject(dx, shadowRenderer, _voxelization, dimension, maxCascade);
 
-		if(shadowRenderer->GetSpotLightCount() > 0)
-			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization);
+		if(lightMgr->GetSpotLightCount() > 0)
+			_injectSpotLight->Inject(dx, shadowRenderer, _voxelization, dimension, maxCascade);
 	}
-	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, _globalInfo.initWorldSize, materialMgr);
+	//_debugVoxelViewer->GenerateVoxelViewer(dx, _injectionColorMap->GetSourceMapUAV()->GetView(), 0, false, initWorldSize, materialMgr);
+	//return;
 
 	// 3. Mipmap Pass
 	_mipmap->Mipmapping(dx, _injectionColorMap, maxCascade);

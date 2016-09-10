@@ -18,6 +18,9 @@ namespace Rendering
 		{
 			float			initVoxelSize;
 			Math::Vector3	startCenterWorldPos;
+
+			unsigned int	packedNumOfLights;
+			float			dummy0, dummy1, dummy2;
 		};
 	}
 }

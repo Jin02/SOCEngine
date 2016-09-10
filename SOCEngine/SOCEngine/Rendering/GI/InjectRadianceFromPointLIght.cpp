@@ -52,7 +52,6 @@ void InjectRadianceFromPointLIght::Initialize(const InjectRadiance::InitParam& i
 
 void InjectRadianceFromPointLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization, uint dimension, uint maximumCascade)
 {
-	Size<uint> activatedShadowMapSize = shadowMgr->GetActivatedPLShadowMapSize();
 	uint xzLength = (dimension + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES;
 
 	ComputeShader::ThreadGroup threadGroup(

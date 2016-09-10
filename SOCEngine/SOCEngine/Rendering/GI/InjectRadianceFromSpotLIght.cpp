@@ -51,12 +51,14 @@ void InjectRadianceFromSpotLIght::Initialize(const InjectRadiance::InitParam& in
 	_shader->SetInputTextures(inputTextures);
 }
 
-void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization)
+void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization, uint dimension, uint maximumCascade)
 {
-	Size<uint> activatedShadowMapSize = shadowMgr->GetActivatedSLShadowMapSize();
+	uint xzLength = (dimension + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES;
 
-	ComputeShader::ThreadGroup threadGroup(	(activatedShadowMapSize.w + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES,
-											(activatedShadowMapSize.h + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES, 1 );
+	ComputeShader::ThreadGroup threadGroup(
+		xzLength,
+		(dimension * maximumCascade + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES,
+		xzLength );
 
 	_shader->SetThreadGroupInfo(threadGroup);
 	Dispath(dx, voxelization->GetConstBuffers());

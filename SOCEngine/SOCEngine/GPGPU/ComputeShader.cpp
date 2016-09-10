@@ -89,6 +89,9 @@ void ComputeShader::Dispatch(ID3D11DeviceContext* context)
 
 		for(auto iter = _inputTextures.begin(); iter != _inputTextures.end(); ++iter)
 			context->CSSetShaderResources(iter->bindIndex, 1, &nullSRV);
+
+		for(auto iter = _inputRawBuffers.begin(); iter != _inputRawBuffers.end(); ++iter)
+			context->CSSetShaderResources(iter->bindIndex, 1, &nullSRV);
 	}
 
 	ID3D11UnorderedAccessView* nullUAV = nullptr;

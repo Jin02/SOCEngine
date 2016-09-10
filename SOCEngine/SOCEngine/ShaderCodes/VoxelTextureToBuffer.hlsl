@@ -3,9 +3,9 @@
 #include "../GlobalDefine.h"
 #include "VoxelRawBufferCommon.h"
 
-//#define RAW_BUFFER
+//#define USE_DEBUG_TEXTURE_INJECTION
 
-#if defined(USE_TEXTURE_VOXELIZATION)
+#if defined(USE_TEXTURE_VOXELIZATION) || defined(USE_DEBUG_TEXTURE_INJECTION)
 RWTexture3D<uint>	InputVoxelTexture	: register( u0 );
 #else
 RWByteAddressBuffer	InputVoxelTexture	: register( u0 );
@@ -38,20 +38,20 @@ void CS(uint3 globalIdx : SV_DispatchThreadID,
 
 		uint idx = voxelIdx.x + (voxelIdx.y * dimension * 6) + (voxelIdx.z * dimension * dimension * 6);
 
-#ifdef USE_TEXTURE_VOXELIZATION
+#if defined(USE_TEXTURE_VOXELIZATION) || defined(USE_DEBUG_TEXTURE_INJECTION)
 		OutputBuffer[idx].x = InputVoxelTexture[voxelIdx];
 #else
-		OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx);
+		OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx * 4);
 #endif
 
 	}
 #else
 	uint idx = globalIdx.x + (globalIdx.y * dimension) + (globalIdx.z * dimension * dimension);
 
-#ifdef USE_TEXTURE_VOXELIZATION
+#if defined(USE_TEXTURE_VOXELIZATION) || defined(USE_DEBUG_TEXTURE_INJECTION)
 	OutputBuffer[idx].x = InputVoxelTexture[globalIdx];
 #else
-	OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx);
+	OutputBuffer[idx].x = InputVoxelTexture.Load(flatIdx * 4);
 #endif
 
 #endif

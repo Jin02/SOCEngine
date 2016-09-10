@@ -27,6 +27,9 @@ cbuffer GIGlobalDynamicInfo : register( b2 )
 {
 	float	gi_initVoxelSize;
 	float3	gi_startCenterWorldPos;
+
+	uint	gi_packedNumOfLights;
+	float3	gi_dummy;
 }
 
 uint GetMaximumCascade()
@@ -61,14 +64,14 @@ float GetVoxelizeSize(uint cascade)
 	return GetInitWorldSize() * (cascadeScale * cascadeScale);
 }
 
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
+void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 startCenterWorldPos)
 {
 	float cascadeScale = float(cascade + 1);
 
 	float worldSize		= GetVoxelizeSize(cascade);
 	float halfWorldSize	= worldSize * 0.5f;
 
-	outBBMin = cameraWorldPos - halfWorldSize.xxx;
+	outBBMin = startCenterWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
 }
 
@@ -101,8 +104,6 @@ void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uin
 
 	uint count = 0;
 
-	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
-	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
 		uint address	= flattedVoxelIdx * 4;
@@ -132,9 +133,6 @@ void StoreVoxelMapAtomicColorAvgUsingTexture3D(RWTexture3D<uint> voxelMap, int3 
 	uint currentStoredValue	= 0;
 
 	uint count = 0;
-
-	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
-	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
 	[allow_uav_condition]do//[allow_uav_condition]while(true)
 	{
 		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
