@@ -196,11 +196,11 @@ void GlobalIllumination::Run(const Device::DirectX* dx, const Camera::MeshCamera
 
 void GlobalIllumination::Destroy()
 {
-	_giGlobalInfoCB->Destory();
+	_giGlobalInfoCB->Destroy();
 	_voxelization->Destroy();
 	_injectPointLight->Destroy();
 	_injectSpotLight->Destroy();
 	_mipmap->Destroy();
 	_voxelConeTracing->Destroy();
-	_injectionColorMap->Destory();
+	_injectionColorMap->Destroy();
 }

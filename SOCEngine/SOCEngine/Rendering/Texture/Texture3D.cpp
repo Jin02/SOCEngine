@@ -11,7 +11,7 @@ Texture3D::Texture3D()
 
 Texture3D::~Texture3D()
 {
-	Destory();
+	Destroy();
 }
 
 void Texture3D::Initialize(	uint width, uint height, uint depth,
@@ -55,7 +55,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	if(bindFlag & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
+		_srv->InitializeUsingTexture(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
 	}
 
 	if(bindFlag & D3D11_BIND_RENDER_TARGET)
@@ -77,7 +77,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	}
 }
 
-void Texture3D::Destory()
+void Texture3D::Destroy()
 {
 	TextureForm::Destroy();
 

@@ -91,7 +91,7 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
+		_srv->InitializeUsingTexture(_texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
 	}
 
 	if(bindFlags & D3D11_BIND_UNORDERED_ACCESS)
@@ -142,7 +142,7 @@ void Texture2D::Destroy()
 	SAFE_RELEASE(_texture);
 
 	if(_srv)
-		_srv->Destory();
+		_srv->Destroy();
 	if(_uav)
 		_uav->Destroy();
 }

@@ -12,10 +12,10 @@ ShaderResourceView::ShaderResourceView(ID3D11ShaderResourceView* srv)
 
 ShaderResourceView::~ShaderResourceView()
 {
-	Destory();
+	Destroy();
 }
 
-void ShaderResourceView::Initialize(
+void ShaderResourceView::InitializeUsingTexture(
 	ID3D11Resource* resource,
 	DXGI_FORMAT format, uint mipLevel,
 	D3D11_SRV_DIMENSION viewDimension)
@@ -50,7 +50,22 @@ void ShaderResourceView::Initialize(
 	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
 }
 
-void ShaderResourceView::Destory()
+void ShaderResourceView::InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, DXGI_FORMAT format)
+{
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
+	ID3D11Device* device = dx->GetDevice();
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	srvDesc.Format = format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.ElementOffset = 0;
+	srvDesc.Buffer.ElementWidth = num;
+
+	HRESULT hr = device->CreateShaderResourceView(buffer, &srvDesc, &_srv);
+	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create shader resource view");
+}
+
+void ShaderResourceView::Destroy()
 {
 	SAFE_RELEASE(_srv);
 }

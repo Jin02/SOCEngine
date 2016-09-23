@@ -2,26 +2,19 @@
 
 #include "Injection_Common.h"
 
-#ifdef USE_SHADOW_INVERTED_DEPTH
-
 [numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, INJECTION_TILE_RES)]
 void CS(uint3 globalIdx	: SV_DispatchThreadID, 
 		uint3 localIdx	: SV_GroupThreadID,
 		uint3 groupIdx	: SV_GroupID)
 {
-	int dimension		= (int)GetDimension();
-	uint cascade		= globalIdx.y / dimension;
-	uint3 voxelIndex	= uint3(globalIdx.x, globalIdx.y % dimension, globalIdx.z);
-
 	float3 bbMin		= float3(0.0f, 0.0f, 0.0f);
 	{
 		float3 bbMax	= float3(0.0f, 0.0f, 0.0f);
-		ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition);
+		ComputeVoxelizationBound(bbMin, bbMax, tbrParam_cameraWorldPosition);
 	}
-	float voxelSize		= ComputeVoxelSize(cascade);
-	float3 worldPos		= GetVoxelCenterPos(voxelIndex, bbMin, voxelSize);
 
-	uint lightCount  = 1;//GetNumOfPointLight(gi_packedNumOfLights);
+	float3 worldPos	= GetVoxelCenterPos(globalIdx, bbMin, gi_voxelSize);
+	uint lightCount	= GetNumOfPointLight(gi_packedNumOfLights);
 	for(uint lightIndex	= 0; lightIndex < lightCount; ++lightIndex)
 	{
 		float4 lightCenterWithRadius	= PointLightTransformBuffer[lightIndex];
@@ -32,9 +25,9 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float distanceOfLightWithVertex	= length(lightDir);
 		lightDir = normalize(lightDir);
 	
-		float3 normal	= GetNormal(VoxelNormalMap, voxelIndex, voxelization_currentCascade);
-		float4 albedo	= GetColor(VoxelAlbedoMap, voxelIndex, voxelization_currentCascade);
-		float4 emission	= GetColor(VoxelEmissionMap, voxelIndex, voxelization_currentCascade);
+		float3 normal	= GetNormalInVoxelRawBuf(VoxelNormalRawBuf, globalIdx);
+		float4 albedo	= GetColorInVoxelRawBuf(VoxelAlbedoRawBuf, globalIdx);
+		float4 emission	= GetColorInVoxelRawBuf(VoxelEmissionRawBuf, globalIdx);
 	
 		float3 radiosity = float3(0.0f, 0.0f, 0.0f);
 		if( distanceOfLightWithVertex < lightRadius )
@@ -50,8 +43,6 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		}
 		radiosity = saturate(radiosity + emission.rgb);
 	
-		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, voxelIndex, voxelization_currentCascade);
+		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx);
 	}
 }
-
-#endif

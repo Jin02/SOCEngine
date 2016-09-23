@@ -62,9 +62,9 @@ void GeometryShader::BindResourcesToContext(ID3D11DeviceContext* context,
 	{
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
-			auto srv = iter->srBuffer->GetShaderResourceView();
+			auto srv = iter->srBuffer->GetShaderResourceView()->GetView();
 			if(srv && iter->useGS)
-				context->GSSetShaderResources( iter->bindIndex, 1, srv );
+				context->GSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 }
@@ -127,6 +127,6 @@ void GeometryShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBi
 
 void GeometryShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView()->GetView() : nullptr;
 	context->GSSetShaderResources(uint(bind), 1, &srv);
 }

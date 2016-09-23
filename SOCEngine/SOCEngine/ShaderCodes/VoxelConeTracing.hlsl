@@ -49,29 +49,25 @@ static const float ConeWeights[MAXIMUM_CONE_COUNT] =
 };
 
 
-float3 GetAnisotropicVoxelUV(float3 worldPos, uniform uint faceIdx, uint cascade, float3 bbMin)
+float3 GetAnisotropicVoxelUV(float3 worldPos, uniform uint faceIdx, float3 bbMin)
 {
-	float3 uv = (worldPos - bbMin) / GetVoxelizeSize(cascade);
-
+	float3 uv = (worldPos - bbMin) / GetVoxelizationSize();
 	uv.x = (uv.x + (float)faceIdx) * rcp(6.0f);
-	uv.y = (uv.y + (float)cascade) * rcp((float)GetMaximumCascade());
 
 	return uv;
 }
 
-float3 GetVoxelUV(float3 worldPos, uint cascade, float3 bbMin)
+float3 GetVoxelUV(float3 worldPos, float3 bbMin)
 {
-	float3 uv = (worldPos - bbMin) / GetVoxelizeSize(cascade);
-	uv.y = (uv.y + (float)cascade) * rcp((float)GetMaximumCascade());
-
+	float3 uv = (worldPos - bbMin) / GetVoxelizationSize();
 	return uv;
 }
 
 float4 SampleAnisotropicVoxelTex
-	(float3 samplePos, float3 dir, uint cascade, float lod)
+	(float3 samplePos, float3 dir, float lod)
 {
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, cascade, tbrParam_cameraWorldPosition);
+	ComputeVoxelizationBound(bbMin, bbMax, gi_startCenterWorldPos);
 
 #ifdef USE_ANISOTROPIC_INJECTION_MAP
 	uint3 dirIdx;
@@ -79,16 +75,16 @@ float4 SampleAnisotropicVoxelTex
 	dirIdx.y = (dir.y < 0.0f) ? 2 : 3;
 	dirIdx.z = (dir.z < 0.0f) ? 4 : 5;
 
-	float4 colorAxisX = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.x, cascade, bbMin), lod);
-	float4 colorAxisY = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, cascade, bbMin), lod);
-	float4 colorAxisZ = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, cascade, bbMin), lod);
+	float4 colorAxisX = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.x, bbMin), lod);
+	float4 colorAxisY = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.y, bbMin), lod);
+	float4 colorAxisZ = VoxelMap.SampleLevel(linearSampler, GetAnisotropicVoxelUV(samplePos, dirIdx.z, bbMin), lod);
 
 	dir = abs(dir);
 	float4 result = ((dir.x * colorAxisX) + (dir.y * colorAxisY) + (dir.z * colorAxisZ));
 
 	return result;
 #else
-	return VoxelMap.SampleLevel(linearSampler, GetVoxelUV(samplePos, cascade, bbMin), lod);
+	return VoxelMap.SampleLevel(linearSampler, GetVoxelUV(samplePos, bbMin), lod);
 #endif
 }
 
@@ -101,22 +97,21 @@ float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAng
 float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfConeAngleRad, uniform float occlusionBias, uniform uint sampleCount)
 {
 	float currLength		= 0.0f;
-	float3 samplePos		= worldPos + worldNormal * gi_initVoxelSize * SAMPLE_START_OFFSET_RATE;
+	float3 samplePos		= worldPos + worldNormal * gi_voxelSize * SAMPLE_START_OFFSET_RATE;
 	float3 sampleStartPos	= samplePos;// + worldNormal * gi_initVoxelSize * 2.0f;
 
 	float3 bbMin, bbMax;
-	ComputeVoxelizationBound(bbMin, bbMax, GetMaximumCascade()-1, tbrParam_cameraWorldPosition);
+	ComputeVoxelizationBound(bbMin, bbMax, gi_startCenterWorldPos);
 
 	float4 colorAccumInCone	= float4(0.0f, 0.0f, 0.0f, 0.0f); // w is occulusion
 	float aoAccumInCone		= 0.0f;
 
 	for(uint i=0; i<sampleCount; ++i)
 	{
-		uint cascade		= ComputeCascade(samplePos, tbrParam_cameraWorldPosition);
-		float voxelSize		= ComputeVoxelSize(cascade);
+		float voxelSize		= gi_voxelSize;
 		float mipLevel		= ComputeDistanceLOD(voxelSize, currLength, halfConeAngleRad);
 		
-		float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, dir, cascade, mipLevel);
+		float4 sampleColor	= SampleAnisotropicVoxelTex(samplePos, dir, mipLevel);
 
 		colorAccumInCone	+= (1.0f - colorAccumInCone.a) * sampleColor;
 		aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + AMBIENT_OCCLUSION_K * currLength));
@@ -136,7 +131,7 @@ float4 TraceCone(float3 worldPos, float3 worldNormal, float3 dir, float halfCone
 
 float3 SpecularVCT(float3 worldPos, float3 worldNormal, float halfConeAngleRad)
 {
-	float3 viewDir			= normalize(tbrParam_cameraWorldPosition - worldPos);
+	float3 viewDir			= normalize(gi_startCenterWorldPos - worldPos);
 	float3 reflectDir		= reflect(-viewDir, worldNormal);
 
 	float4 colorAccum = TraceCone(worldPos, worldNormal, reflectDir, halfConeAngleRad, SPECULAR_OCCLUSION, SPECULAR_SAMPLING_COUNT);

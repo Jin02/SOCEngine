@@ -65,5 +65,5 @@ void ScreenSpaceRayTracing::Render(const DirectX* dx, const GBuffers& gbuffer)
 void ScreenSpaceRayTracing::Destroy()
 {
 	_rayTracingBuffer->Destroy();
-	_viewToTexSpaceCB->Destory();
+	_viewToTexSpaceCB->Destroy();
 }

@@ -52,7 +52,7 @@ void ReflectionProbe::OnInitialize()
 void ReflectionProbe::OnDestroy()
 {
 	_cubeMap->Destroy();
-	_rpInfoCB->Destory();
+	_rpInfoCB->Destroy();
 	_opaqueDepthBuffer->Destroy();
 }
 

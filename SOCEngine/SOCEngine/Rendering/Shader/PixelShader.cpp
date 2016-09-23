@@ -63,9 +63,9 @@ void PixelShader::BindResourcesToContext(
 	{
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
-			auto srv = iter->srBuffer->GetShaderResourceView();
+			auto srv = iter->srBuffer->GetShaderResourceView()->GetView();
 			if(srv && iter->usePS)
-				context->PSSetShaderResources( iter->bindIndex, 1, srv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 }
@@ -129,6 +129,6 @@ void PixelShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindI
 
 void PixelShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? *srBuffer->GetShaderResourceView() : nullptr;
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView()->GetView() : nullptr;
 	context->PSSetShaderResources(uint(bind), 1, &srv);
 }

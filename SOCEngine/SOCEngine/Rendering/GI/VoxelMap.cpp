@@ -15,7 +15,7 @@ VoxelMap::VoxelMap()
 
 VoxelMap::~VoxelMap()
 {
-	VoxelMap::Destory();
+	VoxelMap::Destroy();
 }
 
 void VoxelMap::Initialize(
@@ -49,5 +49,5 @@ void VoxelMap::Destroy()
 	}
 	
 	_mipmapUAVs.clear();
-	Texture3D::Destory();
+	Texture3D::Destroy();
 }

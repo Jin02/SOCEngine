@@ -79,6 +79,6 @@ void OnlyLightCulling::Destroy()
 {
 	LightCulling::Destroy();
 
-	_shaderResourceBuffer->Destory();
+	_shaderResourceBuffer->Destroy();
 	_uav->Destroy();
 }

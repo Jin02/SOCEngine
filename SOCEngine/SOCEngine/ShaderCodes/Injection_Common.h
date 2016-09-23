@@ -3,36 +3,52 @@
 #ifndef __SOC_INJECTION_COMMON_H__
 #define __SOC_INJECTION_COMMON_H__
 
-#define NEVER_USE_VSM
-#define NOT_USE_SHADOW_STRENGTH
-
 #include "DynamicLighting.h"
 #include "PhysicallyBased_Common.h"
-#include "Voxelization_Common.h"
 #include "GICommon.h"
 
-StructuredBuffer<DSLightVPMat>	DirectionalLightShadowInvVPVMatBuffer		: register( t32 );
-StructuredBuffer<PLightVPMat>	PointLightShadowInvVPVMatBuffer				: register( t33 );
-StructuredBuffer<DSLightVPMat>	SpotLightShadowInvVPVMatBuffer				: register( t34 );
+RWTexture3D<uint>	OutVoxelColorMap	: register( u0 );
+Buffer<uint>		VoxelAlbedoRawBuf	: register( t29 );
+Buffer<uint>		VoxelNormalRawBuf	: register( t30 );
+Buffer<uint>		VoxelEmissionRawBuf	: register( t31 );
 
-RWTexture3D<uint> OutVoxelColorMap											: register( u0 );
-
-float4 GetColor(Texture3D<float4> voxelTexture, uint3 voxelIdx, uint cascade)
+float4 GetColorInVoxelRawBuf(Buffer<uint> voxelRawBuf, uint3 voxelIdx)
 {
-	uint3 idx = voxelIdx;
-	idx.y += cascade * uint(GetDimension());
-
-	return voxelTexture.Load(int4(idx, 0));
+	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, gi_dimension);
+	return RGBA8UintColorToFloat4(voxelRawBuf.Load(bufferIndex));
 }
 
-float3 GetNormal(Texture3D<float4> voxelNormalMap, uint3 voxelIdx, uint cascade)
+float3 GetNormalInVoxelRawBuf(Buffer<uint> voxelRawBuf, uint3 voxelIdx)
 {
-	voxelIdx.y += cascade * int(GetDimension());
-
-	float3 normal = voxelNormalMap.Load(int4(voxelIdx, 0)).xyz;
+	uint bufferIndex = GetFlattedVoxelIndex(voxelIdx, gi_dimension);
+	float3 normal = RGBA8UintColorToFloat4(voxelRawBuf.Load(bufferIndex)).rgb;
 	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 
 	return normal;
 }
+
+void StoreRadiosity(RWTexture3D<uint> outVoxelMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx)
+{
+	float anisotropicNormals[6] = {
+		-normal.x,
+		 normal.x,
+		-normal.y,
+		 normal.y,
+		-normal.z,
+		 normal.z
+	};
+
+	for(int faceIndex=0; faceIndex<6; ++faceIndex)
+	{
+		uint3 index = voxelIdx;
+		index.x += (faceIndex * gi_dimension);
+
+		float rate = max(anisotropicNormals[faceIndex], 0.0f);
+		float4 storeValue = float4(radiosity * rate, alpha);
+
+		outVoxelMap[index] = Float4ColorToUint(storeValue);
+	}
+}
+
 
 #endif

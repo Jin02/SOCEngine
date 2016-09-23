@@ -3,70 +3,32 @@
 
 #include "ShaderCommon.h"
 
-#ifndef VOXEL_CONE_TRACING
-
-Texture3D<float4>	VoxelAlbedoMap	: register( t29 );
-Texture3D<float4>	VoxelEmissionMap	: register( t31 );
-Texture3D<float4>	VoxelNormalMap	: register( t30 );
-
-cbuffer GIInfoCB : register( b6 )
-#else
-cbuffer GIInfoCB : register( b1 )
-#endif
+cbuffer VXGIStaticInfo	: register( b6 )
 {
-	// High 16 bit is cascade
-	// Low bits is voxel dimension
-	uint	gi_maxCascadeWithVoxelDimensionPowOf2;
-
-	float	gi_initVoxelSize;
-	float	gi_initWorldSize;
+	uint	gi_dimension;
 	float	gi_maxMipLevel;
+	float	gi_voxelSize;
+	uint	gi_packedNumOfLights;
 }
 
-uint GetMaximumCascade()
+cbuffer VXGIDynamicInfo	: register( b7 )
 {
-	return (gi_maxCascadeWithVoxelDimensionPowOf2 >> 16);
+	float3	gi_startCenterWorldPos;
+	uint	gi_packedNumfOfLights;
 }
 
-uint ComputeCascade(float3 worldPos, float3 cameraWorldPos)
+float GetVoxelizationSize()
 {
-	//x, y, z 축 중에 가장 큰걸 고름
-	float	dist = max(	abs(worldPos.x - cameraWorldPos.x),
-						abs(worldPos.y - cameraWorldPos.y));
-			dist = max(	dist,
-						abs(worldPos.z - cameraWorldPos.z) );
-
-	return (uint)sqrt(dist / (gi_initWorldSize * 0.5f));
+	return gi_voxelSize * float(gi_dimension);
 }
 
-float GetVoxelizeSize(uint cascade)
+void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, float3 cameraWorldPos)
 {
-	float cascadeScale = float(cascade + 1);
-	return gi_initWorldSize * (cascadeScale * cascadeScale);
-}
-
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, uint cascade, float3 cameraWorldPos)
-{
-	float cascadeScale = float(cascade + 1);
-
-	float worldSize		= GetVoxelizeSize(cascade);
+	float worldSize		= GetVoxelizationSize();
 	float halfWorldSize	= worldSize * 0.5f;
 
 	outBBMin = cameraWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
-}
-
-float GetDimension()
-{
-	return float(1 << (gi_maxCascadeWithVoxelDimensionPowOf2 & 0x0000ffff));
-}
-
-float ComputeVoxelSize(uint cascade)
-{
-	float worldSize = GetVoxelizeSize(cascade);
-	float dimension = GetDimension();
-
-	return worldSize / dimension;
 }
 
 float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
@@ -80,114 +42,27 @@ float3 GetVoxelCenterPos(uint3 voxelIdx, float3 bbMin, float voxelSize)
 	return voxelCenter;
 }
 
-uint encUnsignedNibble(uint m, uint n)
+int3 ComputeVoxelIdx(float3 minPos, float3 worldPos)
 {
-  return	(m & 0xFEFEFEFE)		|
-			(n & 0x00000001)		|
-			(n & 0x00000002) << 7U	|
-			(n & 0x00000004) << 14U	|
-			(n & 0x00000008) << 21U;
+	return int3( (worldPos - minPos) / gi_voxelSize );
 }
 
-uint decUnsignedNibble(uint m)
+uint GetFlattedVoxelIndex(uint3 voxelIndex, uint dimension)
 {
-  return	(m & 0x00000001)		|
-			(m & 0x00000100) >> 7U	|
-			(m & 0x00010000) >> 14U	|
-			(m & 0x01000000) >> 21U;
+	uint sqDimension	= dimension * dimension;
+	uint flat			= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
+	return flat;
 }
 
-void StoreVoxelMapAtomicColorAvgNibble(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
+uint GetFlattedVoxelIndexWithFaceIndex(uint3 voxelIndex, uint faceIndex, uint dimension)
 {
-	// 나도 이게 왜 돌아가는지 모르겠다.
-	// 그런데 결과물이 가장 좋음 -_-.. 
+	uint sqDimension		= dimension * dimension;
 
-	// value *= 255.0f;
-	// uint newValue = ToUint(value);
-	uint newValue			= Float4ColorToUint(value);
+	uint fullLength			= (sqDimension * dimension);
+	uint faceOffset			= fullLength * faceIndex;
 
-	uint prevStoredValue	= 0;
-	uint currentStoredValue	= 0;
-
-	uint count = 0;
-	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
-	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
-	do//while( (!useLimit) || (count++ < 8) )
-	{
-		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
-
-		if(prevStoredValue == currentStoredValue)
-			break;
-		prevStoredValue = currentStoredValue;
-
-		float4 rval = ToFloat4(currentStoredValue & 0xFEFEFEFE);
-		uint n = decUnsignedNibble(currentStoredValue);
-
-		rval = rval * n + value;
-		rval /= ++n;
-		rval = round(rval / 2) * 2;
-		newValue = encUnsignedNibble(ToUint(rval), n);
-
-	}while(++count < 16);
+	uint localFlattedIdx	= voxelIndex.x + (voxelIndex.y * dimension) + (voxelIndex.z * sqDimension);
+	return faceOffset  +  localFlattedIdx;
 }
-
-void StoreVoxelMapAtomicColorAvg(RWTexture3D<uint> voxelMap, int3 idx, float4 value, uniform bool useLimit)
-{
-	value *= 255.0f;
-
-	uint newValue			= ToUint(value);
-	uint prevStoredValue	= 0;
-	uint currentStoredValue	= 0;
-
-	uint count = 0;
-
-	// 현재 개발환경에서 while과 for는 작동이 되질 않는다.
-	// 왜 그런지는 모르겠지만, 유일하게 do-while만 작동이 되는 상태.
-	[allow_uav_condition]do//[allow_uav_condition]while(true)
-	{
-		InterlockedCompareExchange(voxelMap[idx], prevStoredValue, newValue, currentStoredValue);
-
-		if(prevStoredValue == currentStoredValue)
-			break;
-
-		prevStoredValue = currentStoredValue;
-
-		float4 curFlt4 = ToFloat4(currentStoredValue);
-		curFlt4.xyz = (curFlt4.xyz * curFlt4.w);
-
-		float4 reCompute = curFlt4 + value;
-		reCompute.xyz /= reCompute.w;
-
-		newValue = ToUint(reCompute);
-	}while(++count < 16);
-}
-
-void StoreRadiosity(RWTexture3D<uint> outVoxelColorTexture, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uint curCascade)
-{
-	float anisotropicNormals[6] = {
-		-normal.x,
-		 normal.x,
-		-normal.y,
-		 normal.y,
-		-normal.z,
-		 normal.z
-	};
-
-	uint dimension = (uint)GetDimension();
-	voxelIdx.y += curCascade * dimension;
-
-	for(int faceIndex=0; faceIndex<6; ++faceIndex)
-	{
-		uint3 index = voxelIdx;
-		index.x += (faceIndex * dimension);
-
-		float rate = max(anisotropicNormals[faceIndex], 0.0f);
-		float4 storeValue = float4(radiosity * rate, alpha);
-
-//		StoreVoxelMapAtomicColorAvg(outVoxelColorTexture, index, storeValue, true);
-		outVoxelColorTexture[index] = Float4ColorToUint(storeValue);
-	}
-}
-
 
 #endif

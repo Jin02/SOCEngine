@@ -54,7 +54,7 @@ namespace Core
 		Rendering::PostProcessPipeline*						_postProcessingSystem;
 
 	protected:
-		Rendering::GI::GlobalIllumination*					_globalIllumination;
+		//Rendering::GI::GlobalIllumination*					_globalIllumination;
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;
 
 	public:
