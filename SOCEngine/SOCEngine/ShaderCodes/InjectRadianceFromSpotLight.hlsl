@@ -4,26 +4,18 @@
 
 #ifdef USE_SHADOW_INVERTED_DEPTH
 
-[numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, 1)]
+[numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, INJECTION_TILE_RES)]
 void CS(uint3 globalIdx	: SV_DispatchThreadID, 
 		uint3 localIdx	: SV_GroupThreadID,
 		uint3 groupIdx	: SV_GroupID)
 {
-	uint capacity			= GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	float perShadowMapRes	= (float)(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float3 bbMin		= float3(0.0f, 0.0f, 0.0f);
+	{
+		float3 bbMax	= float3(0.0f, 0.0f, 0.0f);
+		ComputeVoxelizationBound(bbMin, bbMax, tbrParam_cameraWorldPosition);
+	}
 
-	uint shadowIndex		= globalIdx.x / (uint)perShadowMapRes;
-	ParsedShadowParam shadowParam;
-	ParseShadowParam(shadowParam, SpotLightShadowParams[shadowIndex]);
-	uint lightIndex			= shadowParam.lightIndex;
-
-	float2 shadowMapPos	= float2(globalIdx.x % uint(perShadowMapRes), globalIdx.y % uint(perShadowMapRes));
-	float2 shadowMapUV	= shadowMapPos.xy / perShadowMapRes;
-
-	float depth = SpotLightShadowMapAtlas.Load(uint3(globalIdx.xy, 0), 0);
-
-	float4 worldPos = mul( float4(shadowMapPos.xy, depth, 1.0f), SpotLightShadowInvVPVMatBuffer[shadowIndex].mat );
-	worldPos /= worldPos.w;
+	float3 worldPos	= GetVoxelCenterPos(globalIdx, bbMin, gi_voxelSize);
 
 	float voxelizeSize	= GetVoxelizeSize(voxelization_currentCascade);
 	float3 voxelSpaceUV = (worldPos.xyz - voxelization_minPos) / voxelizeSize;

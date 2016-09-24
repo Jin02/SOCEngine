@@ -19,13 +19,13 @@ VoxelMap::~VoxelMap()
 }
 
 void VoxelMap::Initialize(
-	uint sideLength, uint maxNumOfCascade, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount, bool isAnisotropic)
+	uint sideLength, DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount, bool isAnisotropic)
 {
 	_sideLength		= sideLength;
 	_mipmapCount	= mipmapCount;
 
 	uint width		= sideLength * (isAnisotropic ? (uint)Direction::Num : 1);
-	uint height		= sideLength * maxNumOfCascade;
+	uint height		= sideLength;
 	uint depth		= sideLength;
 	Texture3D::Initialize(width, height, depth, typelessFormat, srvFormat, uavFormat, D3D11_BIND_RENDER_TARGET, _mipmapCount);
 

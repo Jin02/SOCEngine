@@ -2,7 +2,7 @@
 
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
-#include "GlobalIlluminationCommon.h"
+#include "VXGICommon.h"
 #include "VoxelMap.h"
 #include "InjectRadiance.h"
 
@@ -16,8 +16,7 @@ namespace Rendering
 			struct InfoCB
 			{
 				uint sourceDimension;
-				uint currentCascade;
-				uint dummy1, dummy2;
+				uint dummy1, dummy2, dummy3;
 			};
 
 		private:
@@ -29,8 +28,8 @@ namespace Rendering
 			~MipmapVoxelTexture();
 
 		public:
-			void Initialize(const GlobalInfo& giInfo);
-			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade);
+			void Initialize();
+			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap);
 			void Destroy();
 		};
 	}

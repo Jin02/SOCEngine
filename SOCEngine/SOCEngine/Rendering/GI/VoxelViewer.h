@@ -23,11 +23,11 @@ namespace Rendering
 			public:
 				struct InfoCB
 				{
-					uint curCascade;
 					uint dimension;
 
 					uint dummy1;
 					uint dummy2;
+					uint dummy3;
 				};
 
 			private:

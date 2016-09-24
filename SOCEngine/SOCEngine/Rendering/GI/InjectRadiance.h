@@ -1,47 +1,57 @@
-//#pragma once
-//
-//#include "ComputeShader.h"
-//#include "ConstBuffer.h"
-//#include "VoxelMap.h"
-//#include "GlobalIlluminationCommon.h"
-//#include "DirectX.h"
-//#include "ShadowRenderer.h"
-//#include "Voxelization.h"
-//
-//namespace Rendering
-//{
-//	namespace GI
-//	{
-//		class InjectRadiance
-//		{
-//		public:
-//			struct InitParam
-//			{
-//				const GlobalInfo*					globalInfo;
-//				const Buffer::ConstBuffer*			giInfoConstBuffer;
-//				const VoxelMap*						outColorMap;
-//				const Voxelization*					voxelization;
-//
-//				bool IsValid() const
-//				{
-//					return globalInfo && giInfoConstBuffer && voxelization && outColorMap;
-//				}
-//			};
-//
-//		protected:
-//			GPGPU::DirectCompute::ComputeShader*				_shader;
-//
-//		protected:
-//			InjectRadiance();
-//			~InjectRadiance();
-//
-//		protected:
-//			void Initialize(const std::string& fileName, const InitParam& param);
-//			void Dispath(const Device::DirectX* dx,
-//						 const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers);
-//
-//		public:
-//			void Destroy();
-//		};
-//	}
-//}
+#pragma once
+
+#include "ComputeShader.h"
+#include "ConstBuffer.h"
+#include "VoxelMap.h"
+#include "VXGICommon.h"
+#include "DirectX.h"
+#include "ShadowRenderer.h"
+#include "Voxelization.h"
+
+namespace Rendering
+{
+	namespace GI
+	{
+		class InjectRadiance
+		{
+		public:
+			struct DispatchParam
+			{
+				struct Voxelization
+				{
+					const Buffer::RawBuffer*		AlbedoRawBuffer;
+					const Buffer::RawBuffer*		NormalRawBuffer;
+					const Buffer::RawBuffer*		EmissionRawBuffer;
+					const Buffer::ConstBuffer*		InfoCB;
+				};
+				struct Global
+				{
+					const Buffer::ConstBuffer*		vxgiStaticInfo;
+					const Buffer::ConstBuffer*		vxgiDynamicInfo;
+				};
+
+				Voxelization						voxelization;
+				Global								global;
+
+				const Buffer::ConstBuffer*			shadowGlobalInfo;
+				const View::UnorderedAccessView*	OutAnisotropicVoxelColorMap;
+
+				uint								dimension;
+			};
+
+		protected:
+			GPGPU::DirectCompute::ComputeShader*				_shader;
+
+		protected:
+			InjectRadiance();
+			~InjectRadiance();
+
+		protected:
+			void Initialize(const std::string& fileName);
+			void Dispath(const Device::DirectX* dx, const DispatchParam& param);
+
+		public:
+			void Destroy();
+		};
+	}
+}

@@ -23,41 +23,35 @@ InjectRadianceFromSpotLIght::~InjectRadianceFromSpotLIght()
 {
 }
 
-void InjectRadianceFromSpotLIght::Initialize(const InjectRadiance::InitParam& initParam)
+void InjectRadianceFromSpotLIght::Initialize()
 {
-	const Scene* curScene			= Director::SharedInstance()->GetCurrentScene();
-	const LightManager* lightMgr	= curScene->GetLightManager();
-	const ShadowRenderer* shadowMgr	= curScene->GetShadowManager();
-
-	InjectRadiance::Initialize("InjectRadianceFromSpotLight", initParam);
-
-	std::vector<ShaderForm::InputShaderResourceBuffer> inputSRBuffers = _shader->GetInputSRBuffers();
-	{
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightRadiusWithCenter),		lightMgr->GetSpotLightTransformSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightColor),					lightMgr->GetSpotLightColorSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightParam),					lightMgr->GetSpotLightParamSRBuffer()));
-
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowParam),			shadowMgr->GetSpotLightShadowParamSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowInvVPVMat),		shadowMgr->GetSpotLightInvViewProjViewpotSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowIndex),			lightMgr->GetSpotLightShadowIndexSRBuffer()));
-		inputSRBuffers.push_back(ShaderForm::InputShaderResourceBuffer(uint(TextureBindIndex::SpotLightShadowViewProjMatrix),	shadowMgr->GetSpotLightShadowViewProjSRBuffer()));
-	}
-	_shader->SetInputSRBuffers(inputSRBuffers);
-
-	std::vector<ShaderForm::InputTexture> inputTextures = _shader->GetInputTextures();
-	{
-		inputTextures.push_back(ShaderForm::InputTexture( uint(TextureBindIndex::SpotLightShadowMapAtlas), shadowMgr->GetSpotLightShadowMapAtlas()) );
-	}
-	_shader->SetInputTextures(inputTextures);
+	InjectRadiance::Initialize("InjectRadianceFromSpotLight");
 }
 
-void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const ShadowRenderer*& shadowMgr, const Voxelization* voxelization)
+void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const Manager::LightManager* lightMgr, const Shadow::ShadowRenderer*& shadowMgr, const InjectRadiance::DispatchParam& param)
 {
-	Size<uint> activatedShadowMapSize = shadowMgr->GetActivatedSLShadowMapSize();
-
-	ComputeShader::ThreadGroup threadGroup(	(activatedShadowMapSize.w + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES,
-											(activatedShadowMapSize.h + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES, 1 );
-
+	uint xzLength = (param.dimension + INJECTION_TILE_RES - 1) / INJECTION_TILE_RES;
+	ComputeShader::ThreadGroup threadGroup(xzLength, xzLength, xzLength);
+	
 	_shader->SetThreadGroupInfo(threadGroup);
-	Dispath(dx, voxelization->GetConstBuffers());
+
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightRadiusWithCenter,		lightMgr->GetSpotLightTransformSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightColor,					lightMgr->GetSpotLightColorSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowParam,				shadowMgr->GetSpotLightShadowParamSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowInvVPVMat,			shadowMgr->GetSpotLightInvViewProjViewpotSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowIndex,				lightMgr->GetSpotLightShadowIndexSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,	shadowMgr->GetSpotLightShadowViewProjSRBuffer());
+	ComputeShader::BindTexture(context,					TextureBindIndex::SpotLightShadowMapAtlas,			shadowMgr->GetSpotLightShadowMapAtlas());
+
+	Dispath(dx, param);
+
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightRadiusWithCenter,		nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightColor,					nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowParam,				nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowInvVPVMat,			nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowIndex,				nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,	nullptr);
+	ComputeShader::BindTexture(context,					TextureBindIndex::SpotLightShadowMapAtlas,			nullptr);
 }

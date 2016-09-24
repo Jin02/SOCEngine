@@ -8,7 +8,7 @@ cbuffer VXGIStaticInfo	: register( b6 )
 	uint	gi_dimension;
 	float	gi_maxMipLevel;
 	float	gi_voxelSize;
-	uint	gi_packedNumOfLights;
+	float	gi_diffuseHalfConeMaxAngle;
 }
 
 cbuffer VXGIDynamicInfo	: register( b7 )

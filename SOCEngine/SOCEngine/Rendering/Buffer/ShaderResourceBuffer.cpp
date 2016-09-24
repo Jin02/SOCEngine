@@ -41,7 +41,7 @@ void ShaderResourceBuffer::Initialize(
 	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
 
 	_srv = new View::ShaderResourceView;
-	_srv->InitializeUsingBuffer(_buffer, num, format);
+	_srv->InitializeUsingBuffer(_buffer, num, format, false);
 }
 
 void ShaderResourceBuffer::Destroy()

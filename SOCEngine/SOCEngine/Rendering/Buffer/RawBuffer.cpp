@@ -22,7 +22,7 @@ bool RawBuffer::Initialize(uint stride, uint elemNum, Flag flag)
 	bool useSRV = flag == Flag::ONLY_SRV || useAll;
 	bool useUAV = flag == Flag::ONLY_UAV || useAll;
 
-	uint bindFlag = useSRV ? D3D11_BIND_SHADER_RESOURCE : 0 | useUAV ? D3D11_BIND_UNORDERED_ACCESS : 0;
+	uint bindFlag = (useSRV ? D3D11_BIND_SHADER_RESOURCE : 0) | (useUAV ? D3D11_BIND_UNORDERED_ACCESS : 0);
 
 	D3D11_BUFFER_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_BUFFER_DESC));
@@ -41,7 +41,7 @@ bool RawBuffer::Initialize(uint stride, uint elemNum, Flag flag)
 	if(useSRV)
 	{
 		if(_srv == nullptr)	_srv = new View::ShaderResourceView;
-		_srv->InitializeUsingBuffer(_buffer, elemNum, DXGI_FORMAT_R32_UINT);
+		_srv->InitializeUsingBuffer(_buffer, elemNum, DXGI_FORMAT_R32_UINT, true);
 	}
 
 	if(useUAV)

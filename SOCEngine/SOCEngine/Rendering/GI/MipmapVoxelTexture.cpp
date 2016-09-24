@@ -30,7 +30,7 @@ MipmapVoxelTexture::~MipmapVoxelTexture()
 	SAFE_DELETE(_infoCB);
 }
 
-void MipmapVoxelTexture::Initialize(const GlobalInfo& giInfo)
+void MipmapVoxelTexture::Initialize()
 {
 	auto LoadComputeShader = [](const std::string& fileName, const std::string& mainFuncName) -> ComputeShader*
 	{
@@ -60,12 +60,12 @@ void MipmapVoxelTexture::Destroy()
 {
 }
 
-void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceColorMap, uint maxNumOfCascade)
+void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceColorMap)
 {
 	ID3D11DeviceContext* context	= dx->GetContext();
 	uint sourceDimension			= sourceColorMap->GetSideLength();
 
-	auto Mipmap = [&](ComputeShader* shader, const UnorderedAccessView* sourceUAV, const UnorderedAccessView* targetUAV, uint mipLevel, uint curCascade)
+	auto Mipmap = [&](ComputeShader* shader, const UnorderedAccessView* sourceUAV, const UnorderedAccessView* targetUAV, uint mipLevel)
 	{
 		uint mipCoff		= 1 << mipLevel;
 		uint curDimension	= sourceDimension / mipCoff;
@@ -78,7 +78,6 @@ void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceCol
 
 		InfoCB info;
 		info.sourceDimension	= curDimension;
-		info.currentCascade		= curCascade;
 		_infoCB->UpdateSubResource(context, &info);
 
 		std::vector<ShaderForm::InputUnorderedAccessView> uavs;
@@ -100,12 +99,9 @@ void MipmapVoxelTexture::Mipmapping(const DirectX* dx, const VoxelMap* sourceCol
 	if(sourceColorMap->GetMipmapCount() <= 1)
 		return;
 
-	for(uint curCascade=0; curCascade<maxNumOfCascade; ++curCascade)
-	{
-		Mipmap(_shader, sourceColorMap->GetSourceMapUAV(), sourceColorMap->GetMipmapUAV(0), 0, curCascade);
+	Mipmap(_shader, sourceColorMap->GetSourceMapUAV(), sourceColorMap->GetMipmapUAV(0), 0);
 
-		uint maxMipLevel = sourceColorMap->GetMaxMipmapLevel();
-		for(uint i=1; i<maxMipLevel; ++i)
-			Mipmap(_shader, sourceColorMap->GetMipmapUAV(i-1), sourceColorMap->GetMipmapUAV(i), i, curCascade);
-	}
+	uint maxMipLevel = sourceColorMap->GetMaxMipmapLevel();
+	for(uint i=1; i<maxMipLevel; ++i)
+		Mipmap(_shader, sourceColorMap->GetMipmapUAV(i-1), sourceColorMap->GetMipmapUAV(i), i);
 }

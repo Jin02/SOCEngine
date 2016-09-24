@@ -14,7 +14,7 @@
 #include "MeshCamera.h"
 #include "BackBufferMaker.h"
 #include "ShadowRenderer.h"
-#include "GlobalIllumination.h"
+#include "VXGI.h"
 
 #include "BasicGeometryGenerator.h"
 #include "SkyForm.h"
@@ -54,7 +54,7 @@ namespace Core
 		Rendering::PostProcessPipeline*						_postProcessingSystem;
 
 	protected:
-		//Rendering::GI::GlobalIllumination*					_globalIllumination;
+		Rendering::GI::VXGI*								_vxgi;
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;
 
 	public:

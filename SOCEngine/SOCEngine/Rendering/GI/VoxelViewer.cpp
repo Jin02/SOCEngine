@@ -99,7 +99,6 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11Unorde
 		// Texture3D to Buffer
 		{
 			InfoCB info;
-			info.curCascade	= cascade;
 			info.dimension	= _dimension;
 	
 			uint threadCount = (_dimension + 8 - 1) / 8;

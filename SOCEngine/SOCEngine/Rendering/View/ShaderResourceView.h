@@ -19,7 +19,7 @@ namespace Rendering
 
 		public:
 			void InitializeUsingTexture(ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension);
-			void InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, DXGI_FORMAT format);
+			void InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
 
 			void Destroy();
 

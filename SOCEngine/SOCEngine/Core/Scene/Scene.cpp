@@ -18,13 +18,13 @@ using namespace UI::Manager;
 using namespace Rendering::Camera;
 using namespace Rendering::Texture;
 using namespace Rendering::Shadow;
-//using namespace Rendering::GI;
+using namespace Rendering::GI;
 using namespace Rendering::Sky;
 
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
 	_renderMgr(nullptr),
-	_shadowRenderer(nullptr),// _globalIllumination(nullptr),
+	_shadowRenderer(nullptr), _vxgi(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
 	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr),
 	_lightManager(nullptr), _materialMgr(nullptr)
@@ -40,7 +40,7 @@ Scene::~Scene(void)
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_shadowRenderer);
-	//SAFE_DELETE(_globalIllumination);
+	SAFE_DELETE(_vxgi);
 	SAFE_DELETE(_backBuffer);
 	SAFE_DELETE(_postProcessingSystem);
 	SAFE_DELETE(_reflectionManager);
@@ -155,15 +155,15 @@ void Scene::Render()
 		bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
 		const RenderTexture* indirectColorMap = nullptr;
 
-		//if(_globalIllumination && isMainCam)
-		//{
-		//	if(meshCam->GetUseIndirectColorMap() == false)
-		//		meshCam->ReCompileOffScreen(true);
+		if(_vxgi && isMainCam)
+		{
+			if(meshCam->GetUseIndirectColorMap() == false)
+				meshCam->ReCompileOffScreen(true);
 
-		//	_globalIllumination->Run(_dx, meshCam, this);
-		//	indirectColorMap = _globalIllumination->GetIndirectColorMap();
-		//}
-		//else
+			_vxgi->Run(_dx, meshCam, this);
+			indirectColorMap = _vxgi->GetIndirectColorMap();
+		}
+		else
 		{
 			if(meshCam->GetUseIndirectColorMap())
 				meshCam->ReCompileOffScreen(false);
@@ -181,15 +181,10 @@ void Scene::Render()
 		{
 			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
 			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
-			//meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
-			//				_shadowRenderer->GetNeverUseVSM(),
-			//				_sky,
-			//				_globalIllumination ? GIPass : giPassNull);
 			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
 							_shadowRenderer->GetNeverUseVSM(),
 							_sky,
-							giPassNull);
-
+							_vxgi ? GIPass : giPassNull);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
@@ -218,9 +213,9 @@ void Scene::Destroy()
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
 	
-	//if(_globalIllumination)
-	//	_globalIllumination->Destroy();
-	
+	if(_vxgi)
+		_vxgi->Destroy();
+
 	_postProcessingSystem->Destroy();
 	_reflectionManager->Destroy();
 
@@ -281,21 +276,21 @@ void Scene::Input(const Device::Win32::Mouse& mouse, const  Device::Win32::Keybo
 
 void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 {
-	//if(activate == false)
-	//{
-	//	if(_globalIllumination)
-	//		_globalIllumination->Destroy();
+	if(activate == false)
+	{
+		if(_vxgi)
+			_vxgi->Destroy();
 
-	//	SAFE_DELETE(_globalIllumination);
-	//}
-	//else
-	//{
-	//	if(_globalIllumination)
-	//		return;
+		SAFE_DELETE(_vxgi);
+	}
+	else
+	{
+		if(_vxgi)
+			return;
 
-	//	_globalIllumination = new GlobalIllumination;
-	//	_globalIllumination->Initialize(_dx, dimension, giSize);
-	//}
+		_vxgi = new VXGI;
+		_vxgi->Initialize(_dx, dimension, giSize);
+	}
 }
 
 void Scene::ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath)

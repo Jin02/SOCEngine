@@ -14,7 +14,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	}
 
 	float3 worldPos	= GetVoxelCenterPos(globalIdx, bbMin, gi_voxelSize);
-	uint lightCount	= GetNumOfPointLight(gi_packedNumOfLights);
+	uint lightCount	= GetNumOfPointLight(gi_packedNumfOfLights);
 	for(uint lightIndex	= 0; lightIndex < lightCount; ++lightIndex)
 	{
 		float4 lightCenterWithRadius	= PointLightTransformBuffer[lightIndex];

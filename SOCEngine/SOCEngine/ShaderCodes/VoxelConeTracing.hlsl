@@ -179,32 +179,5 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 indirectColor	= max(indirectDiffuse + indirectSpecular, 0.0f);
 
-
-#if (MSAA_SAMPLES_COUNT > 1) // MSAA only 4x
-	uint2 scaledGlobalIdx = globalIdx.xy * 2;
-
-	uint2 texIndex[4] =
-	{
-		scaledGlobalIdx + uint2(0, 0),
-		scaledGlobalIdx + uint2(0, 1),
-		scaledGlobalIdx + uint2(1, 0),
-		scaledGlobalIdx + uint2(1, 1)
-	};
-
-	OutIndirectColorMap[ texIndex[0] ] = indirectColor;
-
-	[unroll] for(uint i=1; i<4; ++i)
-	{
-		Surface sampledSurface;
-		ParseGBufferSurface(sampledSurface, globalIdx.xy, i);
-		
-		float3 sampledIndirectDiffuse	= diffuseVCT	* sampledSurface.albedo;
-		float3 sampledIndirectSpecular	= specularVCT	* sampledSurface.specular;
-		float3 sampledIndirectColor		= max(sampledIndirectDiffuse + sampledIndirectSpecular, 0.0f);
-
-		OutIndirectColorMap[ texIndex[i] ] = float4(sampledIndirectColor, 1.0f);
-	}
-#else
 	OutIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
-#endif
 }

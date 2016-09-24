@@ -39,6 +39,7 @@ void TestScene::OnInitialize()
 
 #if 1 //GI Test
 	ActivateGI(true, 256, 50.0f);
+	_vxgi->SetStartCenterWorldPos(Vector3(0, 0, 0));
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
