@@ -42,6 +42,7 @@ void TestScene::OnInitialize()
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
+
 	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
 	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
@@ -58,11 +59,30 @@ void TestScene::OnInitialize()
 	light->GetShadow()->SetUnderScanSize(0.0f);
 	AddObject(_light);
 
-//	UpdateBoundBox();
-//	Vector3 pos = GetBoundBox().GetCenter();
-	_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
+	if(_vxgi)
+		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
+#elif 0
+	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
+	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
-#else //IBL Test
+	_testObject = importer->Load("./Resources/Sponza/sponza.obj", false);
+	_testObject->GetTransform()->UpdatePosition(Vector3(-15, -20, 70));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 90.0f, 0.0f));
+	_testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
+	AddObject(_testObject);
+	UpdateBoundBox();
+
+	_camera->GetTransform()->UpdatePosition(GetBoundBox().GetCenter());
+
+	_light = new Object("Light");
+	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(30.0f, 330.0f, 0.0f));
+
+	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
+	dl->SetIntensity(2.0f);
+	dl->ActiveShadow(false);
+
+#elif 0 //IBL Test
 	// SkyBox
 	ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
 	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
@@ -120,9 +140,9 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	const float scale = 1.0f;
+	const float scale = 5.0f;
 #if 1
-	Transform* control = _testObject->GetTransform();
+	Transform* control = _light->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
