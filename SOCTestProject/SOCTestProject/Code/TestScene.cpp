@@ -47,17 +47,27 @@ void TestScene::OnInitialize()
 	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
 	_testObject->GetTransform()->UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
+
 	AddObject(_testObject);
 
 	_light = new Object("Light");
-	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
 
 	PointLight* light = _light->AddComponent<PointLight>();
 	light->SetLumen(100);
 	light->SetRadius(30.0f);
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
+	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
+
 	AddObject(_light);
+
+	//DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
+	//dl->SetIntensity(1);
+	//_light->GetTransform()->UpdateEulerAngles(Vector3(45.0f, 20.0f, 16.0f));
+	//_light->GetTransform()->UpdatePosition(Vector3(-10.0f, 7.0f, 16.0f));
+
+//	dl->ActiveShadow(true);
+//	dl->SetUseAutoProjectionLocation(true);
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
@@ -65,10 +75,14 @@ void TestScene::OnInitialize()
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
-	_testObject = importer->Load("./Resources/Sponza/sponza.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(-15, -20, 70));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 90.0f, 0.0f));
-	_testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
+	//_testObject = importer->Load("./Resources/Sponza/sponza.obj", false);
+	//_testObject->GetTransform()->UpdatePosition(Vector3(-15, -20, 70));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 90.0f, 0.0f));
+	//_testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
+	_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx", false);
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
+	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
+
 	AddObject(_testObject);
 	UpdateBoundBox();
 
@@ -80,7 +94,7 @@ void TestScene::OnInitialize()
 
 	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
 	dl->SetIntensity(2.0f);
-	dl->ActiveShadow(false);
+//	dl->ActiveShadow(false);
 
 #elif 0 //IBL Test
 	// SkyBox
