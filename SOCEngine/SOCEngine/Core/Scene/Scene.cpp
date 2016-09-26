@@ -93,7 +93,10 @@ void Scene::Update(float dt)
 
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
+	{
+		(*iter)->GetTransform()->UpdateWorldMatrix();
 		(*iter)->Update(dt);
+	}
 }
 
 void Scene::RenderPreview()
