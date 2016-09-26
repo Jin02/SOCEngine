@@ -47,7 +47,7 @@ namespace Rendering
 		private:
 			void InitializeClearVoxelMap(uint dimension);
 			void UpdateConstBuffer(const Device::DirectX*& dx, const Math::Vector3& startMinPos, float voxelSize, float dimension);
-			void ClearZeroVoxelMap(const Device::DirectX*& dx);
+			void ClearZeroVoxelMap(const Device::DirectX*& dx, const Buffer::ConstBuffer* vxgiStaticInfoCB);
 
 		public:
 			void Initialize(uint dimension);

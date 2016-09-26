@@ -88,24 +88,6 @@ void Voxelization::InitializeClearVoxelMap(uint dimension)
 
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
-
-	std::vector<ShaderForm::InputUnorderedAccessView> uavs;
-	{
-		ShaderForm::InputUnorderedAccessView uav;
-		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Albedo;
-		uav.uav			= _voxelAlbedoRawBuffer->GetUnorderedAccessView();
-		uavs.push_back(uav);
-
-		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Emission;
-		uav.uav			= _voxelEmissionRawBuffer->GetUnorderedAccessView();
-		uavs.push_back(uav);
-
-		uav.bindIndex	= (uint)UAVBindIndex::VoxelMap_Normal;
-		uav.uav			= _voxelNormalRawBuffer->GetUnorderedAccessView();
-		uavs.push_back(uav);
-	}
-
-	_clearVoxelMapCS->SetUAVs(uavs);
 }
 
 void Voxelization::Destroy()
@@ -117,9 +99,23 @@ void Voxelization::Destroy()
 	_infoCB->Destroy();
 }
 
-void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx)
+void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx, const ConstBuffer* vxgiStaticInfoCB)
 {
-	_clearVoxelMapCS->Dispatch(dx->GetContext());
+	ID3D11DeviceContext* context = dx->GetContext();
+
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Albedo,				_voxelAlbedoRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Emission,			_voxelEmissionRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Normal,				_voxelNormalRawBuffer->GetUnorderedAccessView());
+
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIStaticInfoCB,		vxgiStaticInfoCB);
+
+	_clearVoxelMapCS->Dispatch(context);
+
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIStaticInfoCB,		nullptr);
+
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Albedo,				nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Emission,			nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VoxelMap_Normal,				nullptr);
 }
 
 void Voxelization::Voxelize(const Device::DirectX*& dx,
@@ -127,7 +123,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 							float dimension, float voxelSize, const VoxelMap* injectionColorMap,
 							const ConstBuffer* vxgiStaticInfoCB, const ConstBuffer* vxgiDynamicInfoCB)
 {
-	ClearZeroVoxelMap(dx);
+	ClearZeroVoxelMap(dx, vxgiStaticInfoCB);
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	context->RSSetState(dx->GetRasterizerStateCWDisableCullingWithClip());
