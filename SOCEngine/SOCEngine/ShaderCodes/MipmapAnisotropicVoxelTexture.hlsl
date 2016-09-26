@@ -30,7 +30,9 @@ uint AlphaBledningAnisotropicVoxelMap
 
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
+#ifndef BASE_MIP_MAP
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
+#endif
 	return RGBA8UintColorToFloat4(VoxelMap[voxelIdx]);
 }
 

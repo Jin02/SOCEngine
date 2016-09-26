@@ -12,7 +12,7 @@
 #include "BilateralFiltering.h"
 #include "GaussianBlur.h"
 
-#define USE_BILATERAL_FILTERING
+#define USE_GAUSSIAN_BLUR
 
 namespace Rendering
 {
@@ -36,7 +36,7 @@ namespace Rendering
 
 		public:
 			void Initialize(const Device::DirectX* dx);
-			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam, const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB);
+			void Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam, const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB);
 			void Destroy();
 
 		public:

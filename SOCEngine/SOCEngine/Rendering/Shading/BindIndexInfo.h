@@ -59,7 +59,8 @@ namespace Rendering
 		PointLightShadowInvVPVMat				= 33,
 		SpotLightShadowInvVPVMat				= 34,
 
-		VCTMipmappedInjectionColorMap			= 29,
+		VCTInjectionSourceColorMap				= 29,
+		VCTMipmappedInjectionColorMap			= 30,
 
 //		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
@@ -111,7 +112,7 @@ namespace Rendering
 		
 		Lightculling_LightIndexBuffer	= 0,
 
-		OutAnisotropicVoxelColorTexture	= 0,
+		OutVoxelColorMap				= 0,
 
 		VoxelMap_Albedo					= 0,
 		VoxelMap_Normal					= 1,

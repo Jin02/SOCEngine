@@ -10,7 +10,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	float3 bbMin		= float3(0.0f, 0.0f, 0.0f);
 	{
 		float3 bbMax	= float3(0.0f, 0.0f, 0.0f);
-		ComputeVoxelizationBound(bbMin, bbMax, tbrParam_cameraWorldPosition);
+		ComputeVoxelizationBound(bbMin, bbMax, gi_startCenterWorldPos);
 	}
 
 	float3 worldPos	= GetVoxelCenterPos(globalIdx, bbMin, gi_voxelSize);
@@ -42,7 +42,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			radiosity = lambert * attenuation * lightColor * RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
 		}
 		radiosity = saturate(radiosity + emission.rgb);
-	
+
 		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx);
 	}
 }

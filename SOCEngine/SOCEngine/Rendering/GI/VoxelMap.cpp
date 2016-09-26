@@ -29,8 +29,6 @@ void VoxelMap::Initialize(
 	uint depth		= sideLength;
 	Texture3D::Initialize(width, height, depth, typelessFormat, srvFormat, uavFormat, D3D11_BIND_RENDER_TARGET, _mipmapCount);
 
-	auto device = Director::SharedInstance()->GetDirectX()->GetDevice();
-
 	for(uint i=1; i<mipmapCount; ++i)
 	{
 		UnorderedAccessView* uav = new UnorderedAccessView;

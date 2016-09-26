@@ -826,9 +826,6 @@
     <ClInclude Include="Rendering\GI\VoxelMap.h">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h">
-      <Filter>Rendering\GI\Mipmap</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\NormalMapping.h">
       <Filter>ShaderCodes\Material</Filter>
     </ClInclude>
@@ -903,6 +900,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\GI\VXGI.h">
       <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1170,9 +1170,6 @@
     <ClCompile Include="Rendering\GI\VoxelMap.cpp">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp">
-      <Filter>Rendering\GI\Mipmap</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
       <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
     </ClCompile>
@@ -1229,6 +1226,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\VXGI.cpp">
       <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

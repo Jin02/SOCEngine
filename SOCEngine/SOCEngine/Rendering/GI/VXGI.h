@@ -9,7 +9,7 @@
 #include "InjectRadianceFromPointLIght.h"
 #include "InjectRadianceFromSpotLIght.h"
 
-#include "MipmapVoxelTexture.h"
+#include "MipmapVoxelMap.h"
 
 #include "VoxelConeTracing.h"
 #include "RenderManager.h"
@@ -35,13 +35,15 @@ namespace Rendering
 			VXGIDynamicInfo							_dynamicInfo;
 			Buffer::ConstBuffer*					_dynamicInfoCB;
 
-			VoxelMap*								_injectionColorMap;
+			VoxelMap*								_injectionSourceMap;
+			VoxelMap*								_mipmappedInjectionMap;
+
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
 			Voxelization*							_voxelization;
 			InjectRadianceFromPointLIght*			_injectPointLight;
 			InjectRadianceFromSpotLIght*			_injectSpotLight;
-			MipmapVoxelTexture*						_mipmap;
+			MipmapVoxelMap*						_mipmap;
 			VoxelConeTracing*						_voxelConeTracing;
 
 			Debug::VoxelViewer*						_debugVoxelViewer;

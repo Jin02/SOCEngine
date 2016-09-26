@@ -80,7 +80,7 @@ void VoxelConeTracing::Destroy()
 	_blur->Destroy();
 }
 
-void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam,
+void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam,
 							const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -88,7 +88,9 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* mipmappedI
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->ClearRenderTargetView(_indirectColorMap->GetRenderTargetView(), clearColor);
 
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTInjectionSourceColorMap,				injectionSourceMap);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			mipmappedInjectionMap);
+
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					meshCam->GetGBufferAlbedoOcclusion());
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	meshCam->GetGBufferMotionXYMetallicSpecularity());
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					meshCam->GetGBufferNormalRoughness());
@@ -105,7 +107,9 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* mipmappedI
 	_shader->Dispatch(context);
 
 	// Clear
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTInjectionSourceColorMap,				nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			nullptr);
+
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					nullptr);

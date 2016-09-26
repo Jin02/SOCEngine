@@ -73,7 +73,7 @@
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h">
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
@@ -368,7 +368,7 @@
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp">
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">

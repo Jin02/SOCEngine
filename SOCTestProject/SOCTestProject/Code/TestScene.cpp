@@ -38,8 +38,7 @@ void TestScene::OnInitialize()
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 
 #if 1 //GI Test
-	ActivateGI(true, 256, 50.0f);
-	_vxgi->SetStartCenterWorldPos(Vector3(0, 0, 0));
+	ActivateGI(true, 256, 15.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
@@ -58,6 +57,10 @@ void TestScene::OnInitialize()
 	light->ActiveShadow(true);
 	light->GetShadow()->SetUnderScanSize(0.0f);
 	AddObject(_light);
+
+//	UpdateBoundBox();
+//	Vector3 pos = GetBoundBox().GetCenter();
+	_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
 
 #else //IBL Test
 	// SkyBox
@@ -88,12 +91,38 @@ void TestScene::OnInitialize()
 
 void TestScene::OnRenderPreview()
 {
+	if(_vxgi)
+	{
+		auto voxelViwer = _vxgi->GetDebugVoxelViewer();
+		
+		if(voxelViwer)
+		{
+			Object* debugVoxels = voxelViwer->GetVoxelsParent();
+			if(debugVoxels)
+			{
+				Object* exist = FindObject(debugVoxels->GetName());
+				if( exist == nullptr )
+				{
+					_testObject->SetUse(false);
+
+					AddObject(debugVoxels);
+					_testObject2 = debugVoxels;
+//#ifndef USE_ANISOTROPIC_VOXELIZATION
+					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
+//#else
+//					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
+//#endif
+				}
+			}
+		}
+	}
 }
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
+	const float scale = 1.0f;
+#if 1
 	Transform* control = _testObject->GetTransform();
-	const float scale = 0.1f;
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
@@ -161,6 +190,23 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 	{
 		_testObject->SetUse(!_testObject->GetUse());
 	}
+#else
+	Vector3 pos = _vxgi->GetStartCenterWorldPos();
+
+	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, scale, 0));
+	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, -scale, 0));
+	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(-scale, 0, 0));
+	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(scale, 0, 0));
+
+	if(keyboard.states['T'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, scale));
+	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
+		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, -scale));
+#endif
 }
 
 void TestScene::OnUpdate(float dt)

@@ -22,12 +22,12 @@ float GetVoxelizationSize()
 	return gi_voxelSize * float(gi_dimension);
 }
 
-void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, float3 cameraWorldPos)
+void ComputeVoxelizationBound(out float3 outBBMin, out float3 outBBMax, float3 startCenterWorldPos)
 {
 	float worldSize		= GetVoxelizationSize();
 	float halfWorldSize	= worldSize * 0.5f;
 
-	outBBMin = cameraWorldPos - halfWorldSize.xxx;
+	outBBMin = startCenterWorldPos - halfWorldSize.xxx;
 	outBBMax = outBBMin + worldSize.xxx;
 }
 

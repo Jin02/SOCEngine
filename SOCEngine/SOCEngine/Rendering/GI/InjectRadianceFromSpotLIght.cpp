@@ -44,9 +44,11 @@ void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const Manag
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowIndex,				lightMgr->GetSpotLightShadowIndexSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,	shadowMgr->GetSpotLightShadowViewProjSRBuffer());
 	ComputeShader::BindTexture(context,					TextureBindIndex::SpotLightShadowMapAtlas,			shadowMgr->GetSpotLightShadowMapAtlas());
+	ComputeShader::BindSamplerState(context,			SamplerStateBindIndex::VSMShadowSamplerState,		dx->GetShadowSamplerState());
 
 	Dispath(dx, param);
 
+	ComputeShader::BindSamplerState(context,			SamplerStateBindIndex::VSMShadowSamplerState,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightRadiusWithCenter,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightColor,					nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowParam,				nullptr);
