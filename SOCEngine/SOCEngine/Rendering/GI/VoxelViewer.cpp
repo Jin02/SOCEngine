@@ -35,7 +35,7 @@ VoxelViewer::~VoxelViewer()
 	SAFE_DELETE(_voxelsParent);
 }
 
-void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
+void VoxelViewer::Initialize(uint dimension, bool useFaceIndex, bool useTexture)
 {
 	_infoCB = new ConstBuffer;
 	_infoCB->Initialize(sizeof(InfoCB));
@@ -51,8 +51,8 @@ void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 
 	std::vector<ShaderMacro> macros;
 	{
-		if(isAnisotropic)
-			macros.push_back(ShaderMacro("USE_FACE_INDEX", ""));
+		if(useFaceIndex)	macros.push_back(ShaderMacro("USE_FACE_INDEX", ""));
+		if(useTexture)		macros.push_back(ShaderMacro("USE_DEBUG_TEXTURE_INJECTION", ""));
 	}
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
@@ -60,7 +60,7 @@ void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
 
 	_readBuffer = new CPUReadBuffer;
-	_readBuffer->Initialize(4, dimension * dimension * dimension * (isAnisotropic ? 6 : 1), DXGI_FORMAT_R32_UINT);
+	_readBuffer->Initialize(4, dimension * dimension * dimension * (useFaceIndex ? 6 : 1), DXGI_FORMAT_R32_UINT);
 
 	std::vector<ShaderForm::InputUnorderedAccessView> uavs;
 	uavs.push_back( ShaderForm::InputUnorderedAccessView(1, _readBuffer->GetUAV()) );
@@ -71,7 +71,7 @@ void VoxelViewer::Initialize(uint dimension, bool isAnisotropic)
 	_shader->SetInputConstBuffers(cbs);
 
 	_dimension		= dimension;
-	_isAnisotropic	= isAnisotropic;
+	_isAnisotropic	= useFaceIndex;
 }
 
 Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11UnorderedAccessView* uav, uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr)
@@ -211,6 +211,13 @@ Object* VoxelViewer::GenerateVoxelViewer(const Device::DirectX* dx, ID3D11Unorde
 						};
 
 						Object* container			= meshObject->GetChild(0);
+
+						//leftColor	= (leftColor	 * 2).Normalized();
+						//rightColor	= (rightColor	 * 2).Normalized();
+						//backColor	= (backColor	 * 2).Normalized();
+						//frontColor	= (frontColor	 * 2).Normalized();
+						//topColor	= (topColor		 * 2).Normalized();
+						//botColor	= (botColor		 * 2).Normalized();
 
 						UpdateColor(container->GetChild(3), leftColor);
 						UpdateColor(container->GetChild(0), rightColor);
