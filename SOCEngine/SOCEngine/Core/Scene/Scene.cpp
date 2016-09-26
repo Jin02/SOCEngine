@@ -99,15 +99,7 @@ void Scene::Update(float dt)
 void Scene::RenderPreview()
 {
 	OnRenderPreview();
-
-	Vector3 boundBoxMin = _boundBox.GetMin();
-	Vector3 boundBoxMax = _boundBox.GetMax();
-
-	const auto& objectVector = _rootObjects.GetVector();
-	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
-
-	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
+	UpdateBoundBox();
 
 	_shadowRenderer->ComputeAllLightViewProj();
 	_lightManager->ComputeDirectionalLightViewProj(_boundBox, float(_shadowRenderer->GetDirectionalLightShadowMapResolution()));
@@ -320,4 +312,16 @@ void Scene::DeactivateSky()
 		SAFE_DELETE(_sky);
 
 	_sky = nullptr;
+}
+
+void Scene::UpdateBoundBox()
+{
+	Vector3 boundBoxMin = _boundBox.GetMin();
+	Vector3 boundBoxMax = _boundBox.GetMax();
+
+	const auto& objectVector = _rootObjects.GetVector();
+	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
+
+	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
 }

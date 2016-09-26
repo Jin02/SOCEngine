@@ -89,6 +89,8 @@ namespace Core
 		void ActiveCustomSky(Rendering::Sky::SkyForm* sky);
 		void DeactivateSky();
 
+		void UpdateBoundBox();
+
 	public:
 		void NextState();
 		void StopState();
@@ -102,5 +104,7 @@ namespace Core
 		GET_ACCESSOR(MaterialManager,	Rendering::Manager::MaterialManager*,	_materialMgr);
 		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
 		GET_ACCESSOR(Sky,				Rendering::Sky::SkyForm*,				_sky);
+
+		GET_ACCESSOR(BoundBox,			const Intersection::BoundBox&,			_boundBox);
 	};
 }
