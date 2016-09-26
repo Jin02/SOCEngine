@@ -10,7 +10,7 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class MipmapVoxelTexture
+		class MipmapVoxelMap
 		{
 		public:
 			struct InfoCB
@@ -20,16 +20,18 @@ namespace Rendering
 			};
 
 		private:
-			GPGPU::DirectCompute::ComputeShader*		_shader;
+			GPGPU::DirectCompute::ComputeShader*		_baseMipmap;
+			GPGPU::DirectCompute::ComputeShader*		_anisotropicMipmap;
+
 			Buffer::ConstBuffer*						_infoCB;
 
 		public:
-			MipmapVoxelTexture();
-			~MipmapVoxelTexture();
+			MipmapVoxelMap();
+			~MipmapVoxelMap();
 
 		public:
 			void Initialize();
-			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap);
+			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, const VoxelMap* anisotropicMap);
 			void Destroy();
 		};
 	}
