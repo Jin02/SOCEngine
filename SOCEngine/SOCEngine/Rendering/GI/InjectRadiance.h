@@ -34,7 +34,7 @@ namespace Rendering
 				Global								global;
 
 				const Buffer::ConstBuffer*			shadowGlobalInfo;
-				const View::UnorderedAccessView*	OutAnisotropicVoxelColorMap;
+				const View::UnorderedAccessView*	OutVoxelColorMap;
 
 				uint								dimension;
 			};

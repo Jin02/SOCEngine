@@ -46,16 +46,16 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 	ID3D11DeviceContext* context = dx->GetContext();
 	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, dx->GetShadowGreaterEqualSamplerComparisonState());
 
-	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,		param.global.vxgiDynamicInfo);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,		param.global.vxgiStaticInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,	param.global.vxgiDynamicInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,	param.shadowGlobalInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,	param.voxelization.InfoCB);
 
-	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutAnisotropicVoxelColorTexture, param.OutAnisotropicVoxelColorMap);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap, param.OutVoxelColorMap);
 
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer, param.voxelization.AlbedoRawBuffer);
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer, param.voxelization.NormalRawBuffer);
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer, param.voxelization.EmissionRawBuffer);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(1), param.voxelization.AlbedoRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(2), param.voxelization.NormalRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(3), param.voxelization.EmissionRawBuffer->GetUnorderedAccessView());
 
 	_shader->Dispatch(context);
 
@@ -66,11 +66,11 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,				nullptr);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,				nullptr);
 
-	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutAnisotropicVoxelColorTexture,	nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap,	nullptr);
 
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer,		nullptr);
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer,		nullptr);
-	ComputeShader::BindShaderResourceBuffer(context, TextureBindIndex::VoxelAlbedoRawBuffer,		nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(1),		nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(2),		nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(3),		nullptr);
 }
 
 void InjectRadiance::Destroy()
