@@ -20,8 +20,6 @@ uint GetFlattedVoxelIndexWithFaceIndex(uint3 voxelIndex, uint faceIndex, uint di
 	return faceOffset  +  localFlattedIdx;
 }
 
-#define USE_DEBUG_TEXTURE_INJECTION
-
 #if defined(USE_DEBUG_TEXTURE_INJECTION)
 RWTexture3D<uint>	InputVoxelTexture	: register( u0 );
 #else
