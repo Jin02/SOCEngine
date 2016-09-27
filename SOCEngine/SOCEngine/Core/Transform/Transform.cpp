@@ -302,7 +302,9 @@ namespace Core
 			worldMat *= localMat;
 		}
 #endif
-		outMatrix = _worldMat;
+
+		if(_owner == nullptr)	FetchLocalMatrix(outMatrix);
+		else					outMatrix = _worldMat;
 	}
 
 	void Transform::FetchWorldPosition(Math::Vector3& outPosition) const
