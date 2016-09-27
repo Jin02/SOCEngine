@@ -38,7 +38,7 @@ void TestScene::OnInitialize()
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 
 #if 1 //GI Test
-	ActivateGI(true, 256, 15.0f);
+	ActivateGI(true, 32, 15.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
