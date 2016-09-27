@@ -124,6 +124,9 @@ float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRa
 		float noise = 1.0f + (SimpleNoise(origin) * mipLevel) * diameter;
 		currLength += diameter * noise;
 //		currLength += diameter * 0.5f;
+
+		isInBound = IsInBound(bbMin, bbMax, origin);
+		colorAccumInCone.a = (isInBound == false) ? 1.0f : 0.0f;
 	}
 
 	return float4(colorAccumInCone.rgb, aoAccumInCone);
