@@ -51,15 +51,16 @@ namespace Rendering
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
 
-		AnisotropicVoxelAlbedoTexture			= 29,
-		AnisotropicVoxelNormalTexture			= 30,
-		AnisotropicVoxelEmissionTexture			= 31,
+		VoxelAlbedoRawBuffer					= 29,
+		VoxelNormalRawBuffer					= 30,
+		VoxelEmissionRawBuffer					= 31,
 
 		DirectionalLightShadowInvVPVMat			= 32,
 		PointLightShadowInvVPVMat				= 33,
 		SpotLightShadowInvVPVMat				= 34,
 
-		VCT_InputVoxelMap						= 29,
+		VCTInjectionSourceColorMap				= 29,
+		VCTMipmappedInjectionColorMap			= 30,
 
 //		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
@@ -82,8 +83,9 @@ namespace Rendering
 
 		ReflectionProbe_Info			= 5,	
 
-		Voxelization_InfoCB				= 5,
-		GlobalIIllumination_InfoCB		= 6,
+		VoxelizationInfoCB				= 5,
+		VXGIStaticInfoCB				= 6,
+		VXGIDynamicInfoCB				= 7,
 
 		SkyMapInfoParam					= 7,
 
@@ -110,7 +112,7 @@ namespace Rendering
 		
 		Lightculling_LightIndexBuffer	= 0,
 
-		OutAnisotropicVoxelColorTexture	= 0,
+		OutVoxelColorMap				= 0,
 
 		VoxelMap_Albedo					= 0,
 		VoxelMap_Normal					= 1,
@@ -119,6 +121,6 @@ namespace Rendering
 		VoxelMipmap_InputVoxelMap		= 0,
 		VoxelMipmap_OutputVoxelMap		= 1,
 
-		VCT_OutIndirectMap				= 0,
+		VCTOutIndirectMap				= 0,
 	};
 }

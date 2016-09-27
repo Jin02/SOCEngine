@@ -217,7 +217,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 	{
 		D3D11_RASTERIZER_DESC desc;
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.CullMode				= D3D11_CULL_NONE;		//Ã„ÃƒÂ¸Âµ Â²Ã»
 		desc.FrontCounterClockwise	= true;
 		desc.DepthBias				= 0;
 		desc.DepthBiasClamp			= 0.0f;
@@ -244,7 +244,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			ASSERT_MSG("Error!, device cant create rasterizer state");
 
 		desc.FillMode				= D3D11_FILL_SOLID;
-		desc.CullMode				= D3D11_CULL_NONE;		//ÄÃ¸µ ²û
+		desc.CullMode				= D3D11_CULL_NONE;		//Ã„ÃƒÂ¸Âµ Â²Ã»
 		desc.DepthClipEnable		= false;
 		desc.FrontCounterClockwise	= false;
 		if( FAILED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCullingWithClip)) )
@@ -318,14 +318,14 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		D3D11_SAMPLER_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_SAMPLER_DESC));
 
-		desc.Filter			= D3D11_FILTER_ANISOTROPIC;
-		desc.AddressU		= D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressV		= D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressW		= D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.Filter		= D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
 		desc.MaxAnisotropy	= 16;
 		desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;
-		desc.MinLOD			= -D3D11_FLOAT32_MAX;
-		desc.MaxLOD			= D3D11_FLOAT32_MAX;
+		desc.MinLOD		= -D3D11_FLOAT32_MAX;
+		desc.MaxLOD		= D3D11_FLOAT32_MAX;
 
 		HRESULT hr = _device ->CreateSamplerState( &desc, &_anisotropicSamplerState );
 		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
@@ -340,7 +340,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 
 		// Shadow Sampler State
 		{
-			desc.Filter			= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+			desc.Filter		= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
 			desc.ComparisonFunc	= D3D11_COMPARISON_LESS_EQUAL;
 			desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
 			desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -353,7 +353,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			hr = _device->CreateSamplerState( &desc, &_shadowGreaterEqualCompState );
 			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowGreaterEqualCompState state");
 
-			desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.Filter		= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
 			desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
 			desc.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;
@@ -361,13 +361,13 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.MaxAnisotropy	= 0;
 			desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;//D3D11_COMPARISON_ALWAYS;
 			desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
-			desc.MinLOD			= 0;
-			desc.MaxLOD			= 0;
+			desc.MinLOD		= 0;
+			desc.MaxLOD		= 0;
 			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
 			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
 
 			ZeroMemory(&desc, sizeof(desc));
-			desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			desc.Filter		= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			desc.MaxAnisotropy	= 0;
 			desc.AddressU		= D3D11_TEXTURE_ADDRESS_BORDER;
 			desc.AddressV		= D3D11_TEXTURE_ADDRESS_BORDER;
@@ -427,16 +427,19 @@ void DirectX::ClearDeviceContext() const
     _immediateContext->VSSetConstantBuffers( 0, 14, pBuffers );
     _immediateContext->PSSetConstantBuffers( 0, 14, pBuffers );
     _immediateContext->CSSetConstantBuffers( 0, 14, pBuffers );
+    _immediateContext->GSSetConstantBuffers( 0, 14, pBuffers );
 
     // Resources
     _immediateContext->VSSetShaderResources( 0, 16, pSRVs );
     _immediateContext->PSSetShaderResources( 0, 16, pSRVs );
     _immediateContext->CSSetShaderResources( 0, 16, pSRVs );
+    _immediateContext->GSSetShaderResources( 0, 16, pSRVs );
 
     // Samplers
     _immediateContext->VSSetSamplers( 0, 16, pSamplers );
     _immediateContext->PSSetSamplers( 0, 16, pSamplers );
     _immediateContext->CSSetSamplers( 0, 16, pSamplers );
+    _immediateContext->GSSetSamplers( 0, 16, pSamplers );
 
     // Render targets
     _immediateContext->OMSetRenderTargets( 8, pRTVs, pDSV );

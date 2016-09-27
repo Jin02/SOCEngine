@@ -189,11 +189,6 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float depth	= shadowUV.z;
 	
 	float shadow = 1.0f;
-#ifndef NEVER_USE_VSM
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(PointLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
-#endif
 #ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(PointLightShadowMapAtlas, shadowUV.xy, depth + bias) );
 #else

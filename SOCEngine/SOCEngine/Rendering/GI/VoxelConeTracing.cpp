@@ -36,8 +36,7 @@ VoxelConeTracing::~VoxelConeTracing()
 	SAFE_DELETE(_blur);
 }
 
-void VoxelConeTracing::Initialize(const Device::DirectX* dx,
-								  const Buffer::ConstBuffer* giInfoCB)
+void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 {
 	std::string filePath = "";
 	EngineFactory pathFinder(nullptr);
@@ -49,27 +48,11 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx,
 	auto shaderMgr = resourceManager->GetShaderManager();
 
 	// Compile Compute Shader
-	ID3DBlob* blob = nullptr;
-	{
-		std::vector<ShaderMacro> macros;
-		macros.push_back(dx->GetMSAAShaderMacro());
-	
-		blob = shaderMgr->CreateBlob(filePath, "cs", "VoxelConeTracingCS", false, &macros);
-	}
+	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "VoxelConeTracingCS", false, nullptr);
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 0);
-	Size<uint> mapSize(0, 0);
+	Size<uint> mapSize = dx->GetBackBufferSize();
 	{
-		// Compute MapSize
-		{
-			mapSize = dx->GetBackBufferSize();
-			if(dx->GetMSAADesc().Count > 1)
-			{
-				mapSize.w *= 2;
-				mapSize.h *= 2;
-			}
-		}
-
 		threadGroup.x = (mapSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES;
 		threadGroup.y = (mapSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES;
 		threadGroup.z = 1;
@@ -77,12 +60,6 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx,
 
 	_shader = new ComputeShader(threadGroup, blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
-
-	std::vector<ShaderForm::InputConstBuffer> icbs;
-	{
-		icbs.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::VCT_GlobalInfoCB), giInfoCB));
-	}
-	_shader->SetInputConstBuffers(icbs);
 
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,
@@ -103,60 +80,49 @@ void VoxelConeTracing::Destroy()
 	_blur->Destroy();
 }
 
-void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam)
+void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam,
+							const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	context->ClearRenderTargetView(_indirectColorMap->GetRenderTargetView(), clearColor);
 
-	auto CSSetShaderResource = [](ID3D11DeviceContext* context, TextureBindIndex bind, const ShaderResourceView* srv) -> void
-	{
-		ID3D11ShaderResourceView* view = srv ? srv->GetView() : nullptr;
-		context->CSSetShaderResources(uint(bind), 1, &view);
-	};
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTInjectionSourceColorMap,				injectionSourceMap);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			mipmappedInjectionMap);
 
-	CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelMap,						injectedColorMap->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Occlusion,				meshCam->GetGBufferAlbedoOcclusion()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	meshCam->GetGBufferMotionXYMetallicSpecularity()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,				meshCam->GetGBufferNormalRoughness()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,							meshCam->GetOpaqueDepthBuffer()->GetShaderResourceView());
-	CSSetShaderResource(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag()->GetShaderResourceView());
-//	CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				meshCam->GetDiffuseLightBuffer()->GetShaderResourceView());
-//	CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				meshCam->GetSpecularLightBuffer()->GetShaderResourceView());
-//	context->CSSetShaderResources(uint(TextureBindIndex::VCT_InputPerLightIndicesBuffer), 1,meshCam->GetPerLightIndicesBuffer()->GetShaderResourceView());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					meshCam->GetGBufferAlbedoOcclusion());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	meshCam->GetGBufferMotionXYMetallicSpecularity());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					meshCam->GetGBufferNormalRoughness());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Depth,							meshCam->GetOpaqueDepthBuffer());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag());
 
-	ID3D11Buffer* tbrParamCB = meshCam->GetTBRParamConstBuffer()->GetBuffer();
-	context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,								meshCam->GetTBRParamConstBuffer());
+	ComputeShader::BindSamplerState(context,		SamplerStateBindIndex::DefaultSamplerState,					dx->GetConeTracingSamplerState());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VCTOutIndirectMap,							_indirectColorMap->GetUnorderedAccessView());
 
-	ID3D11UnorderedAccessView* uav = _indirectColorMap->GetUnorderedAccessView()->GetView();
-	context->CSSetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav, nullptr);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIStaticInfoCB,						vxgiStaticInfoCB);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIDynamicInfoCB,					vxgiDynamicInfoCB);
 
-	ID3D11SamplerState* samplerState = dx->GetConeTracingSamplerState();
-	context->CSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1,	&samplerState);
 	_shader->Dispatch(context);
 
 	// Clear
-	{
-		samplerState = nullptr;
-		context->CSSetSamplers(uint(SamplerStateBindIndex::DefaultSamplerState), 1, &samplerState);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTInjectionSourceColorMap,				nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			nullptr);
 
-		uav = nullptr;
-		context->CSSetUnorderedAccessViews(uint(UAVBindIndex::VCT_OutIndirectMap), 1, &uav, nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Depth,							nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			nullptr);
 
-		tbrParamCB = nullptr;
-		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &tbrParamCB);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,								nullptr);
+	ComputeShader::BindSamplerState(context,		SamplerStateBindIndex::DefaultSamplerState,					nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VCTOutIndirectMap,							nullptr);
 
-		CSSetShaderResource(context, TextureBindIndex::VCT_InputVoxelMap,						nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_Albedo_Occlusion,				nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_Normal_Roughness,				nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			nullptr);
-		CSSetShaderResource(context, TextureBindIndex::GBuffer_Depth,							nullptr);
-//		CSSetShaderResource(context, TextureBindIndex::VCT_InputDiffuseLightMap,				nullptr);
-//		CSSetShaderResource(context, TextureBindIndex::VCT_InputSpecularLightMap,				nullptr);
-//		CSSetShaderResource(context, TextureBindIndex::VCT_InputPerLightIndicesBuffer,			nullptr);
-	}
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIDynamicInfoCB,					nullptr);
+
 
 #if defined(USE_GAUSSIAN_BLUR)
 	_blur->Render(dx, _indirectColorMap, _indirectColorMap);

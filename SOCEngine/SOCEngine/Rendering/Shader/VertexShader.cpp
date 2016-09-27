@@ -2,7 +2,7 @@
 
 using namespace Device;
 using namespace Rendering::Shader;
-
+using namespace Rendering;
 
 VertexShader::VertexShader(ID3DBlob* blob, const std::string& key)
 	: ShaderForm(blob, key), _shader(nullptr), _layout(nullptr)
@@ -103,9 +103,9 @@ void VertexShader::BindResourcesToContext(
 	{
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
-			auto srv = iter->srBuffer->GetShaderResourceView();
+			auto srv = iter->srBuffer->GetShaderResourceView()->GetView();
 			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->bindIndex, 1, srv );
+				context->VSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 }
@@ -148,4 +148,27 @@ void VertexShader::Clear(
 				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
+}
+
+void VertexShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
+{
+	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->VSSetShaderResources(uint(bind), 1, &srv);
+}
+
+void VertexShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+{
+	context->VSSetSamplers(uint(bind), 1, &samplerState);
+}
+
+void VertexShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+{
+	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
+	context->VSSetConstantBuffers(uint(bind), 1, &buf);
+}
+
+void VertexShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+{
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView()->GetView() : nullptr;
+	context->VSSetShaderResources(uint(bind), 1, &srv);
 }

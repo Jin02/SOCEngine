@@ -16,7 +16,7 @@ namespace Rendering
 			virtual ~UnorderedAccessView();
 
 		public:
-			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, D3D11_UAV_DIMENSION viewDimension, uint tex3dMipSlice = 0, uint tex3dWSize = 0);
+			void Initialize(DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, D3D11_UAV_DIMENSION viewDimension, uint tex3dMipSlice = 0, uint tex3dWSize = 0, uint bufferFlags = 0);
 			void Destroy();
 
 		public:

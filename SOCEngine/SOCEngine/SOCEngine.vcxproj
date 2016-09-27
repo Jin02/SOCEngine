@@ -46,6 +46,7 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
     <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\RawBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
@@ -54,18 +55,33 @@
     <ClInclude Include="Rendering\Camera\ReflectionProbe.h" />
     <ClInclude Include="Rendering\Camera\ReflectionProbeManager.h" />
     <ClInclude Include="Rendering\Color\Color.h" />
-    <ClInclude Include="Rendering\GI\VoxelMap.h" />
-    <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
-    <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h" />
-    <ClInclude Include="Rendering\GI\InjectRadianceFromDirectionalLIght.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <ClInclude Include="Rendering\GI\VoxelMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadiance.h" />
-    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h" />
-    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h" />
-    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h" />
-    <ClInclude Include="Rendering\GI\VoxelConeTracing.h" />
-    <ClInclude Include="Rendering\GI\Voxelization.h" />
+    <ClInclude Include="Rendering\GI\VXGI.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGICommon.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadiance.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelViewer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -148,7 +164,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelMaps.hlsl">
+    <FxCompile Include="ShaderCodes\ClearVoxelRawMap.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
@@ -232,6 +248,7 @@
     <FxCompile Include="ShaderCodes\IBLPass.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
     <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -241,21 +258,7 @@
     <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
@@ -311,13 +314,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Component\Component.cpp" />
@@ -347,6 +344,7 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
@@ -355,17 +353,30 @@
     <ClCompile Include="Rendering\Camera\ReflectionProbe.cpp" />
     <ClCompile Include="Rendering\Camera\ReflectionProbeManager.cpp" />
     <ClCompile Include="Rendering\Color\Color.cpp" />
-    <ClCompile Include="Rendering\GI\VoxelMap.cpp" />
-    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromDirectionalLIght.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\InjectRadiance.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp" />
-    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp" />
-    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp" />
-    <ClCompile Include="Rendering\GI\Voxelization.cpp" />
+    <ClCompile Include="Rendering\GI\VXGI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadiance.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\Voxelization.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelViewer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

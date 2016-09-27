@@ -1,5 +1,6 @@
 #include "PixelShader.h"
 
+using namespace Rendering;
 using namespace Rendering::Shader;
 
 PixelShader::PixelShader(ID3DBlob* blob, const std::string& key)
@@ -62,9 +63,9 @@ void PixelShader::BindResourcesToContext(
 	{
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
-			auto srv = iter->srBuffer->GetShaderResourceView();
+			auto srv = iter->srBuffer->GetShaderResourceView()->GetView();
 			if(srv && iter->usePS)
-				context->PSSetShaderResources( iter->bindIndex, 1, srv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &srv );
 		}
 	}
 }
@@ -82,7 +83,7 @@ void PixelShader::Clear(
 		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -93,7 +94,7 @@ void PixelShader::Clear(
 		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
+				context->PSSetShaderResources( iter->bindIndex, 1, &nullSrv );
 		}
 	}
 
@@ -104,7 +105,30 @@ void PixelShader::Clear(
 		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
 		{
 			if(iter->usePS)
-				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
+				context->PSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
 		}
 	}
+}
+
+void PixelShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
+{
+	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
+	context->PSSetShaderResources(uint(bind), 1, &srv);
+}
+
+void PixelShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+{
+	context->PSSetSamplers(uint(bind), 1, &samplerState);
+}
+
+void PixelShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+{
+	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
+	context->PSSetConstantBuffers(uint(bind), 1, &buf);
+}
+
+void PixelShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+{
+	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView()->GetView() : nullptr;
+	context->PSSetShaderResources(uint(bind), 1, &srv);
 }

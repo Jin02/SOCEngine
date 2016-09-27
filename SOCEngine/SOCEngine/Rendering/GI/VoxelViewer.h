@@ -23,11 +23,11 @@ namespace Rendering
 			public:
 				struct InfoCB
 				{
-					uint curCascade;
 					uint dimension;
 
 					uint dummy1;
 					uint dummy2;
+					uint dummy3;
 				};
 
 			private:
@@ -44,7 +44,7 @@ namespace Rendering
 				~VoxelViewer();
 
 			public:
-				void Initialize(uint dimension, bool isAnisotropic);
+				void Initialize(uint dimension, bool useFaceIndex, bool useTexture);
 				Core::Object* GenerateVoxelViewer(const Device::DirectX* dx, ID3D11UnorderedAccessView* uav,
 													uint cascade, bool realloc, float voxelizeSize, Manager::MaterialManager* matMgr);
 				void DestroyAllVoxelMeshes();

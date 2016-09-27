@@ -24,7 +24,7 @@ using namespace Rendering::Sky;
 Scene::Scene(void) : 
 	_cameraMgr(nullptr), _uiManager(nullptr),
 	_renderMgr(nullptr),
-	_shadowRenderer(nullptr), _globalIllumination(nullptr),
+	_shadowRenderer(nullptr), _vxgi(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
 	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr),
 	_lightManager(nullptr), _materialMgr(nullptr)
@@ -40,7 +40,7 @@ Scene::~Scene(void)
 	SAFE_DELETE(_lightManager);	
 	SAFE_DELETE(_materialMgr);
 	SAFE_DELETE(_shadowRenderer);
-	SAFE_DELETE(_globalIllumination);
+	SAFE_DELETE(_vxgi);
 	SAFE_DELETE(_backBuffer);
 	SAFE_DELETE(_postProcessingSystem);
 	SAFE_DELETE(_reflectionManager);
@@ -93,21 +93,16 @@ void Scene::Update(float dt)
 
 	auto end = _rootObjects.GetVector().end();
 	for(auto iter = _rootObjects.GetVector().begin(); iter != end; ++iter)
+	{
+		(*iter)->GetTransform()->UpdateWorldMatrix();
 		(*iter)->Update(dt);
+	}
 }
 
 void Scene::RenderPreview()
 {
 	OnRenderPreview();
-
-	Vector3 boundBoxMin = _boundBox.GetMin();
-	Vector3 boundBoxMax = _boundBox.GetMax();
-
-	const auto& objectVector = _rootObjects.GetVector();
-	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
-		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
-
-	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
+	UpdateBoundBox();
 
 	_shadowRenderer->ComputeAllLightViewProj();
 	_lightManager->ComputeDirectionalLightViewProj(_boundBox, float(_shadowRenderer->GetDirectionalLightShadowMapResolution()));
@@ -155,13 +150,13 @@ void Scene::Render()
 		bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
 		const RenderTexture* indirectColorMap = nullptr;
 
-		if(_globalIllumination && isMainCam)
+		if(_vxgi && isMainCam)
 		{
 			if(meshCam->GetUseIndirectColorMap() == false)
 				meshCam->ReCompileOffScreen(true);
 
-			_globalIllumination->Run(_dx, meshCam, this);
-			indirectColorMap = _globalIllumination->GetIndirectColorMap();
+			_vxgi->Run(_dx, meshCam, this);
+			indirectColorMap = _vxgi->GetIndirectColorMap();
 		}
 		else
 		{
@@ -184,7 +179,7 @@ void Scene::Render()
 			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
 							_shadowRenderer->GetNeverUseVSM(),
 							_sky,
-							_globalIllumination ? GIPass : giPassNull);
+							_vxgi ? GIPass : giPassNull);
 		}
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
@@ -213,9 +208,9 @@ void Scene::Destroy()
 	_lightManager->Destroy();
 	_cameraMgr->Destroy();
 	
-	if(_globalIllumination)
-		_globalIllumination->Destroy();
-	
+	if(_vxgi)
+		_vxgi->Destroy();
+
 	_postProcessingSystem->Destroy();
 	_reflectionManager->Destroy();
 
@@ -278,18 +273,18 @@ void Scene::ActivateGI(bool activate, uint dimension, float giSize)
 {
 	if(activate == false)
 	{
-		if(_globalIllumination)
-			_globalIllumination->Destroy();
+		if(_vxgi)
+			_vxgi->Destroy();
 
-		SAFE_DELETE(_globalIllumination);
+		SAFE_DELETE(_vxgi);
 	}
 	else
 	{
-		if(_globalIllumination)
+		if(_vxgi)
 			return;
 
-		_globalIllumination = new GlobalIllumination;
-		_globalIllumination->Initialize(_dx, dimension, giSize);
+		_vxgi = new VXGI;
+		_vxgi->Initialize(_dx, dimension, giSize);
 	}
 }
 
@@ -320,4 +315,16 @@ void Scene::DeactivateSky()
 		SAFE_DELETE(_sky);
 
 	_sky = nullptr;
+}
+
+void Scene::UpdateBoundBox()
+{
+	Vector3 boundBoxMin = _boundBox.GetMin();
+	Vector3 boundBoxMax = _boundBox.GetMax();
+
+	const auto& objectVector = _rootObjects.GetVector();
+	for(auto iter = objectVector.begin(); iter != objectVector.end(); ++iter)
+		(*iter)->UpdateTransformCB_With_ComputeSceneMinMaxPos(_dx, boundBoxMin, boundBoxMax, _localMat);
+
+	_boundBox.SetMinMax(boundBoxMin, boundBoxMax);
 }

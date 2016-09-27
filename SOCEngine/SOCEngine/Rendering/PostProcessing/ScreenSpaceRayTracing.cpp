@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "SkyBox.h"
 
+using namespace Rendering;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
@@ -26,7 +27,7 @@ ScreenSpaceRayTracing::~ScreenSpaceRayTracing()
 	SAFE_DELETE(_viewToTexSpaceCB);
 }
 
-void ScreenSpaceRayTracing::Initialize(const Device::DirectX* dx, const ConstBuffer* ssrtParam)
+void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx, const Buffer::ConstBuffer* ssrtParam )
 {
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
@@ -46,8 +47,23 @@ void ScreenSpaceRayTracing::Initialize(const Device::DirectX* dx, const ConstBuf
 	_rayTracingBuffer->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
 }
 
+void ScreenSpaceRayTracing::UpdateConstBuffer(const Device::DirectX* dx)
+{
+}
+
+void ScreenSpaceRayTracing::Render(const DirectX* dx, const GBuffers& gbuffer)
+{
+	ID3D11DeviceContext* context	= dx->GetContext();
+
+	// GBuffer Setting
+	{
+	}
+	
+	FullScreen::Render(dx, _rayTracingBuffer);
+}
+
 void ScreenSpaceRayTracing::Destroy()
 {
 	_rayTracingBuffer->Destroy();
-	_viewToTexSpaceCB->Destory();
+	_viewToTexSpaceCB->Destroy();
 }

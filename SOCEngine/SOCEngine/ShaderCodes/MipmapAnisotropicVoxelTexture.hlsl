@@ -5,8 +5,7 @@
 cbuffer MipMapInfoCB : register(b0)
 {
 	uint mipmapInfo_sourceDimension;
-	uint mipmapInfo_currentCascade;
-	uint2 mipmapInfo_dummy;
+	uint3 mipmapInfo_dummy;
 };
 
 RWTexture3D<uint> VoxelMap		: register(u0);
@@ -14,12 +13,7 @@ RWTexture3D<uint> OutMipMap		: register(u1);
 
 float4 AlphaBlending(float4 front, float4 back)
 {
-	float3 blending = front.rgb + back.rgb * (1.0f - front.a);
-
-	//알파는 블랜딩 시키지 않음.
-	float alpha = (front.a + back.a) / 2.0f;
-
-	return float4(blending, alpha);
+	return front + back * (1.0f - front.a);
 }
 
 uint AlphaBledningAnisotropicVoxelMap
@@ -31,23 +25,14 @@ uint AlphaBledningAnisotropicVoxelMap
 	float4 color2 = AlphaBlending(front2, back2);
 	float4 color3 = AlphaBlending(front3, back3);
 
-	color0.rgb *= color0.a;
-	color1.rgb *= color1.a;
-	color2.rgb *= color2.a;
-	color3.rgb *= color3.a;
-
-	float4 result = color0 + color1 + color2 + color3;
-	result.rgb /= result.a;
-	result.a /= 4.0f;
-
-	return Float4ColorToUint( result );
-//	return Float4ColorToUint( (color0 + color1 + color2 + color3) * 0.25f );
+	return Float4ColorToUint( (color0 + color1 + color2 + color3) * 0.25f );
 }
 
 float4 GetColorFromVoxelMap(uint3 voxelIdx, uniform uint faceIndex)
 {
+#ifndef BASE_MIP_MAP
 	voxelIdx.x += (faceIndex * mipmapInfo_sourceDimension);
-	voxelIdx.y += (mipmapInfo_currentCascade * mipmapInfo_sourceDimension);
+#endif
 	return RGBA8UintColorToFloat4(VoxelMap[voxelIdx]);
 }
 
@@ -102,7 +87,6 @@ void MipmapAnisotropicVoxelMapCS(uint3 globalIdx : SV_DispatchThreadID,
 
 
 	uint destDimension = mipmapInfo_sourceDimension / 2;
-	globalIdx.y += mipmapInfo_currentCascade * destDimension;
 
 	OutMipMap[uint3(globalIdx.x,						globalIdx.yz)]	= negx;
 	OutMipMap[uint3(globalIdx.x + (1 * destDimension),	globalIdx.yz)]	= posx;

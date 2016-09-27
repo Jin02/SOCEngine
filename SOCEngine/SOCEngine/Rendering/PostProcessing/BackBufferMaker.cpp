@@ -7,6 +7,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::TBDR;
+using namespace Rendering;
 using namespace Device;
 
 BackBufferMaker::BackBufferMaker()
@@ -58,33 +59,17 @@ void BackBufferMaker::Render(
 
 	//_pixelShader->BindResourcesToContext(context, nullptr, &_inputPSTextures, nullptr);
 	{
-		ID3D11Buffer* cb = tbrParamConstBuffer->GetBuffer();
-		context->PSSetConstantBuffers(
-			(uint)ConstBufferBindIndex::TBRParam,
-			1, &cb);
-
-		ID3D11ShaderResourceView* srv = renderScene->GetShaderResourceView()->GetView();
-		context->PSSetShaderResources(
-			(uint)TextureBindIndex::RenderScene, 
-			1, &srv);
+		PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, tbrParamConstBuffer);
+		PixelShader::BindTexture(context, Rendering::TextureBindIndex(TextureBindIndex::RenderScene), renderScene);
 
 		if(_useUI)
-		{
-			srv = uiScene->GetShaderResourceView()->GetView();
-			context->PSSetShaderResources(
-			(uint)TextureBindIndex::UIScene, 
-			1, &srv);
-		}
+			PixelShader::BindTexture(context, Rendering::TextureBindIndex(TextureBindIndex::UIScene), uiScene);
 	}
 
-	ID3D11SamplerState* linerSampler = dx->GetSamplerStateLinear();
-	context->PSSetSamplers((uint)SamplerStateBindIndex::DefaultSamplerState, 1, &linerSampler);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 
 	if(_useUI)
-	{
-		ID3D11SamplerState* pointSampler = dx->GetSamplerStatePoint();
-		context->PSSetSamplers((uint)SamplerStateBindIndex::UISamplerState, 1, &pointSampler);
-	}
+		PixelShader::BindSamplerState(context, SamplerStateBindIndex::UISamplerState, dx->GetSamplerStatePoint());
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	context->RSSetState( nullptr );

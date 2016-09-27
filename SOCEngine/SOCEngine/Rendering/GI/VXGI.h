@@ -2,15 +2,14 @@
 
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
-#include "GlobalIlluminationCommon.h"
+#include "VXGICommon.h"
 
 #include "Voxelization.h"
 
-#include "InjectRadianceFromDirectionalLIght.h"
 #include "InjectRadianceFromPointLIght.h"
 #include "InjectRadianceFromSpotLIght.h"
 
-#include "MipmapVoxelTexture.h"
+#include "MipmapVoxelMap.h"
 
 #include "VoxelConeTracing.h"
 #include "RenderManager.h"
@@ -27,33 +26,37 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class GlobalIllumination
+		class VXGI
 		{
 		private:
-			GlobalInfo								_globalInfo;
-			Buffer::ConstBuffer*					_giGlobalInfoCB;
-			VoxelMap*								_injectionColorMap;
+			VXGIStaticInfo							_staticInfo;
+			Buffer::ConstBuffer*					_staticInfoCB;
 
-			Voxelization*							_voxelization;
+			VXGIDynamicInfo							_dynamicInfo;
+			Buffer::ConstBuffer*					_dynamicInfoCB;
 
-			InjectRadianceFromPointLIght*			_injectPointLight;
-			InjectRadianceFromSpotLIght*			_injectSpotLight;
+			VoxelMap*								_injectionSourceMap;
+			VoxelMap*								_mipmappedInjectionMap;
 
-			MipmapVoxelTexture*			_mipmap;
-
-			VoxelConeTracing*						_voxelConeTracing;
 			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
 
+			Voxelization*							_voxelization;
+			InjectRadianceFromPointLIght*			_injectPointLight;
+			InjectRadianceFromSpotLIght*			_injectSpotLight;
+			MipmapVoxelMap*						_mipmap;
+			VoxelConeTracing*						_voxelConeTracing;
 
 			Debug::VoxelViewer*						_debugVoxelViewer;
+			Math::Vector3							_startCenterWorldPos;
 
 		public:
-			GlobalIllumination();
-			~GlobalIllumination();
+			VXGI();
+			~VXGI();
 
 		private:
-			void InitializeClearVoxelMap(uint dimension, uint maxNumOfCascade);
+			void InitializeClearVoxelMap(uint dimension);
 			void ClearInjectColorVoxelMap(const Device::DirectX* dx);
+			void UpdateGIDynamicInfo(const Device::DirectX* dx, const VXGIDynamicInfo& dynamicInfo);
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
@@ -63,6 +66,7 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*,	_voxelConeTracing->GetIndirectColorMap());
 			GET_ACCESSOR(DebugVoxelViewer, const Debug::VoxelViewer*,		_debugVoxelViewer);
+			GET_SET_ACCESSOR(StartCenterWorldPos, const Math::Vector3&,		_startCenterWorldPos);
 		};
 	}
 }

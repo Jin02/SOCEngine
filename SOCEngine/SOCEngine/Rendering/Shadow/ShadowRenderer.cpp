@@ -15,6 +15,8 @@ using namespace Rendering::Shadow;
 using namespace Rendering::Texture;
 using namespace Rendering::Light;
 using namespace Rendering::Manager;
+using namespace Rendering;
+using namespace Rendering::Shader;
 
 ShadowRenderer::ShadowRenderer() :
 	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
@@ -199,7 +201,7 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 
 		Size<uint> mapSize;
 		mapSize.w = _numOfShadowCastingPointLightInAtlas * _pointLightShadowMapResolution;
-		mapSize.h = 6 * _pointLightShadowMapResolution; //point light´Â 6¸é ·»´õ¸µ
+		mapSize.h = 6 * _pointLightShadowMapResolution; //point lightëŠ” 6ë©´ ë Œë”ë§
 
 		_pointLightShadowMapAtlas = new DepthBuffer;
 		_pointLightShadowMapAtlas->Initialize(mapSize, true, 1);
@@ -291,7 +293,7 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 
 	CameraForm::CameraCBData cbData;
 	{
-		cbData.viewMat		= shadow->GetInvNearFarViewProjectionMatrix();	// »ç¿ëÇÏÁö ¾Ê´Â viewMat´ë½Å invNearFarViewProj »ç¿ë
+		cbData.viewMat		= shadow->GetInvNearFarViewProjectionMatrix();	// ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” viewMatëŒ€ì‹  invNearFarViewProj ì‚¬ìš©
 		cbData.viewProjMat	= shadow->GetViewProjectionMatrix();
 	}
 
@@ -332,7 +334,7 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 		{
 			CameraForm::CameraCBData cb;
 			{
-				cb.viewMat		= invNearFarViewProjMatrices[i]; // »ç¿ëÇÏÁö ¾Ê´Â viewMat´ë½Å invNearFarViewProj »ç¿ë
+				cb.viewMat		= invNearFarViewProjMatrices[i]; // ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” viewMatëŒ€ì‹  invNearFarViewProj ì‚¬ìš©
 				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
@@ -355,7 +357,7 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	
 	CameraForm::CameraCBData cbData;
 	{
-		cbData.viewMat = light->GetInvNearFarViewProjectionMatrix(); // »ç¿ëÇÏÁö ¾Ê´Â viewMat´ë½Å invNearFarViewProj »ç¿ë
+		cbData.viewMat = light->GetInvNearFarViewProjectionMatrix(); // ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” viewMatëŒ€ì‹  invNearFarViewProj ì‚¬ìš©
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
 	}
 
@@ -881,7 +883,7 @@ Math::Size<uint> ShadowRenderer::GetActivatedSLShadowMapSize() const
 
 void ShadowRenderer::ComputeAllLightViewProj()
 {
-	// Directional Light´Â Light Manager¿¡¼­ ¼öÇàÇÔ.
+	// Directional LightëŠ” Light Managerì—ì„œ ìˆ˜í–‰í•¨.
 
 	Matrix spotLightInvViewport;
 	CameraForm::GetInvViewportMatrix(spotLightInvViewport, Rect<float>(0.0f, 0.0f, float(_spotLightShadowMapResolution), float(_spotLightShadowMapResolution)));
@@ -1049,7 +1051,7 @@ void ShadowRenderer::UpdateSRBufferUsingMapDiscard(	const Device::DirectX*& dx,
 
 	// Update point light sr buffer
 	{
-		// ¾îµğ¼­ ¹» »ç¿ëÇÏ´ø countÀÇ °ªÀº °°´Ù.
+		// ì–´ë””ì„œ ë­˜ ì‚¬ìš©í•˜ë˜ countì˜ ê°’ì€ ê°™ë‹¤.
 		uint count = _pointLightShadowParamBuffer.GetSize();
 
 		if(pl.isUpdatedParam || _forceUpdatePL)
@@ -1072,7 +1074,7 @@ void ShadowRenderer::UpdateSRBufferUsingMapDiscard(	const Device::DirectX*& dx,
 
 	// Update spot light sr buffer
 	{
-		// ¾îµğ¼­ ¹» »ç¿ëÇÏ´ø countÀÇ °ªÀº °°´Ù.
+		// ì–´ë””ì„œ ë­˜ ì‚¬ìš©í•˜ë˜ countì˜ ê°’ì€ ê°™ë‹¤.
 		uint count = _spotLightShadowParamBuffer.GetSize();
 
 		if(sl.isUpdatedParam || _forceUpdateSL)
@@ -1095,7 +1097,7 @@ void ShadowRenderer::UpdateSRBufferUsingMapDiscard(	const Device::DirectX*& dx,
 
 	// Update directional light sr buffer
 	{
-		// ¾îµğ¼­ ¹» »ç¿ëÇÏ´ø countÀÇ °ªÀº °°´Ù.
+		// ì–´ë””ì„œ ë­˜ ì‚¬ìš©í•˜ë˜ countì˜ ê°’ì€ ê°™ë‹¤.
 		uint count = _directionalLightShadowParamBuffer.GetSize();
 
 		if(dl.isUpdatedParam || _forceUpdateDL)
@@ -1122,8 +1124,8 @@ void ShadowRenderer::UpdateSRBufferUsingMapNoOverWrite(const Device::DirectX*& d
 	ASSERT_MSG("Deprecated func");
 }
 
-void ShadowRenderer::UpdateSRBuffer(const Device::DirectX*& dx,
-									const std::function<uint(const LightForm*)>& getLightIndexInEachLightsFunc)
+void ShadowRenderer::UpdateSRBuffer(	const Device::DirectX*& dx,
+					const std::function<uint(const LightForm*)>& getLightIndexInEachLightsFunc)
 {
 	//D3D_FEATURE_LEVEL level = dx->GetFeatureLevel();
 
@@ -1137,86 +1139,78 @@ void ShadowRenderer::BindResources(const Device::DirectX* dx, bool bindVS, bool 
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto SetShaderResources_Tex = [](ID3D11DeviceContext* context, TextureBindIndex bind, const View::ShaderResourceView* srv, bool bindVS, bool bindGS, bool bindPS)
+	auto BindTextureToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, const TextureForm* tex, bool bindVS, bool bindGS, bool bindPS)
 	{
-		ID3D11ShaderResourceView* view = srv->GetView();
-
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, &view);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, &view);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, &view);
+		if(bindVS)	VertexShader::BindTexture(context, bind, tex);
+		if(bindGS)	GeometryShader::BindTexture(context, bind, tex);
+		if(bindPS)	PixelShader::BindTexture(context, bind, tex);
 	};
-	auto SetShaderResources_Buf = [](ID3D11DeviceContext* context, TextureBindIndex bind, ID3D11ShaderResourceView* const* srv, bool bindVS, bool bindGS, bool bindPS)
+	auto BindSRBufferToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, const ShaderResourceBuffer* srBuffer, bool bindVS, bool bindGS, bool bindPS)
 	{
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, srv);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, srv);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, srv);
+		if(bindVS)	VertexShader::BindShaderResourceBuffer(context, bind, srBuffer);
+		if(bindGS)	GeometryShader::BindShaderResourceBuffer(context, bind, srBuffer);
+		if(bindPS)	PixelShader::BindShaderResourceBuffer(context, bind, srBuffer);
 	};
 
-	SetShaderResources_Tex(context,	TextureBindIndex::PointLightShadowMapAtlas,					_pointLightShadowMapAtlas->GetShaderResourceView(),				bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,			_pointLightMomentShadowMapAtlas->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowParam,					_pointLightShadowParamSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowViewProjMatrix,			_pointLightViewProjMatSRBuffer->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowInvVPVMat,				_pointLightInvVPVMatSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				_pointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		_pointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				_pointLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		_pointLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,			_pointLightInvVPVMatSRBuffer,			bindVS, bindGS, bindPS);
 
-	SetShaderResources_Tex(context,	TextureBindIndex::SpotLightShadowMapAtlas,					_spotLightShadowMapAtlas->GetShaderResourceView(),				bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,			_spotLightMomentShadowMapAtlas->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowParam,						_spotLightShadowParamSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,			_spotLightViewProjMatSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowInvVPVMat,					_spotLightInvVPVMatSRBuffer->GetShaderResourceView(),			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				_spotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		_spotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					_spotLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		_spotLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowInvVPVMat,				_spotLightInvVPVMatSRBuffer,			bindVS, bindGS, bindPS);
 
-	SetShaderResources_Tex(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,			_directionalLightShadowMapAtlas->GetShaderResourceView(),		bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,		_directionalLightMomentShadowMapAtlas->GetShaderResourceView(),	bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowParam,				_directionalLightShadowParamSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		_directionalLightViewProjMatSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,			_directionalLightInvVPVMatSRBuffer->GetShaderResourceView(),	bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		_directionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	_directionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			_directionalLightShadowParamSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	_directionalLightViewProjMatSRBuffer,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,		_directionalLightInvVPVMatSRBuffer,		bindVS, bindGS, bindPS);
 
-	ID3D11Buffer* buffer = _shadowGlobalParamCB->GetBuffer();
-	if(bindVS) context->VSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
-	if(bindGS) context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
-	if(bindPS) context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
+	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
+	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
+	if(bindPS) PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
 }
 
 void ShadowRenderer::UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	auto SetShaderResources_Tex = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
+	auto BindTextureToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
 	{
-		ID3D11ShaderResourceView* view = nullptr;
-
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, &view);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, &view);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, &view);
+		if(bindVS)	VertexShader::BindTexture(context, bind, nullptr);
+		if(bindGS)	GeometryShader::BindTexture(context, bind, nullptr);
+		if(bindPS)	PixelShader::BindTexture(context, bind, nullptr);
 	};
-	auto SetShaderResources_Buf = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
+	auto BindSRBufferToVGP = [](ID3D11DeviceContext* context, TextureBindIndex bind, bool bindVS, bool bindGS, bool bindPS)
 	{
-		ID3D11ShaderResourceView* srv = nullptr;
-
-		if(bindVS)	context->VSSetShaderResources(uint(bind), 1, &srv);
-		if(bindGS)	context->GSSetShaderResources(uint(bind), 1, &srv);
-		if(bindPS)	context->PSSetShaderResources(uint(bind), 1, &srv);
+		if(bindVS)	VertexShader::BindShaderResourceBuffer(context, bind, nullptr);
+		if(bindGS)	GeometryShader::BindShaderResourceBuffer(context, bind, nullptr);
+		if(bindPS)	PixelShader::BindShaderResourceBuffer(context, bind, nullptr);
 	};
 
-	SetShaderResources_Tex(context,	TextureBindIndex::PointLightShadowMapAtlas,					bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowParam,					bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowViewProjMatrix,			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::PointLightShadowInvVPVMat,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowInvVPVMat,			bindVS, bindGS, bindPS);
 
-	SetShaderResources_Tex(context,	TextureBindIndex::SpotLightShadowMapAtlas,					bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowParam,						bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,			bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::SpotLightShadowInvVPVMat,					bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowInvVPVMat,				bindVS, bindGS, bindPS);
 
-	SetShaderResources_Tex(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,			bindVS, bindGS, bindPS);
-	SetShaderResources_Tex(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowParam,				bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
-	SetShaderResources_Buf(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,			bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	bindVS, bindGS, bindPS);
+	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowInvVPVMat,		bindVS, bindGS, bindPS);
 
-	ID3D11Buffer* buffer = nullptr;
-	if(bindVS) context->VSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
-	if(bindGS) context->GSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
-	if(bindPS) context->PSSetConstantBuffers(uint(ConstBufferBindIndex::ShadowGlobalParam), 1, &buffer);
+	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
+	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
+	if(bindPS) PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
 }

@@ -2,7 +2,7 @@
 
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
-#include "GlobalIlluminationCommon.h"
+#include "VXGICommon.h"
 
 #include "ShadingWithLightCulling.h"
 #include "VoxelMap.h"
@@ -12,7 +12,7 @@
 #include "BilateralFiltering.h"
 #include "GaussianBlur.h"
 
-#define USE_BILATERAL_FILTERING
+#define USE_GAUSSIAN_BLUR
 
 namespace Rendering
 {
@@ -35,8 +35,8 @@ namespace Rendering
 			~VoxelConeTracing();
 
 		public:
-			void Initialize(const Device::DirectX* dx, const Buffer::ConstBuffer* giInfoCB);
-			void Run(const Device::DirectX* dx, const VoxelMap* injectedColorMap, const Camera::MeshCamera* meshCam);
+			void Initialize(const Device::DirectX* dx);
+			void Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam, const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB);
 			void Destroy();
 
 		public:

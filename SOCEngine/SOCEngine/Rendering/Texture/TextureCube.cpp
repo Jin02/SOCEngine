@@ -64,7 +64,7 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
 		_srv = new ShaderResourceView;
-		_srv->Initialize(_texture, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
+		_srv->InitializeUsingTexture(_texture, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
 	}
 }
 

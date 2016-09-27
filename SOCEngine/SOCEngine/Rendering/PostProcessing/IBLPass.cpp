@@ -34,23 +34,16 @@ void IBLPass::Initialize()
 
 void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const MeshCamera* meshCam, const SkyForm* sky)
 {
-	auto BindTexturesToPixelShader = [](ID3D11DeviceContext* context, TextureBindIndex bind, const Texture2D* tex)
-	{
-		ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
-		context->PSSetShaderResources(uint(bind), 1, &srv);
-	};
-
 	ID3D11DeviceContext* context	= dx->GetContext();
 
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Albedo_Occlusion,					meshCam->GetGBufferAlbedoOcclusion());
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,				meshCam->GetGBufferEmissionMaterialFlag());
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,		meshCam->GetGBufferMotionXYMetallicSpecularity());
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Normal_Roughness,					meshCam->GetGBufferNormalRoughness());	
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,								meshCam->GetOpaqueDepthBuffer());
-	BindTexturesToPixelShader(context, TextureBindIndex::IBLPass_IlluminationMap,					meshCam->GetRenderTarget());
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Albedo_Occlusion,				meshCam->GetGBufferAlbedoOcclusion());
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag());
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,		meshCam->GetGBufferMotionXYMetallicSpecularity());
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Normal_Roughness,				meshCam->GetGBufferNormalRoughness());	
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Depth,					meshCam->GetOpaqueDepthBuffer());
+	PixelShader::BindTexture(context, TextureBindIndex::IBLPass_IlluminationMap,				meshCam->GetRenderTarget());
 
-	ID3D11Buffer* buffer = meshCam->GetTBRParamConstBuffer()->GetBuffer();
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, meshCam->GetTBRParamConstBuffer());
 
 	// Sky Cube Map
 	if(sky)
@@ -62,29 +55,23 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 		else
 			ASSERT_MSG("cant support");
 
-		BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap, cubeMap);
-
-		buffer = sky->GetSkyMapInfoConstBuffer()->GetBuffer();
-		context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+		PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap, cubeMap);
+		PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, sky->GetSkyMapInfoConstBuffer());
 	}
 
-	ID3D11SamplerState* sampler		= dx->GetSamplerStateLinear();
-	context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());
 
 	FullScreen::Render(dx, outResultRT);
 
-	sampler = nullptr;
-	context->PSSetSamplers(uint(SamplerStateBindIndex::AmbientCubeMapSamplerState), 1, &sampler);
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::SkyMapInfoParam), 1, &buffer);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState,	nullptr);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam,			nullptr);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam,				nullptr);
 
-	buffer = nullptr;
-	context->PSSetConstantBuffers(uint(ConstBufferBindIndex::TBRParam), 1, &buffer);
-
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			nullptr);
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,		nullptr);
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Normal_Roughness,			nullptr);	
-	BindTexturesToPixelShader(context, TextureBindIndex::GBuffer_Depth,						nullptr);
-	BindTexturesToPixelShader(context, TextureBindIndex::AmbientCubeMap,					nullptr);
-	BindTexturesToPixelShader(context, TextureBindIndex::IBLPass_IlluminationMap,			nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,		nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Normal_Roughness,			nullptr);	
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Depth,				nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap,				nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::IBLPass_IlluminationMap,			nullptr);
 }

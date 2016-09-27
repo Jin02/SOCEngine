@@ -5,7 +5,7 @@ using namespace Math;
 
 namespace Core
 {
-	Transform::Transform(Object* owner) : _owner(owner), _updateCounter(0)
+	Transform::Transform(Object* owner) : _owner(owner), _updateCounter(0), _parent(nullptr)
 	{
 		_rotation	= Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 		_scale		= Vector3::One();
@@ -13,11 +13,62 @@ namespace Core
 		_forward = Vector3(0.0f, 0.0f, 1.0f);
 		_right	 = Vector3(1.0f, 0.0f, 0.0f);
 		_up	 	 = Vector3(0.0f, 1.0f, 0.0f);
+
+		Matrix::Identity(_worldMat);
 	}
 
 	Transform::~Transform(void)
 	{
 
+	}
+
+	void Transform::AddChild(const std::string& key, Transform* child)
+	{
+		child->_parent = this;
+		_childs.Add(key, child);
+	}
+
+	Transform* Transform::FindChild(const std::string& key)
+	{
+		Transform** find = _childs.Find(key);
+		return find ? (*find) : nullptr;
+	}
+
+	Transform* Transform::GetChild(uint index)
+	{
+		return _childs.Get(index);
+	}
+
+	void Transform::DeleteChild(const std::string& key)
+	{
+		_childs.Delete(key);
+	}
+
+	void Transform::DeleteAllChilds()
+	{
+		_childs.DeleteAll();
+	}
+
+	void Transform::UpdateWorldMatrix()
+	{
+		ASSERT_COND_MSG(_parent == nullptr, "Error, this func must be run in root");
+		FetchLocalMatrix(_worldMat);
+
+		_UpdateWorldMatrix();
+	}
+
+	void Transform::_UpdateWorldMatrix()
+	{
+		Matrix localMat;
+
+		auto& childs = _childs.GetVector();
+		for(auto& iter : childs)
+		{
+			iter->FetchLocalMatrix(localMat);
+
+			iter->_worldMat = localMat * _worldMat;
+			iter->_UpdateWorldMatrix();
+		}
 	}
 
 	void Transform::LookAtWorld(const Vector3& targetPosition, const Math::Vector3* upVec)
@@ -236,6 +287,7 @@ namespace Core
 
 	void Transform::FetchWorldMatrix(Math::Matrix& outMatrix) const
 	{
+#if 0 //deprecated
 		Matrix& worldMat = outMatrix;
 		FetchLocalMatrix(worldMat);
 
@@ -249,6 +301,10 @@ namespace Core
 
 			worldMat *= localMat;
 		}
+#endif
+
+		if(_owner == nullptr)	FetchLocalMatrix(outMatrix);
+		else					outMatrix = _worldMat;
 	}
 
 	void Transform::FetchWorldPosition(Math::Vector3& outPosition) const

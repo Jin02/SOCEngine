@@ -4,15 +4,15 @@
 
 struct VS_INPUT
 {
-	float3 position 			: POSITION;
-	float3 normal				: NORMAL;
+	float3 position 		: POSITION;
+	float3 normal			: NORMAL;
 	float2 uv				: TEXCOORD0;
 };
 
 struct VS_OUTPUT
 {
-	float3 localPos				: LOCAL_POSITION;
-	float3 normal 				: NORMAL;
+	float3 localPos			: LOCAL_POSITION;
+	float3 normal 			: NORMAL;
 
 	float2 uv				: TEXCOORD0;
 };
@@ -34,8 +34,6 @@ struct GS_OUTPUT
 	float3 worldPos				: WORLD_POSITION;
 	float3 normal				: NORMAL;
 	float2 uv					: TEXCOORD0;
-
-	uint axis					: AXIS_INDEX;
 };
 
 [maxvertexcount(3)]
@@ -50,7 +48,7 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 
 	uint axisIndex = 0;
 	float4 position[3], worldPos[3];
-	ComputeVoxelizationProjPos(position, worldPos, axisIndex, localPos);
+	ComputeVoxelizationProjPos(position, worldPos, localPos);
 
 	[unroll]
 	for(uint i=0; i<3; ++i)
@@ -60,7 +58,6 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 		output.uv			= input[i].uv;
 		output.normal		= input[i].normal;
 		output.worldPos		= worldPos[i].xyz;
-		output.axis			= axisIndex;
 
 		outputStream.Append(output);
 	}
@@ -71,5 +68,5 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 void PS( GS_OUTPUT input )
 {
 	float3 normal = normalize(input.normal);
-	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos, input.axis);
+	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos);
 }

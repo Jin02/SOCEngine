@@ -24,7 +24,7 @@ ShadingWithLightCulling::ShadingWithLightCulling()
 
 ShadingWithLightCulling::~ShadingWithLightCulling()
 {
-	Destory();
+	Destroy();
 }
 
 void ShadingWithLightCulling::Initialize(
@@ -148,7 +148,7 @@ void ShadingWithLightCulling::Initialize(
 	SetInputsToCS();
 }
 
-void ShadingWithLightCulling::Destory()
+void ShadingWithLightCulling::Destroy()
 {
 	SAFE_DELETE(_diffuseLightBuffer);
 	SAFE_DELETE(_specularLightBuffer);

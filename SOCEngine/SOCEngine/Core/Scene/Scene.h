@@ -14,7 +14,7 @@
 #include "MeshCamera.h"
 #include "BackBufferMaker.h"
 #include "ShadowRenderer.h"
-#include "GlobalIllumination.h"
+#include "VXGI.h"
 
 #include "BasicGeometryGenerator.h"
 #include "SkyForm.h"
@@ -54,7 +54,7 @@ namespace Core
 		Rendering::PostProcessPipeline*						_postProcessingSystem;
 
 	protected:
-		Rendering::GI::GlobalIllumination*					_globalIllumination;
+		Rendering::GI::VXGI*								_vxgi;
 		Structure::VectorMap<std::string, Core::Object*>	_rootObjects;
 
 	public:
@@ -89,6 +89,8 @@ namespace Core
 		void ActiveCustomSky(Rendering::Sky::SkyForm* sky);
 		void DeactivateSky();
 
+		void UpdateBoundBox();
+
 	public:
 		void NextState();
 		void StopState();
@@ -102,5 +104,7 @@ namespace Core
 		GET_ACCESSOR(MaterialManager,	Rendering::Manager::MaterialManager*,	_materialMgr);
 		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
 		GET_ACCESSOR(Sky,				Rendering::Sky::SkyForm*,				_sky);
+
+		GET_ACCESSOR(BoundBox,			const Intersection::BoundBox&,			_boundBox);
 	};
 }

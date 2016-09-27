@@ -215,7 +215,7 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 			const auto& texInfoNode = texturesNode[texIdx];
 			Material::Texture texInfo;
 			texInfo.id			= texInfoNode["id"].GetString();
-			texInfo.fileName	= texInfoNode["filename"].GetString();
+			texInfo.fileName	= std::string("Textures/") + texInfoNode["filename"].GetString();
 
 			const std::string& type = texInfoNode["type"].GetString();
 			if(type == "DIFFUSE")			texInfo.type = Material::Texture::Type::Diffuse;

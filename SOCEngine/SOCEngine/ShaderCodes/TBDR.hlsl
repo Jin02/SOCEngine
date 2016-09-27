@@ -9,6 +9,8 @@
 groupshared uint s_edgePixelCounter;
 groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TILE_RES];
 
+#define EDGE_MIN_DEGREE 60.0f
+
 #endif
 
 // Output
@@ -184,7 +186,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		sampleNormal = GBufferNormal_roughness.Load( globalIdx.xy, sampleIdx).rgb;
 		sampleNormal *= 2; sampleNormal -= float3(1.0f, 1.0f, 1.0f);
 
-		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, surface.normal) < DEG_2_RAD(60.0f) );
+		isDetectedEdge = isDetectedEdge || (dot(sampleNormal, surface.normal) < DEG_2_RAD(EDGE_MIN_DEGREE) );
 	}
 
 	if(isDetectedEdge)
@@ -214,7 +216,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
 	{
 		edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
-		sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1ºÎÅÍ ½ÃÀÛ
+		sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1ÂºÃŽÃ…Ã Â½ÃƒÃ€Ã›
 
 		uint packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
 
@@ -257,6 +259,9 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #else
 	OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
 	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
+//	OutDiffuseLightBuffer[globalIdx.xy]		= float4(surface.albedo,	1.0f);
+//	OutSpecularLightBuffer[globalIdx.xy]	= float4(0,0,0,	1.0f);
+
 #endif
 
 #endif

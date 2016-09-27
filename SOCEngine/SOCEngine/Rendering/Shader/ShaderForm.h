@@ -6,6 +6,7 @@
 #include "Texture2D.h"
 #include "ShaderResourceBuffer.h"
 #include <vector>
+#include "BindIndexInfo.h"
 
 #define BASIC_SHADER_NAME "Basic"
 #define BASIC_NORMAL_MAPPING_SHADER_NAME "BasicNormalMapping"

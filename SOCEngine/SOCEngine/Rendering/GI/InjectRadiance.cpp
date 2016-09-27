@@ -25,10 +25,8 @@ InjectRadiance::~InjectRadiance()
 	SAFE_DELETE(_shader);
 }
 
-void InjectRadiance::Initialize(const std::string& fileName, const InitParam& param)
+void InjectRadiance::Initialize(const std::string& fileName)
 {
-	ASSERT_COND_MSG(param.IsValid(),		"Error,  Param is invalid.");
-
 	std::string filePath = "";
 	EngineFactory pathFinder(nullptr);
 	pathFinder.FetchShaderFullPath(filePath, fileName);
@@ -41,57 +39,38 @@ void InjectRadiance::Initialize(const std::string& fileName, const InitParam& pa
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
 	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
-
-	// Setting Inputs
-	{
-		const Scene* curScene			= Director::SharedInstance()->GetCurrentScene();
-		const ShadowRenderer* shadowMgr	= curScene->GetShadowManager();
-
-		std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
-		{
-			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::ShadowGlobalParam),				shadowMgr->GetShadowGlobalParamConstBuffer()));
-			inputConstBuffers.push_back(ShaderForm::InputConstBuffer(uint(ConstBufferBindIndex::GlobalIIllumination_InfoCB),	param.giInfoConstBuffer));
-		}
-		_shader->SetInputConstBuffers(inputConstBuffers);
-
-		std::vector<ShaderForm::InputTexture> inputTextures;
-		{
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelAlbedoTexture),				param.voxelization->GetAnisotropicVoxelAlbedoMapAtlas()));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelNormalTexture),				param.voxelization->GetAnisotropicVoxelNormalMapAtlas()));
-			inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::AnisotropicVoxelEmissionTexture),			param.voxelization->GetAnisotropicVoxelEmissionMapAtlas()));
-		}
-		_shader->SetInputTextures(inputTextures);
-	}
-
-	uint dimension = (1 << (param.globalInfo->maxCascadeWithVoxelDimensionPow2 & 0xffff));
-
-	// Setting Output
-	{
-		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
-		{
-			outputs.push_back(ShaderForm::InputUnorderedAccessView(uint(UAVBindIndex::OutAnisotropicVoxelColorTexture),			param.outColorMap->GetSourceMapUAV()));
-		}
-
-		_shader->SetUAVs(outputs);
-	}
 }
 
-void InjectRadiance::Dispath(const Device::DirectX* dx, const std::vector<Buffer::ConstBuffer*>& voxelizationInfoConstBuffers)
+void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& param)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, dx->GetShadowGreaterEqualSamplerComparisonState());
 
-	ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
-	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &shadowSamplerState);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,		param.global.vxgiStaticInfo);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,	param.global.vxgiDynamicInfo);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,	param.shadowGlobalInfo);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,	param.voxelization.InfoCB);
 
-	for(auto iter = voxelizationInfoConstBuffers.begin(); iter != voxelizationInfoConstBuffers.end(); ++iter)
-	{
-		ID3D11Buffer* cb = (*iter)->GetBuffer();
-		context->CSSetConstantBuffers(uint(ConstBufferBindIndex::Voxelization_InfoCB), 1, &cb);
-		_shader->Dispatch(context);
-	}
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap, param.OutVoxelColorMap);
 
-	ID3D11SamplerState* nullSamplerState = nullptr;
-	context->CSSetSamplers((uint)SamplerStateBindIndex::ShadowComprisonSamplerState, 1, &nullSamplerState);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(1), param.voxelization.AlbedoRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(2), param.voxelization.NormalRawBuffer->GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(3), param.voxelization.EmissionRawBuffer->GetUnorderedAccessView());
+
+	_shader->Dispatch(context);
+
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState,	nullptr);
+
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,					nullptr);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,				nullptr);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,				nullptr);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,				nullptr);
+
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap,	nullptr);
+
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(1),		nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(2),		nullptr);
+	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex(3),		nullptr);
 }
 
 void InjectRadiance::Destroy()

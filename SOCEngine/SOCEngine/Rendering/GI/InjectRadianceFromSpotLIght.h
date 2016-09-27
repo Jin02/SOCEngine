@@ -13,8 +13,8 @@ namespace Rendering
 			~InjectRadianceFromSpotLIght();
 
 		public:
-			void Initialize(const InjectRadiance::InitParam& initParam);
-			void Inject(const Device::DirectX*& dx, const Shadow::ShadowRenderer*& shadowMgr, const Voxelization* voxelization);
+			void Initialize();
+			void Inject(const Device::DirectX*& dx, const Manager::LightManager* lightMgr, const Shadow::ShadowRenderer*& shadowMgr, const InjectRadiance::DispatchParam& param);
 		};
 	}
 }

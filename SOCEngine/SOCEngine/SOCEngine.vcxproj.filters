@@ -352,9 +352,6 @@
     <Filter Include="Rendering\GI\Injection\Lights">
       <UniqueIdentifier>{d5afa70b-b207-4b33-b387-11f38e0da566}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\GI\Injection\Lights\Directional">
-      <UniqueIdentifier>{bb107f13-f497-4bb5-a207-c47ff2b8a001}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\GI\Injection\Lights\Point">
       <UniqueIdentifier>{9af92980-8765-490e-ad1b-08f8fe82980c}</UniqueIdentifier>
     </Filter>
@@ -787,9 +784,6 @@
     <ClInclude Include="ShaderCodes\GICommon.h">
       <Filter>ShaderCodes\GI</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\GlobalIlluminationCommon.h">
-      <Filter>Rendering\GI</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </ClInclude>
@@ -808,17 +802,11 @@
     <ClInclude Include="Rendering\GI\InjectRadiance.h">
       <Filter>Rendering\GI\Injection</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadianceFromDirectionalLIght.h">
-      <Filter>Rendering\GI\Injection\Lights\Directional</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h">
       <Filter>Rendering\GI\Injection\Lights\Point</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h">
       <Filter>Rendering\GI\Injection\Lights\Spot</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\GlobalIllumination.h">
-      <Filter>Rendering\GI</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\TBDRInput.h">
       <Filter>ShaderCodes\Deferred</Filter>
@@ -837,9 +825,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelMap.h">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\MipmapVoxelTexture.h">
-      <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\NormalMapping.h">
       <Filter>ShaderCodes\Material</Filter>
@@ -906,6 +891,18 @@
     </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
       <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\RawBuffer.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGICommon.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGI.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
+      <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1155,9 +1152,6 @@
     <ClCompile Include="Rendering\GI\InjectRadiance.cpp">
       <Filter>Rendering\GI\Injection</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\InjectRadianceFromDirectionalLIght.cpp">
-      <Filter>Rendering\GI\Injection\Lights\Directional</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp">
       <Filter>Rendering\GI\Injection\Lights\Point</Filter>
     </ClCompile>
@@ -1175,12 +1169,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelMap.cpp">
       <Filter>Rendering\GI\Voxelization\VoxelMap</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp">
-      <Filter>Rendering\GI</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\MipmapVoxelTexture.cpp">
-      <Filter>Rendering\GI\Mipmap</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
       <Filter>Rendering\Mesh\BasicGeometryGenerator</Filter>
@@ -1233,6 +1221,15 @@
     <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
       <Filter>Rendering\PostProcessing\SSLR\ConeTracing</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VXGI.cpp">
+      <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
+      <Filter>Rendering\GI\Mipmap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1253,16 +1250,10 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl">
       <Filter>ShaderCodes\Mesh\Forward</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
-      <Filter>ShaderCodes\GI\Injection</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <Filter>ShaderCodes\Light\Culling</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
-      <Filter>ShaderCodes\GI\Injection</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
       <Filter>ShaderCodes\GI\Injection</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
@@ -1288,12 +1279,6 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelMaps.hlsl">
-      <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
-      <Filter>ShaderCodes\GI\Debug</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\Voxelization_TN_UV0.hlsl">
       <Filter>ShaderCodes\GI\Voxelization</Filter>
@@ -1339,6 +1324,15 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
       <Filter>ShaderCodes\PostProcessing\SSLR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelRawMap.hlsl">
+      <Filter>ShaderCodes\GI\Voxelization\Clear</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
+      <Filter>ShaderCodes\GI\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
+      <Filter>ShaderCodes\GI\Injection</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
