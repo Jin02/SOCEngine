@@ -53,6 +53,8 @@ void Object::AddChild(Object *child)
 	{
 		Add(child->_name, child);
 		child->_parent = this;
+
+		_transform->AddChild(child->GetName(), child->_transform);
 	}
 	else
 	{

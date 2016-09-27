@@ -4,6 +4,8 @@
 #include "Intersection.h"
 #include "Common.h"
 
+#include "VectorMap.h"
+
 namespace Core
 {
 	class Object;
@@ -11,23 +13,37 @@ namespace Core
 	class Transform
 	{
 	private:
-		Object		*_owner;
+		Object*											_owner;
+		Transform*										_parent;
+		Structure::VectorMap<std::string, Transform*>	_childs;
 
 	protected:		
-		Math::Vector3		_forward;
-		Math::Vector3		_right;
-		Math::Vector3		_up;
+		Math::Vector3									_forward;
+		Math::Vector3									_right;
+		Math::Vector3									_up;
 
-		Math::Vector3		_position;
-		Math::Quaternion	_rotation;
-		Math::Vector3		_scale;
-		Math::Vector3		_eulerAngle;
+		Math::Vector3									_position;
+		Math::Quaternion								_rotation;
+		Math::Vector3									_scale;
+		Math::Vector3									_eulerAngle;
 
-		uint				_updateCounter;
+		uint											_updateCounter;
+		Math::Matrix									_worldMat;
 
 	public:
 		Transform(Object* owner);
 		~Transform(void);
+
+	private:
+		void		_UpdateWorldMatrix();
+
+	public:
+		void		AddChild(const std::string& key, Transform* child);
+		Transform*	FindChild(const std::string& key);
+		Transform*	GetChild(uint index);
+		void		DeleteChild(const std::string& key);
+		void		DeleteAllChilds();
+		void		UpdateWorldMatrix();
 
 	public:
 		static void FetchMatrixFromAxises(Math::Matrix& outMatrix, const Math::Vector3& right, const Math::Vector3& up, const Math::Vector3& forward);
