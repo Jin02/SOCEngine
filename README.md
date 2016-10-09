@@ -26,6 +26,7 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 </p>
 
 ![VCT](http://i.imgur.com/7abr7mn.png)
+![VCT2](http://i.imgur.com/HYRyt7M.png)
 ![IBLPass](http://i.imgur.com/HEGuINm.png)
 ![Test_Image](http://i.imgur.com/lCluQ1q.png)
 ![ShadowTest](http://i.imgur.com/3NYNdy0.png)
