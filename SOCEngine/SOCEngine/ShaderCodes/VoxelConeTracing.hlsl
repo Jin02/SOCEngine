@@ -121,11 +121,11 @@ float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRa
 		colorAccumInCone	+= sampleColor * (1.0f - colorAccumInCone.a);
 		aoAccumInCone		+= sampleColor.a * (1.0f / (1.0f + AMBIENT_OCCLUSION_K * currLength));
 
-		float noise = 1.0f + (SimpleNoise(origin) * mipLevel) * diameter;
-		currLength += diameter * noise;
-//		currLength += diameter * 0.5f;
+//		float noise = 1.0f + (SimpleNoise(origin) * mipLevel) * diameter;
+//		currLength += diameter * noise;
+		currLength += diameter * 0.5f;
 
-		isInBound = IsInBound(bbMin, bbMax, origin);
+		isInBound = IsInBound(bbMin, bbMax, samplePos);
 		colorAccumInCone.a = (isInBound == false) ? 1.0f : 0.0f;
 	}
 
