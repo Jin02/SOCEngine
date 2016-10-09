@@ -25,8 +25,8 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 전체 작업 현황은 Projects 참고해주시면 됩니다.
 </p>
 
-![VCT](http://i.imgur.com/7abr7mn.png)
-![VCT2](http://i.imgur.com/HYRyt7M.png)
+![VCT](http://i.imgur.com/HYRyt7M.png)
+![VCT2](http://i.imgur.com/7abr7mn.png)
 ![IBLPass](http://i.imgur.com/HEGuINm.png)
 ![Test_Image](http://i.imgur.com/lCluQ1q.png)
 ![ShadowTest](http://i.imgur.com/3NYNdy0.png)
