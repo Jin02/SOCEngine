@@ -53,10 +53,10 @@ void RenderDirectionalLight(
 		uint shadowIndex = DirectionalLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
-			float3 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
+			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
 
-			resultDiffuseColor				*= shadowColor;
-			resultSpecularColor				*= shadowColor;
+			resultDiffuseColor				*= shadowColor.rgb;
+			resultSpecularColor				*= shadowColor.rgb;
 		}
 #endif
 	}	
@@ -115,10 +115,10 @@ void RenderPointLight(
 		uint shadowIndex = PointLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
-			float3 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
+			float4 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
 
-			resultDiffuseColor	*= shadowColor;
-			resultSpecularColor	*= shadowColor;
+			resultDiffuseColor	*= shadowColor.rgb;
+			resultSpecularColor	*= shadowColor.rgb;
 		}
 #endif
 	}
@@ -198,10 +198,10 @@ void RenderSpotLight(
 		uint shadowIndex = PointLightShadowIndex[lightIndex];
 		if(shadowIndex != -1) //isShadow == true
 		{
-			float3 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);
+			float4 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);
 
-			resultDiffuseColor	*= shadowColor;
-			resultSpecularColor	*= shadowColor;
+			resultDiffuseColor	*= shadowColor.rgb;
+			resultSpecularColor	*= shadowColor.rgb;
 		}
 #endif
 	}

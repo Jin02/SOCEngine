@@ -65,7 +65,7 @@ float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float de
 	return shadow;
 }
 
-float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
+float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
 {
 	uint shadowIndex = SpotLightShadowIndex[lightIndex];
 
@@ -98,10 +98,12 @@ float3 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
 	float shadowStrength = shadowParam.color.a;
-	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	return float4(ret, shadow);
 }
 
-float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
+float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
 	uint shadowIndex = DirectionalLightShadowIndex[lightIndex];
 
@@ -135,7 +137,9 @@ float3 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
 
 	float shadowStrength = shadowParam.color.a;
-	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	return float4(ret, shadow);
 }
 
 uint ComputeFaceIndex(float3 dir)
@@ -157,7 +161,7 @@ uint ComputeFaceIndex(float3 dir)
 	return res;
 }
 
-float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir, float shadowDistanceTerm)
+float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir, float shadowDistanceTerm)
 {
 	uint faceIndex		= ComputeFaceIndex(-lightDir);
 	uint shadowIndex	= PointLightShadowIndex[lightIndex];
@@ -203,7 +207,8 @@ float3 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 #else
 	float shadowStrength = 1.0f;
 #endif
-	return lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	return float4(ret, shadow);
 }
 
 
