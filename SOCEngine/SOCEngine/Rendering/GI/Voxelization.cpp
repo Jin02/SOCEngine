@@ -259,9 +259,18 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, const Vector3& 
 		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
 		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
 
+#ifdef USE_BLOATING_IN_VOXELIZATION_PASS 
+		Matrix::Inverse(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
+		Matrix::Inverse(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
+		Matrix::Inverse(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
+
+		Matrix::Transpose(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
+#endif
 		Matrix::Transpose(currentVoxelizeInfo.viewProjX, currentVoxelizeInfo.viewProjX);
 		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);	
 	}
 
 	_infoCB->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);
