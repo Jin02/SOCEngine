@@ -42,7 +42,8 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float4 albedo	= GetColorInVoxelRawBuf(VoxelAlbedoRawBuf, globalIdx);
 		float4 emission	= GetColorInVoxelRawBuf(VoxelEmissionRawBuf, globalIdx);
 	
-		float3 radiosity = float3(0.0f, 0.0f, 0.0f);
+		float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
+		float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 		if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
 			(outerCosineConeAngle < currentCosineConeAngle) )
 		{
@@ -60,11 +61,12 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float3 lightColor = lightColorWithLm.rgb;
 			float3 lambert = albedo.rgb * saturate(dot(normal, lightDir));
 	
-			radiosity = lambert * totalAttenTerm * lightColor * RenderSpotLightShadow(lightIndex, worldPos.xyz, 0.0f);
+			shadowColor = RenderSpotLightShadow(lightIndex, worldPos.xyz, 0.0f);
+			radiosity = lambert * totalAttenTerm * lightColor * shadowColor.rgb;
 		}
 		radiosity += emission.rgb;
 	
-		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx);
+		StoreRadiosity(OutVoxelColorMap, radiosity, shadowColor.a, normal, globalIdx);
 	}
 }
 
