@@ -21,7 +21,7 @@ Required : python 2.7.x, VS2012 or 13, FBXSDK2014.1
 7. Simple 2D Rendering
 8. Image Based Rendering
 
-<p>참고 자료 : https://github.com/Jin02/SOCEngine/wiki/%EC%B0%B8%EA%B3%A0-%EC%9E%90%EB%A3%8C<br>
+<p>
 전체 작업 현황은 Projects 참고해주시면 됩니다.
 </p>
 
