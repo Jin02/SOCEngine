@@ -1,5 +1,6 @@
 //EMPTY_META_DATA
 
+#define USE_TBR_PARAM
 #include "FullScreenShader.h"
 
 cbuffer DoFParam : register(b1)
