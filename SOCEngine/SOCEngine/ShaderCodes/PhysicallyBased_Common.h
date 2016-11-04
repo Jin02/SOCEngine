@@ -15,12 +15,16 @@ cbuffer Transform : register( b1 )		//Object World
 {
 	matrix transform_world;
 	matrix transform_worldInvTranspose;
+
+	matrix transform_prevWorld;		// used for motion blur
 };
 
 cbuffer Camera : register( b2 )
 {
-	matrix	camera_viewMat;				// or InvNearFarViewProj
+	matrix	camera_viewMat;			// or InvNearFarViewProj
 	matrix	camera_viewProjMat;
+	matrix	camera_prevViewProjMat;		// used for motion blur
+
 	float4	camera_worldPos;
 };
 
