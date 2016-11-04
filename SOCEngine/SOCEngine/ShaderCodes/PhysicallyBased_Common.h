@@ -29,7 +29,7 @@ cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 	uint	material_mainColor_alpha;
 	uint	material_emissiveColor_Metallic;
 	uint	material_roughness_specularity_existTextureFlag;
-	uint	material_flag;
+	uint	material_flag_ior;
 
 	float2 	material_uvTiling0;
 	float2 	material_uvOffset0;
@@ -83,7 +83,13 @@ uint GetMaterialExistTextureFlag()
 
 uint GetMaterialFlag()
 {
-	return material_flag & 0xff;
+	return material_flag_ior & 0xf;
+}
+
+float GetIndexOfRefraction()
+{
+	float ior8Bit = float( (material_flag_ior >> 8) & 0xf );
+	return ior8Bit * rcp(255.0f);
 }
 
 bool HasDiffuseMap()	{	return (GetMaterialExistTextureFlag() & (1 << 0));	}
