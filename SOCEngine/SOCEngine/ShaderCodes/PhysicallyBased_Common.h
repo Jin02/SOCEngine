@@ -83,12 +83,12 @@ uint GetMaterialExistTextureFlag()
 
 uint GetMaterialFlag()
 {
-	return material_flag_ior & 0xf;
+	return (material_flag_ior >> 8) & 0xf;
 }
 
 float GetIndexOfRefraction()
 {
-	float ior8Bit = float( (material_flag_ior >> 8) & 0xf );
+	float ior8Bit = float( material_flag_ior & 0xf );
 	return ior8Bit * rcp(255.0f);
 }
 
