@@ -23,6 +23,8 @@ namespace Rendering
 			{
 				Math::Matrix	viewMat;
 				Math::Matrix	viewProjMat;
+				Math::Matrix	prevViewProjMat;
+
 				Math::Vector4	worldPos;		
 			};
 			friend class ReflectionProbe;
