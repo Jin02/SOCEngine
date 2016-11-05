@@ -142,9 +142,9 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 		Matrix::Transpose(worldInvTranspose, worldInvTranspose);
 	}
 
-	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
+	bool changedWorldMat = memcmp(&_prevTransposedWorldMat, &transposedWM, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
-		_prevWorldMat = worldMat;
+		_prevTransposedWorldMat = transposedWM;
 
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
