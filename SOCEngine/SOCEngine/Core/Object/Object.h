@@ -29,6 +29,7 @@ namespace Core
 		Intersection::BoundBox			_boundBox;
 
 		Math::Matrix				_prevTransposedWorldMat;
+		TransformCB::ChangeState		_tfChangeState;
 
 	public:
 		Object(const std::string& name, Object* parent = NULL);
