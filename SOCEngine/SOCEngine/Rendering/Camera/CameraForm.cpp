@@ -266,3 +266,8 @@ void CameraForm::_Clone(CameraForm* newCam) const
 		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
 	}
 }
+
+bool CameraForm::ComparePrevCameraCBData(const CameraCBData& cbData) const
+{
+	return memcmp(&_prevCamMatCBData, &cbData, sizeof(Matrix) * 2) != 0;
+}
