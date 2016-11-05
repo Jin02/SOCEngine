@@ -87,7 +87,7 @@ namespace Rendering
 			void Destroy();
 			
 		protected:
-			bool ComputeIsChangedCameraCBData(const CameraCBData& left, const CameraCBData& right) const;
+			bool ComputeIsChangedCameraCBData(const CameraCBData& cbData) const;
 
 		public:
 			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
