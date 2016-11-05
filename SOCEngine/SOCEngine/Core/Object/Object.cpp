@@ -12,7 +12,7 @@ using namespace Core;
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
-	_radius(0.0f)
+	_radius(0.0f), _tfChangeState(TransformCB::ChangeState::No)
 {
 	_boundBox.SetMinMax(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
@@ -132,6 +132,7 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 	}
 
 	Rendering::TransformCB transformCB;
+	transformCB.prevWorld = _prevTransposedWorldMat;
 	
 	Matrix& transposedWM = transformCB.world;
 	Matrix::Transpose(transposedWM, worldMat);
@@ -144,14 +145,22 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 
 	bool changedWorldMat = memcmp(&_prevTransposedWorldMat, &transposedWM, sizeof(Math::Matrix)) != 0;
 	if(changedWorldMat)
-		_prevTransposedWorldMat = transposedWM;
+		_tfChangeState = TransformCB::ChangeState::HasChanged;
 
+	bool isUpdate = (_tfChangeState != TransformCB::ChangeState::No);
+	
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
-		if(changedWorldMat)
+		if(isUpdate)
 			(*iter)->OnUpdateTransformCB(dx, transformCB);
 
 		(*iter)->OnRenderPreview();
+	}
+	
+	if(isUpdate)
+	{
+		_prevTransposedWorldMat	= transposedWM;
+		_tfChangeState		= (static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
