@@ -4,6 +4,7 @@
 
 using namespace Math;
 using namespace std;
+using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Light;
 using namespace Intersection;
@@ -13,7 +14,8 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage),
+		_camCBChangeState(TransformCB::ChangeState::No)
 {
 }
 
@@ -166,23 +168,21 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 
 void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
+	Matrix worldMat;
+	_owner->GetTransform()->FetchWorldMatrix(worldMat);
+
 	CameraCBData cbData;
 	{
-		Matrix worldMat;
-		_owner->GetTransform()->FetchWorldMatrix(worldMat);
-
 		Matrix& viewMat = cbData.viewMat;
 		GetViewMatrix(cbData.viewMat, worldMat);
 
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
 		cbData.viewProjMat = viewMat * projMat;
-
-		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
 	}
 
-	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CameraCBData)) != 0;
-	if(updatedVP)
+	bool isChanged = ComparePrevCameraCBData(cbData);
+	if(isChanged)
 	{
 		// Make Frustum
 		{
@@ -190,13 +190,26 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			GetProjectionMatrix(notInvProj, false);
 			_frustum->Make(cbData.viewMat * notInvProj);
 		}
+		
+		_camCBChangeState = TransformCB::ChangeState::HasChanged;
+	}
 
+	bool isUpdate = (_camCBChangeState != TransformCB::ChangeState::No);
+	
+	if(isUpdate)
+	{
+		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);	
+		cbData.prevViewProjMat = _prevCamMatCBData.viewProjMat;
+		
 		_prevCamMatCBData = cbData;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
+		Matrix::Transpose(cbData.prevViewProjMat, cbData.prevViewProjMat);
 
 		_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
+		
+		_camCBChangeState = (static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
