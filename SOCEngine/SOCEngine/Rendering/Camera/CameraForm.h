@@ -48,19 +48,20 @@ namespace Rendering
 		protected:
 			Intersection::Frustum*			_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			RenderQueue						_transparentMeshQueue;
+			RenderQueue				_transparentMeshQueue;
 
-			float							_fieldOfViewDegree;
-			float							_clippingNear;
-			float							_clippingFar;
-			ProjectionType					_projectionType;
-			float							_aspect;
-			Color							_clearColor;
+			float					_fieldOfViewDegree;
+			float					_clippingNear;
+			float					_clippingFar;
+			ProjectionType				_projectionType;
+			float					_aspect;
+			Color					_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CameraCBData					_prevCamMatCBData;
+			CameraCBData				_prevCamMatCBData;
+			TransformCB::ChangeState		_camCBChangeState;
 
-			Math::Rect<float>				_renderRect;
+			Math::Rect<float>			_renderRect;
 
 		public:
 			CameraForm(Usage usage);
