@@ -4,6 +4,7 @@
 #define __SOC_PHYSICALLY_BASED_COMMON_H__
 
 #include "NormalMapping.h"
+#include "CommonConstBuffer.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
