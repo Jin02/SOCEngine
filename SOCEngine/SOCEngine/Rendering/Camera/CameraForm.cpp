@@ -181,7 +181,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool isChanged = ComparePrevCameraCBData(cbData);
+	bool isChanged = (cbData.viewProjMat != _prevCamMatCBData.viewProjMat);
 	if(isChanged)
 	{
 		// Make Frustum
@@ -278,9 +278,4 @@ void CameraForm::_Clone(CameraForm* newCam) const
 		newCam->_renderTarget->GetTexture()->GetDesc(&desc);		
 		newCam->_renderTarget->Initialize(size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, desc.BindFlags, desc.SampleDesc.Count);
 	}
-}
-
-bool CameraForm::ComparePrevCameraCBData(const CameraCBData& cbData) const
-{
-	return memcmp(&_prevCamMatCBData, &cbData, sizeof(Matrix) * 2) != 0;
 }
