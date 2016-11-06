@@ -8,9 +8,9 @@
 #include "EnvIBL.h"
 
 Texture2D<float2> preIntegrateEnvBRDFMap	: register( t29 );
-Texture2D<float4> illuminationMap			: register( t30 );
+Texture2D<float4> illuminationMap		: register( t30 );
 
-SamplerState linerSamplerState				: register( s0 );
+SamplerState linerSamplerState			: register( s0 );
 
 float ComputeCubeMapMipFromRoughness(float roughness, float mipCount)
 {
@@ -30,7 +30,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 #endif
 
 	float3 normal		= surface.normal;
-	float3 viewDir		= normalize( tbrParam_cameraWorldPosition - surface.worldPos );
+	float3 viewDir		= normalize( camera_worldPos - surface.worldPos );
 	float3 reflectDir	= reflect(-viewDir, normal);
 
 	float3 diffuse	= float3(0.0f, 0.0f, 0.0f);
