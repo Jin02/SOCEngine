@@ -11,24 +11,6 @@
 #define ALPHA_TEST_BIAS		0.5f
 #endif
 
-cbuffer Transform : register( b1 )		//Object World
-{
-	matrix transform_world;
-	matrix transform_worldInvTranspose;
-
-	matrix transform_prevWorld;		// used for motion blur
-};
-
-cbuffer Camera : register( b2 )
-{
-	matrix	camera_viewMat;			// or InvNearFarViewProj
-	matrix	camera_viewProjMat;
-	matrix	camera_prevViewProjMat;		// used for motion blur
-
-	float3	camera_worldPos;
-	uint	camera_packedNearFar;
-};
-
 cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 {
 	uint	material_mainColor_alpha;
@@ -156,14 +138,6 @@ float GetAlpha(SamplerState samplerState, float2 uv)
 	return alpha;
 }
 
-float GetCameraNear()
-{
-	return f16tof32(camera_packedNearFar >> 16);
-}
 
-float GetCameraFar()
-{
-	return f16tof32(camera_packedNearFar & 0x0000ffff);
-}
 
 #endif
