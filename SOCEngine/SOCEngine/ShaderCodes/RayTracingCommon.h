@@ -52,8 +52,9 @@ float FetchLinearDepthFromGBuffer(int2 screenPos)
 bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 							float3 rayOrigin, float3 rayDir, float jitter	)
 {
-	float rayLength		= ((rayOrigin.z + rayDir.z * ssrt_maxDistance) < tbrParam_cameraNear) ?
-			   	   (tbrParam_cameraNear - rayOrigin.z) / rayDir.z : ssrt_maxDistance;
+	float camNear		= GetCameraNear();	
+	float rayLength		= ((rayOrigin.z + rayDir.z * ssrt_maxDistance) < camNear) ?
+			   	   (camNear - rayOrigin.z) / rayDir.z : ssrt_maxDistance;
 	float3 rayEndPos	= rayOrigin + rayDir * rayLength;
 	
 	float2 viewportSize	= GetViewportSize();
@@ -155,7 +156,7 @@ void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, ou
 #endif
     
 	float3 worldNormal	= normal_roughness.xyz * 2.0f - float3(1.0f, 1.0f, 1.0f);
-    float3 viewNormal	= mul(float4(worldNormal, 0.0f), tbrParam_viewMat).xyz;
+   	float3 viewNormal	= mul(float4(worldNormal, 0.0f), camera_viewMat).xyz;
 
 	outViewNormal	= normalize( viewNormal );
 	outRoughness	= normal_roughness.a;
