@@ -58,7 +58,7 @@ namespace Rendering
 			Color					_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CameraCBData				_prevCamMatCBData;
+			Math::Matrix				_prevViewProjMat;
 			TransformCB::ChangeState		_camCBChangeState;
 
 			Math::Rect<float>			_renderRect;
