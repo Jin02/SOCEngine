@@ -17,6 +17,7 @@ CameraForm::CameraForm(Usage usage)
 	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage),
 		_camCBChangeState(TransformCB::ChangeState::No)
 {
+	Matrix::Identity(_prevViewProjMat);
 }
 
 CameraForm::~CameraForm(void)
@@ -181,7 +182,7 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		cbData.viewProjMat = viewMat * projMat;
 	}
 
-	bool isChanged = (cbData.viewProjMat != _prevCamMatCBData.viewProjMat);
+	bool isChanged = (cbData.viewProjMat != _prevViewProjMat);
 	if(isChanged)
 	{
 		// Make Frustum
@@ -199,9 +200,9 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	if(isUpdate)
 	{
 		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);	
-		cbData.prevViewProjMat = _prevCamMatCBData.viewProjMat;
+		cbData.prevViewProjMat = _prevViewProjMat;
 		
-		_prevCamMatCBData = cbData;
+		_prevViewProjMat = cbData.viewProjMat;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
