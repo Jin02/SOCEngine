@@ -89,8 +89,8 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 											(float)(LIGHT_CULLING_TILE_RES * (groupIdx.y + 1)));
 		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
 											(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
-											//½ºÅ©¸° ÇÈ¼¿ »çÀÌÁî¶ó »ı°¢ÇØµµ ÁÁ°í,
-											//ÇöÀç µ¹¾Æ°¡´Â ÀüÃ¼ °¡·Îx¼¼·Î ½º·¹µå ¼ö?
+											//ìŠ¤í¬ë¦° í”½ì…€ ì‚¬ì´ì¦ˆë¼ ìƒê°í•´ë„ ì¢‹ê³ ,
+											//í˜„ì¬ ëŒì•„ê°€ëŠ” ì „ì²´ ê°€ë¡œxì„¸ë¡œ ìŠ¤ë ˆë“œ ìˆ˜?
 
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
@@ -123,12 +123,12 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 	float maxZ = asfloat(s_maxZ);
 
 	uint pointLightCount = GetNumOfPointLight(tbrParam_packedNumOfLights);
-    for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
-    {
+	for(uint pointLightIdx=idxInTile; pointLightIdx<pointLightCount; pointLightIdx+=THREAD_COUNT)
+	{
 		float4 center = PointLightTransformBuffer[pointLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
@@ -156,7 +156,7 @@ void LightCulling(in uint3 globalIdx, in uint3 localIdx, in uint3 groupIdx, out 
 		float4 center = SpotLightTransformBuffer[spotLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
