@@ -28,7 +28,7 @@ namespace Core
 		float					_radius;
 		Intersection::BoundBox			_boundBox;
 
-		Math::Matrix				_prevTransposedWorldMat;
+		Math::Matrix				_prevWorldMat;
 		TransformCB::ChangeState		_tfChangeState;
 
 	public:
