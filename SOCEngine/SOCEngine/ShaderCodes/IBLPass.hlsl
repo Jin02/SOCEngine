@@ -5,6 +5,7 @@
 
 #include "FullScreenShader.h"
 #include "GBufferParser.h"
+#include "CommonConstBuffer.h"
 #include "EnvIBL.h"
 
 Texture2D<float2> preIntegrateEnvBRDFMap	: register( t29 );
