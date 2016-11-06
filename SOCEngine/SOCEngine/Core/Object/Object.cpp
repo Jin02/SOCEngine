@@ -21,6 +21,8 @@ Object::Object(const std::string& name, Object* parent /* = NULL */) :
 
 	if(parent)
 		parent->AddChild(this);
+	
+	Matrix::Identity(_prevWorldMat);
 }
 
 Object::~Object(void)
@@ -131,23 +133,20 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 	}
 
-	Rendering::TransformCB transformCB;
-	transformCB.prevWorld = _prevTransposedWorldMat;
 	
-	Matrix& transposedWM = transformCB.world;
-	Matrix::Transpose(transposedWM, worldMat);
-
-	Matrix& worldInvTranspose = transformCB.worldInvTranspose;
-	{
-		Matrix::Inverse(worldInvTranspose, transposedWM);
-		Matrix::Transpose(worldInvTranspose, worldInvTranspose);
-	}
-
-	bool changedWorldMat = memcmp(&_prevTransposedWorldMat, &transposedWM, sizeof(Math::Matrix)) != 0;
-	if(changedWorldMat)
+	if(_prevWorldMat != worldMat)
 		_tfChangeState = TransformCB::ChangeState::HasChanged;
 
+	Rendering::TransformCB transformCB;
+
 	bool isUpdate = (_tfChangeState != TransformCB::ChangeState::No);
+	if(isUpdate)
+	{
+		Matrix::Transpose(transformCB.worldMat, worldMat);		
+		Matrix::Transpose(transformCB.prevWorldMat, _prevWorldMat);
+
+		Matrix::Inverse(transformCB.worldInvTranspose, transformCB.worldMat);		
+	}	
 	
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
@@ -159,8 +158,8 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 	
 	if(isUpdate)
 	{
-		_prevTransposedWorldMat	= transposedWM;
-		_tfChangeState		= (static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
+		_prevWorldMat	= worldMat;
+		_tfChangeState	= (static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)
