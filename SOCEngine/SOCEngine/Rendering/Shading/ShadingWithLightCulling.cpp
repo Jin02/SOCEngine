@@ -68,13 +68,13 @@ void ShadingWithLightCulling::Initialize(
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowIndex),			lightManager->GetDirectionalLightShadowIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowViewProjMatrix),	shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 
-	// Point Light transformÀº LightCulling::Initialize¿¡¼­ µî·ÏÇÏ°í ÀÖ´Ù.
+	// Point Light transformì€ LightCulling::Initializeì—ì„œ ë“±ë¡í•˜ê³  ìžˆë‹¤.
 	AddInputBufferToList(uint(TextureBindIndex::PointLightColor),						lightManager->GetPointLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowParam),					shadowMgr->GetPointLightShadowParamSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowIndex),					lightManager->GetPointLightShadowIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowViewProjMatrix),		shadowMgr->GetPointLightShadowViewProjSRBuffer());
 
-	// Spot Light transform¿Í ParamÀº LightCulling::Initialize¿¡¼­ µî·ÏÇÏ°í ÀÖ´Ù.
+	// Spot Light transformì™€ Paramì€ LightCulling::Initializeì—ì„œ ë“±ë¡í•˜ê³  ìžˆë‹¤.
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightColor),						lightManager->GetSpotLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowParam),					shadowMgr->GetSpotLightShadowParamSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowIndex),					lightManager->GetSpotLightShadowIndexSRBuffer());
@@ -157,18 +157,13 @@ void ShadingWithLightCulling::Destroy()
 }
 
 void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
-									   const Buffer::ConstBuffer* tbrConstBuffer,
-									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer)
+				       const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB,
+				       const Buffer::ConstBuffer* shadowGlobalParamCB)
 {
 	std::vector<ShaderForm::InputConstBuffer> additionalConstBuffers;
+
 	if(shadowGlobalParamConstBuffer)
-	{
-		ShaderForm::InputConstBuffer icb;
-		icb.buffer		= shadowGlobalParamConstBuffer;
-		icb.bindIndex	= (uint)ConstBufferBindIndex::ShadowGlobalParam;
+		additionalConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::ShadowGlobalParam, shadowGlobalParamCB));
 
-		additionalConstBuffers.push_back(icb);
-	}
-
-	LightCulling::Dispatch(dx, tbrConstBuffer, &additionalConstBuffers);
+	LightCulling::Dispatch(dx, tbrCB, mainCamCB, &additionalConstBuffers);
 }
