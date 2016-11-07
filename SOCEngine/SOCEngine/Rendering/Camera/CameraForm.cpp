@@ -167,7 +167,7 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
-void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
+bool CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
@@ -215,6 +215,8 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
 		(*iter)->Culling(_frustum);
+	
+	return isUpdate;
 }
 
 void CameraForm::SortTransparentMeshRenderQueue(RenderQueue& inoutTranparentMeshQ, const Transform* ownerTF, const RenderManager* renderMgr)
