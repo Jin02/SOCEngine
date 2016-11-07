@@ -170,7 +170,8 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx,
 				      const std::vector<Core::Object*>& objects,
 				      const LightManager* lightManager,
-				      CameraCBData* outResultCamCBData, Math::Matrix* outProjMat)
+				      CameraCBData* outResultCamCBData, Math::Matrix* outProjMat,
+				     Math::Matrix* outViewProjMat)
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
@@ -187,6 +188,9 @@ bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx,
 			(*outProjMat) = projMat;
 	
 		cbData.viewProjMat	= viewMat * projMat;
+		if(outViewProjMat)
+			(*outViewProjMat) = cbData.viewProjMat;
+
 		cbData.worldPos		= Vector3(worldMat._41, worldMat._42, worldMat._43);	
 		cbData.prevViewProjMat	= _prevViewProjMat;
 		cbData.packedCamNearFar = (Common::FloatToHalf(_clippingNear) << 16) | Common::FloatToHalf(_clippingFar);
