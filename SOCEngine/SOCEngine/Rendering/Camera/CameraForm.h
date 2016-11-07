@@ -87,6 +87,9 @@ namespace Rendering
 			void Initialize(const Math::Rect<float>& renderRect);
 			void Destroy();	
 			
+		public:
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager) = 0;
+			
 		protected:
 			void _Clone(CameraForm* newCam) const;
 			bool _CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
