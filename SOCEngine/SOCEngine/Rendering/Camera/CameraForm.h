@@ -25,7 +25,8 @@ namespace Rendering
 				Math::Matrix	viewProjMat;
 				Math::Matrix	prevViewProjMat;
 
-				Math::Vector4	worldPos;		
+				Math::Vector3	worldPos;		
+				uint		packedCamNearFar;
 			};
 			friend class ReflectionProbe;
 
@@ -92,7 +93,7 @@ namespace Rendering
 			
 		protected:
 			void _Clone(CameraForm* newCam) const;
-			bool _CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
+			bool _CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager, CameraCBData* outResultCamCBData = nullptr, Math::Matrix* outProjMat = nullptr);
 
 		public:
 			GET_SET_ACCESSOR(Near,			float,					_clippingNear);
