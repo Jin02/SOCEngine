@@ -94,15 +94,16 @@ namespace Rendering
 			void _Clone(CameraForm* newCam) const;
 
 		public:
-			GET_SET_ACCESSOR(Near,				float,							_clippingNear);
-			GET_SET_ACCESSOR(Far,				float,							_clippingFar);
-			GET_SET_ACCESSOR(FieldOfViewDegree,	float,							_fieldOfViewDegree);
+			GET_SET_ACCESSOR(Near,			float,					_clippingNear);
+			GET_SET_ACCESSOR(Far,			float,					_clippingFar);
+			GET_SET_ACCESSOR(FieldOfViewDegree,	float,					_fieldOfViewDegree);
 			GET_SET_ACCESSOR(RenderRect,		const Math::Rect<float>&,		_renderRect);
 
-			GET_ACCESSOR(ProjectionType,		ProjectionType,					_projectionType);
-			GET_ACCESSOR(RenderTarget,			const Texture::RenderTexture*,	_renderTarget);
+			GET_ACCESSOR(ProjectionType,		ProjectionType,				_projectionType);
+			GET_ACCESSOR(RenderTarget,		const Texture::RenderTexture*,		_renderTarget);
 
-			GET_ACCESSOR(Usage,					Usage,							_usage);
+			GET_ACCESSOR(Usage,			Usage,					_usage);			
+			GET_ACCESSOR(CamConstBuffer,		const Buffer::ConstBuffer*,		_camMatConstBuffer);
 		};
 	}
 }
