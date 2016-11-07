@@ -72,7 +72,7 @@ namespace Rendering
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
-				const Buffer::ConstBuffer* tbrConstBuffer,
+				const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB,
 				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers = nullptr);
 
 		public:
