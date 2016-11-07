@@ -167,7 +167,10 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
-bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
+bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx,
+				      const std::vector<Core::Object*>& objects,
+				      const LightManager* lightManager,
+				      CameraCBData* outResultCamCBData, Math::Matrix* outProjMat)
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
@@ -179,8 +182,17 @@ bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx, const std::vect
 
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
-		cbData.viewProjMat = viewMat * projMat;
+
+		if(outProjMat)
+			(*outProjMat) = projMat;
+	
+		cbData.viewProjMat	= viewMat * projMat;
+		cbData.worldPos		= Vector3(worldMat._41, worldMat._42, worldMat._43);	
+		cbData.prevViewProjMat	= _prevViewProjMat;
+		cbData.packedCamNearFar = (Common::FloatToHalf(_clippingNear) << 16) | Common::FloatToHalf(_clippingFar);
 	}
+	if(outResultCamCBData)
+		(*outResultCamCBData) = cbData;
 
 	bool isChanged = (cbData.viewProjMat != _prevViewProjMat);
 	if(isChanged)
@@ -195,13 +207,12 @@ bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx, const std::vect
 		_camCBChangeState = TransformCB::ChangeState::HasChanged;
 	}
 
+	
+	
 	bool isUpdate = (_camCBChangeState != TransformCB::ChangeState::No);
 	
 	if(isUpdate)
-	{
-		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);	
-		cbData.prevViewProjMat = _prevViewProjMat;
-		
+	{		
 		_prevViewProjMat = cbData.viewProjMat;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
@@ -214,7 +225,7 @@ bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx, const std::vect
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-		(*iter)->Culling(_frustum);
+		(*iter)->Culling(_frustum);	
 	
 	return isUpdate;
 }
