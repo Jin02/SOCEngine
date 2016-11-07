@@ -488,7 +488,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		context->PSSetShader(nullptr, nullptr, 0);
 		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, GetCamConstBuffer(), shadowGlobalParamCB);
 
 		if(_useTransparent)
 			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
