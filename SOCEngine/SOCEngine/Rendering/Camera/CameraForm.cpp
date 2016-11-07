@@ -167,7 +167,7 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
-bool CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
+bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
 {
 	Matrix worldMat;
 	_owner->GetTransform()->FetchWorldMatrix(worldMat);
