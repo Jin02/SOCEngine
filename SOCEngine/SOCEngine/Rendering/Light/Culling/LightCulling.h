@@ -21,19 +21,14 @@ namespace Rendering
 		public:
 			struct TBRParam
 			{	
-				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
 				Math::Matrix 		invViewProjMat;
 				Math::Matrix 		invViewProjViewport;
 
-				uint				packedViewportSize;
-				unsigned int 		packedNumOfLights;
-				unsigned int 		maxNumOfperLightInTile;
-
-				Math::Vector3		camWorldPosition;
-
-				float				cameraNear;
-				float				cameraFar;
+				uint			packedViewportSize;
+				uint 			packedNumOfLights;
+				uint 			maxNumOfperLightInTile;
+				uint			dummy;
 
 				TBRParam(){}
 				~TBRParam(){}
