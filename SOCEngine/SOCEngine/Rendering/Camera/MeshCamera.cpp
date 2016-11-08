@@ -115,23 +115,20 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	bool isUpdateCamCB = _CullingWithUpdateCB(dx, objects, lightManager, nullptr, &projMat, &viewProjMat);
 	
 	LightCulling::TBRParam tbrParam;
+	LightCulling::TBRParam::Packed& packedParam = tbrParam.packedParam;
 	{
-		Size<uint> viewportSize		= Director::SharedInstance()->GetBackBufferSize();
-		tbrParam.packedViewportSize	= (viewportSize.w << 16) | viewportSize.h;
-		tbrParam.packedNumOfLights	= lightManager->GetPackedLightCount();
-		tbrParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
-		tbrParam.dummy			= 0;
+		Size<uint> viewportSize			= Director::SharedInstance()->GetBackBufferSize();
+		packedParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
+		packedParam.packedNumOfLights		= lightManager->GetPackedLightCount();
+		packedParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
+		tbrParam.dummy				= 0;
 	}
 	
-	bool isChangedTBRParam = (_prevParamData.packedViewportSize == _prevParamData.packedViewportSize)	||
-				(_prevParamData.packedNumOfLights == _prevParamData.packedNumOfLights)		||
-				(_prevParamData.maxNumOfperLightInTile == _prevParamData.maxNumOfperLightInTile) || isUpdateCamCB;
-
-	
-	if(isChangedTBRParam)
+	bool isChangedPackedTBRParam = (_prevPackedParamData == packedParam.packedViewportSize);	
+	if(isChangedPackedTBRParam || isUpdateCamCB)
 	{
 		//굳이 행렬까지 계산하고 저장할 필요는 없다
-		_prevParamData = tbrParam;
+		_prevPackedParamData = packedParam;
 		
 		Matrix::Inverse(tbrParam.invProjMat, projMat);
 		Matrix::Inverse(tbrParam.invViewProjMat, viewProjMat);
