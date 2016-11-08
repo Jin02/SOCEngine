@@ -324,10 +324,10 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 }
 
 void MeshCamera::Render(const Device::DirectX* dx,
-						const RenderManager* renderManager, const LightManager* lightManager,
-						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
-						Sky::SkyForm* sky,
-						std::function<const RenderTexture*(MeshCamera*)> giPass)
+			const RenderManager* renderManager, const LightManager* lightManager,
+			const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+			Sky::SkyForm* sky,
+			std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
@@ -488,10 +488,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		context->PSSetShader(nullptr, nullptr, 0);
 		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, GetCamConstBuffer(), shadowGlobalParamCB);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camMatConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
-			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+			_blendedMeshLightCulling->Dispatch(dx, _camMatConstBuffer, _tbrParamConstBuffer);
 
 		//if(useShadow)
 		{
