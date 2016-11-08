@@ -24,10 +24,15 @@ namespace Rendering
 				Math::Matrix 		invProjMat;
 				Math::Matrix 		invViewProjMat;
 				Math::Matrix 		invViewProjViewport;
-
-				uint			packedViewportSize;
-				uint 			packedNumOfLights;
-				uint 			maxNumOfperLightInTile;
+				
+				struct Packed
+				{
+					uint		packedViewportSize;
+					uint 		packedNumOfLights;
+					uint 		maxNumOfperLightInTile;
+				};
+				
+				Packed			packedParam;
 				uint			dummy;
 
 				TBRParam(){}
