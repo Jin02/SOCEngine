@@ -9,12 +9,16 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-	float4 position 		 	: SV_POSITION;
-	float2 uv				: TEXCOORD0;
-	float3 worldPos				: WORLD_POS;
-	float3 velocity				: VELOCITY;
+	float4 sv_position 		 	: SV_POSITION;
 
+#ifdef USE_MOTION_BLUR
+	float4 position				: POSITION;
+	float4 prevPosition			: PREV_POSITION;
+#endif
+
+	float3 worldPos				: WORLD_POS;
 	float3 normal 				: NORMAL;
+	float2 uv				: TEXCOORD0;
 };
 
 VS_OUTPUT VS( VS_INPUT input )
@@ -23,16 +27,20 @@ VS_OUTPUT VS( VS_INPUT input )
 	
 	float4 localPos		= float4(input.position, 1.0f);
 	float4 worldPos		= mul(localPos, transform_world);
-	ps.position 		= mul(worldPos, camera_viewProjMat);
+	float4 position		= mul(worldPos, camera_viewProjMat);
+	
+	ps.sv_position 		= position;
 	ps.worldPos		= worldPos.xyz / worldPos.w;
 
 	ps.uv			= input.uv;
 	ps.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
-	
-	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
-	float4 prevPos		= mul(prevWorldPos, camera_prevViewProjMat);
 
-	ps.velocity		= ((ps.position.xyz / ps.position.w) - (prevPos.xyz / prevPos.w)) / 2.0f;
+#ifdef USE_MOTION_BLUR
+	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
+	ps.prevPosition		= mul(prevWorldPos, camera_prevViewProjMat);
+	
+	ps.position		= position;
+#endif
  
     return ps;
 }
@@ -48,8 +56,16 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
+	float2 velocity = float2(0.0f, 0.0f);
+#ifdef USE_MOTION_BLUR
+	float2 curScreenPos	= (input.position.xy / input.position.w) * 0.5f + 0.5f;
+	float2 prevScreenPos	= (input.prevPosition.xy / input.prevPosition.w) * 0.5f + 0.5f;
+	
+	velocity = curScreenPos - prevScreenPos;
+#endif
+
 	float3 normal = normalize(input.normal);
-	MakeGBuffer(normal, input.uv, outGBuffer.albedo_occlusion, outGBuffer.motionXY_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
+	MakeGBuffer(normal, input.uv, velocity, outGBuffer.albedo_occlusion, outGBuffer.motionXY_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;
 }
