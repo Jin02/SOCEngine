@@ -40,7 +40,7 @@ float3 LensFlare_1(float2 uv, float2 pos)
 	return c;
 }
 
-float2 GetDistOffset_LensFlare2(float2 uv, float2 pxoffset, uniform float DistortionBarrel)
+float2 GetDistOffset(float2 uv, float2 pxoffset, uniform float DistortionBarrel)
 {
 	float2 tocenter		= uv.xy;
 	float3 prep		= normalize(float3(tocenter.y, -tocenter.x, 0.0f));
@@ -54,7 +54,7 @@ float2 GetDistOffset_LensFlare2(float2 uv, float2 pxoffset, uniform float Distor
 
 float3 Flare(float2 uv, float2 pos, float dist, float size, uniform float DistortionBarrel)
 {
-	pos = GetDistOffset_LensFlare2(uv, pos, DistortionBarrel);
+	pos = GetDistOffset(uv, pos, DistortionBarrel);
     
 	float r = max(0.01f - pow(length(uv + (dist - 0.05f) * pos), 2.4f) * (1.0f / (size * 2.0f)), 0.0f) * 6.0f;
 	float g = max(0.01f - pow(length(uv +  dist          * pos), 2.4f) * (1.0f / (size * 2.0f)), 0.0f) * 6.0f;
@@ -63,7 +63,7 @@ float3 Flare(float2 uv, float2 pos, float dist, float size, uniform float Distor
 	return float3(r, g, b);
 }
 
-float3 Flare(float2 uv, float2 pos, float dist, float size, float3 color,  uniform float DistortionBarrel)
+float3 Flare(float2 uv, float2 pos, float dist, float size, float3 color, uniform float DistortionBarrel)
 {
     return Flare(uv, pos, dist, size, DistortionBarrel) * color;
 }
@@ -78,7 +78,7 @@ float3 Orb(float2 uv, float2 pos, float dist, float size, uniform uint OrbFlareC
 		float offset	= j / (j + 1.0f);
 		float colOffset	= j / float(OrbFlareCount * 2);
 		
-		c += Flare(uv, pos, dist + offset, size / (j + 0.1f), float3(1.0f - colOffset, 1.0f, 0.5f + colOffset));
+		c += Flare(uv, pos, dist + offset, size / (j + 0.1f), float3(1.0f - colOffset, 1.0f, 0.5f + colOffset), DistortionBarrel);
 	}
 	
 	c += Flare(uv, pos, dist + 0.5f, 4.0f * size, float3(1.0f, 1.0f, 1.0f), DistortionBarrel) * 4.0f; 
@@ -101,16 +101,16 @@ float3 Ring(float2 uv, float2 pos, float dist)
 	return float3(r, g, b);
 }
 
-float3 Lensflare2(float2 uv, float2 pos, float brightness, float size)
+float3 Lensflare2(float2 uv, float2 pos, float brightness, float size, uniform uint OrbFlareCount, uniform float DistortionBarrel)
 {
     float3 c = float3(0.1f, 0.1f, 0.1f);
 
-    c += Flare(uv, pos, -3.0f, 3.0f * size);
-    c += Flare(uv, pos, -1.0f, size) * 3.0f;
-    c += Flare(uv, pos,  0.5f, 0.8f * size);
-    c += Flare(uv, pos, -0.4f, 0.8f * size);
+    c += Flare(uv, pos, -3.0f, 3.0f * size, DistortionBarrel);
+    c += Flare(uv, pos, -1.0f, size, DistortionBarrel) * 3.0f;
+    c += Flare(uv, pos,  0.5f, 0.8f * size, DistortionBarrel);
+    c += Flare(uv, pos, -0.4f, 0.8f * size, DistortionBarrel);
     
-    c += Orb(uv,pos, 0.0f, 0.5f * size);
+    c += Orb(uv,pos, 0.0f, 0.5f * size, OrbFlareCount, DistortionBarrel);
     
     c += Ring(uv, pos, -1.0f) * 0.5f * size;
     c += Ring(uv, pos,  1.0f) * 0.5f * size;
