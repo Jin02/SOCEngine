@@ -136,7 +136,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		Matrix invViewportMat;
 		GetInvViewportMatrix(invViewportMat, _renderRect);
 		
-		Matrix invViewProjViewport = invViewportMat * tbrParam.invViewProjMat;
+		tbrParam.invViewProjViewport = invViewportMat * tbrParam.invViewProjMat;
 		
 		Matrix::Transpose(tbrParam.invProjMat, tbrParam.invProjMat);
 		Matrix::Transpose(tbrParam.invViewProjMat, tbrParam.invViewProjMat);
