@@ -16,10 +16,10 @@ RWTexture2D<float4>	OutIndirectColorMap					: register( u0 );
 SamplerState		linearSampler						: register( s0 );
 
 #define MAXIMUM_CONE_COUNT				6
-#define SAMPLE_START_OFFSET_RATE		1.2f
+#define SAMPLE_START_OFFSET_RATE			2.0f
 #define AMBIENT_OCCLUSION_K				8.0f
 
-// ÄÜÀÇ °¢µµ¿¡ °ü·ÃÇÑ µ¥ÀÌÅÍ °ªÀº ¾Æ·¡ ±Û Âü°íÇßÀ½.
+// ì½˜ì˜ ê°ë„ì— ê´€ë ¨í•œ ë°ì´í„° ê°’ì€ ì•„ë˜ ê¸€ ì°¸ê³ í–ˆìŒ.
 // http://simonstechblog.blogspot.kr/2013/01/implementing-voxel-cone-tracing.html
 static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Space
 {
@@ -31,7 +31,7 @@ static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Sp
 	float3(-0.823639f, 0.5f, 0.267617f)
 };
 
-// ÀÌ°Íµµ À§ÀÇ ¸µÅ© Âü°í
+// ì´ê²ƒë„ ìœ„ì˜ ë§í¬ ì°¸ê³ 
 static const float ConeWeights[MAXIMUM_CONE_COUNT] =
 {
 	PI / 4.0f,		//45 degree
@@ -96,7 +96,7 @@ bool IsInBound(float3 bbMin, float3 bbMax, float3 pos)
 
 float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRad, uniform uint sampleCount, uniform bool useOcclusion)
 {
-	float voxelSize			= gi_voxelSize * 2.0f;
+	float voxelSize			= gi_voxelSize * SAMPLE_START_OFFSET_RATE;
 	float currLength		= voxelSize;
 	float3 sampleStartPos	= origin + normal * currLength;
 
@@ -173,7 +173,9 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, 128);
 
-	float halfConeAngle = lerp(1.57079f, 0.0174533f, (1.0f - surface.roughness));
+	// 1.73206060282 is tan( 60 degree )
+	// 0.01745506492 is tan(  1 degree )
+	float halfConeAngle	= lerp(1.73206060282f, 0.0174533f, (1.0f - surface.roughness));
 	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle, 256);
 
 	float3 indirectDiffuse	= diffuseVCT	* surface.albedo;
