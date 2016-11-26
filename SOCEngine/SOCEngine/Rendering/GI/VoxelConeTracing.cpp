@@ -71,7 +71,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 
 #if defined(USE_GAUSSIAN_BLUR)
 	_blur = new GaussianBlur;
-	_blur->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+	_blur->Initialize(dx, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 #elif defined(USE_BILATERAL_FILTERING)
 	_blur = new BilateralFiltering;
 	_blur->Initialize(BilateralFiltering::Type::Near, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);

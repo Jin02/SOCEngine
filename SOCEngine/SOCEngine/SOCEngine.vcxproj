@@ -156,7 +156,7 @@
     </ClInclude>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -5,7 +5,6 @@
 #define USE_INCREMENTAL_GAUSSIAN_COEFFICENT
 #define PI 3.14159265359f
 
-#if defined(USE_BLUR_PARAM)
 cbuffer BlurParam : register(b0)
 {
 	float BlurParam_sigma;
@@ -13,9 +12,8 @@ cbuffer BlurParam : register(b0)
 	float BlurParam_blurSize;
 	float BlurParam_scale;			// dummy
 };
-#endif
 
-Texture2D<float4>	InputMap		: register( t0 );
+Texture2D<float4>	InputMap			: register( t0 );
 SamplerState		DefaultSampler		: register( s0 );
 
 float4 GaussianBlur(Texture2D<float4> tex, float2 uv, float2 multiplyVec, float blurSize, float numPixelsPerSide, float sigma)
@@ -59,17 +57,10 @@ float4 GuassianBlur_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float w, h;
 	InputMap.GetDimensions(w, h);
 
-#if defined(USE_BLUR_PARAM)
-	const float sigma			= BlurParam_sigma;
-	const float numPixelsPerSide		= BlurParam_numPixelPerSide;
+	const float sigma				= BlurParam_sigma;
+	const float numPixelsPerSide	= BlurParam_numPixelsPerSide;
 	const float blurSize			= BlurParam_blurSize;
 	const float calcBlurSize		= blurSize * 0.2f * 1.0f / w * BlurParam_scale;
-#else
-	const float sigma			= 6.0f;
-	const float numPixelsPerSide		= 8.0f;
-	const float blurSize			= 2.5f;
-	const float calcBlurSize		= blurSize * 0.2f * 1.0f / w;
-#endif
 
 #if defined(BLUR_HORIZONTAL)
 	resultColor.xyz = GaussianBlur(InputMap, input.uv, float2(1.0f, 0.0f), calcBlurSize, numPixelsPerSide, sigma).rgb;
