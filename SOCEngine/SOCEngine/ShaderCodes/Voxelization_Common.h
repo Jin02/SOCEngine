@@ -39,7 +39,7 @@ void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3],
 
 	position[0] = mul(worldPos[0], voxelization_vp_axis[axisIndex]);
 	position[1] = mul(worldPos[1], voxelization_vp_axis[axisIndex]);
-	position[2] = mul(worldPos[2], voxelization_vp_axis[axisIndex])
+	position[2] = mul(worldPos[2], voxelization_vp_axis[axisIndex]);
 
 #ifdef	USE_BLOATING_IN_VOXELIZATION_PASS
 	float3 planes[3] =
