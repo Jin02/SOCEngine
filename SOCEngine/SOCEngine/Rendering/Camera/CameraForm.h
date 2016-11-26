@@ -100,6 +100,7 @@ namespace Rendering
 			GET_ACCESSOR(RenderTarget,			const Texture::RenderTexture*,	_renderTarget);
 
 			GET_ACCESSOR(Usage,					Usage,							_usage);
+			GET_ACCESSOR(CameraConstBuffer,		const Buffer::ConstBuffer*,		_camMatConstBuffer);
 		};
 	}
 }

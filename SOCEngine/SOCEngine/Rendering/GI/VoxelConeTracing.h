@@ -12,7 +12,7 @@
 #include "BilateralFiltering.h"
 #include "GaussianBlur.h"
 
-#define USE_GAUSSIAN_BLUR
+//#define USE_GAUSSIAN_BLUR
 
 namespace Rendering
 {
