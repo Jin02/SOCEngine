@@ -907,6 +907,9 @@
     <ClInclude Include="ShaderCodes\SimpleImageEffect.h">
       <Filter>ShaderCodes\PostProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\LensFlare.h">
+      <Filter>ShaderCodes\PostProcessing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
