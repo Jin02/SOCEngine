@@ -190,6 +190,7 @@
     <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\SimpleImageEffect.h" />
     <ClInclude Include="ShaderCodes\TBDRInput.h" />
     <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
