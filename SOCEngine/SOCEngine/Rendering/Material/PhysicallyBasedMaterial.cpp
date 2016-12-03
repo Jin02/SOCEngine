@@ -122,7 +122,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 		
 		float ior = 0.0f;
 		GetIndexOfRefraction(ior);
-		ior = std::min(std::max(0.0f, ior), 1.0f) * 255.0f;
+		ior = min(max(0.0f, ior), 1.0f) * 255.0f;
 				
 		param.flag_ior = (static_cast<uint>(flag) << 8) | static_cast<uint>(ior);
 
