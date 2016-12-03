@@ -162,7 +162,7 @@ void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
 {
 	std::vector<ShaderForm::InputConstBuffer> additionalConstBuffers;
 
-	if(shadowGlobalParamConstBuffer)
+	if(shadowGlobalParamCB)
 		additionalConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::ShadowGlobalParam, shadowGlobalParamCB));
 
 	LightCulling::Dispatch(dx, tbrCB, mainCamCB, &additionalConstBuffers);

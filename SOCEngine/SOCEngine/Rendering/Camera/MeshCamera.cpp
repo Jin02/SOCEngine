@@ -117,14 +117,14 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 	LightCulling::TBRParam tbrParam;
 	LightCulling::TBRParam::Packed& packedParam = tbrParam.packedParam;
 	{
-		Size<uint> viewportSize			= Director::SharedInstance()->GetBackBufferSize();
+		Size<uint> viewportSize				= Director::SharedInstance()->GetBackBufferSize();
 		packedParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
 		packedParam.packedNumOfLights		= lightManager->GetPackedLightCount();
 		packedParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
-		tbrParam.dummy				= 0;
+		tbrParam.dummy						= 0;
 	}
 	
-	bool isChangedPackedTBRParam = (_prevPackedParamData == packedParam.packedViewportSize);	
+	bool isChangedPackedTBRParam = (_prevPackedParamData != packedParam);	
 	if(isChangedPackedTBRParam || isUpdateCamCB)
 	{
 		//굳이 행렬까지 계산하고 저장할 필요는 없다

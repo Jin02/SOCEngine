@@ -4,7 +4,7 @@ struct VS_INPUT
 {
 	float3 position 			: POSITION;
 	float3 normal				: NORMAL;
-	float2 uv				: TEXCOORD0;
+	float2 uv					: TEXCOORD0;
 };
 
 struct VS_OUTPUT
@@ -18,7 +18,7 @@ struct VS_OUTPUT
 
 	float3 worldPos				: WORLD_POS;
 	float3 normal 				: NORMAL;
-	float2 uv				: TEXCOORD0;
+	float2 uv					: TEXCOORD0;
 };
 
 VS_OUTPUT VS( VS_INPUT input )
@@ -30,16 +30,16 @@ VS_OUTPUT VS( VS_INPUT input )
 	float4 position		= mul(worldPos, camera_viewProjMat);
 	
 	ps.sv_position 		= position;
-	ps.worldPos		= worldPos.xyz / worldPos.w;
+	ps.worldPos			= worldPos.xyz / worldPos.w;
 
-	ps.uv			= input.uv;
-	ps.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
+	ps.uv				= input.uv;
+	ps.normal 			= mul(input.normal, (float3x3)transform_worldInvTranspose);
 
 #ifdef USE_MOTION_BLUR
 	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
 	ps.prevPosition		= mul(prevWorldPos, camera_prevViewProjMat);
 	
-	ps.position		= position;
+	ps.position			= position;
 #endif
  
     return ps;
@@ -58,7 +58,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 
 	float2 velocity = float2(0.0f, 0.0f);
 #ifdef USE_MOTION_BLUR
-	float2 curScreenPos	= (input.position.xy / input.position.w) * 0.5f + 0.5f;
+	float2 curScreenPos		= (input.position.xy / input.position.w) * 0.5f + 0.5f;
 	float2 prevScreenPos	= (input.prevPosition.xy / input.prevPosition.w) * 0.5f + 0.5f;
 	
 	velocity = curScreenPos - prevScreenPos;

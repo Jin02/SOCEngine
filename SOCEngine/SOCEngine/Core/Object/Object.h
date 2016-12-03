@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "EngineMath.h"
 #include "Structure.h"
@@ -13,23 +13,23 @@ namespace Core
 	class Object : protected Structure::VectorMap<std::string, Object*>
 	{
 	protected:
-		bool					_use;
-		bool					_culled;
-		bool					_hasMesh;
+		bool									_use;
+		bool									_culled;
+		bool									_hasMesh;
 
-		std::string				_name;
+		std::string								_name;
 
-		Object*					_parent;
-		Object*					_root;
-		Transform*				_transform;
+		Object*									_parent;
+		Object*									_root;
+		Transform*								_transform;
 
-		std::vector<Component*>			_components;
+		std::vector<Component*>					_components;
 
-		float					_radius;
-		Intersection::BoundBox			_boundBox;
+		float									_radius;
+		Intersection::BoundBox					_boundBox;
 
-		Math::Matrix				_prevWorldMat;
-		TransformCB::ChangeState		_tfChangeState;
+		Math::Matrix							_prevWorldMat;
+		Rendering::TransformCB::ChangeState		_tfChangeState;
 
 	public:
 		Object(const std::string& name, Object* parent = NULL);

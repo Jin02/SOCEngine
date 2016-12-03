@@ -225,7 +225,7 @@ bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx,
 
 		_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
 		
-		_camCBChangeState = (static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
+		_camCBChangeState = TransformCB::ChangeState( (uint(_camCBChangeState) + 1) % uint(TransformCB::ChangeState::MAX) );
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)

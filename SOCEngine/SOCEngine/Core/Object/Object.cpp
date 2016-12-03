@@ -142,10 +142,10 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 	bool isUpdate = (_tfChangeState != TransformCB::ChangeState::No);
 	if(isUpdate)
 	{
-		Matrix::Transpose(transformCB.worldMat, worldMat);		
-		Matrix::Transpose(transformCB.prevWorldMat, _prevWorldMat);
+		Matrix::Transpose(transformCB.world, worldMat);		
+		Matrix::Transpose(transformCB.prevWorld, _prevWorldMat);
 
-		Matrix::Inverse(transformCB.worldInvTranspose, transformCB.worldMat);		
+		Matrix::Inverse(transformCB.worldInvTranspose, transformCB.world);		
 	}	
 	
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
@@ -159,7 +159,7 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 	if(isUpdate)
 	{
 		_prevWorldMat	= worldMat;
-		_tfChangeState	= (static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX);
+		_tfChangeState	= TransformCB::ChangeState( (uint(_tfChangeState) + 1) % uint(TransformCB::ChangeState::MAX) );
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)

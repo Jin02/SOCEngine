@@ -6,9 +6,9 @@ namespace Rendering
 {
 	struct TransformCB
 	{
-		enum class ChangeState : uint
+		enum class ChangeState : unsigned int
 		{
-			No,
+			No			= 0,
 			HasChanged,
 			HadChanged,
 			MAX

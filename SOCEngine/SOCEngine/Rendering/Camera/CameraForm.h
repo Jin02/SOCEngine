@@ -26,7 +26,7 @@ namespace Rendering
 				Math::Matrix	prevViewProjMat;
 
 				Math::Vector3	worldPos;		
-				uint		packedCamNearFar;
+				uint			packedCamNearFar;
 			};
 			friend class ReflectionProbe;
 

@@ -21,7 +21,7 @@ namespace Rendering
 
 		private:
 			bool _useTransparent;
-			Light::LightCulling::TBRParam::Packed				_prevPackedParamData;
+			Light::LightCulling::TBRParam::Packed		_prevPackedParamData;
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:

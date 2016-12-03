@@ -30,6 +30,15 @@ namespace Rendering
 					uint		packedViewportSize;
 					uint 		packedNumOfLights;
 					uint 		maxNumOfperLightInTile;
+
+					bool operator == (const Packed& a)
+					{
+						return (packedViewportSize == a.packedViewportSize) && (packedNumOfLights == a.packedNumOfLights) && (maxNumOfperLightInTile == a.maxNumOfperLightInTile);
+					}
+					bool operator != (const Packed& a)
+					{
+						return !( (*this) == a );
+					}
 				};
 				
 				Packed			packedParam;
