@@ -31,6 +31,11 @@ void CameraManager::DeleteAll()
 {
 	for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
 	{
+		//당연한거긴 하다만.. 에러난다.
+		//메모리 참조, 관리 등등 이슈관리할때 처리하자.
+
+		ASSERT_MSG("Bug");
+
 		CameraForm* cam = (*iter);
 		SAFE_DELETE(cam);
 	}
