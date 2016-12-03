@@ -10,12 +10,23 @@ namespace Rendering
 	{
 		class GaussianBlur
 		{
+		public:
+			struct ParamCB
+			{
+				float sigma;
+				float numPixelPerSide;
+				float blurSize;
+				float scale;
+			};
+
 		private:
 			Math::Size<uint>		_filteringSize;
 
 			FullScreen*				_vertical;
 			FullScreen*				_horizontal;
-			Texture::RenderTexture*	_tempBuffer;
+			Texture::RenderTexture*	_tempMap;
+
+			Buffer::ConstBuffer*	_paramCB;
 
 		public:
 			GaussianBlur();
@@ -25,8 +36,12 @@ namespace Rendering
 			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT){}
 
 		public:
-			void Initialize(const Math::Size<uint>& size, DXGI_FORMAT format);
+			void Initialize(const Device::DirectX* dx, const Math::Size<uint>& size, DXGI_FORMAT format);
+			void Initialize(const Device::DirectX* dx, const Math::Size<uint>& size);
+
+			void UpdateParam(const Device::DirectX* dx, const ParamCB& param);
 			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Texture::RenderTexture* inputColorMap);
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Texture::RenderTexture* inputColorMap, const Texture::RenderTexture* tempMap);
 			void Destroy();
 		};
 	}

@@ -66,7 +66,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		}
 		radiosity += emission.rgb;
 	
-		StoreRadiosity(OutVoxelColorMap, radiosity, shadowColor.a, normal, globalIdx);
+		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx, true);
 	}
 }
 
