@@ -15,6 +15,8 @@ private:
 
 	Core::Object* _light;
 
+	Math::Vector3 _pos;
+
 public:
 	TestScene(void);
 	virtual ~TestScene(void);
