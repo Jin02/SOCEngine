@@ -12,7 +12,7 @@ namespace Rendering
 			uint			mainColor_alpha;
 			uint			emissiveColor_Metallic;
 			uint			roughness_specularity_existTextureFlag;
-			uint			flag;
+			uint			flag_ior; //상위 2비트는 아직 사용하지 않음
 
 			Math::Vector2	uvTiling0;
 			Math::Vector2	uvOffset0;
@@ -55,7 +55,8 @@ namespace Rendering
 		GET_SET_ACCESSOR_MATERIAL(Metallic,			float);
 		GET_SET_ACCESSOR_MATERIAL(Specularity,		float);
 		GET_SET_ACCESSOR_MATERIAL(Roughness,		float);
-		GET_SET_ACCESSOR_MATERIAL(Flag,				uint);
+		GET_SET_ACCESSOR_MATERIAL(Flag,			unsigned char);
+		GET_SET_ACCESSOR_MATERIAL(IndexOfRefraction,	float);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling0,		Math::Vector2);
 		GET_SET_ACCESSOR_MATERIAL(UVOffset0,		Math::Vector2);
 		GET_SET_ACCESSOR_MATERIAL(UVTiling1,		Math::Vector2);

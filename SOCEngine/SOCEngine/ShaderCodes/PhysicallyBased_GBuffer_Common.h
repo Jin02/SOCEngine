@@ -71,7 +71,7 @@ void MakeGBuffer(float3 worldNormal, float2 uv,
 	normal_roughness.rgb				= normal;
 	normal_roughness.a					= roughness;
 	emission_materialFlag.rgb			= emissiveColor;
-	emission_materialFlag.a				= float(GetMaterialFlag()) / 255.0f;
+	emission_materialFlag.a				= float(GetMaterialFlag()) * rcp(255.0f);
 }
 
 #endif
