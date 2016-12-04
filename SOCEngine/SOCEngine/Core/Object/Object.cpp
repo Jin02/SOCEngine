@@ -12,7 +12,7 @@ using namespace Core;
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
-	_radius(0.0f), _tfChangeState(TransformCB::ChangeState::No)
+	_radius(0.0f), _tfChangeState(TransformCB::ChangeState::HasChanged)
 {
 	_boundBox.SetMinMax(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 

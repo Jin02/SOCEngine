@@ -15,7 +15,7 @@ using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
 	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage),
-		_camCBChangeState(TransformCB::ChangeState::No)
+		_camCBChangeState(TransformCB::ChangeState::HasChanged)
 {
 	Matrix::Identity(_prevViewProjMat);
 }
