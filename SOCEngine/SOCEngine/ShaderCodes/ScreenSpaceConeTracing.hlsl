@@ -4,9 +4,9 @@
 #include "IsoscelesTriangle.h"
 #include "BRDF.h"
 
-Texture2D<float4>	InputColorBuffer			: register( t29 );
-Texture2D<float4>	RayTracingBuffer			: register( t30 );
-Texture2D<float4>	InDirectColorMap			: register( t31 );
+Texture2D<float4>	InputColorBuffer		: register( t29 );
+Texture2D<float4>	RayTracingBuffer		: register( t30 );
+Texture2D<float4>	InDirectColorMap		: register( t31 );
 Texture2D<float4>	DirectDiffuseColorMap		: register( t32 );
 Texture2D<float4>	DirectSpecularColorMap		: register( t33 );
 
@@ -60,7 +60,7 @@ float4 SSCT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	if(screenSpaceRay.w <= 0.0f)
 		return float4(fallbackColor, 1.0f);
 
-	float	linearDepth			= LinearizeDepth( GBufferDepth.Load(screenPos).r );
+	float	linearDepth		= LinearizeDepth( GBufferDepth.Load(screenPos).r, GetCameraFar() );
 	float3	viewSpacePos		= input.viewRay * linearDepth;
 	float3	toViewSpacePos		= normalize(viewSpacePos);
 	
@@ -106,16 +106,16 @@ float4 SSCT_InFullScreen_PS(PS_INPUT input) : SV_Target
 		glossMult 				*= 1.0f - roughness;
 	}
 	
-	float3 toEye				= -toViewSpacePos;
-	float3 worldNormal			= GBufferNormal_roughness.Load(screenPos).rgb * 2.0f - float3(1.0f, 1.0f, 1.0f);
-	float3 viewNormal			= mul(float4(worldNormal, 0.0f), tbrParam_viewMat).xyz;
-	float3 specular				= FresnelSchlick(specularColor.rgb, abs( dot(viewNormal, toEye) ) );
+	float3 toEye			= -toViewSpacePos;
+	float3 worldNormal		= GBufferNormal_roughness.Load(screenPos).rgb * 2.0f - float3(1.0f, 1.0f, 1.0f);
+	float3 viewNormal		= mul(float4(worldNormal, 0.0f), camera_viewMat).xyz;
+	float3 specular			= FresnelSchlick(specularColor.rgb, abs( dot(viewNormal, toEye) ) );
 
-	float2 boundary				= abs(screenSpaceRay.xy - float2(0.5f, 0.5f)) * 2.0f;
-	float fadeDiffRcp			= 1.0f / (ssrt_fadeEnd - ssrt_fadeStart);
-	float fadeOnBorder			= 1.0f - saturate((boundary.x - ssrt_fadeStart) * fadeDiffRcp);
-	fadeOnBorder				*= 1.0f - saturate((boundary.y - ssrt_fadeStart) * fadeDiffRcp);
-	fadeOnBorder				= smoothstep(0.0f, 1.0f, fadeOnBorder);
+	float2 boundary			= abs(screenSpaceRay.xy - float2(0.5f, 0.5f)) * 2.0f;
+	float fadeDiffRcp		= 1.0f / (ssrt_fadeEnd - ssrt_fadeStart);
+	float fadeOnBorder		= 1.0f - saturate((boundary.x - ssrt_fadeStart) * fadeDiffRcp);
+	fadeOnBorder			*= 1.0f - saturate((boundary.y - ssrt_fadeStart) * fadeDiffRcp);
+	fadeOnBorder			= smoothstep(0.0f, 1.0f, fadeOnBorder);
 	float3 rayHitPositionVS		= ViewSpacePositionFromDepth(screenSpaceRay.xy, screenSpaceRay.z);
 	float fadeOnDistance		= 1.0f - saturate(distance(rayHitPositionVS, viewSpacePos) / ssrt_maxDistance);
 	float fadeOnPerpendicular	= saturate(lerp(0.0f, 1.0f, saturate(screenSpaceRay.w * 4.0f)));

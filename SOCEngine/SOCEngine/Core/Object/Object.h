@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "EngineMath.h"
 #include "Structure.h"
@@ -13,22 +13,23 @@ namespace Core
 	class Object : protected Structure::VectorMap<std::string, Object*>
 	{
 	protected:
-		bool							_use;
-		bool							_culled;
-		bool							_hasMesh;
+		bool									_use;
+		bool									_culled;
+		bool									_hasMesh;
 
-		std::string						_name;
+		std::string								_name;
 
-		Object*							_parent;
-		Object*							_root;
-		Transform*						_transform;
+		Object*									_parent;
+		Object*									_root;
+		Transform*								_transform;
 
-		std::vector<Component*>			_components;
+		std::vector<Component*>					_components;
 
-		float							_radius;
-		Intersection::BoundBox			_boundBox;
+		float									_radius;
+		Intersection::BoundBox					_boundBox;
 
-		Math::Matrix					_prevWorldMat;
+		Math::Matrix							_prevWorldMat;
+		Rendering::TransformCB::ChangeState		_tfChangeState;
 
 	public:
 		Object(const std::string& name, Object* parent = NULL);
@@ -68,7 +69,7 @@ namespace Core
 			if(compo->GetComponentType() == Component::Type::Mesh)
 				_hasMesh = true;
 
-			//¿ÀÁ÷ À¯Àú ÄÄÆ÷³ÍÆ®¸¸ Áßº¹ °¡´É
+			//ì˜¤ì§ ìœ ì € ì»´í¬ë„ŒíŠ¸ë§Œ ì¤‘ë³µ ê°€ëŠ¥
 			compo->OnInitialize();
 			_components.push_back(compo);
 

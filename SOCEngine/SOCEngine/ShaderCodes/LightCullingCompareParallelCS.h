@@ -91,7 +91,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 	ioCornerMinMax.min_tr = min(minDepth_tr, ioCornerMinMax.min_tr); 	ioCornerMinMax.max_tr = max(maxDepth_tr, ioCornerMinMax.max_tr);
 	ioCornerMinMax.min_bl = min(minDepth_bl, ioCornerMinMax.min_bl); 	ioCornerMinMax.max_bl = max(maxDepth_bl, ioCornerMinMax.max_bl);
 	ioCornerMinMax.min_br = min(minDepth_br, ioCornerMinMax.min_br); 	ioCornerMinMax.max_br = max(maxDepth_br, ioCornerMinMax.max_br);
-#else // Edge √º≈©, MSAA¥¬ π€ø°º≠ √≥∏Æ«‘
+#else // Edge Ï≤¥ÌÅ¨, MSAAÎäî Î∞ñÏóêÏÑú Ï≤òÎ¶¨Ìï®
 	uint2 localIdx = halfLocalIdx * 2;
 	uint idxInOriginTile = localIdx.x + localIdx.y * LIGHT_CULLING_TILE_RES;
 
@@ -108,7 +108,7 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 
 	GroupMemoryBarrierWithGroupSync();
 
-	//π›∏∏ «œ∏È µ 
+	//Î∞òÎßå ÌïòÎ©¥ Îê®
 	if( idxInTile < 32 )
 	{
 		s_depthMinDatas[idxInTile] = min( s_depthMinDatas[idxInTile], s_depthMinDatas[idxInTile + 32] );
@@ -186,7 +186,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 	uint idxInTile	= halfLocalIdx.x + halfLocalIdx.y * TILE_RES_HALF;
 	uint idxOfGroup	= groupIdx.x + groupIdx.y * GetNumTilesX();
 	
-	//«—π¯∏∏ √ ±‚»≠
+	//ÌïúÎ≤àÎßå Ï¥àÍ∏∞Ìôî
 	if(idxInTile == 0)
 		s_lightIndexCounter	= 0;
 
@@ -198,8 +198,8 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 											LIGHT_CULLING_TILE_RES * (groupIdx.y + 1));
 		float2 totalThreadLength =	float2(	(float)(LIGHT_CULLING_TILE_RES * GetNumTilesX()),
 											(float)(LIGHT_CULLING_TILE_RES * GetNumTilesY()) );
-											//Ω∫≈©∏∞ «»ºø ªÁ¿Ã¡Ó∂Û ª˝∞¢«ÿµµ ¡¡∞Ì,
-											//«ˆ¿Á µπæ∆∞°¥¬ ¿¸√º ∞°∑Œxºº∑Œ Ω∫∑πµÂ ºˆ?
+											//Ïä§ÌÅ¨Î¶∞ ÌîΩÏÖÄ ÏÇ¨Ïù¥Ï¶àÎùº ÏÉùÍ∞ÅÌï¥ÎèÑ Ï¢ãÍ≥†,
+											//ÌòÑÏû¨ ÎèåÏïÑÍ∞ÄÎäî Ï†ÑÏ≤¥ Í∞ÄÎ°úxÏÑ∏Î°ú Ïä§Î†àÎìú Ïàò?
 		float4 frustum[4];
 		frustum[0] = ProjToView( float4( tl.x / totalThreadLength.x * 2.f - 1.f, 
 											   (totalThreadLength.y - tl.y) / totalThreadLength.y * 2.f - 1.f,
@@ -232,7 +232,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 		float4 center = PointLightTransformBuffer[pointLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{
@@ -260,7 +260,7 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 		float4 center = SpotLightTransformBuffer[spotLightIdx];
 		float r = center.w;
 
-		center.xyz = mul( float4(center.xyz, 1), tbrParam_viewMat ).xyz;
+		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
 		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
 		{

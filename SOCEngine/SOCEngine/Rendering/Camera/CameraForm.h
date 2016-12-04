@@ -23,7 +23,10 @@ namespace Rendering
 			{
 				Math::Matrix	viewMat;
 				Math::Matrix	viewProjMat;
-				Math::Vector4	worldPos;		
+				Math::Matrix	prevViewProjMat;
+
+				Math::Vector3	worldPos;		
+				uint			packedCamNearFar;
 			};
 			friend class ReflectionProbe;
 
@@ -46,19 +49,20 @@ namespace Rendering
 		protected:
 			Intersection::Frustum*			_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			RenderQueue						_transparentMeshQueue;
+			RenderQueue				_transparentMeshQueue;
 
-			float							_fieldOfViewDegree;
-			float							_clippingNear;
-			float							_clippingFar;
-			ProjectionType					_projectionType;
-			float							_aspect;
-			Color							_clearColor;
+			float					_fieldOfViewDegree;
+			float					_clippingNear;
+			float					_clippingFar;
+			ProjectionType				_projectionType;
+			float					_aspect;
+			Color					_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CameraCBData					_prevCamMatCBData;
+			Math::Matrix				_prevViewProjMat;
+			TransformCB::ChangeState		_camCBChangeState;
 
-			Math::Rect<float>				_renderRect;
+			Math::Rect<float>			_renderRect;
 
 		public:
 			CameraForm(Usage usage);
@@ -82,13 +86,17 @@ namespace Rendering
 
 		protected:
 			void Initialize(const Math::Rect<float>& renderRect);
-			void Destroy();
-
+			void Destroy();	
+			
 		public:
-			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager) = 0;
+			
 		protected:
 			void _Clone(CameraForm* newCam) const;
+			bool _CullingWithUpdateCB(
+			const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager,
+			CameraCBData* outResultCamCBData = nullptr, Math::Matrix* outProjMat = nullptr,
+			Math::Matrix* outViewProjMat = nullptr);
 
 		public:
 			GET_SET_ACCESSOR(Near,				float,							_clippingNear);

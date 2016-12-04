@@ -4,25 +4,13 @@
 #define __SOC_PHYSICALLY_BASED_COMMON_H__
 
 #include "NormalMapping.h"
+#include "CommonConstBuffer.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
 #else
 #define ALPHA_TEST_BIAS		0.5f
 #endif
-
-cbuffer Transform : register( b1 )		//Object World
-{
-	matrix transform_world;
-	matrix transform_worldInvTranspose;
-};
-
-cbuffer Camera : register( b2 )
-{
-	matrix	camera_viewMat;				// or InvNearFarViewProj
-	matrix	camera_viewProjMat;
-	float4	camera_worldPos;
-};
 
 cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 {

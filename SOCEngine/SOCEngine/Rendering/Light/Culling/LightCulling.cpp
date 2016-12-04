@@ -104,7 +104,7 @@ void LightCulling::SetInputsToCS()
 	_computeShader->SetInputTextures(_inputTextures);
 }
 
-// È­¸é Å©±â¿¡ µû¶ó À¯µ¿ÀûÀ¸·Î Å¸ÀÏ ¾È ÃÖ´ë ºû °¹¼ö¸¦ °è»êÇÑ´Ù.
+// í™”ë©´ í¬ê¸°ì— ë”°ë¼ ìœ ë™ì ìœ¼ë¡œ íƒ€ì¼ ì•ˆ ìµœëŒ€ ë¹› ê°¯ìˆ˜ë¥¼ ê³„ì‚°í•œë‹¤.
 unsigned int LightCulling::CalcMaxNumLightsInTile()
 {
 	const Math::Size<unsigned int>& size = Director::SharedInstance()->GetBackBufferSize();
@@ -114,21 +114,19 @@ unsigned int LightCulling::CalcMaxNumLightsInTile()
 }
 
 void LightCulling::Dispatch(const Device::DirectX* dx,
-							const Buffer::ConstBuffer* tbrConstBuffer,
-							const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
+			    const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB,
+			    const std::vector<ShaderForm::InputConstBuffer>* additionalConstBuffers)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
 
-	if(tbrConstBuffer)
+	ASSERT_COND_MSG(tbrCB && mainCamCB, "Error, tbrCB and mainCB is null");
 	{
-		ShaderForm::InputConstBuffer icb;
-
-		icb.buffer		= tbrConstBuffer;
-		icb.bindIndex	= (uint)ConstBufferBindIndex::TBRParam;
-		inputConstBuffers.push_back(icb);
+		inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::TBRParam,	tbrCB));
+		inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::Camera,	mainCamCB));
 	}
+
 	if(additionalConstBuffers)
 		inputConstBuffers.insert(inputConstBuffers.end(), additionalConstBuffers->begin(), additionalConstBuffers->end());
 

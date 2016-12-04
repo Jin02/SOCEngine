@@ -36,6 +36,7 @@ void TestScene::OnInitialize()
 {
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
+//	AddObject(_camera);
 
 #if 1 //GI Test
 //	ActivateGI(true, 256, 50.0f);
@@ -44,12 +45,19 @@ void TestScene::OnInitialize()
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
-	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
-	_testObject->GetTransform()->UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
+	_testObject2 = importer->Load("./Resources/Sphere/sphere.obj", false);
+	_pos = Vector3(-2.7f, 3.3f, 17.7f);
+	_testObject2->GetTransform()->UpdatePosition(_pos);
+	_testObject2->GetTransform()->UpdateScale(Vector3(2.5f, 2.5f, 2.5f));
 
-	AddObject(_testObject);
+	AddObject(_testObject2);
+
+	//_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
+	//_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
+	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
+	//_testObject->GetTransform()->UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
+
+	//AddObject(_testObject);
 
 	_light = new Object("Light");
 
@@ -155,9 +163,9 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	const float scale = 5.0f;
+	const float scale = 0.5f;
 #if 1
-	Transform* control = _light->GetTransform();
+	Transform* control = _testObject2->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
@@ -246,6 +254,14 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
+	Transform* control = _testObject2->GetTransform();
+	float scale = 20.0f;
+	float distScale = 10.0f;
+
+	static float count = 0.0f;
+	count = count + dt * scale;
+
+	control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
 }
 
 void TestScene::OnRenderPost()

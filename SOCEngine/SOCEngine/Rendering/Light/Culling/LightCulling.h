@@ -21,19 +21,28 @@ namespace Rendering
 		public:
 			struct TBRParam
 			{	
-				Math::Matrix		viewMat;
 				Math::Matrix 		invProjMat;
 				Math::Matrix 		invViewProjMat;
 				Math::Matrix 		invViewProjViewport;
+				
+				struct Packed
+				{
+					uint		packedViewportSize;
+					uint 		packedNumOfLights;
+					uint 		maxNumOfperLightInTile;
 
-				uint				packedViewportSize;
-				unsigned int 		packedNumOfLights;
-				unsigned int 		maxNumOfperLightInTile;
-
-				Math::Vector3		camWorldPosition;
-
-				float				cameraNear;
-				float				cameraFar;
+					bool operator == (const Packed& a)
+					{
+						return (packedViewportSize == a.packedViewportSize) && (packedNumOfLights == a.packedNumOfLights) && (maxNumOfperLightInTile == a.maxNumOfperLightInTile);
+					}
+					bool operator != (const Packed& a)
+					{
+						return !( (*this) == a );
+					}
+				};
+				
+				Packed			packedParam;
+				uint			dummy;
 
 				TBRParam(){}
 				~TBRParam(){}
@@ -72,7 +81,7 @@ namespace Rendering
 
 		public:	
 			void Dispatch(const Device::DirectX* dx,
-				const Buffer::ConstBuffer* tbrConstBuffer,
+				const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB,
 				const std::vector<Shader::ShaderForm::InputConstBuffer>* additionalConstBuffers = nullptr);
 
 		public:

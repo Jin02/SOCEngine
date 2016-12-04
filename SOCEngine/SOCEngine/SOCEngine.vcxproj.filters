@@ -910,6 +910,9 @@
     <ClInclude Include="ShaderCodes\LensFlare.h">
       <Filter>ShaderCodes\PostProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Transform\TransformCB.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

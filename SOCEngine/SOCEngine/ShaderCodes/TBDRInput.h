@@ -87,7 +87,6 @@ struct LightingCommonParams
 
 cbuffer TBRParam : register( b0 )
 {
-	matrix	tbrParam_viewMat;
 	matrix 	tbrParam_invProjMat;
 	matrix 	tbrParam_invViewProjMat;
 	matrix	tbrParam_invViewProjViewportMat;
@@ -95,11 +94,7 @@ cbuffer TBRParam : register( b0 )
 	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
-	
-	float3	tbrParam_cameraWorldPosition;
-
-	float	tbrParam_cameraNear;
-	float	tbrParam_cameraFar;
+	uint	tbrParam_dummy;	
 };
 
 float2 GetViewportSize()
@@ -108,8 +103,6 @@ float2 GetViewportSize()
 					tbrParam_packedViewportSize & 0x0000ffff	);
 }
 
-// b1, b2, b3은 PhysicallyBased_Common에 있음
-
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
@@ -117,8 +110,6 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint	shadowGlobalParam_packedNumOfShadows;
 	uint	shadowGlobalParam_dummy;
 };
-
-// b5, b6, b7 은 GI 관련
 
 
 float4 ProjToView( float4 p )
@@ -142,9 +133,9 @@ float InvertProjDepthToView(float depth)
 }
 
 
-float LinearizeDepth(float depth)
+float LinearizeDepth(float depth, float camFar)
 {
-	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
+	return InvertProjDepthToView(depth) / camFar;
 }
 
 #endif

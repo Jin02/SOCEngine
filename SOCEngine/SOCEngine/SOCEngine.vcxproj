@@ -20,6 +20,7 @@
     </ClInclude>
     <ClInclude Include="Core\Time\Timer.h" />
     <ClInclude Include="Core\Transform\Transform.h" />
+    <ClInclude Include="Core\Transform\TransformCB.h" />
     <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="GPGPU\ComputeShader.h" />
     <ClInclude Include="Importer\G3djDataTypes.h" />
