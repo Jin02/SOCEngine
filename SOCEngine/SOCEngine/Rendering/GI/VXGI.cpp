@@ -109,7 +109,8 @@ void VXGI::Initialize(const Device::DirectX* dx, uint dimension, float minWorldS
 		_staticInfo.dimension				= dimension;
 		_staticInfo.maxMipLevel				= mipmapLevels;
 		_staticInfo.voxelSize				= minWorldSize / float(dimension);
-		_staticInfo.diffuseHalfConeMaxAngle	= Math::Common::Deg2Rad(60.0f);
+		_staticInfo.diffuseSamplingCount		= 128;
+		_staticInfo.specularSamplingCount		= 256;
 
 		_staticInfoCB->UpdateSubResource(dx->GetContext(), &_staticInfo);
 
@@ -233,6 +234,11 @@ void VXGI::UpdateGIDynamicInfo(const Device::DirectX* dx, const VXGIDynamicInfo&
 	}
 }
 
+void VXGI::UpdateGIStaticDynamicInfo(const Device::DirectX* dx, const VXGIStaticInfo& info)
+{
+	// 자주 업데이트 될 것이 아니니, 중복 체크를 할 이유는 딱히 없다.
+	_staticInfoCB->UpdateSubResource(dx->GetContext(), &info);	
+}
 
 void VXGI::Destroy()
 {
