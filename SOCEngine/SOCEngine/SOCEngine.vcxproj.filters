@@ -913,6 +913,9 @@
     <ClInclude Include="Core\Transform\TransformCB.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\CommonConstBuffer.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">

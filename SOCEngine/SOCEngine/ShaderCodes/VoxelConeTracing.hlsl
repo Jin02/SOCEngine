@@ -8,6 +8,7 @@
 #include "GBufferParser.h"
 #include "GICommon.h"
 #include "TBDRInput.h"
+#include "CommonConstBuffer.h"
 
 Texture3D<float4>	SourceVoxelMap						: register( t29 );
 Texture3D<float4>	MipmappedAnisotropicVoxelMap		: register( t30 );
@@ -135,7 +136,7 @@ float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRa
 
 float3 SpecularVCT(float3 worldPos, float3 normal, float halfConeAngleRad, uniform uint sampleCount)
 {
-	float3 viewDir			= normalize(tbrParam_cameraWorldPosition - worldPos);
+	float3 viewDir			= normalize(camera_worldPos - worldPos);
 	float3 reflectDir		= reflect(-viewDir, normal);
 
 	float4 colorAccum = TraceCone(worldPos, normal, reflectDir, halfConeAngleRad, sampleCount, false);

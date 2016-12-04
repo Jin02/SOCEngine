@@ -44,7 +44,7 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 	PixelShader::BindTexture(context, TextureBindIndex::IBLPass_IlluminationMap,				meshCam->GetRenderTarget());
 
 	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, meshCam->GetTBRParamConstBuffer());
-	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::Camera, meshCam->GetCamConstBuffer());
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::Camera, meshCam->GetCameraConstBuffer());
 
 	// Sky Cube Map
 	if(sky)

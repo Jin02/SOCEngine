@@ -178,6 +178,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
+    <ClInclude Include="ShaderCodes\CommonConstBuffer.h" />
     <ClInclude Include="ShaderCodes\DynamicLighting.h" />
     <ClInclude Include="ShaderCodes\EnvIBL.h" />
     <ClInclude Include="ShaderCodes\GBufferParser.h" />
