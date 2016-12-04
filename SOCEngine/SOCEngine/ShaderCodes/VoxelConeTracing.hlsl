@@ -172,12 +172,12 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
-	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, 128);
+	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, GetDiffuseSamplingCount());
 
 	// 1.73206060282 is tan( 60 degree )
 	// 0.01745506492 is tan(  1 degree )
 	float halfConeAngle	= lerp(1.73206060282f, 0.0174533f, (1.0f - surface.roughness));
-	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle, 256);
+	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle, GetSpecularSamplingCount());
 
 	float3 indirectDiffuse	= diffuseVCT	* surface.albedo;
 	float3 indirectSpecular	= specularVCT	* surface.specular;
