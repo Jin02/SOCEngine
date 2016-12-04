@@ -12,6 +12,11 @@ namespace Rendering
 			float			maxMipLevel;
 			float			voxelSize;
 			uint			packedSamplingCount;
+			
+			uint SetSamplingCount(uint diffuse, uint specular)
+			{
+				return ( packedSamplingCount = (diffuse & 0xffff) | (specular << 16) );
+			}
 		};
 		struct VXGIDynamicInfo
 		{
