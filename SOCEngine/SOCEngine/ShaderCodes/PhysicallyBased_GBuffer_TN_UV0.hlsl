@@ -12,10 +12,10 @@ struct VS_OUTPUT
 {
 	float4 sv_position 		 	: SV_POSITION;
 
-#ifdef USE_MOTION_BLUR
+//#ifdef USE_MOTION_BLUR
 	float4 position				: POSITION;
 	float4 prevPosition			: PREV_POSITION;
-#endif
+//#endif
 
 	float3 worldPos				: WORLD_POS;
 	float3 normal 				: NORMAL;
@@ -38,12 +38,12 @@ VS_OUTPUT VS( VS_INPUT input )
 	ps.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
 	ps.tangent 		= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
  
-#ifdef USE_MOTION_BLUR
+//#ifdef USE_MOTION_BLUR
 	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
 	ps.prevPosition		= mul(prevWorldPos, camera_prevViewProjMat);
 	
 	ps.position			= position;
-#endif
+//#endif
 
     return ps;
 }
@@ -60,12 +60,13 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 #endif
 
 	float2 velocity = float2(0.0f, 0.0f);
-#ifdef USE_MOTION_BLUR
-	float2 curScreenPos		= (input.position.xy / input.position.w) * 0.5f + 0.5f;
-	float2 prevScreenPos	= (input.prevPosition.xy / input.prevPosition.w) * 0.5f + 0.5f;
+//#ifdef USE_MOTION_BLUR
+	float2 curScreenPos		= input.position.xy / input.position.w;
+	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
 	
-	velocity = curScreenPos - prevScreenPos;
-#endif
+	velocity = (curScreenPos - prevScreenPos) * 0.5f;
+	velocity.y = -velocity.y;
+//#endif
 
 	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
