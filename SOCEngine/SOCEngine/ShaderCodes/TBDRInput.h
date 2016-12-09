@@ -10,13 +10,12 @@
 Buffer<float4>								PointLightTransformBuffer					: register( t0 ); // center, radius
 Buffer<float4>								PointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
 
-Buffer<float4>								SpotLightTransformBuffer						: register( t2 ); // center, radiusWithDirZSignBit
-Buffer<float4>								SpotLightColorBuffer							: register( t3 ); // rgb, lumen(maximum : 30,000)
-Buffer<float4>								SpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
+Buffer<float4>								SpotLightTransformBuffer					: register( t2 ); // center, radiusWithDirZSignBit
+Buffer<float4>								SpotLightColorBuffer						: register( t3 ); // rgb, lumen(maximum : 30,000)
+Buffer<float4>								SpotLightParamBuffer						: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
 
-Buffer<float4>								DirectionalLightTransformWithDirZBuffer		: register( t5 ); // center, DirZ
+Buffer<float2>								DirectionalLightDirXYBuffer					: register( t5 ); // DirXY
 Buffer<float4>								DirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
-Buffer<float2>								DirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
@@ -54,9 +53,9 @@ Texture2D<float>							PointLightShadowMapAtlas						: register( t17 );
 Texture2D<float>							SpotLightShadowMapAtlas						: register( t18 );
 Texture2D<float>							DirectionalLightShadowMapAtlas				: register( t19 );
 
-Buffer<uint>								PointLightShadowIndex						: register( t20 );
-Buffer<uint>								SpotLightShadowIndex							: register( t21 );
-Buffer<uint>								DirectionalLightShadowIndex					: register( t22 );
+Buffer<uint>								PointLightOptionalParamIndex						: register( t20 );
+Buffer<uint>								SpotLightOptionalParamIndex							: register( t21 );
+Buffer<uint>								DirectionalLightOptionalParamIndex					: register( t22 );
 
 struct DSLightVPMat	{	matrix mat;		};
 struct PLightVPMat	{	matrix mat[6];	};
@@ -137,5 +136,32 @@ float LinearizeDepth(float depth, float camFar)
 {
 	return InvertProjDepthToView(depth) / camFar;
 }
+
+uint GetShadowIndex(uint lightOptionalParamIndex)
+{
+	return lightOptionalParamIndex >> 16;
+}
+
+uint GetLightFlag(uint lightOptionalParamIndex)
+{
+	return (lightOptionalParamIndex & 0x0000ff00) >> 8;
+}
+
+uint GetLightShaftIndex(uint pl_dl_lightOptionalParamIndex)
+{
+	return (pl_dl_lightOptionalParamIndex & 0xe0) >> 5; 
+}
+
+uint GetDirectionalLightShaftPosIndex(uint directionalLightOptionalParamIndex)
+{
+	return (directionalLightOptionalParamIndex & 0x1c) >> 2; 
+}
+
+float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
+{
+	return float( (directionalLightOptionalParamIndex & 0x02) >> 1 );
+}
+
+
 
 #endif

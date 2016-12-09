@@ -61,23 +61,22 @@ void ShadingWithLightCulling::Initialize(
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
 
 	// Input Shader Resource Buffers
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),		lightManager->GetDirectionalLightTransformSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightDirXY),					lightManager->GetDirectionalLightDirXYSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightColor),					lightManager->GetDirectionalLightColorSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightParam),					lightManager->GetDirectionalLightParamSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowParam),			shadowMgr->GetDirectionalLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowIndex),			lightManager->GetDirectionalLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightOptionalParamIndex),	lightManager->GetDirectionalLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowViewProjMatrix),	shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 
 	// Point Light transform은 LightCulling::Initialize에서 등록하고 있다.
 	AddInputBufferToList(uint(TextureBindIndex::PointLightColor),						lightManager->GetPointLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowParam),					shadowMgr->GetPointLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowIndex),					lightManager->GetPointLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::PointLightOptionalParamIndex),			lightManager->GetPointLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowViewProjMatrix),		shadowMgr->GetPointLightShadowViewProjSRBuffer());
 
 	// Spot Light transform와 Param은 LightCulling::Initialize에서 등록하고 있다.
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightColor),						lightManager->GetSpotLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowParam),					shadowMgr->GetSpotLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowIndex),					lightManager->GetSpotLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightOptionalParamIndex),			lightManager->GetSpotLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowViewProjMatrix),			shadowMgr->GetSpotLightShadowViewProjSRBuffer());
 
 	// Input Texture

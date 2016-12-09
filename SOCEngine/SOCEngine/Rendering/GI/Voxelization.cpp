@@ -156,11 +156,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	const LightManager*		lightMgr	= scene->GetLightManager();
 	const ShadowRenderer*	shadowMgr	= scene->GetShadowManager();
 
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,			lightMgr->GetDirectionalLightTransformSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					lightMgr->GetDirectionalLightDirXYSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					lightMgr->GetDirectionalLightColorSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,					lightMgr->GetDirectionalLightParamSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				shadowMgr->GetDirectionalLightShadowParamSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				lightMgr->GetDirectionalLightShadowIndexSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,				lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 	
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						vxgiStaticInfoCB);
@@ -193,11 +192,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	GeometryShader::BindConstBuffer(context, 			ConstBufferBindIndex::VoxelizationInfoCB,					nullptr);
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VoxelizationInfoCB,					nullptr);
 
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,			nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,				nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		nullptr);
 
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);

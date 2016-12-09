@@ -16,10 +16,6 @@ namespace Rendering
 		public:
 			struct Param
 			{
-				unsigned short dirX;
-				unsigned short dirY;
-				//dirZ는, LightTransformBuffer의 radius에 해당함
-
 				Param() {}
 				~Param() {}
 			};
@@ -44,7 +40,7 @@ namespace Rendering
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const;
+			void MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;

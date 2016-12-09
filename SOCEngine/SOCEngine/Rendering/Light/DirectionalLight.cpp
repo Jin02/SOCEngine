@@ -71,18 +71,16 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const
+void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
+
 	Transform worldTransform(nullptr);
 	transform->FetchWorldTransform(worldTransform);
-	outTransform.worldPosition = worldTransform.GetLocalPosition();
-
 	const auto& forward = worldTransform.GetForward();
-	outTransform.radius = forward.z;
 	
-	outParam.dirX = Math::Common::FloatToHalf(forward.x);
-	outParam.dirY = Math::Common::FloatToHalf(forward.y);
+	outDir.first	= Math::Common::FloatToHalf(forward.x);
+	outDir.second	= Math::Common::FloatToHalf(forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const
