@@ -159,7 +159,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					lightMgr->GetDirectionalLightDirXYSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					lightMgr->GetDirectionalLightColorSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				shadowMgr->GetDirectionalLightShadowParamSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,				lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,		lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 	
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						vxgiStaticInfoCB);
@@ -195,7 +195,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,		nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		nullptr);
 
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);
