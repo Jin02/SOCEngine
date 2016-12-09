@@ -11,7 +11,17 @@ namespace Rendering
 			unsigned int	dimension;
 			float			maxMipLevel;
 			float			voxelSize;
-			float			diffuseHalfConeMaxAngle;
+			
+			union
+			{
+				uint packedSamplingCount;
+				struct
+				{
+					ushort specularSamplingCount;
+					ushort diffuseSamplingCount;
+				};
+			};
+			
 		};
 		struct VXGIDynamicInfo
 		{

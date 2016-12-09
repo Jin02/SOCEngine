@@ -8,13 +8,23 @@ cbuffer VXGIStaticInfo	: register( b6 )
 	uint	gi_dimension;
 	float	gi_maxMipLevel;
 	float	gi_voxelSize;
-	float	gi_diffuseHalfConeMaxAngle;
+	uint	gi_packedStepCount;
 }
 
 cbuffer VXGIDynamicInfo	: register( b7 )
 {
 	float3	gi_startCenterWorldPos;
 	uint	gi_packedNumfOfLights;
+}
+
+uint GetDiffuseSamplingCount()
+{
+	return gi_packedStepCount & 0xffff;
+}
+
+uint GetSpecularSamplingCount()
+{
+	return gi_packedStepCount >> 16;
 }
 
 float GetVoxelizationSize()
