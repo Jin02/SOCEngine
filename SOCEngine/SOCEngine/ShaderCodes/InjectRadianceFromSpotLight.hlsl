@@ -59,7 +59,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;
 	
 			float3 lightColor = lightColorWithLm.rgb;
-			float3 lambert = albedo.rgb * saturate(dot(normal, lightDir));
+			float3 lambert = (albedo.rgb / PI) * saturate(dot(normal, lightDir));
 	
 			shadowColor = RenderSpotLightShadow(lightIndex, worldPos.xyz, 0.0f);
 			radiosity = lambert * totalAttenTerm * lightColor * shadowColor.rgb;
