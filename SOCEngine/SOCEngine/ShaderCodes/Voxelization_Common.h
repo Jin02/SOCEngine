@@ -152,9 +152,8 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		ParseShadowParam(shadowParam, DirectionalLightShadowParams[dlShadowIdx]);
 		uint lightIndex			= shadowParam.lightIndex;
 
-		float4 lightCenterWithDirZ	= DirectionalLightTransformWithDirZBuffer[lightIndex];
-		float2 lightParam		= DirectionalLightParamBuffer[lightIndex];
-		float3 lightDir			= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		float3 lightDir			= float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
+		lightDir.z				= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
 
 		float3 lightColor		= DirectionalLightColorBuffer[lightIndex].rgb;
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));

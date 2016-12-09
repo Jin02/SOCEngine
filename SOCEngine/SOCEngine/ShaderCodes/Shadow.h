@@ -67,7 +67,7 @@ float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float de
 
 float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
 {
-	uint shadowIndex = SpotLightShadowIndex[lightIndex];
+	uint shadowIndex = GetShadowIndex(SpotLightOptionalParamIndex[lightIndex]);
 
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), SpotLightShadowViewProjMatrix[shadowIndex].mat);
 	shadowUV /= shadowUV.w;
@@ -105,7 +105,7 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 
 float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
-	uint shadowIndex = DirectionalLightShadowIndex[lightIndex];
+	uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), DirectionalLightShadowViewProjMatrix[shadowIndex].mat );
 	shadowUV /= shadowUV.w;
@@ -144,10 +144,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 uint ComputeFaceIndex(float3 dir)
 {
-	// 뭐, 별건 없고
-	// PointLight::ComputeViewProjMatrix에서 사용되는 forwards, ups 이거 인덱스 정하는 함수이다.
-	// 대체 뭔 방식으로 계산하는지 궁금하다면, 0, 0, 1이나 1, 0, 0 직접 머리속에 넣어서 계산하면된다.
-	// 그럼 PointLight::ComputeViewProjMatrix에서 사용 중인 인덱스와 동일하게 뜬다.
+	// PointLight::ComputeViewProjMatrix 李멸퀬
 
 	uint res = 0;
 
@@ -164,7 +161,7 @@ uint ComputeFaceIndex(float3 dir)
 float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir, float shadowDistanceTerm)
 {
 	uint faceIndex		= ComputeFaceIndex(-lightDir);
-	uint shadowIndex	= PointLightShadowIndex[lightIndex];
+	uint shadowIndex	= GetShadowIndex(PointLightOptionalParamIndex[lightIndex]);
 
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), PointLightShadowViewProjMatrix[shadowIndex].mat[faceIndex] );
 	shadowUV /= shadowUV.w;
