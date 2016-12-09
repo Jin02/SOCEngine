@@ -62,7 +62,7 @@ void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 
 	albedo_occlusion.rgb				= albedo;
 	albedo_occlusion.a					= occlusion;
-	motionXY_metallic_specularity.rg	= velocity * 0.25f + 0.5f; // -2 ~ 2 사이의 결과값을 0 ~ 1로 압축
+	motionXY_metallic_specularity.rg	= velocity * 0.5f + 0.5f;
 	motionXY_metallic_specularity.b		= metallic;
 	motionXY_metallic_specularity.a		= specularity;
 	normal_roughness.rgb				= normal;
