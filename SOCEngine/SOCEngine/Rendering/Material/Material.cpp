@@ -68,7 +68,7 @@ void Material::SetTextureUseBindIndex(unsigned int bindIndex, const Rendering::T
 
 void Material::SetTextureUseArrayIndex(unsigned int arrayIndex, const Rendering::Texture::Texture2D* texture, ShaderForm::Usage usage)
 {
-	ASSERT_COND_MSG(arrayIndex < _textures.size(), "Error, Invalid arrayIdx");
+	ASSERT_MSG_IF(arrayIndex < _textures.size(), "Error, Invalid arrayIdx");
 
 	_textures[arrayIndex].texture = texture;
 	_textures[arrayIndex].SetUsage(usage);
@@ -91,7 +91,7 @@ void Material::SetConstBufferUseBindIndex(uint bindIndex, const Buffer::ConstBuf
 
 void Material::SetConstBufferUseArrayIndex(uint arrayIdx, const Buffer::ConstBuffer* cb, ShaderForm::Usage usage)
 {
-	ASSERT_COND_MSG(arrayIdx < _constBuffers.size(), "Error, Invalid arrayIdx");
+	ASSERT_MSG_IF(arrayIdx < _constBuffers.size(), "Error, Invalid arrayIdx");
 
 	_constBuffers[arrayIdx].buffer = cb;
 	_constBuffers[arrayIdx].SetUsage(usage);
@@ -144,7 +144,7 @@ void Material::SetShaderResourceBufferUseBindIndex(unsigned int bindIndex, const
 
 void Material::SetShaderResourceBufferUseArrayIndex(unsigned int arrayIndex, const Rendering::Buffer::ShaderResourceBuffer* srBuffer, ShaderForm::Usage usage)
 {
-	ASSERT_COND_MSG(arrayIndex < _srBuffers.size(), "Error, Invalid arrayIdx");
+	ASSERT_MSG_IF(arrayIndex < _srBuffers.size(), "Error, Invalid arrayIdx");
 
 	_srBuffers[arrayIndex].srBuffer = srBuffer;
 	_srBuffers[arrayIndex].SetUsage(usage);

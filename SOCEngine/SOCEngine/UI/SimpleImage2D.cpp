@@ -73,7 +73,7 @@ void SimpleImage2D::Initialize(const Math::Size<uint>& size, const std::string& 
 
 	_meshFilter = new Geometry::MeshFilter;
 	bool success = _meshFilter->Initialize(meshCreateArgs);
-	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
+	ASSERT_MSG_IF(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::SharedInstance()->GetCurrentScene()->GetUIManager();
 	uiMgr->AddRenderQueue(_name, this);

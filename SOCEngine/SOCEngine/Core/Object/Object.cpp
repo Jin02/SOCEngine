@@ -48,7 +48,7 @@ void Object::DeleteAllChild()
 
 void Object::AddChild(Object *child)
 {
-	ASSERT_COND_MSG( (child->_parent == nullptr) || (child->_parent == this), 
+	ASSERT_MSG_IF( (child->_parent == nullptr) || (child->_parent == this), 
 		"Error, Invalid parent");
 
 	if(FindChild(child->GetName()) == nullptr)

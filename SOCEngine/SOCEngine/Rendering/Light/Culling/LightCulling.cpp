@@ -75,7 +75,7 @@ void LightCulling::Initialize(const std::string& filePath, const std::string& ma
 	UpdateThreadGroup(&threadGroup, false);
 	_computeShader = new ComputeShader(threadGroup, blob);
 
-	ASSERT_COND_MSG(_computeShader->Initialize(), "can not create compute shader");
+	ASSERT_MSG_IF(_computeShader->Initialize(), "can not create compute shader");
 	Manager::LightManager* lightManager = Director::SharedInstance()->GetCurrentScene()->GetLightManager();
 
 	// Input Buffer Setting
@@ -121,7 +121,7 @@ void LightCulling::Dispatch(const Device::DirectX* dx,
 
 	std::vector<ShaderForm::InputConstBuffer> inputConstBuffers;
 
-	ASSERT_COND_MSG(tbrCB && mainCamCB, "Error, tbrCB and mainCB is null");
+	ASSERT_MSG_IF(tbrCB && mainCamCB, "Error, tbrCB and mainCB is null");
 	{
 		inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::TBRParam,	tbrCB));
 		inputConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::Camera,	mainCamCB));

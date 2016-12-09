@@ -28,7 +28,7 @@ BilateralFiltering::~BilateralFiltering()
 
 void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::Size<uint>& size, DXGI_FORMAT format)
 {
-	ASSERT_COND_MSG(type != Type::Far, "Cant support this type");
+	ASSERT_MSG_IF(type != Type::Far, "Cant support this type");
 
 	_filteringSize = size;
 
@@ -41,7 +41,7 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::S
 		else if(type == Type::Far)	psName = "BilateralGaussFar_InFullScreen_PS";
 	}
 
-	ASSERT_COND_MSG(psName.empty() == false, "Error, psName is null");
+	ASSERT_MSG_IF(psName.empty() == false, "Error, psName is null");
 	{
 		if(_vertical == nullptr)	_vertical	= new FullScreen;
 		macros.push_back(ShaderMacro("BLUR_VERTICAL", ""));

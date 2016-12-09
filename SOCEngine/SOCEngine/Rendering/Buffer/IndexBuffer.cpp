@@ -33,7 +33,7 @@ bool IndexBuffer::Initialize(
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create ib");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. does not create ib");
 
 	return true;
 }

@@ -46,7 +46,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 	EngineFactory pathFinder(nullptr);
 	pathFinder.FetchShaderFullPath(filePath, "VoxelConeTracing");
 
-	ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+	ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
@@ -63,7 +63,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 	}
 
 	_shader = new ComputeShader(threadGroup, blob);
-	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
+	ASSERT_MSG_IF(_shader->Initialize(), "can not create compute shader");
 
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,

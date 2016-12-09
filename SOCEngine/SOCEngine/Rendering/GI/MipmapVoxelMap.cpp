@@ -40,7 +40,7 @@ void MipmapVoxelMap::Initialize()
 		EngineFactory pathFinder(nullptr);
 		pathFinder.FetchShaderFullPath(filePath, fileName);
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 
 		ResourceManager* resourceManager = ResourceManager::SharedInstance();
 		auto shaderMgr = resourceManager->GetShaderManager();
@@ -51,7 +51,7 @@ void MipmapVoxelMap::Initialize()
 
 		ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", mainFuncName, false, &macros);
 		ComputeShader* shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-		ASSERT_COND_MSG(shader->Initialize(), "can not create compute shader");
+		ASSERT_MSG_IF(shader->Initialize(), "can not create compute shader");
 
 		return shader;
 	};
@@ -99,7 +99,7 @@ void MipmapVoxelMap::Mipmapping(const DirectX* dx, const VoxelMap* sourceColorMa
 		ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::Mipmap_InfoCB,				nullptr);
 	};
 
-	ASSERT_COND_MSG(sourceColorMap && anisotropicMap, "Error, param is invalid");
+	ASSERT_MSG_IF(sourceColorMap && anisotropicMap, "Error, param is invalid");
 
 	Mipmap(_baseMipmap, sourceColorMap->GetSourceMapUAV(), anisotropicMap->GetSourceMapUAV(), 0);
 	Mipmap(_anisotropicMipmap, anisotropicMap->GetSourceMapUAV(), anisotropicMap->GetMipmapUAV(0), 1);

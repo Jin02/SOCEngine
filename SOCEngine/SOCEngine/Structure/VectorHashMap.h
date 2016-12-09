@@ -71,7 +71,7 @@ namespace Structure
 
 		Object& Get(unsigned int index)
 		{
-			ASSERT_COND_MSG(index < _vector.size(), "Out index");
+			ASSERT_MSG_IF(index < _vector.size(), "Out index");
 			return _vector[index];
 		}
 

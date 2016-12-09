@@ -69,7 +69,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension)
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "ClearVoxelRawMap");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
@@ -87,7 +87,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension)
 	}
 
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
-	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+	ASSERT_MSG_IF(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 }
 
 void Voxelization::Destroy()

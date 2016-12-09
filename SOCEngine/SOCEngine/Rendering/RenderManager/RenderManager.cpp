@@ -67,7 +67,7 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 		ShaderGroup shaders;
 		shaderLoader.LoadShader(fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);
 
-		//ASSERT_COND_MSG(shaders.vs, "RenderManager Error : can not load shader");
+		//ASSERT_MSG_IF(shaders.vs, "RenderManager Error : can not load shader");
 		return shaders;
 	};
 

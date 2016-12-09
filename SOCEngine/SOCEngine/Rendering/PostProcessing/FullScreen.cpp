@@ -30,7 +30,7 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	
 	std::string folderPath = "";
 	bool success = Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
-	ASSERT_COND_MSG(success, "Error!, Invalid File Path");
+	ASSERT_MSG_IF(success, "Error!, Invalid File Path");
 
 	auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
 

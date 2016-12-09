@@ -15,7 +15,7 @@ CameraManager::~CameraManager(){}
 void CameraManager::Add(Camera::CameraForm* camera)
 {
 	address key = reinterpret_cast<address>(camera);
-	ASSERT_COND_MSG(Has(key) == false, "Error, Already registed camera objeect");
+	ASSERT_MSG_IF(Has(key) == false, "Error, Already registed camera objeect");
 
 	VectorMap<address, Camera::CameraForm*>::Add(key, camera);
 }

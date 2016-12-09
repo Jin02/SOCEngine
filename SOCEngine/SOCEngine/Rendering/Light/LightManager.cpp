@@ -128,7 +128,7 @@ uint LightManager::Add(LightForm*& light)
 	address searchKey = reinterpret_cast<address>(light);
 
 	bool found = Has(light);
-	ASSERT_COND_MSG(found == false, "Already has Key");
+	ASSERT_MSG_IF(found == false, "Already has Key");
 
 	uint counter = -1;
 	_lights.Add(searchKey, Lights(light, counter));

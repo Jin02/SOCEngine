@@ -97,7 +97,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 
 	_meshFilter = new Geometry::MeshFilter;
 	bool success = _meshFilter->Initialize(meshCreateArgs);
-	ASSERT_COND_MSG(success, "Error, cant create SimpleImage2D meshfilter");
+	ASSERT_MSG_IF(success, "Error, cant create SimpleImage2D meshfilter");
 
 	Manager::UIManager* uiMgr = Director::SharedInstance()->GetCurrentScene()->GetUIManager();
 	uiMgr->AddRenderQueue(_name, this);
@@ -110,7 +110,7 @@ void SimpleText2D::Initialize(uint maxLength, const std::string& sharedVerticesK
 
 void SimpleText2D::UpdateText(const std::string& text)
 {
-	ASSERT_COND_MSG(text.length() < _maxLength, "Error, text's length is longer than maximum length");
+	ASSERT_MSG_IF(text.length() < _maxLength, "Error, text's length is longer than maximum length");
 	if(text.empty())
 		return;
 

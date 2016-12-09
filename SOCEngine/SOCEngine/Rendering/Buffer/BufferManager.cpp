@@ -14,12 +14,12 @@ BufferManager::~BufferManager()
 
 void BufferManager::Add(const std::string& file, const std::string& key, VertexBuffer* bufferData)
 {
-	ASSERT_COND_MSG(_vertexBuffers.Add(file, key, bufferData), "Error, Duplicated Key");
+	ASSERT_MSG_IF(_vertexBuffers.Add(file, key, bufferData), "Error, Duplicated Key");
 }
 
 void BufferManager::Add(const std::string& file, const std::string& key, IndexBuffer* bufferData)
 {
-	ASSERT_COND_MSG(_indexBuffers.Add(file, key, bufferData), "Error, Duplicated Key");
+	ASSERT_MSG_IF(_indexBuffers.Add(file, key, bufferData), "Error, Duplicated Key");
 }
 
 void BufferManager::Add(const std::string& file, const std::string& key, const void* bufferData)

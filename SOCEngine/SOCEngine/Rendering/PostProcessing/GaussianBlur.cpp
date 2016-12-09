@@ -80,7 +80,7 @@ void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outRes
 
 void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const RenderTexture* inputColorMap, const RenderTexture* tempMap)
 {
-	ASSERT_COND_MSG(tempMap, "Error, temp map is null!");
+	ASSERT_MSG_IF(tempMap, "Error, temp map is null!");
 
 	ID3D11DeviceContext* context	= dx->GetContext();
 

@@ -39,7 +39,7 @@ bool DepthBufferCube::Initialize(const Math::Size<unsigned int>& size, bool useS
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &_texture);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create texture");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, cant create texture");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	memset(&dsvDesc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -51,7 +51,7 @@ bool DepthBufferCube::Initialize(const Math::Size<unsigned int>& size, bool useS
 	dsvDesc.Texture2DArray.MipSlice			= 0;
 
 	hr = device->CreateDepthStencilView(_texture, &dsvDesc, &_depthStencilView);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create dsv");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, cant create dsv");
 
 	return true;
 }

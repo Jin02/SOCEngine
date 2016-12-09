@@ -33,7 +33,7 @@ PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
 
 void PhysicallyBasedMaterial::Initialize()
 {
-	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
+	ASSERT_MSG_IF(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
 	SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 	SetEmissiveColor(Color(0.0f, 0.0f, 0.0f, 0.0f));

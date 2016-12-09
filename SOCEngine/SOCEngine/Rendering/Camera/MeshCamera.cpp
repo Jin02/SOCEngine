@@ -40,25 +40,25 @@ void MeshCamera::OnInitialize()
 	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
 	_albedo_occlusion = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_albedo_occlusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
 	_motionXY_metallic_specularity = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_motionXY_metallic_specularity->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _motionXY_metallic_specularity render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
 	_emission_materialFlag = new Texture::RenderTexture;
-	ASSERT_COND_MSG(
+	ASSERT_MSG_IF(
 		_emission_materialFlag->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _emission_materialFlag render texture"
 		);
@@ -550,13 +550,13 @@ void MeshCamera::EnableRenderTransparentMesh(bool enable)
 	{
 		const Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 
-		ASSERT_COND_MSG(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
+		ASSERT_MSG_IF(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
 		{
 			_blendedDepthBuffer =  new DepthBuffer;
 			_blendedDepthBuffer->Initialize(backBufferSize, true);
 		}
 
-		ASSERT_COND_MSG(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
+		ASSERT_MSG_IF(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
 		{
 			_blendedMeshLightCulling = new OnlyLightCulling;
 			_blendedMeshLightCulling->Initialize(_opaqueDepthBuffer, _blendedDepthBuffer);

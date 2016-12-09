@@ -328,15 +328,15 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 		desc.MaxLOD		= D3D11_FLOAT32_MAX;
 
 		HRESULT hr = _device ->CreateSamplerState( &desc, &_anisotropicSamplerState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
 		desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		hr = _device ->CreateSamplerState( &desc, &_linearSamplerState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		hr = _device ->CreateSamplerState( &desc, &_pointSamplerState );
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create sampler state");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create sampler state");
 
 		// Shadow Sampler State
 		{
@@ -347,11 +347,11 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
 			desc.MaxAnisotropy	= 1;
 			hr = _device->CreateSamplerState( &desc, &_shadowLessEqualCompState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLessEqualCompState state");
+			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _shadowLessEqualCompState state");
 
 			desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
 			hr = _device->CreateSamplerState( &desc, &_shadowGreaterEqualCompState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowGreaterEqualCompState state");
+			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _shadowGreaterEqualCompState state");
 
 			desc.Filter		= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -364,7 +364,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.MinLOD		= 0;
 			desc.MaxLOD		= 0;
 			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
+			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
 
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Filter		= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -381,7 +381,7 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.MaxLOD			= D3D11_FLOAT32_MAX;
 
 			hr = _device->CreateSamplerState( &desc, &_coneTracingSamplerState );
-			ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, device cant create _coneTracingSamplerState");
+			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _coneTracingSamplerState");
 		}
 	}
 

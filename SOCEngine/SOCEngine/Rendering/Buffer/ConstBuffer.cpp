@@ -27,6 +27,6 @@ bool ConstBuffer::Initialize(unsigned int size)
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create constant buffer");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. Not create constant buffer");
 	return true;
 }

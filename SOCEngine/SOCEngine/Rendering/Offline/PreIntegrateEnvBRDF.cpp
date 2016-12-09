@@ -37,14 +37,14 @@ Texture::Texture2D* PreIntegrateEnvBRDF::CreatePreBRDFMap()
 		EngineFactory pathFinder(nullptr);
 		pathFinder.FetchShaderFullPath(filePath, fileName);
 	
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 	
 		ResourceManager* resourceManager = ResourceManager::SharedInstance();
 		auto shaderMgr = resourceManager->GetShaderManager();
 	
 		ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 		shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-		ASSERT_COND_MSG(shader->Initialize(), "can not create compute shader");
+		ASSERT_MSG_IF(shader->Initialize(), "can not create compute shader");
 
 		return shader;
 	};
