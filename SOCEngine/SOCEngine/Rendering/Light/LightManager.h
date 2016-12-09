@@ -7,11 +7,6 @@
 
 #include <functional>
 
-#define POINT_LIGHT_BUFFER_MAX_NUM			2048
-#define SPOT_LIGHT_BUFFER_MAX_NUM			2048
-#define DIRECTIONAL_LIGHT_BUFFER_MAX_NUM	1024
-#define LIGHT_BUFFER_OVERALL_UPDATE_RATE	0.5f
-
 namespace Rendering
 {
 	namespace Manager
