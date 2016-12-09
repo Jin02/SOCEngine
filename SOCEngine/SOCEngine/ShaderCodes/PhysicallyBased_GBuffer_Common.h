@@ -62,7 +62,7 @@ void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 
 	albedo_occlusion.rgb				= albedo;
 	albedo_occlusion.a					= occlusion;
-	motionXY_metallic_specularity.rg	= velocity;
+	motionXY_metallic_specularity.rg	= velocity * 0.5f + 0.5f;
 	motionXY_metallic_specularity.b		= metallic;
 	motionXY_metallic_specularity.a		= specularity;
 	normal_roughness.rgb				= normal;

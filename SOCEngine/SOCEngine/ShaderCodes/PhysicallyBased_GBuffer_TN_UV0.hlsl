@@ -59,14 +59,9 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
-	float2 velocity = float2(0.0f, 0.0f);
-//#ifdef USE_MOTION_BLUR
-	float2 curScreenPos		= input.position.xy / input.position.w;
+	float2 curScreenPos	= input.position.xy / input.position.w;
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
-	
-	velocity = (curScreenPos - prevScreenPos) * 0.5f;
-	velocity.y = -velocity.y;
-//#endif
+	float2 velocity		= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 
 	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
