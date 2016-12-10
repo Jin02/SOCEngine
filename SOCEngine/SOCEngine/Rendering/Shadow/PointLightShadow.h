@@ -19,8 +19,6 @@ namespace Rendering
 			Math::Matrix	_invNearFarViewProjMat[5];	// another viewMat is placed in LightForm.
 			Math::Matrix	_viewProjMat[5];			// another viewProjMat is placed in LightForm.
 
-			Math::Matrix	_invViewProjViewportMat[5];	// another invViewProjViewportMat is placed in LightForm.
-
 			Math::Matrix	_prevViewProj;
 
 		public:
@@ -28,18 +26,17 @@ namespace Rendering
 			~PointLightShadow();
 
 		public:
-			void ComputeViewProjMatrix(const Math::Matrix& invViewportMat);
+			void ComputeViewProjMatrix();
 
 		public:
 			void MakeParam(Param& outParam, uint lightIndex) const;
-			void MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat, std::array<Math::Matrix, 6>& outInvVPVMat) const;
+			void MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const;
 
 			GET_ACCESSOR(UnderScanSize,			float,	_underScanSize);
 			SET_SHADOW_ACCESSOR(UnderScanSize,	float,	_underScanSize, _paramUpdateCounter);
 
 			void GetInvNearFarViewProjMatrices(std::array<Math::Matrix, 6>& out) const;
 			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const;
-			void GetInvViewProjViewportMatrices(std::array<Math::Matrix, 6>& out) const;
 		};
 	}
 }

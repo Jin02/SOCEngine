@@ -66,11 +66,6 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 #else
 	_frustum.Make(_viewProjMat);
 #endif
-
-	Matrix invViewProj;
-	Matrix::Inverse(invViewProj, _viewProjMat);
-
-	_invViewProjViewportMat = invViewportMat * invViewProj;
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const

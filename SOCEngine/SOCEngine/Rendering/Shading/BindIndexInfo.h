@@ -38,9 +38,9 @@ namespace Rendering
 		SpotLightShadowMapAtlas					= 18,
 		DirectionalLightShadowMapAtlas			= 19,
 
-		PointLightOptionalParamIndex					= 20,
-		SpotLightOptionalParamIndex					= 21,
-		DirectionalLightOptionalParamIndex				= 22,
+		PointLightOptionalParamIndex			= 20,
+		SpotLightOptionalParamIndex				= 21,
+		DirectionalLightOptionalParamIndex		= 22,
 
 		PointLightShadowViewProjMatrix			= 23,
 		SpotLightShadowViewProjMatrix			= 24,
@@ -53,10 +53,6 @@ namespace Rendering
 		VoxelAlbedoRawBuffer					= 29,
 		VoxelNormalRawBuffer					= 30,
 		VoxelEmissionRawBuffer					= 31,
-
-		DirectionalLightShadowInvVPVMat			= 32,
-		PointLightShadowInvVPVMat				= 33,
-		SpotLightShadowInvVPVMat				= 34,
 
 		VCTInjectionSourceColorMap				= 29,
 		VCTMipmappedInjectionColorMap			= 30,

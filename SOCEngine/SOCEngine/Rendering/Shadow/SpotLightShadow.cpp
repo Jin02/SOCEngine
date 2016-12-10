@@ -18,7 +18,7 @@ SpotLightShadow::~SpotLightShadow()
 {
 }
 
-void SpotLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const
+void SpotLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat) const
 {
 #ifdef USE_SHADOW_INVERTED_DEPTH
 	if(GetUseVSM())
@@ -26,10 +26,9 @@ void SpotLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix
 	else
 #endif
 	Math::Matrix::Transpose(outViewProjMat, _viewProjMat);
-	Math::Matrix::Transpose(outInvVPVMat, _invViewProjViewportMat);
 }
 
-void SpotLightShadow::ComputeViewProjMatrix(const Math::Matrix& invViewportMat)
+void SpotLightShadow::ComputeViewProjMatrix()
 {
 	Matrix view;
 	_owner->GetOwner()->GetTransform()->FetchWorldMatrix(view);
@@ -52,9 +51,4 @@ void SpotLightShadow::ComputeViewProjMatrix(const Math::Matrix& invViewportMat)
 
 	_invNearFarViewProjMat	= view * invNearFarProj;
 	_viewProjMat			= view * proj;
-	
-	Matrix invViewProj;
-	Matrix::Inverse(invViewProj, _viewProjMat);
-
-	_invViewProjViewportMat = invViewportMat * invViewProj;
 }

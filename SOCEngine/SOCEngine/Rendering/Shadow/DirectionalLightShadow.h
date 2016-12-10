@@ -16,7 +16,7 @@ namespace Rendering
 			~DirectionalLightShadow();
 
 		public:
-			void MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const;
+			void MakeMatrixParam(Math::Matrix& outViewProjMat) const;
 		};
 	}
 }

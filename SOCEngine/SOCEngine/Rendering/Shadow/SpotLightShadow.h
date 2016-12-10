@@ -16,10 +16,10 @@ namespace Rendering
 			~SpotLightShadow();
 
 		public:
-			void ComputeViewProjMatrix(const Math::Matrix& invViewportMat);
+			void ComputeViewProjMatrix();
 
 		public:
-			void MakeMatrixParam(Math::Matrix& outViewProjMat, Math::Matrix& outInvVPVMat) const;
+			void MakeMatrixParam(Math::Matrix& outViewProjMat) const;
 		};
 	}
 }
