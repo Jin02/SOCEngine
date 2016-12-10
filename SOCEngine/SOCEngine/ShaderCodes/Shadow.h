@@ -87,11 +87,19 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
 		shadow = saturate( VarianceShadow(SpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 	else
-#endif
-#ifdef USE_SHADOW_INVERTED_DEPTH
+	{
+	#ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias) );
-#else
+	#else
 		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+	#endif
+	}
+#else
+	#ifdef USE_SHADOW_INVERTED_DEPTH
+		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+	#else
+		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+	#endif
 #endif
 
 	float3 shadowColor = shadowParam.color.rgb;
@@ -126,11 +134,19 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
 		shadow = saturate( VarianceShadow(DirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 	else
-#endif
-#ifdef USE_SHADOW_INVERTED_DEPTH
+	{
+	#ifdef USE_SHADOW_INVERTED_DEPTH
 		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias) );
-#else
+	#else
 		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+	#endif
+	}
+#else
+	#ifdef USE_SHADOW_INVERTED_DEPTH
+		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+	#else
+		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+	#endif
 #endif
 
 	float3 shadowColor = shadowParam.color.rgb;
