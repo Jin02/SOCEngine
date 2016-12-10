@@ -14,11 +14,7 @@ namespace Rendering
 		class DirectionalLight : public LightForm
 		{
 		public:
-			struct Param
-			{
-				Param() {}
-				~Param() {}
-			};
+			struct Param{};
 
 		private:
 			Math::Matrix				_invNearFarViewProjMat;
@@ -33,6 +29,9 @@ namespace Rendering
 		public:
 			DirectionalLight();
 			virtual ~DirectionalLight();
+
+		public:
+			virtual void OnUpdate(float deltaTime);
 
 		public:
 			void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
@@ -52,8 +51,9 @@ namespace Rendering
 			GET_ACCESSOR(InvViewProjViewportMatrix,			const Math::Matrix&,				_invViewProjViewportMat);
 			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,				_viewProjMat);
 
-			GET_SET_ACCESSOR(ProjectionSize,			float,	_projectionSize);
-			GET_SET_ACCESSOR(UseAutoProjectionLocation,	bool,	_useAutoProjectLocation);
+			GET_SET_ACCESSOR(ProjectionSize,				float,								_projectionSize);
+			GET_SET_ACCESSOR(UseAutoProjectionLocation,		bool,								_useAutoProjectLocation);
+			GET_SET_ACCESSOR(LightShaftSize,				float,								_radius);
 		};
 	}
 }
