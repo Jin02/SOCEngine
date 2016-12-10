@@ -43,7 +43,7 @@ void ShadingWithLightCulling::Initialize(
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "TBDR");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	std::vector<ShaderMacro> macros;

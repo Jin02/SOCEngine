@@ -7,11 +7,6 @@
 
 #include <functional>
 
-#define POINT_LIGHT_BUFFER_MAX_NUM			2048
-#define SPOT_LIGHT_BUFFER_MAX_NUM			2048
-#define DIRECTIONAL_LIGHT_BUFFER_MAX_NUM	1024
-#define LIGHT_BUFFER_OVERALL_UPDATE_RATE	0.5f
-
 namespace Rendering
 {
 	namespace Manager
@@ -69,7 +64,8 @@ namespace Rendering
 
 		private:
 			void UpdateSRBufferUsingMapDiscard(	ID3D11DeviceContext* context,
-												const std::function<uint(const Light::LightForm*)>& getShadowIndexInEachShadowLights);
+												const std::function<ushort(const Light::LightForm*)>& getShadowIndexInEachShadowLights,
+												const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex);
 			void UpdateSRBufferUsingMapNoOverWrite(ID3D11DeviceContext* context);
 
 		public:
@@ -78,7 +74,8 @@ namespace Rendering
 
 			uint Add(Light::LightForm*& light);
 			void UpdateSRBuffer(const Device::DirectX* dx,
-								const std::function<uint(const Light::LightForm*)>& getShadowIndexInEachShadowLights);
+								const std::function<ushort(const Light::LightForm*)>& getShadowIndexInEachShadowLights,
+								const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex);
 			void ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, float directionalLightShadowMapResolution);
 
 			bool Has(Light::LightForm*& light) const;

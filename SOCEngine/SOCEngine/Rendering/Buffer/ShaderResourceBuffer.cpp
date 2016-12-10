@@ -38,7 +38,7 @@ void ShaderResourceBuffer::Initialize(
 	HRESULT hr = sysMem ? device->CreateBuffer(&desc, &data, &_buffer)
 						: device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
+	ASSERT_MSG_IF(SUCCEEDED( hr ), "Error!. can't create buffer");
 
 	_srv = new View::ShaderResourceView;
 	_srv->InitializeUsingBuffer(_buffer, num, format, false);

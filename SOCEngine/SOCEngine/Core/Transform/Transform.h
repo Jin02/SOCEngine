@@ -81,6 +81,8 @@ namespace Core
 		GET_ACCESSOR(Up,				const Math::Vector3&,		_up);
 		GET_ACCESSOR(Right,				const Math::Vector3&,		_right);
 
+		GET_ACCESSOR(WorldMatrix,		const Math::Matrix&,		_worldMat);
+
 		void FetchLocalMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldMatrix(Math::Matrix& outMatrix) const;
 		void FetchWorldPosition(Math::Vector3& outPosition) const;

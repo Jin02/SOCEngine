@@ -34,6 +34,7 @@ namespace Rendering
 			uint					_lumen; //intensity
 
 			Shadow::ShadowCommon*	_shadow;
+			uchar					_flag;
 
 		protected:
 			LightForm();
@@ -69,8 +70,9 @@ namespace Rendering
 
 			uint Get32BitMainColor() const;
 
-			GET_ACCESSOR(UseShadow, bool, _shadow != nullptr);
-			GET_ACCESSOR(ShadowColor, const Color&, _shadow->GetColor());
+			GET_ACCESSOR(UseShadow,		bool,			_shadow != nullptr);
+			GET_ACCESSOR(ShadowColor,	const Color&,	_shadow->GetColor());
+			GET_ACCESSOR(Flag,			uchar,			_flag);
 		};
 	}
 }

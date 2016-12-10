@@ -27,7 +27,7 @@ Scene::Scene(void) :
 	_shadowRenderer(nullptr), _vxgi(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
 	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr),
-	_lightManager(nullptr), _materialMgr(nullptr)
+	_lightManager(nullptr), _materialMgr(nullptr), _lightShaftMgr(nullptr)
 {
 	_state = State::Init;
 }
@@ -44,6 +44,7 @@ Scene::~Scene(void)
 	SAFE_DELETE(_backBuffer);
 	SAFE_DELETE(_postProcessingSystem);
 	SAFE_DELETE(_reflectionManager);
+	SAFE_DELETE(_lightShaftMgr);
 }
 
 void Scene::Initialize()
@@ -83,6 +84,9 @@ void Scene::Initialize()
 
 	_prevIntegrateBRDFMap = Resource::ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 
+	_lightShaftMgr = new LightShaftManager;
+	_lightShaftMgr->Initialize();
+
 	NextState();
 	OnInitialize();
 }
@@ -113,16 +117,20 @@ void Scene::RenderPreview()
 	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
 		(*iter)->UpdateConstBuffer(_dx);
 
-	auto FetchLightIndex = [&](const Light::LightForm* light) -> uint
+	auto FetchLightIndex = [&](const Light::LightForm* light) -> ushort
 	{
 		return _lightManager->FetchLightIndexInEachLights(light);
 	};
-	auto FetchShadowIndex = [&](const Light::LightForm* light) -> uint
+	auto FetchShadowIndex = [&](const Light::LightForm* light) -> ushort
 	{
 		return _shadowRenderer->FetchShadowIndexInEachShadowLights(light);
 	};
+	auto FetchLightShaftIndex = [&](const Light::LightForm* light) -> uchar
+	{
+		return _lightShaftMgr->GetLightShaftIndex(light);
+	};
 
-	_lightManager->UpdateSRBuffer(_dx, FetchShadowIndex);
+	_lightManager->UpdateSRBuffer(_dx, FetchShadowIndex, FetchLightShaftIndex);
 	_shadowRenderer->UpdateSRBuffer(_dx, FetchLightIndex);
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
@@ -135,6 +143,10 @@ void Scene::RenderPreview()
 
 	if(_sky)
 		_sky->UpdateConstBuffer(_dx);
+
+	const CameraForm* mainCam = _cameraMgr->GetMainCamera();
+	if(mainCam)
+		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
 }
 
 void Scene::Render()
@@ -215,6 +227,7 @@ void Scene::Destroy()
 	_reflectionManager->Destroy();
 
 	DeactivateSky();
+	_lightShaftMgr->Destroy();
 }
 
 void Scene::NextState()

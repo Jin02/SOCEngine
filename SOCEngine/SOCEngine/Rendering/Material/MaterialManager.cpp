@@ -50,7 +50,7 @@ void MaterialManager::DeleteAll()
 
 void MaterialManager::Add(const std::string& key, Material* material)
 {
-	ASSERT_COND_MSG(Find(key) == nullptr, "Error, Duplicated key");
+	ASSERT_MSG_IF(Find(key) == nullptr, "Error, Duplicated key");
 	_materials.Add(key, material);
 }
 

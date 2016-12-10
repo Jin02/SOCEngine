@@ -53,10 +53,10 @@ void Director::CalculateFPS()
 void Director::Initialize(const Math::Rect<unsigned int>& windowRect, const Math::Rect<unsigned int>& renderScreenRect, HINSTANCE instance, const char* name, bool windowMode, bool isChild, HWND parentHandle, bool useMSAA)
 {
 	_win = new Win32(windowRect, instance, name, windowMode, isChild, parentHandle);
-	ASSERT_COND_MSG(_win->Initialize(), "Error, can not create windows");
+	ASSERT_MSG_IF(_win->Initialize(), "Error, can not create windows");
 
 	_directX = new DirectX();
-	ASSERT_COND_MSG(_directX->InitDevice(_win, renderScreenRect, useMSAA), "Error, can not create directX device");
+	ASSERT_MSG_IF(_directX->InitDevice(_win, renderScreenRect, useMSAA), "Error, can not create directX device");
 
 	ResourceManager::SharedInstance()->Initialize();
 }

@@ -85,4 +85,4 @@ namespace Utility
 
 #define DEBUG_LOG(message) Utility::Debug::Log(message);
 #define ASSERT_MSG(MSG) assert(!MSG)
-#define ASSERT_COND_MSG(CONDITION, MSG) if(!(CONDITION)){assert(!MSG);}
+#define ASSERT_MSG_IF(CONDITION, MSG) if(!(CONDITION)){assert(!MSG);}

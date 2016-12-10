@@ -15,7 +15,7 @@ ReflectionProbeManager::~ReflectionProbeManager(){}
 void ReflectionProbeManager::Add(Camera::ReflectionProbe* camera)
 {
 	address key = reinterpret_cast<address>(camera);
-	ASSERT_COND_MSG(Has(key) == false, "Error, Already registed reflection probe objeect");
+	ASSERT_MSG_IF(Has(key) == false, "Error, Already registed reflection probe objeect");
 
 	VectorMap<address, Camera::ReflectionProbe*>::Add(key, camera);
 }

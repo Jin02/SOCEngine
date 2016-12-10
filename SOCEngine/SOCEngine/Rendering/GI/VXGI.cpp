@@ -54,14 +54,14 @@ void VXGI::InitializeClearVoxelMap(uint dimension)
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMap");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 
 	_clearVoxelMapCS = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+	ASSERT_MSG_IF(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 }
 
 void VXGI::ClearInjectColorVoxelMap(const Device::DirectX* dx)
@@ -159,7 +159,7 @@ void VXGI::Initialize(const Device::DirectX* dx, uint dimension, float minWorldS
 
 void VXGI::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
-	ASSERT_COND_MSG(camera, "Error, camera is null");
+	ASSERT_MSG_IF(camera, "Error, camera is null");
 
 	const LightManager* lightMgr	= scene->GetLightManager();
 	

@@ -36,7 +36,7 @@ bool RawBuffer::Initialize(uint stride, uint elemNum, Flag flag)
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED( hr ), "Error!. can't create buffer");
+	ASSERT_MSG_IF(SUCCEEDED( hr ), "Error!. can't create buffer");
 
 	if(useSRV)
 	{

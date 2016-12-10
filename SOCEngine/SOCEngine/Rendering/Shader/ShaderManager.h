@@ -57,7 +57,7 @@ namespace Rendering
 			template<typename ShaderType>
 			ShaderType* FindShader(const std::string& key)
 			{
-				ASSERT_COND_MSG(key.empty() == false, "Error, Key is empty");
+				ASSERT_MSG_IF(key.empty() == false, "Error, Key is empty");
 				auto findIter = _shaders.find(key);
 				return findIter == _shaders.end() ? nullptr : static_cast<ShaderType*>(findIter->second);
 			}

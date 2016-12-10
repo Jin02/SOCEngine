@@ -23,6 +23,13 @@ void DirectionalLight::CreateShadow()
 	_shadow = new DirectionalLightShadow(this);
 }
 
+void DirectionalLight::OnUpdate(float deltaTime)
+{
+	bool isNegDirZSign = _owner->GetTransform()->GetWorldMatrix()._33 < 0.0f;
+
+	_flag |= isNegDirZSign ? 1 : 0;
+}
+
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat)
 {
 	Matrix view;
@@ -71,7 +78,7 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const
+void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& dummy) const
 {
 	const Transform* transform = _owner->GetTransform();
 

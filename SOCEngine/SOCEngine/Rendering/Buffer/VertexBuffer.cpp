@@ -40,7 +40,7 @@ void VertexBuffer::Initialize(
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. does not create vb");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. does not create vb");
 }
 
 void VertexBuffer::IASetBuffer(ID3D11DeviceContext* context)
@@ -53,7 +53,7 @@ void VertexBuffer::UpdateVertexData(ID3D11DeviceContext* context, const void* da
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT hr = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	ASSERT_COND_MSG( SUCCEEDED(hr), "Error, VertexBuffer cant execute dx Map func");
+	ASSERT_MSG_IF( SUCCEEDED(hr), "Error, VertexBuffer cant execute dx Map func");
 
 	memcpy(mappedResource.pData, data, size);
 

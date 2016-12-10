@@ -128,7 +128,7 @@ uint LightManager::Add(LightForm*& light)
 	address searchKey = reinterpret_cast<address>(light);
 
 	bool found = Has(light);
-	ASSERT_COND_MSG(found == false, "Already has Key");
+	ASSERT_MSG_IF(found == false, "Already has Key");
 
 	uint counter = -1;
 	_lights.Add(searchKey, Lights(light, counter));
@@ -150,7 +150,8 @@ bool UpdateBuffer(ID3D11DeviceContext* context,
 				  VectorHashMap<address, uint>& colorBuffer,
 				  VectorHashMap<address, uint>& optionalParamIndexBuffer,
 				  const LightType* light,
-				  std::function<uint(const LightForm*)> getShadowIndexInEachShadowLights)
+				  std::function<ushort(const LightForm*)> getShadowIndexInEachShadowLights,
+				  const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 {
 	uint& prevCounter	= lights.Get(lightIndexInAllLights).prevTransformUpdateCounter;
 	uint curCounter		= light->GetOwner()->GetTransform()->GetUpdateCounter();
@@ -165,8 +166,11 @@ bool UpdateBuffer(ID3D11DeviceContext* context,
 	LightType::Param param;
 	light->MakeLightBufferElement(transformElem, param);
 
-	ushort shadowIndex	= getShadowIndexInEachShadowLights(light);
-	uint paramIndex		= shadowIndex;
+	ushort	shadowIndex		= getShadowIndexInEachShadowLights(light);
+	uchar	lightShaftIndex	= getLightShaftIndex(light) & 0x7f;
+	uchar	lightFlag		= light->GetFlag();
+	uint	paramIndex		= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
+
 	uint uintColor		= light->Get32BitMainColor();
 
 	LightTransformParam* existTransform = transformBuffer.Find(key);
@@ -193,7 +197,8 @@ bool UpdateBuffer(ID3D11DeviceContext* context,
 }
 
 void LightManager::UpdateSRBufferUsingMapDiscard(ID3D11DeviceContext* context,
-												 const std::function<uint(const LightForm*)>& getShadowIndexInEachShadowLights)
+												 const std::function<ushort(const LightForm*)>& getShadowIndexInEachShadowLights,
+												 const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 {
 	bool isUpdatedDL = false;
 	bool isUpdatedPL = false;
@@ -215,7 +220,7 @@ void LightManager::UpdateSRBufferUsingMapDiscard(ID3D11DeviceContext* context,
 				_directionalLightColorBuffer,
 				_directionalLightOptionalParamIndexBuffer,
 				dynamic_cast<const DirectionalLight*>(light),
-				getShadowIndexInEachShadowLights);
+				getShadowIndexInEachShadowLights, getLightShaftIndex);
 		}
 		else if(lightType == LightForm::LightType::Point)
 		{	
@@ -226,7 +231,7 @@ void LightManager::UpdateSRBufferUsingMapDiscard(ID3D11DeviceContext* context,
 				_pointLightColorBuffer,
 				_pointLightOptionalParamIndexBuffer,
 				dynamic_cast<const PointLight*>(light),
-				getShadowIndexInEachShadowLights);
+				getShadowIndexInEachShadowLights, getLightShaftIndex);
 		}
 		else if(lightType == LightForm::LightType::Spot)
 		{
@@ -237,7 +242,7 @@ void LightManager::UpdateSRBufferUsingMapDiscard(ID3D11DeviceContext* context,
 				_spotLightColorBuffer,
 				_spotLightOptionalParamIndexBuffer,
 				dynamic_cast<const SpotLight*>(light),
-				getShadowIndexInEachShadowLights);
+				getShadowIndexInEachShadowLights, getLightShaftIndex);
 		}
 	}
 
@@ -543,14 +548,15 @@ void LightManager::UpdateSRBufferUsingMapNoOverWrite(ID3D11DeviceContext* contex
 }
 
 void LightManager::UpdateSRBuffer(const DirectX* dx,
-								  const std::function<uint(const LightForm*)>& getShadowIndexInEachShadowLights)
+								  const std::function<ushort(const LightForm*)>& getShadowIndexInEachShadowLights,
+								  const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 {
 	//D3D_FEATURE_LEVEL level = dx->GetFeatureLevel();
 
 	//if(level >= D3D_FEATURE_LEVEL_11_1)
 	//	UpdateSRBufferUsingMapNoOverWrite(dx->GetContext());
 	//else
-	UpdateSRBufferUsingMapDiscard(dx->GetContext(), getShadowIndexInEachShadowLights);
+	UpdateSRBufferUsingMapDiscard(dx->GetContext(), getShadowIndexInEachShadowLights, getLightShaftIndex);
 }
 
 void LightManager::Delete(const LightForm*& inputLight)

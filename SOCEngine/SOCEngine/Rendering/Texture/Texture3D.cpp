@@ -49,7 +49,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	//Initialize texture
 	{
 		HRESULT hr = device->CreateTexture3D(&textureDesc, NULL, &_texture);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create texture");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, not create texture");
 	}
 
 	if(bindFlag & D3D11_BIND_SHADER_RESOURCE)
@@ -67,7 +67,7 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 		rtvDesc.Texture3D.FirstWSlice	= 0;
 		rtvDesc.Texture3D.WSize			= -1;
 		HRESULT hr = device->CreateRenderTargetView(_texture, &rtvDesc, &_rtv);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, can't create render target view");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, can't create render target view");
 	}
 
 	if(bindFlag & D3D11_BIND_UNORDERED_ACCESS)

@@ -21,7 +21,7 @@ MeshFilter::~MeshFilter()
 
 bool MeshFilter::Initialize(const CreateFuncArguments& args)
 {
-	ASSERT_COND_MSG(args.indices, "Error, Indices is null!");
+	ASSERT_MSG_IF(args.indices, "Error, Indices is null!");
 
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices->size();

@@ -38,9 +38,9 @@ void TestScene::OnInitialize()
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 //	AddObject(_camera);
 
-#if 1 //GI Test
+#if 0 //GI Test
 //	ActivateGI(true, 256, 50.0f);
-	ActivateGI(true, 256, 15.0f);
+//	ActivateGI(true, 256, 15.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
@@ -80,7 +80,7 @@ void TestScene::OnInitialize()
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
-#elif 0
+#elif 1
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
@@ -100,10 +100,11 @@ void TestScene::OnInitialize()
 	_light = new Object("Light");
 	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
 	_light->GetTransform()->UpdateEulerAngles(Vector3(30.0f, 330.0f, 0.0f));
+	AddObject(_light);
 
 	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
-	dl->SetIntensity(2.0f);
-//	dl->ActiveShadow(false);
+	dl->SetIntensity(20.0f);
+	dl->ActiveShadow(true);
 
 #elif 0 //IBL Test
 	// SkyBox
@@ -165,7 +166,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 {
 	const float scale = 0.5f;
 #if 1
-	Transform* control = _testObject->GetTransform();
+	Transform* control = _light->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{

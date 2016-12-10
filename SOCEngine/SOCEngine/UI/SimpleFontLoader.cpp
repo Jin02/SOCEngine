@@ -26,8 +26,8 @@ const SimpleFontLoader* SimpleFontLoader::Initialize(const std::string& fontData
 {
 	if(_texture == nullptr)
 	{
-		ASSERT_COND_MSG(LoadFontData(fontDataFilePath), "Error, can not load font datas");
-		ASSERT_COND_MSG(LoadTexture(fontTexturePath), "Error, can not load font texture");
+		ASSERT_MSG_IF(LoadFontData(fontDataFilePath), "Error, can not load font datas");
+		ASSERT_MSG_IF(LoadTexture(fontTexturePath), "Error, can not load font texture");
 	}
 
 	return this;
@@ -67,7 +67,7 @@ bool SimpleFontLoader::LoadTexture(const std::string& texturePath)
 	auto textureMgr = resourceManager->GetTextureManager();
 	_texture = textureMgr->LoadTextureFromFile(texturePath, false);
 
-	ASSERT_COND_MSG(_texture, "Error! can not create texture");
+	ASSERT_MSG_IF(_texture, "Error! can not create texture");
 
 	_fontTextureSize = _texture->FetchSize();
 

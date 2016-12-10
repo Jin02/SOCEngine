@@ -44,7 +44,7 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 	ID3D11Device* device = dx->GetDevice();
 	
 	HRESULT hr = device->CreateTexture2D(&texDesc, nullptr, &_texture);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create texture");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, cant create texture");
 
 	// render target
 	if(useRTV)
@@ -58,7 +58,7 @@ void TextureCube::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format, b
 		rtvDesc.Texture2DArray.MipSlice			= 0;
 
 		hr = device->CreateRenderTargetView(_texture, &rtvDesc, &_rtv);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, cant create rtv");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, cant create rtv");
 	}
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)

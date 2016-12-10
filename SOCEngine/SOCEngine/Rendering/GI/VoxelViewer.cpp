@@ -47,7 +47,7 @@ void VoxelViewer::Initialize(uint dimension, bool useFaceIndex, bool useTexture)
 	EngineFactory pathFinder(nullptr);
 	pathFinder.FetchShaderFullPath(filePath, "VoxelTextureToBuffer");
 
-	ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+	ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 
 	std::vector<ShaderMacro> macros;
 	{
@@ -57,7 +57,7 @@ void VoxelViewer::Initialize(uint dimension, bool useFaceIndex, bool useTexture)
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, &macros);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
+	ASSERT_MSG_IF(_shader->Initialize(), "can not create compute shader");
 
 	_readBuffer = new CPUReadBuffer;
 	_readBuffer->Initialize(4, dimension * dimension * dimension * (useFaceIndex ? 6 : 1), DXGI_FORMAT_R32_UINT);

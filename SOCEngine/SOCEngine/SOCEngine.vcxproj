@@ -107,6 +107,7 @@
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h" />
     <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
+    <ClInclude Include="Rendering\PostProcessing\LightShaftManager.h" />
     <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h" />
     <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -404,6 +405,7 @@
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
     <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp" />
     <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\LightShaftManager.cpp" />
     <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp" />
     <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
