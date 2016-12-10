@@ -13,6 +13,39 @@
 SamplerComparisonState shadowSamplerCmpState	:	register( s2 );
 SamplerState shadowSamplerState					:	register( s3 );
 
+struct ShadowParam
+{
+	float	lightNear;
+	float	lightFar;
+
+	float	underScanSize;
+	float	softness;
+
+	uint	lightIndex;
+	float	bias;
+	uint	flag;
+
+	float3	shadowColor;
+	float	shadowStrength;
+};
+
+void ParseShdaowParam(out ShadowParam outParam, uint4 param)
+{
+	outParam.lightNear		= f16tof32(param.x >> 16);
+	outParam.lightFar		= f16tof32(param.x & 0x0000ffff);
+
+	outParam.underScanSize	= f16tof32(param.y >> 16);
+	outParam.softness		= f16tof32(param.y & 0xffff);
+
+	outParam.lightIndex		= (param.z >> 16);
+	outParam.bias			= ((param.z & 0x0000ff00) >> 8) / 255.0f;
+	outParam.flag			= (param.z & 0x000000ff);
+
+	float4 shadowColor		= RGBA8UintColorToFloat4(param.w);
+	outParam.shadowColor	= shadowColor.rgb;
+	outParam.shadowStrength	= shadowColor.a;
+}
+
 float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
 {
 	float shadow = 0.0f;
