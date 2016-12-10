@@ -49,20 +49,21 @@ namespace Rendering
 		protected:
 			Intersection::Frustum*			_frustum;
 			Texture::RenderTexture*			_renderTarget;
-			RenderQueue				_transparentMeshQueue;
+			RenderQueue						_transparentMeshQueue;
 
-			float					_fieldOfViewDegree;
-			float					_clippingNear;
-			float					_clippingFar;
-			ProjectionType				_projectionType;
-			float					_aspect;
-			Color					_clearColor;
+			float							_fieldOfViewDegree;
+			float							_clippingNear;
+			float							_clippingFar;
+			ProjectionType					_projectionType;
+			float							_aspect;
+			Color							_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			Math::Matrix				_prevViewProjMat;
+			Math::Matrix					_prevViewProjMat;
 			TransformCB::ChangeState		_camCBChangeState;
 
-			Math::Rect<float>			_renderRect;
+			Math::Rect<float>				_renderRect;
+			Math::Matrix					_viewProjMat;
 
 		public:
 			CameraForm(Usage usage);
@@ -94,9 +95,8 @@ namespace Rendering
 		protected:
 			void _Clone(CameraForm* newCam) const;
 			bool _CullingWithUpdateCB(
-			const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager,
-			CameraCBData* outResultCamCBData = nullptr, Math::Matrix* outProjMat = nullptr,
-			Math::Matrix* outViewProjMat = nullptr);
+				const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager,
+				CameraCBData* outResultCamCBData = nullptr, Math::Matrix* outProjMat = nullptr);
 
 		public:
 			GET_SET_ACCESSOR(Near,				float,							_clippingNear);
@@ -109,6 +109,8 @@ namespace Rendering
 
 			GET_ACCESSOR(Usage,					Usage,							_usage);
 			GET_ACCESSOR(CameraConstBuffer,		const Buffer::ConstBuffer*,		_camMatConstBuffer);
+
+			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&,			_viewProjMat);
 		};
 	}
 }
