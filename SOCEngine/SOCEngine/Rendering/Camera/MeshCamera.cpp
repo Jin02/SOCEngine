@@ -111,8 +111,10 @@ void MeshCamera::OnDestroy()
 
 void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	Matrix projMat, viewProjMat;
-	bool isUpdateCamCB = _CullingWithUpdateCB(dx, objects, lightManager, nullptr, &projMat, &viewProjMat);
+	Matrix projMat;
+	bool isUpdateCamCB = _CullingWithUpdateCB(dx, objects, lightManager, nullptr, &projMat);
+
+	Matrix viewProjMat = GetViewProjectionMatrix();
 	
 	LightCulling::TBRParam tbrParam;
 	LightCulling::TBRParam::Packed& packedParam = tbrParam.packedParam;
