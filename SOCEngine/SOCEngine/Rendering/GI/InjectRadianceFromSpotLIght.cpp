@@ -40,7 +40,6 @@ void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const Manag
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightRadiusWithCenter,		lightMgr->GetSpotLightTransformSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightColor,					lightMgr->GetSpotLightColorSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowParam,				shadowMgr->GetSpotLightShadowParamSRBuffer());
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowInvVPVMat,			shadowMgr->GetSpotLightInvViewProjViewpotSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightOptionalParamIndex,				lightMgr->GetSpotLightOptionalParamIndexSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,	shadowMgr->GetSpotLightShadowViewProjSRBuffer());
 	ComputeShader::BindTexture(context,					TextureBindIndex::SpotLightShadowMapAtlas,			shadowMgr->GetSpotLightShadowMapAtlas());
@@ -52,8 +51,7 @@ void InjectRadianceFromSpotLIght::Inject(const Device::DirectX*& dx, const Manag
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightRadiusWithCenter,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightColor,					nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowParam,				nullptr);
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowInvVPVMat,			nullptr);
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightOptionalParamIndex,				nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightOptionalParamIndex,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,	nullptr);
 	ComputeShader::BindTexture(context,					TextureBindIndex::SpotLightShadowMapAtlas,			nullptr);
 }

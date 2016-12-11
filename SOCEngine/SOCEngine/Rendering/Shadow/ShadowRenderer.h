@@ -96,29 +96,20 @@ namespace Rendering
 			uint																_spotLightShadowMapResolution;					//default 1024
 			uint																_directionalLightShadowMapResolution;			//default 2048
 
-			// lightIndexWithbiasWithFlag, color, underScanSize
-			Structure::VectorMap<address, PointLightShadow::Param>				_pointLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_pointLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_pointLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, std::array<Math::Matrix, 6>>		_pointLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_pointLightViewProjMatSRBuffer;
-			Structure::VectorHashMap<address, std::array<Math::Matrix, 6>>		_pointLightInvVPVMatBuffer;
-			Buffer::ShaderResourceBuffer*										_pointLightInvVPVMatSRBuffer;
 
-			// lightIndexWithbiasWithFlag, color
-			Structure::VectorMap<address, SpotLightShadow::Param>				_spotLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_spotLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_spotLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, Math::Matrix>						_spotLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_spotLightViewProjMatSRBuffer;
-			Structure::VectorHashMap<address, Math::Matrix>						_spotLightInvVPVMatBuffer;
-			Buffer::ShaderResourceBuffer*										_spotLightInvVPVMatSRBuffer;
 
-			// lightIndexWithbiasWithFlag, color
-			Structure::VectorMap<address, DirectionalLightShadow::Param>		_directionalLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_directionalLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_directionalLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, Math::Matrix>						_directionalLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_directionalLightViewProjMatSRBuffer;
-			Structure::VectorHashMap<address, Math::Matrix>						_directionalLightInvVPVMatBuffer;
-			Buffer::ShaderResourceBuffer*										_directionalLightInvVPVMatSRBuffer;
 
 			bool																_neverUseVSM;
 
@@ -187,15 +178,12 @@ namespace Rendering
 
 			GET_ACCESSOR(PointLightShadowParamSRBuffer,					const Buffer::ShaderResourceBuffer*,		_pointLightShadowParamSRBuffer);
 			GET_ACCESSOR(PointLightShadowViewProjSRBuffer,				const Buffer::ShaderResourceBuffer*,		_pointLightViewProjMatSRBuffer);
-			GET_ACCESSOR(PointLightInvViewProjViewpotSRBuffer,			const Buffer::ShaderResourceBuffer*,		_pointLightInvVPVMatSRBuffer);
 
 			GET_ACCESSOR(SpotLightShadowParamSRBuffer,					const Buffer::ShaderResourceBuffer*,		_spotLightShadowParamSRBuffer);
 			GET_ACCESSOR(SpotLightShadowViewProjSRBuffer,				const Buffer::ShaderResourceBuffer*,		_spotLightViewProjMatSRBuffer);
-			GET_ACCESSOR(SpotLightInvViewProjViewpotSRBuffer,			const Buffer::ShaderResourceBuffer*,		_spotLightInvVPVMatSRBuffer);
 
 			GET_ACCESSOR(DirectionalLightShadowParamSRBuffer,			const Buffer::ShaderResourceBuffer*,		_directionalLightShadowParamSRBuffer);
 			GET_ACCESSOR(DirectionalLightShadowViewProjSRBuffer,		const Buffer::ShaderResourceBuffer*,		_directionalLightViewProjMatSRBuffer);
-			GET_ACCESSOR(DirectionalLightInvViewProjViewpotSRBuffer,	const Buffer::ShaderResourceBuffer*,		_directionalLightInvVPVMatSRBuffer);
 
 			GET_ACCESSOR(DirectionalLightCount,							uint,										_shadowCastingDirectionalLights.GetSize());
 			GET_ACCESSOR(PointLightCount,								uint,										_shadowCastingPointLights.GetSize());

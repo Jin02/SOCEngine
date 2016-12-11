@@ -11,7 +11,7 @@ using namespace Math;
 using namespace Core;
 
 PointLightShadow::PointLightShadow(const LightForm* owner)
-	: ShadowCommon(owner), _underScanSize(4.25f)
+	: ShadowCommon(owner)
 {
 }
 
@@ -19,13 +19,7 @@ PointLightShadow::~PointLightShadow()
 {
 }
 
-void PointLightShadow::MakeParam(Param& outParam, uint lightIndex) const
-{
-	ShadowCommon::MakeParam(outParam, lightIndex);
-	outParam.underScanSize = _underScanSize;
-}
-
-void PointLightShadow::ComputeViewProjMatrix(const Math::Matrix& invViewportMat)
+void PointLightShadow::ComputeViewProjMatrix()
 {
 	Vector3 forwards[6] = 
 	{
@@ -88,45 +82,32 @@ void PointLightShadow::ComputeViewProjMatrix(const Math::Matrix& invViewportMat)
 		ShadowCommon::_invNearFarViewProjMat	= invNearFarViewProj;
 		ShadowCommon::_viewProjMat				= viewProj;
 
-		// Compute InvViewProjViewportMat
-		{
-			Matrix invViewProj;
-			Matrix::Inverse(invViewProj, viewProj);
-			ShadowCommon::_invViewProjViewportMat = invViewportMat * invViewProj;
-		}
-
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
 			
 			ComputeViewProj(_invNearFarViewProjMat[matIdx], _viewProjMat[matIdx],
 							worldPos, forwards[i], ups[i], proj, invNearFarProj);
-
-			// Compute InvViewProjViewportMat
-			{
-				Matrix invViewProj;
-				Matrix::Inverse(invViewProj, _viewProjMat[matIdx]);
-
-				_invViewProjViewportMat[matIdx] = invViewportMat * invViewProj;
-			}
 		}
 	}
 }
 
-void PointLightShadow::MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat, std::array<Math::Matrix, 6>& outInvVPVMat) const
+void PointLightShadow::MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const
 {
 #ifdef USE_SHADOW_INVERTED_DEPTH
 	if(GetUseVSM())
 		GetInvNearFarViewProjMatrices(outViewProjMat);
 	else
-#endif
+	{
+		GetViewProjectionMatrices(outViewProjMat);
+	}
+#else
 	GetViewProjectionMatrices(outViewProjMat);
-	GetInvViewProjViewportMatrices(outInvVPVMat);
+#endif
 
 	for(uint i=0; i<6; ++i)
 	{
 		Math::Matrix::Transpose(outViewProjMat[i], outViewProjMat[i]);
-		Math::Matrix::Transpose(outInvVPVMat[i], outInvVPVMat[i]);
 	}
 }
 
@@ -144,12 +125,4 @@ void PointLightShadow::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& ou
 
 	for(uint i=1; i<6; ++i)
 		out[i] = _viewProjMat[i-1];
-}
-
-void PointLightShadow::GetInvViewProjViewportMatrices(std::array<Math::Matrix, 6>& out) const
-{
-	out[0] = ShadowCommon::_invViewProjViewportMat;
-
-	for(uint i=1; i<6; ++i)
-		out[i] = _invViewProjViewportMat[i-1];
 }

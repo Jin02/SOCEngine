@@ -10,7 +10,8 @@ using namespace Core;
 using namespace Rendering;
 
 ShadowCommon::ShadowCommon(const LightForm* owner) 
-	: _owner(owner), _bias(0.001f), _projNear(0.1f),
+	: _owner(owner),
+	_projNear(0.1f), _projFar(32.0f), _underScanSize(4.25f), _softness(1.0f), _bias(0.001f), _flag(0),
 	_paramUpdateCounter(0), _useVSM(false)
 {
 	_color = Color::Black();
@@ -25,14 +26,19 @@ void ShadowCommon::Initialize()
 {
 }
 
-void ShadowCommon::MakeParam(CommonParam& outParam, uint lightIndex) const
+void ShadowCommon::MakeParam(Param& outParam, uint lightIndex) const
 {
-	uint index	= lightIndex << 16;
-	uint bias	= (uint(_bias * 4096.0f) & 0x0fff) << 4;
-	uint flag	= uint(_useVSM) & 0xf;
+	outParam.projNear		= Math::Common::FloatToHalf(_projNear);
+	outParam.projFar		= Math::Common::FloatToHalf(_projFar);
 
-	outParam.lightIndexWithBiasWithFlag = index | bias | flag;
-	outParam.color						= _color.Get32BitUintColor();
+	outParam.underScanSize	= Math::Common::FloatToHalf(_underScanSize);
+	outParam.softness		= Math::Common::FloatToHalf(_softness);
+
+	outParam.lightIndex		= lightIndex;
+	outParam.bias			= uchar(_bias * 1020.0f);
+	outParam.flag			= uchar(_useVSM);
+
+	outParam.shadowColor	= _color.Get32BitUintColor();
 }
 
 void ShadowCommon::SetProjectionNear(float n)

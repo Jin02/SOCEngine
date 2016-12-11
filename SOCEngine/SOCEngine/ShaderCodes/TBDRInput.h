@@ -19,54 +19,58 @@ Buffer<float4>								DirectionalLightColorBuffer					: register( t6 ); // rgb, 
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferAlbedo_occlusion								: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_metallic_specularity						: register( t9 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferNormal_roughness								: register( t10 );
-Texture2DMS<float,	MSAA_SAMPLES_COUNT>		GBufferDepth										: register( t11 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_materialFlag							: register( t31 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferAlbedo_occlusion						: register( t8 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_metallic_specularity		: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferNormal_roughness						: register( t10 );
+Texture2DMS<float,	MSAA_SAMPLES_COUNT>		GBufferDepth								: register( t11 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_materialFlag				: register( t31 );
 
 #if defined(ENABLE_BLEND)
-Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth									: register( t12 );
+Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth							: register( t12 );
 #endif
 
 #else //Turn off MSAA
 
-Texture2D<float4>							GBufferAlbedo_occlusion								: register( t8 );
-Texture2D<float4>							GBufferMotionXY_metallic_specularity						: register( t9 );
-Texture2D<float4>							GBufferNormal_roughness								: register( t10 );
-Texture2D<float>							GBufferDepth										: register( t11 );
-Texture2D<float4>							GBufferEmission_materialFlag							: register( t31 );
+Texture2D<float4>							GBufferAlbedo_occlusion						: register( t8 );
+Texture2D<float4>							GBufferMotionXY_metallic_specularity		: register( t9 );
+Texture2D<float4>							GBufferNormal_roughness						: register( t10 );
+Texture2D<float>							GBufferDepth								: register( t11 );
+Texture2D<float4>							GBufferEmission_materialFlag				: register( t31 );
 
 #if defined(ENABLE_BLEND)
-Texture2D<float>							GBufferBlendedDepth		 							: register( t12 );
+Texture2D<float>							GBufferBlendedDepth		 					: register( t12 );
 #endif
 
 #endif
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
 
-Buffer<uint3>								PointLightShadowParams						: register( t14 ); // lightIndexWithbiasWithFlag, color, underScanSize
-Buffer<uint2>								SpotLightShadowParams						: register( t15 ); // lightIndexWithbiasWithFlag, color
-Buffer<uint2>								DirectionalLightShadowParams					: register( t16 ); // lightIndexWithbiasWithFlag, color
+Buffer<uint4>								PointLightShadowParams						: register( t14 ); 
+Buffer<uint4>								SpotLightShadowParams						: register( t15 ); 
+Buffer<uint4>								DirectionalLightShadowParams				: register( t16 ); 
 
-Texture2D<float>							PointLightShadowMapAtlas						: register( t17 );
+//Buffer<uint4>								PointLightShadowParams						: register( t14 );
+//Buffer<uint4>								SpotLightShadowParams						: register( t15 );
+//Buffer<uint4>								DirectionalLightShadowParams				: register( t16 );
+
+Texture2D<float>							PointLightShadowMapAtlas					: register( t17 );
 Texture2D<float>							SpotLightShadowMapAtlas						: register( t18 );
 Texture2D<float>							DirectionalLightShadowMapAtlas				: register( t19 );
 
-Buffer<uint>								PointLightOptionalParamIndex						: register( t20 );
-Buffer<uint>								SpotLightOptionalParamIndex							: register( t21 );
-Buffer<uint>								DirectionalLightOptionalParamIndex					: register( t22 );
+Buffer<uint>								PointLightOptionalParamIndex				: register( t20 );
+Buffer<uint>								SpotLightOptionalParamIndex					: register( t21 );
+Buffer<uint>								DirectionalLightOptionalParamIndex			: register( t22 );
 
 struct DSLightVPMat	{	matrix mat;		};
 struct PLightVPMat	{	matrix mat[6];	};
 
 StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t23 );
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
-StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix			: register( t25 );
+StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
 Texture2D<float4>							PointLightMomentShadowMapAtlas				: register( t26 );
 Texture2D<float4>							SpotLightMomentShadowMapAtlas				: register( t27 );
-Texture2D<float4>							DirectionalLightMomentShadowMapAtlas			: register( t28 );
+Texture2D<float4>							DirectionalLightMomentShadowMapAtlas		: register( t28 );
 
 struct LightingParams
 {
