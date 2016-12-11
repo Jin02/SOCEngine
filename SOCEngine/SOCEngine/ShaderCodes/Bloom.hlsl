@@ -36,7 +36,7 @@ float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float avgLum		= AverageLuminance();
 
 	float exposure		= 0.0f;
-	color = ComputeExposedColor(exposure, color.rgb, avgLum, GetBloomThreshold());
+	color = ComputeExposedColor(exposure, color.rgb, avgLum, bloom_threshold);
 
 	if( dot(color, 0.333f) <= 0.01f )
 		color = float3(0.0f, 0.0f, 0.0f);
@@ -58,7 +58,7 @@ float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float avgLum		= AverageLuminance();
 
 	float exposure		= 0.0f;
-	color.rgb			= BloomToneMapping(exposure, color.rgb, avgLum, GetBloomThreshold());
+	color.rgb			= BloomToneMapping(exposure, color.rgb, avgLum, bloom_threshold);
 
 	float4 bloom = InputBloomMap.Sample(LinearSampler, input.uv);
 	return float4( (color + bloom).rgb, color.a);

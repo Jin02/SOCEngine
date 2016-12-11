@@ -64,7 +64,7 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 #endif
 	uint	matFlag			= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
 	float	specularity		= motionXY_metallic_specularity.a;
-	float3	baseColor		= albedo_occlusion.rgb;
+	float3	baseColor		= ToLinear(albedo_occlusion.rgb, tbrParam_gamma);
 	float	metallic		= motionXY_metallic_specularity.b;
 
 	outSurface.albedo		= baseColor - baseColor * metallic;
