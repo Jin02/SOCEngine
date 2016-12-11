@@ -9,9 +9,6 @@ namespace Rendering
 		class SpotLightShadow : public ShadowCommon
 		{
 		public:
-			typedef ShadowCommon::CommonParam Param;
-
-		public:
 			SpotLightShadow(const Light::LightForm* owner);
 			~SpotLightShadow();
 

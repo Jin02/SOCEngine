@@ -11,18 +11,12 @@ using namespace Math;
 using namespace Core;
 
 PointLightShadow::PointLightShadow(const LightForm* owner)
-	: ShadowCommon(owner), _underScanSize(4.25f)
+	: ShadowCommon(owner)
 {
 }
 
 PointLightShadow::~PointLightShadow()
 {
-}
-
-void PointLightShadow::MakeParam(Param& outParam, uint lightIndex) const
-{
-	ShadowCommon::MakeParam(outParam, lightIndex);
-	outParam.underScanSize = _underScanSize;
 }
 
 void PointLightShadow::ComputeViewProjMatrix()

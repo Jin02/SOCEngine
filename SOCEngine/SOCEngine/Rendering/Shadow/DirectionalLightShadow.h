@@ -9,9 +9,6 @@ namespace Rendering
 		class DirectionalLightShadow : public ShadowCommon
 		{
 		public:
-			typedef ShadowCommon::CommonParam Param;
-
-		public:
 			DirectionalLightShadow(const Light::LightForm* owner);
 			~DirectionalLightShadow();
 
