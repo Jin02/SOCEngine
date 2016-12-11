@@ -15,7 +15,7 @@ CameraManager::~CameraManager(){}
 void CameraManager::Add(Camera::CameraForm* camera)
 {
 	address key = reinterpret_cast<address>(camera);
-	ASSERT_COND_MSG(Has(key) == false, "Error, Already registed camera objeect");
+	ASSERT_MSG_IF(Has(key) == false, "Error, Already registed camera objeect");
 
 	VectorMap<address, Camera::CameraForm*>::Add(key, camera);
 }
@@ -31,6 +31,8 @@ void CameraManager::DeleteAll()
 {
 	for(auto iter = _vector.begin(); iter != _vector.end(); ++iter)
 	{
+		//당연한거긴 하다만.. 에러난다.
+		//메모리 참조, 관리 등등 이슈관리할때 처리하자. 아래는 임시로 처리해둔거다.
 		CameraForm* cam = (*iter);
 		SAFE_DELETE(cam);
 	}

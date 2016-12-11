@@ -40,8 +40,7 @@ void InjectRadianceFromPointLIght::Inject(const Device::DirectX*& dx, const Ligh
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightRadiusWithCenter,		lightMgr->GetPointLightTransformSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightColor,					lightMgr->GetPointLightColorSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowParam,			shadowMgr->GetPointLightShadowParamSRBuffer());
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowInvVPVMat,		shadowMgr->GetPointLightInvViewProjViewpotSRBuffer());
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowIndex,			lightMgr->GetPointLightShadowIndexSRBuffer());
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightOptionalParamIndex,		lightMgr->GetPointLightOptionalParamIndexSRBuffer());
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowViewProjMatrix,	shadowMgr->GetPointLightShadowViewProjSRBuffer());
 	ComputeShader::BindTexture(context,					TextureBindIndex::PointLightShadowMapAtlas,			shadowMgr->GetPointLightShadowMapAtlas());
 
@@ -50,8 +49,7 @@ void InjectRadianceFromPointLIght::Inject(const Device::DirectX*& dx, const Ligh
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightRadiusWithCenter,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightColor,					nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowParam,			nullptr);
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowInvVPVMat,		nullptr);
-	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowIndex,			nullptr);
+	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightOptionalParamIndex,		nullptr);
 	ComputeShader::BindShaderResourceBuffer(context,	TextureBindIndex::PointLightShadowViewProjMatrix,	nullptr);
 	ComputeShader::BindTexture(context,					TextureBindIndex::PointLightShadowMapAtlas,			nullptr);
 }

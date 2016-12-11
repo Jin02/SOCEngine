@@ -4,6 +4,7 @@
 
 using namespace Math;
 using namespace std;
+using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Light;
 using namespace Intersection;
@@ -13,8 +14,10 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraForm::CameraForm(Usage usage) 
-	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage)
+	: Component(), _frustum(nullptr), _renderTarget(nullptr), _camMatConstBuffer(nullptr), _usage(usage),
+		_camCBChangeState(TransformCB::ChangeState::HasChanged)
 {
+	Matrix::Identity(_prevViewProjMat);
 }
 
 CameraForm::~CameraForm(void)
@@ -164,25 +167,38 @@ void CameraForm::GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<flo
 	Math::Matrix::Inverse(outMat, viewportMat);
 }
 
-void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const LightManager* lightManager)
+bool CameraForm::_CullingWithUpdateCB(const Device::DirectX* dx,
+				      const std::vector<Core::Object*>& objects,
+				      const LightManager* lightManager,
+				      CameraCBData* outResultCamCBData, Math::Matrix* outProjMat)
 {
+	Matrix worldMat;
+	_owner->GetTransform()->FetchWorldMatrix(worldMat);
+
 	CameraCBData cbData;
 	{
-		Matrix worldMat;
-		_owner->GetTransform()->FetchWorldMatrix(worldMat);
-
 		Matrix& viewMat = cbData.viewMat;
 		GetViewMatrix(cbData.viewMat, worldMat);
 
 		Matrix projMat;
 		GetProjectionMatrix(projMat, true);
-		cbData.viewProjMat = viewMat * projMat;
 
-		cbData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
+		if(outProjMat)
+			(*outProjMat) = projMat;
+	
+		_viewProjMat		= viewMat * projMat;
+		cbData.viewProjMat	= _viewProjMat;
+
+		cbData.worldPos		= Vector3(worldMat._41, worldMat._42, worldMat._43);	
+		cbData.prevViewProjMat	= _prevViewProjMat;
+		cbData.packedCamNearFar = (Common::FloatToHalf(_clippingNear) << 16) | Common::FloatToHalf(_clippingFar);
 	}
 
-	bool updatedVP = memcmp(&_prevCamMatCBData, &cbData, sizeof(CameraCBData)) != 0;
-	if(updatedVP)
+	if(outResultCamCBData)
+		(*outResultCamCBData) = cbData;
+
+	bool isChanged = (cbData.viewProjMat != _prevViewProjMat);
+	if(isChanged)
 	{
 		// Make Frustum
 		{
@@ -190,17 +206,31 @@ void CameraForm::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 			GetProjectionMatrix(notInvProj, false);
 			_frustum->Make(cbData.viewMat * notInvProj);
 		}
+		
+		_camCBChangeState = TransformCB::ChangeState::HasChanged;
+	}
 
-		_prevCamMatCBData = cbData;
+	
+	
+	bool isUpdate = (_camCBChangeState != TransformCB::ChangeState::No);
+	
+	if(isUpdate)
+	{		
+		_prevViewProjMat = cbData.viewProjMat;
 
 		Matrix::Transpose(cbData.viewMat, cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
+		Matrix::Transpose(cbData.prevViewProjMat, cbData.prevViewProjMat);
 
 		_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &cbData);
+		
+		_camCBChangeState = TransformCB::ChangeState( (uint(_camCBChangeState) + 1) % uint(TransformCB::ChangeState::MAX) );
 	}
 
 	for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-		(*iter)->Culling(_frustum);
+		(*iter)->Culling(_frustum);	
+	
+	return isUpdate;
 }
 
 void CameraForm::SortTransparentMeshRenderQueue(RenderQueue& inoutTranparentMeshQ, const Transform* ownerTF, const RenderManager* renderMgr)

@@ -22,9 +22,11 @@ using namespace GPGPU::DirectCompute;
 using namespace Resource;
 
 
-VoxelConeTracing::VoxelConeTracing()
-	: _shader(nullptr), _indirectColorMap(nullptr), _blur(nullptr)
+VoxelConeTracing::VoxelConeTracing() : _shader(nullptr), _indirectColorMap(nullptr)
 {
+#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
+	_blur = nullptr;
+#endif
 }
 
 VoxelConeTracing::~VoxelConeTracing()
@@ -33,7 +35,9 @@ VoxelConeTracing::~VoxelConeTracing()
 
 	SAFE_DELETE(_shader);
 	SAFE_DELETE(_indirectColorMap);
+#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
 	SAFE_DELETE(_blur);
+#endif
 }
 
 void VoxelConeTracing::Initialize(const Device::DirectX* dx)
@@ -42,7 +46,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 	EngineFactory pathFinder(nullptr);
 	pathFinder.FetchShaderFullPath(filePath, "VoxelConeTracing");
 
-	ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+	ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
@@ -59,7 +63,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 	}
 
 	_shader = new ComputeShader(threadGroup, blob);
-	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
+	ASSERT_MSG_IF(_shader->Initialize(), "can not create compute shader");
 
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,
@@ -67,7 +71,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 
 #if defined(USE_GAUSSIAN_BLUR)
 	_blur = new GaussianBlur;
-	_blur->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+	_blur->Initialize(dx, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 #elif defined(USE_BILATERAL_FILTERING)
 	_blur = new BilateralFiltering;
 	_blur->Initialize(BilateralFiltering::Type::Near, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -77,7 +81,9 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 void VoxelConeTracing::Destroy()
 {
 	_indirectColorMap->Destroy();
+#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
 	_blur->Destroy();
+#endif
 }
 
 void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam,
@@ -98,6 +104,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionS
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag());
 
 	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,								meshCam->GetTBRParamConstBuffer());
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,								meshCam->GetCameraConstBuffer());
 	ComputeShader::BindSamplerState(context,		SamplerStateBindIndex::DefaultSamplerState,					dx->GetConeTracingSamplerState());
 	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VCTOutIndirectMap,							_indirectColorMap->GetUnorderedAccessView());
 
@@ -117,6 +124,8 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionS
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			nullptr);
 
 	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,								nullptr);
+	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,								nullptr);
+
 	ComputeShader::BindSamplerState(context,		SamplerStateBindIndex::DefaultSamplerState,					nullptr);
 	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::VCTOutIndirectMap,							nullptr);
 

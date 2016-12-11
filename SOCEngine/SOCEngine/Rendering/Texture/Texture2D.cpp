@@ -56,7 +56,7 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_
 
 	DXGI_FORMAT texFormat = (bindFlags & D3D11_BIND_DEPTH_STENCIL) ?  
 							GetDepthBufferTexDesc(srvFormat) : srvFormat;
-	ASSERT_COND_MSG(texFormat != DXGI_FORMAT_UNKNOWN, "Error, cant support this format");
+	ASSERT_MSG_IF(texFormat != DXGI_FORMAT_UNKNOWN, "Error, cant support this format");
 
 	textureDesc.Format = texFormat;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -85,7 +85,7 @@ void Texture2D::Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_
 	//Initialize texture
 	{
 		HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &_texture);
-		ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create texture");
+		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, not create texture");
 	}
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)

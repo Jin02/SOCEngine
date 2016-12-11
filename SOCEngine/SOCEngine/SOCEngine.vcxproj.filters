@@ -448,6 +448,12 @@
     <Filter Include="Rendering\PostProcessing\SSLR\ConeTracing">
       <UniqueIdentifier>{261ab9af-d818-4990-890f-3655c490b4d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\PostProcessing\LightShaft">
+      <UniqueIdentifier>{fe83b8b8-e566-4af2-bf9e-34573e960353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PostProcessing\HDR">
+      <UniqueIdentifier>{b26a2f9e-6965-4e63-bf4d-4672d7179754}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -904,6 +910,27 @@
     <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
       <Filter>Rendering\GI\Mipmap</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\SimpleImageEffect.h">
+      <Filter>ShaderCodes\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\LensFlare.h">
+      <Filter>ShaderCodes\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Transform\TransformCB.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\CommonConstBuffer.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\LightShaftManager.h">
+      <Filter>Rendering\PostProcessing\LightShaft</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\HDRCommon.h">
+      <Filter>ShaderCodes\PostProcessing\HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\ToneMapping.h">
+      <Filter>ShaderCodes\PostProcessing\HDR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1230,6 +1257,9 @@
     <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
       <Filter>Rendering\GI\Mipmap</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\LightShaftManager.cpp">
+      <Filter>Rendering\PostProcessing\LightShaft</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1333,6 +1363,12 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
       <Filter>ShaderCodes\GI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl">
+      <Filter>ShaderCodes\PostProcessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Bloom.hlsl">
+      <Filter>ShaderCodes\PostProcessing\HDR</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

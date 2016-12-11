@@ -31,14 +31,14 @@ void InjectRadiance::Initialize(const std::string& fileName)
 	EngineFactory pathFinder(nullptr);
 	pathFinder.FetchShaderFullPath(filePath, fileName);
 
-	ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty!");
+	ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
 
 	ResourceManager* resourceManager = ResourceManager::SharedInstance();
 	auto shaderMgr = resourceManager->GetShaderManager();
 
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 	_shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-	ASSERT_COND_MSG(_shader->Initialize(), "can not create compute shader");
+	ASSERT_MSG_IF(_shader->Initialize(), "can not create compute shader");
 }
 
 void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& param)

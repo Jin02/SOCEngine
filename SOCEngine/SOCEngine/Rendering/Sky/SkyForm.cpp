@@ -91,7 +91,7 @@ void SkyForm::_Render(const Device::DirectX* dx, const Rendering::Material* mate
 	{
 		const auto& customShader = material->GetCustomShader().shaderGroup;
 
-		ASSERT_COND_MSG(customShader.ableRender(), "Error,  this shader is invalid")
+		ASSERT_MSG_IF(customShader.ableRender(), "Error,  this shader is invalid")
 		{
 			const auto& cbs = material->GetConstBuffers();
 			const auto& srbs = material->GetShaderResourceBuffers();

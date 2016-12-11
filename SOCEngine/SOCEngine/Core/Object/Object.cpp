@@ -12,7 +12,7 @@ using namespace Core;
 
 Object::Object(const std::string& name, Object* parent /* = NULL */) :
 	_culled(false), _parent(parent), _use(true), _hasMesh(false), _name(name),
-	_radius(0.0f)
+	_radius(0.0f), _tfChangeState(TransformCB::ChangeState::HasChanged)
 {
 	_boundBox.SetMinMax(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
@@ -21,6 +21,8 @@ Object::Object(const std::string& name, Object* parent /* = NULL */) :
 
 	if(parent)
 		parent->AddChild(this);
+	
+	Matrix::Identity(_prevWorldMat);
 }
 
 Object::~Object(void)
@@ -46,7 +48,7 @@ void Object::DeleteAllChild()
 
 void Object::AddChild(Object *child)
 {
-	ASSERT_COND_MSG( (child->_parent == nullptr) || (child->_parent == this), 
+	ASSERT_MSG_IF( (child->_parent == nullptr) || (child->_parent == this), 
 		"Error, Invalid parent");
 
 	if(FindChild(child->GetName()) == nullptr)
@@ -131,27 +133,33 @@ void Object::UpdateTransformCB_With_ComputeSceneMinMaxPos(
 		if(refWorldPosMax.z < maxPos.z) refWorldPosMax.z = maxPos.z;
 	}
 
-	Rendering::TransformCB transformCB;
 	
-	Matrix& transposedWM = transformCB.world;
-	Matrix::Transpose(transposedWM, worldMat);
+	if(_prevWorldMat != worldMat)
+		_tfChangeState = TransformCB::ChangeState::HasChanged;
 
-	Matrix& worldInvTranspose = transformCB.worldInvTranspose;
+	Rendering::TransformCB transformCB;
+
+	bool isUpdate = (_tfChangeState != TransformCB::ChangeState::No);
+	if(isUpdate)
 	{
-		Matrix::Inverse(worldInvTranspose, transposedWM);
-		Matrix::Transpose(worldInvTranspose, worldInvTranspose);
-	}
+		Matrix::Transpose(transformCB.world, worldMat);		
+		Matrix::Transpose(transformCB.prevWorld, _prevWorldMat);
 
-	bool changedWorldMat = memcmp(&_prevWorldMat, &worldMat, sizeof(Math::Matrix)) != 0;
-	if(changedWorldMat)
-		_prevWorldMat = worldMat;
-
+		Matrix::Inverse(transformCB.worldInvTranspose, transformCB.world);		
+	}	
+	
 	for(auto iter = _components.begin(); iter != _components.end(); ++iter)
 	{
-		if(changedWorldMat)
+		if(isUpdate)
 			(*iter)->OnUpdateTransformCB(dx, transformCB);
 
 		(*iter)->OnRenderPreview();
+	}
+	
+	if(isUpdate)
+	{
+		_prevWorldMat	= worldMat;
+		_tfChangeState	= TransformCB::ChangeState( (uint(_tfChangeState) + 1) % uint(TransformCB::ChangeState::MAX) );
 	}
 
 	for(auto iter = _child.begin(); iter != _child.end(); ++iter)

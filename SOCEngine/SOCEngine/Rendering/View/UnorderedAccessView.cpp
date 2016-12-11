@@ -18,7 +18,7 @@ void UnorderedAccessView::Initialize(
 	uint tex3dMipSlice, uint tex3dWSize,
 	uint bufferFlags)
 {
-	ASSERT_COND_MSG(_uav == nullptr, "Error, _uav has already been allocated");
+	ASSERT_MSG_IF(_uav == nullptr, "Error, _uav has already been allocated");
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
@@ -40,7 +40,7 @@ void UnorderedAccessView::Initialize(
 	ID3D11Device* device = dx->GetDevice();
 
 	HRESULT hr = device->CreateUnorderedAccessView(resource, &desc, &_uav);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, Cant create UAV");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, Cant create UAV");
 }
 
 void UnorderedAccessView::Destroy()

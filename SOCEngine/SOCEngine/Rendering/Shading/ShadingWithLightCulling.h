@@ -35,7 +35,8 @@ namespace Rendering
 			void Initialize(const Texture::DepthBuffer* opaqueDepthBuffer, const GBuffers& geometryBuffers, const Math::Size<uint>& backBufferSize, bool fetchLightIndexBuffer, bool useDebugMode = false);
 			void Destroy();
 
-			void Dispatch(const Device::DirectX* dx, const Buffer::ConstBuffer* tbrConstBuffer, const Buffer::ConstBuffer* shadowGlobalParamConstBuffer);
+			void Dispatch(	const Device::DirectX* dx,
+					const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB, const Buffer::ConstBuffer* shadowGlobalParamCB);
 
 		public:
 			GET_ACCESSOR(DiffuseLightBuffer,		const Rendering::Texture::RenderTexture*,	_diffuseLightBuffer);

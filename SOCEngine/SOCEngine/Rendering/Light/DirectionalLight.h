@@ -14,20 +14,11 @@ namespace Rendering
 		class DirectionalLight : public LightForm
 		{
 		public:
-			struct Param
-			{
-				unsigned short dirX;
-				unsigned short dirY;
-				//dirZ는, LightTransformBuffer의 radius에 해당함
-
-				Param() {}
-				~Param() {}
-			};
+			struct Param{};
 
 		private:
 			Math::Matrix				_invNearFarViewProjMat;
 			Math::Matrix				_viewProjMat;
-			Math::Matrix				_invViewProjViewportMat;
 
 			Intersection::Frustum		_frustum;
 			
@@ -39,12 +30,15 @@ namespace Rendering
 			virtual ~DirectionalLight();
 
 		public:
+			virtual void OnUpdate(float deltaTime);
+
+		public:
 			void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
 			virtual void CreateShadow();
 
 		public:
 			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const;
+			void MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
@@ -53,11 +47,11 @@ namespace Rendering
 			GET_ACCESSOR(Frustum,							const Intersection::Frustum&,		_frustum);
 			GET_ACCESSOR(Shadow,							Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
 			GET_ACCESSOR(InvNearFarViewProjectionMatrix,	const Math::Matrix&,				_invNearFarViewProjMat);
-			GET_ACCESSOR(InvViewProjViewportMatrix,			const Math::Matrix&,				_invViewProjViewportMat);
 			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,				_viewProjMat);
 
-			GET_SET_ACCESSOR(ProjectionSize,			float,	_projectionSize);
-			GET_SET_ACCESSOR(UseAutoProjectionLocation,	bool,	_useAutoProjectLocation);
+			GET_SET_ACCESSOR(ProjectionSize,				float,								_projectionSize);
+			GET_SET_ACCESSOR(UseAutoProjectionLocation,		bool,								_useAutoProjectLocation);
+			GET_SET_ACCESSOR(LightShaftSize,				float,								_radius);
 		};
 	}
 }

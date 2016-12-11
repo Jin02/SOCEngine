@@ -3,6 +3,8 @@
 
 #define USE_SHADOW_INVERTED_DEPTH
 #define ENABLE_SKY_LIGHT
+#define NEVER_USE_VSM
+//#define USE_MOTION_BLUR
 //#define USE_UI
 
 #define LIGHT_CULLING_TILE_RES						16
@@ -14,6 +16,11 @@
 #define MAXIMUM_LUMEN								25500
 #define PRE_INTEGRATE_TILE_RES						16
 #define BRDF_SAMPLES								64
+#define POINT_LIGHT_BUFFER_MAX_NUM					2048
+#define SPOT_LIGHT_BUFFER_MAX_NUM					2048
+#define DIRECTIONAL_LIGHT_BUFFER_MAX_NUM			1024
+#define LIGHT_BUFFER_OVERALL_UPDATE_RATE			0.5f
+#define LIGHT_SHAFT_MAXIMUM							8
 
 // Math
 #define PI											3.141592654f

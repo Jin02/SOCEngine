@@ -51,7 +51,7 @@ namespace Core
 
 	void Transform::UpdateWorldMatrix()
 	{
-		ASSERT_COND_MSG(_parent == nullptr, "Error, this func must be run in root");
+		ASSERT_MSG_IF(_parent == nullptr, "Error, this func must be run in root");
 		FetchLocalMatrix(_worldMat);
 
 		_UpdateWorldMatrix();

@@ -25,7 +25,7 @@ MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_motionXY_metallic_specularity(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr), _gamma(2.2f)
 {
 }
 
@@ -40,25 +40,25 @@ void MeshCamera::OnInitialize()
 	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
 
 	_albedo_occlusion = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_albedo_occlusion->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
 	_motionXY_metallic_specularity = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_motionXY_metallic_specularity->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _motionXY_metallic_specularity render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
-	ASSERT_COND_MSG( 
+	ASSERT_MSG_IF( 
 		_normal_roughness->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _normal_roughness render texture" 
 		);
 
 	_emission_materialFlag = new Texture::RenderTexture;
-	ASSERT_COND_MSG(
+	ASSERT_MSG_IF(
 		_emission_materialFlag->Initialize(backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0),
 		"GBuffer Error : cant create _emission_materialFlag render texture"
 		);
@@ -111,78 +111,40 @@ void MeshCamera::OnDestroy()
 
 void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
 {
-	CameraCBData camConstBufferData;
+	Matrix projMat;
+	bool isUpdateCamCB = _CullingWithUpdateCB(dx, objects, lightManager, nullptr, &projMat);
 
-	Matrix	worldMat;
-	Matrix& viewMat = camConstBufferData.viewMat;
-	Matrix	projMat;
-	Matrix	viewProjMat;
-	{
-		_owner->GetTransform()->FetchWorldMatrix(worldMat);
-
-		CameraForm::GetViewMatrix(viewMat, worldMat);
-		GetProjectionMatrix(projMat, true);
-		viewProjMat = viewMat * projMat;
-
-		camConstBufferData.worldPos = Vector4(worldMat._41, worldMat._42, worldMat._43, 1.0f);
-
-		bool updatedVP = memcmp(&_prevCamMatCBData, &camConstBufferData, sizeof(CameraCBData)) != 0;
-		if(updatedVP)
-		{
-			// Make Frustum
-			{
-				Matrix notInvProj;
-				GetProjectionMatrix(notInvProj, false);
-				_frustum->Make(camConstBufferData.viewMat * notInvProj);
-			}
-
-			_prevCamMatCBData = camConstBufferData;
-
-			Matrix::Transpose(camConstBufferData.viewMat,		camConstBufferData.viewMat);
-			Matrix::Transpose(camConstBufferData.viewProjMat,	viewProjMat);
-
-			_camMatConstBuffer->UpdateSubResource(dx->GetContext(), &camConstBufferData);
-		}
-
-		for(auto iter = objects.begin(); iter != objects.end(); ++iter)
-			(*iter)->Culling(_frustum);
-	}
-
+	Matrix viewProjMat = GetViewProjectionMatrix();
+	
 	LightCulling::TBRParam tbrParam;
+	LightCulling::TBRParam::Packed& packedParam = tbrParam.packedParam;
 	{
-		tbrParam.viewMat = viewMat;
-
-		Matrix invProjMat;
-		Matrix::Inverse(invProjMat, projMat);
-		Matrix::Transpose(tbrParam.invProjMat, invProjMat);
-
+		Size<uint> viewportSize				= Director::SharedInstance()->GetBackBufferSize();
+		packedParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
+		packedParam.packedNumOfLights		= lightManager->GetPackedLightCount();
+		packedParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
+		tbrParam.gamma						= _gamma;
+	}
+	
+	bool isChangedPackedTBRParam = (_prevPackedParamData != packedParam);	
+	if(isChangedPackedTBRParam || isUpdateCamCB)
+	{
+		//굳이 행렬까지 계산하고 저장할 필요는 없다
+		_prevPackedParamData = packedParam;
+		
+		Matrix::Inverse(tbrParam.invProjMat, projMat);
+		Matrix::Inverse(tbrParam.invViewProjMat, viewProjMat);
+		
 		Matrix invViewportMat;
 		GetInvViewportMatrix(invViewportMat, _renderRect);
-
-		Matrix invViewProj;
-		Matrix::Inverse(invViewProj, viewProjMat);
-		Matrix invViewProjViewport = invViewportMat * invViewProj;
-
-		Matrix::Transpose(tbrParam.invViewProjMat, invViewProj);
-		Matrix::Transpose(tbrParam.invViewProjViewport, invViewProjViewport);
-
-		Size<uint> viewportSize = Director::SharedInstance()->GetBackBufferSize();
-		tbrParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
-		tbrParam.packedNumOfLights		= lightManager->GetPackedLightCount();
-		tbrParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
-
-		tbrParam.camWorldPosition		= Math::Vector3(worldMat._41, worldMat._42, worldMat._43);
-		tbrParam.cameraNear				= _clippingNear;
-		tbrParam.cameraFar				= _clippingFar;
-	}
-
-	if( memcmp(&_prevParamData, &tbrParam, sizeof(LightCulling::TBRParam)) != 0 )
-	{
-		// Update Const Buffer
-		ID3D11DeviceContext* context = dx->GetContext();
-		_tbrParamConstBuffer->UpdateSubResource(context, &tbrParam);
-
-		_prevParamData = tbrParam;
+		
+		tbrParam.invViewProjViewport = invViewportMat * tbrParam.invViewProjMat;
+		
+		Matrix::Transpose(tbrParam.invProjMat, tbrParam.invProjMat);
+		Matrix::Transpose(tbrParam.invViewProjMat, tbrParam.invViewProjMat);
+		Matrix::Transpose(tbrParam.invViewProjViewport, tbrParam.invViewProjViewport);
+		
+		_tbrParamConstBuffer->UpdateSubResource(dx->GetContext(), &tbrParam);
 	}
 }
 
@@ -361,10 +323,10 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 }
 
 void MeshCamera::Render(const Device::DirectX* dx,
-						const RenderManager* renderManager, const LightManager* lightManager,
-						const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
-						Sky::SkyForm* sky,
-						std::function<const RenderTexture*(MeshCamera*)> giPass)
+			const RenderManager* renderManager, const LightManager* lightManager,
+			const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+			Sky::SkyForm* sky,
+			std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
 	auto SetCurrentViewport = [](ID3D11DeviceContext* context, const Rect<float>& renderRect) -> void
 	{
@@ -525,10 +487,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		context->PSSetShader(nullptr, nullptr, 0);
 		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 
-		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, shadowGlobalParamCB);
+		_deferredShadingWithLightCulling->Dispatch(dx, _tbrParamConstBuffer, _camMatConstBuffer, shadowGlobalParamCB);
 
 		if(_useTransparent)
-			_blendedMeshLightCulling->Dispatch(dx, _tbrParamConstBuffer);
+			_blendedMeshLightCulling->Dispatch(dx, _camMatConstBuffer, _tbrParamConstBuffer);
 
 		//if(useShadow)
 		{
@@ -590,13 +552,13 @@ void MeshCamera::EnableRenderTransparentMesh(bool enable)
 	{
 		const Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
 
-		ASSERT_COND_MSG(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
+		ASSERT_MSG_IF(_blendedDepthBuffer == nullptr, "Error, Already allocated depth");
 		{
 			_blendedDepthBuffer =  new DepthBuffer;
 			_blendedDepthBuffer->Initialize(backBufferSize, true);
 		}
 
-		ASSERT_COND_MSG(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
+		ASSERT_MSG_IF(_blendedMeshLightCulling == nullptr, "Error, Already allocated depth");
 		{
 			_blendedMeshLightCulling = new OnlyLightCulling;
 			_blendedMeshLightCulling->Initialize(_opaqueDepthBuffer, _blendedDepthBuffer);

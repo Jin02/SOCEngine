@@ -57,6 +57,7 @@ namespace Rendering
 			void InitializeClearVoxelMap(uint dimension);
 			void ClearInjectColorVoxelMap(const Device::DirectX* dx);
 			void UpdateGIDynamicInfo(const Device::DirectX* dx, const VXGIDynamicInfo& dynamicInfo);
+			void UpdateGIStaticDynamicInfo(const Device::DirectX* dx, const VXGIStaticInfo& info);
 
 		public:
 			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);

@@ -36,12 +36,21 @@ void TestScene::OnInitialize()
 {
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
+//	AddObject(_camera);
 
 #if 1 //GI Test
-	ActivateGI(true, 32, 15.0f);
+//	ActivateGI(true, 256, 50.0f);
+//	ActivateGI(true, 256, 15.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
+
+	//_testObject2 = importer->Load("./Resources/Sphere/sphere.obj", false);
+	//_pos = Vector3(-2.7f, 3.3f, 17.7f);
+	//_testObject2->GetTransform()->UpdatePosition(_pos);
+	//_testObject2->GetTransform()->UpdateScale(Vector3(2.5f, 2.5f, 2.5f));
+	//
+	//AddObject(_testObject2);
 
 	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
 	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
@@ -91,10 +100,11 @@ void TestScene::OnInitialize()
 	_light = new Object("Light");
 	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
 	_light->GetTransform()->UpdateEulerAngles(Vector3(30.0f, 330.0f, 0.0f));
+	AddObject(_light);
 
 	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
-	dl->SetIntensity(2.0f);
-//	dl->ActiveShadow(false);
+	dl->SetIntensity(20.0f);
+	dl->ActiveShadow(true);
 
 #elif 0 //IBL Test
 	// SkyBox
@@ -154,7 +164,7 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	const float scale = 5.0f;
+	const float scale = 0.5f;
 #if 1
 	Transform* control = _light->GetTransform();
 
@@ -245,6 +255,14 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 
 void TestScene::OnUpdate(float dt)
 {
+	//Transform* control = _testObject2->GetTransform();
+	//float scale = 20.0f;
+	//float distScale = 10.0f;
+
+	//static float count = 0.0f;
+	//count = count + dt * scale;
+
+	//control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
 }
 
 void TestScene::OnRenderPost()

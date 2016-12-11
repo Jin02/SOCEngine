@@ -20,8 +20,7 @@ namespace Rendering
 			static const uint NumOfRenderTargets = 4;
 
 		private:
-			bool _useTransparent;
-			Light::LightCulling::TBRParam				_prevParamData;
+			Light::LightCulling::TBRParam::Packed		_prevPackedParamData;
 			Buffer::ConstBuffer*						_tbrParamConstBuffer;
 
 		private:
@@ -37,6 +36,8 @@ namespace Rendering
 			Texture::DepthBuffer*						_blendedDepthBuffer;
 			TBDR::OffScreen*							_offScreen;
 
+			float										_gamma;
+			bool										_useTransparent;
 
 		public:
 			MeshCamera();
@@ -96,6 +97,8 @@ namespace Rendering
 			GET_ACCESSOR(PerLightIndicesBuffer,					const Buffer::ShaderResourceBuffer*,	_deferredShadingWithLightCulling->GetPerLightIndicesSRBuffer());
 
 			GET_ACCESSOR(UseIndirectColorMap,					bool,									_offScreen->GetUseIndirectColorMap());
+
+			GET_SET_ACCESSOR(Gamma,								float,									_gamma);
 		};
 	}
 

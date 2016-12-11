@@ -15,7 +15,7 @@ using namespace Device;
 using namespace Resource;
 
 GaussianBlur::GaussianBlur()
-	: _vertical(nullptr), _horizontal(nullptr), _tempBuffer(nullptr)
+	: _vertical(nullptr), _horizontal(nullptr), _tempMap(nullptr), _paramCB(nullptr)
 {
 }
 
@@ -23,15 +23,17 @@ GaussianBlur::~GaussianBlur()
 {
 	SAFE_DELETE(_vertical);
 	SAFE_DELETE(_horizontal);
-	SAFE_DELETE(_tempBuffer);
+	SAFE_DELETE(_tempMap);
+
+	SAFE_DELETE(_paramCB);
 }
 
-void GaussianBlur::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format)
+void GaussianBlur::Initialize(const Device::DirectX* dx, const Math::Size<uint>& size)
 {
 	_filteringSize = size;
 
 	std::vector<ShaderMacro> macros;
-	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
+	macros.push_back(dx->GetMSAAShaderMacro());
 
 	// Init Shader
 	{
@@ -42,14 +44,44 @@ void GaussianBlur::Initialize(const Math::Size<uint>& size, DXGI_FORMAT format)
 		if(_horizontal == nullptr)	_horizontal	= new FullScreen;
 		macros.back().SetName("BLUR_HORIZONTAL");
 		_horizontal->Initialize("GaussianBlur", "GuassianBlur_InFullScreen_PS", &macros);
-
-		if(_tempBuffer == nullptr)	_tempBuffer = new RenderTexture;
-		_tempBuffer->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);
 	}
+
+	_paramCB = new ConstBuffer;
+	_paramCB->Initialize(sizeof(ParamCB));
+
+	ParamCB param;
+	{
+		param.blurSize			= 2.5f;
+		param.sigma				= 6.0f;
+		param.numPixelPerSide	= 8.0f;
+		param.scale				= 1.0f;
+	}
+
+	UpdateParam(dx, param);
+}
+
+void GaussianBlur::Initialize(const Device::DirectX* dx, const Math::Size<uint>& size, DXGI_FORMAT format)
+{
+	Initialize(dx, size);
+
+	if(_tempMap == nullptr)	_tempMap = new RenderTexture;
+	_tempMap->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);
+}
+
+void GaussianBlur::UpdateParam(const Device::DirectX* dx, const ParamCB& param)
+{
+	_paramCB->UpdateSubResource(dx->GetContext(), &param);
 }
 
 void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const RenderTexture* inputColorMap)
 {
+	Render(dx, outResultRT, inputColorMap, _tempMap);
+}
+
+void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outResultRT, const RenderTexture* inputColorMap, const RenderTexture* tempMap)
+{
+	ASSERT_MSG_IF(tempMap, "Error, temp map is null!");
+
 	ID3D11DeviceContext* context	= dx->GetContext();
 
 	// Setting Viewport
@@ -66,23 +98,26 @@ void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outRes
 		context->RSSetViewports( 1, &vp );
 	}
 
-
 	PixelShader::BindTexture(context, TextureBindIndex(0), inputColorMap);
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex(0), _paramCB);
 	
-	_vertical->Render(dx, _tempBuffer);
+	_vertical->Render(dx, tempMap);
 
-	PixelShader::BindTexture(context, TextureBindIndex(0), _tempBuffer);
+	PixelShader::BindTexture(context, TextureBindIndex(0), tempMap);
 
 	_horizontal->Render(dx, outResultRT);
 
 	PixelShader::BindTexture(context, TextureBindIndex(0), nullptr);
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
+	PixelShader::BindConstBuffer(context, ConstBufferBindIndex(0), nullptr);
 }
 
 void GaussianBlur::Destroy()
 {
 	_vertical->Destroy();
 	_horizontal->Destroy();
-	_tempBuffer->Destroy();
+
+	if(_tempMap)
+		_tempMap->Destroy();
 }

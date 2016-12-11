@@ -424,9 +424,9 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 {
 	Document document;
 	document.Parse(buffer);
-	ASSERT_COND_MSG(document.HasParseError() == false, "Error, Invalid Json File");
+	ASSERT_MSG_IF(document.HasParseError() == false, "Error, Invalid Json File");
 
-	ASSERT_COND_MSG(document.HasMember("nodes"), "Error, Where is Node?");
+	ASSERT_MSG_IF(document.HasMember("nodes"), "Error, Where is Node?");
 	{
 		const Value& nodes = document["nodes"];
 		uint size = nodes.Size();
@@ -443,7 +443,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 	NodeHashMap nodeHashMap;
 	FetchNodeHashMap(nodeHashMap, outNodes);
 
-	ASSERT_COND_MSG(document.HasMember("meshes"), "Error, Where is Mesh?");
+	ASSERT_MSG_IF(document.HasMember("meshes"), "Error, Where is Mesh?");
 	{
 		const Value& nodes = document["meshes"];
 		uint size = nodes.Size();
@@ -455,7 +455,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		}
 	}
 
-	ASSERT_COND_MSG(document.HasMember("materials"), "Error, Where is Material?");
+	ASSERT_MSG_IF(document.HasMember("materials"), "Error, Where is Material?");
 	{
 		const Value& nodes = document["materials"];
 		uint size = nodes.Size();
@@ -590,7 +590,7 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 					IndexBuffer* indexBuffer = new IndexBuffer;
 
 					bool success = indexBuffer->Initialize(indices, vertexBufferKey, useDynamicIB);
-					ASSERT_COND_MSG(success, "Error, Can't create index buffer");
+					ASSERT_MSG_IF(success, "Error, Can't create index buffer");
 
 					bufferMgr->Add(meshFileName, partsIter->meshPartId, indexBuffer);
 
@@ -806,7 +806,7 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 	auto MakeMaterial = [&](const Material& impMat, Rendering::Material::Type materialType)
 	{
 		const std::string materialName = impMat.id;
-		ASSERT_COND_MSG(materialName.empty() == false, "Material has not key");
+		ASSERT_MSG_IF(materialName.empty() == false, "Material has not key");
 
 		Rendering::Material* material = materialMgr->Find(meshFileName, materialName);
 
@@ -938,7 +938,7 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 		}
 		IndexBuffer* indexBuffer = nullptr;
 		bool success = bufferManager->Find(&indexBuffer, meshFileName, part.meshPartId);
-		ASSERT_COND_MSG(success, "Error, Invalid mesh part id");
+		ASSERT_MSG_IF(success, "Error, Invalid mesh part id");
 
 		std::string vbChunkKey = "";
 		{
@@ -950,11 +950,11 @@ void MeshImporter::MakeHierarchy(Core::Object* parent, const Node& node,
 
 			vbChunkKey = tokens.back();
 		}
-		ASSERT_COND_MSG(vbChunkKey.empty() == false, "Error, Invalid vb Chunk Key");
+		ASSERT_MSG_IF(vbChunkKey.empty() == false, "Error, Invalid vb Chunk Key");
 
 		VertexBuffer* vertexBuffer = nullptr;
 		success = bufferManager->Find(&vertexBuffer, meshFileName, vbChunkKey);
-		ASSERT_COND_MSG(success, "Error, Invalid vb Chunk Key");
+		ASSERT_MSG_IF(success, "Error, Invalid vb Chunk Key");
 
 		Rendering::Material* material = materialManager->Find(meshFileName, part.materialId);
 

@@ -43,7 +43,7 @@ void ShadingWithLightCulling::Initialize(
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "TBDR");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	std::vector<ShaderMacro> macros;
@@ -61,23 +61,22 @@ void ShadingWithLightCulling::Initialize(
 	LightCulling::Initialize(filePath, "TileBasedDeferredShadingCS", opaqueDepthBuffer, nullptr, &macros);
 
 	// Input Shader Resource Buffers
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightCenterWithDirZ),		lightManager->GetDirectionalLightTransformSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightDirXY),					lightManager->GetDirectionalLightDirXYSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightColor),					lightManager->GetDirectionalLightColorSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightParam),					lightManager->GetDirectionalLightParamSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowParam),			shadowMgr->GetDirectionalLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowIndex),			lightManager->GetDirectionalLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightOptionalParamIndex),	lightManager->GetDirectionalLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::DirectionalLightShadowViewProjMatrix),	shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 
-	// Point Light transformÀº LightCulling::Initialize¿¡¼­ µî·ÏÇÏ°í ÀÖ´Ù.
+	// Point Light transformì€ LightCulling::Initializeì—ì„œ ë“±ë¡í•˜ê³  ìžˆë‹¤.
 	AddInputBufferToList(uint(TextureBindIndex::PointLightColor),						lightManager->GetPointLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowParam),					shadowMgr->GetPointLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowIndex),					lightManager->GetPointLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::PointLightOptionalParamIndex),			lightManager->GetPointLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::PointLightShadowViewProjMatrix),		shadowMgr->GetPointLightShadowViewProjSRBuffer());
 
-	// Spot Light transform¿Í ParamÀº LightCulling::Initialize¿¡¼­ µî·ÏÇÏ°í ÀÖ´Ù.
+	// Spot Light transformì™€ Paramì€ LightCulling::Initializeì—ì„œ ë“±ë¡í•˜ê³  ìžˆë‹¤.
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightColor),						lightManager->GetSpotLightColorSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowParam),					shadowMgr->GetSpotLightShadowParamSRBuffer());
-	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowIndex),					lightManager->GetSpotLightShadowIndexSRBuffer());
+	AddInputBufferToList(uint(TextureBindIndex::SpotLightOptionalParamIndex),			lightManager->GetSpotLightOptionalParamIndexSRBuffer());
 	AddInputBufferToList(uint(TextureBindIndex::SpotLightShadowViewProjMatrix),			shadowMgr->GetSpotLightShadowViewProjSRBuffer());
 
 	// Input Texture
@@ -157,18 +156,13 @@ void ShadingWithLightCulling::Destroy()
 }
 
 void ShadingWithLightCulling::Dispatch(const Device::DirectX* dx,
-									   const Buffer::ConstBuffer* tbrConstBuffer,
-									   const Buffer::ConstBuffer* shadowGlobalParamConstBuffer)
+				       const Buffer::ConstBuffer* tbrCB, const Buffer::ConstBuffer* mainCamCB,
+				       const Buffer::ConstBuffer* shadowGlobalParamCB)
 {
 	std::vector<ShaderForm::InputConstBuffer> additionalConstBuffers;
-	if(shadowGlobalParamConstBuffer)
-	{
-		ShaderForm::InputConstBuffer icb;
-		icb.buffer		= shadowGlobalParamConstBuffer;
-		icb.bindIndex	= (uint)ConstBufferBindIndex::ShadowGlobalParam;
 
-		additionalConstBuffers.push_back(icb);
-	}
+	if(shadowGlobalParamCB)
+		additionalConstBuffers.push_back(ShaderForm::InputConstBuffer((uint)ConstBufferBindIndex::ShadowGlobalParam, shadowGlobalParamCB));
 
-	LightCulling::Dispatch(dx, tbrConstBuffer, &additionalConstBuffers);
+	LightCulling::Dispatch(dx, tbrCB, mainCamCB, &additionalConstBuffers);
 }

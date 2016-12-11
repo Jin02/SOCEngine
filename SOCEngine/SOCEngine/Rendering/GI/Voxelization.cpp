@@ -69,7 +69,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension)
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "ClearVoxelRawMap");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
@@ -87,7 +87,7 @@ void Voxelization::InitializeClearVoxelMap(uint dimension)
 	}
 
 	_clearVoxelMapCS = new ComputeShader(threadGroup, blob);
-	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+	ASSERT_MSG_IF(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 }
 
 void Voxelization::Destroy()
@@ -156,11 +156,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	const LightManager*		lightMgr	= scene->GetLightManager();
 	const ShadowRenderer*	shadowMgr	= scene->GetShadowManager();
 
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,			lightMgr->GetDirectionalLightTransformSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					lightMgr->GetDirectionalLightDirXYSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					lightMgr->GetDirectionalLightColorSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,					lightMgr->GetDirectionalLightParamSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				shadowMgr->GetDirectionalLightShadowParamSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				lightMgr->GetDirectionalLightShadowIndexSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,		lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		shadowMgr->GetDirectionalLightShadowViewProjSRBuffer());
 	
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						vxgiStaticInfoCB);
@@ -193,11 +192,10 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	GeometryShader::BindConstBuffer(context, 			ConstBufferBindIndex::VoxelizationInfoCB,					nullptr);
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VoxelizationInfoCB,					nullptr);
 
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightCenterWithDirZ,			nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightDirXY,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightColor,					nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightParam,					nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowParam,				nullptr);
-	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowIndex,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightOptionalParamIndex,		nullptr);
 	PixelShader::BindShaderResourceBuffer(context,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,		nullptr);
 
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);
@@ -259,9 +257,18 @@ void Voxelization::UpdateConstBuffer(const Device::DirectX*& dx, const Vector3& 
 		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
 		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
 
+#ifdef USE_BLOATING_IN_VOXELIZATION_PASS 
+		Matrix::Inverse(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
+		Matrix::Inverse(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
+		Matrix::Inverse(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
+
+		Matrix::Transpose(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
+#endif
 		Matrix::Transpose(currentVoxelizeInfo.viewProjX, currentVoxelizeInfo.viewProjX);
 		Matrix::Transpose(currentVoxelizeInfo.viewProjY, currentVoxelizeInfo.viewProjY);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);
+		Matrix::Transpose(currentVoxelizeInfo.viewProjZ, currentVoxelizeInfo.viewProjZ);	
 	}
 
 	_infoCB->UpdateSubResource(dx->GetContext(), &currentVoxelizeInfo);

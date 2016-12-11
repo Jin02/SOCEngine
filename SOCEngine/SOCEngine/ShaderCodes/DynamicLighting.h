@@ -25,15 +25,14 @@ void RenderDirectionalLight(
 
 	uint lightIndex = lightingParams.lightIndex;
 
-	float4	lightCenterWithDirZ	= DirectionalLightTransformWithDirZBuffer[lightIndex];
-	float3	lightCenterWorldPosition = lightCenterWithDirZ.xyz;
-
 	LightingCommonParams commonParams;
 	{
 		commonParams.lightColor		= DirectionalLightColorBuffer[lightIndex].xyz;
 
-		float2	lightParam			= DirectionalLightParamBuffer[lightIndex];
-		commonParams.lightDir		= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
+		float3	lightDir			= float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
+		lightDir.z					= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
+
+		commonParams.lightDir		= -lightDir;
 
 		float intensity = DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 #if defined(RENDER_TRANSPARENCY)
@@ -50,7 +49,7 @@ void RenderDirectionalLight(
 		resultDiffuseColor				*= intensity;
 		resultSpecularColor				*= intensity;
 
-		uint shadowIndex = DirectionalLightShadowIndex[lightIndex];
+		uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
@@ -112,7 +111,7 @@ void RenderPointLight(
 		resultDiffuseColor	*= attenuation;
 		resultSpecularColor	*= attenuation;
 
-		uint shadowIndex = PointLightShadowIndex[lightIndex];
+		uint shadowIndex = GetShadowIndex(PointLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float4 shadowColor = RenderPointLightShadow(lightIndex, vertexWorldPosition, lightDir, distanceOfLightWithVertex / lightRadius);
@@ -195,7 +194,7 @@ void RenderSpotLight(
 		resultDiffuseColor	*= totalAttenTerm;
 		resultSpecularColor	*= totalAttenTerm;
 
-		uint shadowIndex = PointLightShadowIndex[lightIndex];
+		uint shadowIndex = GetShadowIndex(SpotLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
 		{
 			float4 shadowColor = RenderSpotLightShadow(lightIndex, vertexWorldPosition, distanceOfLightWithVertex / radius);

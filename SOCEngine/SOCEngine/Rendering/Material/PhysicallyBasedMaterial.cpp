@@ -9,10 +9,10 @@ using namespace Rendering::Shader;
 
 PhysicallyBasedMaterial::GBufferParam::GBufferParam()
 {
-	mainColor_alpha							= 0;
-	emissiveColor_Metallic					= 0;
-	roughness_specularity_existTextureFlag	= 0;
-	flag									= 0;
+	mainColor_alpha					= 0;
+	emissiveColor_Metallic				= 0;
+	roughness_specularity_existTextureFlag		= 0;
+	flag_ior					= 0;
 
 	uvTiling0.x = uvTiling0.y = uvTiling1.x = uvTiling1.y = 1.0f;
 	uvOffset0.x = uvOffset0.y = uvOffset1.x = uvOffset1.y = 0.0f;
@@ -33,7 +33,7 @@ PhysicallyBasedMaterial::~PhysicallyBasedMaterial(void)
 
 void PhysicallyBasedMaterial::Initialize()
 {
-	ASSERT_COND_MSG(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
+	ASSERT_MSG_IF(_gbufferCB == nullptr, "Error, gbuffer const buffer was already allocated");
 
 	SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 	SetEmissiveColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
@@ -117,7 +117,14 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(const Device::DirectX* dx)
 			param.roughness_specularity_existTextureFlag = resultFlag;
 		}
 
-		GetFlag(param.flag);
+		unsigned char flag = 0;
+		GetFlag(flag);
+		
+		float ior = 0.0f;
+		GetIndexOfRefraction(ior);
+		ior = min(max(0.0f, ior), 1.0f) * 255.0f;
+				
+		param.flag_ior = (static_cast<uint>(flag) << 8) | static_cast<uint>(ior);
 
 		GetUVTiling0(param.uvTiling0);
 		GetUVOffset0(param.uvOffset0);

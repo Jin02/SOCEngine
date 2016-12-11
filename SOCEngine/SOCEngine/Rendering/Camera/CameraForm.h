@@ -23,7 +23,10 @@ namespace Rendering
 			{
 				Math::Matrix	viewMat;
 				Math::Matrix	viewProjMat;
-				Math::Vector4	worldPos;		
+				Math::Matrix	prevViewProjMat;
+
+				Math::Vector3	worldPos;		
+				uint			packedCamNearFar;
 			};
 			friend class ReflectionProbe;
 
@@ -56,9 +59,11 @@ namespace Rendering
 			Color							_clearColor;
 
 			Buffer::ConstBuffer*			_camMatConstBuffer;
-			CameraCBData					_prevCamMatCBData;
+			Math::Matrix					_prevViewProjMat;
+			TransformCB::ChangeState		_camCBChangeState;
 
 			Math::Rect<float>				_renderRect;
+			Math::Matrix					_viewProjMat;
 
 		public:
 			CameraForm(Usage usage);
@@ -82,13 +87,16 @@ namespace Rendering
 
 		protected:
 			void Initialize(const Math::Rect<float>& renderRect);
-			void Destroy();
-
+			void Destroy();	
+			
 		public:
-			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
-
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager) = 0;
+			
 		protected:
 			void _Clone(CameraForm* newCam) const;
+			bool _CullingWithUpdateCB(
+				const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager,
+				CameraCBData* outResultCamCBData = nullptr, Math::Matrix* outProjMat = nullptr);
 
 		public:
 			GET_SET_ACCESSOR(Near,				float,							_clippingNear);
@@ -100,6 +108,9 @@ namespace Rendering
 			GET_ACCESSOR(RenderTarget,			const Texture::RenderTexture*,	_renderTarget);
 
 			GET_ACCESSOR(Usage,					Usage,							_usage);
+			GET_ACCESSOR(CameraConstBuffer,		const Buffer::ConstBuffer*,		_camMatConstBuffer);
+
+			GET_ACCESSOR(ViewProjectionMatrix,	const Math::Matrix&,			_viewProjMat);
 		};
 	}
 }

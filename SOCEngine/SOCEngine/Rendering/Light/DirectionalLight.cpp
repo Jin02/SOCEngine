@@ -23,6 +23,13 @@ void DirectionalLight::CreateShadow()
 	_shadow = new DirectionalLightShadow(this);
 }
 
+void DirectionalLight::OnUpdate(float deltaTime)
+{
+	bool isNegDirZSign = _owner->GetTransform()->GetWorldMatrix()._33 < 0.0f;
+
+	_flag |= isNegDirZSign ? 1 : 0;
+}
+
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat)
 {
 	Matrix view;
@@ -59,11 +66,6 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 #else
 	_frustum.Make(_viewProjMat);
 #endif
-
-	Matrix invViewProj;
-	Matrix::Inverse(invViewProj, _viewProjMat);
-
-	_invViewProjViewportMat = invViewportMat * invViewProj;
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
@@ -71,18 +73,16 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const
+void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& dummy) const
 {
 	const Transform* transform = _owner->GetTransform();
+
 	Transform worldTransform(nullptr);
 	transform->FetchWorldTransform(worldTransform);
-	outTransform.worldPosition = worldTransform.GetLocalPosition();
-
 	const auto& forward = worldTransform.GetForward();
-	outTransform.radius = forward.z;
 	
-	outParam.dirX = Math::Common::FloatToHalf(forward.x);
-	outParam.dirY = Math::Common::FloatToHalf(forward.y);
+	outDir.first	= Math::Common::FloatToHalf(forward.x);
+	outDir.second	= Math::Common::FloatToHalf(forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const

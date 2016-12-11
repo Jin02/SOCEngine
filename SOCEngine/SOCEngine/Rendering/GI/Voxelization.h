@@ -26,7 +26,11 @@ namespace Rendering
 				Math::Matrix	viewProjX;
 				Math::Matrix	viewProjY;
 				Math::Matrix	viewProjZ;
-
+#ifdef USE_BLOATING_IN_VOXELIZATION_PASS 
+				Math::Matrix	viewProjX_inv;
+				Math::Matrix	viewProjY_inv;
+				Math::Matrix	viewProjZ_inv;				
+#endif				
 				Math::Vector4	voxelizeMinPos;
 			};
 

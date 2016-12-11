@@ -25,6 +25,7 @@ namespace Rendering
 		public:
 			void Update(float delta);
 			void Render(const Device::DirectX* dx);
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
 
 		public:
 			virtual Core::Component* Clone() const;

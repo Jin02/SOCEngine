@@ -53,22 +53,6 @@ float smoothStep(float low, float high, float v)
 	return clamp( (v - low) / (high - low), 0.0f, 1.0f);
 }
 
-struct ParsedShadowParam
-{
-	uint	lightIndex;
-	uint	flag;
-	float	bias;
-	float4	color;
-};
-
-void ParseShadowParam(out ParsedShadowParam outParam, uint2 shadowParam)
-{
-	outParam.lightIndex	= shadowParam.x >> 16;
-	outParam.bias		= float(uint(shadowParam.x & 0xfff0) >> 4) / (8192.0f);
-	outParam.flag		= shadowParam.x & 0xf;
-	outParam.color		= RGBA8UintColorToFloat4(shadowParam.y);
-}
-
 float Luminance(float3 linearColor)
 {
 	return dot(linearColor, float3(0.3f, 0.59f, 0.11f));
@@ -77,6 +61,16 @@ float Luminance(float3 linearColor)
 float SimpleNoise(in float3 co)
 {
     return frac(sin(dot(co, float3(12.9898f, 78.233f, 31.323f))) * 43758.5453f);
+}
+
+float3 ToLinear(float3 color, float gamma)
+{
+	return pow(color, gamma);
+}
+
+float3 ToGamma(float3 color, float gamma)
+{
+	return pow(color, 1.0f / gamma);
 }
 
 #endif

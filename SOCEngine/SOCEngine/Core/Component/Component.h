@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix.h"
+#include "TransformCB.h"
 #include "Common.h"
 #include <vector>
 
@@ -14,12 +14,6 @@ namespace Rendering
 	namespace Light
 	{
 		class LightForm;
-	};
-
-	struct TransformCB
-	{
-		Math::Matrix world;
-		Math::Matrix worldInvTranspose;
 	};
 };
 

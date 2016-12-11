@@ -54,14 +54,14 @@ void VXGI::InitializeClearVoxelMap(uint dimension)
 		Factory::EngineFactory pathFind(nullptr);
 		pathFind.FetchShaderFullPath(filePath, "ClearVoxelMap");
 
-		ASSERT_COND_MSG(filePath.empty() == false, "Error, File path is empty");
+		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty");
 	}
 
 	ShaderManager* shaderMgr = ResourceManager::SharedInstance()->GetShaderManager();
 	ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
 
 	_clearVoxelMapCS = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-	ASSERT_COND_MSG(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
+	ASSERT_MSG_IF(_clearVoxelMapCS->Initialize(), "Error, Can't Init ClearVoxelMapCS");
 }
 
 void VXGI::ClearInjectColorVoxelMap(const Device::DirectX* dx)
@@ -109,7 +109,8 @@ void VXGI::Initialize(const Device::DirectX* dx, uint dimension, float minWorldS
 		_staticInfo.dimension				= dimension;
 		_staticInfo.maxMipLevel				= mipmapLevels;
 		_staticInfo.voxelSize				= minWorldSize / float(dimension);
-		_staticInfo.diffuseHalfConeMaxAngle	= Math::Common::Deg2Rad(60.0f);
+		_staticInfo.diffuseSamplingCount		= 128;
+		_staticInfo.specularSamplingCount		= 256;
 
 		_staticInfoCB->UpdateSubResource(dx->GetContext(), &_staticInfo);
 
@@ -158,7 +159,7 @@ void VXGI::Initialize(const Device::DirectX* dx, uint dimension, float minWorldS
 
 void VXGI::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene)
 {
-	ASSERT_COND_MSG(camera, "Error, camera is null");
+	ASSERT_MSG_IF(camera, "Error, camera is null");
 
 	const LightManager* lightMgr	= scene->GetLightManager();
 	
@@ -233,6 +234,11 @@ void VXGI::UpdateGIDynamicInfo(const Device::DirectX* dx, const VXGIDynamicInfo&
 	}
 }
 
+void VXGI::UpdateGIStaticDynamicInfo(const Device::DirectX* dx, const VXGIStaticInfo& info)
+{
+	// 자주 업데이트 될 것이 아니니, 중복 체크를 할 이유는 딱히 없다.
+	_staticInfoCB->UpdateSubResource(dx->GetContext(), &info);	
+}
 
 void VXGI::Destroy()
 {

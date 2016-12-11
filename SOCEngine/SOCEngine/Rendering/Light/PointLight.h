@@ -11,10 +11,7 @@ namespace Rendering
 		class PointLight : public LightForm
 		{
 		public:
-			struct Param
-			{
-
-			};
+			struct Param{};
 
 		public:
 			PointLight();

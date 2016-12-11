@@ -38,7 +38,7 @@ namespace Math
 		unsigned int floatBit = *((unsigned int*)&f);
 
 		int exponent = (int)((floatBit &0x7F800000) >> 23) - 127 + 15;
-		ASSERT_COND_MSG(exponent < 31, "Strange Exp");
+		ASSERT_MSG_IF(exponent < 31, "Strange Exp");
 
 		if(exponent <= 0)
 			return (unsigned short)((floatBit & 0x80000000) >> 16);

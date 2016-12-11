@@ -70,13 +70,13 @@ namespace Structure
 
 		inline Object& Get(unsigned int index)
 		{
-			ASSERT_COND_MSG(index < _vector.size(), "Out index");
+			ASSERT_MSG_IF(index < _vector.size(), "Out index");
 			return _vector[index];
 		}
 
 		inline Object& Get(unsigned int index) const
 		{
-			ASSERT_COND_MSG(index < _vector.size(), "Out index");
+			ASSERT_MSG_IF(index < _vector.size(), "Out index");
 			return _vector[index];
 		}
 

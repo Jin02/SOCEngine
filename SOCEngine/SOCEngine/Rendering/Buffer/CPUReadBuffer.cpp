@@ -33,14 +33,14 @@ bool CPUReadBuffer::Initialize(uint stride, uint num, DXGI_FORMAT format)
 	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
 
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create buffer");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. Not create buffer");
 
 	desc.Usage					= D3D11_USAGE_STAGING;
 	desc.BindFlags				= 0;
 	desc.CPUAccessFlags			= D3D11_CPU_ACCESS_READ;
 	hr = device->CreateBuffer(&desc, nullptr, &_readBuffer);
 
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!. Not create staging buffer");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. Not create staging buffer");
 
 	_uav = new UnorderedAccessView;
 	_uav->Initialize(format, num, _buffer, D3D11_UAV_DIMENSION_BUFFER);

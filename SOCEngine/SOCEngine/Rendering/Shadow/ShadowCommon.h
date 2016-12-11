@@ -23,16 +23,34 @@ namespace Rendering
 		class ShadowCommon
 		{
 		public:
-			struct CommonParam
+			struct Param
 			{
-				uint lightIndexWithBiasWithFlag;
-				uint color;
+				union
+				{
+					struct
+					{
+						ushort	projFar, projNear;			// x
+						ushort	softness, underScanSize;	// y
+
+						uchar	flag, bias;					// z
+						ushort	lightIndex;					// z
+
+						uint	shadowColor;				// a
+					};
+
+					uint packedParam[4];
+				};
 			};
 
 		private:
-			Color						_color; //a is strength
-			float						_bias;
 			float						_projNear;
+			float						_projFar;			//new
+			float						_underScanSize;		//new
+			float						_softness;			//new
+			float						_bias;
+			uchar						_flag;				//new
+
+			Color						_color; //a is strength
 			bool						_useVSM;
 
 		protected:
@@ -51,18 +69,9 @@ namespace Rendering
 			void Initialize();
 
 		public:
-			void MakeParam(CommonParam& outParam, uint lightIndex) const;
+			void MakeParam(Param& outParam, uint lightIndex) const;
 
 		public:
-			GET_ACCESSOR(Bias,								float,						_bias);
-			SET_SHADOW_ACCESSOR(Bias,						float,						_bias,			_paramUpdateCounter);
-
-			GET_ACCESSOR(Color,								const Color&,				_color);
-			SET_SHADOW_ACCESSOR(Color,						const Color&,				_color,			_paramUpdateCounter);
-
-			GET_ACCESSOR(ProjectionNear,					float,						_projNear);
-			void SetProjectionNear(float n);
-
 			GET_ACCESSOR(UseVSM,							bool,						_useVSM);
 			SET_SHADOW_ACCESSOR(UseVSM,						bool,						_useVSM,		_paramUpdateCounter);
 
@@ -71,6 +80,28 @@ namespace Rendering
 			GET_ACCESSOR(Owner,								const Light::LightForm*,	_owner);
 
 			GET_ACCESSOR(ParamUpdateCounter,				uint,						_paramUpdateCounter);
+
+
+
+			GET_ACCESSOR(ProjectionNear,					float,						_projNear);
+			void SetProjectionNear(float n);
+
+			GET_ACCESSOR(ProjectionFar,						float,						_projFar);
+			SET_SHADOW_ACCESSOR(ProjectionFar,				float,						_projFar,		_paramUpdateCounter);
+
+			GET_ACCESSOR(UnderScanSize,						float,						_underScanSize);
+			SET_SHADOW_ACCESSOR(UnderScanSize,				float,						_underScanSize,	_paramUpdateCounter);
+
+			GET_ACCESSOR(Softness,							float,						_softness);
+			SET_SHADOW_ACCESSOR(Softness,					float,						_softness,		_paramUpdateCounter);
+
+			GET_ACCESSOR(Bias,								float,						_bias);
+			SET_SHADOW_ACCESSOR(Bias,						float,						_bias,			_paramUpdateCounter);
+
+			GET_ACCESSOR(Flag,								uchar,						_flag);
+
+			GET_ACCESSOR(Color,								const Color&,				_color);
+			SET_SHADOW_ACCESSOR(Color,						const Color&,				_color,			_paramUpdateCounter);
 		};
 	}
 }

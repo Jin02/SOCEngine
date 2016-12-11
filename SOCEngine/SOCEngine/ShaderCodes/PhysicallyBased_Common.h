@@ -4,6 +4,7 @@
 #define __SOC_PHYSICALLY_BASED_COMMON_H__
 
 #include "NormalMapping.h"
+#include "CommonConstBuffer.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
@@ -11,25 +12,12 @@
 #define ALPHA_TEST_BIAS		0.5f
 #endif
 
-cbuffer Transform : register( b1 )		//Object World
-{
-	matrix transform_world;
-	matrix transform_worldInvTranspose;
-};
-
-cbuffer Camera : register( b2 )
-{
-	matrix	camera_viewMat;				// or InvNearFarViewProj
-	matrix	camera_viewProjMat;
-	float4	camera_worldPos;
-};
-
 cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 {
 	uint	material_mainColor_alpha;
 	uint	material_emissiveColor_Metallic;
 	uint	material_roughness_specularity_existTextureFlag;
-	uint	material_flag;
+	uint	material_flag_ior;
 
 	float2 	material_uvTiling0;
 	float2 	material_uvOffset0;
@@ -83,7 +71,13 @@ uint GetMaterialExistTextureFlag()
 
 uint GetMaterialFlag()
 {
-	return material_flag & 0xff;
+	return (material_flag_ior >> 8) & 0xf;
+}
+
+float GetIndexOfRefraction()
+{
+	float ior8Bit = float( material_flag_ior & 0xf );
+	return ior8Bit * rcp(255.0f);
 }
 
 bool HasDiffuseMap()	{	return (GetMaterialExistTextureFlag() & (1 << 0));	}

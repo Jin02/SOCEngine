@@ -27,7 +27,7 @@ float3 GetNormalInVoxelRawBuf(RWByteAddressBuffer voxelRawBuf, uint3 voxelIdx)
 	return normal;
 }
 
-void StoreRadiosity(RWTexture3D<uint> outVoxelMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx)
+void StoreRadiosity(RWTexture3D<uint> outVoxelMap, float3 radiosity, float alpha, float3 normal, uint3 voxelIdx, uniform bool isAccum)
 {
 #if 0
 	float anisotropicNormals[6] = {
@@ -47,10 +47,18 @@ void StoreRadiosity(RWTexture3D<uint> outVoxelMap, float3 radiosity, float alpha
 		float rate = max(anisotropicNormals[faceIndex], 0.0f);
 		float4 storeValue = float4(radiosity * rate, alpha);
 
+		if(isAccum)
+			storeValue = saturate( RGBA8UintColorToFloat4(outVoxelMap[index]) + storeValue );
+
 		outVoxelMap[index] = Float4ColorToUint(storeValue);
 	}
 #else
-	outVoxelMap[voxelIdx] = Float4ColorToUint(float4(radiosity, alpha));
+	float4 storeValue = float4(radiosity, alpha);
+
+	if(isAccum)
+		storeValue = saturate( RGBA8UintColorToFloat4(outVoxelMap[voxelIdx]) + storeValue );
+
+	outVoxelMap[voxelIdx] = Float4ColorToUint(storeValue);
 #endif
 }
 

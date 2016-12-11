@@ -10,64 +10,67 @@
 Buffer<float4>								PointLightTransformBuffer					: register( t0 ); // center, radius
 Buffer<float4>								PointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
 
-Buffer<float4>								SpotLightTransformBuffer						: register( t2 ); // center, radiusWithDirZSignBit
-Buffer<float4>								SpotLightColorBuffer							: register( t3 ); // rgb, lumen(maximum : 30,000)
-Buffer<float4>								SpotLightParamBuffer							: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
+Buffer<float4>								SpotLightTransformBuffer					: register( t2 ); // center, radiusWithDirZSignBit
+Buffer<float4>								SpotLightColorBuffer						: register( t3 ); // rgb, lumen(maximum : 30,000)
+Buffer<float4>								SpotLightParamBuffer						: register( t4 ); // all half type(2byte) / dirXY, innerConeCosAngle, outerConeCosAngle
 
-Buffer<float4>								DirectionalLightTransformWithDirZBuffer		: register( t5 ); // center, DirZ
+Buffer<float2>								DirectionalLightDirXYBuffer					: register( t5 ); // DirXY
 Buffer<float4>								DirectionalLightColorBuffer					: register( t6 ); // rgb, lumen(maximum : 30,000)
-Buffer<float2>								DirectionalLightParamBuffer					: register( t7 ); // all half type(2byte) / dirX,  dirY
 
 #if (MSAA_SAMPLES_COUNT > 1)
 
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferAlbedo_occlusion								: register( t8 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_metallic_specularity						: register( t9 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferNormal_roughness								: register( t10 );
-Texture2DMS<float,	MSAA_SAMPLES_COUNT>		GBufferDepth										: register( t11 );
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_materialFlag							: register( t31 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferAlbedo_occlusion						: register( t8 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferMotionXY_metallic_specularity		: register( t9 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferNormal_roughness						: register( t10 );
+Texture2DMS<float,	MSAA_SAMPLES_COUNT>		GBufferDepth								: register( t11 );
+Texture2DMS<float4, MSAA_SAMPLES_COUNT>		GBufferEmission_materialFlag				: register( t31 );
 
 #if defined(ENABLE_BLEND)
-Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth									: register( t12 );
+Texture2DMS<float,  MSAA_SAMPLES_COUNT>		GBufferBlendedDepth							: register( t12 );
 #endif
 
 #else //Turn off MSAA
 
-Texture2D<float4>							GBufferAlbedo_occlusion								: register( t8 );
-Texture2D<float4>							GBufferMotionXY_metallic_specularity						: register( t9 );
-Texture2D<float4>							GBufferNormal_roughness								: register( t10 );
-Texture2D<float>							GBufferDepth										: register( t11 );
-Texture2D<float4>							GBufferEmission_materialFlag							: register( t31 );
+Texture2D<float4>							GBufferAlbedo_occlusion						: register( t8 );
+Texture2D<float4>							GBufferMotionXY_metallic_specularity		: register( t9 );
+Texture2D<float4>							GBufferNormal_roughness						: register( t10 );
+Texture2D<float>							GBufferDepth								: register( t11 );
+Texture2D<float4>							GBufferEmission_materialFlag				: register( t31 );
 
 #if defined(ENABLE_BLEND)
-Texture2D<float>							GBufferBlendedDepth		 							: register( t12 );
+Texture2D<float>							GBufferBlendedDepth		 					: register( t12 );
 #endif
 
 #endif
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
 
-Buffer<uint3>								PointLightShadowParams						: register( t14 ); // lightIndexWithbiasWithFlag, color, underScanSize
-Buffer<uint2>								SpotLightShadowParams						: register( t15 ); // lightIndexWithbiasWithFlag, color
-Buffer<uint2>								DirectionalLightShadowParams					: register( t16 ); // lightIndexWithbiasWithFlag, color
+Buffer<uint4>								PointLightShadowParams						: register( t14 ); 
+Buffer<uint4>								SpotLightShadowParams						: register( t15 ); 
+Buffer<uint4>								DirectionalLightShadowParams				: register( t16 ); 
 
-Texture2D<float>							PointLightShadowMapAtlas						: register( t17 );
+//Buffer<uint4>								PointLightShadowParams						: register( t14 );
+//Buffer<uint4>								SpotLightShadowParams						: register( t15 );
+//Buffer<uint4>								DirectionalLightShadowParams				: register( t16 );
+
+Texture2D<float>							PointLightShadowMapAtlas					: register( t17 );
 Texture2D<float>							SpotLightShadowMapAtlas						: register( t18 );
 Texture2D<float>							DirectionalLightShadowMapAtlas				: register( t19 );
 
-Buffer<uint>								PointLightShadowIndex						: register( t20 );
-Buffer<uint>								SpotLightShadowIndex							: register( t21 );
-Buffer<uint>								DirectionalLightShadowIndex					: register( t22 );
+Buffer<uint>								PointLightOptionalParamIndex				: register( t20 );
+Buffer<uint>								SpotLightOptionalParamIndex					: register( t21 );
+Buffer<uint>								DirectionalLightOptionalParamIndex			: register( t22 );
 
 struct DSLightVPMat	{	matrix mat;		};
 struct PLightVPMat	{	matrix mat[6];	};
 
 StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t23 );
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
-StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix			: register( t25 );
+StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
 Texture2D<float4>							PointLightMomentShadowMapAtlas				: register( t26 );
 Texture2D<float4>							SpotLightMomentShadowMapAtlas				: register( t27 );
-Texture2D<float4>							DirectionalLightMomentShadowMapAtlas			: register( t28 );
+Texture2D<float4>							DirectionalLightMomentShadowMapAtlas		: register( t28 );
 
 struct LightingParams
 {
@@ -87,7 +90,6 @@ struct LightingCommonParams
 
 cbuffer TBRParam : register( b0 )
 {
-	matrix	tbrParam_viewMat;
 	matrix 	tbrParam_invProjMat;
 	matrix 	tbrParam_invViewProjMat;
 	matrix	tbrParam_invViewProjViewportMat;
@@ -95,11 +97,7 @@ cbuffer TBRParam : register( b0 )
 	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
-	
-	float3	tbrParam_cameraWorldPosition;
-
-	float	tbrParam_cameraNear;
-	float	tbrParam_cameraFar;
+	float	tbrParam_gamma;
 };
 
 float2 GetViewportSize()
@@ -108,8 +106,6 @@ float2 GetViewportSize()
 					tbrParam_packedViewportSize & 0x0000ffff	);
 }
 
-// b1, b2, b3은 PhysicallyBased_Common에 있음
-
 cbuffer ShadowGlobalParam : register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
@@ -117,8 +113,6 @@ cbuffer ShadowGlobalParam : register( b4 )
 	uint	shadowGlobalParam_packedNumOfShadows;
 	uint	shadowGlobalParam_dummy;
 };
-
-// b5, b6, b7 은 GI 관련
 
 
 float4 ProjToView( float4 p )
@@ -142,9 +136,32 @@ float InvertProjDepthToView(float depth)
 }
 
 
-float LinearizeDepth(float depth)
+float LinearizeDepth(float depth, float camFar)
 {
-	return InvertProjDepthToView(depth) / tbrParam_cameraFar;
+	return InvertProjDepthToView(depth) / camFar;
 }
+
+uint GetShadowIndex(uint lightOptionalParamIndex)
+{
+	return lightOptionalParamIndex >> 16;
+}
+
+uint GetLightFlag(uint lightOptionalParamIndex)
+{
+	return (lightOptionalParamIndex & 0x0000ff00) >> 8;
+}
+
+uint GetLightShaftIndex(uint pl_dl_lightOptionalParamIndex)
+{
+	return (pl_dl_lightOptionalParamIndex & 0xff); 
+}
+
+float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
+{
+	bool isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
+	return float( 1.0f - 2.0f * float(isMinus) );
+}
+
+
 
 #endif

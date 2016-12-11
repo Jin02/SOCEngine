@@ -31,7 +31,7 @@ void OnlyLightCulling::Initialize(
 		EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
 		shaderFactory.FetchShaderFullPath(path, "OnlyLightCullingCS");
 
-		ASSERT_COND_MSG(path.empty() == false, "Error, path is null");
+		ASSERT_MSG_IF(path.empty() == false, "Error, path is null");
 	}
 
 	std::vector<ShaderMacro> macros;

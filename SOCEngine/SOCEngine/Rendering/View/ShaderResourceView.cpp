@@ -20,7 +20,7 @@ void ShaderResourceView::InitializeUsingTexture(
 	DXGI_FORMAT format, uint mipLevel,
 	D3D11_SRV_DIMENSION viewDimension)
 {
-	ASSERT_COND_MSG(_srv == nullptr, "Error, SRV was already allocated");
+	ASSERT_MSG_IF(_srv == nullptr, "Error, SRV was already allocated");
 
 	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	ID3D11Device* device = dx->GetDevice();
@@ -47,7 +47,7 @@ void ShaderResourceView::InitializeUsingTexture(
 		srdesc.Texture1D.MipLevels = mipLevel;
 
 	HRESULT hr = device->CreateShaderResourceView(resource, &srdesc, &_srv);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, not create shader resource view. plz check desc");
 }
 
 void ShaderResourceView::InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
@@ -64,7 +64,7 @@ void ShaderResourceView::InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, D
 	srvDesc.BufferEx.Flags = isRawBuffer ? D3D11_BUFFEREX_SRV_FLAG_RAW : 0;
 
 	HRESULT hr = device->CreateShaderResourceView(buffer, &srvDesc, &_srv);
-	ASSERT_COND_MSG(SUCCEEDED(hr), "Error!, does not create shader resource view");
+	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, does not create shader resource view");
 }
 
 void ShaderResourceView::Destroy()

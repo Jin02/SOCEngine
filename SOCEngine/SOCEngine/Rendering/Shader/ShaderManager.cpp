@@ -119,10 +119,10 @@ bool ShaderManager::LoadShaderCode(std::string& outCode, const std::string& fold
 
 	std::string filePath = "";
 	bool success = MakeShaderFileFullPath(filePath, folderPath, fileName);
-	ASSERT_COND_MSG(success, "Error, Invalid path");
+	ASSERT_MSG_IF(success, "Error, Invalid path");
 
 	std::ifstream file(filePath, std::ios::in | std::ios::ate | std::ios::binary);
-	ASSERT_COND_MSG(file.is_open() && file.good(), "Error, strange file");
+	ASSERT_MSG_IF(file.is_open() && file.good(), "Error, strange file");
 
 	std::streamoff length = file.tellg();
 	file.seekg(0, file.beg);
@@ -293,7 +293,7 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		bool success = shader->Create(dx, vertexDeclations);		
-		ASSERT_COND_MSG(success, "Error, Not Created VS");
+		ASSERT_MSG_IF(success, "Error, Not Created VS");
 
 		_shaders.insert(std::make_pair(key, shader));
 	}
@@ -322,7 +322,7 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
-		ASSERT_COND_MSG(shader->Create(device), "Error, Not Created PS");
+		ASSERT_MSG_IF(shader->Create(device), "Error, Not Created PS");
 
 		_shaders.insert(std::make_pair(key, shader));
 	}
@@ -412,7 +412,7 @@ GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath,
 
 		const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 		ID3D11Device* device = dx->GetDevice();
-		ASSERT_COND_MSG(shader->Create(device), "Error, Can't create GS");
+		ASSERT_MSG_IF(shader->Create(device), "Error, Can't create GS");
 
 		_shaders.insert(std::make_pair(key, shader));
 	}

@@ -38,13 +38,13 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float3 lightColor	= lightColorWithLm.rgb;
 			float lumen			= lightColorWithLm.a * float(MAXIMUM_LUMEN);
 			float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
-			float3 lambert		= albedo.rgb * saturate(dot(normal, lightDir));
+			float3 lambert		= (albedo.rgb / PI)* saturate(dot(normal, lightDir));
 	
 			shadowColor = RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
 			radiosity = lambert * attenuation * lightColor * shadowColor.rgb;
 		}
 		radiosity = saturate(radiosity + emission.rgb);
 
-		StoreRadiosity(OutVoxelColorMap, radiosity, shadowColor.a, normal, globalIdx);
+		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx, true);
 	}
 }

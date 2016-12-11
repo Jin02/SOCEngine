@@ -9,9 +9,8 @@ namespace Rendering
 		SpotLightRadiusWithCenter				= 2,
 		SpotLightColor							= 3,
 		SpotLightParam							= 4,
-		DirectionalLightCenterWithDirZ			= 5,
+		DirectionalLightDirXY					= 5,
 		DirectionalLightColor					= 6,
-		DirectionalLightParam					= 7,
 
 		GBuffer_Albedo_Occlusion				= 8,
 		GBuffer_MotionXY_Metallic_Specularity	= 9,
@@ -39,9 +38,9 @@ namespace Rendering
 		SpotLightShadowMapAtlas					= 18,
 		DirectionalLightShadowMapAtlas			= 19,
 
-		PointLightShadowIndex					= 20,
-		SpotLightShadowIndex					= 21,
-		DirectionalLightShadowIndex				= 22,
+		PointLightOptionalParamIndex			= 20,
+		SpotLightOptionalParamIndex				= 21,
+		DirectionalLightOptionalParamIndex		= 22,
 
 		PointLightShadowViewProjMatrix			= 23,
 		SpotLightShadowViewProjMatrix			= 24,
@@ -54,10 +53,6 @@ namespace Rendering
 		VoxelAlbedoRawBuffer					= 29,
 		VoxelNormalRawBuffer					= 30,
 		VoxelEmissionRawBuffer					= 31,
-
-		DirectionalLightShadowInvVPVMat			= 32,
-		PointLightShadowInvVPVMat				= 33,
-		SpotLightShadowInvVPVMat				= 34,
 
 		VCTInjectionSourceColorMap				= 29,
 		VCTMipmappedInjectionColorMap			= 30,

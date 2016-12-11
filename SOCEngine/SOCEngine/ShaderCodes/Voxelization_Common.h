@@ -10,6 +10,9 @@
 cbuffer Voxelization_Info_CB				: register( b5 )
 {
 	matrix	voxelization_vp_axis[3];
+#ifdef USE_BLOATING_IN_VOXELIZATION_PASS 
+	matrix	voxelization_vp_axis_inv[3];
+#endif
 	float4	voxelization_minPos;
 };
 
@@ -37,16 +40,49 @@ void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3],
 	position[0] = mul(worldPos[0], voxelization_vp_axis[axisIndex]);
 	position[1] = mul(worldPos[1], voxelization_vp_axis[axisIndex]);
 	position[2] = mul(worldPos[2], voxelization_vp_axis[axisIndex]);
-}
 
-void ComputeAlbedo(out float3 albedo, out float alpha, float2 uv)
-{
-	float4 diffuseTex	= diffuseMap.Sample(DefaultSampler, uv);
-	float3 mainColor	= GetMaterialMainColor().rgb;
-	albedo				= lerp(mainColor, diffuseTex.rgb * mainColor, HasDiffuseMap());
+#ifdef	USE_BLOATING_IN_VOXELIZATION_PASS
+	float3 planes[3] =
+	{
+		cross(position[0].xyw - position[2].xyw, position[2].xyw),
+		cross(position[1].xyw - position[0].xyw, position[0].xyw),
+		cross(position[2].xyw - position[1].xyw, position[1].xyw),
+	};	
 
-	//float opacityMap	= 1.0f - opacityMap.Sample(DefaultSampler, input.uv).x;
-	alpha			= 1.0f;//lerp(1.0f, diffuseTex.a, HasDiffuseMap()) * opacityMap * GetMaterialMainColor().a;
+	float halfPixel = 1.0f / float(gi_dimension);
+	planes[0].z -= dot(halfPixel.xx, abs(planes[0].xy));
+	planes[1].z -= dot(halfPixel.xx, abs(planes[1].xy));
+	planes[2].z -= dot(halfPixel.xx, abs(planes[2].xy));
+
+	float3 intersection[3] = 
+	{
+		cross(planes[0], planes[1]),
+		cross(planes[1], planes[2]),
+		cross(planes[2], planes[0]),
+	};
+
+	intersection[0] /= intersection[0].z;
+	intersection[1] /= intersection[1].z;
+	intersection[2] /= intersection[2].z;
+	
+	float4 trianglePlane;
+	trianglePlane.xyz 	= normalize( cross(position[1].xyz - position[0].xyz, position[2].xyz - position[0].xyz) );
+	trianglePlane.w		= -dot(position[0].xyz, trianglePlane.xyz);
+	
+	float z[3] =
+	{
+		-(intersection[0].x * trianglePlane.x + intersection[0].y * trianglePlane.y + trianglePlane.w) / trianglePlane.z;
+		-(intersection[1].x * trianglePlane.x + intersection[1].y * trianglePlane.y + trianglePlane.w) / trianglePlane.z;
+		-(intersection[2].x * trianglePlane.x + intersection[2].y * trianglePlane.y + trianglePlane.w) / trianglePlane.z;	
+	};
+
+	position[0].xyz = vec3(intersection[0].xy, z[0]);
+	position[1].xyz = vec3(intersection[1].xy, z[1]);
+	position[2].xyz = vec3(intersection[2].xy, z[2]);
+	
+	[unroll]for(uint i=0; i<3; ++i)
+		worldPos[i] = mul(position[i], voxelization_vp_axis_inv[axisIndex]);
+#endif	
 }
 
 void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx,
@@ -98,25 +134,20 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 	float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
 	float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	uint dlShadowCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadows);
+	uint dlCount = GetNumOfDirectionalLight(gi_packedNumfOfLights);
 
-	for(uint dlShadowIdx=0; dlShadowIdx<dlShadowCount; ++dlShadowIdx)
+	for(uint index=0; index<dlCount; ++index)
 	{
-		ParsedShadowParam shadowParam;
-		ParseShadowParam(shadowParam, DirectionalLightShadowParams[dlShadowIdx]);
-		uint lightIndex			= shadowParam.lightIndex;
+		float3 lightDir			= float3(DirectionalLightDirXYBuffer[index], 0.0f);
+		lightDir.z				= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[index]);
 
-		float4 lightCenterWithDirZ	= DirectionalLightTransformWithDirZBuffer[lightIndex];
-		float2 lightParam		= DirectionalLightParamBuffer[lightIndex];
-		float3 lightDir			= -float3(lightParam.x, lightParam.y, lightCenterWithDirZ.w);
-
-		float3 lightColor		= DirectionalLightColorBuffer[lightIndex].rgb;
+		float3 lightColor		= DirectionalLightColorBuffer[index].rgb;
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
-		float intensity			= DirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float intensity			= DirectionalLightColorBuffer[index].a * 10.0f;
 
-		shadowColor = RenderDirectionalLightShadow(lightIndex, worldPos);
+		shadowColor = RenderDirectionalLightShadow(index, worldPos);
 
-		radiosity += lambert * lightColor * intensity * shadowColor.rgb;
+		radiosity += (lambert / 1.0f) * lightColor * intensity * shadowColor.rgb;
 		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 
@@ -125,9 +156,8 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 
 void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos)
 {
-	float	alpha;
-	float3	albedo;
-	ComputeAlbedo(albedo, alpha, uv);
+	float3	albedo	= GetAlbedo(DefaultSampler, uv);
+	float	alpha	= GetAlpha(DefaultSampler, uv);
 
 	int3 voxelIdx = ComputeVoxelIdx(voxelization_minPos.xyz, worldPos);
 	StoreVoxelMap(float4(albedo, alpha), normal, voxelIdx);
