@@ -25,11 +25,11 @@ struct ShadowParam
 	float	bias;
 	uint	flag;
 
-	float3	shadowColor;
-	float	shadowStrength;
+	float3	color;
+	float	strength;
 };
 
-void ParseShdaowParam(out ShadowParam outParam, uint4 param)
+void ParseShadowParam(out ShadowParam outParam, uint4 param)
 {
 	outParam.lightNear		= f16tof32(param.x >> 16);
 	outParam.lightFar		= f16tof32(param.x & 0x0000ffff);
@@ -38,22 +38,23 @@ void ParseShdaowParam(out ShadowParam outParam, uint4 param)
 	outParam.softness		= f16tof32(param.y & 0xffff);
 
 	outParam.lightIndex		= (param.z >> 16);
-	outParam.bias			= ((param.z & 0x0000ff00) >> 8) / 255.0f;
+	outParam.bias			= float((param.z & 0x0000ff00) >> 8) / 1020.0f;
 	outParam.flag			= (param.z & 0x000000ff);
 
 	float4 shadowColor		= RGBA8UintColorToFloat4(param.w);
-	outParam.shadowColor	= shadowColor.rgb;
-	outParam.shadowStrength	= shadowColor.a;
+	outParam.color			= shadowColor.rgb;
+	outParam.strength		= shadowColor.a;
 }
 
-float Shadowing(Texture2D<float> atlas, float2 uv, float depth)
+float PCF(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
 {
 	float shadow = 0.0f;
 	[unroll] for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
 	{
 		[unroll] for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
 		{
-			shadow += (atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv, depth, int2(i, j)).x);
+			float2 offset = float2(i, j) * stepUV;
+			shadow += (atlas.SampleCmpLevelZero(shadowSamplerCmpState, uv + offset, depth).x);
 		}
 	}
 
@@ -105,15 +106,19 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), SpotLightShadowViewProjMatrix[shadowIndex].mat);
 	shadowUV /= shadowUV.w;
 
-	uint lightCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
+	uint lightCapacityCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
+	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	ParsedShadowParam shadowParam;
+	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, SpotLightShadowParams[shadowIndex]);
 
 	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth	= shadowUV.z;
+
+	float oneShadowMapSize	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float2 atlasMapSize		= float2(lightCapacityCount, 1.0f) * oneShadowMapSize;
+	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
@@ -122,25 +127,22 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	else
 	{
 	#ifdef USE_SHADOW_INVERTED_DEPTH
-		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+		shadow = saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 	#else
-		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+		shadow = saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 	#endif
 	}
 #else
 	#ifdef USE_SHADOW_INVERTED_DEPTH
-		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+		shadow = saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 	#else
-		shadow = saturate( Shadowing(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+		shadow = saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 	#endif
 #endif
 
-	float3 shadowColor = shadowParam.color.rgb;
-	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 
-	float shadowStrength = shadowParam.color.a;
-
-	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
 	return float4(ret, shadow);
 }
 
@@ -151,16 +153,20 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), DirectionalLightShadowViewProjMatrix[shadowIndex].mat );
 	shadowUV /= shadowUV.w;
 
-	uint lightCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
+	uint lightCapacityCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCount);
+	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
-	ParsedShadowParam shadowParam;
+	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, DirectionalLightShadowParams[shadowIndex]);
 
 	float bias	= shadowParam.bias;
 	float depth	= shadowUV.z;
+
+	float oneShadowMapSize	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float2 atlasMapSize		= float2(lightCapacityCount, 1.0f) * oneShadowMapSize;
+	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
@@ -169,25 +175,21 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	else
 	{
 	#ifdef USE_SHADOW_INVERTED_DEPTH
-		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 	#else
-		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 	#endif
 	}
 #else
 	#ifdef USE_SHADOW_INVERTED_DEPTH
-		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 	#else
-		shadow = saturate( Shadowing(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 	#endif
 #endif
 
-	float3 shadowColor = shadowParam.color.rgb;
-	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
-
-	float shadowStrength = shadowParam.color.a;
-
-	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
 	return float4(ret, shadow);
 }
 
@@ -219,41 +221,36 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
 
 	float oneShadowMapSize	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	float underScanSize		= asfloat(PointLightShadowParams[shadowIndex].z);
 
-	ParsedShadowParam shadowParam;
-	ParseShadowParam(shadowParam, PointLightShadowParams[shadowIndex].xy);
+	ShadowParam shadowParam;
+	ParseShadowParam(shadowParam, PointLightShadowParams[shadowIndex]);
 
-	shadowUV.xy *= ((oneShadowMapSize - (2.0f * underScanSize)) / oneShadowMapSize).xx;
-	shadowUV.xy += (underScanSize / oneShadowMapSize).xx;
+	shadowUV.xy *= ((oneShadowMapSize - (2.0f * shadowParam.underScanSize)) / oneShadowMapSize).xx;
+	shadowUV.xy += (shadowParam.underScanSize / oneShadowMapSize).xx;
 
 	shadowUV.y += (float)faceIndex;
 	shadowUV.y *= rcp(6); //1.0f / 6.0f;
 
-	uint lightCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
+	uint lightCapacityCount = GetNumOfPointLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 
 	shadowUV.x += (float)shadowIndex;
-	shadowUV.x *= rcp((float)lightCount);//(1.0f / (float)lightCount);
+	shadowUV.x *= rcp((float)lightCapacityCount);//(1.0f / (float)lightCapacityCount);
 
 	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth	= shadowUV.z;
-	
+
+	float2 atlasMapSize		= float2(lightCapacityCount, 6.0f) * oneShadowMapSize;
+	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
+
 	float shadow = 1.0f;
 #ifdef USE_SHADOW_INVERTED_DEPTH
-		shadow = saturate( Shadowing(PointLightShadowMapAtlas, shadowUV.xy, depth + bias) );
+		shadow = saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 #else
-		shadow = saturate( Shadowing(PointLightShadowMapAtlas, shadowUV.xy, depth - bias) );
+		shadow = saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 #endif
 
-	float3 shadowColor = shadowParam.color.rgb;
-	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowColor, float3(1.0f, 1.0f, 1.0f), shadow);
-
-#ifndef NOT_USE_SHADOW_STRENGTH
-	float shadowStrength = shadowParam.color.a;
-#else
-	float shadowStrength = 1.0f;
-#endif
-	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowStrength);
+	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
+	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
 	return float4(ret, shadow);
 }
 
