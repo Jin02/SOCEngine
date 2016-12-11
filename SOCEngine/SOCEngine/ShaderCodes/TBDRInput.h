@@ -45,9 +45,9 @@ Texture2D<float>							GBufferBlendedDepth		 					: register( t12 );
 
 //Buffer<uint> g_perLightIndicesInTile	: register( t13 ); -> in PhysicallyBased_Forward_Common.h
 
-Buffer<uint3>								PointLightShadowParams						: register( t14 ); 
-Buffer<uint2>								SpotLightShadowParams						: register( t15 ); 
-Buffer<uint2>								DirectionalLightShadowParams				: register( t16 ); 
+Buffer<uint4>								PointLightShadowParams						: register( t14 ); 
+Buffer<uint4>								SpotLightShadowParams						: register( t15 ); 
+Buffer<uint4>								DirectionalLightShadowParams				: register( t16 ); 
 
 //Buffer<uint4>								PointLightShadowParams						: register( t14 );
 //Buffer<uint4>								SpotLightShadowParams						: register( t15 );
