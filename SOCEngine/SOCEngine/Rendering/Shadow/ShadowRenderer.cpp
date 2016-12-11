@@ -103,20 +103,20 @@ void ShadowRenderer::Initialize(bool neverUseVSM,
 
 	_pointLightShadowParamSRBuffer = new ShaderResourceBuffer;
 	_pointLightShadowParamSRBuffer->Initialize(
-		sizeof(PointLightShadow::Param), POINT_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32G32B32_UINT,
+		sizeof(ShadowCommon::Param), POINT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32B32A32_UINT,
 		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 	_directionalLightShadowParamSRBuffer = new ShaderResourceBuffer;
 	_directionalLightShadowParamSRBuffer->Initialize(
-		sizeof(DirectionalLightShadow::Param), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32G32_UINT,
+		sizeof(ShadowCommon::Param), DIRECTIONAL_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32B32A32_UINT,
 		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 	_spotLightShadowParamSRBuffer = new ShaderResourceBuffer;
 	_spotLightShadowParamSRBuffer->Initialize(
-		sizeof(DirectionalLightShadow::Param), SPOT_LIGHT_BUFFER_MAX_NUM,
-		DXGI_FORMAT_R32G32_UINT,
+		sizeof(ShadowCommon::Param), SPOT_LIGHT_BUFFER_MAX_NUM,
+		DXGI_FORMAT_R32G32B32A32_UINT,
 		dummyData, true, 0, D3D11_USAGE_DYNAMIC);
 
 

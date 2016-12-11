@@ -96,20 +96,17 @@ namespace Rendering
 			uint																_spotLightShadowMapResolution;					//default 1024
 			uint																_directionalLightShadowMapResolution;			//default 2048
 
-			// lightIndexWithbiasWithFlag, color, underScanSize
-			Structure::VectorMap<address, PointLightShadow::Param>				_pointLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_pointLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_pointLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, std::array<Math::Matrix, 6>>		_pointLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_pointLightViewProjMatSRBuffer;
 
-			// lightIndexWithbiasWithFlag, color
-			Structure::VectorMap<address, SpotLightShadow::Param>				_spotLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_spotLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_spotLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, Math::Matrix>						_spotLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_spotLightViewProjMatSRBuffer;
 
-			// lightIndexWithbiasWithFlag, color
-			Structure::VectorMap<address, DirectionalLightShadow::Param>		_directionalLightShadowParamBuffer;
+			Structure::VectorMap<address, ShadowCommon::Param>					_directionalLightShadowParamBuffer;
 			Buffer::ShaderResourceBuffer*										_directionalLightShadowParamSRBuffer;
 			Structure::VectorHashMap<address, Math::Matrix>						_directionalLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_directionalLightViewProjMatSRBuffer;
