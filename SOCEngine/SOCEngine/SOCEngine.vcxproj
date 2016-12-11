@@ -157,6 +157,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </ClInclude>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
+    <FxCompile Include="ShaderCodes\Bloom.hlsl" />
+    <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
@@ -184,6 +186,7 @@
     <ClInclude Include="ShaderCodes\EnvIBL.h" />
     <ClInclude Include="ShaderCodes\GBufferParser.h" />
     <ClInclude Include="ShaderCodes\GICommon.h" />
+    <ClInclude Include="ShaderCodes\HDRCommon.h" />
     <ClInclude Include="ShaderCodes\Injection_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -227,6 +230,7 @@
     <ClInclude Include="ShaderCodes\FullScreenShader.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
     <ClInclude Include="ShaderCodes\Shadow.h" />
+    <ClInclude Include="ShaderCodes\ToneMapping.h" />
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
