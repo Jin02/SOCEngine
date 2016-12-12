@@ -48,10 +48,25 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	}
 }
 
-void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT)
+void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT,
+						bool useOutRTViewportSize)
 {
-	ID3D11RenderTargetView* rtv		= outResultRT->GetRenderTargetView();	
 	ID3D11DeviceContext* context	= dx->GetContext();
+
+	if(useOutRTViewportSize)
+	{
+		D3D11_VIEWPORT viewport;
+		viewport.TopLeftX	= 0.0f;
+		viewport.TopLeftY	= 0.0f;
+		viewport.MinDepth	= 0.0f;
+		viewport.MaxDepth	= 1.0f;
+		viewport.Width		= outResultRT->GetSize().w;
+		viewport.Height		= outResultRT->GetSize().h;
+		
+		context->RSSetViewports(1, &viewport);
+	}
+
+	ID3D11RenderTargetView* rtv		= outResultRT->GetRenderTargetView();	
 
 	ID3D11DepthStencilView* nullDSV = nullptr;
 	context->OMSetRenderTargets(1, &rtv, nullDSV);
