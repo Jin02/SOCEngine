@@ -454,6 +454,9 @@
     <Filter Include="ShaderCodes\PostProcessing\HDR">
       <UniqueIdentifier>{b26a2f9e-6965-4e63-bf4d-4672d7179754}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\PostProcessing\DepthOfField">
+      <UniqueIdentifier>{fb9bce2b-c482-4a80-a359-5380db05b883}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -931,6 +934,9 @@
     <ClInclude Include="ShaderCodes\ToneMapping.h">
       <Filter>ShaderCodes\PostProcessing\HDR</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\DepthOfField.h">
+      <Filter>Rendering\PostProcessing\DepthOfField</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1260,6 +1266,9 @@
     <ClCompile Include="Rendering\PostProcessing\LightShaftManager.cpp">
       <Filter>Rendering\PostProcessing\LightShaft</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\DepthOfField.cpp">
+      <Filter>Rendering\PostProcessing\DepthOfField</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1369,6 +1378,12 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\Bloom.hlsl">
       <Filter>ShaderCodes\PostProcessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\DepthOfField.hlsl">
+      <Filter>ShaderCodes\PostProcessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Copy.hlsl">
+      <Filter>ShaderCodes\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

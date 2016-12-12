@@ -14,8 +14,6 @@ namespace Rendering
 			enum class Type	{	Near, Far	};
 
 		private:
-			Math::Size<uint>		_filteringSize;
-
 			FullScreen*				_vertical;
 			FullScreen*				_horizontal;
 			Texture::RenderTexture*	_tempBuffer;

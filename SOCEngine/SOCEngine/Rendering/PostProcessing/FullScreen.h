@@ -26,7 +26,7 @@ namespace Rendering
 			void Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<Shader::ShaderMacro>* macros);
 
 		public:
-			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT);
+			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, bool useOutRTViewportSize = false);
 			void Destroy();
 
 		public:

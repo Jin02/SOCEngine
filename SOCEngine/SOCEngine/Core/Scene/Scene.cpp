@@ -80,7 +80,7 @@ void Scene::Initialize()
 	_backBuffer->Initialize(_dx->GetBackBufferRTV(), _dx->GetBackBufferSize());
 
 	_postProcessingSystem = new PostProcessPipeline;
-	_postProcessingSystem->Initialize(_dx->GetBackBufferSize());
+	_postProcessingSystem->Initialize(_dx, _dx->GetBackBufferSize(), 4);
 
 	_prevIntegrateBRDFMap = Resource::ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 

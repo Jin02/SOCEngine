@@ -28,12 +28,9 @@ GaussianBlur::~GaussianBlur()
 	SAFE_DELETE(_paramCB);
 }
 
-void GaussianBlur::Initialize(const Device::DirectX* dx, const Math::Size<uint>& size)
+void GaussianBlur::Initialize(const Device::DirectX* dx)
 {
-	_filteringSize = size;
-
 	std::vector<ShaderMacro> macros;
-	macros.push_back(dx->GetMSAAShaderMacro());
 
 	// Init Shader
 	{
@@ -49,21 +46,22 @@ void GaussianBlur::Initialize(const Device::DirectX* dx, const Math::Size<uint>&
 	_paramCB = new ConstBuffer;
 	_paramCB->Initialize(sizeof(ParamCB));
 
-	ParamCB param;
+	if(dx)
 	{
-		param.blurSize			= 2.5f;
-		param.sigma				= 6.0f;
-		param.numPixelPerSide	= 8.0f;
-		param.scale				= 1.0f;
+		ParamCB param;
+		{
+			param.blurSize			= 2.5f;
+			param.sigma				= 6.0f;
+			param.numPixelPerSide	= 8.0f;
+			param.scale				= 1.0f;
+		}
+	
+		UpdateParam(dx, param);
 	}
-
-	UpdateParam(dx, param);
 }
 
 void GaussianBlur::Initialize(const Device::DirectX* dx, const Math::Size<uint>& size, DXGI_FORMAT format)
 {
-	Initialize(dx, size);
-
 	if(_tempMap == nullptr)	_tempMap = new RenderTexture;
 	_tempMap->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);
 }
@@ -84,29 +82,15 @@ void GaussianBlur::Render(const Device::DirectX* dx, const RenderTexture* outRes
 
 	ID3D11DeviceContext* context	= dx->GetContext();
 
-	// Setting Viewport
-	{
-		D3D11_VIEWPORT vp;
-	
-		vp.TopLeftX	= 0.0f;
-		vp.TopLeftY	= 0.0f;
-		vp.Width	= _filteringSize.Cast<float>().w;
-		vp.Height	= _filteringSize.Cast<float>().h;
-		vp.MinDepth	= 0.0f;
-		vp.MaxDepth	= 1.0f;
-	
-		context->RSSetViewports( 1, &vp );
-	}
-
 	PixelShader::BindTexture(context, TextureBindIndex(0), inputColorMap);
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 	PixelShader::BindConstBuffer(context, ConstBufferBindIndex(0), _paramCB);
 	
-	_vertical->Render(dx, tempMap);
+	_vertical->Render(dx, tempMap, true);
 
 	PixelShader::BindTexture(context, TextureBindIndex(0), tempMap);
 
-	_horizontal->Render(dx, outResultRT);
+	_horizontal->Render(dx, outResultRT, true);
 
 	PixelShader::BindTexture(context, TextureBindIndex(0), nullptr);
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);

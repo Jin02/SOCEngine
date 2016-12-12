@@ -30,8 +30,6 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::S
 {
 	ASSERT_MSG_IF(type != Type::Far, "Cant support this type");
 
-	_filteringSize = size;
-
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
 
@@ -61,36 +59,22 @@ void BilateralFiltering::Render(const Device::DirectX* dx, const RenderTexture* 
 {
 	ID3D11DeviceContext* context	= dx->GetContext();
 
-	// Setting Viewport
-	{
-		D3D11_VIEWPORT vp;
-	
-		vp.TopLeftX	= 0.0f;
-		vp.TopLeftY	= 0.0f;
-		vp.Width	= _filteringSize.Cast<float>().w;
-		vp.Height	= _filteringSize.Cast<float>().h;
-		vp.MinDepth	= 0.0f;
-		vp.MaxDepth	= 1.0f;
-	
-		context->RSSetViewports( 1, &vp );
-	}
-
 	PixelShader::BindTexture(context, TextureBindIndex(0), inputColorMap);
 	PixelShader::BindTexture(context, TextureBindIndex(1), depthBuffer);
 
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
-	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),			dx->GetShadowSamplerState());
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),					dx->GetShadowSamplerState());
 
-	_vertical->Render(dx, _tempBuffer);
+	_vertical->Render(dx, _tempBuffer, true);
 
 	PixelShader::BindTexture(context, TextureBindIndex(0), _tempBuffer);
-	_horizontal->Render(dx, outResultRT);
+	_horizontal->Render(dx, outResultRT, true);
 
 	PixelShader::BindTexture(context, TextureBindIndex(0), nullptr);
 	PixelShader::BindTexture(context, TextureBindIndex(1), nullptr);
 
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState,	nullptr);
-	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),			nullptr);
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex(1),					nullptr);
 }
 
 void BilateralFiltering::Destroy()

@@ -164,8 +164,8 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	const float scale = 0.5f;
-#if 1
+	const float scale = 5.0f;
+#if 0
 	Transform* control = _light->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
@@ -234,7 +234,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 	{
 		_testObject->SetUse(!_testObject->GetUse());
 	}
-#else
+#elif 0
 	Vector3 pos = _vxgi->GetStartCenterWorldPos();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
@@ -250,6 +250,36 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, scale));
 	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
 		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, -scale));
+#elif 1
+
+	auto dof = GetPostProcessing()->GetDepthOfField();
+	auto param = dof->GetParam();
+
+	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
+	{
+		param.start += scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
+	{
+		param.start -= scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
+	{
+		param.end += scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
+	{
+		param.end -= scale;
+
+		dof->UpdateParam(param);
+	}
+
 #endif
 }
 
