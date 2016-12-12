@@ -104,6 +104,7 @@
     <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
     <ClInclude Include="Rendering\PostProcessing\BilateralFiltering.h" />
+    <ClInclude Include="Rendering\PostProcessing\DepthOfField.h" />
     <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
     <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h" />
     <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
@@ -158,6 +159,8 @@
     </ClInclude>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
     <FxCompile Include="ShaderCodes\Bloom.hlsl" />
+    <FxCompile Include="ShaderCodes\Copy.hlsl" />
+    <FxCompile Include="ShaderCodes\DepthOfField.hlsl" />
     <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -405,6 +408,7 @@
     <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp" />
     <ClCompile Include="Rendering\PostProcessing\BilateralFiltering.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\DepthOfField.cpp" />
     <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
     <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
     <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp" />
