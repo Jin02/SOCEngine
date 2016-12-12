@@ -108,6 +108,7 @@ namespace Core
 		GET_ACCESSOR(ShadowManager,		Rendering::Shadow::ShadowRenderer*,		_shadowRenderer);
 		GET_ACCESSOR(Sky,				Rendering::Sky::SkyForm*,				_sky);
 		GET_ACCESSOR(LightShaftManager, Rendering::Manager::LightShaftManager*,	_lightShaftMgr);
+		GET_ACCESSOR(PostProcessing,	Rendering::PostProcessPipeline*,		_postProcessingSystem);
 
 		GET_ACCESSOR(BoundBox,			const Intersection::BoundBox&,			_boundBox);
 	};
