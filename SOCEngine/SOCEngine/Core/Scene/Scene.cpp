@@ -101,6 +101,8 @@ void Scene::Update(float dt)
 		(*iter)->GetTransform()->UpdateWorldMatrix();
 		(*iter)->Update(dt);
 	}
+
+	_postProcessingSystem->SetDeltaTime(dt);
 }
 
 void Scene::RenderPreview()
@@ -147,6 +149,8 @@ void Scene::RenderPreview()
 	const CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	if(mainCam)
 		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
+
+	_postProcessingSystem->UpdateGlobalParam(_dx);
 }
 
 void Scene::Render()
@@ -213,6 +217,8 @@ void Scene::Destroy()
 	OnDestroy();
 	DeleteAllObject();
 
+	_postProcessingSystem->Destroy();
+
 	_materialMgr->DeleteAll();
 	_shadowRenderer->Destroy();
 	_renderMgr->Destroy();
@@ -223,7 +229,6 @@ void Scene::Destroy()
 	if(_vxgi)
 		_vxgi->Destroy();
 
-	_postProcessingSystem->Destroy();
 	_reflectionManager->Destroy();
 
 	DeactivateSky();
