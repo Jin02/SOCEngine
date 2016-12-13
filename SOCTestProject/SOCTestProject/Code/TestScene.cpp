@@ -34,6 +34,14 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	PostProcessing::DepthOfField::ParamCB param;
+	param.start	= 15.0f;
+	param.end	= 20.0f;
+//	param.start	= 40.0f;
+//	param.end	= 40.0f;
+
+	GetPostProcessing()->GetDepthOfField()->UpdateParam(param);
+
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 //	AddObject(_camera);
