@@ -36,11 +36,11 @@ void GaussianBlur::Initialize(const Device::DirectX* dx)
 	{
 		if(_vertical == nullptr)	_vertical	= new FullScreen;
 		macros.push_back(ShaderMacro("BLUR_VERTICAL", ""));
-		_vertical->Initialize("GaussianBlur", "GuassianBlur_InFullScreen_PS", &macros);
+		_vertical->Initialize("GaussianBlur", "GuassianBlur_InFullScreen_PS", true, &macros);
 	
 		if(_horizontal == nullptr)	_horizontal	= new FullScreen;
 		macros.back().SetName("BLUR_HORIZONTAL");
-		_horizontal->Initialize("GaussianBlur", "GuassianBlur_InFullScreen_PS", &macros);
+		_horizontal->Initialize("GaussianBlur", "GuassianBlur_InFullScreen_PS", true, &macros);
 	}
 
 	_paramCB = new ConstBuffer;

@@ -83,16 +83,16 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 		_gaussianBlur->Initialize(dx);
 
 		_copy = new FullScreen;
-		_copy->Initialize("Copy", "Copy_InFullScreen_PS", nullptr);
+		_copy->Initialize("Copy", "Copy_InFullScreen_PS", true, nullptr);
 
 		_eyeAdaptation = new FullScreen;
-		_eyeAdaptation->Initialize("EyeAdaptation", "EyeAdaptation_InFullScreen_PS", nullptr);
+		_eyeAdaptation->Initialize("EyeAdaptation", "EyeAdaptation_InFullScreen_PS", true, nullptr);
 
 		_bloomThreshold = new FullScreen;
-		_bloomThreshold->Initialize("Bloom", "Bloom_Threshold_InFullScreen_PS", nullptr);
+		_bloomThreshold->Initialize("Bloom", "Bloom_Threshold_InFullScreen_PS", true, nullptr);
 
 		_bloom = new FullScreen;
-		_bloom->Initialize("Bloom", "Bloom_InFullScreen_PS", nullptr);
+		_bloom->Initialize("Bloom", "Bloom_InFullScreen_PS", true, nullptr);
 
 		_dof = new DepthOfField;
 		_dof->Initialize();

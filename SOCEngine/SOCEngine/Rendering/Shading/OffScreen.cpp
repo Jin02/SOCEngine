@@ -28,7 +28,7 @@ void OffScreen::ReCompile(bool useIndirectColorMap)
 		macros.push_back(ShaderMacro("USE_GI", ""));
 
 	std::vector<ShaderForm::InputTexture> prevInputTextures = _inputTextures;
-	FullScreen::Initialize("DeferredMainOffScreen", "PS", &macros);
+	FullScreen::Initialize("DeferredMainOffScreen", "PS", false, &macros);
 	_inputTextures = prevInputTextures;
 
 	_useIndirectColorMap = useIndirectColorMap;

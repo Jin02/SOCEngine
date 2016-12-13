@@ -43,11 +43,11 @@ void BilateralFiltering::Initialize(BilateralFiltering::Type type, const Math::S
 	{
 		if(_vertical == nullptr)	_vertical	= new FullScreen;
 		macros.push_back(ShaderMacro("BLUR_VERTICAL", ""));
-		_vertical->Initialize("BilateralFiltering", psName, &macros);
+		_vertical->Initialize("BilateralFiltering", psName, true, &macros);
 	
 		if(_horizontal == nullptr)	_horizontal	= new FullScreen;
 		macros.back().SetName("BLUR_HORIZONTAL");
-		_horizontal->Initialize("BilateralFiltering", psName, &macros);
+		_horizontal->Initialize("BilateralFiltering", psName, true, &macros);
 
 		if(_tempBuffer == nullptr)	_tempBuffer = new RenderTexture;
 		_tempBuffer->Initialize(size, format, format, DXGI_FORMAT_UNKNOWN, 0, 1);

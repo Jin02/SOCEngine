@@ -32,7 +32,7 @@ void ScreenSpaceRayTracing::Initialize(	const Device::DirectX* dx, const Buffer:
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
 
-	FullScreen::Initialize("ScreenSpaceRayTracing", "SSRT_InFullScreen_PS", &macros);
+	FullScreen::Initialize("ScreenSpaceRayTracing", "SSRT_InFullScreen_PS", true, &macros);
 
 	_viewToTexSpaceCB = new ConstBuffer;
 	_viewToTexSpaceCB->Initialize(sizeof(Matrix));

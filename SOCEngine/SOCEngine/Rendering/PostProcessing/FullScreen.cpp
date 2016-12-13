@@ -20,7 +20,7 @@ FullScreen::~FullScreen()
 	Destroy();
 }
 
-void FullScreen::Initialize(const std::string& shaderFileName, const std::string& psName, const std::vector<ShaderMacro>* macros)
+void FullScreen::Initialize(const std::string& shaderFileName, const std::string& psName, bool useUniqueKey, const std::vector<ShaderMacro>* macros)
 {
 	Destroy();
 	Factory::EngineFactory shaderPathFinder(nullptr);
@@ -38,15 +38,19 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	{
 		std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
 		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, "FullScreenVS");
-		_vsUniqueKey = "FullScreenVS";
 
-		if(macros)
+		if(useUniqueKey)
 		{
-			for(auto iter : (*macros))
-				_vsUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
+			_vsUniqueKey = "FullScreenVS";
+	
+			if(macros)
+			{
+				for(auto iter : (*macros))
+					_vsUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
+			}
 		}
 
-		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, macros, &_vsUniqueKey);
+		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, macros, useUniqueKey ? &_vsUniqueKey : nullptr);
 	}
 
 	// Setting Pixel Shader
@@ -105,7 +109,7 @@ void FullScreen::Destroy()
 	auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
 	VertexShader* vs = (_vsUniqueKey.empty() == false) ? shaderManager->FindShader<VertexShader>(_vsUniqueKey) : nullptr;
 
-	if(vs)
+	if(vs && _vertexShader)
 	{
 		shaderManager->DeleteShader(_vsUniqueKey);
 		_vertexShader	= nullptr;
