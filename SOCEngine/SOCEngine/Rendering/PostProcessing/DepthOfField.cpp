@@ -21,7 +21,7 @@ DepthOfField::~DepthOfField()
 void DepthOfField::Initialize()
 {
 	_dof = new FullScreen;
-	_dof->Initialize("DepthOfField", "DoF_InFullScreen_PS", nullptr);
+	_dof->Initialize("DepthOfField", "DoF_InFullScreen_PS", true, nullptr);
 
 	_paramCB = new ConstBuffer;
 	_paramCB->Initialize(sizeof(ParamCB));

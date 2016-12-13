@@ -26,7 +26,7 @@ void IBLPass::Initialize()
 {
 	std::vector<ShaderMacro> macros;
 	macros.push_back(Director::SharedInstance()->GetDirectX()->GetMSAAShaderMacro());
-	FullScreen::Initialize("IBLPass", "PS", &macros);
+	FullScreen::Initialize("IBLPass", "PS", true, &macros);
 	
 	const Texture2D* preIntegrateEnvBRDFMap = ResourceManager::SharedInstance()->GetPreIntegrateEnvBRDFMap();
 	_inputTextures.push_back(ShaderForm::InputTexture(uint(TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap), preIntegrateEnvBRDFMap, false, false, false, true));

@@ -30,7 +30,7 @@ void BackBufferMaker::Initialize(bool useUI)
 		macros.push_back(msaaMacro);
 	}
 
-	FullScreen::Initialize("FinalScreenMerger", "PS", &macros);
+	FullScreen::Initialize("FinalScreenMerger", "PS", true, &macros);
 
 	_useUI = useUI;
 }
