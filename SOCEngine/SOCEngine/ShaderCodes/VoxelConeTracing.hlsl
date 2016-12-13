@@ -134,7 +134,7 @@ float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRa
 	return float4(colorAccumInCone.rgb, occlusion);
 }
 
-float3 SpecularVCT(float3 worldPos, float3 normal, float halfConeAngleRad, uniform uint sampleCount)
+float3 SpecularVCT(float3 worldPos, float3 normal, float halfConeAngleRad, uint sampleCount)
 {
 	float3 viewDir			= normalize(camera_worldPos - worldPos);
 	float3 reflectDir		= reflect(-viewDir, normal);
@@ -143,7 +143,7 @@ float3 SpecularVCT(float3 worldPos, float3 normal, float halfConeAngleRad, unifo
 	return colorAccum.rgb;
 }
 
-float3 DiffuseVCT(float3 worldPos, float3 normal, uniform uint sampleCount)
+float3 DiffuseVCT(float3 worldPos, float3 normal, uint sampleCount)
 {
 	float3 up		= (normal.y * normal.y) > 0.95f ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f);
 	float3 right	= cross(normal, up);
@@ -171,6 +171,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 {
 	Surface surface;
 	ParseGBufferSurface(surface, globalIdx.xy, 0, false);
+	surface.roughness =0.0f;
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, GetDiffuseSamplingCount());
 
