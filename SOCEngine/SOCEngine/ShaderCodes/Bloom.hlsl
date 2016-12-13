@@ -9,44 +9,38 @@ Texture2D<float4>	CurColorMap				: register( t0 );
 Texture2D<float4>	PrevAdaptedLuminanceMap	: register( t1 );
 Texture2D<float4>	InputBloomMap			: register( t2 );
 
-SamplerState		DefaultSampler			: register( s0 );
-SamplerState		LinearSampler			: register( s1 );
+SamplerState		LinearSampler			: register( s0 );
 
 float AverageLuminance()
 {
 	return PrevAdaptedLuminanceMap.Load(uint3(0,0,0)).x;
 }
 
-float3 ComputeExposedColor(out float outExposure, float3 color, float avgLum, float threshold)
+float3 ComputeExposedColor(float3 color, float avgLum, float threshold)
 {
 	avgLum = max(avgLum, 0.0001f);
 
 	float linearExposure	= (hdr_exposureKey / avgLum);
 
-	outExposure = log2( max(linearExposure, 0.001f) );
-	outExposure -= threshold;
+	float	exposure = log2( max(linearExposure, 0.001f) );
+			exposure -= threshold;
 
-	return color * exp2(outExposure);
+	return color * exp2(exposure);
 }
 
 float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
-	float3 color		= CurColorMap.Sample(DefaultSampler, input.uv).rgb;
-
+	float3 color		= CurColorMap.Sample(LinearSampler, input.uv).rgb;
 	float avgLum		= AverageLuminance();
 
-	float exposure		= 0.0f;
-	color = ComputeExposedColor(exposure, color.rgb, avgLum, bloom_threshold);
-
-	if( dot(color, 0.333f) <= 0.01f )
-		color = float3(0.0f, 0.0f, 0.0f);
+	color = ComputeExposedColor(color.rgb, avgLum, bloom_threshold);
 
 	return float4(color, 1.0f);
 }
 
-float3 BloomToneMapping(out float outExposure, float3 color, float avgLum, float threshold)
+float3 BloomToneMapping(float3 color, float avgLum, float threshold)
 {
-	color = ComputeExposedColor(outExposure, color, avgLum, threshold);
+	color = ComputeExposedColor(color, avgLum, threshold);
 	color = Uncharted2ToneMapping(color);
 
 	return color;
@@ -54,12 +48,11 @@ float3 BloomToneMapping(out float outExposure, float3 color, float avgLum, float
 
 float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
-	float4 color		= CurColorMap.Sample(DefaultSampler, input.uv);
+	float4 color		= CurColorMap.Sample(LinearSampler, input.uv);
 	float avgLum		= AverageLuminance();
 
-	float exposure		= 0.0f;
-	color.rgb			= BloomToneMapping(exposure, color.rgb, avgLum, bloom_threshold);
+	color.rgb			= saturate( BloomToneMapping(color.rgb, avgLum, 0.0f) );
 
 	float4 bloom = InputBloomMap.Sample(LinearSampler, input.uv);
-	return float4( (color + bloom).rgb, color.a);
+	return float4( saturate( (color + bloom).rgb ) , color.a);
 }
