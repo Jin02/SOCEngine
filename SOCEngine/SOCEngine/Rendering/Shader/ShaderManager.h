@@ -43,9 +43,9 @@ namespace Rendering
 			bool					LoadShaderCode(std::string& outCode, const std::string& fileFullPath, bool useRecycle);
 			bool					LoadShaderCode(std::string& outCode, const std::string& folderPath, const std::string& fileName, bool useRecycle);
 
-			Shader::VertexShader*	LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<Shader::ShaderMacro>* macros);
-			Shader::PixelShader*	LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<Shader::ShaderMacro>* macros);
-			Shader::GeometryShader*	LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<Shader::ShaderMacro>* macros);
+			Shader::VertexShader*	LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<Shader::ShaderMacro>* macros, const std::string* uniqueKey = nullptr);
+			Shader::PixelShader*	LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<Shader::ShaderMacro>* macros, const std::string* uniqueKey = nullptr);
+			Shader::GeometryShader*	LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<Shader::ShaderMacro>* macros, const std::string* uniqueKey = nullptr);
 
 			void					Add(const std::string& fullCommand, Shader::ShaderForm* shader);
 			bool					LoadShader(const std::string filePath);

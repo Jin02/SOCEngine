@@ -269,7 +269,9 @@ void ShaderManager::MakeKey(std::string& out, const std::string& fullCommand, co
 	out = key;
 }
 
-VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros)
+VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle,
+											  const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations, const std::vector<ShaderMacro>* macros,
+											  const std::string* uniqueKey)
 {
 	std::string fileName, mainFunc;
 
@@ -280,7 +282,9 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	}
 
 	std::string key = "";
-	MakeKey(key, VS_FULL_COMMAND(fileName, mainFunc), macros);
+	if(uniqueKey == nullptr)	MakeKey(key, VS_FULL_COMMAND(fileName, mainFunc), macros);
+	else						key = (*uniqueKey); 
+		
 	VertexShader* shader = FindShader<VertexShader>(key);
 	
 	if(shader == nullptr)
@@ -301,7 +305,8 @@ VertexShader* ShaderManager::LoadVertexShader(const std::string& folderPath, con
 	return shader;
 }
 
-PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros)
+PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle,
+											const std::vector<ShaderMacro>* macros, const std::string* uniqueKey)
 {
 	std::string fileName, mainFunc;
 
@@ -309,7 +314,9 @@ PixelShader* ShaderManager::LoadPixelShader(const std::string& folderPath, const
 		return nullptr;
 
 	std::string key = "";
-	MakeKey(key, PS_FULL_COMMAND(fileName, mainFunc), macros);
+	if(uniqueKey == nullptr)	MakeKey(key, PS_FULL_COMMAND(fileName, mainFunc), macros);
+	else						key = (*uniqueKey); 
+
 	PixelShader* shader = FindShader<PixelShader>(key);
 
 	if(shader == nullptr)
@@ -391,7 +398,7 @@ std::string ShaderManager::MakeFullCommand(const std::string& shaderName, const 
 	return shaderName + ":" + shaderType + ":" + shaderMainFuncName;
 }
 
-GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros)
+GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath, const std::string& partlyCommand, bool useRecycle, const std::vector<ShaderMacro>* macros, const std::string* uniqueKey)
 {
 	std::string fileName, mainFunc;
 
@@ -399,7 +406,9 @@ GeometryShader* ShaderManager::LoadGeometryShader(const std::string& folderPath,
 		return nullptr;
 
 	std::string key = "";
-	MakeKey(key, GS_FULL_COMMAND(fileName, mainFunc), macros);
+	if(uniqueKey == nullptr)	MakeKey(key, GS_FULL_COMMAND(fileName, mainFunc), macros);
+	else						key = (*uniqueKey);
+
 	GeometryShader* shader = FindShader<GeometryShader>(key);
 
 	if(shader == nullptr)
