@@ -11,6 +11,7 @@ namespace Rendering
 		class FullScreen
 		{
 		protected:
+			std::string													_vsUniqueKey;
 			Shader::VertexShader*										_vertexShader;
 			Shader::PixelShader*										_pixelShader;
 		

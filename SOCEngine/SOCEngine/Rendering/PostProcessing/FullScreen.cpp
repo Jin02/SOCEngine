@@ -38,7 +38,15 @@ void FullScreen::Initialize(const std::string& shaderFileName, const std::string
 	{
 		std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
 		std::string command = Manager::ShaderManager::MakePartlyCommand(shaderFileName, "FullScreenVS");
-		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, macros);
+		_vsUniqueKey = "FullScreenVS";
+
+		if(macros)
+		{
+			for(auto iter : (*macros))
+				_vsUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
+		}
+
+		_vertexShader = shaderManager->LoadVertexShader(folderPath, command, false, nullDeclations, macros, &_vsUniqueKey);
 	}
 
 	// Setting Pixel Shader
@@ -95,10 +103,13 @@ void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT,
 void FullScreen::Destroy()
 {
 	auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
-	if(_vertexShader)
+	VertexShader* vs = (_vsUniqueKey.empty() == false) ? shaderManager->FindShader<VertexShader>(_vsUniqueKey) : nullptr;
+
+	if(vs)
 	{
-		shaderManager->DeleteShader(_vertexShader->GetKey());
+		shaderManager->DeleteShader(_vsUniqueKey);
 		_vertexShader	= nullptr;
+		_vsUniqueKey	= "";
 	}
 	if(_pixelShader)
 	{
