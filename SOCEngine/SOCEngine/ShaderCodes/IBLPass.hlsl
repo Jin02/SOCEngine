@@ -25,9 +25,9 @@ float4 PS( PS_INPUT input ) : SV_Target
 
 	Surface surface;
 #if (MSAA_SAMPLES_COUNT > 1)
-	ParseGBufferSurface(surface, screenPt, input.sampleIdx);
+	ParseGBufferSurface(surface, screenPt, input.sampleIdx, false);
 #else
-	ParseGBufferSurface(surface, screenPt, 0);
+	ParseGBufferSurface(surface, screenPt, 0, false);
 #endif
 
 	float3 normal		= surface.normal;

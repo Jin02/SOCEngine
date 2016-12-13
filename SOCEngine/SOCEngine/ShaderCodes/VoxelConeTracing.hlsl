@@ -170,7 +170,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 						uint3 groupIdx	: SV_GroupID)
 {
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, 0);
+	ParseGBufferSurface(surface, globalIdx.xy, 0, false);
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, GetDiffuseSamplingCount());
 
