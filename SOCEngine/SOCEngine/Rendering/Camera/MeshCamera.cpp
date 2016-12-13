@@ -37,7 +37,7 @@ MeshCamera::~MeshCamera()
 void MeshCamera::OnInitialize()
 {
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
-	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
+	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)), true);
 
 	_albedo_occlusion = new Texture::RenderTexture;
 	ASSERT_MSG_IF( 
