@@ -19,12 +19,12 @@ cbuffer VXGIDynamicInfo	: register( b7 )
 
 uint GetDiffuseSamplingCount()
 {
-	return gi_packedStepCount & 0xffff;
+	return gi_packedStepCount >> 16;
 }
 
 uint GetSpecularSamplingCount()
 {
-	return gi_packedStepCount >> 16;
+	return gi_packedStepCount & 0xffff;
 }
 
 float GetVoxelizationSize()
