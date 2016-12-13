@@ -270,8 +270,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 #else
 
 #if defined(USE_POST_PROCESSING_BLOOM)
-//	OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
-//	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
+	OutDiffuseLightBuffer[globalIdx.xy]		= float4(accumulativeDiffuse,	1.0f);
+	OutSpecularLightBuffer[globalIdx.xy]	= float4(accumulativeSpecular,	1.0f);
 #else
 	OutDiffuseLightBuffer[globalIdx.xy]		= float4( ToGamma(accumulativeDiffuse, tbrParam_gamma),		1.0f);
 	OutSpecularLightBuffer[globalIdx.xy]	= float4( ToGamma(accumulativeSpecular, tbrParam_gamma),	1.0f);
