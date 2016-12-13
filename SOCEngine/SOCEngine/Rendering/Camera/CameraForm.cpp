@@ -25,7 +25,7 @@ CameraForm::~CameraForm(void)
 	Destroy();
 }
 
-void CameraForm::Initialize(const Math::Rect<float>& renderRect)
+void CameraForm::Initialize(const Math::Rect<float>& renderRect, bool useMipmap)
 {
 	_fieldOfViewDegree	= 45.0f;
 	_clippingNear		= 0.1f;
@@ -37,10 +37,12 @@ void CameraForm::Initialize(const Math::Rect<float>& renderRect)
 	_projectionType    = ProjectionType::Perspective;
 	_clearColor = Color(0.5f, 0.5f, 1.0f, 1.0f);
 
-	_frustum = new Frustum(0.0f);		
+	_frustum = new Frustum(0.0f);
+
+	uint mipLevel = useMipmap ? uint(log(max(backBufferSize.w, backBufferSize.h)) / log(2.0f)) + 1 : 1;
 
 	_renderTarget = new Texture::RenderTexture;
-	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0);
+	_renderTarget->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 	//_clearFlag = ClearFlag::FlagSolidColor;
 	_renderRect = renderRect;

@@ -34,11 +34,19 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
+	PostProcessing::DepthOfField::ParamCB param;
+	param.start	= 15.0f;
+	param.end	= 20.0f;
+//	param.start	= 40.0f;
+//	param.end	= 40.0f;
+
+	GetPostProcessing()->GetDepthOfField()->UpdateParam(param);
+
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 //	AddObject(_camera);
 
-#if 0 //GI Test
+#if 1 //GI Test
 //	ActivateGI(true, 256, 50.0f);
 //	ActivateGI(true, 256, 15.0f);
 
@@ -80,7 +88,7 @@ void TestScene::OnInitialize()
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
-#elif 1
+#elif 0
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
@@ -164,8 +172,8 @@ void TestScene::OnRenderPreview()
 
 void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
 {
-	const float scale = 0.5f;
-#if 1
+	const float scale = 5.0f;
+#if 0
 	Transform* control = _light->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
@@ -234,7 +242,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 	{
 		_testObject->SetUse(!_testObject->GetUse());
 	}
-#else
+#elif 0
 	Vector3 pos = _vxgi->GetStartCenterWorldPos();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
@@ -250,6 +258,36 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, scale));
 	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
 		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, -scale));
+#elif 1
+
+	auto dof = GetPostProcessing()->GetDepthOfField();
+	auto param = dof->GetParam();
+
+	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
+	{
+		param.start += scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
+	{
+		param.start -= scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
+	{
+		param.end += scale;
+
+		dof->UpdateParam(param);
+	}
+	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
+	{
+		param.end -= scale;
+
+		dof->UpdateParam(param);
+	}
+
 #endif
 }
 

@@ -4,6 +4,7 @@
 #define USE_SHADOW_INVERTED_DEPTH
 #define ENABLE_SKY_LIGHT
 #define NEVER_USE_VSM
+#define USE_POST_PROCESSING_BLOOM
 //#define USE_MOTION_BLUR
 //#define USE_UI
 

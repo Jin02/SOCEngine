@@ -37,7 +37,7 @@ void BackBufferMaker::Initialize(bool useUI)
 
 void BackBufferMaker::Render(
 	ID3D11RenderTargetView* outResultRTV,
-	const RenderTexture*& renderScene,
+	const RenderTexture* renderScene,
 	const RenderTexture* uiScene,
 	const ConstBuffer* const& tbrParamConstBuffer)
 {

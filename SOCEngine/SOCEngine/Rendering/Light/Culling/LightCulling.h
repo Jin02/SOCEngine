@@ -42,7 +42,7 @@ namespace Rendering
 				};
 				
 				Packed			packedParam;
-				uint			dummy;
+				float			gamma;
 
 				TBRParam(){}
 				~TBRParam(){}

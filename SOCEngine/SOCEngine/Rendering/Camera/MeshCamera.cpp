@@ -25,7 +25,7 @@ MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_motionXY_metallic_specularity(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
-	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr)
+	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr), _gamma(2.2f)
 {
 }
 
@@ -37,7 +37,7 @@ MeshCamera::~MeshCamera()
 void MeshCamera::OnInitialize()
 {
 	Size<unsigned int> backBufferSize = Director::SharedInstance()->GetBackBufferSize();
-	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)));
+	CameraForm::Initialize(Math::Rect<float>(0.0f, 0.0f, float(backBufferSize.w), float(backBufferSize.h)), true);
 
 	_albedo_occlusion = new Texture::RenderTexture;
 	ASSERT_MSG_IF( 
@@ -123,7 +123,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		packedParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
 		packedParam.packedNumOfLights		= lightManager->GetPackedLightCount();
 		packedParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
-		tbrParam.dummy						= 0;
+		tbrParam.gamma						= _gamma;
 	}
 	
 	bool isChangedPackedTBRParam = (_prevPackedParamData != packedParam);	

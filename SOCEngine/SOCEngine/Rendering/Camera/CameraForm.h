@@ -86,7 +86,7 @@ namespace Rendering
 			static void GetInvViewportMatrix(Math::Matrix& outMat, const Math::Rect<float>& rect);
 
 		protected:
-			void Initialize(const Math::Rect<float>& renderRect);
+			void Initialize(const Math::Rect<float>& renderRect, bool useMipmap);
 			void Destroy();	
 			
 		public:
@@ -105,7 +105,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(RenderRect,		const Math::Rect<float>&,		_renderRect);
 
 			GET_ACCESSOR(ProjectionType,		ProjectionType,					_projectionType);
-			GET_ACCESSOR(RenderTarget,			const Texture::RenderTexture*,	_renderTarget);
+			GET_ACCESSOR(RenderTarget,			Texture::RenderTexture*,		_renderTarget);
 
 			GET_ACCESSOR(Usage,					Usage,							_usage);
 			GET_ACCESSOR(CameraConstBuffer,		const Buffer::ConstBuffer*,		_camMatConstBuffer);

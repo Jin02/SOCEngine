@@ -97,7 +97,7 @@ cbuffer TBRParam : register( b0 )
 	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
-	uint	tbrParam_dummy;	
+	float	tbrParam_gamma;
 };
 
 float2 GetViewportSize()

@@ -63,4 +63,14 @@ float SimpleNoise(in float3 co)
     return frac(sin(dot(co, float3(12.9898f, 78.233f, 31.323f))) * 43758.5453f);
 }
 
+float3 ToLinear(float3 color, float gamma)
+{
+	return pow(color, gamma);
+}
+
+float3 ToGamma(float3 color, float gamma)
+{
+	return pow(color, 1.0f / gamma);
+}
+
 #endif

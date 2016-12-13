@@ -20,8 +20,6 @@ namespace Rendering
 			};
 
 		private:
-			Math::Size<uint>		_filteringSize;
-
 			FullScreen*				_vertical;
 			FullScreen*				_horizontal;
 			Texture::RenderTexture*	_tempMap;
@@ -36,8 +34,8 @@ namespace Rendering
 			virtual void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT){}
 
 		public:
-			void Initialize(const Device::DirectX* dx, const Math::Size<uint>& size, DXGI_FORMAT format);
-			void Initialize(const Device::DirectX* dx, const Math::Size<uint>& size);
+			void Initialize(const Device::DirectX* dx, const Math::Size<uint>& tempBufferSize, DXGI_FORMAT format);
+			void Initialize(const Device::DirectX* dx);
 
 			void UpdateParam(const Device::DirectX* dx, const ParamCB& param);
 			void Render(const Device::DirectX* dx, const Texture::RenderTexture* outResultRT, const Texture::RenderTexture* inputColorMap);

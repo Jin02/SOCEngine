@@ -3,7 +3,7 @@
 #ifndef __SOC_FULL_SCREEN_H__
 #define __SOC_FULL_SCREEN_H__
 
-#ifdef USE_VIEW_INFORMATION
+#if defined(USE_VIEW_INFORMATION) | defined(USE_TBR_PARAM)
 #include "TBDRInput.h"
 #endif
 
