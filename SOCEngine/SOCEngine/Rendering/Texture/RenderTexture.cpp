@@ -15,11 +15,11 @@ RenderTexture::~RenderTexture()
 	Destroy();
 }
 
-bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount)
+bool RenderTexture::Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount, uint mipLevel)
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | ((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS : 0) | optionalBindFlags;
 	
-	Texture2D::Initialize(size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, 1);
+	Texture2D::Initialize(size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, mipLevel);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
