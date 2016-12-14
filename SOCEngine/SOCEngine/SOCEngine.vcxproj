@@ -115,6 +115,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.h" />
     <ClInclude Include="Rendering\PostProcessing\ScreenSpaceRayTracing.h" />
+    <ClInclude Include="Rendering\PostProcessing\SSAO.h" />
     <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
     <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
@@ -303,6 +304,7 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
+    <FxCompile Include="ShaderCodes\SSAO.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -420,6 +422,7 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.cpp" />
     <ClCompile Include="Rendering\PostProcessing\ScreenSpaceRayTracing.cpp" />
+    <ClCompile Include="Rendering\PostProcessing\SSAO.cpp" />
     <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\HullShader.cpp" />

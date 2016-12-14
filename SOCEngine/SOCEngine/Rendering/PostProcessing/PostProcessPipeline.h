@@ -4,6 +4,7 @@
 #include "BackBufferMaker.h"
 #include "GaussianBlur.h"
 #include "DepthOfField.h"
+#include "SSAO.h"
 
 namespace Rendering
 {
@@ -29,6 +30,7 @@ namespace Rendering
 
 		PostProcessing::GaussianBlur*			_gaussianBlur;
 		PostProcessing::DepthOfField*			_dof;
+		PostProcessing::SSAO*					_ssao;
 
 		PostProcessing::IBLPass*				_iblPass;
 
@@ -64,6 +66,8 @@ namespace Rendering
 
 	public:
 		GET_ACCESSOR(DepthOfField,		PostProcessing::DepthOfField*,		_dof);
+		GET_ACCESSOR(SSAO,				PostProcessing::SSAO*,				_ssao);
+
 		GET_SET_ACCESSOR(GlobalParam,	const GlobalParam&,					_globalParam);
 		SET_ACCESSOR(DeltaTime,			float,								_globalParam.dt);
 	};

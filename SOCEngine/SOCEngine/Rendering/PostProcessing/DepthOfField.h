@@ -37,7 +37,7 @@ namespace Rendering
 		public:
 			void Initialize();
 			void UpdateParam(const ParamCB& param);
-			void Render(const Device::DirectX* dx, const Texture::RenderTexture* out,
+			void Render(const Device::DirectX* dx, const Texture::RenderTexture* out, const Texture::RenderTexture* in,
 						const Camera::MeshCamera* mainCam, const Texture::Texture2D* bluredCurScene);
 			void Destroy();
 
