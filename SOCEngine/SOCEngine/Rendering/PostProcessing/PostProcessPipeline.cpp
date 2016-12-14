@@ -10,7 +10,7 @@ using namespace Rendering::Texture;
 PostProcessPipeline::PostProcessPipeline()
 	: _iblPass(nullptr), _backBufferMaker(nullptr), _result(nullptr), _gaussianBlur(nullptr), _tempHalfMap(nullptr), _bluredCurScene(nullptr), _dof(nullptr),
 	_currentAdaptedLuminanceIndx(0), _eyeAdaptation(nullptr), _bloomThreshold(nullptr), _hdrGlobalParamCB(nullptr), _bloomThresholdMap(nullptr),
-	_tempDownSampledMinimumSizeMap(nullptr), _bloom(nullptr), _tempMap(nullptr)
+	_tempDownSampledMinimumSizeMap(nullptr), _bloom(nullptr), _tempMap(nullptr), _ssao(nullptr)
 {
 	_adaptedLuminanceMaps.fill(nullptr);
 }
@@ -34,6 +34,7 @@ PostProcessPipeline::~PostProcessPipeline()
 	SAFE_DELETE(_tempDownSampledMinimumSizeMap);
 	SAFE_DELETE(_bloom);
 	SAFE_DELETE(_tempMap);
+	SAFE_DELETE(_ssao);
 
 	for(uint i=0; i<_adaptedLuminanceMaps.size(); ++i)
 		SAFE_DELETE(_adaptedLuminanceMaps[i]);
@@ -96,6 +97,9 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 
 		_dof = new DepthOfField;
 		_dof->Initialize();
+
+		_ssao = new SSAO;
+		_ssao->Initialize();
 	}
 
 	// const buffer
@@ -145,8 +149,8 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		return;
 
 	RenderTexture* mainScene	= mainMeshCamera->GetRenderTarget();
-	RenderTexture* front		= _result;
-	RenderTexture* back			= _tempMap;
+	RenderTexture* back		= _result;
+	RenderTexture* front	= _tempMap;
 
 	mainScene->GenerateMips(dx);
 
@@ -162,80 +166,86 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 	};
 
-	PixelShader::BindTexture(context,		TextureBindIndex(0),						mainScene);
-	PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
-	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
+	//PixelShader::BindTexture(context,		TextureBindIndex(0),						mainScene);
+	//PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
+	//PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
+	//PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
 
-	// Eye Adaption
-	_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
+	//// Eye Adaption
+	//_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 
-	// Bloom Map
-	{
-		_bloomThreshold->Render(dx, _bloomThresholdMap, true);
+	//// Bloom Map
+	//{
+	//	_bloomThreshold->Render(dx, _bloomThresholdMap, true);
 
-		// Blur
-		{
-			// Down Scale
-			{
-				CopyMap(_downSampledTextures[0], _bloomThresholdMap);		// source	-> /2
-				CopyMap(_downSampledTextures[1], _downSampledTextures[0]);	// /2		-> /4
-				CopyMap(_downSampledTextures[2], _downSampledTextures[1]);	// /4		-> /8
-				CopyMap(_downSampledTextures[3], _downSampledTextures[2]);	// /8		-> /16
-			}
+	//	// Blur
+	//	{
+	//		// Down Scale
+	//		{
+	//			CopyMap(_downSampledTextures[0], _bloomThresholdMap);		// source	-> /2
+	//			CopyMap(_downSampledTextures[1], _downSampledTextures[0]);	// /2		-> /4
+	//			CopyMap(_downSampledTextures[2], _downSampledTextures[1]);	// /4		-> /8
+	//			CopyMap(_downSampledTextures[3], _downSampledTextures[2]);	// /8		-> /16
+	//		}
 
-			for(uint i=0; i<2; ++i)
-				_gaussianBlur->Render(dx, _downSampledTextures[3], _downSampledTextures[3], _tempDownSampledMinimumSizeMap);
-				
-			// Up Scale
-			{
-				CopyMap(_downSampledTextures[2],	_downSampledTextures[3]);	// /16		-> /8
-				CopyMap(_downSampledTextures[1],	_downSampledTextures[2]);	// /8		-> /4
-				CopyMap(_downSampledTextures[0],	_downSampledTextures[1]);	// /4		-> /2
-				CopyMap(_bloomThresholdMap,			_downSampledTextures[0]);	// /2		-> source
-			}
-		}
-	}
+	//		for(uint i=0; i<2; ++i)
+	//			_gaussianBlur->Render(dx, _downSampledTextures[3], _downSampledTextures[3], _tempDownSampledMinimumSizeMap);
+	//			
+	//		// Up Scale
+	//		{
+	//			CopyMap(_downSampledTextures[2],	_downSampledTextures[3]);	// /16		-> /8
+	//			CopyMap(_downSampledTextures[1],	_downSampledTextures[2]);	// /8		-> /4
+	//			CopyMap(_downSampledTextures[0],	_downSampledTextures[1]);	// /4		-> /2
+	//			CopyMap(_bloomThresholdMap,			_downSampledTextures[0]);	// /2		-> source
+	//		}
+	//	}
+	//}
 
-	PixelShader::BindTexture(context,		TextureBindIndex(0),						nullptr);
-	PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
-	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
+	//PixelShader::BindTexture(context,		TextureBindIndex(0),						nullptr);
+	//PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
+	//PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
+	//PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
 
-	// Depth Of Field
-	{
-		// Down Scale
-		CopyMap(_downSampledTextures[0], mainScene);
-
-		for(uint i=0; i<2; ++i)
-			_gaussianBlur->Render(dx, _downSampledTextures[0], _downSampledTextures[0], _tempHalfMap);
-
-		// Up Scale
-		CopyMap(_bluredCurScene, _downSampledTextures[0]);
-
-		_dof->Render(dx, front, mainMeshCamera, _bluredCurScene);
-	}
-
+	// SSAO
+	_ssao->Render(dx, back, mainScene, mainMeshCamera);
 	std::swap(front, back);
 
-	// Bloom Merger, Tone Mapping, Gamma Correction
-	{
-		PixelShader::BindTexture(context,		TextureBindIndex(0),							back);
-		PixelShader::BindTexture(context,		TextureBindIndex(1),							_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
-		PixelShader::BindTexture(context,		TextureBindIndex(2),							_bloomThresholdMap);
-		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,		dx->GetSamplerStateLinear());
-		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,			_hdrGlobalParamCB);
-		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,					mainMeshCamera->GetTBRParamConstBuffer());
+	//// Depth Of Field
+	//{
+	//	// Down Scale
+	//	CopyMap(_downSampledTextures[0], front);
 
-		_bloom->Render(dx, front, true);
+	//	for(uint i=0; i<2; ++i)
+	//		_gaussianBlur->Render(dx, _downSampledTextures[0], _downSampledTextures[0], _tempHalfMap);
 
-		PixelShader::BindTexture(context,		TextureBindIndex(0),							nullptr);
-		PixelShader::BindTexture(context,		TextureBindIndex(1),							nullptr);
-		PixelShader::BindTexture(context,		TextureBindIndex(2),							nullptr);
-		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,		nullptr);
-		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,			nullptr);
-		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,					nullptr);
-	}
+	//	// Up Scale
+	//	CopyMap(_bluredCurScene, _downSampledTextures[0]);
+
+	//	_dof->Render(dx, back, mainMeshCamera, _bluredCurScene);
+	//}
+
+	//std::swap(front, back);
+
+	//// Bloom Merger, Tone Mapping, Gamma Correction
+	//{
+	//	PixelShader::BindTexture(context,		TextureBindIndex(0),							front);
+	//	PixelShader::BindTexture(context,		TextureBindIndex(1),							_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
+	//	PixelShader::BindTexture(context,		TextureBindIndex(2),							_bloomThresholdMap);
+	//	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,		dx->GetSamplerStateLinear());
+	//	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,			_hdrGlobalParamCB);
+	//	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,					mainMeshCamera->GetTBRParamConstBuffer());
+
+	//	_bloom->Render(dx, back, true);
+
+	//	PixelShader::BindTexture(context,		TextureBindIndex(0),							nullptr);
+	//	PixelShader::BindTexture(context,		TextureBindIndex(1),							nullptr);
+	//	PixelShader::BindTexture(context,		TextureBindIndex(2),							nullptr);
+	//	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,		nullptr);
+	//	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,			nullptr);
+	//	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,					nullptr);
+	//}
+
+	//std::swap(front, back);
 
 	// Restore Viewport
 	{
@@ -270,6 +280,7 @@ void PostProcessPipeline::Destroy()
 	_tempDownSampledMinimumSizeMap->Destroy();
 	_bloom->Destroy();
 	_tempMap->Destroy();
+	_ssao->Destroy();
 
 	uint size = _downSampledTextures.size();
 	for(uint i=0; i<size; ++i)
