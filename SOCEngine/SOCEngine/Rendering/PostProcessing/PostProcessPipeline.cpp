@@ -150,7 +150,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 
 	RenderTexture* mainScene	= mainMeshCamera->GetRenderTarget();
 	RenderTexture* back		= _result;
-	RenderTexture* front	= _tempMap;
+	RenderTexture* front	= mainScene;
 
 	mainScene->GenerateMips(dx);
 
@@ -207,7 +207,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
 
 	// SSAO
-	_ssao->Render(dx, back, mainScene, mainMeshCamera);
+	_ssao->Render(dx, back, front, mainMeshCamera);
 	std::swap(front, back);
 
 	// Depth Of Field
@@ -221,7 +221,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		// Up Scale
 		CopyMap(_bluredCurScene, _downSampledTextures[0]);
 
-		_dof->Render(dx, back, mainMeshCamera, _bluredCurScene);
+		_dof->Render(dx, back, front, mainMeshCamera, _bluredCurScene);
 	}
 
 	std::swap(front, back);

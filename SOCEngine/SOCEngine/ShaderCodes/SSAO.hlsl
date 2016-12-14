@@ -101,6 +101,6 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 			result += ssaoScale * saturate( dot(normal, dir) ) * rcp(1.0f + dist);
 	}
 
-	return float4(InputSceneMap.Sample(LinearSampler, input.uv).rgb * (1.0f - saturate(result / samplingCount)), 1.0f);
-//	return float4((1.0f - saturate(result / samplingCount)).xxx, 1.0f);
+	return float4(InputSceneMap.Sample(LinearSampler, input.uv).rgb * (1.0f - saturate(result / float(samplingCount))), 1.0f);
+//	return float4((1.0f - saturate(result / float(samplingCount))).xxx, 1.0f);
 }
