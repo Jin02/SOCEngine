@@ -2,3 +2,5 @@
 ![roughness0](http://i.imgur.com/BrKWv7z.png)
 ![withHDR0](http://i.imgur.com/GQxZRGp.png)
 ![withHDR1](http://i.imgur.com/0iU5QsT.png)
+![bloom](http://i.imgur.com/rSshNB8.png)
+![ssao](http://i.imgur.com/84IRZt7.png)
