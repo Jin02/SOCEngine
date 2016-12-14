@@ -23,6 +23,7 @@
 #include "ReflectionProbeManager.h"
 
 #include "LightShaftManager.h"
+#include "SkyScattering.h"
 
 namespace Core
 {
@@ -55,6 +56,8 @@ namespace Core
 
 		Rendering::PostProcessPipeline*						_postProcessingSystem;
 		Rendering::Manager::LightShaftManager*				_lightShaftMgr;
+
+		Rendering::Sky::SkyScattering*						_skyScattering;
 
 	protected:
 		Rendering::GI::VXGI*								_vxgi;
