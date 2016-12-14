@@ -34,13 +34,20 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	PostProcessing::DepthOfField::ParamCB param;
-	param.start	= 15.0f;
-	param.end	= 20.0f;
-//	param.start	= 40.0f;
-//	param.end	= 40.0f;
+	PostProcessing::DepthOfField::ParamCB dofParam;
+	dofParam.start	= 15.0f;
+	dofParam.end	= 20.0f;
+	GetPostProcessing()->GetDepthOfField()->UpdateParam(dofParam);
 
-	GetPostProcessing()->GetDepthOfField()->UpdateParam(param);
+	PostProcessing::SSAO::Param ssaoParam;
+	ssaoParam.stepUV = Vector2(1.0f, 1.0f);
+	ssaoParam.SetSampleCount(24);
+	ssaoParam.SetSkipDist(0.1f);
+	ssaoParam.SetScale(10.0f);
+	ssaoParam.SetOccluedRate(0.95f);
+
+	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
+
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
