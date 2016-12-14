@@ -61,7 +61,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float2 velocity		= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 	
 	float3 normal = normalize(input.normal);
-	MakeGBuffer(normal, input.uv, velocity, outGBuffer.albedo_occlusion, outGBuffer.motionXY_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
+	MakeGBuffer(normal, input.uv, velocity, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;
 }

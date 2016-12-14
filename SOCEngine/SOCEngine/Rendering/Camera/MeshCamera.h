@@ -26,7 +26,7 @@ namespace Rendering
 		private:
 			Texture::RenderTexture*						_albedo_occlusion;
 			Texture::RenderTexture*						_normal_roughness;
-			Texture::RenderTexture*						_motionXY_metallic_specularity;
+			Texture::RenderTexture*						_velocity_metallic_specularity;
 			Texture::RenderTexture*						_emission_materialFlag;
 
 			TBDR::ShadingWithLightCulling*				_deferredShadingWithLightCulling;
@@ -84,7 +84,7 @@ namespace Rendering
 
 			GET_ACCESSOR(GBufferAlbedoOcclusion,				const Texture::RenderTexture*,			_albedo_occlusion);
 			GET_ACCESSOR(GBufferNormalRoughness,				const Texture::RenderTexture*,			_normal_roughness);
-			GET_ACCESSOR(GBufferMotionXYMetallicSpecularity,	const Texture::RenderTexture*,			_motionXY_metallic_specularity);
+			GET_ACCESSOR(GBufferVelocityMetallicSpecularity,	const Texture::RenderTexture*,			_velocity_metallic_specularity);
 			GET_ACCESSOR(GBufferEmissionMaterialFlag,			const Texture::RenderTexture*,			_emission_materialFlag);
 
 			GET_ACCESSOR(OpaqueDepthBuffer,						const Texture::DepthBuffer*,			_opaqueDepthBuffer);

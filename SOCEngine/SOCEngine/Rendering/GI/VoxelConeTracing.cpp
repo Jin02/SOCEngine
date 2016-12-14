@@ -98,7 +98,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionS
 	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			mipmappedInjectionMap);
 
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					meshCam->GetGBufferAlbedoOcclusion());
-	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	meshCam->GetGBufferMotionXYMetallicSpecularity());
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	meshCam->GetGBufferVelocityMetallicSpecularity());
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					meshCam->GetGBufferNormalRoughness());
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Depth,							meshCam->GetOpaqueDepthBuffer());
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag());
@@ -118,7 +118,7 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionS
 	ComputeShader::BindTexture(context, 			TextureBindIndex::VCTMipmappedInjectionColorMap,			nullptr);
 
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Albedo_Occlusion,					nullptr);
-	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
+	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Normal_Roughness,					nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Depth,							nullptr);
 	ComputeShader::BindTexture(context, 			TextureBindIndex::GBuffer_Emission_MaterialFlag,			nullptr);

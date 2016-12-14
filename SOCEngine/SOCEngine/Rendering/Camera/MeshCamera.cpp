@@ -22,7 +22,7 @@ using namespace GPGPU::DirectCompute;
 
 MeshCamera::MeshCamera() : CameraForm(Usage::MeshRender),
 	_blendedDepthBuffer(nullptr), _albedo_occlusion(nullptr),
-	_motionXY_metallic_specularity(nullptr), _normal_roughness(nullptr),
+	_velocity_metallic_specularity(nullptr), _normal_roughness(nullptr),
 	_useTransparent(false), _opaqueDepthBuffer(nullptr),
 	_tbrParamConstBuffer(nullptr), _offScreen(nullptr),
 	_blendedMeshLightCulling(nullptr), _emission_materialFlag(nullptr), _gamma(2.2f)
@@ -45,10 +45,10 @@ void MeshCamera::OnInitialize()
 		"GBuffer Error : cant create albedo_occlusion render texture" 
 		);
 
-	_motionXY_metallic_specularity = new Texture::RenderTexture;
+	_velocity_metallic_specularity = new Texture::RenderTexture;
 	ASSERT_MSG_IF( 
-		_motionXY_metallic_specularity->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
-		"GBuffer Error : cant create _motionXY_metallic_specularity render texture"
+		_velocity_metallic_specularity->Initialize(backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0),
+		"GBuffer Error : cant create _velocity_metallic_specularity render texture"
 		);
 
 	_normal_roughness = new Texture::RenderTexture;
@@ -74,7 +74,7 @@ void MeshCamera::OnInitialize()
 		{
 			gbuffer.albedo_occlusion				= _albedo_occlusion;
 			gbuffer.normal_roughness				= _normal_roughness;
-			gbuffer.motionXY_metallic_specularity	= _motionXY_metallic_specularity;
+			gbuffer.velocity_metallic_specularity	= _velocity_metallic_specularity;
 			gbuffer.emission_materialFlag			= _emission_materialFlag;
 		}
 
@@ -95,7 +95,7 @@ void MeshCamera::OnDestroy()
 	SAFE_DELETE(_tbrParamConstBuffer);
 
 	SAFE_DELETE(_albedo_occlusion);
-	SAFE_DELETE(_motionXY_metallic_specularity);
+	SAFE_DELETE(_velocity_metallic_specularity);
 	SAFE_DELETE(_normal_roughness);
 	SAFE_DELETE(_emission_materialFlag);
 
@@ -349,7 +349,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		Color allZeroColor(0.f, 0.f, 0.f, 0.f);
 
 		_albedo_occlusion->Clear(context, allZeroColor);
-		_motionXY_metallic_specularity->Clear(context, allZeroColor);
+		_velocity_metallic_specularity->Clear(context, allZeroColor);
 		_normal_roughness->Clear(context, allZeroColor);
 		_emission_materialFlag->Clear(context, allZeroColor);
 	}
@@ -401,7 +401,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	{
 		ID3D11RenderTargetView* renderTargetViews[] = {
 			_albedo_occlusion->GetRenderTargetView(),
-			_motionXY_metallic_specularity->GetRenderTargetView(),
+			_velocity_metallic_specularity->GetRenderTargetView(),
 			_normal_roughness->GetRenderTargetView(),
 			_emission_materialFlag->GetRenderTargetView(),
 			nullptr

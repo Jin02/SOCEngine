@@ -38,7 +38,7 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Albedo_Occlusion,				meshCam->GetGBufferAlbedoOcclusion());
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,			meshCam->GetGBufferEmissionMaterialFlag());
-	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,		meshCam->GetGBufferMotionXYMetallicSpecularity());
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,		meshCam->GetGBufferVelocityMetallicSpecularity());
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Normal_Roughness,				meshCam->GetGBufferNormalRoughness());	
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Depth,					meshCam->GetOpaqueDepthBuffer());
 	PixelShader::BindTexture(context, TextureBindIndex::IBLPass_IlluminationMap,				meshCam->GetRenderTarget());
@@ -71,7 +71,7 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Albedo_Occlusion,			nullptr);
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Emission_MaterialFlag,		nullptr);
-	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_MotionXY_Metallic_Specularity,	nullptr);
+	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	nullptr);
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Normal_Roughness,			nullptr);	
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Depth,				nullptr);
 	PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap,				nullptr);

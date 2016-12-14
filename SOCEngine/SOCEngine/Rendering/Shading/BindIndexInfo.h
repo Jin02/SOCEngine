@@ -13,7 +13,7 @@ namespace Rendering
 		DirectionalLightColor					= 6,
 
 		GBuffer_Albedo_Occlusion				= 8,
-		GBuffer_MotionXY_Metallic_Specularity	= 9,
+		GBuffer_Velocity_Metallic_Specularity	= 9,
 		GBuffer_Normal_Roughness				= 10,
 		GBuffer_Depth							= 11,
 		GBuffer_Emission_MaterialFlag			= 31,

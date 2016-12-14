@@ -55,17 +55,17 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
-	float4 motionXY_metallic_specularity	= GBufferMotionXY_metallic_specularity.Load( globalIdx, sampleIdx );
+	float4 velocity_metallic_specularity	= GBufferVelocity_metallic_specularity.Load( globalIdx, sampleIdx );
 	float3 emission							= GBufferEmission_materialFlag.Load(globalIdx, sampleIdx).rgb;
 #else
 	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
-	float4 motionXY_metallic_specularity	= GBufferMotionXY_metallic_specularity.Load( uint3(globalIdx, 0) );
+	float4 velocity_metallic_specularity	= GBufferVelocity_metallic_specularity.Load( uint3(globalIdx, 0) );
 	float3 emission							= GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).rgb;
 #endif
 	uint	matFlag			= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
-	float	specularity		= motionXY_metallic_specularity.a;
+	float	specularity		= velocity_metallic_specularity.a;
 	float3	baseColor		= useLinearDiffuse ? ToLinear(albedo_occlusion.rgb, tbrParam_gamma) : albedo_occlusion.rgb;
-	float	metallic		= motionXY_metallic_specularity.b;
+	float	metallic		= velocity_metallic_specularity.b;
 
 	outSurface.albedo		= baseColor - baseColor * metallic;
 	outSurface.occlusion	= albedo_occlusion.a;
@@ -76,7 +76,7 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.emission		= emission;
 	outSurface.specularity	= specularity;
 
-	outSurface.motion		= (motionXY_metallic_specularity.xy * 2.0f) - float2(1.0f, 1.0f);
+	outSurface.motion		= (velocity_metallic_specularity.xy * 2.0f) - float2(1.0f, 1.0f);
 	outSurface.materialFlag	= matFlag;
 }
 
