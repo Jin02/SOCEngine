@@ -38,12 +38,12 @@ void DepthOfField::UpdateParam(const ParamCB& param)
 	_paramCB->UpdateSubResource(dx->GetContext(), &param);
 }
 
-void DepthOfField::Render(const Device::DirectX* dx, const Texture::RenderTexture* out,
+void DepthOfField::Render(const Device::DirectX* dx, const Texture::RenderTexture* out, const Texture::RenderTexture* in,
 						  const Camera::MeshCamera* mainCam, const Texture::Texture2D* bluredCurScene)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
-	PixelShader::BindTexture(context, TextureBindIndex(0),								mainCam->GetRenderTarget());
+	PixelShader::BindTexture(context, TextureBindIndex(0),								in);
 	PixelShader::BindTexture(context, TextureBindIndex(1),								bluredCurScene);
 	PixelShader::BindTexture(context, TextureBindIndex::GBuffer_Depth,					mainCam->GetOpaqueDepthBuffer());
 
