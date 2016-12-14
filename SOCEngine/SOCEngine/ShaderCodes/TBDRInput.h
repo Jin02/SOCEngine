@@ -5,8 +5,6 @@
 
 #include "../GlobalDefine.h"
 
-#define DEG_2_RAD(X) PI * X / 180.0f
-
 Buffer<float4>								PointLightTransformBuffer					: register( t0 ); // center, radius
 Buffer<float4>								PointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
 

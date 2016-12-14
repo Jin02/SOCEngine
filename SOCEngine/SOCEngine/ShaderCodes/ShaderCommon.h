@@ -5,7 +5,8 @@
 
 #include "../GlobalDefine.h"
 
-#define DEG_2_RAD(X) PI * X / 180.0f
+#define DEG_2_RAD(X) ((PI * X) / 180.0f)
+#define RAD_2_DEG(X) ((180.0f * X) / PI)
 
 uint GetNumOfPointLight(uint packedNumOfLights)
 {
