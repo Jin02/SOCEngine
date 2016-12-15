@@ -170,6 +170,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindTexture(context,					TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowMgr->GetDirectionalLightShadowMapAtlas());
 
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowComprisonSamplerState,			dx->GetShadowGreaterEqualSamplerComparisonState());	
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowPointSamplerState,				dx->GetSamplerStatePoint());	
+
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,					dx->GetSamplerStateAnisotropic());	
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,				dx->GetShadowSamplerState());	
 
@@ -205,6 +207,8 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindTexture(context,					TextureBindIndex::DirectionalLightShadowMapAtlas,			nullptr);
 
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowComprisonSamplerState,			nullptr);
+	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowPointSamplerState,				nullptr);
+
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,					nullptr);	
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,				nullptr);	
 

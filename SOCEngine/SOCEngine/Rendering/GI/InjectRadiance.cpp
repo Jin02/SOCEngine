@@ -45,6 +45,7 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, dx->GetShadowGreaterEqualSamplerComparisonState());
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, dx->GetSamplerStatePoint());
 
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,		param.global.vxgiStaticInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,	param.global.vxgiDynamicInfo);
@@ -60,6 +61,7 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 	_shader->Dispatch(context);
 
 	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState,	nullptr);
+	ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState,		nullptr);
 
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIStaticInfoCB,					nullptr);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,				nullptr);

@@ -98,6 +98,7 @@ namespace Rendering
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
 		AmbientCubeMapSamplerState		= 4,
+		ShadowPointSamplerState			= 4,
 	};
 
 	enum class UAVBindIndex : unsigned int

@@ -471,6 +471,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
 #endif
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, shadowSamplerState);
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, dx->GetSamplerStatePoint());
 			if(neverUseVSM == false)
 			{
 				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
@@ -495,6 +496,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		//if(useShadow)
 		{
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, nullptr);
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, nullptr);
 
 			if(neverUseVSM == false)
 				ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, nullptr);
