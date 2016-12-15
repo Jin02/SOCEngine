@@ -55,7 +55,7 @@ namespace Device
 		ID3D11SamplerState*			_pointSamplerState;
 		ID3D11SamplerState*			_shadowLessEqualCompState;
 		ID3D11SamplerState*			_shadowGreaterEqualCompState;
-		ID3D11SamplerState*			_shadowLinearSamplerState;
+		ID3D11SamplerState*			_shadowSamplerStateLinear;
 		ID3D11SamplerState*			_coneTracingSamplerState;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
@@ -111,7 +111,7 @@ namespace Device
 		GET_ACCESSOR(SamplerStatePoint,								ID3D11SamplerState*,		_pointSamplerState);
 		GET_ACCESSOR(ShadowLessEqualSamplerComparisonState,			ID3D11SamplerState*,		_shadowLessEqualCompState);
 		GET_ACCESSOR(ShadowGreaterEqualSamplerComparisonState,		ID3D11SamplerState*,		_shadowGreaterEqualCompState);
-		GET_ACCESSOR(ShadowSamplerState,							ID3D11SamplerState*,		_shadowLinearSamplerState);
+		GET_ACCESSOR(ShadowSamplerState,							ID3D11SamplerState*,		_shadowSamplerStateLinear);
 		GET_ACCESSOR(ConeTracingSamplerState,						ID3D11SamplerState*,		_coneTracingSamplerState);
 
 		GET_ACCESSOR(MSAADesc,										const DXGI_SAMPLE_DESC&,	_msaaDesc);
