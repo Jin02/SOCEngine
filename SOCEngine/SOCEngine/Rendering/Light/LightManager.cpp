@@ -135,8 +135,18 @@ uint LightManager::Add(LightForm*& light)
 
 	if(light->GetType() == LightForm::LightType::Directional)
 	{
-		DirectionalLight* dl = static_cast<DirectionalLight*>(light);
-		_directionalLights.Add(searchKey, dl);
+		DirectionalLight* l = static_cast<DirectionalLight*>(light);
+		_directionalLights.Add(searchKey, l);
+	}
+	else if(light->GetType() == LightForm::LightType::Point)
+	{
+		PointLight* l = static_cast<PointLight*>(light);
+		_pointLights.Add(searchKey, l);
+	}
+	else if(light->GetType() == LightForm::LightType::Spot)
+	{
+		SpotLight* l = static_cast<SpotLight*>(light);
+		_spotLights.Add(searchKey, l);
 	}
 
 	return FetchLightIndexInEachLights(light);
@@ -580,6 +590,7 @@ void LightManager::Delete(const LightForm*& inputLight)
 		_pointLightOptionalParamIndexBuffer.Delete(key);
 		_pointLightTransformBuffer.Delete(key);
 		_pointLightColorBuffer.Delete(key);
+		_pointLights.Delete(key);
 
 		_forceUpdatePL = true;
 	}
@@ -589,6 +600,7 @@ void LightManager::Delete(const LightForm*& inputLight)
 		_spotLightTransformBuffer.Delete(key);
 		_spotLightColorBuffer.Delete(key);
 		_spotLightParamBuffer.Delete(key);
+		_spotLights.Delete(key);
 
 		_forceUpdateSL = true;
 	}
@@ -602,10 +614,12 @@ void LightManager::DeleteAll()
 	_spotLightColorBuffer.DeleteAll();
 	_spotLightParamBuffer.DeleteAll();
 	_spotLightOptionalParamIndexBuffer.DeleteAll();
+	_spotLights.DeleteAll();
 	
 	_pointLightTransformBuffer.DeleteAll();
 	_pointLightColorBuffer.DeleteAll();
 	_pointLightOptionalParamIndexBuffer.DeleteAll();
+	_pointLights.DeleteAll();
 
 	_directionalLightColorBuffer.DeleteAll();
 	_directionalLightDirBuffer.DeleteAll();
@@ -636,9 +650,9 @@ uint LightManager::FetchLightIndexInEachLights(const LightForm* inputLight) cons
 		const Light::LightForm* light		= _lights.Find(key)->light;
 		Light::LightForm::LightType type	= light->GetType();
 
-		if(type == LightForm::LightType::Directional)	_directionalLightColorBuffer.Find(key,	&index);
-		else if(type == LightForm::LightType::Point)	_pointLightColorBuffer.Find(key,		&index);
-		else if(type == LightForm::LightType::Spot)		_spotLightColorBuffer.Find(key,			&index);
+		if(type == LightForm::LightType::Directional)	_directionalLights.Find(key,	&index);
+		else if(type == LightForm::LightType::Point)	_pointLights.Find(key,			&index);
+		else if(type == LightForm::LightType::Spot)		_spotLights.Find(key,			&index);
 	}
 
 	return index;

@@ -141,6 +141,7 @@
     <ClInclude Include="Rendering\Sky\SkyForm.h" />
     <ClInclude Include="Rendering\Sky\SkyBox.h" />
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
+    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
@@ -304,6 +305,7 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl" />
     <FxCompile Include="ShaderCodes\SSAO.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -444,6 +446,7 @@
     <ClCompile Include="Rendering\Sky\SkyForm.cpp" />
     <ClCompile Include="Rendering\Sky\SkyBox.cpp" />
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
+    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />

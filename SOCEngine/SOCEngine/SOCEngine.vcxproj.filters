@@ -463,6 +463,9 @@
     <Filter Include="Rendering\PostProcessing\SSAO">
       <UniqueIdentifier>{a442ed21-8aa6-4292-846b-d8ecbebb4281}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Sky\Scattering">
+      <UniqueIdentifier>{18299b10-3513-4d34-ac52-b8ffe9cc4b3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -946,6 +949,9 @@
     <ClInclude Include="Rendering\PostProcessing\SSAO.h">
       <Filter>Rendering\PostProcessing\SSAO</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
+      <Filter>Rendering\Sky\Scattering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
@@ -1281,6 +1287,9 @@
     <ClCompile Include="Rendering\PostProcessing\SSAO.cpp">
       <Filter>Rendering\PostProcessing\SSAO</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp">
+      <Filter>Rendering\Sky\Scattering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
@@ -1399,6 +1408,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\SSAO.hlsl">
       <Filter>ShaderCodes\PostProcessing\AO</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

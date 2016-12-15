@@ -33,6 +33,11 @@ void PixelShader::BindShaderToContext(ID3D11DeviceContext* context)
 	context->PSSetShader(_shader, nullptr, 0);
 }
 
+void PixelShader::UnBindShaderToContext(ID3D11DeviceContext* context)
+{
+	context->PSSetShader(nullptr, nullptr, 0);
+}
+
 void PixelShader::BindResourcesToContext(
 	ID3D11DeviceContext* context,
 	const std::vector<InputConstBuffer>* constBuffers,

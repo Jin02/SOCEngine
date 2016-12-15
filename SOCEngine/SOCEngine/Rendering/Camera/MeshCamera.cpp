@@ -510,7 +510,12 @@ void MeshCamera::Render(const Device::DirectX* dx,
 	if(sky)
 	{
 		if(sky->GetIsSkyOn())
-			sky->Render(dx, this, _renderTarget, _opaqueDepthBuffer);
+		{
+			if(sky->GetType() == Sky::SkyForm::Type::Atmospheric)
+				dynamic_cast<Sky::AtmosphericScattering*>(sky)->UpdateTransform(this);
+
+			sky->Render(dx, this, _renderTarget, _opaqueDepthBuffer, lightManager);
+		}
 	}
 
 	// Transparency

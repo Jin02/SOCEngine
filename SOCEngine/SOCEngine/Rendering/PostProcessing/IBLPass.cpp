@@ -51,13 +51,12 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 	{
 		const Texture2D* cubeMap = nullptr;
 
-		if(sky->GetType() == SkyForm::Type::Box)
+		if(sky->GetType() == SkyForm::Type::Common)
 			cubeMap = dynamic_cast<const SkyBox*>(sky)->GetSkyCubeMap();
 		else
 			ASSERT_MSG("cant support");
 
 		PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap, cubeMap);
-		PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, sky->GetSkyMapInfoConstBuffer());
 	}
 
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());

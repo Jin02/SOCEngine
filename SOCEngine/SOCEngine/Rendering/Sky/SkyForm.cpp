@@ -14,8 +14,8 @@ using namespace Rendering::Texture;
 using namespace Resource;
 using namespace Math;
 
-SkyForm::SkyForm(Type type) : _meshFilter(nullptr), _skyMapInfoCB(nullptr),
-	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(7.0f), _type(type)
+SkyForm::SkyForm(Type type) : _meshFilter(nullptr),
+	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(10.0f), _type(type)
 {
 }
 
@@ -36,35 +36,12 @@ void SkyForm::Initialize()
 	};
 
 	BasicGeometryGenerator gen;
-	gen.CreateSphere(CreateMeshContent, 1.0f, 30, 30, 0);
-
-	_skyMapInfoCB = new ConstBuffer;
-	_skyMapInfoCB->Initialize(sizeof(SkyMapInfoCBData));
+	gen.CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
 }
 
 void SkyForm::Destroy()
 {
 	SAFE_DELETE(_meshFilter);
-	SAFE_DELETE(_skyMapInfoCB);
-}
-
-void SkyForm::UpdateConstBuffer(const Device::DirectX* dx)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-
-	SkyMapInfoCBData cbData;
-	{
-		cbData.maxMipCount			= _maxMipCount;
-		cbData.isSkyLightOn			= uint(_isSkyLightOn);
-		cbData.isDynamicSkyLight	= _isDynamicSkyLight;
-		cbData.blendFraction		= _blendFraction;
-	}
-	bool isChanged = memcmp(&cbData, &_prevCBData, sizeof(SkyMapInfoCBData)) != 0;
-	if(isChanged)
-	{
-		_skyMapInfoCB->UpdateSubResource(context, &cbData);
-		_prevCBData = cbData;
-	}
 }
 
 void SkyForm::_Render(const Device::DirectX* dx, const Rendering::Material* material, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv)

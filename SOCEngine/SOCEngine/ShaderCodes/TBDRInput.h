@@ -5,8 +5,6 @@
 
 #include "../GlobalDefine.h"
 
-#define DEG_2_RAD(X) PI * X / 180.0f
-
 Buffer<float4>								PointLightTransformBuffer					: register( t0 ); // center, radius
 Buffer<float4>								PointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
 
@@ -158,7 +156,7 @@ uint GetLightShaftIndex(uint pl_dl_lightOptionalParamIndex)
 
 float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
 {
-	bool isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
+	uint isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
 	return float( 1.0f - 2.0f * float(isMinus) );
 }
 

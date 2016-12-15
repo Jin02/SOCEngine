@@ -27,7 +27,7 @@ void DirectionalLight::OnUpdate(float deltaTime)
 {
 	bool isNegDirZSign = _owner->GetTransform()->GetWorldMatrix()._33 < 0.0f;
 
-	_flag |= isNegDirZSign ? 1 : 0;
+	_flag = (_flag & 0xfe) | (isNegDirZSign ? 1 : 0);
 }
 
 void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat)

@@ -143,14 +143,12 @@ void Scene::RenderPreview()
 	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
 		(*iter)->UpdateReflectionProbeCB(_dx, _lightManager->GetPackedLightCount());
 
-	if(_sky)
-		_sky->UpdateConstBuffer(_dx);
-
 	const CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	if(mainCam)
 		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
 
 	_postProcessingSystem->UpdateGlobalParam(_dx);
+//	_skyScattering->UpdateTransform(mainCam);
 }
 
 void Scene::Render()
@@ -158,19 +156,19 @@ void Scene::Render()
 	_dx->ClearDeviceContext();
 	const RenderManager* renderMgr = _renderMgr;
 	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
-
+	
 	_dx->ClearDeviceContext();
-
+	
 	auto GIPass = [&](MeshCamera* meshCam) -> const RenderTexture*
 	{
 		bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
 		const RenderTexture* indirectColorMap = nullptr;
-
+	
 		if(_vxgi && isMainCam)
 		{
 			if(meshCam->GetUseIndirectColorMap() == false)
 				meshCam->ReCompileOffScreen(true);
-
+	
 			_vxgi->Run(_dx, meshCam, this);
 			indirectColorMap = _vxgi->GetIndirectColorMap();
 		}
@@ -179,12 +177,12 @@ void Scene::Render()
 			if(meshCam->GetUseIndirectColorMap())
 				meshCam->ReCompileOffScreen(false);
 		}
-
+	
 		return indirectColorMap;
 	};
-
+	
 	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
-
+	
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
 	{
@@ -200,11 +198,11 @@ void Scene::Render()
 		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
 			dynamic_cast<UICamera*>(*iter)->Render(_dx);
 	}
-
+	
 	const auto& rps = _reflectionManager->GetReflectionProbeVector();
 	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
 		(*iter)->Render(_dx, this, _prevIntegrateBRDFMap);
-
+	
 	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
 	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
 	
@@ -315,6 +313,21 @@ void Scene::ActiveSkyBox(const std::string& materialName, const std::string& cub
 	skyBox->Initialize(materialName, cubeMapFilePath);
 
 	_sky = skyBox;
+	_ableDeallocSky = true;
+}
+
+void Scene::ActiveAtmosphericScattering(const Rendering::Light::DirectionalLight* directionalLight)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	AtmosphericScattering* sky = new AtmosphericScattering;
+	sky->Initialize(_dx);
+
+	uint dlIndex = _lightManager->FetchLightIndexInEachLights(directionalLight) & 0xffff;
+	sky->GetMaterial()->ChangeDirectionalLightIndex(dlIndex);
+
+	_sky = sky;
 	_ableDeallocSky = true;
 }
 

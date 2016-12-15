@@ -17,26 +17,10 @@ namespace Rendering
 		class SkyForm
 		{
 		public:
-			enum class Type
-			{
-				Unknown,
-				Box,
-				Dome
-			};
-
-			struct SkyMapInfoCBData
-			{
-				float	maxMipCount;
-				uint	isSkyLightOn;
-				uint	isDynamicSkyLight;
-				float	blendFraction;
-			};
+			enum class Type { Common, Atmospheric };
 
 		private:
 			Geometry::MeshFilter*		_meshFilter;
-			Buffer::ConstBuffer*		_skyMapInfoCB;
-
-			SkyMapInfoCBData			_prevCBData;
 
 		protected:
 			float						_maxMipCount;
@@ -54,18 +38,22 @@ namespace Rendering
 			void _Render(const Device::DirectX* dx, const Material* material, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv);
 
 		public:
-			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer) = 0;
-			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe, const Texture::TextureCube* renderTarget, const Texture::DepthBufferCube* opaqueDepthBuffer) = 0;
+			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera,
+				const Texture::RenderTexture* out, const Texture::DepthBuffer* depthBuffer,
+				const Manager::LightManager* lightMgr) = 0;
+			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe,
+				const Texture::TextureCube* out, const Texture::DepthBufferCube* depthBuffer,
+				const Manager::LightManager* lightMgr) = 0;
 
 			virtual void Destroy();
 
-			void UpdateConstBuffer(const Device::DirectX* dx);
+		protected:
+			GET_ACCESSOR(MeshFilter,			const Geometry::MeshFilter*,	_meshFilter);
 
 		public:
-			GET_SET_ACCESSOR(BlendFraction,		float,					_blendFraction);
-			GET_SET_ACCESSOR(IsSkyOn,			bool,					_isSkyLightOn);
-			GET_ACCESSOR(SkyMapInfoConstBuffer,	Buffer::ConstBuffer*,	_skyMapInfoCB);
-			GET_ACCESSOR(Type,					Type,					_type);
+			GET_SET_ACCESSOR(BlendFraction,		float,							_blendFraction);
+			GET_SET_ACCESSOR(IsSkyOn,			bool,							_isSkyLightOn);
+			GET_ACCESSOR(Type,					Type,							_type);
 		};
 	}
 }
