@@ -144,9 +144,9 @@ float InvertProjDepthToView(float depth)
 }
 
 
-float LinearizeDepth(float depth, float camFar)
+float LinearizeDepth(float depth, float camFar) // ?????
 {
-	return InvertProjDepthToView(depth) / camFar;
+	return 0.0f;
 }
 
 uint GetShadowIndex(uint lightOptionalParamIndex)
