@@ -68,7 +68,8 @@ namespace Rendering
 				void Initialize(const Device::DirectX* dx, bool useGS);
 				virtual void Destroy();
 
-				void UpdateParam(const Param& param);
+				void UpdateParam(float rayleigh, float turbidity, float luminance, float mieCoefficient, float mieDirectionalG, uint dlIndex = -1);
+				void ChangeDirectionalLightIndex(ushort dlIndex);
 				void UpdateTransform(const Camera::CameraForm* camera);
 
 				GET_ACCESSOR(Param, const Param&,	_prevParam);
@@ -101,10 +102,8 @@ namespace Rendering
 		public:
 			inline void UpdateTransform(const Camera::CameraForm* camera)
 			{ if(camera && _material) _material->UpdateTransform(camera); }
-			inline void UpdateParam(const Material::Param& param)
-			{ _material->UpdateParam(param); }
 
-			GET_ACCESSOR(Material, const Material*, _material);
+			GET_ACCESSOR(Material, Material*, _material);
 		};
 	}
 }

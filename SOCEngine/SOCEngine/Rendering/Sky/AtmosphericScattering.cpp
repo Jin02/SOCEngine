@@ -44,15 +44,7 @@ void AtmosphericScattering::Material::Initialize(const Device::DirectX* dx, bool
 	{
 		_paramCB = new ConstBuffer;
 		_paramCB->Initialize(sizeof(Param));
-
-		Param param;
-		param.dlIndex = 0;
-		param.luminance = Math::Common::FloatToHalf(1.0f);
-		param.mieCoefficient = 0.005f;
-		param.mieDirectionalG = 0.8f;
-		param.rayleigh = Math::Common::FloatToHalf(2.0f);
-		param.turbidity = Math::Common::FloatToHalf(10.0f);
-		UpdateParam(param);
+		UpdateParam(2.0f, 10.0f, 1.0f, 0.005f, 0.8f);
 
 		_ssTransformCB = new ConstBuffer;
 		_ssTransformCB->Initialize(sizeof(SSTransform));
@@ -110,18 +102,40 @@ void AtmosphericScattering::Material::UpdateTransform(const CameraForm* camera)
 	_ssTransformCB->UpdateSubResource(dx->GetContext(), &ssTransform);
 }
 
-void AtmosphericScattering::Material::UpdateParam(const Param& param)
+void AtmosphericScattering::Material::UpdateParam(float rayleigh, float turbidity, float luminance, float mieCoefficient, float mieDirectionalG, uint dlIndex)
 {
+	Param param;
+	{
+		param.dlIndex			= dlIndex == -1 ? _prevParam.dlIndex : dlIndex;
+		param.luminance			= Math::Common::FloatToHalf(luminance);
+		param.mieCoefficient	= mieCoefficient;
+		param.mieDirectionalG	= mieDirectionalG;
+		param.rayleigh			= Math::Common::FloatToHalf(rayleigh);
+		param.turbidity			= Math::Common::FloatToHalf(turbidity);
+	}
+
 	if(param == _prevParam)
 		return;
+
 	_prevParam = param;
 
 	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	_paramCB->UpdateSubResource(dx->GetContext(), &param);
 }
 
+void AtmosphericScattering::Material::ChangeDirectionalLightIndex(ushort dlIndex)
+{
+	Param param = _prevParam;
+	param.dlIndex = dlIndex;
 
+	if(param == _prevParam)
+		return;
 
+	_prevParam = param;
+
+	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
+	_paramCB->UpdateSubResource(dx->GetContext(), &param);
+}
 
 
 
