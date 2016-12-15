@@ -1,5 +1,3 @@
-//EMPTY_META_DATA
-
 #include "TBDRInput.h"
 #include "CommonConstBuffer.h"
 #include "ShaderCommon.h"
@@ -14,29 +12,34 @@ cbuffer SkyScatteringParam : register(b1)
 	float ssParam_mieDirectionalG;
 };
 
+cbuffer WorldMat : register(b3)
+{
+	matrix ssParam_worldMat;
+};
+
 float GetRayleigh()
 {
-	return 2.0f;//f16tof32(ssParam_rayleighWithTurbidity & 0xffff);
+	return f16tof32(ssParam_rayleighWithTurbidity & 0xffff);
 }
 float GetTurbidity()
 {
-	return 10.0f;//f16tof32(ssParam_rayleighWithTurbidity >> 16);
+	return f16tof32(ssParam_rayleighWithTurbidity >> 16);
 }
 uint GetDirectionalLightIndex()
 {
-	return 0;//ssParam_directionalLightIndexWithLuminance & 0xffff;
+	return ssParam_directionalLightIndexWithLuminance & 0xffff;
 }
 float GetLuminance()
 {
-	return 1.0f;//f16tof32(ssParam_directionalLightIndexWithLuminance >> 16);
+	return f16tof32(ssParam_directionalLightIndexWithLuminance >> 16);
 }
 float GetMieCoefficient()
 {
-	return 0.005f;//ssParam_mieCoefficient;
+	return ssParam_mieCoefficient;
 }
 float GetMieDirectionalG()
 {
-	return 0.8f;//ssParam_mieDirectionalG;
+	return ssParam_mieDirectionalG;
 }
 
 
@@ -93,7 +96,7 @@ struct SS_PS_INPUT
 SS_PS_INPUT SkyScattering_InFullScreen_VS(VS_INPUT input)
 {
 	SS_PS_INPUT ps = (SS_PS_INPUT)0;
-	float4 worldPos = mul(float4(input.position, 1.0f), transform_world);
+	float4 worldPos = mul(float4(input.position, 1.0f), ssParam_worldMat);
 
 	ps.position = mul(worldPos, camera_viewProjMat);
 	ps.worldPos = worldPos.xyz / worldPos.w;

@@ -155,6 +155,7 @@ void Scene::RenderPreview()
 		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
 
 	_postProcessingSystem->UpdateGlobalParam(_dx);
+	_skyScattering->UpdateWorldMat(mainCam);
 }
 
 void Scene::Render()

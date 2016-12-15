@@ -1,9 +1,10 @@
 #pragma once
 
-#include "FullScreen.h"
 #include "GaussianBlur.h"
 #include "MeshCamera.h"
 #include "LightManager.h"
+#include "MeshFilter.h"
+#include "Matrix.h"
 
 namespace Rendering
 {
@@ -36,13 +37,24 @@ namespace Rendering
 							(dlIndexWithLuminance == a.dlIndexWithLuminance);
 				}
 			};
+			struct SSTransform
+			{
+				Math::Matrix worldMat;
+				Math::Matrix worldViewProjMat;
+			};
+
+		private:
+			Math::Matrix					_prevWorldMat;
+			Param							_prevParam;
 
 		private:
 			Shader::VertexShader*			_vs;
 			Shader::PixelShader*			_ps;
 
-			Param							_prevParam;
+			Geometry::MeshFilter*			_meshFilter;
+
 			Buffer::ConstBuffer*			_paramCB;
+			Buffer::ConstBuffer*			_worldMatCB;
 
 		public:
 			SkyScattering();
@@ -51,6 +63,7 @@ namespace Rendering
 		public:
 			void Initialize();
 			void UpdateParam(const Param& param);
+			void UpdateWorldMat(const Camera::CameraForm* mainCam);
 			void Render(const Device::DirectX* dx, const Texture::RenderTexture* out, const Camera::MeshCamera* mainCam, const Manager::LightManager* lightMgr);
 			void Destroy();
 
