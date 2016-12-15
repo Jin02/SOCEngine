@@ -156,7 +156,7 @@ uint GetLightShaftIndex(uint pl_dl_lightOptionalParamIndex)
 
 float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
 {
-	bool isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
+	uint isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
 	return float( 1.0f - 2.0f * float(isMinus) );
 }
 

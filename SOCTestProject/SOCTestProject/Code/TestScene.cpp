@@ -120,6 +120,8 @@ void TestScene::OnInitialize()
 	dl->SetIntensity(20.0f);
 //	dl->ActiveShadow(true);
 
+	ActiveAtmosphericScattering(dl);
+
 #elif 0 //IBL Test
 	// SkyBox
 	ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
@@ -220,7 +222,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		//float us = pl->GetShadow()->GetUnderScanSize();
 		//pl->GetShadow()->SetUnderScanSize(us + scale);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
+		control->UpdateEulerAngles(euler + Vector3(0.05f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
@@ -228,21 +230,21 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		//float us = pl->GetShadow()->GetUnderScanSize();
 		//pl->GetShadow()->SetUnderScanSize(us - scale);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
+		control->UpdateEulerAngles(euler - Vector3(0.05f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
 		//PointLight* pl = _light->GetComponent<PointLight>();
 		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
+		control->UpdateEulerAngles(euler - Vector3(0.0f, 0.5f, 0.0f));
 	}
 	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
 	{
 		//PointLight* pl = _light->GetComponent<PointLight>();
 		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
+		control->UpdateEulerAngles(euler + Vector3(0.0f, 0.5f, 0.0f));
 	}
 	if(keyboard.states['M'] == Win32::Keyboard::Type::Up)
 	{
@@ -307,6 +309,14 @@ void TestScene::OnUpdate(float dt)
 	//count = count + dt * scale;
 
 	//control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
+
+	Transform* tf = _light->GetTransform();
+	Vector3 euler = tf->GetLocalEulerAngle();
+	if( (uint(euler.x) % 90) == 0)
+	{
+		dt += 1; //use for break point
+	}
+	tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.0f, 0.0f));
 }
 
 void TestScene::OnRenderPost()
