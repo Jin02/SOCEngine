@@ -305,7 +305,7 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
-    <FxCompile Include="ShaderCodes\SkyScattering.hlsl" />
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl" />
     <FxCompile Include="ShaderCodes\SSAO.hlsl" />
     <FxCompile Include="ShaderCodes\SummedAreaVSM.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

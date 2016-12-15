@@ -1409,7 +1409,7 @@
     <FxCompile Include="ShaderCodes\SSAO.hlsl">
       <Filter>ShaderCodes\PostProcessing\AO</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\SkyScattering.hlsl">
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
   </ItemGroup>
