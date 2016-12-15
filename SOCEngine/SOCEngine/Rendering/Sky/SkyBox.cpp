@@ -57,7 +57,9 @@ void SkyBox::Destroy()
 	SkyForm::Destroy();
 }
 
-void SkyBox::Render(const DirectX* dx, const CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer)
+void SkyBox::Render(const DirectX* dx, const CameraForm* camera,
+					const Texture::RenderTexture* out, const Texture::DepthBuffer* depthBuffer,
+					const Manager::LightManager* lightMgr)
 {
 	Matrix worldViewProj;
 	{
@@ -95,17 +97,19 @@ void SkyBox::Render(const DirectX* dx, const CameraForm* camera, const Texture::
 		_skyBoxMaterial->UpdateWVPMatrix(dx, worldViewProj);
 	}
 
-	SkyForm::_Render(dx, _skyBoxMaterial, renderTarget->GetRenderTargetView(), opaqueDepthBuffer->GetDepthStencilView());
+	SkyForm::_Render(dx, _skyBoxMaterial, out->GetRenderTargetView(), depthBuffer->GetDepthStencilView());
 }
 
-void SkyBox::Render(const DirectX* dx, const ReflectionProbe* probe, const TextureCube* renderTarget, const DepthBufferCube* opaqueDepthBuffer)
+void SkyBox::Render(const DirectX* dx, const ReflectionProbe* probe,
+					const TextureCube* out, const DepthBufferCube* depthBuffer,
+					const Manager::LightManager* lightMgr)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, probe->GetInfoConstBuffer());
 	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, probe->GetInfoConstBuffer());
 
-	SkyForm::_Render(dx, _skyBoxMaterialForReflectionProbe, renderTarget->GetRenderTargetView(), opaqueDepthBuffer->GetDepthStencilView());
+	SkyForm::_Render(dx, _skyBoxMaterialForReflectionProbe, out->GetRenderTargetView(), depthBuffer->GetDepthStencilView());
 
 	GeometryShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);
 	PixelShader::BindConstBuffer(context, ConstBufferBindIndex::ReflectionProbe_Info, nullptr);

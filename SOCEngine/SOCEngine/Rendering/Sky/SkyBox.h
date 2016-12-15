@@ -38,8 +38,8 @@ namespace Rendering
 			virtual void Destroy();
 
 		public:
-			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture* renderTarget, const Texture::DepthBuffer* opaqueDepthBuffer);
-			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe, const Texture::TextureCube* renderTarget, const Texture::DepthBufferCube* opaqueDepthBuffer);
+			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera, const Texture::RenderTexture* out, const Texture::DepthBuffer* depthBuffer, const Manager::LightManager* lightMgr);
+			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe, const Texture::TextureCube* out, const Texture::DepthBufferCube* depthBuffer, const Manager::LightManager* lightMgr);
 
 		public:
 			GET_ACCESSOR(SkyCubeMap, const Texture::Texture2D*, _cubeMap);
