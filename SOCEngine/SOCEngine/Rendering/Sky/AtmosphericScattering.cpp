@@ -128,7 +128,7 @@ void AtmosphericScattering::Material::UpdateParam(const Param& param)
 
 
 
-AtmosphericScattering::AtmosphericScattering() : SkyForm(SkyForm::Type::Dome), _material(nullptr)		
+AtmosphericScattering::AtmosphericScattering() : SkyForm(SkyForm::Type::Atmospheric), _material(nullptr)		
 {
 }
 

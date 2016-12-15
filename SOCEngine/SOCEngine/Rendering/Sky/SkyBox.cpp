@@ -13,7 +13,7 @@ using namespace Math;
 using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 
-SkyBox::SkyBox() : SkyForm(Type::Box), _skyBoxMaterialForReflectionProbe(nullptr), _skyBoxMaterial(nullptr), _cubeMap(nullptr)
+SkyBox::SkyBox() : SkyForm(Type::Common), _skyBoxMaterialForReflectionProbe(nullptr), _skyBoxMaterial(nullptr), _cubeMap(nullptr)
 {
 	memset(&_prevWorldViewProjMat, 0, sizeof(Math::Matrix));
 }

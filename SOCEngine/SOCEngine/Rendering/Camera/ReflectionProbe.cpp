@@ -251,7 +251,7 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 				PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());
 				
 				ID3D11ShaderResourceView* srv = nullptr;
-				ASSERT_MSG_IF(sky->GetType() == SkyForm::Type::Box, "cant support");
+				ASSERT_MSG_IF(sky->GetType() == SkyForm::Type::Common, "cant support");
 				{
 					const Texture2D* skyMap = dynamic_cast<SkyBox*>(sky)->GetSkyCubeMap();
 					if(skyMap)

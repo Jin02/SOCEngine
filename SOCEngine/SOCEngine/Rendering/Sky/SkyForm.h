@@ -17,12 +17,7 @@ namespace Rendering
 		class SkyForm
 		{
 		public:
-			enum class Type
-			{
-				Unknown,
-				Box,
-				Dome
-			};
+			enum class Type { Common, Atmospheric };
 
 			struct SkyMapInfoCBData
 			{

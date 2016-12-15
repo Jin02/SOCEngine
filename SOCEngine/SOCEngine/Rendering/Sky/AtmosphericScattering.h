@@ -103,6 +103,8 @@ namespace Rendering
 			{ if(camera && _material) _material->UpdateTransform(camera); }
 			inline void UpdateParam(const Material::Param& param)
 			{ _material->UpdateParam(param); }
+
+			GET_ACCESSOR(Material, const Material*, _material);
 		};
 	}
 }
