@@ -137,7 +137,7 @@ void Scene::RenderPreview()
 
 	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
 	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager);
+		(*iter)->CullingWithUpdateCB(_dx, _rootObjects.GetVector(), _lightManager, _postProcessingSystem->GetUseBloom());
 
 	const std::vector<ReflectionProbe*>& rps = _reflectionManager->GetReflectionProbeVector();
 	for(auto iter = rps.begin(); iter != rps.end(); ++iter)

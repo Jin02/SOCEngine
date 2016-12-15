@@ -90,7 +90,7 @@ namespace Rendering
 			void Destroy();	
 			
 		public:
-			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager) = 0;
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager, bool useHDR) = 0;
 			
 		protected:
 			void _Clone(CameraForm* newCam) const;

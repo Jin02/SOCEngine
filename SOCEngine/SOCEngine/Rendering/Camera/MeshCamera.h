@@ -48,7 +48,7 @@ namespace Rendering
 			virtual void OnDestroy();
 
 		public:
-			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager);
+			virtual void CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager, bool useHDR);
 			void Render(
 				const Device::DirectX* dx,
 				const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager,

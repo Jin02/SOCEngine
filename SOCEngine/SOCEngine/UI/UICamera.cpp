@@ -90,7 +90,7 @@ void UICamera::Render(const Device::DirectX* dx)
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 }
 
-void UICamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
+void UICamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager, bool useHDR)
 {
 	ASSERT_MSG("Not use");
 }
