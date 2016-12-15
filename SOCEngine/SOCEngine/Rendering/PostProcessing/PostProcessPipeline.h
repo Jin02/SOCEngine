@@ -51,6 +51,10 @@ namespace Rendering
 		std::array<Texture::RenderTexture*, 2>	_adaptedLuminanceMaps; //prev, curr
 		bool									_currentAdaptedLuminanceIndx;
 
+		bool									_useBloom;
+		bool									_useSSAO;
+		bool									_useDoF;
+
 	public:
 		PostProcessPipeline();
 		~PostProcessPipeline();
@@ -70,5 +74,9 @@ namespace Rendering
 
 		GET_SET_ACCESSOR(GlobalParam,	const GlobalParam&,					_globalParam);
 		SET_ACCESSOR(DeltaTime,			float,								_globalParam.dt);
+
+		GET_SET_ACCESSOR(UseBloom,		bool,								_useBloom);
+		GET_SET_ACCESSOR(UseSSAO,		bool,								_useSSAO);
+		GET_SET_ACCESSOR(UseDoF,		bool,								_useDoF);
 	};
 }

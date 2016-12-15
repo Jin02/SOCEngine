@@ -10,7 +10,8 @@ using namespace Rendering::Texture;
 PostProcessPipeline::PostProcessPipeline()
 	: _iblPass(nullptr), _backBufferMaker(nullptr), _result(nullptr), _gaussianBlur(nullptr), _tempHalfMap(nullptr), _bluredCurScene(nullptr), _dof(nullptr),
 	_currentAdaptedLuminanceIndx(0), _eyeAdaptation(nullptr), _bloomThreshold(nullptr), _hdrGlobalParamCB(nullptr), _bloomThresholdMap(nullptr),
-	_tempDownSampledMinimumSizeMap(nullptr), _bloom(nullptr), _tempMap(nullptr), _ssao(nullptr)
+	_tempDownSampledMinimumSizeMap(nullptr), _bloom(nullptr), _tempMap(nullptr), _ssao(nullptr),
+	_useBloom(false), _useSSAO(false), _useDoF(false)
 {
 	_adaptedLuminanceMaps.fill(nullptr);
 }
@@ -111,9 +112,9 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 	// Param
 	{
 		_globalParam.dt					= 0.0f;
-		_globalParam.bloomThreshold		= 0.1f;
+		_globalParam.bloomThreshold		= 0.01f;
 		_globalParam.exposureKey		= 0.1f;
-		_globalParam.exposureSpeed		= 0.01f;
+		_globalParam.exposureSpeed		= 0.4f;
 
 		{
 			DepthOfField::ParamCB param;
@@ -166,51 +167,56 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, nullptr);
 	};
 
-	PixelShader::BindTexture(context,		TextureBindIndex(0),						mainScene);
-	PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
-	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
-
-	// Eye Adaption
-	_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
-
-	// Bloom Map
+	if(_useBloom)
 	{
-		_bloomThreshold->Render(dx, _bloomThresholdMap, true);
-
-		// Blur
+		PixelShader::BindTexture(context,		TextureBindIndex(0),						mainScene);
+		PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
+		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
+	
+		// Eye Adaption
+		_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
+	
+		// Bloom Map
 		{
-			// Down Scale
+			_bloomThreshold->Render(dx, _bloomThresholdMap, true);
+	
+			// Blur
 			{
-				CopyMap(_downSampledTextures[0], _bloomThresholdMap);		// source	-> /2
-				CopyMap(_downSampledTextures[1], _downSampledTextures[0]);	// /2		-> /4
-				CopyMap(_downSampledTextures[2], _downSampledTextures[1]);	// /4		-> /8
-				CopyMap(_downSampledTextures[3], _downSampledTextures[2]);	// /8		-> /16
-			}
-
-			for(uint i=0; i<2; ++i)
-				_gaussianBlur->Render(dx, _downSampledTextures[3], _downSampledTextures[3], _tempDownSampledMinimumSizeMap);
-				
-			// Up Scale
-			{
-				CopyMap(_downSampledTextures[2],	_downSampledTextures[3]);	// /16		-> /8
-				CopyMap(_downSampledTextures[1],	_downSampledTextures[2]);	// /8		-> /4
-				CopyMap(_downSampledTextures[0],	_downSampledTextures[1]);	// /4		-> /2
-				CopyMap(_bloomThresholdMap,			_downSampledTextures[0]);	// /2		-> source
+				// Down Scale
+				{
+					CopyMap(_downSampledTextures[0], _bloomThresholdMap);		// source	-> /2
+					CopyMap(_downSampledTextures[1], _downSampledTextures[0]);	// /2		-> /4
+					CopyMap(_downSampledTextures[2], _downSampledTextures[1]);	// /4		-> /8
+					CopyMap(_downSampledTextures[3], _downSampledTextures[2]);	// /8		-> /16
+				}
+	
+				for(uint i=0; i<2; ++i)
+					_gaussianBlur->Render(dx, _downSampledTextures[3], _downSampledTextures[3], _tempDownSampledMinimumSizeMap);
+					
+				// Up Scale
+				{
+					CopyMap(_downSampledTextures[2],	_downSampledTextures[3]);	// /16		-> /8
+					CopyMap(_downSampledTextures[1],	_downSampledTextures[2]);	// /8		-> /4
+					CopyMap(_downSampledTextures[0],	_downSampledTextures[1]);	// /4		-> /2
+					CopyMap(_bloomThresholdMap,			_downSampledTextures[0]);	// /2		-> source
+				}
 			}
 		}
+	
+		PixelShader::BindTexture(context,		TextureBindIndex(0),						nullptr);
+		PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
+		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
 	}
 
-	PixelShader::BindTexture(context,		TextureBindIndex(0),						nullptr);
-	PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
-	PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
-	PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
+	if(_useSSAO)
+	{
+		_ssao->Render(dx, back, front, mainMeshCamera);
+		std::swap(front, back);
+	}
 
-	// SSAO
-	_ssao->Render(dx, back, front, mainMeshCamera);
-	std::swap(front, back);
-
-	// Depth Of Field
+	if(_useDoF)
 	{
 		// Down Scale
 		CopyMap(_downSampledTextures[0], front);
@@ -222,11 +228,11 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		CopyMap(_bluredCurScene, _downSampledTextures[0]);
 
 		_dof->Render(dx, back, front, mainMeshCamera, _bluredCurScene);
+		std::swap(front, back);
 	}
 
-	std::swap(front, back);
-
 	// Bloom Merger, Tone Mapping, Gamma Correction
+	if(_useBloom)
 	{
 		PixelShader::BindTexture(context,		TextureBindIndex(0),							front);
 		PixelShader::BindTexture(context,		TextureBindIndex(1),							_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
@@ -243,9 +249,9 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,		nullptr);
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,			nullptr);
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,					nullptr);
-	}
 
-	std::swap(front, back);
+		std::swap(front, back);
+	}
 
 	// Restore Viewport
 	{
@@ -297,4 +303,8 @@ void PostProcessPipeline::Destroy()
 	_eyeAdaptation->Destroy();
 	_bloomThreshold->Destroy();
 	_hdrGlobalParamCB->Destroy();
+
+	_useBloom = false;
+	_useSSAO = false;
+	_useDoF = false;
 }
