@@ -949,7 +949,7 @@
     <ClInclude Include="Rendering\PostProcessing\SSAO.h">
       <Filter>Rendering\PostProcessing\SSAO</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyScattering.h">
+    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
       <Filter>Rendering\Sky\Scattering</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1287,7 +1287,7 @@
     <ClCompile Include="Rendering\PostProcessing\SSAO.cpp">
       <Filter>Rendering\PostProcessing\SSAO</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyScattering.cpp">
+    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp">
       <Filter>Rendering\Sky\Scattering</Filter>
     </ClCompile>
   </ItemGroup>
