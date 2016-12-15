@@ -12,9 +12,10 @@ cbuffer SkyScatteringParam : register(b1)
 	float ssParam_mieDirectionalG;
 };
 
-cbuffer WorldMat : register(b3)
+cbuffer SSTransform : register(b3)
 {
 	matrix ssParam_worldMat;
+	matrix ssParam_worldViewProjMat;
 };
 
 float GetRayleigh()
@@ -93,21 +94,21 @@ struct SS_PS_INPUT
 	float sunFade				: SUN_FADE;
 };
 
-SS_PS_INPUT SkyScattering_InFullScreen_VS(VS_INPUT input)
+SS_PS_INPUT VS(VS_INPUT input)
 {
 	SS_PS_INPUT ps = (SS_PS_INPUT)0;
 	float4 worldPos = mul(float4(input.position, 1.0f), ssParam_worldMat);
 
-	ps.position = mul(worldPos, camera_viewProjMat);
+	ps.position = mul(float4(input.position, 1.0f), ssParam_worldViewProjMat);
 	ps.worldPos = worldPos.xyz / worldPos.w;
 	
 	float3 lightDir	= GetLightDir();
 	float camFar	= GetCameraFar();
 
 	float3 sunWorldPos = float3(0.0f, 0.0f, 0.0f);
-	sunWorldPos.x = 0.0f - (lightDir.x * camFar);
-	sunWorldPos.y = 0.0f - (lightDir.y * camFar);
-	sunWorldPos.z = 0.0f - (lightDir.z * camFar);
+	sunWorldPos.x = camera_worldPos.x - (lightDir.x * camFar);
+	sunWorldPos.y = camera_worldPos.y - (lightDir.y * camFar);
+	sunWorldPos.z = camera_worldPos.z - (lightDir.z * camFar);
 
 	float intensity = ComputeSunItensity( dot(lightDir, float3(0.0f, 1.0f, 0.0f)) );
 	float fade		= 1.0f - saturate( 1.0f - exp(sunWorldPos.y / camFar ) );
@@ -128,7 +129,7 @@ float hgPhase(float cosTheta, float g)
 	return (1.0f / (4.0f * PI)) * ((1.0f - pow(g, 2.0f)) / pow(1.0f - 2.0f * g * cosTheta + pow(g, 2.0f), 1.5f));
 }
 
-float4 SkyScattering_InFullScreen_PS(SS_PS_INPUT input) : SV_Target
+float4 PS(SS_PS_INPUT input) : SV_Target
 {		
 	float rayleighCoefficient = GetRayleigh() - (1.0f * (1.0f - input.sunFade));
 	// wavelength of used primaries, according to preetham
