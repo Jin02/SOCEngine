@@ -26,6 +26,8 @@ namespace Rendering
 		private:
 			Structure::VectorHashMap<address, Lights>										_lights;
 			Structure::VectorHashMap<address, Light::DirectionalLight*>						_directionalLights; // using for compute frustum
+			Structure::VectorHashMap<address, Light::PointLight*>							_pointLights;
+			Structure::VectorHashMap<address, Light::SpotLight*>							_spotLights;
 
 			Structure::VectorHashMap<address, Light::LightForm::LightTransformBuffer>		_pointLightTransformBuffer;
 			Buffer::ShaderResourceBuffer*													_pointLightTransformSRBuffer;
