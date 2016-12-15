@@ -15,7 +15,7 @@ using namespace Resource;
 using namespace Math;
 
 SkyForm::SkyForm(Type type) : _meshFilter(nullptr), _skyMapInfoCB(nullptr),
-	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(7.0f), _type(type)
+	_isSkyLightOn(true), _isDynamicSkyLight(false), _blendFraction(0.0f), _maxMipCount(10.0f), _type(type)
 {
 }
 
@@ -36,7 +36,7 @@ void SkyForm::Initialize()
 	};
 
 	BasicGeometryGenerator gen;
-	gen.CreateSphere(CreateMeshContent, 1.0f, 30, 30, 0);
+	gen.CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
 
 	_skyMapInfoCB = new ConstBuffer;
 	_skyMapInfoCB->Initialize(sizeof(SkyMapInfoCBData));
@@ -48,7 +48,7 @@ void SkyForm::Destroy()
 	SAFE_DELETE(_skyMapInfoCB);
 }
 
-void SkyForm::UpdateConstBuffer(const Device::DirectX* dx)
+void SkyForm::UpdateParam(const Device::DirectX* dx)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
