@@ -143,9 +143,6 @@ void Scene::RenderPreview()
 	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
 		(*iter)->UpdateReflectionProbeCB(_dx, _lightManager->GetPackedLightCount());
 
-	if(_sky)
-		_sky->UpdateParam(_dx);
-
 	const CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	if(mainCam)
 		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
@@ -327,9 +324,8 @@ void Scene::ActiveAtmosphericScattering(const Rendering::Light::DirectionalLight
 	AtmosphericScattering* sky = new AtmosphericScattering;
 	sky->Initialize(_dx);
 
-	AtmosphericScattering::Material::Param param = sky->GetMaterial()->GetParam();
-	param.dlIndex = _lightManager->FetchLightIndexInEachLights(directionalLight) & 0xffff;
-	sky->UpdateParam(param);
+	uint dlIndex = _lightManager->FetchLightIndexInEachLights(directionalLight) & 0xffff;
+	sky->GetMaterial()->ChangeDirectionalLightIndex(dlIndex);
 
 	_sky = sky;
 	_ableDeallocSky = true;
