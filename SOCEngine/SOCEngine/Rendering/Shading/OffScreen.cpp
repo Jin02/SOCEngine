@@ -45,11 +45,11 @@ void OffScreen::Render(const DirectX* dx,
 					   const RenderTexture* outResultRT,
 					   const RenderTexture* indirectColorMap)
 {
-	if(_useIndirectColorMap)
-	{
-		ID3D11DeviceContext* context = dx->GetContext();
-		PixelShader::BindTexture(context, TextureBindIndex::OffScreen_InDirectLightBuffer, indirectColorMap);
-	}
+	ID3D11DeviceContext* context = dx->GetContext();
 
+	if(_useIndirectColorMap)
+		PixelShader::BindTexture(context, TextureBindIndex::OffScreen_InDirectLightBuffer, indirectColorMap);
+
+	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 	FullScreen::Render(dx, outResultRT);
 }

@@ -91,7 +91,6 @@ void FullScreen::Render(const DirectX* dx, const RenderTexture* outResultRT,
 	_pixelShader->BindShaderToContext(context);
 	_pixelShader->BindResourcesToContext(context, &_inputConstBuffers, &_inputTextures, &_inputSRBuffers);
 
-	PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	context->RSSetState( nullptr );
 
