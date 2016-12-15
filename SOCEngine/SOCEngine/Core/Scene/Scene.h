@@ -23,7 +23,7 @@
 #include "ReflectionProbeManager.h"
 
 #include "LightShaftManager.h"
-#include "SkyScattering.h"
+#include "AtmosphericScattering.h"
 
 namespace Core
 {
@@ -56,8 +56,6 @@ namespace Core
 
 		Rendering::PostProcessPipeline*						_postProcessingSystem;
 		Rendering::Manager::LightShaftManager*				_lightShaftMgr;
-
-		Rendering::Sky::SkyScattering*						_skyScattering;
 
 	protected:
 		Rendering::GI::VXGI*								_vxgi;
@@ -92,6 +90,8 @@ namespace Core
 		void ActivateGI(bool activate, uint dimension, float giSize);
 
 		void ActiveSkyBox(const std::string& materialName, const std::string& cubeMapFilePath);
+		void ActiveAtmosphericScattering(const Rendering::Light::DirectionalLight* directionalLight);
+
 		void ActiveCustomSky(Rendering::Sky::SkyForm* sky);
 		void DeactivateSky();
 

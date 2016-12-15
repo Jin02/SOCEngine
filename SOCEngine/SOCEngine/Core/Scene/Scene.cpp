@@ -27,7 +27,7 @@ Scene::Scene(void) :
 	_shadowRenderer(nullptr), _vxgi(nullptr),
 	_sky(nullptr), _ableDeallocSky(false), _backBuffer(nullptr),
 	_postProcessingSystem(nullptr), _reflectionManager(nullptr), _prevIntegrateBRDFMap(nullptr),
-	_lightManager(nullptr), _materialMgr(nullptr), _lightShaftMgr(nullptr), _skyScattering(nullptr)
+	_lightManager(nullptr), _materialMgr(nullptr), _lightShaftMgr(nullptr)
 {
 	_state = State::Init;
 }
@@ -45,7 +45,6 @@ Scene::~Scene(void)
 	SAFE_DELETE(_postProcessingSystem);
 	SAFE_DELETE(_reflectionManager);
 	SAFE_DELETE(_lightShaftMgr);
-	SAFE_DELETE(_skyScattering);
 }
 
 void Scene::Initialize()
@@ -87,9 +86,6 @@ void Scene::Initialize()
 
 	_lightShaftMgr = new LightShaftManager;
 	_lightShaftMgr->Initialize();
-
-	_skyScattering = new SkyScattering;
-	_skyScattering->Initialize();
 
 	NextState();
 	OnInitialize();
@@ -148,73 +144,71 @@ void Scene::RenderPreview()
 		(*iter)->UpdateReflectionProbeCB(_dx, _lightManager->GetPackedLightCount());
 
 	if(_sky)
-		_sky->UpdateConstBuffer(_dx);
+		_sky->UpdateParam(_dx);
 
 	const CameraForm* mainCam = _cameraMgr->GetMainCamera();
 	if(mainCam)
 		_lightShaftMgr->UpdateSRBuffer(_dx, mainCam->GetViewProjectionMatrix());
 
 	_postProcessingSystem->UpdateGlobalParam(_dx);
-	_skyScattering->UpdateWorldMat(mainCam);
+//	_skyScattering->UpdateTransform(mainCam);
 }
 
 void Scene::Render()
 {
 	_dx->ClearDeviceContext();
-	//const RenderManager* renderMgr = _renderMgr;
-	//_shadowRenderer->RenderShadowMap(_dx, renderMgr);
-	//
-	//_dx->ClearDeviceContext();
-	//
-	//auto GIPass = [&](MeshCamera* meshCam) -> const RenderTexture*
-	//{
-	//	bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
-	//	const RenderTexture* indirectColorMap = nullptr;
-	//
-	//	if(_vxgi && isMainCam)
-	//	{
-	//		if(meshCam->GetUseIndirectColorMap() == false)
-	//			meshCam->ReCompileOffScreen(true);
-	//
-	//		_vxgi->Run(_dx, meshCam, this);
-	//		indirectColorMap = _vxgi->GetIndirectColorMap();
-	//	}
-	//	else
-	//	{
-	//		if(meshCam->GetUseIndirectColorMap())
-	//			meshCam->ReCompileOffScreen(false);
-	//	}
-	//
-	//	return indirectColorMap;
-	//};
-	//
-	//auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
-	//
-	//const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
-	//for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
-	//{
-	//	if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
-	//	{
-	//		auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
-	//		MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
-	//		meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
-	//						_shadowRenderer->GetNeverUseVSM(),
-	//						_sky,
-	//						_vxgi ? GIPass : giPassNull);
-	//	}
-	//	else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
-	//		dynamic_cast<UICamera*>(*iter)->Render(_dx);
-	//}
-	//
-	//const auto& rps = _reflectionManager->GetReflectionProbeVector();
-	//for(auto iter = rps.begin(); iter != rps.end(); ++iter)
-	//	(*iter)->Render(_dx, this, _prevIntegrateBRDFMap);
-	//
-	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
-	//_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
+	const RenderManager* renderMgr = _renderMgr;
+	_shadowRenderer->RenderShadowMap(_dx, renderMgr);
 	
-	_skyScattering->Render(_dx, _backBuffer, mainCam, _lightManager);
-
+	_dx->ClearDeviceContext();
+	
+	auto GIPass = [&](MeshCamera* meshCam) -> const RenderTexture*
+	{
+		bool isMainCam = _cameraMgr->GetMainCamera() == meshCam;
+		const RenderTexture* indirectColorMap = nullptr;
+	
+		if(_vxgi && isMainCam)
+		{
+			if(meshCam->GetUseIndirectColorMap() == false)
+				meshCam->ReCompileOffScreen(true);
+	
+			_vxgi->Run(_dx, meshCam, this);
+			indirectColorMap = _vxgi->GetIndirectColorMap();
+		}
+		else
+		{
+			if(meshCam->GetUseIndirectColorMap())
+				meshCam->ReCompileOffScreen(false);
+		}
+	
+		return indirectColorMap;
+	};
+	
+	auto giPassNull = std::function<const RenderTexture*(MeshCamera*)>(nullptr);
+	
+	const std::vector<CameraForm*>& cameras = _cameraMgr->GetCameraVector();
+	for(auto iter = cameras.begin(); iter != cameras.end(); ++iter)
+	{
+		if( (*iter)->GetUsage() == CameraForm::Usage::MeshRender )
+		{
+			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
+			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
+			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
+							_shadowRenderer->GetNeverUseVSM(),
+							_sky,
+							_vxgi ? GIPass : giPassNull);
+		}
+		else if( (*iter)->GetUsage() == CameraForm::Usage::UI )
+			dynamic_cast<UICamera*>(*iter)->Render(_dx);
+	}
+	
+	const auto& rps = _reflectionManager->GetReflectionProbeVector();
+	for(auto iter = rps.begin(); iter != rps.end(); ++iter)
+		(*iter)->Render(_dx, this, _prevIntegrateBRDFMap);
+	
+	MeshCamera* mainCam = dynamic_cast<MeshCamera*>(_cameraMgr->GetMainCamera());
+	_postProcessingSystem->Render(_dx, _backBuffer, mainCam, _sky);
+	
 	_dx->GetSwapChain()->Present(0, 0);
 	OnRenderPost();
 }
@@ -240,7 +234,6 @@ void Scene::Destroy()
 
 	DeactivateSky();
 	_lightShaftMgr->Destroy();
-	_skyScattering->Destroy();
 }
 
 void Scene::NextState()
@@ -323,6 +316,18 @@ void Scene::ActiveSkyBox(const std::string& materialName, const std::string& cub
 	skyBox->Initialize(materialName, cubeMapFilePath);
 
 	_sky = skyBox;
+	_ableDeallocSky = true;
+}
+
+void Scene::ActiveAtmosphericScattering(const Rendering::Light::DirectionalLight* directionalLight)
+{
+	if (_ableDeallocSky)
+		SAFE_DELETE(_sky);
+
+	AtmosphericScattering* sky = new AtmosphericScattering;
+	sky->Initialize(_dx);
+
+	_sky = sky;
 	_ableDeallocSky = true;
 }
 
