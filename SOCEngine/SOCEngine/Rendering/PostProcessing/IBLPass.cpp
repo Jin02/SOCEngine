@@ -57,7 +57,6 @@ void IBLPass::Render(const Device::DirectX* dx, const RenderTexture* outResultRT
 			ASSERT_MSG("cant support");
 
 		PixelShader::BindTexture(context, TextureBindIndex::AmbientCubeMap, cubeMap);
-		PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, sky->GetSkyMapInfoConstBuffer());
 	}
 
 	PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());

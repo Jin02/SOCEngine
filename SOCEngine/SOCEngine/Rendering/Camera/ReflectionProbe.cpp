@@ -247,7 +247,6 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			SkyForm* sky = scene->GetSky();
 			if(sky)
 			{
-				PixelShader::BindConstBuffer(context, ConstBufferBindIndex::SkyMapInfoParam, sky->GetSkyMapInfoConstBuffer());
 				PixelShader::BindSamplerState(context, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx->GetSamplerStateLinear());
 				
 				ID3D11ShaderResourceView* srv = nullptr;

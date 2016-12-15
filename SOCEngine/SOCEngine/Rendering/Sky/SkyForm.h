@@ -19,19 +19,8 @@ namespace Rendering
 		public:
 			enum class Type { Common, Atmospheric };
 
-			struct SkyMapInfoCBData
-			{
-				float	maxMipCount;
-				uint	isSkyLightOn;
-				uint	isDynamicSkyLight;
-				float	blendFraction;
-			};
-
 		private:
-			Buffer::ConstBuffer*		_skyMapInfoCB;
 			Geometry::MeshFilter*		_meshFilter;
-
-			SkyMapInfoCBData			_prevCBData;
 
 		protected:
 			float						_maxMipCount;
@@ -58,15 +47,12 @@ namespace Rendering
 
 			virtual void Destroy();
 
-			void UpdateParam(const Device::DirectX* dx);
-
 		protected:
 			GET_ACCESSOR(MeshFilter,			const Geometry::MeshFilter*,	_meshFilter);
 
 		public:
 			GET_SET_ACCESSOR(BlendFraction,		float,							_blendFraction);
 			GET_SET_ACCESSOR(IsSkyOn,			bool,							_isSkyLightOn);
-			GET_ACCESSOR(SkyMapInfoConstBuffer,	Buffer::ConstBuffer*,			_skyMapInfoCB);
 			GET_ACCESSOR(Type,					Type,							_type);
 		};
 	}
