@@ -9,7 +9,7 @@ float3 LinearToneMapping(float3 color)
 	float exposure = 1.0f;
 
 	color = saturate(exposure * color);
-	color = ToGamma(color, tbrParam_gamma);
+	color = ToGamma(color, GetGamma());
 
 	return color;
 }
@@ -19,7 +19,7 @@ float3 SimpleReinhardToneMapping(float3 color)
 	float exposure = 1.5f;
 
 	color *= exposure/(1.0f + color / exposure);
-	color = ToGamma(color, tbrParam_gamma);
+	color = ToGamma(color, GetGamma());
 
 	return color;
 }
@@ -30,7 +30,7 @@ float3 LumianceBasedReinhardToneMapping(float3 color)
 	float toneMappedLuma	= luma / (1.0f + luma);
 
 	color *= toneMappedLuma / luma;
-	color = ToGamma(color, tbrParam_gamma);
+	color = ToGamma(color, GetGamma());
 
 	return color;
 }
@@ -42,7 +42,7 @@ float3 whitePreservingLumaBasedReinhardToneMapping(float3 color)
 	float toneMappedLuma	= luma * (1.0f + luma / (white*white)) / (1.0f + luma);
 
 	color *= toneMappedLuma / luma;	
-	color = ToGamma(color, tbrParam_gamma);
+	color = ToGamma(color, GetGamma());
 
 	return color;
 }
@@ -50,7 +50,7 @@ float3 whitePreservingLumaBasedReinhardToneMapping(float3 color)
 float3 RomBinDaHouseToneMapping(float3 color)
 {
     color = exp( -1.0f / ( 2.72f * color + 0.15f) );
-	return ToGamma(color, tbrParam_gamma);
+	return ToGamma(color, GetGamma());
 }
 
 float3 filmicToneMapping(float3 color)
@@ -77,7 +77,7 @@ float3 Uncharted2ToneMapping(float3 color)
 	float white = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
 	color /= white;
 
-	return ToGamma(color, tbrParam_gamma);
+	return ToGamma(color, GetGamma());
 }
 
 

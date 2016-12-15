@@ -192,7 +192,7 @@ float4 PS(SS_PS_INPUT input) : SV_Target
 
 		float3 texColor = (Lin + L0) * 0.04f + float3(0.0f, 0.0003f, 0.00075f);
 
-		float3 curr				= ToLinear(Uncharted2ToneMapping((log2(2.0f / pow(GetLuminance(), 4.0f))) * texColor), tbrParam_gamma);
+		float3 curr				= ToLinear(Uncharted2ToneMapping((log2(2.0f / pow(GetLuminance(), 4.0f))) * texColor), GetGamma());
 		const float whiteScale	= 1.0748724675633854f;
 		float3 color			= curr * whiteScale;
 
@@ -200,5 +200,6 @@ float4 PS(SS_PS_INPUT input) : SV_Target
 		result.rgb = pow(color, coff);
 	}
 
-	return float4(ToGamma(result.rgb, tbrParam_gamma), 1.0f);
+	float gamma = GetUseHDR() ? 1.0f : GetGamma();
+	return float4(ToGamma(result.rgb, gamma), 1.0f);
 }
