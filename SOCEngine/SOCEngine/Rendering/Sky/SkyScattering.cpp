@@ -6,36 +6,38 @@
 using namespace Device;
 using namespace Core;
 using namespace Resource;
-using namespace Rendering;
 using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Sky;
+using namespace Rendering::Camera;
 using namespace Math;
 
-SkyScattering::SkyScattering()
-	: _vs(nullptr), _ps(nullptr), _paramCB(nullptr), _meshFilter(nullptr),
-	_worldMatCB(nullptr)
+SkyScattering::Material::Material(const std::string& name) : Rendering::Material(name, Type::Sky),
+		_paramCB(nullptr), _ssTransformCB(nullptr)
 {
+
 }
 
-SkyScattering::~SkyScattering()
+SkyScattering::Material::~Material()
 {
-	Destroy();	
+	Destroy();
 
-	SAFE_DELETE(_meshFilter);
-	SAFE_DELETE(_worldMatCB);
 	SAFE_DELETE(_paramCB);
+	SAFE_DELETE(_ssTransformCB);
 }
 
-void SkyScattering::Initialize()
+
+void SkyScattering::Material::Initialize(const Device::DirectX* dx, bool useGS)
 {
 	// Load Shader
 	{
 		auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
 		Factory::EngineFactory factory(shaderManager);
-		factory.LoadShader("SkyScattering", "SkyScattering_InFullScreen_VS", "SkyScattering_InFullScreen_PS", "", nullptr, &_vs, &_ps, nullptr);
+		factory.LoadShader("SkyScattering", "VS", "PS", useGS ? "GS" : "", nullptr,
+							&_customShaders.shaderGroup.vs, &_customShaders.shaderGroup.ps,
+							&_customShaders.shaderGroup.gs);
 	}
 
 	// Const Buffer
@@ -52,78 +54,150 @@ void SkyScattering::Initialize()
 		param.turbidity = Math::Common::FloatToHalf(10.0f);
 		UpdateParam(param);
 
-		_worldMatCB = new ConstBuffer;
-		_worldMatCB->Initialize(sizeof(Matrix));
+		_ssTransformCB = new ConstBuffer;
+		_ssTransformCB->Initialize(sizeof(SSTransform));
 	}
 
-	// Create Mesh
-	{
-		const ResourceManager* resMgr	= ResourceManager::SharedInstance();
-		BufferManager* bufferMgr		= resMgr->GetBufferManager();
-	
-		_meshFilter = new MeshFilter;
-		auto CreateMeshContent = [&](const Mesh::CreateFuncArguments& args)
-		{
-			_meshFilter->Initialize(args);
-		};
-	
-		BasicGeometryGenerator gen;
-		gen.CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
-	}
+	SetConstBufferUseBindIndex(1, _paramCB,			ShaderForm::Usage(true, useGS, false, true));
+	SetConstBufferUseBindIndex(3, _ssTransformCB,	ShaderForm::Usage(true, useGS, false, false));
 }
 
-void SkyScattering::UpdateWorldMat(const Camera::CameraForm* mainCam)
+void SkyScattering::Material::Destroy()
 {
-	Matrix world;
+	_paramCB->Destroy();
+	_ssTransformCB->Destroy();
+}
+
+void SkyScattering::Material::UpdateTransform(const CameraForm* camera)
+{
+	SSTransform ssTransform;
+	{
+		Matrix& world = ssTransform.worldMat;
+		
+		Transform* transform = camera->GetOwner()->GetTransform();
+		transform->FetchWorldMatrix(world);
 	
-	Transform* transform = mainCam->GetOwner()->GetTransform();
-	transform->FetchWorldMatrix(world);
+		Matrix view;
+		camera->GetViewMatrix(view, world);
 	
-	if(_prevWorldMat == world)
+		Vector3 camWorldPos(world._41, world._42, world._43);
+	
+		Matrix::Identity(world);
+		world._41 = camWorldPos.x;
+		world._42 = camWorldPos.y;
+		world._43 = camWorldPos.z;
+	
+		world._11 = camera->GetFar();
+		world._22 = camera->GetFar();
+		world._33 = camera->GetFar();
+		
+		Matrix proj;
+		camera->GetProjectionMatrix(proj, true);
+	
+		ssTransform.worldViewProjMat = world * view * proj;
+	}
+
+	if(_prevSSTransform == ssTransform)
 		return;
 
 	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 	
-	_prevWorldMat = world;
+	_prevSSTransform = ssTransform;
 	
-	Matrix::Transpose(world, world);
-	_worldMatCB->UpdateSubResource(dx->GetContext(), &world);
+	Matrix::Transpose(ssTransform.worldMat, ssTransform.worldMat);
+	Matrix::Transpose(ssTransform.worldViewProjMat, ssTransform.worldViewProjMat);
+
+	_ssTransformCB->UpdateSubResource(dx->GetContext(), &ssTransform);
 }
 
-void SkyScattering::UpdateParam(const Param& param)
+void SkyScattering::Material::UpdateParam(const Param& param)
 {
 	if(param == _prevParam)
 		return;
+	_prevParam = param;
 
 	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
-
-	_prevParam = param;
 	_paramCB->UpdateSubResource(dx->GetContext(), &param);
 }
 
-void SkyScattering::Render(const Device::DirectX* dx,
-						   const Texture::RenderTexture* out,
-						   const Camera::MeshCamera* mainCam,
-						   const Manager::LightManager* lightMgr)
+
+
+
+
+
+
+
+
+SkyScattering::SkyScattering() : SkyForm(SkyForm::Type::Dome), _material(nullptr)		
+{
+}
+
+SkyScattering::~SkyScattering()
+{
+	Destroy();	
+	SAFE_DELETE(_material);
+}
+
+void SkyScattering::BindParamToShader(ID3D11DeviceContext* context,
+									  const MeshCamera* mainCam,
+									  const LightManager* lightMgr)
+{
+	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							mainCam->GetTBRParamConstBuffer());
+	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							mainCam->GetCameraConstBuffer());
+	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							mainCam->GetTBRParamConstBuffer());
+	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							mainCam->GetCameraConstBuffer());
+	
+	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				lightMgr->GetDirectionalLightDirXYSRBuffer());
+	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				lightMgr->GetDirectionalLightDirXYSRBuffer());
+	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
+
+	if(_material->GetUseGS())
+	{
+		GeometryShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							mainCam->GetTBRParamConstBuffer());
+		GeometryShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							mainCam->GetCameraConstBuffer());
+		GeometryShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				lightMgr->GetDirectionalLightDirXYSRBuffer());
+		GeometryShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
+	}
+}
+
+void SkyScattering::UnBindParamToShader(ID3D11DeviceContext* context)
+{
+	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
+	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
+	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
+	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
+	
+	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				nullptr);
+	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	nullptr);
+	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				nullptr);
+	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	nullptr);
+
+	if(_material->GetUseGS())
+	{
+		GeometryShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
+		GeometryShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
+		GeometryShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				nullptr);
+		GeometryShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	nullptr);
+	}
+}
+
+void SkyScattering::Initialize(const Device::DirectX* dx)
+{
+	SkyForm::Initialize();
+	_material = new Material("@SkyScattering");
+	_material->Initialize(dx, false);
+}
+
+void SkyScattering::_Render(const Device::DirectX* dx,
+						   const Rendering::Texture::RenderTexture* out,
+						   const MeshCamera* meshCam,
+						   const LightManager* lightMgr)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
 	ID3D11RenderTargetView* rtv		= out->GetRenderTargetView();
-	ID3D11DepthStencilView* dsv		= mainCam->GetOpaqueDepthBuffer()->GetDepthStencilView();
-
-	// Rendering Option
-	{
-		context->RSSetState(dx->GetRasterizerStateCWDisableCulling());
-	
-		PixelShader::BindSamplerState(context, SamplerStateBindIndex::DefaultSamplerState, dx->GetSamplerStateLinear());
-	
-		context->OMSetDepthStencilState(dx->GetDepthStateGreaterEqualAndDisableDepthWrite(), 0);
-		context->OMSetRenderTargets(1, &rtv, dsv);
-	
-		float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		context->OMSetBlendState(dx->GetBlendStateOpaque(), blendFactor, 0xffffffff);
-	}
-
+	ID3D11DepthStencilView* dsv		= meshCam->GetOpaqueDepthBuffer()->GetDepthStencilView();
 
 	D3D11_VIEWPORT viewport;
 	{
@@ -136,53 +210,37 @@ void SkyScattering::Render(const Device::DirectX* dx,
 	}
 	context->RSSetViewports(1, &viewport);
 
-	_vs->BindShaderToContext(context);
-	_vs->BindInputLayoutToContext(context);
-
-	_ps->BindShaderToContext(context);
-
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							mainCam->GetTBRParamConstBuffer());
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							mainCam->GetTBRParamConstBuffer());
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							mainCam->GetCameraConstBuffer());
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							mainCam->GetCameraConstBuffer());
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex(1),								_paramCB);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex(1),								_paramCB);
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex(3),								_worldMatCB);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex(3),								_worldMatCB);
-	
-	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				lightMgr->GetDirectionalLightDirXYSRBuffer());
-	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				lightMgr->GetDirectionalLightDirXYSRBuffer());
-	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr->GetDirectionalLightOptionalParamIndexSRBuffer());
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_meshFilter->GetIndexBuffer()->IASetBuffer(context);
-	_meshFilter->GetVertexBuffer()->IASetBuffer(context);
-	context->DrawIndexed(_meshFilter->GetIndexCount(), 0, 0);
-
-	_vs->UnBindBasicInputs(context);
-	_ps->UnBindShaderToContext(context);
-
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex(1),								nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex(1),								nullptr);
-	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex(3),								nullptr);
-	PixelShader::BindConstBuffer(context,			ConstBufferBindIndex(3),								nullptr);
-
-	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				nullptr);
-	VertexShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	nullptr);
-	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightDirXY,				nullptr);
-	PixelShader::BindShaderResourceBuffer(context,	TextureBindIndex::DirectionalLightOptionalParamIndex,	nullptr);
+	BindParamToShader(context, meshCam, lightMgr);
+	SkyForm::_Render(dx, _material, rtv, dsv);
+	UnBindParamToShader(context);
 
 	rtv = nullptr;
+	dsv = nullptr;
 	context->OMSetRenderTargets(1, &rtv, dsv);
+}
+
+
+void SkyScattering::Render(const Device::DirectX* dx, const CameraForm* camera,
+						   const Rendering::Texture::RenderTexture* out,
+						   const Rendering::Texture::DepthBuffer* depthBuffer,
+						   const LightManager* lightMgr)
+{
+	const MeshCamera* meshCam = dynamic_cast<const MeshCamera*>(camera);
+	ASSERT_MSG_IF(meshCam, "Error, camera must be MeshCamera.");
+
+	_Render(dx, out, meshCam, lightMgr);
+}
+
+void SkyScattering::Render(const Device::DirectX* dx, const ReflectionProbe* probe,
+						   const Rendering::Texture::TextureCube* out,
+						   const Rendering::Texture::DepthBufferCube* depthBuffer,
+						   const LightManager* lightMgr)
+{
+	// null
+	ASSERT_MSG("not yet supported");
 }
 
 void SkyScattering::Destroy()
 {
-	_paramCB->Destroy();
-	_worldMatCB->Destroy();
+	_material->Destroy();
 }
