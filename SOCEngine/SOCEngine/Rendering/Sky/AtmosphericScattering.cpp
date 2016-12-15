@@ -1,4 +1,4 @@
-#include "SkyScattering.h"
+#include "AtmosphericScattering.h"
 #include "Director.h"
 #include "ResourceManager.h"
 #include "EngineShaderFactory.hpp"
@@ -14,13 +14,13 @@ using namespace Rendering::Sky;
 using namespace Rendering::Camera;
 using namespace Math;
 
-SkyScattering::Material::Material(const std::string& name) : Rendering::Material(name, Type::Sky),
+AtmosphericScattering::Material::Material(const std::string& name) : Rendering::Material(name, Type::Sky),
 		_paramCB(nullptr), _ssTransformCB(nullptr)
 {
 
 }
 
-SkyScattering::Material::~Material()
+AtmosphericScattering::Material::~Material()
 {
 	Destroy();
 
@@ -29,13 +29,13 @@ SkyScattering::Material::~Material()
 }
 
 
-void SkyScattering::Material::Initialize(const Device::DirectX* dx, bool useGS)
+void AtmosphericScattering::Material::Initialize(const Device::DirectX* dx, bool useGS)
 {
 	// Load Shader
 	{
 		auto shaderManager = ResourceManager::SharedInstance()->GetShaderManager();
 		Factory::EngineFactory factory(shaderManager);
-		factory.LoadShader("SkyScattering", "VS", "PS", useGS ? "GS" : "", nullptr,
+		factory.LoadShader("AtmosphericScattering", "VS", "PS", useGS ? "GS" : "", nullptr,
 							&_customShaders.shaderGroup.vs, &_customShaders.shaderGroup.ps,
 							&_customShaders.shaderGroup.gs);
 	}
@@ -62,13 +62,13 @@ void SkyScattering::Material::Initialize(const Device::DirectX* dx, bool useGS)
 	SetConstBufferUseBindIndex(3, _ssTransformCB,	ShaderForm::Usage(true, useGS, false, false));
 }
 
-void SkyScattering::Material::Destroy()
+void AtmosphericScattering::Material::Destroy()
 {
 	_paramCB->Destroy();
 	_ssTransformCB->Destroy();
 }
 
-void SkyScattering::Material::UpdateTransform(const CameraForm* camera)
+void AtmosphericScattering::Material::UpdateTransform(const CameraForm* camera)
 {
 	SSTransform ssTransform;
 	{
@@ -110,7 +110,7 @@ void SkyScattering::Material::UpdateTransform(const CameraForm* camera)
 	_ssTransformCB->UpdateSubResource(dx->GetContext(), &ssTransform);
 }
 
-void SkyScattering::Material::UpdateParam(const Param& param)
+void AtmosphericScattering::Material::UpdateParam(const Param& param)
 {
 	if(param == _prevParam)
 		return;
@@ -128,17 +128,17 @@ void SkyScattering::Material::UpdateParam(const Param& param)
 
 
 
-SkyScattering::SkyScattering() : SkyForm(SkyForm::Type::Dome), _material(nullptr)		
+AtmosphericScattering::AtmosphericScattering() : SkyForm(SkyForm::Type::Dome), _material(nullptr)		
 {
 }
 
-SkyScattering::~SkyScattering()
+AtmosphericScattering::~AtmosphericScattering()
 {
 	Destroy();	
 	SAFE_DELETE(_material);
 }
 
-void SkyScattering::BindParamToShader(ID3D11DeviceContext* context,
+void AtmosphericScattering::BindParamToShader(ID3D11DeviceContext* context,
 									  const MeshCamera* mainCam,
 									  const LightManager* lightMgr)
 {
@@ -161,7 +161,7 @@ void SkyScattering::BindParamToShader(ID3D11DeviceContext* context,
 	}
 }
 
-void SkyScattering::UnBindParamToShader(ID3D11DeviceContext* context)
+void AtmosphericScattering::UnBindParamToShader(ID3D11DeviceContext* context)
 {
 	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::TBRParam,							nullptr);
 	VertexShader::BindConstBuffer(context,			ConstBufferBindIndex::Camera,							nullptr);
@@ -182,14 +182,14 @@ void SkyScattering::UnBindParamToShader(ID3D11DeviceContext* context)
 	}
 }
 
-void SkyScattering::Initialize(const Device::DirectX* dx)
+void AtmosphericScattering::Initialize(const Device::DirectX* dx)
 {
 	SkyForm::Initialize();
-	_material = new Material("@SkyScattering");
+	_material = new Material("@AtmosphericScattering");
 	_material->Initialize(dx, false);
 }
 
-void SkyScattering::_Render(const Device::DirectX* dx,
+void AtmosphericScattering::_Render(const Device::DirectX* dx,
 						   const Rendering::Texture::RenderTexture* out,
 						   const MeshCamera* meshCam,
 						   const LightManager* lightMgr)
@@ -220,7 +220,7 @@ void SkyScattering::_Render(const Device::DirectX* dx,
 }
 
 
-void SkyScattering::Render(const Device::DirectX* dx, const CameraForm* camera,
+void AtmosphericScattering::Render(const Device::DirectX* dx, const CameraForm* camera,
 						   const Rendering::Texture::RenderTexture* out,
 						   const Rendering::Texture::DepthBuffer* depthBuffer,
 						   const LightManager* lightMgr)
@@ -231,7 +231,7 @@ void SkyScattering::Render(const Device::DirectX* dx, const CameraForm* camera,
 	_Render(dx, out, meshCam, lightMgr);
 }
 
-void SkyScattering::Render(const Device::DirectX* dx, const ReflectionProbe* probe,
+void AtmosphericScattering::Render(const Device::DirectX* dx, const ReflectionProbe* probe,
 						   const Rendering::Texture::TextureCube* out,
 						   const Rendering::Texture::DepthBufferCube* depthBuffer,
 						   const LightManager* lightMgr)
@@ -240,7 +240,7 @@ void SkyScattering::Render(const Device::DirectX* dx, const ReflectionProbe* pro
 	ASSERT_MSG("not yet supported");
 }
 
-void SkyScattering::Destroy()
+void AtmosphericScattering::Destroy()
 {
 	_material->Destroy();
 }

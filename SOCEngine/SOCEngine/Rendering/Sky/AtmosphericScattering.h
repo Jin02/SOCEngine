@@ -11,7 +11,7 @@ namespace Rendering
 {
 	namespace Sky
 	{
-		class SkyScattering : public SkyForm
+		class AtmosphericScattering : public SkyForm
 		{
 		public:
 			class Material : public Rendering::Material
@@ -79,8 +79,8 @@ namespace Rendering
 			Material*						_material;
 
 		public:
-			SkyScattering();
-			~SkyScattering();
+			AtmosphericScattering();
+			~AtmosphericScattering();
 
 		private:
 			void BindParamToShader(ID3D11DeviceContext* context, const Camera::MeshCamera* mainCam, const Manager::LightManager* lightMgr);
