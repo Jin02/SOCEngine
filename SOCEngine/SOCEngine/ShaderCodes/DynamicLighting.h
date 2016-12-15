@@ -30,7 +30,8 @@ void RenderDirectionalLight(
 		commonParams.lightColor		= DirectionalLightColorBuffer[lightIndex].xyz;
 
 		float3	lightDir			= float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
-		lightDir.z					= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
+		lightDir.z					= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y)
+										* -GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
 
 		commonParams.lightDir		= -lightDir;
 

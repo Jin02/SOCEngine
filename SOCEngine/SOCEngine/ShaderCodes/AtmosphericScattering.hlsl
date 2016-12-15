@@ -77,7 +77,7 @@ float3 GetLightDir()
 	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
 	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
 
-	return lightDir;
+	return -lightDir;
 }
 
 struct VS_INPUT
@@ -146,9 +146,6 @@ float4 PS(SS_PS_INPUT input) : SV_Target
 	// rayleigh coefficients
 	float3 betaR = simplifiedRayleigh * rayleighCoefficient;
 
-	const float n = 1.0003f; // refractive index of air
-	const float N = 2.545E25f; // number of molecules per unit volume for air at
-
 	// optical length at zenith for molecules
 	const float rayleighZenithLength	= 8.4E3f;
 	const float mieZenithLength			= 1.25E3f;
@@ -186,17 +183,12 @@ float4 PS(SS_PS_INPUT input) : SV_Target
 
 		float3	Lin			=	pow(input.sunIntensity * x * (1.0f - Fex), 1.5f);
 				Lin			*=	lerp(float3(1.0f, 1.0f, 1.0f), pow(input.sunIntensity * x * Fex, 1.0f / 2.0f), saturate( pow(1.0f - dot(up, lightDir), 5.0f) ));
-
-		//nightsky
-		float3 direction	= ToCamDir;
-		float theta			= acos(direction.y); // elevation --> y-axis, [-PI/2, PI/2],
-		float phi			= atan2(direction.z, direction.x); // azimuth --> x-axis [-PI/2, PI/2],
-		float2 uv			= float2(phi, theta) / float2(2.0f * PI, PI) + float2(0.5f, 0.0f);
 		float3 L0			= Fex * 0.1f;
+//		float3 L0			= Fex * 0.001f;
 
 		// composition + solar disc
 		float sundisk = smoothstep(sunAngularDiameterCos, sunAngularDiameterCos + 0.00002f, cosTheta);
-		L0 += (input.sunIntensity * GetCameraFar() / 2.0f * Fex) * sundisk;
+		L0 += (input.sunIntensity * 500.0f * Fex) * sundisk;
 
 		float3 texColor = (Lin + L0) * 0.04f + float3(0.0f, 0.0003f, 0.00075f);
 
