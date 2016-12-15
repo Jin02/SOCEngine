@@ -327,6 +327,10 @@ void Scene::ActiveAtmosphericScattering(const Rendering::Light::DirectionalLight
 	AtmosphericScattering* sky = new AtmosphericScattering;
 	sky->Initialize(_dx);
 
+	AtmosphericScattering::Material::Param param = sky->GetMaterial()->GetParam();
+	param.dlIndex = _lightManager->FetchLightIndexInEachLights(directionalLight) & 0xffff;
+	sky->UpdateParam(param);
+
 	_sky = sky;
 	_ableDeallocSky = true;
 }
