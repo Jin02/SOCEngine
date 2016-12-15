@@ -309,7 +309,7 @@ void ReflectionProbe::Render(const Device::DirectX*& dx, const Core::Scene* scen
 			if(sky)
 			{
 				if(sky->GetIsSkyOn())
-					sky->Render(dx, this, _cubeMap, _opaqueDepthBuffer);
+					sky->Render(dx, this, _cubeMap, _opaqueDepthBuffer, lightManager);
 			}
 
 		}
