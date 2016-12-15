@@ -42,7 +42,7 @@ namespace Rendering
 				};
 				
 				Packed			packedParam;
-				float			gamma;
+				float			gammaWithSignUseHDR;
 
 				TBRParam(){}
 				~TBRParam(){}

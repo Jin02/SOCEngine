@@ -109,7 +109,7 @@ void MeshCamera::OnDestroy()
 	CameraForm::Destroy();
 }
 
-void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager)
+void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vector<Core::Object*>& objects, const Manager::LightManager* lightManager, bool useHDR)
 {
 	Matrix projMat;
 	bool isUpdateCamCB = _CullingWithUpdateCB(dx, objects, lightManager, nullptr, &projMat);
@@ -123,7 +123,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 		packedParam.packedViewportSize		= (viewportSize.w << 16) | viewportSize.h;
 		packedParam.packedNumOfLights		= lightManager->GetPackedLightCount();
 		packedParam.maxNumOfperLightInTile	= LightCulling::CalcMaxNumLightsInTile();
-		tbrParam.gamma						= _gamma;
+		tbrParam.gammaWithSignUseHDR		= _gamma * (useHDR ? -1.0f : 1.0f);
 	}
 	
 	bool isChangedPackedTBRParam = (_prevPackedParamData != packedParam);	

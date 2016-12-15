@@ -95,8 +95,18 @@ cbuffer TBRParam : register( b0 )
 	uint	tbrParam_packedViewportSize;
 	uint 	tbrParam_packedNumOfLights;
 	uint	tbrParam_maxNumOfPerLightInTile;
-	float	tbrParam_gamma;
+	float	tbrParam_gammaWithSignUseHDR;
 };
+
+float GetGamma()
+{
+	return abs(tbrParam_gammaWithSignUseHDR);
+}
+
+bool GetUseHDR()
+{
+	return tbrParam_gammaWithSignUseHDR < 0.0f;
+}
 
 float2 GetViewportSize()
 {
