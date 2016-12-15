@@ -68,6 +68,12 @@ void VertexShader::BindShaderToContext(ID3D11DeviceContext* context)
 	context->VSSetShader(_shader, nullptr, 0);
 }
 
+void VertexShader::UnBindBasicInputs(ID3D11DeviceContext* context)
+{
+	context->VSSetShader(nullptr, nullptr, 0);
+	context->IASetInputLayout(nullptr);
+}
+
 void VertexShader::BindInputLayoutToContext(ID3D11DeviceContext* context)
 {
 	context->IASetInputLayout(_layout);

@@ -42,6 +42,7 @@ namespace Rendering
 		public:
 			void BindShaderToContext(ID3D11DeviceContext* context);
 			void BindInputLayoutToContext(ID3D11DeviceContext* context);
+			void UnBindBasicInputs(ID3D11DeviceContext* context);
 
 			void BindResourcesToContext(ID3D11DeviceContext* context,
 				const std::vector<InputConstBuffer>*			constBuffers, 
