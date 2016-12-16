@@ -7,7 +7,7 @@
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
-SamplerState ambientCubeMapSampler	: register( s4  );
+SamplerState ambientCubeMapSampler	: register( s5  );
 TextureCube	ambientCubeMap			: register( t32 );
 
 cbuffer SkyMapInfoParam				: register( b7 )
