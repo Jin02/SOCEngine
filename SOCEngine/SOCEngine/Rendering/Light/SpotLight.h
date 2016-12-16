@@ -24,7 +24,7 @@ namespace Rendering
 				~Param() {}
 			};
 
-		public:
+		private:
 			Param			_param;
 			float			_spotAngleDegree;
 
