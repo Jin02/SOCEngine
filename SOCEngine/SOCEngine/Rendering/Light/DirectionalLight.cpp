@@ -66,6 +66,10 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 #else
 	_frustum.Make(_viewProjMat);
 #endif
+
+	Matrix::Inverse(proj, proj);
+	_param.invProj_33 = proj._33;
+	_param.invProj_44 = proj._44;
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
@@ -73,7 +77,7 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& dummy) const
+void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
 
@@ -83,6 +87,8 @@ void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir,
 	
 	outDir.first	= Math::Common::FloatToHalf(forward.x);
 	outDir.second	= Math::Common::FloatToHalf(forward.y);
+
+	outParam = _param;
 }
 
 Core::Component* DirectionalLight::Clone() const
