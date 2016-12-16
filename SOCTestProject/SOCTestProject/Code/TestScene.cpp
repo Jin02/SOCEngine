@@ -103,24 +103,33 @@ void TestScene::OnInitialize()
 	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 90.0f, 0.0f));
 	//_testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
 	_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 15));
+	_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 20));
 	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
 
 	AddObject(_testObject);
+
+	BasicGeometryGenerator gen;
+	uint flag = uint(RenderManager::DefaultVertexInputTypeFlag::UV0) |
+				uint(RenderManager::DefaultVertexInputTypeFlag::NORMAL);
+	_testObject2 = gen.CreatePlane(20.0f, 20.0f, 4, 4, flag);
+	_testObject2->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));	
+	_testObject2->GetTransform()->UpdatePosition(Vector3(0, -5, 20));
+	AddObject(_testObject2);
+
 	UpdateBoundBox();
 
 	_camera->GetTransform()->UpdatePosition(GetBoundBox().GetCenter());
 
 	_light = new Object("Light");
 	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
-//	_light->GetTransform()->UpdateEulerAngles(Vector3(30.0f, 330.0f, 0.0f));
+	_light->GetTransform()->UpdateEulerAngles(Vector3(120.0f, 30.0f, 0.0f));
 	AddObject(_light);
 
 	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
 	dl->SetIntensity(20.0f);
-//	dl->ActiveShadow(true);
+	dl->ActiveShadow(true);
 
-	ActiveAtmosphericScattering(dl);
+//	ActiveAtmosphericScattering(dl);
 
 #elif 0 //IBL Test
 	// SkyBox
@@ -310,13 +319,13 @@ void TestScene::OnUpdate(float dt)
 
 	//control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
 
-	Transform* tf = _light->GetTransform();
-	Vector3 euler = tf->GetLocalEulerAngle();
-	if( (uint(euler.x) % 90) == 0)
-	{
-		dt += 1; //use for break point
-	}
-	tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.0f, 0.0f));
+	//Transform* tf = _light->GetTransform();
+	//Vector3 euler = tf->GetLocalEulerAngle();
+	//if( (uint(euler.x) % 90) == 0)
+	//{
+	//	dt += 1; //use for break point
+	//}
+	//tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.1f, 0.0f));
 }
 
 void TestScene::OnRenderPost()
