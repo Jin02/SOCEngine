@@ -191,7 +191,6 @@ void Scene::Render()
 			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
 			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
 			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
-							_shadowRenderer->GetNeverUseVSM(),
 							_sky,
 							_vxgi ? GIPass : giPassNull);
 		}

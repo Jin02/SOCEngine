@@ -20,7 +20,7 @@ using namespace Rendering::Shader;
 
 ShadowRenderer::ShadowRenderer() :
 	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
-	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr), _neverUseVSM(false),
+	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr),
 	_pointLightShadowMapResolution(512),
 	_spotLightShadowMapResolution(512),
 	_directionalLightShadowMapResolution(512),
@@ -83,13 +83,10 @@ ShadowRenderer::~ShadowRenderer()
 	}
 }
 
-void ShadowRenderer::Initialize(bool neverUseVSM,
-								uint numOfShadowCastingPointLight,
+void ShadowRenderer::Initialize(uint numOfShadowCastingPointLight,
 								uint numOfShadowCastingSpotLight,
 								uint numOfShadowCastingDirectionalLight)
 {
-	_neverUseVSM = neverUseVSM;
-
 	ResizeShadowMapAtlas(	numOfShadowCastingPointLight,
 							numOfShadowCastingSpotLight,
 							numOfShadowCastingDirectionalLight,
@@ -183,11 +180,10 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_pointLightShadowMapAtlas = new DepthBuffer;
 		_pointLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_neverUseVSM == false)
-		{
-			_pointLightMomentShadowMapAtlas = new RenderTexture;
-			_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
-		}
+#ifndef NEVER_USE_VSM
+		_pointLightMomentShadowMapAtlas = new RenderTexture;
+		_pointLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 	}
 
 	// Spot Light
@@ -202,11 +198,10 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_spotLightShadowMapAtlas = new DepthBuffer;
 		_spotLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_neverUseVSM == false)
-		{
-			_spotLightMomentShadowMapAtlas = new RenderTexture;
-			_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
-		}
+#ifndef NEVER_USE_VSM
+		_spotLightMomentShadowMapAtlas = new RenderTexture;
+		_spotLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 	}
 
 	// dl
@@ -221,11 +216,10 @@ void ShadowRenderer::ResizeShadowMapAtlas(
 		_directionalLightShadowMapAtlas = new DepthBuffer;
 		_directionalLightShadowMapAtlas->Initialize(mapSize, true, 1);
 
-		if(_neverUseVSM == false)
-		{
-			_directionalLightMomentShadowMapAtlas = new RenderTexture;
-			_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
-		}
+#ifndef NEVER_USE_VSM
+		_directionalLightMomentShadowMapAtlas = new RenderTexture;
+		_directionalLightMomentShadowMapAtlas->Initialize(mapSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0, 1);
+#endif
 	}
 }
 
@@ -375,15 +369,15 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_neverUseVSM == false)
-	{
-		Color clearColor(1.f, 1.f, 1.f, 1.f);
-		_spotLightMomentShadowMapAtlas->Clear(context, clearColor);
-		rtv = _spotLightMomentShadowMapAtlas->GetRenderTargetView();
 
-		opaqueRenderType		= RenderType::Forward_MomentDepth;
-		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
-	}
+#ifndef NEVER_USE_VSM
+	Color clearColor(1.f, 1.f, 1.f, 1.f);
+	_spotLightMomentShadowMapAtlas->Clear(context, clearColor);
+	rtv = _spotLightMomentShadowMapAtlas->GetRenderTargetView();
+
+	opaqueRenderType		= RenderType::Forward_MomentDepth;
+	alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+#endif
 
 	context->OMSetRenderTargets(1, &rtv, _spotLightShadowMapAtlas->GetDepthStencilView());
 
@@ -455,16 +449,15 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_neverUseVSM == false)
-	{
-		Color clearColor(1.f, 1.f, 1.f, 1.f);
-		_pointLightMomentShadowMapAtlas->Clear(context, clearColor);
+#ifndef NEVER_USE_VSM
+	Color clearColor(1.f, 1.f, 1.f, 1.f);
+	_pointLightMomentShadowMapAtlas->Clear(context, clearColor);
 
-		rtv = _pointLightMomentShadowMapAtlas->GetRenderTargetView();
-		
-		opaqueRenderType		= RenderType::Forward_MomentDepth;
-		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
-	}
+	rtv = _pointLightMomentShadowMapAtlas->GetRenderTargetView();
+	
+	opaqueRenderType		= RenderType::Forward_MomentDepth;
+	alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+#endif
 
 	context->OMSetRenderTargets(1, &rtv, _pointLightShadowMapAtlas->GetDepthStencilView());
 
@@ -538,16 +531,15 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
 	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
-	if(_neverUseVSM == false)
-	{
-		Color clearColor(1.f, 1.f, 1.f, 1.f);
-		_directionalLightMomentShadowMapAtlas->Clear(context, clearColor);
+#ifndef NEVER_USE_VSM
+	Color clearColor(1.f, 1.f, 1.f, 1.f);
+	_directionalLightMomentShadowMapAtlas->Clear(context, clearColor);
 
-		rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
+	rtv = _directionalLightMomentShadowMapAtlas->GetRenderTargetView();
 
-		opaqueRenderType		= RenderType::Forward_MomentDepth;
-		alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
-	}
+	opaqueRenderType		= RenderType::Forward_MomentDepth;
+	alphaBlendRenderType	= RenderType::Forward_MomentDepthWithAlphaTest;
+#endif
 
 	context->OMSetRenderTargets(1, &rtv, _directionalLightShadowMapAtlas->GetDepthStencilView());
 
@@ -1106,19 +1098,22 @@ void ShadowRenderer::BindResources(const Device::DirectX* dx, bool bindVS, bool 
 	};
 
 	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				_pointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		_pointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				_pointLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		_pointLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
 
 	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				_spotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		_spotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					_spotLightShadowParamSRBuffer,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		_spotLightViewProjMatSRBuffer,			bindVS, bindGS, bindPS);
 
 	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		_directionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	_directionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			_directionalLightShadowParamSRBuffer,	bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	_directionalLightViewProjMatSRBuffer,	bindVS, bindGS, bindPS);
+
+#ifndef NEVER_USE_VSM
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		_pointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	_directionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		_spotLightMomentShadowMapAtlas,			bindVS, bindGS, bindPS);
+#endif
 
 	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
 	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	_shadowGlobalParamCB);
@@ -1143,19 +1138,22 @@ void ShadowRenderer::UnbindResources(const Device::DirectX* dx, bool bindVS, boo
 	};
 
 	BindTextureToVGP(context,	TextureBindIndex::PointLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowParam,				bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::PointLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
 
 	BindTextureToVGP(context,	TextureBindIndex::SpotLightShadowMapAtlas,				bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowParam,					bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::SpotLightShadowViewProjMatrix,		bindVS, bindGS, bindPS);
 
 	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightShadowMapAtlas,		bindVS, bindGS, bindPS);
-	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowParam,			bindVS, bindGS, bindPS);
 	BindSRBufferToVGP(context,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	bindVS, bindGS, bindPS);
+
+#ifndef NEVER_USE_VSM
+	BindTextureToVGP(context,	TextureBindIndex::PointLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::SpotLightMomentShadowMapAtlas,		bindVS, bindGS, bindPS);
+	BindTextureToVGP(context,	TextureBindIndex::DirectionalLightMomentShadowMapAtlas,	bindVS, bindGS, bindPS);
+#endif
 
 	if(bindVS) VertexShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);
 	if(bindGS) GeometryShader::BindConstBuffer(context,	ConstBufferBindIndex::ShadowGlobalParam,	nullptr);

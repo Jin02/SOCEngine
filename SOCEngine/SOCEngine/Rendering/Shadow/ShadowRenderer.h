@@ -111,8 +111,6 @@ namespace Rendering
 			Structure::VectorHashMap<address, Math::Matrix>						_directionalLightViewProjMatBuffer;
 			Buffer::ShaderResourceBuffer*										_directionalLightViewProjMatSRBuffer;
 
-			bool																_neverUseVSM;
-
 			bool																_forceUpdateDL;
 			bool																_forceUpdatePL;
 			bool																_forceUpdateSL;
@@ -122,7 +120,7 @@ namespace Rendering
 			~ShadowRenderer();
 
 		public:
-			void Initialize(bool neverUseVSM, uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
+			void Initialize(uint numOfShadowCastingPointLight = 1, uint numOfShadowCastingSpotLight = 1, uint numOfShadowCastingDirectionalLight = 1);
 
 		public:
 			void ResizeShadowMapAtlas(
@@ -174,7 +172,6 @@ namespace Rendering
 			GET_ACCESSOR(PointLightMomentShadowMapAtlas,				const Texture::RenderTexture*,				_pointLightMomentShadowMapAtlas);
 			GET_ACCESSOR(SpotLightMomentShadowMapAtlas,					const Texture::RenderTexture*,				_spotLightMomentShadowMapAtlas);
 			GET_ACCESSOR(DirectionalLightMomentShadowMapAtlas,			const Texture::RenderTexture*,				_directionalLightMomentShadowMapAtlas);
-			GET_ACCESSOR(NeverUseVSM,									bool,										_neverUseVSM);
 
 			GET_ACCESSOR(PointLightShadowParamSRBuffer,					const Buffer::ShaderResourceBuffer*,		_pointLightShadowParamSRBuffer);
 			GET_ACCESSOR(PointLightShadowViewProjSRBuffer,				const Buffer::ShaderResourceBuffer*,		_pointLightViewProjMatSRBuffer);
