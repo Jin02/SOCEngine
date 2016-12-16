@@ -65,7 +65,7 @@ void Scene::Initialize()
 	_materialMgr->Initialize();
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize(false);
+	_shadowRenderer->Initialize();
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
