@@ -584,7 +584,7 @@ Object* BasicGeometryGenerator::CreateCylinder(float botRadius, float topRadius,
 	Object* object = nullptr;
 	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
 	{
-		Object* object = new Object("Cylinder");
+		object = new Object("Cylinder");
 		object->AddComponent<Mesh>()->Initialize(args);
 	};
 
@@ -597,7 +597,7 @@ Object* BasicGeometryGenerator::CreatePlane(float width, float height, uint widt
 	Object* object = nullptr;
 	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
 	{
-		Object* object = new Object("plane");
+		object = new Object("plane");
 		object->AddComponent<Mesh>()->Initialize(args);
 	};
 
