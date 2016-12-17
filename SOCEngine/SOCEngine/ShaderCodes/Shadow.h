@@ -52,6 +52,16 @@ void ParseShadowParam(out ShadowParam outParam, uint4 param)
 	outParam.strength		= shadowColor.a;
 }
 
+float2 ComputeStepUV(uint lightCapacityCount, float softness, uniform uint faceCount)
+{
+	float oneShadowMapSize	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float2 atlasMapSize	= float2(lightCapacityCount, float(faceCount)) * oneShadowMapSize;
+	float2 stepUV		= softness * rcp(atlasMapSize);
+	
+	return stepUV;
+}
+
+
 float PCF(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
 {
 	float shadow = 0.0f;
@@ -177,9 +187,7 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth	= shadowUV.z;
 
-	float oneShadowMapSize	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	float2 atlasMapSize		= float2(lightCapacityCount, 1.0f) * oneShadowMapSize;
-	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
+	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);
 	
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
@@ -224,11 +232,9 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 	float bias	= shadowParam.bias;
 	float depth	= shadowUV.z;
-
-	float oneShadowMapSize	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	float2 atlasMapSize		= float2(lightCapacityCount, 1.0f) * oneShadowMapSize;
-	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
 	
+	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);	
+		
 	float shadow = 1.0f;
 #ifndef NEVER_USE_VSM
 	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
@@ -300,8 +306,7 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth	= shadowUV.z;
 
-	float2 atlasMapSize		= float2(lightCapacityCount, 6.0f) * oneShadowMapSize;
-	float2 stepUV			= rcp(atlasMapSize) * (1.0f + shadowParam.softness);
+	float2 stepUV			= ComputeStepUV(lightCapacityCount, shadowParam.softness, 6);
 
 	float shadow = 1.0f;
 #ifdef USE_SHADOW_INVERTED_DEPTH
