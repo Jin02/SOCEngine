@@ -79,16 +79,16 @@ float PCF(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
 }
 
 void FindBlocker(out float outAccumBlockerDepth, out uint outNumBlockers,
-				 Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
+				 Texture2D<float> atlas, float2 uv, float lightVPDepth, float2 stepUV)
 {
-	for(float x = -BLOCKER_SEARCH_STEP_COUNT; x <= BLOCKER_SEARCH_STEP_COUNT; ++x)
+	for(uint x = -BLOCKER_SEARCH_STEP_COUNT; x <= BLOCKER_SEARCH_STEP_COUNT; ++x)
 	{
-		for(float y = -BLOCKER_SEARCH_STEP_COUNT; y <= BLOCKER_SEARCH_STEP_COUNT; ++y)
+		for(uint y = -BLOCKER_SEARCH_STEP_COUNT; y <= BLOCKER_SEARCH_STEP_COUNT; ++y)
 		{
 			float2 offset = float2(x, y) * stepUV;
 			float shadowMapDepth = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
 
-			if (shadowMapDepth > depth)
+			if (shadowMapDepth > lightVPDepth)
 			{
 				outAccumBlockerDepth += shadowMapDepth;
 				outNumBlockers++;
@@ -103,34 +103,38 @@ struct PCSSParam
 	float lightNear;
 	float softness;
 	float2 atlasMapSize;
-	float projMat_34;
-	float projMat_44;
+	float invProjMat_34;
+	float invProjMat_44;
 };
 
-float InvertLightProjDepthToView(float depth, float projMat_34, float projMat_44)
+float InvertLightProjDepthToView(float depth, float invProjMat_34, float invProjMat_44)
 {
-	return 1.0f / (depth * projMat_34 + projMat_44);
+	return 1.0f / (depth * invProjMat_34 + invProjMat_44);
 }
 
-float PCSS(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV, PCSSParam param)
+float2 ComputeSearchAreaRadiusUV(float lightViewDepth, float lightNear)
+{
+	return softness.xx * (lightViewDepth - lightNear) / lightViewDepth;
+}
+
+float PCSS(Texture2D<float> atlas, float2 uv, float lightVPDepth, PCSSParam param)
 {
 	float accumBlockerDepth = 0.0f;
-	uint blockerCount		= 0;
+	uint blockerCount	= 0;
+	
+	float2 searchAreaUV	= ComputeSearchAreaRadiusUV(param.lightViewDepth, param.lightNear) * rcp(param.atlasMapSize);
+	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, param.lightVPDepth, searchAreaUV);
 
-	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, depth, stepUV);
-	if(blockerCount == 0)
-		return 1.0f;
-	else if(blockerCount == BLOCKER_SEARCH_COUNT)
-		return 0.0f;
+	if(blockerCount == 0)				return 1.0f;
+	else if(blockerCount == BLOCKER_SEARCH_COUNT)	return 0.0f;
 
-	float avgDepth			= InvertLightProjDepthToView(accumBlockerDepth / float(blockerCount), param.projMat_34, param.projMat_44);
-	float lightRadiusUV		= (1.0f + param.softness) * float(BLOCKER_SEARCH_DIM / 2);
-	float2 penumbraRadiusUV	= (lightRadiusUV * (param.lightViewDepth - avgDepth) / avgDepth);
+	float avgDepth		= InvertLightProjDepthToView(accumBlockerDepth / float(blockerCount),
+							     param.invProjMat_34, param.invProjMat_44);
+	float2 penumbraRadiusUV	= (param.softness.xx * (param.lightViewDepth - avgDepth) / avgDepth);
 	float2 filterRadiusUV	= (penumbraRadiusUV * param.lightNear / param.lightViewDepth);
 
-	stepUV = filterRadiusUV * rcp(param.atlasMapSize);
-
-	return PCF(atlas, uv, depth, stepUV);
+	float2 stepUV = filterRadiusUV * rcp(param.atlasMapSize);
+	return PCF(atlas, uv, lightVPDepth, stepUV);
 }
 
 float ChebyshevUpperBound(float2 moments, float t)
