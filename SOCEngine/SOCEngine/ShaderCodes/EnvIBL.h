@@ -38,16 +38,19 @@ float3 GetSkyLightReflection(float3 reflectDir, float roughness, bool isDynamicS
 
 float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSample)
 {
+	float3	normal		= reflectDir;
+	float3	viewDir		= reflectDir;
+
 	float3	filteredColor	= float3(0.0f, 0.0f, 0.0f);
-	float	weight			= 0.0f;
+	float	weight		= 0.0f;
 		
 	for( uint i = 0; i < numSample; i++ )
 	{
-		float2 e		= Hammersley( i, numSample );
-		float3 halfVec	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, reflectDir );
-		float3 lightDir	= 2 * dot( reflectDir, halfVec ) * halfVec - reflectDir;
+		float2 e	= Hammersley( i, numSample );
+		float3 H	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, normal );
+		float3 lightDir	= 2 * dot( viewDir, H ) * H - viewDir;
 
-		float NdotL		= saturate( dot( reflectDir, lightDir ) );
+		float NdotL		= saturate( dot( normal, lightDir ) );
 		if( NdotL > 0 )
 		{
 			filteredColor += ambientCubeMap.SampleLevel( ambientCubeMapSampler, lightDir, 0 ).rgb * NdotL;
