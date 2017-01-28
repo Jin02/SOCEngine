@@ -48,7 +48,7 @@ void DirectionalLight::MakeParam(DirXYHalf& outDirXY) const
 	transform->FetchWorldTransform(worldTransform);
 	const auto& forward = worldTransform.GetForward();
 	
-	outParam = DirXYHalf(forward.x, forward.y);
+	outDirXY = DirXYHalf(forward.x, forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const
