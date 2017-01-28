@@ -48,6 +48,10 @@ void TestScene::OnInitialize()
 
 	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
 
+	GetPostProcessing()->SetUseSSAO(true);
+	GetPostProcessing()->SetUseBloom(true);
+//	GetPostProcessing()->SetUseDoF(true);	
+
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 //	AddObject(_camera);

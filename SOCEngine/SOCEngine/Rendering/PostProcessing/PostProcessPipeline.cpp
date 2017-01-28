@@ -126,9 +126,9 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 
 		{
 			GaussianBlur::ParamCB param;
-			param.blurSize			= 2.5f;
-			param.sigma				= 6.0f;
-			param.numPixelPerSide	= 8.0f;
+			param.blurSize			= 1.25f;
+			param.sigma				= 3.0f;
+			param.numPixelPerSide	= 4.0f;
 			param.scale				= 1.0f;
 
 			_gaussianBlur->UpdateParam(dx, param);
