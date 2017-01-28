@@ -14,16 +14,6 @@ namespace Rendering
 		class DirectionalLight : public LightForm
 		{
 		public:
-			struct Param
-			{
-				ushort dirX;
-				ushort dirY;
-
-				Param(float dirX, float dirY);
-				~Param() {}
-			};
-
-		public:
 			DirectionalLight();
 			virtual ~DirectionalLight();
 
@@ -35,7 +25,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeParam(Param& outParam) const;
+			void MakeParam(DirXYHalf& outDirXY) const;
 
 		public:
 			virtual Core::Component* Clone() const;
