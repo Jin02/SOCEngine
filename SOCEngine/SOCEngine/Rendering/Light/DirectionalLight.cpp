@@ -32,7 +32,6 @@ void DirectionalLight::CreateShadow()
 void DirectionalLight::OnUpdate(float deltaTime)
 {
 	bool isNegDirZSign = _owner->GetTransform()->GetWorldMatrix()._33 < 0.0f;
-
 	_flag = (_flag & 0xfe) | (isNegDirZSign ? 1 : 0);
 }
 
@@ -41,21 +40,15 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return true;
 }
 
-void DirectionalLight::MakeLightBufferElement(LightTransformBuffer& out,
-												std::shared_ptr<Container>* outParam) const
+void DirectionalLight::MakeParam( Param& outParam ) const
 {
-	if(outParam == nullptr)
-		return;
-
-	(*outParam) = std::shared_ptr<Container>( new Container );
-
 	const Transform* transform = _owner->GetTransform();
 
 	Transform worldTransform(nullptr);
 	transform->FetchWorldTransform(worldTransform);
 	const auto& forward = worldTransform.GetForward();
 	
-	(*outParam)->Init( Param(forward.x, forward.y) );
+	outParam = Param(forward.x, forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const
