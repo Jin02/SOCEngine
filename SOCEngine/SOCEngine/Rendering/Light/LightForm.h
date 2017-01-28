@@ -26,7 +26,13 @@ namespace Rendering
 				LightTransformBuffer() : radius(0) {}
 				~LightTransformBuffer() {}
 			};
-
+			struct DirXYHalf
+			{	
+				ushort dirX, dirY;
+				DirXYHalf(float dirX, float dirY);
+				~DirXYHalf() {}
+			};
+			
 		protected:
 			Color					_color;
 			LightType				_type;
