@@ -176,12 +176,11 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, SpotLightShadowParams[shadowIndex]);
 
-	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
-	float depth	= shadowUV.z;
+	float bias		= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
+	float depth		= shadowUV.z;
+	float shadow	= 1.0f;
 
-	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);
-	
-	float shadow = 1.0f;
+	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);	
 
 	[branch]
 	if(shadowParam.flag == 0)
@@ -210,12 +209,12 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, DirectionalLightShadowParams[shadowIndex]);
 
-	float bias	= shadowParam.bias;
-	float depth	= shadowUV.z;
-	
+	float bias		= shadowParam.bias;
+	float depth		= shadowUV.z;
+	float shadow	= 1.0f;
+
 	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);	
 		
-	float shadow = 1.0f;
 	[branch]
 	if(shadowParam.flag == 0)
 		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );

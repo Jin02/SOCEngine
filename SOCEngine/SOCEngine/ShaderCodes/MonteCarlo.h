@@ -32,16 +32,16 @@ float4 ImportanceSampleGGX( float2 e, float roughness )
 	float cosTheta = sqrt( (1.0f - e.y) / ( 1.0f + (m2 - 1.0f) * e.y ) );
 	float sinTheta = sqrt( 1.0f - cosTheta * cosTheta );
 
-	float3 dirInCartesian;
-	dirInCartesian.x = sinTheta * cos( phi );
-	dirInCartesian.y = sinTheta * sin( phi );
-	dirInCartesian.z = cosTheta;
+	float3 H;
+	H.x = sinTheta * cos( phi );
+	H.y = sinTheta * sin( phi );
+	H.z = cosTheta;
 	
 	float d = ( cosTheta * m2 - cosTheta ) * cosTheta + 1.0f;
 	float D = m2 / ( PI*d*d );
 	float PDF = D * cosTheta;
 
-	return float4( dirInCartesian, PDF );
+	return float4( H, PDF );
 }
 
 // Unreal4 MonteCarlo.usf 참고
@@ -52,14 +52,14 @@ float4 CosineSampleHemisphere( float2 e )
 	float cosTheta = sqrt( e.y );
 	float sinTheta = sqrt( 1 - cosTheta * cosTheta );
 
-	float3 dirInCartesian;
-	dirInCartesian.x = sinTheta * cos( phi );
-	dirInCartesian.y = sinTheta * sin( phi );
-	dirInCartesian.z = cosTheta;
+	float3 H;
+	H.x = sinTheta * cos( phi );
+	H.y = sinTheta * sin( phi );
+	H.z = cosTheta;
 
 	float PDF = cosTheta / PI;
 
-	return float4( dirInCartesian, PDF );
+	return float4( H, PDF );
 }
 
 float3 TangentToWorld( float3 vec, float3 tangentZ )
