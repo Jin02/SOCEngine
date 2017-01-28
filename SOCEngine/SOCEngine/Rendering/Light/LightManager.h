@@ -38,10 +38,10 @@ namespace Rendering
 				Buffer::GPUUploadBuffer<address, uint>			optionalParamIndexBuffer;
 			};
 
-			LightBuffers<Light::LightForm::LightTransformBuffer>							_pointLight;
-			LightBuffers<Light::DirectionalLight::Param>									_directionalLight;
-			LightBuffers<Light::LightForm::LightTransformBuffer>							_spotLight;
-			Buffer::GPUUploadBuffer<address, Light::SpotLight::Param>						_spotLightParamBuffer;
+			LightBuffers<Light::LightForm::LightTransformBuffer>*							_pointLight;
+			LightBuffers<Light::DirectionalLight::Param>*									_directionalLight;
+			LightBuffers<Light::LightForm::LightTransformBuffer>*							_spotLight;
+			Buffer::GPUUploadBuffer<address, Light::SpotLight::Param>*						_spotLightParamBuffer;
 
 			bool																			_forceUpdateDL;
 			bool																			_forceUpdatePL;
@@ -78,18 +78,18 @@ namespace Rendering
 			void UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
 
 		public:
-			GET_ACCESSOR(PointLightTransformSRBuffer,						const Buffer::ShaderResourceBuffer*,	_pointLight.transformBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(PointLightColorSRBuffer,							const Buffer::ShaderResourceBuffer*,	_pointLight.colorBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(PointLightOptionalParamIndexSRBuffer,				const Buffer::ShaderResourceBuffer*,	_pointLight.optionalParamIndexBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(PointLightTransformSRBuffer,						const Buffer::ShaderResourceBuffer*,	_pointLight->transformBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(PointLightColorSRBuffer,							const Buffer::ShaderResourceBuffer*,	_pointLight->colorBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(PointLightOptionalParamIndexSRBuffer,				const Buffer::ShaderResourceBuffer*,	_pointLight->optionalParamIndexBuffer.GetShaderResourceBuffer());
 
-			GET_ACCESSOR(DirectionalLightDirXYSRBuffer,						const Buffer::ShaderResourceBuffer*,	_directionalLight.transformBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(DirectionalLightColorSRBuffer,						const Buffer::ShaderResourceBuffer*,	_directionalLight.colorBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(DirectionalLightOptionalParamIndexSRBuffer,		const Buffer::ShaderResourceBuffer*,	_directionalLight.optionalParamIndexBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(DirectionalLightDirXYSRBuffer,						const Buffer::ShaderResourceBuffer*,	_directionalLight->transformBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(DirectionalLightColorSRBuffer,						const Buffer::ShaderResourceBuffer*,	_directionalLight->colorBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(DirectionalLightOptionalParamIndexSRBuffer,		const Buffer::ShaderResourceBuffer*,	_directionalLight->optionalParamIndexBuffer.GetShaderResourceBuffer());
 
-			GET_ACCESSOR(SpotLightTransformSRBuffer,						const Buffer::ShaderResourceBuffer*,	_spotLight.transformBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(SpotLightColorSRBuffer,							const Buffer::ShaderResourceBuffer*,	_spotLight.colorBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(SpotLightOptionalParamIndexSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLight.optionalParamIndexBuffer.GetShaderResourceBuffer());
-			GET_ACCESSOR(SpotLightParamSRBuffer,							const Buffer::ShaderResourceBuffer*,	_spotLightParamBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(SpotLightTransformSRBuffer,						const Buffer::ShaderResourceBuffer*,	_spotLight->transformBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(SpotLightColorSRBuffer,							const Buffer::ShaderResourceBuffer*,	_spotLight->colorBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(SpotLightOptionalParamIndexSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLight->optionalParamIndexBuffer.GetShaderResourceBuffer());
+			GET_ACCESSOR(SpotLightParamSRBuffer,							const Buffer::ShaderResourceBuffer*,	_spotLightParamBuffer->GetShaderResourceBuffer());
 		};	
 	}
 }
