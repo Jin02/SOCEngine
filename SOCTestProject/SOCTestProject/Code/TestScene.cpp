@@ -52,7 +52,7 @@ void TestScene::OnInitialize()
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 //	AddObject(_camera);
 
-#if 0 //GI Test
+#if 1 //GI Test
 //	ActivateGI(true, 256, 50.0f);
 //	ActivateGI(true, 256, 15.0f);
 
@@ -94,7 +94,7 @@ void TestScene::OnInitialize()
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
-#elif 1
+#elif 0
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
