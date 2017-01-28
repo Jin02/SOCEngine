@@ -112,7 +112,7 @@ float InvertLightProjDepthToView(float depth, float invProjMat_34, float invProj
 	return 1.0f / (depth * invProjMat_34 + invProjMat_44);
 }
 
-float2 ComputeSearchAreaRadiusUV(float lightViewDepth, float lightNear)
+float2 ComputeSearchAreaRadiusUV(float softness, float lightViewDepth, float lightNear)
 {
 	return softness.xx * (lightViewDepth - lightNear) / lightViewDepth;
 }
@@ -122,8 +122,8 @@ float PCSS(Texture2D<float> atlas, float2 uv, float lightVPDepth, PCSSParam para
 	float accumBlockerDepth = 0.0f;
 	uint blockerCount	= 0;
 	
-	float2 searchAreaUV	= ComputeSearchAreaRadiusUV(param.lightViewDepth, param.lightNear) * rcp(param.atlasMapSize);
-	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, param.lightVPDepth, searchAreaUV);
+	float2 searchAreaUV	= ComputeSearchAreaRadiusUV(param.softness, param.lightViewDepth, param.lightNear) * rcp(param.atlasMapSize);
+	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, lightVPDepth, searchAreaUV);
 
 	if(blockerCount == 0)				return 1.0f;
 	else if(blockerCount == BLOCKER_SEARCH_COUNT)	return 0.0f;
@@ -158,20 +158,8 @@ float2 RecombinePrecision(float4 value)
 
 float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float depth)
 {
-	float shadow = 0.0f;
-	float2 moment = float2(0.0f, 0.0f);
-
-	[unroll] for(int i=-SHADOW_KERNEL_LEVEL; i<=SHADOW_KERNEL_LEVEL; ++i)
-	{
-		[unroll] for(int j=-SHADOW_KERNEL_LEVEL; j<=SHADOW_KERNEL_LEVEL; ++j)
-		{
-			moment = RecombinePrecision(momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0, int2(i, j)));
-			shadow += ChebyshevUpperBound(moment, depth);
-		}
-	}
-
-	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
-	return shadow;
+	float2 moment = RecombinePrecision(momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0));
+	return ChebyshevUpperBound(moment, depth);
 }
 
 float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
