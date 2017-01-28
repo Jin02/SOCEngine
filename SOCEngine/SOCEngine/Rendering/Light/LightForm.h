@@ -48,7 +48,6 @@ namespace Rendering
 			virtual void CreateShadow() = 0;
 
 			virtual bool Intersect(const Intersection::Sphere &sphere) const = 0;
-			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const = 0;
 
 		public:
 			void ActiveShadow(bool isActive);
