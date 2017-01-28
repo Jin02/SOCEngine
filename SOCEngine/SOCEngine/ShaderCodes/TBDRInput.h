@@ -62,11 +62,8 @@ StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
 StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
-#ifndef NEVER_USE_VSM
-Texture2D<float4>							PointLightMomentShadowMapAtlas				: register( t26 );
 Texture2D<float4>							SpotLightMomentShadowMapAtlas				: register( t27 );
 Texture2D<float4>							DirectionalLightMomentShadowMapAtlas		: register( t28 );
-#endif
 
 struct LightingParams
 {

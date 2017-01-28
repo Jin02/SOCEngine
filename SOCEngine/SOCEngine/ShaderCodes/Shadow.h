@@ -184,10 +184,10 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	float shadow = 1.0f;
 
 	[branch]
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(SpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
+	if(shadowParam.flag == 0)
 		shadow = saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	else if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM) 
+		shadow = saturate( VarianceShadow(SpotLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 
@@ -217,10 +217,10 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 		
 	float shadow = 1.0f;
 	[branch]
-	if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
-		shadow = saturate( VarianceShadow(DirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
-	else
+	if(shadowParam.flag == 0)
 		shadow = saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	else if(shadowParam.flag & SHADOW_PARAM_FLAG_USE_VSM)
+		shadow = saturate( VarianceShadow(DirectionalLightMomentShadowMapAtlas, shadowUV.xy, depth) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);

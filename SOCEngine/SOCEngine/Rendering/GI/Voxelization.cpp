@@ -173,9 +173,6 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowPointSamplerState,				dx->GetSamplerStatePoint());	
 
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,					dx->GetSamplerStateAnisotropic());	
-#ifndef NEVER_USE_VSM
-	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,				dx->GetShadowSamplerState());	
-#endif
 
 	const RenderManager* renderManager = scene->GetRenderManager();
 	UpdateConstBuffer(dx, startMinWorldPos, voxelSize, dimension);
@@ -212,10 +209,6 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::ShadowPointSamplerState,				nullptr);
 
 	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::DefaultSamplerState,					nullptr);	
-
-#ifndef NEVER_USE_VSM
-	PixelShader::BindSamplerState(context,				SamplerStateBindIndex::VSMShadowSamplerState,				nullptr);	
-#endif
 
 	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr, nullptr};
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);

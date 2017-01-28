@@ -469,10 +469,6 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, shadowSamplerState);
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, dx->GetSamplerStatePoint());
-#ifndef NEVER_USE_VSM
-			ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
-			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, shadowSamplerState);
-#endif
 		}
 
 		ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr, nullptr };
@@ -493,10 +489,6 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		{
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, nullptr);
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, nullptr);
-
-#ifndef NEVER_USE_VSM
-			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, nullptr);
-#endif
 		}
 	}
 
