@@ -11,9 +11,6 @@ namespace Rendering
 		class PointLight : public LightForm
 		{
 		public:
-			struct Param{};
-
-		public:
 			PointLight();
 			virtual ~PointLight();
 
@@ -21,8 +18,8 @@ namespace Rendering
 			virtual void CreateShadow();
 
 		public:
-			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& out, Param& dummyParam) const;
+			virtual bool Intersect(const Intersection::Sphere &sphere) const;
+			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
