@@ -44,8 +44,7 @@ bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 #endif
 }
 
-void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform,
-									   std::shared_ptr<Container>* outParam) const
+void SpotLight::MakeParam(LightTransformBuffer& outTransform, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
 
@@ -56,23 +55,13 @@ void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform,
 	const auto& forward = worldTransform.GetForward();
 	outTransform.radius = forward.z >= 0.0f ? _radius : -_radius;
 
-	if(outParam)
-	{	
-		Param param;
-		{
-			param.dirX = Common::FloatToHalf(forward.x);
-			param.dirY = Common::FloatToHalf(forward.y);
-		
-			float radian = Common::Deg2Rad(_spotAngleDegree);
-			param.outerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
-		
-			radian = Common::Deg2Rad(_spotAngleDegree * 0.3333f);
-			param.innerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
-		}
-
-		(*outParam) = std::shared_ptr<Container>( new Container );
-		(*outParam)->Init<Param>(param);
-	}
+	outParam.dirXY = LightForm::DirXYHalf(forward.x, forward.y);
+	
+	float radian = Common::Deg2Rad(_spotAngleDegree);
+	outParam.outerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
+	
+	radian = Common::Deg2Rad(_spotAngleDegree * 0.3333f);
+	outParam.innerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
 }
 
 Component* SpotLight::Clone() const
