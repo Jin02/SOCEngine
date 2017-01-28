@@ -20,12 +20,10 @@ SpotLightShadow::~SpotLightShadow()
 
 void SpotLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat) const
 {
-#ifdef USE_SHADOW_INVERTED_DEPTH
 	if(GetUseVSM())
 		Math::Matrix::Transpose(outViewProjMat, _invNearFarViewProjMat);
 	else
-#endif
-	Math::Matrix::Transpose(outViewProjMat, _viewProjMat);
+		Math::Matrix::Transpose(outViewProjMat, _viewProjMat);
 }
 
 void SpotLightShadow::ComputeViewProjMatrix()
@@ -41,13 +39,8 @@ void SpotLightShadow::ComputeViewProjMatrix()
 	float projNear	= GetProjectionNear();
 
 	Matrix proj, invNearFarProj;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::PerspectiveFovLH(proj, 1.0f, spotAngle, radius, projNear);
 	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, spotAngle, projNear, radius);
-#else
-	Matrix::PerspectiveFovLH(proj, 1.0f, spotAngle, projNear, radius);
-	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, spotAngle, radius, projNear);
-#endif
 
 	_invNearFarViewProjMat	= view * invNearFarProj;
 	_viewProjMat			= view * proj;

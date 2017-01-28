@@ -2,8 +2,6 @@
 
 #include "Injection_Common.h"
 
-#ifdef USE_SHADOW_INVERTED_DEPTH
-
 [numthreads(INJECTION_TILE_RES, INJECTION_TILE_RES, INJECTION_TILE_RES)]
 void CS(uint3 globalIdx	: SV_DispatchThreadID, 
 		uint3 localIdx	: SV_GroupThreadID,
@@ -69,5 +67,3 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		StoreRadiosity(OutVoxelColorMap, radiosity, albedo.a, normal, globalIdx, true);
 	}
 }
-
-#endif

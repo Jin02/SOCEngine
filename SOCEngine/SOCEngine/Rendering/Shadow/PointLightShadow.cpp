@@ -44,13 +44,9 @@ void PointLightShadow::ComputeViewProjMatrix()
 	float projNear	= GetProjectionNear();
 
 	Matrix proj, invNearFarProj;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
+
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), radius, projNear);
 	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, Common::Deg2Rad(90.0f), projNear, radius);
-#else
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), projNear, radius);
-	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, Common::Deg2Rad(90.0f), radius, projNear);
-#endif
 
 	auto ComputeViewProj = [](Matrix& outInvNearFarViewProj, Matrix& outViewProj,
 		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat, const Matrix& invNearFarProjMat)
@@ -94,16 +90,12 @@ void PointLightShadow::ComputeViewProjMatrix()
 
 void PointLightShadow::MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const
 {
-#ifdef USE_SHADOW_INVERTED_DEPTH
 	if(GetUseVSM())
 		GetInvNearFarViewProjMatrices(outViewProjMat);
 	else
 	{
 		GetViewProjectionMatrices(outViewProjMat);
 	}
-#else
-	GetViewProjectionMatrices(outViewProjMat);
-#endif
 
 	for(uint i=0; i<6; ++i)
 	{
