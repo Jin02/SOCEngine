@@ -40,7 +40,7 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return true;
 }
 
-void DirectionalLight::MakeParam( Param& outParam ) const
+void DirectionalLight::MakeParam(DirXYHalf& outDirXY) const
 {
 	const Transform* transform = _owner->GetTransform();
 
@@ -48,7 +48,7 @@ void DirectionalLight::MakeParam( Param& outParam ) const
 	transform->FetchWorldTransform(worldTransform);
 	const auto& forward = worldTransform.GetForward();
 	
-	outParam = Param(forward.x, forward.y);
+	outParam = DirXYHalf(forward.x, forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const
