@@ -65,7 +65,7 @@ void Scene::Initialize()
 	_materialMgr->Initialize();
 
 	_shadowRenderer = new ShadowRenderer;
-	_shadowRenderer->Initialize(false);
+	_shadowRenderer->Initialize();
 
 	uint value = 0xff7fffff;
 	float fltMin = (*(float*)&value);
@@ -191,7 +191,6 @@ void Scene::Render()
 			auto shadowCB = _shadowRenderer->GetShadowGlobalParamConstBuffer();
 			MeshCamera* meshCam = dynamic_cast<MeshCamera*>(*iter);
 			meshCam->Render(_dx, _renderMgr, _lightManager, shadowCB,
-							_shadowRenderer->GetNeverUseVSM(),
 							_sky,
 							_vxgi ? GIPass : giPassNull);
 		}

@@ -52,7 +52,7 @@ namespace Rendering
 			void Render(
 				const Device::DirectX* dx,
 				const Manager::RenderManager* renderManager, const Manager::LightManager* lightManager,
-				const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+				const Buffer::ConstBuffer* shadowGlobalParamCB,
 				Sky::SkyForm* sky,
 				std::function<const Texture::RenderTexture*(MeshCamera*)> giPass);
 

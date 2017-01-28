@@ -324,7 +324,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 
 void MeshCamera::Render(const Device::DirectX* dx,
 			const RenderManager* renderManager, const LightManager* lightManager,
-			const Buffer::ConstBuffer* shadowGlobalParamCB, bool neverUseVSM,
+			const Buffer::ConstBuffer* shadowGlobalParamCB,
 			Sky::SkyForm* sky,
 			std::function<const RenderTexture*(MeshCamera*)> giPass)
 {
@@ -465,17 +465,10 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		//bool useShadow = shadowGlobalParamCB != nullptr;
 		//if(useShadow)
 		{
-#if defined(USE_SHADOW_INVERTED_DEPTH)
 			ID3D11SamplerState* shadowSamplerState = dx->GetShadowGreaterEqualSamplerComparisonState();
-#else
-			ID3D11SamplerState* shadowSamplerState = dx->GetShadowLessEqualSamplerComparisonState();
-#endif
+
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, shadowSamplerState);
-			if(neverUseVSM == false)
-			{
-				ID3D11SamplerState* shadowSamplerState = dx->GetShadowSamplerState();
-				ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, shadowSamplerState);
-			}
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, dx->GetSamplerStatePoint());
 		}
 
 		ID3D11RenderTargetView* nullRTVs[] = { nullptr, nullptr, nullptr, nullptr };
@@ -495,9 +488,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		//if(useShadow)
 		{
 			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowComprisonSamplerState, nullptr);
-
-			if(neverUseVSM == false)
-				ComputeShader::BindSamplerState(context, SamplerStateBindIndex::VSMShadowSamplerState, nullptr);
+			ComputeShader::BindSamplerState(context, SamplerStateBindIndex::ShadowPointSamplerState, nullptr);
 		}
 	}
 

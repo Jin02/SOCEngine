@@ -14,9 +14,17 @@ namespace Rendering
 		class DirectionalLight : public LightForm
 		{
 		public:
-			struct Param{};
+			struct Param
+			{
+				float invProj_33;
+				float invProj_44;
+
+				Param() : invProj_33(0.0f), invProj_44(0.0f) {}
+				~Param() {}
+			};
 
 		private:
+			Param						_param;
 			Math::Matrix				_invNearFarViewProjMat;
 			Math::Matrix				_viewProjMat;
 

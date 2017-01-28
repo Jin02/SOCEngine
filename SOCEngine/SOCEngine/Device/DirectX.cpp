@@ -16,7 +16,7 @@ DirectX::DirectX(void) :
 	_depthGreaterAndDisableDepthWrite(nullptr), _alphaBlend(nullptr),
 	_anisotropicSamplerState(nullptr), _linearSamplerState(nullptr), _pointSamplerState(nullptr),
 	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowLinearSamplerState(nullptr),
+	_rasterizerCounterClockwiseDefault(nullptr), _shadowLessEqualCompState(nullptr), _shadowGreaterEqualCompState(nullptr), _shadowSamplerStateLinear(nullptr),
 	_rasterizerClockwiseDisableCullingWithClip(nullptr),
 	_depthLessEqual(nullptr), _coneTracingSamplerState(nullptr), _depthGreaterEqualAndDisableDepthWrite(nullptr)
 {
@@ -363,8 +363,8 @@ bool DirectX::InitDevice(const Win32* win, const Math::Rect<uint>& renderScreenR
 			desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
 			desc.MinLOD		= 0;
 			desc.MaxLOD		= 0;
-			hr = _device->CreateSamplerState( &desc, &_shadowLinearSamplerState );
-			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _shadowLinearSamplerState");
+			hr = _device->CreateSamplerState( &desc, &_shadowSamplerStateLinear );
+			ASSERT_MSG_IF(SUCCEEDED(hr), "Error!, device cant create _shadowSamplerStateLinear");
 
 			ZeroMemory(&desc, sizeof(desc));
 			desc.Filter		= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -494,7 +494,7 @@ void DirectX::Destroy()
 	SAFE_RELEASE(_pointSamplerState);
 	SAFE_RELEASE(_shadowLessEqualCompState);
 	SAFE_RELEASE(_shadowGreaterEqualCompState);
-	SAFE_RELEASE(_shadowLinearSamplerState);
+	SAFE_RELEASE(_shadowSamplerStateLinear);
 	SAFE_RELEASE(_depthLessEqual);
 	SAFE_RELEASE(_coneTracingSamplerState);
 	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);

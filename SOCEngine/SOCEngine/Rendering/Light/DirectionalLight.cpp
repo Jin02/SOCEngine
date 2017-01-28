@@ -50,22 +50,17 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 	float orthogonalWH = (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
 
 	Matrix proj, invNearFarProj;
-#if defined(USE_SHADOW_INVERTED_DEPTH)
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
 	Matrix::OrthoLH(invNearFarProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
-#else
-	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
-	Matrix::OrthoLH(invNearFarProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
-#endif
 
 	_invNearFarViewProjMat	= view * invNearFarProj;
 	_viewProjMat			= view * proj;
 
-#if defined(USE_SHADOW_INVERTED_DEPTH)
 	_frustum.Make(_invNearFarViewProjMat);
-#else
-	_frustum.Make(_viewProjMat);
-#endif
+
+	Matrix::Inverse(proj, proj);
+	_param.invProj_33 = proj._33;
+	_param.invProj_44 = proj._44;
 }
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
@@ -73,7 +68,7 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return _frustum.In(sphere.center, sphere.radius);
 }
 
-void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& dummy) const
+void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const
 {
 	const Transform* transform = _owner->GetTransform();
 
@@ -83,6 +78,8 @@ void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir,
 	
 	outDir.first	= Math::Common::FloatToHalf(forward.x);
 	outDir.second	= Math::Common::FloatToHalf(forward.y);
+
+	outParam = _param;
 }
 
 Core::Component* DirectionalLight::Clone() const

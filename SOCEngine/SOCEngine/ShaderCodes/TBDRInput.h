@@ -47,10 +47,6 @@ Buffer<uint4>								PointLightShadowParams						: register( t14 );
 Buffer<uint4>								SpotLightShadowParams						: register( t15 ); 
 Buffer<uint4>								DirectionalLightShadowParams				: register( t16 ); 
 
-//Buffer<uint4>								PointLightShadowParams						: register( t14 );
-//Buffer<uint4>								SpotLightShadowParams						: register( t15 );
-//Buffer<uint4>								DirectionalLightShadowParams				: register( t16 );
-
 Texture2D<float>							PointLightShadowMapAtlas					: register( t17 );
 Texture2D<float>							SpotLightShadowMapAtlas						: register( t18 );
 Texture2D<float>							DirectionalLightShadowMapAtlas				: register( t19 );
@@ -66,7 +62,6 @@ StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
 StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
-Texture2D<float4>							PointLightMomentShadowMapAtlas				: register( t26 );
 Texture2D<float4>							SpotLightMomentShadowMapAtlas				: register( t27 );
 Texture2D<float4>							DirectionalLightMomentShadowMapAtlas		: register( t28 );
 
@@ -144,9 +139,9 @@ float InvertProjDepthToView(float depth)
 }
 
 
-float LinearizeDepth(float depth, float camFar)
+float LinearizeDepth(float depth, float camFar) // ?????
 {
-	return InvertProjDepthToView(depth) / camFar;
+	return 0.0f;
 }
 
 uint GetShadowIndex(uint lightOptionalParamIndex)

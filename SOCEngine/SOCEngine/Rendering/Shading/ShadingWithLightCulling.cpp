@@ -51,9 +51,6 @@ void ShadingWithLightCulling::Initialize(
 		if(useDebugMode)
 			macros.push_back(ShaderMacro("DEBUG_MODE", ""));
 
-		if(shadowMgr->GetNeverUseVSM())
-			macros.push_back(ShaderMacro("NEVER_USE_VSM", ""));
-
 		if(fetchLightIndexBuffer)
 			macros.push_back(ShaderMacro("STORE_PER_LIGHT_INDICES_IN_TILE", ""));
 	}
@@ -93,13 +90,6 @@ void ShadingWithLightCulling::Initialize(
 			AddTextureToInputTextureList(uint(TextureBindIndex::PointLightShadowMapAtlas),			shadowMgr->GetPointLightShadowMapAtlas());
 			AddTextureToInputTextureList(uint(TextureBindIndex::SpotLightShadowMapAtlas),			shadowMgr->GetSpotLightShadowMapAtlas());
 			AddTextureToInputTextureList(uint(TextureBindIndex::DirectionalLightShadowMapAtlas),	shadowMgr->GetDirectionalLightShadowMapAtlas());
-
-			if(shadowMgr->GetNeverUseVSM() == false)
-			{
-				AddTextureToInputTextureList(uint(TextureBindIndex::PointLightMomentShadowMapAtlas),		shadowMgr->GetPointLightMomentShadowMapAtlas());
-				AddTextureToInputTextureList(uint(TextureBindIndex::SpotLightMomentShadowMapAtlas),			shadowMgr->GetSpotLightMomentShadowMapAtlas());
-				AddTextureToInputTextureList(uint(TextureBindIndex::DirectionalLightMomentShadowMapAtlas),	shadowMgr->GetDirectionalLightMomentShadowMapAtlas());
-			}
 		}
 	}
 

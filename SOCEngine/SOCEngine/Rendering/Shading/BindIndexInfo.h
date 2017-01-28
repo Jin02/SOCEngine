@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef SOCENGINE
+#include "../GlobalDefine.h"
+#else
+#include "GlobalDefine.h"
+#endif
+
 namespace Rendering
 {
 	enum class TextureBindIndex : unsigned int
@@ -46,7 +52,6 @@ namespace Rendering
 		SpotLightShadowViewProjMatrix			= 24,
 		DirectionalLightShadowViewProjMatrix	= 25,
 
-		PointLightMomentShadowMapAtlas			= 26,
 		SpotLightMomentShadowMapAtlas			= 27,
 		DirectionalLightMomentShadowMapAtlas	= 28,
 
@@ -97,7 +102,8 @@ namespace Rendering
 		UISamplerState					= 1,
 		ShadowComprisonSamplerState		= 2,
 		VSMShadowSamplerState			= 3,
-		AmbientCubeMapSamplerState		= 4,
+		ShadowPointSamplerState			= 4,
+		AmbientCubeMapSamplerState		= 5,
 	};
 
 	enum class UAVBindIndex : unsigned int
