@@ -101,6 +101,11 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 			result += ssaoScale * saturate( dot(normal, dir) ) * rcp(1.0f + dist);
 	}
 
-	return float4(InputSceneMap.Sample(LinearSampler, input.uv).rgb * (1.0f - saturate(result / float(samplingCount))), 1.0f);
-//	return float4((1.0f - saturate(result / float(samplingCount))).xxx, 1.0f);
+	float3 color = InputSceneMap.Sample(LinearSampler, input.uv).rgb;
+
+	const float lumRate = 0.5f;
+	float ao = 1.0f - saturate(result / float(samplingCount));
+	ao = lerp(ao, 1.0f, Luminance(color) * lumRate);
+
+	return float4(color * ao, 1.0f);
 }
