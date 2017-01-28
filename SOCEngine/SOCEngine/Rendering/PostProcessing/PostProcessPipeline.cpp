@@ -173,6 +173,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
 		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,				mainMeshCamera->GetTBRParamConstBuffer());
 	
 		// Eye Adaption
 		_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
@@ -208,6 +209,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
 		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,				nullptr);
 	}
 
 	if(_useSSAO)
