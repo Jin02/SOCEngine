@@ -2,13 +2,16 @@
 
 namespace Rendering
 {
-	namespace Manager
+	namespace Light
 	{
-		class ILightGPUUploadBuffer
-		{		
-		public:
-			ILightGPUUploadBuffer() {}
-			virtual ~ILightGPUUploadBuffer() {}
-		};
+		namespace GPUUploadBuffer
+		{
+			class ILightGPUUploadBuffer
+			{		
+			public:
+				ILightGPUUploadBuffer() {}
+				virtual ~ILightGPUUploadBuffer() {}
+			};
+		}
 	}
 }
