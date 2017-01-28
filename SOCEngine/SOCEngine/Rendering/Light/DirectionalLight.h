@@ -35,14 +35,14 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const;
+			void MakeParam(Param& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(Shadow,							Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
-			GET_SET_ACCESSOR(LightShaftSize,				float,								_radius);
+			GET_ACCESSOR(Shadow,			Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
+			GET_SET_ACCESSOR(LightShaftSize,	float,					_radius);
 		};
 	}
 }
