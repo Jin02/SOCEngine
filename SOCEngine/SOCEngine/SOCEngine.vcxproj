@@ -49,6 +49,7 @@
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\RawBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\CameraForm.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h" />

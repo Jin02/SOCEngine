@@ -952,6 +952,9 @@
     <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
       <Filter>Rendering\Sky\Scattering</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp">
+      <Filter>Rendering\Buffer\ShaderResource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
