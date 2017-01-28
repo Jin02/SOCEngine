@@ -7,6 +7,12 @@ using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Light;
 
+LightForm::DirXYHalf::DirXYHalf(float dirX, float dirY)
+{
+	this->dirX	= Math::Common::FloatToHalf(dirX);
+	this->dirY	= Math::Common::FloatToHalf(dirY);
+}
+
 LightForm::LightForm()
 	: _radius(10.0f), _lumen(500), _shadow(nullptr), _flag(0)
 {
