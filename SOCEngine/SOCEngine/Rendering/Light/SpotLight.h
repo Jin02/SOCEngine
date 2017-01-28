@@ -12,15 +12,13 @@ namespace Rendering
 		class SpotLight : public LightForm
 		{
 		public:
-			struct Param
+			struct Param 
 			{
-				unsigned short			dirX;
-				unsigned short			dirY;
-
+				LightForm::DirXYHalf		dirXY;
 				unsigned short			outerConeCosAngle;
 				unsigned short			innerConeCosAngle;
 
-				Param() : outerConeCosAngle(0), innerConeCosAngle(0), dirX(0), dirY(0) {}
+				Param(float dirX, float dirY) : dirXY(dirX, dirY), outerConeCosAngle(0), innerConeCosAngle(0) {}
 				~Param() {}
 			};
 
@@ -37,7 +35,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const;
+			void MakeParam(LightTransformBuffer& out, Param& outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
