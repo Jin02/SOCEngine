@@ -9,12 +9,6 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-DirectionalLight::Param::Param(float dirX, float dirY)
-{
-	this->dirX	= Math::Common::FloatToHalf(dirX);
-	this->dirY	= Math::Common::FloatToHalf(dirY);
-}
-
 DirectionalLight::DirectionalLight() : LightForm()
 {
 	_type = LightType::Directional;
