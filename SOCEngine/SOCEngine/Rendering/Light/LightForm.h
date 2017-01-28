@@ -7,6 +7,8 @@
 #include "ShadowCommon.h"
 #include "BoundBox.h"
 #include <functional>
+#include "Container.h"
+#include <memory>
 
 namespace Rendering
 {
@@ -15,8 +17,6 @@ namespace Rendering
 		class LightForm : public Core::Component
 		{
 		public:
-			friend class Shadow::ShadowCommon;
-
 			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
 			enum class LightType : uint { Directional = 0, Point, Spot };
 			struct LightTransformBuffer
@@ -46,6 +46,9 @@ namespace Rendering
 			virtual void OnInitialize();
 			virtual void OnDestroy();
 			virtual void CreateShadow() = 0;
+
+			virtual bool Intersect(const Intersection::Sphere &sphere) const = 0;
+			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const = 0;
 
 		public:
 			void ActiveShadow(bool isActive);
