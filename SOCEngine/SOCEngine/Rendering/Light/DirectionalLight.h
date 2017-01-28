@@ -16,22 +16,12 @@ namespace Rendering
 		public:
 			struct Param
 			{
-				float invProj_33;
-				float invProj_44;
+				ushort dirX;
+				ushort dirY;
 
-				Param() : invProj_33(0.0f), invProj_44(0.0f) {}
+				Param(float dirX, float dirY);
 				~Param() {}
 			};
-
-		private:
-			Param						_param;
-			Math::Matrix				_invNearFarViewProjMat;
-			Math::Matrix				_viewProjMat;
-
-			Intersection::Frustum		_frustum;
-			
-			float						_projectionSize;
-			bool						_useAutoProjectLocation;
 
 		public:
 			DirectionalLight();
@@ -41,24 +31,17 @@ namespace Rendering
 			virtual void OnUpdate(float deltaTime);
 
 		public:
-			void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
 			virtual void CreateShadow();
 
 		public:
-			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const;
+			virtual bool Intersect(const Intersection::Sphere &sphere) const;
+			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
 
 		public:
-			GET_ACCESSOR(Frustum,							const Intersection::Frustum&,		_frustum);
 			GET_ACCESSOR(Shadow,							Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
-			GET_ACCESSOR(InvNearFarViewProjectionMatrix,	const Math::Matrix&,				_invNearFarViewProjMat);
-			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,				_viewProjMat);
-
-			GET_SET_ACCESSOR(ProjectionSize,				float,								_projectionSize);
-			GET_SET_ACCESSOR(UseAutoProjectionLocation,		bool,								_useAutoProjectLocation);
 			GET_SET_ACCESSOR(LightShaftSize,				float,								_radius);
 		};
 	}
