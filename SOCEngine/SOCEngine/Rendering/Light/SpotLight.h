@@ -36,8 +36,8 @@ namespace Rendering
 			virtual void CreateShadow();
 
 		public:
-			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const;
+			virtual bool Intersect(const Intersection::Sphere &sphere) const;
+			virtual void MakeLightBufferElement(LightTransformBuffer& out, std::shared_ptr<Container>* outParam) const;
 
 		public:
 			virtual Core::Component* Clone() const;
