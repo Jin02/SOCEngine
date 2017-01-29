@@ -83,7 +83,7 @@ namespace Rendering
 				}
 				
 			private:
-				bool UpdateBuffer(const LightWithPrevUpdateCounter<Light::SpotLight>& lightWithPrevUC,
+				bool UpdateBuffer(const LightWithPrevUpdateCounter& lightWithPrevUC,
 									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
 									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 				{
@@ -124,11 +124,33 @@ namespace Rendering
 					return lightWithPrevUC->UpdateBuffer(_UpdateBuffer);
 				}
 				
-				void UpdateSRBuffer()
+			public:
+				void UpdateSRBuffer(ID3D11DeviceContext* context,
+									const LightWithPrevUpdateCounter& lightWithPrevUC,
+									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
+									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
+								   bool forcedUpdate = false)
 				{
+					bool isNeedToUpdate = UpdateBuffer(lightWithPrevUC, getShadowIndex, getLightShaftIndex);
+
+					if((isNeedToUpdate || forcedUpdate) == false)
+						return;
 					
+					_transformBuffer->UpdateSRBuffer(context);
+					_colorBuffer->UpdateSRBuffer(context);
+					_paramBuffer->UpdateSRBuffer(context);
+					_optionalParamIndexBuffer->UpdateSRBuffer(context);
 				}
 				
+				void Delete(const Light::SpotLight* light)
+				{
+					address key = reinterpret_cast<address>(light);
+					
+					_transformBuffer->Delete(key);
+					_colorBuffer->Delete(key);
+					_paramBuffer->Delete(key);
+					_optionalParamIndexBuffer->Delete(key);
+				}
 			};
 		}
 	}
