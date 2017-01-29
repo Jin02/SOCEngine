@@ -92,3 +92,11 @@ void SpotLightingBuffer::Delete(const SpotLight* light)
 	
 	_commonBuffer.Delete(key);
 }
+
+void SpotLightingBuffer::DeleteAll()
+{
+	_transformBuffer->DeleteAll();
+	_paramBuffer->DeleteAll();
+	
+	_commonBuffer.DeleteAll();
+}
