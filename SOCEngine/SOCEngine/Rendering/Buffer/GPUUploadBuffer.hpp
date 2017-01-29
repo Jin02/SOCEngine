@@ -2,6 +2,7 @@
 
 #include "ShaderResourceBuffer.h"
 #include "VectorHashMap.h"
+#include <memory>
 
 namespace Rendering
 {
@@ -25,11 +26,14 @@ namespace Rendering
 			}
 
 		public:
-			void Destory()
+			static GPUUploadBuffer* Create(uint count, DXGI_FORMAT format, const void* dummy = nullptr)
 			{
-				SAFE_DELETE(_srBuffer);
-				_buffer.DeleteAll();
+				GPUUploadBuffer<KeyType, T>* buffer = new GPUUploadBuffer<KeyType, T>;
+				buffer->Initialize(count, format, dummy);
+				
+				return buffer;
 			}
+			
 			void Initialize(uint count, DXGI_FORMAT format, const void* dummy = nullptr)
 			{
 				Destory();
@@ -38,6 +42,12 @@ namespace Rendering
 				_srBuffer->Initialize(sizeof(T), count, format, dummy, true, 0, D3D11_USAGE_DYNAMIC);
 			}
 
+			void Destory()
+			{
+				SAFE_DELETE(_srBuffer);
+				_buffer.DeleteAll();
+			}			
+			
 		public: // _buffer
 			void Add(const KeyType& key, const T& object)	{	_buffer.Add(key, object);	}
 			void Delete(const KeyType& key)					{	_buffer.Delete(key);		}
