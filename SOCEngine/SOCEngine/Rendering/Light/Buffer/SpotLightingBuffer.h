@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GPUUploadBuffer.h"
+#include "LightWithPrevUpdateCounter.h"
 
 namespace Rendering
 {
@@ -8,34 +9,6 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
-			class LightWithPrevUpdateCounter
-			{
-			private:
-				const Light::LightForm*	_light;
-				uint					_prevTransformUpdateCounter;
-				
-			public:
-				LightWithPrevUpdateCounter(const Light::LightForm* light, uint prevTransformUpdateCounter)
-					: _light(light), _prevTransformUpdateCounter(prevTransformUpdateCounter) {}
-				~LightWithPrevUpdateCounter() {}
-				
-			public:
-				bool UpdateBuffer(const std::function<void(const Light::LightForm* light)>& bufferUpdateCallback)
-				{
-					uint curCounter = _light->GetOwner()->GetTransform()->GetUpdateCounter();
-
-					bool isChanged = curCounter != _prevTransformUpdateCounter;
-					if(isChanged)
-					{
-						bufferUpdateCallback(_light);
-						_prevTransformUpdateCounter = curCounter;
-					}
-					
-					return isChanged;
-				}
-			};
-				
-
 			class SpotLightingBuffer
 			{
 			private:
