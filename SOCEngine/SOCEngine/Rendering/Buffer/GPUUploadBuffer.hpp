@@ -46,7 +46,16 @@ namespace Rendering
 			{
 				SAFE_DELETE(_srBuffer);
 				_buffer.DeleteAll();
-			}			
+			}
+			
+		public: // _srBuffer
+			void UpdateSRBuffer(ID3D11DeviceContext* context)
+			{
+				uint count		= _buffer.GetSize();
+				const void* raw	= _buffer.GetVector().data();
+
+				_srBuffer->UpdateResourceUsingMapUnMap(context, raw, count * sizeof(T));
+			}
 			
 		public: // _buffer
 			void Add(const KeyType& key, const T& object)	{	_buffer.Add(key, object);	}
