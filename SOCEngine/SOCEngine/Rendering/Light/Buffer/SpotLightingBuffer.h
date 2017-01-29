@@ -8,20 +8,19 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
-			template<typename LightType>
 			class LightWithPrevUpdateCounter
 			{
 			private:
-				const LightType*	_light;
-				uint				_prevTransformUpdateCounter;
+				const Light::LightForm*	_light;
+				uint					_prevTransformUpdateCounter;
 				
 			public:
-				LightWithPrevUpdateCounter(const LightType* light, uint prevTransformUpdateCounter)
+				LightWithPrevUpdateCounter(const Light::LightForm* light, uint prevTransformUpdateCounter)
 					: _light(light), _prevTransformUpdateCounter(prevTransformUpdateCounter) {}
 				~LightWithPrevUpdateCounter() {}
 				
 			public:
-				bool UpdateBuffer(const std::function<void(const LightType* light)>& bufferUpdateCallback)
+				bool UpdateBuffer(const std::function<void(const Light::LightForm* light)>& bufferUpdateCallback)
 				{
 					uint curCounter = _light->GetOwner()->GetTransform()->GetUpdateCounter();
 
@@ -124,6 +123,12 @@ namespace Rendering
 					
 					return lightWithPrevUC->UpdateBuffer(_UpdateBuffer);
 				}
+				
+				void UpdateSRBuffer()
+				{
+					
+				}
+				
 			};
 		}
 	}
