@@ -2,6 +2,7 @@
 
 #include "GPUUploadBuffer.h"
 #include "LightWithPrevUpdateCounter.h"
+#include "CommonLightingBuffer.h"
 
 namespace Rendering
 {
@@ -13,26 +14,24 @@ namespace Rendering
 			{
 			private:
 				typedef Buffer::GPUUploadBuffer<address, LightForm::LightTransformBuffer>	TransformBuffer;
-				typedef Buffer::GPUUploadBuffer<address, uint>								ColorBuffer;
-				typedef Buffer::GPUUploadBuffer<address, uint>								OptionalParamIndexBuffer;
-				typedef Buffer::GPUUploadBuffer<address, Light::SpotLight::Param>			ParamBuffer;
+				typedef Buffer::GPUUploadBuffer<address, Light::SpotLight::Param>		ParamBuffer;
 
 				TransformBuffer*				_transformBuffer;
-				ColorBuffer*					_colorBuffer;
-				OptionalParamIndexBuffer*		_optionalParamIndexBuffer;
 				ParamBuffer*					_paramBuffer;
+				CommonLightingBuffer				_commonBuffer;
 				
 			public:
 				SpotLightingBuffer()
-					: _transformBuffer(nullptr), _colorBuffer(nullptr), _optionalParamIndexBuffer(nullptr), _paramBuffer(nullptr)
+					: _transformBuffer(nullptr), _paramBuffer(nullptr),
+					_commonBuffer()
 				{
 				}
 				
 				~SpotLightingBuffer()
 				{
+					Destroy();
+					
 					SAFE_DELETE(_transformBuffer);
-					SAFE_DELETE(_colorBuffer);
-					SAFE_DELETE(_optionalParamIndexBuffer);
 					SAFE_DELETE(_paramBuffer);					
 				}
 				
@@ -41,18 +40,18 @@ namespace Rendering
 				{
 					const __int32 dummyData[SPOT_LIGHT_BUFFER_MAX_NUM * sizeof(LightForm::LightTransformBuffer) / 4] = {0, };
 					
-					_transformBuffer			= TransformBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM,			DXGI_FORMAT_R32G32B32A32_FLOAT,		dummyData);
-					_colorBuffer				= ColorBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM,				DXGI_FORMAT_R8G8B8A8_UNORM,			dummyData);
-					_optionalParamIndexBuffer	= OptionalParamIndexBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM,	DXGI_FORMAT_R32_UINT,				dummyData);
-					_paramBuffer				= ParamBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM, 				DXGI_FORMAT_R16G16B16A16_FLOAT,		dummyData);
+					_transformBuffer	= TransformBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM,	DXGI_FORMAT_R32G32B32A32_FLOAT,		dummyData);
+					_paramBuffer		= ParamBuffer::Create(SPOT_LIGHT_BUFFER_MAX_NUM, 	DXGI_FORMAT_R16G16B16A16_FLOAT,		dummyData);
+
+					_commonBuffer.Initialize(SPOT_LIGHT_BUFFER_MAX_NUM);
 				}
 				
 				void Destroy()
 				{
 					_transformBuffer->Destroy();
-					_colorBuffer->Destroy();
-					_optionalParamIndexBuffer->Destroy();
 					_paramBuffer->Destroy();
+					
+					_commonBuffer.Destroy();
 				}
 				
 			private:
@@ -60,38 +59,28 @@ namespace Rendering
 									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
 									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 				{
-					auto _UpdateBuffer = [&](const SpotLight* light) -> void
+					auto _UpdateBuffer = [&](const Light::LightForm* light) -> void
 					{
 						address key = reinterpret_cat<address>(light);
 						
 						LightForm::LightTransformBuffer	transform;
-						SpotLight::Param				param;
-						light->MakeParam(transform, param);
-						
-						// Compute Optional Param Index
-						ushort	shadowIndex				= getShadowIndex(light);
-						uchar	lightShaftIndex			= getLightShaftIndex(light) & 0x7f;
-						uchar	lightFlag				= light->GetFlag();
-						uint	optionalParamIndex		= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
-						
-						uint	uintColor				= light->Get32BitMainColor();
-						
+						SpotLight::Param		param;
+						static_cast<const Light::SpotLight*>(light)->MakeParam(transform, param);
+												
 						// 하나만 검색해도 됨
 						LightForm::LightTransformBuffer* existTarnsform = _transformBuffer->Find(key);
 						if( existTarnsform == nullptr )
 						{
 							_transformBuffer->Add(key, transform);
 							_paramBuffer->Add(key, param);
-							_colorBuffer->Add(key, uintColor);
-							_optionalParamIndexBuffer->Add(key, optionalParamIndex);
 						}
 						else // existTarnsform != nullptr
 						{
-							(*existTarnsform)							= transform;
-							(*_paramBuffer->Find(key))					= param;
-							(*_colorBuffer->Find(key))					= uintColor;
-							(*_optionalParamIndexBuffer->Find(key))		= optionalParamIndex;
-						}						
+							(*existTarnsform)		= transform;
+							(*_paramBuffer->Find(key))	= param;
+						}
+						
+						_commonBuffer.UpdateBuffer(light, getShadowIndex, getLightShaftIndex, existTarnsform != nullptr);
 					};
 					
 					return lightWithPrevUC->UpdateBuffer(_UpdateBuffer);
@@ -110,9 +99,9 @@ namespace Rendering
 						return;
 					
 					_transformBuffer->UpdateSRBuffer(context);
-					_colorBuffer->UpdateSRBuffer(context);
 					_paramBuffer->UpdateSRBuffer(context);
-					_optionalParamIndexBuffer->UpdateSRBuffer(context);
+					
+					_commonBuffer.UpdateSRBuffer(context);
 				}
 				
 				void Delete(const Light::SpotLight* light)
@@ -120,9 +109,9 @@ namespace Rendering
 					address key = reinterpret_cast<address>(light);
 					
 					_transformBuffer->Delete(key);
-					_colorBuffer->Delete(key);
 					_paramBuffer->Delete(key);
-					_optionalParamIndexBuffer->Delete(key);
+					
+					_commonBuffer.Delete(key);
 				}
 			};
 		}
