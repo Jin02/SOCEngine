@@ -62,6 +62,7 @@ namespace Rendering
 			void Delete(const KeyType& key)					{	_buffer.Delete(key);		}
 			void DeleteAll()								{	_buffer.DeleteAll();		}
 			const T* Find(const KeyType& key) const			{	return _buffer.Find(key);	}
+			T* Find(const KeyType& key)						{	return _buffer.Find(key);	}
 			bool Has(const KeyType& key) const				{	return _buffer.Has(key);	}
 			T& Get(uint index)								{	return _buffer.Get(index);	}
 			
