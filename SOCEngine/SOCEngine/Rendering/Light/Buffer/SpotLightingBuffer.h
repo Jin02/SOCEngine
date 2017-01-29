@@ -8,6 +8,35 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
+			template<typename LightType>
+			class LightWithPrevUpdateCounter
+			{
+			private:
+				const LightType*	_light;
+				uint				_prevTransformUpdateCounter;
+				
+			public:
+				LightWithPrevUpdateCounter(const LightType* light, uint prevTransformUpdateCounter)
+					: _light(light), _prevTransformUpdateCounter(prevTransformUpdateCounter) {}
+				~LightWithPrevUpdateCounter() {}
+				
+			public:
+				bool UpdateBuffer(const std::function<void(const LightType* light)>& bufferUpdateCallback)
+				{
+					uint curCounter = _light->GetOwner()->GetTransform()->GetUpdateCounter();
+
+					bool isChanged = curCounter != _prevTransformUpdateCounter;
+					if(isChanged)
+					{
+						bufferUpdateCallback(_light);
+						_prevTransformUpdateCounter = curCounter
+					}
+					
+					return isChanged;
+				}
+			};
+				
+
 			class SpotLightingBuffer
 			{
 			private:
@@ -55,42 +84,45 @@ namespace Rendering
 				}
 				
 			private:
-				bool UpdateBuffer(const Light::SpotLight*& light,
+				bool UpdateBuffer(const LightWithPrevUpdateCounter<Light::SpotLight>& lightWithPrevUC,
 									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
 									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
 				{
-					address key = reinterpret_cat<address>(light);
-					
-					LightForm::LightTransformBuffer	transform;
-					SpotLight::Param				param;
-					light->MakeParam(transform, param);
-					
-					// Compute Optional Param Index
-					ushort	shadowIndex				= getShadowIndex(light);
-					uchar	lightShaftIndex			= getLightShaftIndex(light) & 0x7f;
-					uchar	lightFlag				= light->GetFlag();
-					uint	optionalParamIndex		= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
-					
-					uint	uintColor		= light->Get32BitMainColor();
-					
-					// 하나만 검색해도 됨
-					LightForm::LightTransformBuffer* existTarnsform = _transformBuffer->Find(key);
-					if( existTarnsform == nullptr )
+					auto _UpdateBuffer = [&](const SpotLight* light) -> void
 					{
-						_transformBuffer->Add(key, transform);
-						_paramBuffer->Add(key, param);
-						_colorBuffer->Add(key, uintColor);
-						_optionalParamIndexBuffer->Add(key, optionalParamIndex);
-					}
-					else // existTarnsform != nullptr
-					{
-						(*existTarnsform)							= transform;
-						(*_paramBuffer->Find(key))					= param;
-						(*_colorBuffer->Find(key))					= uintColor;
-						(*_optionalParamIndexBuffer->Find(key))		= optionalParamIndex;
-					}
+						address key = reinterpret_cat<address>(light);
+						
+						LightForm::LightTransformBuffer	transform;
+						SpotLight::Param				param;
+						light->MakeParam(transform, param);
+						
+						// Compute Optional Param Index
+						ushort	shadowIndex				= getShadowIndex(light);
+						uchar	lightShaftIndex			= getLightShaftIndex(light) & 0x7f;
+						uchar	lightFlag				= light->GetFlag();
+						uint	optionalParamIndex		= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
+						
+						uint	uintColor				= light->Get32BitMainColor();
+						
+						// 하나만 검색해도 됨
+						LightForm::LightTransformBuffer* existTarnsform = _transformBuffer->Find(key);
+						if( existTarnsform == nullptr )
+						{
+							_transformBuffer->Add(key, transform);
+							_paramBuffer->Add(key, param);
+							_colorBuffer->Add(key, uintColor);
+							_optionalParamIndexBuffer->Add(key, optionalParamIndex);
+						}
+						else // existTarnsform != nullptr
+						{
+							(*existTarnsform)							= transform;
+							(*_paramBuffer->Find(key))					= param;
+							(*_colorBuffer->Find(key))					= uintColor;
+							(*_optionalParamIndexBuffer->Find(key))		= optionalParamIndex;
+						}						
+					};
 					
-					return true;
+					return lightWithPrevUC->UpdateBuffer(_UpdateBuffer);
 				}
 			};
 		}
