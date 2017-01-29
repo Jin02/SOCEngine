@@ -17,8 +17,8 @@ CommonLightingBuffer::~CommonLightingBuffer()
 
 void CommonLightingBuffer::Initialize(uint count)
 {
-	_colorBuffer				= ColorBuffer::Create(count,				DXGI_FORMAT_R8G8B8A8_UNORM,			dummyData);
-	_optionalParamIndexBuffer	= OptionalParamIndexBuffer::Create(count,	DXGI_FORMAT_R32_UINT,				dummyData);	
+	_colorBuffer			= ColorBuffer::Create(count,			DXGI_FORMAT_R8G8B8A8_UNORM,	dummyData);
+	_optionalParamIndexBuffer	= OptionalParamIndexBuffer::Create(count,	DXGI_FORMAT_R32_UINT,		dummyData);	
 }
 
 void CommonLightingBuffer::Destroy()
@@ -28,29 +28,29 @@ void CommonLightingBuffer::Destroy()
 }
 
 void CommonLightingBuffer::UpdateBuffer(const Light::LightForm* light,
-										const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-										const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex)
+					const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
+					const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
+					bool existElem)
 {
 	address key = reinterpret_cat<address>(light);
 	
 	// Compute Optional Param Index
-	ushort	shadowIndex				= getShadowIndex(light);
-	uchar	lightShaftIndex			= getLightShaftIndex(light) & 0x7f;
-	uchar	lightFlag				= light->GetFlag();
-	uint	optionalParamIndex		= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
+	ushort	shadowIndex		= getShadowIndex(light);
+	uchar	lightShaftIndex		= getLightShaftIndex(light) & 0x7f;
+	uchar	lightFlag		= light->GetFlag();
+	uint	optionalParamIndex	= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;
 	
-	uint	uintColor				= light->Get32BitMainColor();
+	uint	uintColor		= light->Get32BitMainColor();
 	
-	uint* existColor = _colorBuffer->Find(key);
-	if(existColor == nullptr)
+	if(existElem)
+	{
+		(*_colorBuffer->Find(key))		= uintColor;
+		(*_optionalParamIndexBuffer->Find(key))	= optionalParamIndex;
+	}
+	else
 	{
 		_colorBuffer->Add(key, uintColor);
 		_optionalParamIndexBuffer->Add(key, optionalParamIndex);
-	}
-	else	// existColor != nullptr
-	{
-		(*existColor)							= uintColor;
-		(*_optionalParamIndexBuffer->Find(key))	= optionalParamIndex;
 	}
 }
 
