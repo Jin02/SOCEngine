@@ -28,7 +28,7 @@ namespace Rendering
 					if(isChanged)
 					{
 						bufferUpdateCallback(_light);
-						_prevTransformUpdateCounter = curCounter
+						_prevTransformUpdateCounter = curCounter;
 					}
 					
 					return isChanged;
