@@ -13,9 +13,10 @@ namespace Rendering
 			template<typename TransformType>
 			class LightingBufferForm
 			{
-			private:
+			protected:
 				typedef Buffer::GPUUploadBuffer<address, TransformType>	TransformBuffer;
 
+			private:
 				TransformBuffer*					_transformBuffer;
 				CommonLightingBuffer					_commonBuffer;
 				
@@ -23,13 +24,14 @@ namespace Rendering
 				LightingBufferForm() : _transformBuffer(nullptr), _commonBuffer()
 				{
 				}
+				
 				virtual ~LightingBufferForm()
 				{
 					Destroy();	
 					SAFE_DELETE(_transformBuffer);
 				}
 				
-			public:
+			protected:
 				void Initialize(uint maxLightCount)
 				{
 					_transformBuffer = InitializeTransformBuffer(maxLightCount);
@@ -41,14 +43,7 @@ namespace Rendering
 					_commonBuffer.Destroy();
 					_transformBuffer->Destroy();
 				}
-				
-			private:
-				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount) = 0;
-				virtual bool UpdateBuffer(const LightWithPrevUpdateCounter& lightWithPrevUC,
-							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-							const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex) = 0;
-				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) = 0;
-				
+
 			public:
 				void UpdateSRBuffer(ID3D11DeviceContext* context,
 								const LightWithPrevUpdateCounter& lightWithPrevUC,
@@ -80,6 +75,13 @@ namespace Rendering
 					_transformBuffer->DeleteAll();
 					_commonBuffer.DeleteAll();					
 				}
+				
+			private:
+				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount) = 0;
+				virtual bool UpdateBuffer(const LightWithPrevUpdateCounter& lightWithPrevUC,
+							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
+							const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex) = 0;
+				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) = 0;
 			};
 		}
 	}
