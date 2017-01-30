@@ -52,6 +52,7 @@ namespace Rendering
 								bool forcedUpdate = false)
 				{
 					bool isNeedToUpdate = UpdateBuffer(lightWithPrevUC, getShadowIndex, getLightShaftIndex);
+					_commonBuffer.UpdateBuffer(light, getShadowIndex, getLightShaftIndex, isNeedToUpdate);
 
 					if((isNeedToUpdate || forcedUpdate) == false)
 						return;
