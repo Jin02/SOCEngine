@@ -1,33 +1,33 @@
-#include "LightingBufferForm.h"
+#include "CommonLightingBuffer.h"
 
 using namespace Rednering;
 using namespace Rednering::Light;
 using namespace Rendering::Light::LightingBuffer;
 
-LightingBufferForm::LightingBufferForm()
+CommonLightingBuffer::CommonLightingBuffer()
   : _colorBuffer(nullptr), _optionalParamIndexBuffer(nullptr)
 {
 }
 
-LightingBufferForm::~LightingBufferForm()
+CommonLightingBuffer::~CommonLightingBuffer()
 {
 	SAFE_DELETE(_colorBuffer);
 	SAFE_DELETE(_optionalParamIndexBuffer);
 }
 
-void LightingBufferForm::Initialize(uint count)
+void CommonLightingBuffer::Initialize(uint count)
 {
 	_colorBuffer			= ColorBuffer::Create(count,			DXGI_FORMAT_R8G8B8A8_UNORM,	dummyData);
 	_optionalParamIndexBuffer	= OptionalParamIndexBuffer::Create(count,	DXGI_FORMAT_R32_UINT,		dummyData);	
 }
 
-void LightingBufferForm::Destroy()
+void CommonLightingBuffer::Destroy()
 {
 	_colorBuffer->Destroy();
 	_optionalParamIndexBuffer->Destroy();
 }
 
-void LightingBufferForm::UpdateBuffer(const Light::LightForm* light,
+void CommonLightingBuffer::UpdateBuffer(const Light::LightForm* light,
 				  const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
 				  const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
 				  bool existElem)
@@ -54,13 +54,13 @@ void LightingBufferForm::UpdateBuffer(const Light::LightForm* light,
 	}
 }
 
-void LightingBufferForm::UpdateSRBuffer(ID3D11DeviceContext* context)
+void CommonLightingBuffer::UpdateSRBuffer(ID3D11DeviceContext* context)
 {
 	_colorBuffer->UpdateSRBuffer(context);
 	_optionalParamIndexBuffer->UpdateSRBuffer(context);
 }
 
-void LightingBufferForm::Delete(const Light::LightForm* light)
+void CommonLightingBuffer::Delete(const Light::LightForm* light)
 {
 	address key = reinterpret_cast<address>(light);
 	
@@ -68,7 +68,7 @@ void LightingBufferForm::Delete(const Light::LightForm* light)
 	_optionalParamIndexBuffer->Delete(key);	
 }
 
-void LightingBufferForm::DeleteAll()
+void CommonLightingBuffer::DeleteAll()
 {
 	_colorBuffer->DeleteAll();
 	_optionalParamIndexBuffer->DeleteAll();
