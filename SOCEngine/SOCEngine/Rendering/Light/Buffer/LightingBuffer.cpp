@@ -2,35 +2,34 @@
 
 using namespace Rednering;
 using namespace Rednering::Light;
-using namespace Rednering::Light::LightingBuffer;
 
-CommonLightingBuffer::CommonLightingBuffer()
+LightingBuffer::LightingBuffer()
   : _colorBuffer(nullptr), _optionalParamIndexBuffer(nullptr)
 {
 }
 
-CommonLightingBuffer::~CommonLightingBuffer()
+LightingBuffer::~LightingBuffer()
 {
 	SAFE_DELETE(_colorBuffer);
 	SAFE_DELETE(_optionalParamIndexBuffer);
 }
 
-void CommonLightingBuffer::Initialize(uint count)
+void LightingBuffer::Initialize(uint count)
 {
 	_colorBuffer			= ColorBuffer::Create(count,			DXGI_FORMAT_R8G8B8A8_UNORM,	dummyData);
 	_optionalParamIndexBuffer	= OptionalParamIndexBuffer::Create(count,	DXGI_FORMAT_R32_UINT,		dummyData);	
 }
 
-void CommonLightingBuffer::Destroy()
+void LightingBuffer::Destroy()
 {
 	_colorBuffer->Destroy();
 	_optionalParamIndexBuffer->Destroy();
 }
 
-void CommonLightingBuffer::UpdateBuffer(const Light::LightForm* light,
-					const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-					const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
-					bool existElem)
+void LightingBuffer::UpdateBuffer(const Light::LightForm* light,
+				  const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
+				  const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
+				  bool existElem)
 {
 	address key = reinterpret_cat<address>(light);
 	
@@ -54,13 +53,13 @@ void CommonLightingBuffer::UpdateBuffer(const Light::LightForm* light,
 	}
 }
 
-void CommonLightingBuffer::UpdateSRBuffer(ID3D11DeviceContext* context)
+void LightingBuffer::UpdateSRBuffer(ID3D11DeviceContext* context)
 {
 	_colorBuffer->UpdateSRBuffer(context);
 	_optionalParamIndexBuffer->UpdateSRBuffer(context);
 }
 
-void CommonLightingBuffer::Delete(const Light::LightForm* light)
+void LightingBuffer::Delete(const Light::LightForm* light)
 {
 	address key = reinterpret_cast<address>(light);
 	
@@ -68,7 +67,7 @@ void CommonLightingBuffer::Delete(const Light::LightForm* light)
 	_optionalParamIndexBuffer->Delete(key);	
 }
 
-void CommonLightingBuffer::DeleteAll()
+void LightingBuffer::DeleteAll()
 {
 	_colorBuffer->DeleteAll();
 	_optionalParamIndexBuffer->DeleteAll();
