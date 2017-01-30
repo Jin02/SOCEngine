@@ -32,6 +32,7 @@ namespace Rendering
 						 			bool existElem);
 				void UpdateSRBuffer(ID3D11DeviceContext* context);		
 				void Delete(const Light::LightForm* light);
+				void DeleteAll();
 			};
 		}
 	}
