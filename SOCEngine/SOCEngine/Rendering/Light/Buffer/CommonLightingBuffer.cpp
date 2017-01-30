@@ -67,3 +67,9 @@ void CommonLightingBuffer::Delete(const Light::LightForm* light)
 	_colorBuffer->Delete(key);
 	_optionalParamIndexBuffer->Delete(key);	
 }
+
+void CommonLightingBuffer::DeleteAll()
+{
+	_colorBuffer->DeleteAll();
+	_optionalParamIndexBuffer->DeleteAll();
+}
