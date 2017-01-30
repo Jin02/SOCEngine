@@ -33,7 +33,7 @@ namespace Rendering
 									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
 									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex);	
 
-				public:
+			public:
 				void UpdateSRBuffer(	ID3D11DeviceContext* context,
 							const LightWithPrevUpdateCounter& lightWithPrevUC,
 							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
