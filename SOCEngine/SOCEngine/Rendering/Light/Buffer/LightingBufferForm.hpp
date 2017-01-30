@@ -32,8 +32,6 @@ namespace Rendering
 			public:
 				void Initialize(uint maxLightCount)
 				{
-					const __int32 dummyData[maxLightCount * sizeof(TransformType) / 4] = {0, };
-
 					_transformBuffer = InitializeTransformBuffer(maxLightCount);
 					_commonBuffer.Initialize(maxLightCount);
 				}
