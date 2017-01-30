@@ -43,6 +43,15 @@ namespace Rendering
 					_commonBuffer.Destroy();
 					_transformBuffer->Destroy();
 				}
+				
+				void UpdateTransformBuffer(uint key, const TransformType& transform)
+				{
+					LightForm::LightTransformBuffer* existTarnsform = _transformBuffer->Find(key);
+					if( existTarnsform == nullptr )
+						_transformBuffer->Add(key, transform);
+					else
+						(*existTarnsform) = transform;				
+				}
 
 			public:
 				void UpdateSRBuffer(ID3D11DeviceContext* context,
