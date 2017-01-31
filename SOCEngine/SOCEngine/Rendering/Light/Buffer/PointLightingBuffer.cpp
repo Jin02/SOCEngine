@@ -14,6 +14,6 @@ PointLightingBuffer::~PointLightingBuffer()
 
 TransformBuffer* PointLightingBuffer::InitializeTransformBuffer(uint maxLightCount)
 {
-	const __int32 dummy[maxLightCount * sizeof(LightingBufferForm::TransformType) / 4] = {0, };
+	const __int32 dummy[maxLightCount * sizeof(Parent::TransformType) / 4] = {0, };
 	return TransformBuffer::Create(maxLightCount, DXGI_FORMAT_R32G32B32A32_FLOAT, dummy);
 }
