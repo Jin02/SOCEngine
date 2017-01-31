@@ -95,10 +95,6 @@ namespace Rendering
 				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount) = 0;
-				virtual bool UpdateBuffer(const LightWithPrevUpdateCounter& lightWithPrevUC,
-							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-							const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex) = 0;
-
 				virtual void UpdateAdditionalBuffer(const LightForm* light) {}
 				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
 			};
