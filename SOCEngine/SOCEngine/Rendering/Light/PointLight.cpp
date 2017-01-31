@@ -33,7 +33,7 @@ bool PointLight::Intersect(const Sphere &sphere) const
 	return Sphere::Intersects(sphere, Sphere(wp, _radius));
 }
 
-void PointLight::MakeTransform(LightTransformBuffer& out) const
+void PointLight::MakeTransform(TransformType& out) const
 {
 	_owner->GetTransform()->FetchWorldPosition(out.worldPosition);
 	out.radius = _radius;
