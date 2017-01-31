@@ -44,12 +44,12 @@ bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 #endif
 }
 
-void SpotLight::MakeTransform(LightTransformBuffer& outTransform) const
+void SpotLight::MakeTransform(TransformType& outTransform) const
 {
 	const Transform* transform	= _owner->GetTransform();
 	const Matrix& worldMat		= transform->GetWorldMatrix();
 	
-	outTransform.worldPosition	= Vector4(worldMat._41, worldMat._42, worldMat._43);
+	outTransform.worldPosition	= Vector3(worldMat._41, worldMat._42, worldMat._43);
 	outTransform.radius		= worldMat._33 >= 0.0f ? _radius : -_radius;
 }
 
