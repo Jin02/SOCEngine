@@ -11,6 +11,9 @@ namespace Rendering
 		class PointLight : public LightForm
 		{
 		public:
+			typedef LightForm::WorldPosWithRadius TransformType;
+			
+		public:
 			PointLight();
 			virtual ~PointLight();
 
@@ -19,7 +22,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeTransform(LightTransformBuffer& out) const;
+			void MakeTransform(TransformType& out) const;
 
 		public:
 			virtual Core::Component* Clone() const;
