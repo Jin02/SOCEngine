@@ -10,15 +10,16 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
-			template<typename TransformType>
+			template<typename LightType>
 			class LightingBufferForm
 			{
 			protected:
+				typedef typename LightType::TransformTraits		TransformType;
 				typedef Buffer::GPUUploadBuffer<address, TransformType>	TransformBuffer;
 
 			private:
-				TransformBuffer*					_transformBuffer;
-				CommonLightingBuffer					_commonBuffer;
+				TransformBuffer*								_transformBuffer;
+				CommonLightingBuffer								_commonBuffer;
 				
 			public:
 				LightingBufferForm() : _transformBuffer(nullptr), _commonBuffer()
@@ -45,7 +46,6 @@ namespace Rendering
 				}
 
 			public:
-				template<typename LightType>
 				void UpdateBuffer(	ID3D11DeviceContext* context,
 							const LightWithPrevUpdateCounter& lightWithPrevUC,
 							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
