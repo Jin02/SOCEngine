@@ -14,6 +14,9 @@ namespace Rendering
 		class DirectionalLight : public LightForm
 		{
 		public:
+			typedef LightForm::DirXYHalf TransformType;
+
+		public:
 			DirectionalLight();
 			virtual ~DirectionalLight();
 
@@ -25,7 +28,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeTransform(DirXYHalf& outDirXY) const;
+			void MakeTransform(TransformType& outDirXY) const;
 
 		public:
 			virtual Core::Component* Clone() const;
