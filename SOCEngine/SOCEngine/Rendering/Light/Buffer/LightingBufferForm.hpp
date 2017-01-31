@@ -32,7 +32,7 @@ namespace Rendering
 					SAFE_DELETE(_transformBuffer);
 				}
 				
-			protected:
+			public:
 				void Initialize(uint maxLightCount)
 				{
 					_transformBuffer = InitializeTransformBuffer(maxLightCount);
@@ -45,7 +45,6 @@ namespace Rendering
 					_transformBuffer->Destroy();
 				}
 
-			public:
 				void UpdateBuffer(	ID3D11DeviceContext* context,
 							const LightWithPrevUpdateCounter& lightWithPrevUC,
 							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
