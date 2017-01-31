@@ -36,11 +36,9 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 
 void DirectionalLight::MakeParam(DirXYHalf& outDirXY) const
 {
-	const Transform* transform = _owner->GetTransform();
-
-	Transform worldTransform(nullptr);
-	transform->FetchWorldTransform(worldTransform);
-	const auto& forward = worldTransform.GetForward();
+	const Transform* transform	= _owner->GetTransform();
+	const Matrix& worldMat		= transform->GetWorldMatrix();
+	const Vector3 forward		= Vector3(worldMat._13, worldMat._23, worldMat._33);
 	
 	outDirXY = DirXYHalf(forward.x, forward.y);
 }
