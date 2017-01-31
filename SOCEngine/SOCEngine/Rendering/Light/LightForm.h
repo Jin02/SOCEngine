@@ -19,12 +19,12 @@ namespace Rendering
 		public:
 			static const Component::Type GetComponentType() {	return Component::Type::Light;	}
 			enum class LightType : uint { Directional = 0, Point, Spot };
-			struct LightTransformBuffer
+			struct WorldPosWithRadius
 			{
-				Math::Vector3	worldPosition;
+				Math::Vector3		worldPosition;
 				float			radius;
-				LightTransformBuffer() : radius(0) {}
-				~LightTransformBuffer() {}
+				WorldPosWithRadius() : radius(0,0f), worldPosition(0.0f, 0.0f, 0.0f) {}
+				~WorldPosWithRadius() {}
 			};
 			struct DirXYHalf
 			{	
