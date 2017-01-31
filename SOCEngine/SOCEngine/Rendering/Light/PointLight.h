@@ -19,7 +19,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeParam(LightTransformBuffer& out) const;
+			void MakeTransform(LightTransformBuffer& out) const;
 
 		public:
 			virtual Core::Component* Clone() const;
