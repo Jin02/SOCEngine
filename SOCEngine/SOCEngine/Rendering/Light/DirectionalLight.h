@@ -25,7 +25,7 @@ namespace Rendering
 
 		public:
 			virtual bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeParam(DirXYHalf& outDirXY) const;
+			void MakeTransform(DirXYHalf& outDirXY) const;
 
 		public:
 			virtual Core::Component* Clone() const;
