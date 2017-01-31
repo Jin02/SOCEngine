@@ -46,13 +46,12 @@ bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
 
 void SpotLight::MakeParam(LightTransformBuffer& outTransform, Param& outParam) const
 {
-	const Transform* transform = _owner->GetTransform();
+	const Transform* transform	= _owner->GetTransform();
+	const Matrix& worldMat		= transform->GetWorldMatrix();
+	
+	outTransform.worldPosition = Vector4(worldMat._41, worldMat._42, worldMat._43);
 
-	Transform worldTransform(nullptr);
-	transform->FetchWorldTransform(worldTransform);
-	outTransform.worldPosition = worldTransform.GetLocalPosition();
-
-	const auto& forward = worldTransform.GetForward();
+	const Vector3 forward = Vector3(worldMat._13, worldMat._23, worldMat._33);
 	outTransform.radius = forward.z >= 0.0f ? _radius : -_radius;
 
 	outParam.dirXY = LightForm::DirXYHalf(forward.x, forward.y);
