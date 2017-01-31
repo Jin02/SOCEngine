@@ -11,7 +11,7 @@ namespace Rendering
 			class PointLightingBuffer : public LightingBufferForm<PointLight>
 			{
 			private:
-				typedef LightingBufferForm<LightForm::LightTransformBuffer> Parent;
+				typedef LightingBufferForm<PointLight> Parent;
 
 			public:
 				PointLightingBuffer();
