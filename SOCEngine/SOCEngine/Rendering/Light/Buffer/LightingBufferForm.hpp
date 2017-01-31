@@ -94,7 +94,7 @@ namespace Rendering
 				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount) = 0;
-				virtual void UpdateAdditionalBuffer(const LightForm* light) {}
+				virtual void UpdateAdditionalBuffer(const LightForm* light, bool existElem) {}
 				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
 			};
 		}
