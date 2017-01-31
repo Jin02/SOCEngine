@@ -14,7 +14,7 @@ namespace Rendering
 			class LightingBufferForm
 			{
 			protected:
-				typedef typename LightType::TransformTraits		TransformType;
+				typedef typename LightType::TransformType		TransformType;
 				typedef Buffer::GPUUploadBuffer<address, TransformType>	TransformBuffer;
 
 			private:
