@@ -34,13 +34,13 @@ bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 	return true;
 }
 
-void DirectionalLight::MakeTransform(DirXYHalf& outDirXY) const
+void DirectionalLight::MakeTransform(TransformType& outDirXY) const
 {
 	const Transform* transform	= _owner->GetTransform();
 	const Matrix& worldMat		= transform->GetWorldMatrix();
 	const Vector3 forward		= Vector3(worldMat._13, worldMat._23, worldMat._33);
 	
-	outDirXY = DirXYHalf(forward.x, forward.y);
+	outDirXY = TransformType(forward.x, forward.y);
 }
 
 Core::Component* DirectionalLight::Clone() const
