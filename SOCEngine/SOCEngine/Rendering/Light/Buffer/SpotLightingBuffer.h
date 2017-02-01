@@ -25,7 +25,9 @@ namespace Rendering
 			public:
 				void Initialize();
 				void Destroy();
-
+				
+				static SpotLightingBuffer* Create();
+				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount);
 				virtual void UpdateAdditionalBuffer(const SpotLight* light, bool existElem);
