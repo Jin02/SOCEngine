@@ -107,6 +107,11 @@ namespace Rendering
 				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
 				virtual void OnDelete(const LightType* light) { }
 				virtual void OnDeleteAll() {}
+				
+			public:
+				GET_ACCESSOR(TransformSRBuffer,			const ShaderResourceBuffer*, _transformBuffer->GetShaderResourceBuffer());
+				GET_ACCESSOR(ColorSRBuffer,			const ShaderResourceBuffer*, _commonBuffer.GetColorSRBuffer());
+				GET_ACCESSOR(OptionalParamIndexSRBuffer, 	const ShaderResourceBuffer*, _commonBuffer.GetOptionalParamIndexSRBuffer());
 			};
 		}
 	}
