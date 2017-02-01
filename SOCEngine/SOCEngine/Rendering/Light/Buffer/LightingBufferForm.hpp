@@ -29,11 +29,10 @@ namespace Rendering
 				
 				virtual ~LightingBufferForm()
 				{
-					Destroy();	
 					SAFE_DELETE(_transformBuffer);
 				}
 				
-			public:
+			protected:
 				void Initialize(uint maxLightCount)
 				{
 					_transformBuffer = InitializeTransformBuffer(maxLightCount);
@@ -46,6 +45,7 @@ namespace Rendering
 					_transformBuffer->Destroy();
 				}
 
+			public:
 				void UpdateBuffer(const std::vector<LightWithPrevUpdateCounter<LightType>>& lightWithPrevUCs,
 						  const std::function<uchar(const LightType*)>& getShadowIndex,
 						  const std::function<uchar(const LightType*)>& getLightShaftIndex)
