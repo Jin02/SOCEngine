@@ -46,17 +46,17 @@ namespace Rendering
 				}
 
 				void UpdateBuffer(	ID3D11DeviceContext* context,
-							const std::vector<LightWithPrevUpdateCounter>& lightWithPrevUCs,
-							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-							const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
+							const std::vector<LightWithPrevUpdateCounter<LightType>>& lightWithPrevUCs,
+							const std::function<uchar(const LightType*)>& getShadowIndex,
+							const std::function<uchar(const LightType*)>& getLightShaftIndex,
 							bool forcedUpdate = false	)
 				{					
-					auto _UpdateBuffer = [&](const LightForm* light) -> void
+					auto _UpdateBuffer = [&](const LightType* light) -> void
 					{
 						address key = reinterpret_cat<address>(light);
 						
 						TransformType transform;
-						static_cast<const LightType*>(light)->MakeTransform(transform);
+						light->MakeTransform(transform);
 						
 						TransformType* existTarnsform = _transformBuffer->Find(key);
 						if( existTarnsform == nullptr )	_transformBuffer->Add(key, transform);
@@ -99,9 +99,9 @@ namespace Rendering
 				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount) = 0;
-				virtual void UpdateAdditionalBuffer(const LightForm* light, bool existElem) {}
+				virtual void UpdateAdditionalBuffer(const LightType* light, bool existElem) {}
 				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
-				virtual void OnDelete(const Light::LightForm* light) { }
+				virtual void OnDelete(const LightType* light) { }
 				virtual void OnDeleteAll() {}
 			};
 		}
