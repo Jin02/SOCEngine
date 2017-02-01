@@ -10,15 +10,13 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
-			class SpotLightingBuffer
+			class SpotLightingBuffer : public LightingBufferForm<SpotLight>
 			{
 			private:
-				typedef Buffer::GPUUploadBuffer<address, LightForm::LightTransformBuffer>	TransformBuffer;
-				typedef Buffer::GPUUploadBuffer<address, Light::SpotLight::Param>		ParamBuffer;
-
-				TransformBuffer*								_transformBuffer;
-				ParamBuffer*									_paramBuffer;
-				CommonLightingBuffer								_commonBuffer;
+				typedef LightingBufferForm<SpotLight> 					Parent;
+				
+				typedef Buffer::GPUUploadBuffer<address, SpotLight::Param>		ParamBuffer;
+				ParamBuffer*								_paramBuffer;
 				
 			public:
 				SpotLightingBuffer();
@@ -27,20 +25,15 @@ namespace Rendering
 			public:
 				void Initialize();
 				void Destroy();
-				
-			private:
-				bool UpdateBuffer(const LightWithPrevUpdateCounter& lightWithPrevUC,
-									const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-									const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex);	
 
-			public:
-				void UpdateSRBuffer(	ID3D11DeviceContext* context,
-							const LightWithPrevUpdateCounter& lightWithPrevUC,
-							const std::function<uchar(const Light::LightForm*)>& getShadowIndex,
-							const std::function<uchar(const Light::LightForm*)>& getLightShaftIndex,
-							bool forcedUpdate = false	);				
-				void Delete(const Light::SpotLight* light);
-				void DeleteAll();
+			private:
+				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount);
+/*
+				virtual void UpdateAdditionalBuffer(const LightType* light, bool existElem) {}
+				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
+				virtual void OnDelete(const LightType* light) { }
+				virtual void OnDeleteAll() {}
+*/
 			};
 		}
 	}
