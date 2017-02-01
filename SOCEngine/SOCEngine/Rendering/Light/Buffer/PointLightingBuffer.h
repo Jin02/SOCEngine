@@ -21,6 +21,8 @@ namespace Rendering
 				inline void Initialize()	{ Parent::Initialize(POINT_LIGHT_BUFFER_MAX_NUM); }				
 				inline void Destroy()		{ Parent::Destroy(); }
 				
+				static PointLightingBuffer* Create();
+				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount);
 			};
