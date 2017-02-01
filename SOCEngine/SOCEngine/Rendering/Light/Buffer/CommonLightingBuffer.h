@@ -33,6 +33,10 @@ namespace Rendering
 				void UpdateSRBuffer(ID3D11DeviceContext* context);		
 				void Delete(const Light::LightForm* light);
 				void DeleteAll();
+				
+				GET_ACCESSOR(ColorSRBuffer,			const ShaderResourceBuffer*,	_colorBuffer->GetShaderResourceBuffer());
+				GET_ACCESSOR(OptionalParamIndexSRBuffer,	const ShaderResourceBuffer*,	_optionalParamIndexBuffer->GetShaderResourceBuffer());
+				
 			};
 		}
 	}
