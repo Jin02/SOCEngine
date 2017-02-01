@@ -68,7 +68,7 @@ namespace Rendering
 					
 					bool isNeedToUpdate = false;
 					for(const auto& iter : lightWithPrevUCs)
-						isNeedToUpdate |= iter->UpdateBuffer(_UpdateBuffer);
+						isNeedToUpdate |= iter.UpdateBuffer(_UpdateBuffer);
 					
 					if((isNeedToUpdate || forcedUpdate) == false)
 						return;
