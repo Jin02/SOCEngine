@@ -28,12 +28,10 @@ namespace Rendering
 
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount);
-/*
-				virtual void UpdateAdditionalBuffer(const LightType* light, bool existElem) {}
-				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
-				virtual void OnDelete(const LightType* light) { }
-				virtual void OnDeleteAll() {}
-*/
+				virtual void UpdateAdditionalBuffer(const SpotLight* light, bool existElem);
+				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context);
+				virtual void OnDelete(const SpotLight* light);
+				virtual void OnDeleteAll();
 			};
 		}
 	}
