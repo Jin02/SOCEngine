@@ -20,9 +20,10 @@ namespace Rendering
 			private:
 				TransformBuffer*					_transformBuffer;
 				CommonLightingBuffer					_commonBuffer;
+				bool							_isNeedToUpdateSRBuffer;
 				
 			public:
-				LightingBufferForm() : _transformBuffer(nullptr), _commonBuffer()
+				LightingBufferForm() : _transformBuffer(nullptr), _commonBuffer(), _isNeedToUpdateSRBuffer(false)
 				{
 				}
 				
@@ -45,11 +46,9 @@ namespace Rendering
 					_transformBuffer->Destroy();
 				}
 
-				void UpdateBuffer(	ID3D11DeviceContext* context,
-							const std::vector<LightWithPrevUpdateCounter<LightType>>& lightWithPrevUCs,
-							const std::function<uchar(const LightType*)>& getShadowIndex,
-							const std::function<uchar(const LightType*)>& getLightShaftIndex,
-							bool forcedUpdate = false	)
+				void UpdateBuffer(const std::vector<LightWithPrevUpdateCounter<LightType>>& lightWithPrevUCs,
+						  const std::function<uchar(const LightType*)>& getShadowIndex,
+						  const std::function<uchar(const LightType*)>& getLightShaftIndex)
 				{					
 					auto _UpdateBuffer = [&](const LightType* light) -> void
 					{
@@ -66,19 +65,24 @@ namespace Rendering
 						UpdateAdditionalBuffer(light);
 					};
 					
-					bool isNeedToUpdate = false;
+					_isNeedToUpdateSRBuffer = false;
 					for(const auto& iter : lightWithPrevUCs)
-						isNeedToUpdate |= iter.UpdateBuffer(_UpdateBuffer);
-					
-					if((isNeedToUpdate || forcedUpdate) == false)
-						return;
-					
-					_transformBuffer->UpdateSRBuffer(context);
-					_commonBuffer.UpdateSRBuffer(context);
-					
-					UpdateAdditionalSRBuffer(context);
+						_isNeedToUpdateSRBuffer |= iter.UpdateBuffer(_UpdateBuffer);					
 				}
-
+				
+				void UpdateSRBuffer(ID3D11DeviceContext* context, bool forcedUpdate = false)
+				{
+					if(_isNeedToUpdateSRBuffer || forcedUpdate)
+					{
+						_transformBuffer->UpdateSRBuffer(context);
+						_commonBuffer.UpdateSRBuffer(context);
+					
+						UpdateAdditionalSRBuffer(context);
+					}
+					
+					_isNeedToUpdateSRBuffer = false;
+				}
+				
 				void Delete(const LightType* light)
 				{
 					address key = reinterpret_cast<address>(light);
