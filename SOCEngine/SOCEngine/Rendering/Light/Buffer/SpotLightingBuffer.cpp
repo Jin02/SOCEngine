@@ -60,3 +60,11 @@ TransformBuffer* SpotLightingBuffer::InitializeTransformBuffer(uint maxLightCoun
 	const __int32 dummy[maxLightCount * sizeof(Parent::TransformType) / 4] = {0, };
 	return TransformBuffer::Create(maxLightCount, DXGI_FORMAT_R32G32B32A32_FLOAT, dummy);
 }
+
+SpotLightingBuffer* SpotLightingBuffer::Create()
+{
+	SpotLightingBuffer* buff = new SpotLightingBuffer;
+	buff->Initialize();
+	
+	return buff;
+}
