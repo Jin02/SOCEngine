@@ -5,13 +5,12 @@ using namespace Rendering::Light;
 using namespace Rendering::Light::LightingBuffer;
 
 SpotLightingBuffer::SpotLightingBuffer()
-	: _transformBuffer(nullptr), _paramBuffer(nullptr), _commonBuffer()
+	: Parent(), _paramBuffer(nullptr)
 {
 }
 
 SpotLightingBuffer::~SpotLightingBuffer()
 {
-	Destroy();
 	SAFE_DELETE(_paramBuffer);
 }
 
