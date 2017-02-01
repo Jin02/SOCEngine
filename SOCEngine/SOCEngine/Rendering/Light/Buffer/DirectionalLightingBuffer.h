@@ -20,6 +20,7 @@ namespace Rendering
 			public:
 				inline void Initialize()	{ Parent::Initialize(DIRECTIONAL_LIGHT_BUFFER_MAX_NUM); }				
 				inline void Destroy()		{ Parent::Destroy(); }
+				static DirectionalLightingBuffer* Create();
 				
 			private:
 				virtual TransformBuffer* InitializeTransformBuffer(uint maxLightCount);
