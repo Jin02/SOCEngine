@@ -29,12 +29,32 @@ void SpotLightingBuffer::Destroy()
 	Parent::Destroy();
 }
 
-/*
-				virtual void UpdateAdditionalBuffer(const LightType* light, bool existElem) {}
-				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context) {}
-				virtual void OnDelete(const LightType* light) { }
-				virtual void OnDeleteAll() {}
-*/
+void SpotLightingBuffer::UpdateAdditionalBuffer(const SpotLight* light, bool existElem)
+{
+	address key = reinterpret_cast<address>(light);
+	
+	SpotLight::Param param;
+	light->MakeParam(param);
+	
+	if(existElem)		(*_paramBuffer->Find(key)) = param;
+	else			_paramBuffer->Add(key, param);
+}
+
+void SpotLightingBuffer::UpdateAdditionalSRBuffer(ID3D11DeviceContext* context)
+{
+	_paramBuffer->UpdateSRBuffer(context);
+}
+
+void SpotLightingBuffer::OnDelete(const SpotLight* light)
+{
+	address key = reinterpret_cast<address>(light);
+	_paramBuffer->Delete(key);
+}
+
+void SpotLightingBuffer::OnDeleteAll()
+{
+	_paramBuffer->DeleteAll();
+}
 
 TransformBuffer* SpotLightingBuffer::InitializeTransformBuffer(uint maxLightCount)
 {
