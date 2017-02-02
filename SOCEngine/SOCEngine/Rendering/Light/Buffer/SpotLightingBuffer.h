@@ -34,6 +34,9 @@ namespace Rendering
 				virtual void UpdateAdditionalSRBuffer(ID3D11DeviceContext* context);
 				virtual void OnDelete(const SpotLight* light);
 				virtual void OnDeleteAll();
+				
+			public:
+				GET_ACCESSOR(ParamSRBuffer,	const Buffer::ShaderResourceBuffer*,	_paramBuffer->GetShaderResourceBuffer());
 			};
 		}
 	}
