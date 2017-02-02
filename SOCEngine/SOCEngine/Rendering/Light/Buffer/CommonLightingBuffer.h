@@ -34,8 +34,8 @@ namespace Rendering
 				void Delete(const Light::LightForm* light);
 				void DeleteAll();
 				
-				GET_ACCESSOR(ColorSRBuffer,			const ShaderResourceBuffer*,	_colorBuffer->GetShaderResourceBuffer());
-				GET_ACCESSOR(OptionalParamIndexSRBuffer,	const ShaderResourceBuffer*,	_optionalParamIndexBuffer->GetShaderResourceBuffer());
+				GET_ACCESSOR(ColorSRBuffer,			const Buffer::ShaderResourceBuffer*,	_colorBuffer->GetShaderResourceBuffer());
+				GET_ACCESSOR(OptionalParamIndexSRBuffer,	const Buffer::ShaderResourceBuffer*,	_optionalParamIndexBuffer->GetShaderResourceBuffer());
 				
 			};
 		}
