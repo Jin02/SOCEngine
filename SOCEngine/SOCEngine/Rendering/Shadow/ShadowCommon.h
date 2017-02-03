@@ -41,7 +41,15 @@ namespace Rendering
 					uint packedParam[4];
 				};
 			};
-
+			struct ToViewSpaceParam
+			{
+				float invProj_34;
+				float invProj_44;
+				
+				ToViewSpaceParam(float _invProj_34, float _invProj_44) : invProj_34(_invProj_34), invProj_44(_invProj_44) {}
+				~ToViewSpaceParam() {}
+			};
+	
 		private:
 			float						_projNear;
 			float						_projFar;			//new
