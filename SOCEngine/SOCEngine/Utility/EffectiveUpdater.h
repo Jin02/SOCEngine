@@ -1,5 +1,11 @@
 #pragma once
 
+#include <vector>
+#include <functional>
+
+#include "Common.h"
+#include "Counter.h"
+
 namespace Utility
 {
 	class EffectiveUpdater
