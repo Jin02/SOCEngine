@@ -117,18 +117,17 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 		_globalParam.exposureSpeed		= 0.4f;
 
 		{
-			DepthOfField::ParamCB param;
-			param.start = 0.0f;
-			param.end = 0.0f;
-
+			DepthOfField::ParamCB param = { 0, 0, 0, 0 };
 			_dof->UpdateParam(param);
 		}
 
 		{
+			const float tempScale = 2.0f;
+
 			GaussianBlur::ParamCB param;
-			param.blurSize			= 1.25f;
-			param.sigma				= 3.0f;
-			param.numPixelPerSide	= 4.0f;
+			param.blurSize			= tempScale * 1.25f;
+			param.sigma				= tempScale * 3.0f;
+			param.numPixelPerSide	= tempScale * 4.0f;
 			param.scale				= 1.0f;
 
 			_gaussianBlur->UpdateParam(dx, param);

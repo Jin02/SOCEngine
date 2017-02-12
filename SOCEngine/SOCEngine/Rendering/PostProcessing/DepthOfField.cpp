@@ -29,9 +29,6 @@ void DepthOfField::Initialize()
 
 void DepthOfField::UpdateParam(const ParamCB& param)
 {
-	if(param == _prevParam)
-		return;
-
 	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
 
 	_prevParam = param;
