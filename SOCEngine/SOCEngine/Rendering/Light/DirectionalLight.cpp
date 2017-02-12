@@ -49,14 +49,10 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 
 	float orthogonalWH = (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
 
-	Matrix proj, invNearFarProj;
+	Matrix proj;
 	Matrix::OrthoLH(proj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z);
-	Matrix::OrthoLH(invNearFarProj, orthogonalWH, orthogonalWH, DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z, DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z);
 
-	_invNearFarViewProjMat	= view * invNearFarProj;
 	_viewProjMat			= view * proj;
-
-	_frustum.Make(_invNearFarViewProjMat);
 
 	Matrix::Inverse(proj, proj);
 	_param.invProj_33 = proj._33;

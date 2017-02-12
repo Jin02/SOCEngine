@@ -35,9 +35,8 @@ void SpotLightShadow::ComputeViewProjMatrix()
 	float radius	= _owner->GetRadius();
 	float projNear	= GetProjectionNear();
 
-	Matrix proj, invNearFarProj;
+	Matrix proj;
 	Matrix::PerspectiveFovLH(proj, 1.0f, spotAngle, radius, projNear);
-	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, spotAngle, projNear, radius);
 
 	_viewProjMat			= view * proj;
 }

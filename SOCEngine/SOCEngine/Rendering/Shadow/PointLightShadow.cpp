@@ -43,13 +43,11 @@ void PointLightShadow::ComputeViewProjMatrix()
 	float radius	= _owner->GetRadius();
 	float projNear	= GetProjectionNear();
 
-	Matrix proj, invNearFarProj;
-
+	Matrix proj;
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), radius, projNear);
-	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, Common::Deg2Rad(90.0f), projNear, radius);
 
 	auto ComputeViewProj = [](Matrix& outViewProj,
-		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat, const Matrix& invNearFarProjMat)
+		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
 	{
 		Matrix view;
 		{
@@ -68,7 +66,7 @@ void PointLightShadow::ComputeViewProjMatrix()
 	_owner->GetOwner()->GetTransform()->FetchWorldPosition(worldPos);
 
 	Matrix viewProj;
-	ComputeViewProj(viewProj, worldPos, forwards[0], ups[0], proj, invNearFarProj);
+	ComputeViewProj(viewProj, worldPos, forwards[0], ups[0], proj);
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
@@ -81,7 +79,7 @@ void PointLightShadow::ComputeViewProjMatrix()
 			uint matIdx = i - 1;
 			
 			ComputeViewProj(_viewProjMat[matIdx],
-							worldPos, forwards[i], ups[i], proj, invNearFarProj);
+							worldPos, forwards[i], ups[i], proj);
 		}
 	}
 }

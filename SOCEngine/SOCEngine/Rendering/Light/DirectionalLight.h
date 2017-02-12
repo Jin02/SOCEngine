@@ -25,7 +25,6 @@ namespace Rendering
 
 		private:
 			Param						_param;
-			Math::Matrix				_invNearFarViewProjMat;
 			Math::Matrix				_viewProjMat;
 
 			Intersection::Frustum		_frustum;
@@ -54,7 +53,6 @@ namespace Rendering
 		public:
 			GET_ACCESSOR(Frustum,							const Intersection::Frustum&,		_frustum);
 			GET_ACCESSOR(Shadow,							Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
-			GET_ACCESSOR(InvNearFarViewProjectionMatrix,	const Math::Matrix&,				_invNearFarViewProjMat);
 			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,				_viewProjMat);
 
 			GET_SET_ACCESSOR(ProjectionSize,				float,								_projectionSize);

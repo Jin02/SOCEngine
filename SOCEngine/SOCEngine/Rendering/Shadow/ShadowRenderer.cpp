@@ -266,7 +266,6 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
 	const PointLight* light			= static_cast<const PointLight*>(ownerLight);
 
-	std::array<Matrix, 6> invNearFarViewProjMatrices;
 	std::array<Matrix, 6> viewProjMatrices;
 
 	shadow->GetViewProjectionMatrices(viewProjMatrices);
@@ -280,7 +279,6 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 		{
 			CameraForm::CameraCBData cb;
 			{
-				cb.viewMat		= invNearFarViewProjMatrices[i]; // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 				cb.viewProjMat	= viewProjMatrices[i];
 			}
 
@@ -303,7 +301,6 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	
 	CameraForm::CameraCBData cbData;
 	{
-		cbData.viewMat = light->GetInvNearFarViewProjectionMatrix(); // 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 		cbData.viewProjMat = light->GetViewProjectionMatrix();
 	}
 
