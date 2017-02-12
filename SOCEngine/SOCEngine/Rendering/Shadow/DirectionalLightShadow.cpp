@@ -18,8 +18,5 @@ void DirectionalLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat) const
 {
 	const DirectionalLight* owner = dynamic_cast<const DirectionalLight*>(_owner);
 
-	if(GetUseVSM())
-		Math::Matrix::Transpose(outViewProjMat,	owner->GetInvNearFarViewProjectionMatrix());
-	else
-		Math::Matrix::Transpose(outViewProjMat,		owner->GetViewProjectionMatrix());
+	Math::Matrix::Transpose(outViewProjMat,		owner->GetViewProjectionMatrix());
 }

@@ -20,7 +20,6 @@ using namespace Rendering::Shader;
 
 ShadowRenderer::ShadowRenderer() :
 	_pointLightShadowMapAtlas(nullptr), _spotLightShadowMapAtlas(nullptr), _directionalLightShadowMapAtlas(nullptr),
-	_pointLightMomentShadowMapAtlas(nullptr), _spotLightMomentShadowMapAtlas(nullptr), _directionalLightMomentShadowMapAtlas(nullptr),
 	_pointLightShadowMapResolution(512),
 	_spotLightShadowMapResolution(512),
 	_directionalLightShadowMapResolution(512),
@@ -41,10 +40,6 @@ ShadowRenderer::~ShadowRenderer()
 	SAFE_DELETE(_pointLightShadowMapAtlas);
 	SAFE_DELETE(_spotLightShadowMapAtlas);
 	SAFE_DELETE(_directionalLightShadowMapAtlas);
-
-	SAFE_DELETE(_pointLightMomentShadowMapAtlas);
-	SAFE_DELETE(_spotLightMomentShadowMapAtlas);
-	SAFE_DELETE(_directionalLightMomentShadowMapAtlas);
 
 	SAFE_DELETE(_pointLightShadowParamSRBuffer);
 	SAFE_DELETE(_pointLightViewProjMatSRBuffer);
@@ -246,7 +241,6 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 
 	CameraForm::CameraCBData cbData;
 	{
-		cbData.viewMat		= shadow->GetInvNearFarViewProjectionMatrix();	// 사용하지 않는 viewMat대신 invNearFarViewProj 사용
 		cbData.viewProjMat	= shadow->GetViewProjectionMatrix();
 	}
 
@@ -275,7 +269,6 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 	std::array<Matrix, 6> invNearFarViewProjMatrices;
 	std::array<Matrix, 6> viewProjMatrices;
 
-	shadow->GetInvNearFarViewProjMatrices(invNearFarViewProjMatrices);
 	shadow->GetViewProjectionMatrices(viewProjMatrices);
 
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &viewProjMatrices[0], sizeof(Matrix)) != 0;
