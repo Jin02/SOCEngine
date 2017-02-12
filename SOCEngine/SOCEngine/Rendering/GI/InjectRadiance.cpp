@@ -51,6 +51,7 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,	param.global.vxgiDynamicInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,	param.shadowGlobalInfo);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,	param.voxelization.InfoCB);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam,				param.tbrParamCB);
 
 	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap, param.OutVoxelColorMap);
 
@@ -67,6 +68,7 @@ void InjectRadiance::Dispath(const Device::DirectX* dx, const DispatchParam& par
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VXGIDynamicInfoCB,				nullptr);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::ShadowGlobalParam,				nullptr);
 	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::VoxelizationInfoCB,				nullptr);
+	ComputeShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam,							nullptr);
 
 	ComputeShader::BindUnorderedAccessView(context, UAVBindIndex::OutVoxelColorMap,	nullptr);
 

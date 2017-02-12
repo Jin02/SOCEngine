@@ -38,6 +38,8 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 	
 		float3 normal	= GetNormalInVoxelRawBuf(VoxelNormalRawBuf, globalIdx);
 		float4 albedo	= GetColorInVoxelRawBuf(VoxelAlbedoRawBuf, globalIdx);
+		albedo.rgb = ToLinear(albedo.rgb, GetGamma());
+
 		float4 emission	= GetColorInVoxelRawBuf(VoxelEmissionRawBuf, globalIdx);
 	
 		float3 radiosity	= float3(0.0f, 0.0f, 0.0f);

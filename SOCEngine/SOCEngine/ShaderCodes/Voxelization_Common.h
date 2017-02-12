@@ -131,6 +131,8 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
 {
+	albedo.rgb = ToLinear(albedo.rgb, GetGamma());
+
 	float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
 	float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 

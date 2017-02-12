@@ -121,7 +121,7 @@ void Voxelization::ClearZeroVoxelMap(const Device::DirectX*& dx, const ConstBuff
 void Voxelization::Voxelize(const Device::DirectX*& dx,
 							const Vector3& startMinWorldPos, const Core::Scene* scene,
 							float dimension, float voxelSize, const VoxelMap* injectionColorMap,
-							const ConstBuffer* vxgiStaticInfoCB, const ConstBuffer* vxgiDynamicInfoCB)
+							const ConstBuffer* vxgiStaticInfoCB, const ConstBuffer* vxgiDynamicInfoCB, const ConstBuffer* tbrParamCB)
 {
 	ClearZeroVoxelMap(dx, vxgiStaticInfoCB);
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -164,6 +164,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						vxgiStaticInfoCB);
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIDynamicInfoCB,					vxgiDynamicInfoCB);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::TBRParam,								tbrParamCB);
 
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::ShadowGlobalParam,					shadowMgr->GetShadowGlobalParamConstBuffer());
 
@@ -202,6 +203,7 @@ void Voxelization::Voxelize(const Device::DirectX*& dx,
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::VXGIDynamicInfoCB,					nullptr);
 	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::ShadowGlobalParam,					nullptr);
+	PixelShader::BindConstBuffer(context,				ConstBufferBindIndex::TBRParam,								nullptr);
 
 	PixelShader::BindTexture(context,					TextureBindIndex::DirectionalLightShadowMapAtlas,			nullptr);
 
