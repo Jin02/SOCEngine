@@ -43,13 +43,11 @@ void PointLightShadow::ComputeViewProjMatrix()
 	float radius	= _owner->GetRadius();
 	float projNear	= GetProjectionNear();
 
-	Matrix proj, invNearFarProj;
-
+	Matrix proj;
 	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), radius, projNear);
-	Matrix::PerspectiveFovLH(invNearFarProj, 1.0f, Common::Deg2Rad(90.0f), projNear, radius);
 
-	auto ComputeViewProj = [](Matrix& outInvNearFarViewProj, Matrix& outViewProj,
-		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat, const Matrix& invNearFarProjMat)
+	auto ComputeViewProj = [](Matrix& outViewProj,
+		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
 	{
 		Matrix view;
 		{
@@ -62,53 +60,38 @@ void PointLightShadow::ComputeViewProjMatrix()
 		}
 
 		outViewProj				= view * projMat;
-		outInvNearFarViewProj	= view * invNearFarProjMat;
 	};
 
 	Vector3 worldPos;
 	_owner->GetOwner()->GetTransform()->FetchWorldPosition(worldPos);
 
-	Matrix invNearFarViewProj, viewProj;
-	ComputeViewProj(invNearFarViewProj, viewProj, worldPos, forwards[0], ups[0], proj, invNearFarProj);
+	Matrix viewProj;
+	ComputeViewProj(viewProj, worldPos, forwards[0], ups[0], proj);
 	bool isDifferent = memcmp(&_prevViewProj, &viewProj, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
 		_prevViewProj = viewProj;
 
-		ShadowCommon::_invNearFarViewProjMat	= invNearFarViewProj;
 		ShadowCommon::_viewProjMat				= viewProj;
 
 		for(uint i=1; i<6; ++i)
 		{
 			uint matIdx = i - 1;
 			
-			ComputeViewProj(_invNearFarViewProjMat[matIdx], _viewProjMat[matIdx],
-							worldPos, forwards[i], ups[i], proj, invNearFarProj);
+			ComputeViewProj(_viewProjMat[matIdx],
+							worldPos, forwards[i], ups[i], proj);
 		}
 	}
 }
 
 void PointLightShadow::MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const
 {
-	if(GetUseVSM())
-		GetInvNearFarViewProjMatrices(outViewProjMat);
-	else
-	{
-		GetViewProjectionMatrices(outViewProjMat);
-	}
+	GetViewProjectionMatrices(outViewProjMat);
 
 	for(uint i=0; i<6; ++i)
 	{
 		Math::Matrix::Transpose(outViewProjMat[i], outViewProjMat[i]);
 	}
-}
-
-void PointLightShadow::GetInvNearFarViewProjMatrices(std::array<Math::Matrix, 6>& out) const
-{
-	out[0] = ShadowCommon::_invNearFarViewProjMat;
-
-	for(uint i=1; i<6; ++i)
-		out[i] = _invNearFarViewProjMat[i-1];
 }
 
 void PointLightShadow::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const

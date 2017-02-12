@@ -57,7 +57,6 @@ namespace Rendering
 			uint						_paramUpdateCounter;
 
 			const Light::LightForm*		_owner;
-			Math::Matrix				_invNearFarViewProjMat;
 			Math::Matrix				_viewProjMat;
 			Math::Matrix				_invViewProjViewportMat;
 
@@ -72,16 +71,10 @@ namespace Rendering
 			void MakeParam(Param& outParam, uint lightIndex) const;
 
 		public:
-			GET_ACCESSOR(UseVSM,							bool,						_useVSM);
-			SET_SHADOW_ACCESSOR(UseVSM,						bool,						_useVSM,		_paramUpdateCounter);
-
-			GET_ACCESSOR(InvNearFarViewProjectionMatrix,	const Math::Matrix&,		_invNearFarViewProjMat);
 			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,		_viewProjMat);
 			GET_ACCESSOR(Owner,								const Light::LightForm*,	_owner);
 
 			GET_ACCESSOR(ParamUpdateCounter,				uint,						_paramUpdateCounter);
-
-
 
 			GET_ACCESSOR(ProjectionNear,					float,						_projNear);
 			void SetProjectionNear(float n);

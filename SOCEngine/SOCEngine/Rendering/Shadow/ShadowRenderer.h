@@ -36,6 +36,10 @@ namespace Rendering
 				uint packedNumOfShadows;
 				uint dummy;
 			};
+			struct ShadowMapCB
+			{
+				Math::Matrix viewProjMat;
+			};
 
 		private:
 			Buffer::ConstBuffer*												_shadowGlobalParamCB;
@@ -45,10 +49,6 @@ namespace Rendering
 			Texture::DepthBuffer*												_pointLightShadowMapAtlas;
 			Texture::DepthBuffer*												_spotLightShadowMapAtlas;
 			Texture::DepthBuffer*												_directionalLightShadowMapAtlas;
-
-			Texture::RenderTexture*												_pointLightMomentShadowMapAtlas;
-			Texture::RenderTexture*												_spotLightMomentShadowMapAtlas;
-			Texture::RenderTexture*												_directionalLightMomentShadowMapAtlas;
 
 		private:
 			struct PrevUpdateCounter
@@ -169,9 +169,6 @@ namespace Rendering
 			GET_ACCESSOR(SpotLightShadowMapResolution,					uint,										_spotLightShadowMapResolution);
 			GET_ACCESSOR(DirectionalLightShadowMapResolution,			uint,										_directionalLightShadowMapResolution);
 			GET_ACCESSOR(ShadowGlobalParamConstBuffer,					const Buffer::ConstBuffer*,					_shadowGlobalParamCB);
-			GET_ACCESSOR(PointLightMomentShadowMapAtlas,				const Texture::RenderTexture*,				_pointLightMomentShadowMapAtlas);
-			GET_ACCESSOR(SpotLightMomentShadowMapAtlas,					const Texture::RenderTexture*,				_spotLightMomentShadowMapAtlas);
-			GET_ACCESSOR(DirectionalLightMomentShadowMapAtlas,			const Texture::RenderTexture*,				_directionalLightMomentShadowMapAtlas);
 
 			GET_ACCESSOR(PointLightShadowParamSRBuffer,					const Buffer::ShaderResourceBuffer*,		_pointLightShadowParamSRBuffer);
 			GET_ACCESSOR(PointLightShadowViewProjSRBuffer,				const Buffer::ShaderResourceBuffer*,		_pointLightViewProjMatSRBuffer);

@@ -11,12 +11,17 @@ cbuffer Transform : register( b1 )		//Object World
 
 cbuffer Camera : register( b2 )
 {
-	matrix	camera_viewMat;			// or InvNearFarViewProj
+	matrix	camera_viewMat;
 	matrix	camera_viewProjMat;
 	matrix	camera_prevViewProjMat;		// used for motion blur
 
 	float3	camera_worldPos;
 	uint	camera_packedNearFar;
+};
+
+cbuffer OnlyPass : register( b4 )
+{
+	matrix	onlyPass_viewProjMat;
 };
 
 float GetCameraNear()

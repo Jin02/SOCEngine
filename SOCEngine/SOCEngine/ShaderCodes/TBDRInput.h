@@ -62,9 +62,6 @@ StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
 StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
-Texture2D<float4>							SpotLightMomentShadowMapAtlas				: register( t27 );
-Texture2D<float4>							DirectionalLightMomentShadowMapAtlas		: register( t28 );
-
 struct LightingParams
 {
 	uint	lightIndex;
@@ -93,14 +90,19 @@ cbuffer TBRParam : register( b0 )
 	float	tbrParam_gammaWithSignUseHDR;
 };
 
-float GetGamma()
-{
-	return abs(tbrParam_gammaWithSignUseHDR);
-}
-
 bool GetUseHDR()
 {
 	return tbrParam_gammaWithSignUseHDR < 0.0f;
+}
+
+float GetGamma()
+{
+	return GetUseHDR() ? abs(tbrParam_gammaWithSignUseHDR) : 1.0f;
+}
+
+float GetRealGammaValue()
+{
+	return abs(tbrParam_gammaWithSignUseHDR); 
 }
 
 float2 GetViewportSize()

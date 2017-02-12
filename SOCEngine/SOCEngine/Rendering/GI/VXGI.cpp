@@ -178,7 +178,7 @@ void VXGI::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, cons
 		// Clear Voxel Map and voxelize
 		_voxelization->Voxelize(dx, _dynamicInfo.startCenterWorldPos, scene,
 								_staticInfo.dimension, _staticInfo.voxelSize,
-								_injectionSourceMap, _staticInfoCB, _dynamicInfoCB);
+								_injectionSourceMap, _staticInfoCB, _dynamicInfoCB, camera->GetTBRParamConstBuffer());
 	}
 
 	MaterialManager* materialMgr = scene->GetMaterialManager();
@@ -200,6 +200,7 @@ void VXGI::Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, cons
 			param.voxelization.NormalRawBuffer		= _voxelization->GetVoxelNormalRawBuffer();
 			param.voxelization.EmissionRawBuffer	= _voxelization->GetVoxelEmissionRawBuffer();
 			param.voxelization.InfoCB				= _voxelization->GetInfoCB();
+			param.tbrParamCB						= camera->GetTBRParamConstBuffer();
 		}
 
 		if(lightMgr->GetPointLightCount() > 0)

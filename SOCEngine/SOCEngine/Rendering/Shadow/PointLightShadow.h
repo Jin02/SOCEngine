@@ -9,9 +9,7 @@ namespace Rendering
 		class PointLightShadow : public ShadowCommon
 		{
 		private:
-			Math::Matrix	_invNearFarViewProjMat[5];	// another viewMat is placed in LightForm.
-			Math::Matrix	_viewProjMat[5];			// another viewProjMat is placed in LightForm.
-
+			Math::Matrix	_viewProjMat[5];
 			Math::Matrix	_prevViewProj;
 
 		public:
@@ -24,7 +22,6 @@ namespace Rendering
 		public:
 			void MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const;
 
-			void GetInvNearFarViewProjMatrices(std::array<Math::Matrix, 6>& out) const;
 			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const;
 		};
 	}

@@ -37,7 +37,6 @@ Shader::ShaderGroup RenderManager::LoadDefaultSahder(RenderType renderType, uint
 	repo = &(_renderShaders[(uint)renderType]);
 
 	if(	renderType == RenderType::GBuffer_AlphaBlend ||
-		renderType == RenderType::Forward_MomentDepthWithAlphaTest ||
 		renderType == RenderType::ReflectionProbe_AlphaTestWithDiffuse	)
 	{
 		ShaderMacro alphaTestMacro;
@@ -161,11 +160,6 @@ void RenderManager::MakeDefaultShaderMainFuncNames(std::vector<ShaderMainFuncNam
 	{
 		vsMain = "DepthOnlyVS";
 		psMain = "";
-	}
-	else if(renderType == RenderType::Forward_MomentDepth || renderType == RenderType::Forward_MomentDepthWithAlphaTest)
-	{
-		vsMain = "MomentDepthVS";
-		psMain = "MomentDepthPS";
 	}
 	else if(renderType == RenderType::ReflectionProbe_OnlyFrontFace			||
 			renderType == RenderType::ReflectionProbe_Transparency			||
@@ -392,8 +386,6 @@ void RenderManager::MakeDefaultSahderFileName(std::string& outFileName, RenderTy
 	case RenderType::Forward_AlphaTestWithDiffuse:
 	case RenderType::Forward_OnlyDepth:
 	case RenderType::Forward_Transparency:
-	case RenderType::Forward_MomentDepth:
-	case RenderType::Forward_MomentDepthWithAlphaTest:
 		frontFileName = "PhysicallyBased_Forward_";
 		break;
 	case RenderType::GBuffer_AlphaBlend:

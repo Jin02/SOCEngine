@@ -1328,9 +1328,6 @@
     <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
-      <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
       <Filter>ShaderCodes\Mesh\Forward\Optional</Filter>
     </FxCompile>

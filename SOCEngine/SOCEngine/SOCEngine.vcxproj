@@ -263,9 +263,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
-    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>

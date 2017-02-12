@@ -52,9 +52,6 @@ namespace Rendering
 		SpotLightShadowViewProjMatrix			= 24,
 		DirectionalLightShadowViewProjMatrix	= 25,
 
-		SpotLightMomentShadowMapAtlas			= 27,
-		DirectionalLightMomentShadowMapAtlas	= 28,
-
 		VoxelAlbedoRawBuffer					= 29,
 		VoxelNormalRawBuffer					= 30,
 		VoxelEmissionRawBuffer					= 31,
@@ -80,6 +77,7 @@ namespace Rendering
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
+		OnlyPass						= 4,
 
 		ReflectionProbe_Info			= 5,	
 

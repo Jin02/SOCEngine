@@ -67,7 +67,7 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,
-								  DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 1);
+								  DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
 
 #if defined(USE_GAUSSIAN_BLUR)
 	_blur = new GaussianBlur;

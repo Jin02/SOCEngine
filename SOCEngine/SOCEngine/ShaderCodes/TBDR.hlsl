@@ -77,8 +77,8 @@ void MSAALighting(
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	outAccumulativeDiffuse	= accumulativeDiffuse + surface.emission.rgb;
-	outAccumulativeSpecular	= accumulativeSpecular;
+	outAccumulativeDiffuse	= saturate(accumulativeDiffuse + surface.emission.rgb);
+	outAccumulativeSpecular	= saturate(accumulativeSpecular);
 }
 #endif
 
@@ -172,7 +172,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		}
 	}
 	
-	accumulativeDiffuse += surface.emission.rgb;
+	accumulativeDiffuse		= saturate(accumulativeDiffuse + surface.emission.rgb);
+	accumulativeSpecular	= saturate(accumulativeSpecular);
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
@@ -198,11 +199,6 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 	else
 	{
-		float gamma = GetUseHDR() ? 1.0f : GetGamma();
-
-		accumulativeDiffuse		= ToGamma(accumulativeDiffuse, gamma);
-		accumulativeSpecular	= ToGamma(accumulativeSpecular, gamma);
-
 		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 0)] = float4(accumulativeDiffuse, 1.0f);
 		OutDiffuseLightBuffer[scale_2_idx + uint2(0, 1)] = float4(accumulativeDiffuse, 1.0f);
 		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 1)] = float4(accumulativeDiffuse, 1.0f);
@@ -237,10 +233,6 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		float4 specular	= float4(0.0f, 0.0f, 0.0f, 0.0f);
 		MSAALighting(edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
 
-		float gamma = GetUseHDR() ? 1.0f : GetGamma();
-		diffuse		= ToGamma(diffuse, gamma);
-		specular	= ToGamma(specular, gamma);
-
 		OutDiffuseLightBuffer[scale_sample_coord]	= diffuse;
 		OutSpecularLightBuffer[scale_sample_coord]	= specular;
 	}
@@ -267,10 +259,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	OutDiffuseLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
 
-	float gamma = GetUseHDR() ? 1.0f : GetGamma();
-
-	OutDiffuseLightBuffer[globalIdx.xy]		= float4( ToGamma(accumulativeDiffuse, gamma),	1.0f);
-	OutSpecularLightBuffer[globalIdx.xy]	= float4( ToGamma(accumulativeSpecular, gamma),	1.0f);
+	OutDiffuseLightBuffer[globalIdx.xy]		= float4( accumulativeDiffuse,	1.0f);
+	OutSpecularLightBuffer[globalIdx.xy]	= float4( accumulativeSpecular,	1.0f);
 
 //	OutDiffuseLightBuffer[globalIdx.xy]		= float4(surface.albedo,	1.0f);
 //	OutSpecularLightBuffer[globalIdx.xy]	= float4(0,0,0,	1.0f);

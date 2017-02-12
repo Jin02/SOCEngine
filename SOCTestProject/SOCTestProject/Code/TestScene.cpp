@@ -34,9 +34,7 @@ TestScene::~TestScene(void)
 
 void TestScene::OnInitialize()
 {
-	PostProcessing::DepthOfField::ParamCB dofParam;
-	dofParam.start	= 15.0f;
-	dofParam.end	= 20.0f;
+	PostProcessing::DepthOfField::ParamCB dofParam = {10.0f, 9.0f, 15.0f, 16.0f};
 	GetPostProcessing()->GetDepthOfField()->UpdateParam(dofParam);
 
 	PostProcessing::SSAO::Param ssaoParam;
@@ -47,6 +45,10 @@ void TestScene::OnInitialize()
 	ssaoParam.SetOccluedRate(0.95f);
 
 	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
+
+	GetPostProcessing()->SetUseSSAO(true);
+	GetPostProcessing()->SetUseBloom(true);
+	GetPostProcessing()->SetUseDoF(true);	
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();

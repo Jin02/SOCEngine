@@ -27,7 +27,7 @@ struct Surface
 	uint	materialFlag;
 };
 
-void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx, uniform bool useLinearDiffuse)
+void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx, uniform bool useLinearSpace)
 {
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 normal_roughness = GBufferNormal_roughness.Load( globalIdx, sampleIdx );
@@ -64,7 +64,8 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 #endif
 	uint	matFlag			= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
 	float	specularity		= velocity_metallic_specularity.a;
-	float3	baseColor		= useLinearDiffuse ? ToLinear(albedo_occlusion.rgb, GetGamma()) : albedo_occlusion.rgb;
+
+	float3	baseColor		= useLinearSpace ? ToLinear(albedo_occlusion.rgb, GetGamma()) : albedo_occlusion.rgb;
 	float	metallic		= velocity_metallic_specularity.b;
 
 	outSurface.albedo		= baseColor - baseColor * metallic;

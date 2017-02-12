@@ -34,6 +34,7 @@ namespace Rendering
 				Global								global;
 
 				const Buffer::ConstBuffer*			shadowGlobalInfo;
+				const Buffer::ConstBuffer*			tbrParamCB;
 				const View::UnorderedAccessView*	OutVoxelColorMap;
 
 				uint								dimension;

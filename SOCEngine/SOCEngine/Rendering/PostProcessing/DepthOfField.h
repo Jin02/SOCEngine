@@ -13,15 +13,10 @@ namespace Rendering
 		public:
 			struct ParamCB
 			{
-				float start;
-				float end;
-				float dummy1;
-				float dummy2;
-
-				bool operator==(const ParamCB& a) const
-				{
-					return	(start == a.start) && (end == a.end);
-				}
+				float fousuNear;
+				float blurNear;
+				float focusFar;
+				float blurFar;
 			};
 
 		private:

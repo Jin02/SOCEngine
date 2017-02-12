@@ -56,7 +56,7 @@ namespace Rendering
 		public:
 			void Initialize(uint dimension);
 			void Voxelize(const Device::DirectX*& dx, const Math::Vector3& startCenterWorldPos, const Core::Scene* scene, float dimension, float voxelSize, const VoxelMap* injectionColorMap,
-				const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB);
+				const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB, const Buffer::ConstBuffer* tbrParamCB);
 			void Destroy();
 
 		public:

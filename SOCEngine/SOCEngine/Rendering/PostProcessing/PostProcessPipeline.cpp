@@ -113,22 +113,21 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 	{
 		_globalParam.dt					= 0.0f;
 		_globalParam.bloomThreshold		= 0.01f;
-		_globalParam.exposureKey		= 0.1f;
-		_globalParam.exposureSpeed		= 0.4f;
+		_globalParam.exposureKey		= 0.4f;
+		_globalParam.exposureSpeed		= 0.2f;
 
 		{
-			DepthOfField::ParamCB param;
-			param.start = 0.0f;
-			param.end = 0.0f;
-
+			DepthOfField::ParamCB param = { 0, 0, 0, 0 };
 			_dof->UpdateParam(param);
 		}
 
 		{
+			const float tempScale = 1.0f;
+
 			GaussianBlur::ParamCB param;
-			param.blurSize			= 2.5f;
-			param.sigma				= 6.0f;
-			param.numPixelPerSide	= 8.0f;
+			param.blurSize			= tempScale * 1.25f;
+			param.sigma				= tempScale * 3.0f;
+			param.numPixelPerSide	= tempScale * 4.0f;
 			param.scale				= 1.0f;
 
 			_gaussianBlur->UpdateParam(dx, param);
@@ -173,6 +172,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindTexture(context,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx]);
 		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	dx->GetSamplerStateLinear());
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		_hdrGlobalParamCB);
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,				mainMeshCamera->GetTBRParamConstBuffer());
 	
 		// Eye Adaption
 		_eyeAdaptation->Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
@@ -208,6 +208,7 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		PixelShader::BindTexture(context,		TextureBindIndex(1),						nullptr);	
 		PixelShader::BindSamplerState(context,	SamplerStateBindIndex::DefaultSamplerState,	nullptr);
 		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::HDRGlobalParamCB,		nullptr);
+		PixelShader::BindConstBuffer(context,	ConstBufferBindIndex::TBRParam,				nullptr);
 	}
 
 	if(_useSSAO)

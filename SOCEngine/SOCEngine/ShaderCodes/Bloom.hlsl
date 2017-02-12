@@ -41,7 +41,7 @@ float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 float3 BloomToneMapping(float3 color, float avgLum, float threshold)
 {
 	color = ComputeExposedColor(color, avgLum, threshold);
-	color = Uncharted2ToneMapping(color);
+	color = ToGamma(Uncharted2ToneMapping(color), GetGamma());
 
 	return color;
 }
@@ -50,9 +50,8 @@ float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
 	float4 color		= CurColorMap.Sample(LinearSampler, input.uv);
 	float avgLum		= AverageLuminance();
-
 	color.rgb			= saturate( BloomToneMapping(color.rgb, avgLum, 0.0f) );
 
-	float4 bloom = InputBloomMap.Sample(LinearSampler, input.uv);
-	return float4( saturate( (color + bloom).rgb ) , color.a);
+	float3 bloom		= InputBloomMap.Sample(LinearSampler, input.uv).rgb;
+	return float4(saturate( (color.rgb + bloom).rgb ), color.a);
 }
