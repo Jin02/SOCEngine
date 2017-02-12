@@ -22,7 +22,7 @@ namespace Rendering
 
 			~GPUUploadBuffer()
 			{
-				Destory();
+				Destroy();
 			}
 
 		public:
@@ -36,13 +36,13 @@ namespace Rendering
 			
 			void Initialize(uint count, DXGI_FORMAT format, const void* dummy = nullptr)
 			{
-				Destory();
+				Destroy();
 
 				_srBuffer = new ShaderResourceBuffer;
 				_srBuffer->Initialize(sizeof(T), count, format, dummy, true, 0, D3D11_USAGE_DYNAMIC);
 			}
 
-			void Destory()
+			void Destroy()
 			{
 				SAFE_DELETE(_srBuffer);
 				_buffer.DeleteAll();
