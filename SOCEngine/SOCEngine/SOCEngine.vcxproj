@@ -46,6 +46,7 @@
     <ClInclude Include="Rendering\Buffer\BufferManager.h" />
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
     <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
     <ClInclude Include="Rendering\Buffer\RawBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="ShaderCodes\Voxelization_Common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Structure\MultiLevelVector.h" />
     <ClInclude Include="Structure\VectorHashMap.h" />
     <ClInclude Include="Structure\VectorMap.h" />
     <ClInclude Include="UI\SimpleFontLoader.h" />
@@ -549,7 +551,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Offline;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Offline;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light/Buffer;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
