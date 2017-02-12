@@ -466,6 +466,9 @@
     <Filter Include="Rendering\Sky\Scattering">
       <UniqueIdentifier>{18299b10-3513-4d34-ac52-b8ffe9cc4b3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Light\Buffer">
+      <UniqueIdentifier>{ae0e3bc3-6ec5-47fc-883c-e1d7eccc77d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -951,6 +954,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
       <Filter>Rendering\Sky\Scattering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Structure\MultiLevelVector.h">
+      <Filter>Structure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
