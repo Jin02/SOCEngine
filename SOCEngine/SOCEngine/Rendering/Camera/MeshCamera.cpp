@@ -451,12 +451,12 @@ void MeshCamera::Render(const Device::DirectX* dx,
 		// Write blended depth buffer
 		if(_useTransparent)
 		{
-			ID3D11RenderTargetView* nullRTV = nullptr;
-			context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
-			//context->PSSetShader(nullptr, nullptr, 0);
+			//ID3D11RenderTargetView* nullRTV = nullptr;
+			//context->OMSetRenderTargets(1, &nullRTV, _blendedDepthBuffer->GetDepthStencilView());
+			////context->PSSetShader(nullptr, nullptr, 0);
 
-			const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
-			MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
+			//const std::vector<const Geometry::Mesh*>& meshes = _transparentMeshQueue.meshes;
+			//MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_OnlyDepth, _camMatConstBuffer, nullptr);
 		}
 	}
 
