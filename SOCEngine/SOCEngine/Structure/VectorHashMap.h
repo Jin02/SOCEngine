@@ -31,6 +31,11 @@ namespace Structure
 			uint idx = _vector.size() - 1;
 			_map.insert(std::make_pair(key, idx));
 		}
+		
+		void Add(const Key& key, const Object& object)
+		{
+			Add(key, const_cast<Object&>(object));
+		}
 
 		Object* Find(const Key& key, uint* outIdx = nullptr)
 		{
