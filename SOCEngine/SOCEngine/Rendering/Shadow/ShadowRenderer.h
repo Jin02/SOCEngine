@@ -36,6 +36,10 @@ namespace Rendering
 				uint packedNumOfShadows;
 				uint dummy;
 			};
+			struct ShadowMapCB
+			{
+				Math::Matrix viewProjMat;
+			};
 
 		private:
 			Buffer::ConstBuffer*												_shadowGlobalParamCB;

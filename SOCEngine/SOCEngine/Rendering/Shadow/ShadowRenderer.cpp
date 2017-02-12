@@ -2,8 +2,6 @@
 #include "Utility.h"
 #include "Object.h"
 
-#define USE_RENDER_WITH_UPDATE_CB
-
 using namespace Structure;
 using namespace Math;
 using namespace Core;
@@ -239,17 +237,12 @@ void ShadowRenderer::UpdateShadowCastingSpotLightCB(const Device::DirectX*& dx, 
 	const SpotLight* light			= static_cast<const SpotLight*>(ownerLight);
 	const SpotLightShadow* shadow	= shadowCastingLight.shadow;
 
-	CameraForm::CameraCBData cbData;
-	{
-		cbData.viewProjMat	= shadow->GetViewProjectionMatrix();
-	}
-
+	ShadowMapCB cbData = {shadow->GetViewProjectionMatrix()};
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &cbData.viewProjMat, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
 		shadowCastingLight.prevViewProjMat = cbData.viewProjMat;
 
-		Matrix::Transpose(cbData.viewMat,		cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat,	cbData.viewProjMat);
 
 		ConstBuffer* camConstBuffer = shadowCastingLight.camConstBuffer;
@@ -277,16 +270,11 @@ void ShadowRenderer::UpdateShadowCastingPointLightCB(const Device::DirectX*& dx,
 
 		for(uint i=0; i<6; ++i)
 		{
-			CameraForm::CameraCBData cb;
-			{
-				cb.viewProjMat	= viewProjMatrices[i];
-			}
-
-			Matrix::Transpose(cb.viewMat,		cb.viewMat);
-			Matrix::Transpose(cb.viewProjMat,	cb.viewProjMat);
+			ShadowMapCB cbData = {viewProjMatrices[i]};
+			Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
 
 			ConstBuffer* constBuffer = shadowCastingLight.camConstBuffers[i];
-			constBuffer->UpdateSubResource(context, &cb);
+			constBuffer->UpdateSubResource(context, &cbData);
 		}
 	}
 }
@@ -299,17 +287,11 @@ void ShadowRenderer::UpdateShadowCastingDirectionalLightCB(const Device::DirectX
 	const LightForm* ownerLight		= shadowCastingLight.shadow->GetOwner();
 	const DirectionalLight* light	= static_cast<const DirectionalLight*>(ownerLight);
 	
-	CameraForm::CameraCBData cbData;
-	{
-		cbData.viewProjMat = light->GetViewProjectionMatrix();
-	}
-
+	ShadowMapCB cbData = {light->GetViewProjectionMatrix()};
 	bool isDifferent = memcmp(&shadowCastingLight.prevViewProjMat, &cbData.viewProjMat, sizeof(Matrix)) != 0;
 	if(isDifferent)
 	{
 		shadowCastingLight.prevViewProjMat = cbData.viewProjMat;
-
-		Matrix::Transpose(cbData.viewMat,		cbData.viewMat);
 		Matrix::Transpose(cbData.viewProjMat,	cbData.viewProjMat);
 
 		ConstBuffer* camConstBuffer = shadowCastingLight.camConstBuffer;
@@ -348,9 +330,7 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 	uint count = _shadowCastingSpotLights.GetSize();
 	for(uint index = 0; index < count; ++index)
 	{		
-#ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingSpotLightCB(dx, index);
-#endif
 
 		const LightForm* ownerLight = _shadowCastingSpotLights.Get(index).shadow->GetOwner();
 		const SpotLight* light = static_cast<const SpotLight*>(ownerLight);
@@ -363,21 +343,25 @@ void ShadowRenderer::RenderSpotLightShadowMap(const DirectX*& dx, const RenderMa
 		viewport.TopLeftX = (float)index * _spotLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
 
-		const ConstBuffer* camConstBuffer = _shadowCastingSpotLights.Get(index).camConstBuffer;
-		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-			dx, renderManager, opaqueMeshes,
-			opaqueRenderType,
-			camConstBuffer, &intersectFunc);
+		const ConstBuffer* shadowMapCB = _shadowCastingSpotLights.Get(index).camConstBuffer;
 
-
-		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-
-		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-			dx, renderManager, alphaTestMeshes,
-			alphaBlendRenderType,
-			camConstBuffer, &intersectFunc);
-
-		context->RSSetState( nullptr );
+		VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, shadowMapCB);
+		{
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, opaqueMeshes,
+				opaqueRenderType,
+				nullptr, &intersectFunc);
+	
+			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+	
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, alphaTestMeshes,
+				alphaBlendRenderType,
+				nullptr, &intersectFunc);
+	
+			context->RSSetState( nullptr );
+		}
+		VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, nullptr);
 	}
 
 	context->RSSetViewports(1, &originViewport);
@@ -403,9 +387,6 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 	_pointLightShadowMapAtlas->Clear(context, 0.0f, 0);
 
 	ID3D11RenderTargetView* rtv		= nullptr;
-	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
-	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
-
 	context->OMSetRenderTargets(1, &rtv, _pointLightShadowMapAtlas->GetDepthStencilView());
 
 	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
@@ -413,10 +394,8 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 
 	uint count = _shadowCastingPointLights.GetSize();
 	for(uint index = 0; index < count; ++index)
-	{
-#ifdef USE_RENDER_WITH_UPDATE_CB
+	{		
 		UpdateShadowCastingPointLightCB(dx, index);
-#endif
 
 		const LightForm* ownerLight = _shadowCastingPointLights.Get(index).shadow->GetOwner();
 		const PointLight* light = static_cast<const PointLight*>(ownerLight);
@@ -433,18 +412,23 @@ void ShadowRenderer::RenderPointLightShadowMap(const DirectX*& dx, const RenderM
 			viewport.TopLeftY = (float)i * _pointLightShadowMapResolution;
 			context->RSSetViewports(1, &viewport);
 
-			const ConstBuffer* camConstBuffer = _shadowCastingPointLights.Get(index).camConstBuffers[i];
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-				dx, renderManager, opaqueMeshes,
-				opaqueRenderType,
-				camConstBuffer, &intersectFunc);
+			const ConstBuffer* shadowMapCB = _shadowCastingPointLights.Get(index).camConstBuffers[i];
 
-			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-				dx, renderManager, alphaTestMeshes,
-				alphaBlendRenderType,
-				camConstBuffer, &intersectFunc);
-			context->RSSetState( nullptr );
+			VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, shadowMapCB);
+			{
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+					dx, renderManager, opaqueMeshes,
+					RenderType::Forward_OnlyDepth,
+					nullptr, &intersectFunc);
+
+				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+					dx, renderManager, alphaTestMeshes,
+					RenderType::Forward_AlphaTestWithDiffuse,
+					nullptr, &intersectFunc);
+				context->RSSetState( nullptr );
+			}
+			VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, nullptr);
 		}
 	}
 
@@ -471,8 +455,6 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	_directionalLightShadowMapAtlas->Clear(context, 0.0f, 0);
 
 	ID3D11RenderTargetView* rtv		= nullptr;
-	RenderType opaqueRenderType		= RenderType::Forward_OnlyDepth;
-	RenderType alphaBlendRenderType	= RenderType::Forward_AlphaTestWithDiffuse;
 
 	context->OMSetRenderTargets(1, &rtv, _directionalLightShadowMapAtlas->GetDepthStencilView());
 
@@ -482,9 +464,7 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 	uint count = _shadowCastingDirectionalLights.GetSize();
 	for(uint index = 0; index < count; ++index)
 	{
-#ifdef USE_RENDER_WITH_UPDATE_CB
 		UpdateShadowCastingDirectionalLightCB(dx, index);
-#endif
 
 		viewport.TopLeftX = (float)index * _directionalLightShadowMapResolution;
 		context->RSSetViewports(1, &viewport);
@@ -497,18 +477,22 @@ void ShadowRenderer::RenderDirectionalLightShadowMap(const DirectX*& dx, const R
 		};
 		std::function<bool(const Sphere&)> intersectFunc = IntersectLight;
 
-		const ConstBuffer* camConstBuffer = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
-		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-			dx, renderManager, opaqueMeshes, 
-			opaqueRenderType,
-			camConstBuffer, &intersectFunc);
+		const ConstBuffer* shadowMapCB = _shadowCastingDirectionalLights.Get(index).camConstBuffer;
+		VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, shadowMapCB);
+		{
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, opaqueMeshes, 
+				RenderType::Forward_OnlyDepth,
+				nullptr, &intersectFunc);
 
-		context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
-		MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
-			dx, renderManager, alphaTestMeshes,
-			alphaBlendRenderType,
-			camConstBuffer, &intersectFunc);
-		context->RSSetState( nullptr );
+			context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
+			MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
+				dx, renderManager, alphaTestMeshes,
+				RenderType::Forward_AlphaTestWithDiffuse,
+				nullptr, &intersectFunc);
+			context->RSSetState( nullptr );
+		}
+		VertexShader::BindConstBuffer(context, ConstBufferBindIndex::OnlyPass, nullptr);
 	}
 
 	context->RSSetViewports(1, &originViewport);
@@ -529,7 +513,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		for(uint i=0; i<6; ++i)
 		{
 			scl.camConstBuffers[i] = new ConstBuffer;
-			scl.camConstBuffers[i]->Initialize(sizeof(CameraForm::CameraCBData));
+			scl.camConstBuffers[i]->Initialize(sizeof(ShadowMapCB));
 		}
 
 		_shadowCastingPointLights.Add(lightAddress, scl);
@@ -542,7 +526,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		ShadowCastingSpotLight scl;
 		scl.shadow			= static_cast<const SpotLight*>(light)->GetShadow();;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CameraCBData));
+		scl.camConstBuffer->Initialize(sizeof(ShadowMapCB));
 
 		_shadowCastingSpotLights.Add(lightAddress, scl);
 	}
@@ -554,7 +538,7 @@ void ShadowRenderer::AddShadowCastingLight(const LightForm*& light)
 		ShadowCastingDirectionalLight scl;
 		scl.shadow			= static_cast<const DirectionalLight*>(light)->GetShadow();;
 		scl.camConstBuffer	= new ConstBuffer;
-		scl.camConstBuffer->Initialize(sizeof(CameraForm::CameraCBData));
+		scl.camConstBuffer->Initialize(sizeof(ShadowMapCB));
 
 		_shadowCastingDirectionalLights.Add(lightAddress, scl);
 	}
@@ -635,29 +619,6 @@ bool ShadowRenderer::HasShadowCastingLight(const LightForm*& light)
 
 void ShadowRenderer::UpdateConstBuffer(const Device::DirectX*& dx)
 {
-#ifndef USE_RENDER_WITH_UPDATE_CB
-	// Spot Light
-	{
-		uint count = _shadowCastingSpotLights.GetSize();
-		for(uint index = 0; index < count; ++index)
-			UpdateShadowCastingSpotLightCB(dx, index);
-	}
-
-	// Point Light
-	{
-		uint count = _shadowCastingPointLights.GetSize();
-		for(uint index = 0; index < count; ++index)
-			UpdateShadowCastingPointLightCB(dx, index);
-	}
-
-	// Directional Light
-	{
-		uint count = _shadowCastingDirectionalLights.GetSize();
-		for(uint index = 0; index < count; ++index)
-			UpdateShadowCastingDirectionalLightCB(dx, index);
-	}
-#endif
-
 	ShadowGlobalParam param;
 	MakeShadowGlobalParam(param);
 	bool isDifferent = memcmp(&param, &_prevShadowGlobalParam, sizeof(ShadowGlobalParam)) != 0;
