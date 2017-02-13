@@ -61,7 +61,7 @@ void DirectionalLight::ComputeViewProjMatrix(const Intersection::BoundBox& scene
 
 bool DirectionalLight::Intersect(const Intersection::Sphere &sphere) const
 {
-	return _frustum.In(sphere.center, sphere.radius);
+	return true;//_frustum.In(sphere.center, sphere.radius);
 }
 
 void DirectionalLight::MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const
