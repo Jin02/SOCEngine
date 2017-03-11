@@ -7,6 +7,7 @@ SOCEngine/Output/
 *.VC.VC.opendb
 *.VC.db
 
+SOCEngine-Backup/
 SOCTestProject/Debug/
 SOCTestProject/SOCTestProject/Debug/
 
