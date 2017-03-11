@@ -23,12 +23,11 @@ WinApp::WinApp(const Rect<uint> &rect, HINSTANCE Instance, const std::string& na
 	_windowInfo.lpszClassName	= name.data();
 
 	_windowInfo.lpfnWndProc = WndProc;
-	_options = isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
 
-	SetRect(rect);
-
-	_parentHandle = parentHandle;
-	_windowsMode = windowMode;
+	_options				= isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
+	_rect					= rect;
+	_parentHandle			= parentHandle;
+	_windowsMode			= windowMode;
 }
 
 WinApp::~WinApp(void)
