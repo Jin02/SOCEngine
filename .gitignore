@@ -4,6 +4,8 @@ SOCEngine/Output/
 *.opensdf
 *.ipch
 *.v11.suo
+*.VC.VC.opendb
+*.VC.db
 
 SOCTestProject/Debug/
 SOCTestProject/SOCTestProject/Debug/
