@@ -13,510 +13,40 @@
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\Container.h" />
-    <ClInclude Include="Core\Component\Component.h" />
-    <ClInclude Include="Core\Object\Object.h" />
-    <ClInclude Include="Core\Scene\Scene.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    <ClInclude Include="Common\Half.h" />
+    <ClInclude Include="Device\DirectX.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Core\Time\Timer.h" />
-    <ClInclude Include="Core\Transform\Transform.h" />
-    <ClInclude Include="Core\Transform\TransformCB.h" />
+    <ClInclude Include="Device\Win32.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
-    <ClInclude Include="GPGPU\ComputeShader.h" />
-    <ClInclude Include="Importer\G3djDataTypes.h" />
-    <ClInclude Include="Importer\ImporterUtility.h" />
-    <ClInclude Include="Importer\MeshImporter.h" />
-    <ClInclude Include="Intersection\BoundBox.h" />
-    <ClInclude Include="Intersection\Cone.h" />
-    <ClInclude Include="Intersection\Frustum.h" />
-    <ClInclude Include="Intersection\Intersection.h" />
-    <ClInclude Include="Intersection\Ray.h" />
-    <ClInclude Include="Intersection\Sphere.h" />
     <ClInclude Include="Math\EngineMath.h" />
-    <ClInclude Include="Math\MathCommon.h" />
     <ClInclude Include="Math\Matrix.h" />
     <ClInclude Include="Math\Plane.h" />
     <ClInclude Include="Math\Quaternion.h" />
     <ClInclude Include="Math\Rect.h" />
-    <ClInclude Include="Math\Size.h" />
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Math\Vector4.h" />
-    <ClInclude Include="Rendering\Buffer\BaseBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\BufferManager.h" />
-    <ClInclude Include="Rendering\Buffer\ConstBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp" />
-    <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\RawBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
-    <ClInclude Include="Rendering\Camera\CameraForm.h" />
-    <ClInclude Include="Rendering\Camera\CameraManager.h" />
-    <ClInclude Include="Rendering\Camera\MeshCamera.h" />
-    <ClInclude Include="Rendering\Camera\ReflectionProbe.h" />
-    <ClInclude Include="Rendering\Camera\ReflectionProbeManager.h" />
-    <ClInclude Include="Rendering\Color\Color.h" />
-    <ClInclude Include="Rendering\GI\VoxelMap.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\VXGI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\VXGICommon.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadiance.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLIght.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLIght.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\Voxelization.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\VoxelViewer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h" />
-    <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h" />
-    <ClInclude Include="Rendering\PostProcessing\BackBufferMaker.h" />
-    <ClInclude Include="Rendering\Light\Culling\LightCulling.h" />
-    <ClInclude Include="Rendering\Light\Culling\OnlyLightCulling.h" />
-    <ClInclude Include="Rendering\Light\DirectionalLight.h" />
-    <ClInclude Include="Rendering\Light\Lights.h" />
-    <ClInclude Include="Rendering\Light\LightForm.h" />
-    <ClInclude Include="Rendering\Light\LightManager.h" />
-    <ClInclude Include="Rendering\Light\PointLight.h" />
-    <ClInclude Include="Rendering\Light\SpotLight.h" />
-    <ClInclude Include="Rendering\Material\Material.h" />
-    <ClInclude Include="Rendering\Material\MaterialManager.h" />
-    <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h" />
-    <ClInclude Include="Rendering\Mesh\Mesh.h" />
-    <ClInclude Include="Rendering\Mesh\MeshFilter.h" />
-    <ClInclude Include="Rendering\Mesh\MeshRenderer.h" />
-    <ClInclude Include="Rendering\PostProcessing\BilateralFiltering.h" />
-    <ClInclude Include="Rendering\PostProcessing\DepthOfField.h" />
-    <ClInclude Include="Rendering\PostProcessing\FullScreen.h" />
-    <ClInclude Include="Rendering\PostProcessing\GaussianBlur.h" />
-    <ClInclude Include="Rendering\PostProcessing\IBLPass.h" />
-    <ClInclude Include="Rendering\PostProcessing\LightShaftManager.h" />
-    <ClInclude Include="Rendering\PostProcessing\PostProcessPipeline.h" />
-    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceConeTracing.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.h" />
-    <ClInclude Include="Rendering\PostProcessing\ScreenSpaceRayTracing.h" />
-    <ClInclude Include="Rendering\PostProcessing\SSAO.h" />
-    <ClInclude Include="Rendering\RenderManager\RenderManager.h" />
-    <ClInclude Include="Rendering\RenderManager\RenderTypes.h" />
-    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
-    <ClInclude Include="Rendering\Shader\GeometryShader.h" />
-    <ClInclude Include="Rendering\Shader\HullShader.h" />
-    <ClInclude Include="Rendering\Shader\PixelShader.h" />
-    <ClInclude Include="Rendering\Shader\ShaderForm.h" />
-    <ClInclude Include="Rendering\Shader\ShaderMacro.h" />
-    <ClInclude Include="Rendering\Shader\Shaders.h" />
-    <ClInclude Include="Rendering\Shader\ShaderManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shader\VertexShader.h" />
-    <ClInclude Include="Rendering\Shading\OffScreen.h" />
-    <ClInclude Include="Rendering\Shading\BindIndexInfo.h" />
-    <ClInclude Include="Rendering\Shading\ShadingWithLightCulling.h" />
-    <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h" />
-    <ClInclude Include="Rendering\Shadow\PointLightShadow.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowCommon.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h" />
-    <ClInclude Include="Rendering\Shadow\SpotLightShadow.h" />
-    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h" />
-    <ClInclude Include="Rendering\Sky\SkyForm.h" />
-    <ClInclude Include="Rendering\Sky\SkyBox.h" />
-    <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
-    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h" />
-    <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
-    <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
-    <ClInclude Include="Rendering\Texture\RenderTexture.h" />
-    <ClInclude Include="Rendering\Texture\Texture2D.h" />
-    <ClInclude Include="Rendering\Texture\Texture3D.h" />
-    <ClInclude Include="Rendering\Texture\TextureCube.h" />
-    <ClInclude Include="Rendering\Texture\TextureForm.h" />
-    <ClInclude Include="Rendering\Texture\TextureManager.h" />
-    <ClInclude Include="Rendering\View\ShaderResourceView.h" />
-    <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
-    <ClInclude Include="ResourceManager\ResourceManager.h" />
-    <ClInclude Include="ShaderCodes\BRDF.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </ClInclude>
-    <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
-    <FxCompile Include="ShaderCodes\Bloom.hlsl" />
-    <FxCompile Include="ShaderCodes\Copy.hlsl" />
-    <FxCompile Include="ShaderCodes\DepthOfField.hlsl" />
-    <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl" />
-    <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ClearVoxelRawMap.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <ClInclude Include="ShaderCodes\CommonConstBuffer.h" />
-    <ClInclude Include="ShaderCodes\DynamicLighting.h" />
-    <ClInclude Include="ShaderCodes\EnvIBL.h" />
-    <ClInclude Include="ShaderCodes\GBufferParser.h" />
-    <ClInclude Include="ShaderCodes\GICommon.h" />
-    <ClInclude Include="ShaderCodes\HDRCommon.h" />
-    <ClInclude Include="ShaderCodes\Injection_Common.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\IsoscelesTriangle.h" />
-    <ClInclude Include="ShaderCodes\LensFlare.h" />
-    <ClInclude Include="ShaderCodes\NormalMapping.h" />
-    <ClInclude Include="ShaderCodes\RayTracingCommon.h" />
-    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\SimpleImageEffect.h" />
-    <ClInclude Include="ShaderCodes\TBDRInput.h" />
-    <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h" />
-    <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h" />
-    <ClInclude Include="ShaderCodes\MonteCarlo.h" />
-    <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h" />
-    <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\ShaderCommon.h">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\FullScreenShader.h" />
-    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
-    <ClInclude Include="ShaderCodes\Shadow.h" />
-    <ClInclude Include="ShaderCodes\ToneMapping.h" />
-    <ClInclude Include="ShaderCodes\Voxelization_Common.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Structure\MultiLevelVector.h" />
-    <ClInclude Include="Structure\VectorHashMap.h" />
-    <ClInclude Include="Structure\VectorMap.h" />
-    <ClInclude Include="UI\SimpleFontLoader.h" />
-    <ClInclude Include="UI\SimpleImage2D.h" />
-    <ClInclude Include="UI\SimpleText2D.h" />
-    <ClInclude Include="UI\UICamera.h" />
-    <ClInclude Include="UI\UIObject.h" />
-    <ClInclude Include="UI\UIManager.h" />
-    <ClInclude Include="Sound\SimpleSoundPlayer.h" />
-    <ClInclude Include="Structure\MapInMap.h" />
-    <ClInclude Include="Structure\Singleton.h" />
-    <ClInclude Include="Structure\Structure.h" />
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Utility\DirectoryManager.h" />
-    <ClInclude Include="Utility\Utility.h" />
-    <ClInclude Include="Device\Director.h" />
-    <ClInclude Include="Device\DirectX.h" />
-    <ClInclude Include="Device\Win32.h" />
-    <FxCompile Include="ShaderCodes\IBLPass.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
-    <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl" />
-    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
-    <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
-    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
-    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl" />
-    <FxCompile Include="ShaderCodes\SSAO.hlsl" />
-    <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\Voxelization_TN_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core\Component\Component.cpp" />
-    <ClCompile Include="Core\Object\Object.cpp" />
-    <ClCompile Include="Core\Scene\Scene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    <ClCompile Include="Common\Half.cpp" />
+    <ClCompile Include="Device\DirectX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Core\Time\Timer.cpp" />
-    <ClCompile Include="Core\Transform\Transform.cpp" />
-    <ClCompile Include="GPGPU\ComputeShader.cpp" />
-    <ClCompile Include="Importer\ImporterUtility.cpp" />
-    <ClCompile Include="Importer\MeshImporter.cpp" />
-    <ClCompile Include="Intersection\BoundBox.cpp" />
-    <ClCompile Include="Intersection\Cone.cpp" />
-    <ClCompile Include="Intersection\Frustum.cpp" />
-    <ClCompile Include="Intersection\Ray.cpp" />
-    <ClCompile Include="Intersection\Sphere.cpp" />
-    <ClCompile Include="Math\MathCommon.cpp" />
+    <ClCompile Include="Device\Win32.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\Plane.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Math\Vector4.cpp" />
-    <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\BufferManager.cpp" />
-    <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
-    <ClCompile Include="Rendering\Camera\CameraForm.cpp" />
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
-    <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
-    <ClCompile Include="Rendering\Camera\ReflectionProbe.cpp" />
-    <ClCompile Include="Rendering\Camera\ReflectionProbeManager.cpp" />
-    <ClCompile Include="Rendering\Color\Color.cpp" />
-    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\VXGI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\InjectRadiance.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLIght.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLIght.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\Voxelization.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\GI\VoxelViewer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\Culling\LightCulling.cpp" />
-    <ClCompile Include="Rendering\Light\Culling\OnlyLightCulling.cpp" />
-    <ClCompile Include="Rendering\Light\DirectionalLight.cpp" />
-    <ClCompile Include="Rendering\Light\LightForm.cpp" />
-    <ClCompile Include="Rendering\Light\LightManager.cpp" />
-    <ClCompile Include="Rendering\Light\PointLight.cpp" />
-    <ClCompile Include="Rendering\Light\SpotLight.cpp" />
-    <ClCompile Include="Rendering\Material\Material.cpp" />
-    <ClCompile Include="Rendering\Material\MaterialManager.cpp" />
-    <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp" />
-    <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp" />
-    <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
-    <ClCompile Include="Rendering\Mesh\MeshFilter.cpp" />
-    <ClCompile Include="Rendering\Mesh\MeshRenderer.cpp" />
-    <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\BilateralFiltering.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\DepthOfField.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\FullScreen.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\BackBufferMaker.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\GaussianBlur.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\IBLPass.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\LightShaftManager.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\PostProcessPipeline.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceConeTracing.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceLocalReflection.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\ScreenSpaceRayTracing.cpp" />
-    <ClCompile Include="Rendering\PostProcessing\SSAO.cpp" />
-    <ClCompile Include="Rendering\RenderManager\RenderManager.cpp" />
-    <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
-    <ClCompile Include="Rendering\Shader\HullShader.cpp" />
-    <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
-    <ClCompile Include="Rendering\Shader\ShaderForm.cpp" />
-    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp" />
-    <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
-    <ClCompile Include="Rendering\Shading\OffScreen.cpp" />
-    <ClCompile Include="Rendering\Shading\ShadingWithLightCulling.cpp" />
-    <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp" />
-    <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp" />
-    <ClCompile Include="Rendering\Shadow\ShadowCommon.cpp" />
-    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp" />
-    <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyForm.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyBox.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
-    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp" />
-    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
-    <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
-    <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
-    <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
-    <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
-    <ClCompile Include="Rendering\Texture\TextureCube.cpp" />
-    <ClCompile Include="Rendering\Texture\TextureForm.cpp" />
-    <ClCompile Include="Rendering\Texture\TextureManager.cpp" />
-    <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
-    <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
-    <ClCompile Include="ResourceManager\ResourceManager.cpp" />
-    <ClCompile Include="UI\SimpleFontLoader.cpp" />
-    <ClCompile Include="UI\SimpleImage2D.cpp" />
-    <ClCompile Include="UI\SimpleText2D.cpp" />
-    <ClCompile Include="UI\UICamera.cpp" />
-    <ClCompile Include="UI\UIObject.cpp" />
-    <ClCompile Include="UI\UIManager.cpp" />
-    <ClCompile Include="Sound\SimpleSoundPlayer.cpp" />
-    <ClCompile Include="Utility\DirectoryManager.cpp" />
-    <ClCompile Include="Device\Director.cpp" />
-    <ClCompile Include="Device\DirectX.cpp" />
-    <ClCompile Include="Device\Win32.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">USE_COMPUTE_SHADER</PreprocessorDefinitions>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\TBDR.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">USE_COMPUTE_SHADER</PreprocessorDefinitions>
-    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D2F8E424-3F82-4761-840D-187B4405A969}</ProjectGuid>
@@ -527,7 +57,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -551,7 +81,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Sound;ResourceManager;ShaderCodes;UI;Rendering/Sky;Rendering/GI;Rendering/Shadow;Rendering/View;Rendering/PostProcessing;Rendering/Shading;Rendering/Offline;Rendering/Sampler;Rendering/Texture;Rendering/Shader;Rendering/Mesh;Rendering/Material;Rendering/Light/Culling;Rendering/Light/Buffer;Rendering/Light;Rendering/Buffer;Rendering/RenderManager;Rendering/Camera;Rendering/Color;Core/Tag;Core/Layer;Core/Object;Core/Transform;Core/Time;Core/Component;Core/Scene;GPGPU;Rendering;Importer/FBX;Importer;Intersection;Template;Structure;Math;Common;Core;Utility;Platform;Device;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Template;Math;Device;Core;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
