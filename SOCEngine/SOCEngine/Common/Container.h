@@ -1,49 +1,23 @@
 #pragma once
 
-#include "Common.h"
-#include <string>
+#include <memory>
+#include <utility>
 
-class Container
+template <typename Type>
+class Container final
 {
+public:
+	explicit Container(const Type& type)
+		: _data(std::make_shared<Type>(type)) {}
+	explicit Container(Type&& type)
+		: _data(std::make_shared<Type>(std::forward<Type>(type))) {}
+	explicit Container(const std::shared_ptr<Type>& sharedData)
+		: _data(sharedData) {}
+	explicit Container(std::shared_ptr<Type>&& sharedData)
+		: _data(std::forward<Type>(sharedData)) {}
+
+	inline auto& Get() { return *_data; }
+
 private:
-	void*		_data;
-	bool		_enableDealloc;
-
-public:
-	Container() : _data(nullptr), _enableDealloc(true)
-	{
-	}
-
-	~Container()
-	{
-		if(_enableDealloc)
-		{
-			free(_data);
-			_data = nullptr;
-		}
-	}
-
-public:
-	template<typename Type>
-	void Init(const Type& value)
-	{
-		Type* node = (Type*)malloc( sizeof(Type) );
-		(*node) = value;
-
-		_data = node;
-	}
-
-	template<typename Type>
-	const Type& GetData() const
-	{
-		return *((Type*)_data);
-	}
-
-	template<typename Type>
-	void SetData(const Type& value)
-	{
-		*((Type*)_data) = value;
-	}
-
-	GET_SET_ACCESSOR(EnableDealloc, bool, _enableDealloc);
+	std::shared_ptr<Type> _data;
 };
