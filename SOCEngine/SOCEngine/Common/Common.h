@@ -12,14 +12,14 @@
 
 #define ENGINE_INDEX_TYPE unsigned int
 
+#define DISALLOW_COPY_CONSTRUCTOR(CLASS) CLASS(const CLASS&) = delete
+#define DISALLOW_ASSIGN(CLASS) CLASS& operator=(const CLASS&) = delete
+
+#define MATH_PI 3.141592654f
+#define RAD_TO_DEG(a) (180.0f / MATH_PI * a)
+#define DEG_TO_RAD(a) (MATH_PI / 180.0f * a)
+
 typedef unsigned int		uint;
 typedef unsigned __int64	address;
 typedef unsigned __int16	ushort;
 typedef unsigned char		uchar;
-
-enum class BufferUpdateType : uint
-{
-	Overall,
-	Selective,
-	MapDiscard
-};
