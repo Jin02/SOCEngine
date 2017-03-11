@@ -113,8 +113,8 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 	{
 		_globalParam.dt					= 0.0f;
 		_globalParam.bloomThreshold		= 0.01f;
-		_globalParam.exposureKey		= 0.4f;
-		_globalParam.exposureSpeed		= 0.2f;
+		_globalParam.exposureKey		= 0.1f;
+		_globalParam.exposureSpeed		= 0.4f;
 
 		{
 			DepthOfField::ParamCB param = { 0, 0, 0, 0 };

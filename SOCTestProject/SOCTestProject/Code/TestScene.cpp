@@ -46,15 +46,15 @@ void TestScene::OnInitialize()
 
 	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
 
-	GetPostProcessing()->SetUseSSAO(true);
-	GetPostProcessing()->SetUseBloom(true);
-	GetPostProcessing()->SetUseDoF(true);	
+//	GetPostProcessing()->SetUseSSAO(true);
+//	GetPostProcessing()->SetUseBloom(true);
+//	GetPostProcessing()->SetUseDoF(true);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
-//	AddObject(_camera);
+	AddObject(_camera);
 
-#if 1 //GI Test
+#if 0 //GI Test
 //	ActivateGI(true, 256, 50.0f);
 //	ActivateGI(true, 256, 15.0f);
 
@@ -96,7 +96,7 @@ void TestScene::OnInitialize()
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
-#elif 0
+#elif 1
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 
@@ -131,7 +131,7 @@ void TestScene::OnInitialize()
 	dl->SetIntensity(20.0f);
 	dl->ActiveShadow(true);
 
-//	ActiveAtmosphericScattering(dl);
+	ActiveAtmosphericScattering(dl);
 
 #elif 0 //IBL Test
 	// SkyBox
@@ -193,7 +193,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 {
 	const float scale = 2.5f;
 #if 1
-	Transform* control = _light->GetTransform();
+	Transform* control = _camera->GetTransform();
 
 	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
 	{
@@ -233,7 +233,7 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		//float us = pl->GetShadow()->GetUnderScanSize();
 		//pl->GetShadow()->SetUnderScanSize(us + scale);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(0.05f, 0.0f, 0.0f));
+		control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
 	{
@@ -241,21 +241,21 @@ void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32:
 		//float us = pl->GetShadow()->GetUnderScanSize();
 		//pl->GetShadow()->SetUnderScanSize(us - scale);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(0.05f, 0.0f, 0.0f));
+		control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
 	}
 	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
 	{
 		//PointLight* pl = _light->GetComponent<PointLight>();
 		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(0.0f, 0.5f, 0.0f));
+		control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
 	}
 	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
 	{
 		//PointLight* pl = _light->GetComponent<PointLight>();
 		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
 		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(0.0f, 0.5f, 0.0f));
+		control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
 	}
 	if(keyboard.states['M'] == Win32::Keyboard::Type::Up)
 	{
@@ -321,13 +321,13 @@ void TestScene::OnUpdate(float dt)
 
 	//control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
 
-	//Transform* tf = _light->GetTransform();
-	//Vector3 euler = tf->GetLocalEulerAngle();
-	//if( (uint(euler.x) % 90) == 0)
-	//{
-	//	dt += 1; //use for break point
-	//}
-	//tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.1f, 0.0f));
+	Transform* tf = _light->GetTransform();
+	Vector3 euler = tf->GetLocalEulerAngle();
+	if( (uint(euler.x) % 90) == 0)
+	{
+		dt += 1; //use for break point
+	}
+	tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.1f, 0.0f));
 }
 
 void TestScene::OnRenderPost()
