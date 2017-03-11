@@ -1,4 +1,5 @@
 #include "Plane.h"
+#include <math.h>
 
 using namespace Math;
 
@@ -14,12 +15,7 @@ Plane::Plane(float _a, float _b, float _c, float _d)
 
 }
 
-Plane::~Plane()
-{
-
-}
-
-Plane Plane::Normalized() const
+const Plane Plane::Normalized() const
 {
 	Plane plane;
 	Plane::Normalize(plane, (*this));
@@ -69,7 +65,7 @@ void Plane::Normalize(Plane& out, const Plane& p)
 
 float Plane::ComputeDistanceWithPoint(const Plane& p, const Vector3& v)
 {
-	return abs( DotCoord(p, v) );
+	return fabsf( DotCoord(p, v) );
 }
 
 bool Plane::SameSide(const Plane& p, const Vector3& v)

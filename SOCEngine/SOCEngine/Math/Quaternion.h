@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MathCommon.h"
-
 namespace Math
 {
 	class Vector3;
@@ -10,21 +8,17 @@ namespace Math
 	class Quaternion
 	{
 	public:
-		float x, y, z, w;
-
-	public:
 		Quaternion();
 		Quaternion(float x, float y, float z, float w);
-		~Quaternion();
 
 	public:
-		Quaternion operator + () const;
-		Quaternion operator - () const;
-		Quaternion operator + (const Quaternion& q) const;
-		Quaternion operator - (const Quaternion& q) const;
-		Quaternion operator * (const Quaternion& q) const;
-		Quaternion operator * (float f) const;
-		Quaternion operator / (float f) const;
+		const Quaternion operator + () const;
+		const Quaternion operator - () const;
+		const Quaternion operator + (const Quaternion& q) const;
+		const Quaternion operator - (const Quaternion& q) const;
+		const Quaternion operator * (const Quaternion& q) const;
+		const Quaternion operator * (float f) const;
+		const Quaternion operator / (float f) const;
 		bool operator == (const Quaternion& q) const;
 		bool operator != (const Quaternion& q) const;
 		Quaternion& operator += (const Quaternion& a);
@@ -44,9 +38,12 @@ namespace Math
 
 	public:
 		void Set(float x, float y, float z, float w);
-		Quaternion Normalized();
-		Quaternion Inversed();
+		const Quaternion Normalized();
+		const Quaternion Inversed();
 		void FromEuler(const Vector3& v);
+
+	public:
+		float x, y, z, w;
 	};
 
 }

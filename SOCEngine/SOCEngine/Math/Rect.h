@@ -1,29 +1,23 @@
 #pragma once
-#include "Size.h"
 
-namespace Math
+template <typename Type>
+struct Size
 {
-	template <typename Type>
-	struct Rect
-	{
-	public:
-		Type x, y;
-		Size<Type> size;
+public:
+	Size(Type _w, Type _h) : w(_w), h(_h) {}
 
-	public:
-		Rect()
-		{
-			x = 0;
-			y = 0;
-		}
+public:
+	Type w, h;
+};
 
-		Rect(Type x, Type y, Type w, Type h)
-		{
-			this->x = x;
-			this->y = y;
-			this->size.w = w;
-			this->size.h = h;
-		}
-	};
+template <typename Type>
+struct Rect
+{
+public:
+	Rect() : x(0), y(0) { }
+	Rect(Type _x, Type _y, Type _w, Type _h) : x(_x), y(_y), size(_w, _h) { }
 
-}
+public:
+	Type x, y;
+	Size<Type> size;
+};

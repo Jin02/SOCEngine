@@ -10,8 +10,7 @@ namespace Math
 	class Matrix
 	{
 	public:
-		Matrix(void);
-		~Matrix(void);
+		Matrix();
 
 	public:
 		bool operator != (const Matrix& mat) const;
@@ -23,12 +22,12 @@ namespace Math
 		Matrix& operator*= (float f);
 		Matrix& operator/= (float f);
 
-		Matrix operator+ (const Matrix& mat) const;
-		Matrix operator- (const Matrix& mat) const;
-		Matrix operator* (const Matrix& mat);
-		Matrix operator* (float f) const;
-		Matrix operator/ (float f) const;
-		Matrix operator* (const Matrix& mat) const;
+		const Matrix operator+ (const Matrix& mat) const;
+		const Matrix operator- (const Matrix& mat) const;
+		const Matrix operator* (const Matrix& mat);
+		const Matrix operator* (float f) const;
+		const Matrix operator/ (float f) const;
+		const Matrix operator* (const Matrix& mat) const;
 
 		const Vector2 operator* (const Vector2& v) const;
 		const Vector3 operator* (const Vector3& v) const;
