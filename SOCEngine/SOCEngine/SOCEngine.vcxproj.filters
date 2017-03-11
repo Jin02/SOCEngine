@@ -25,9 +25,6 @@
     <ClInclude Include="Device\DirectX.h">
       <Filter>Device</Filter>
     </ClInclude>
-    <ClInclude Include="Device\Win32.h">
-      <Filter>Device</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
@@ -58,11 +55,11 @@
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
       <Filter>Template</Filter>
     </ClInclude>
+    <ClInclude Include="Device\WinApp.h">
+      <Filter>Device</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Device\Win32.cpp">
-      <Filter>Device</Filter>
-    </ClCompile>
     <ClCompile Include="Device\DirectX.cpp">
       <Filter>Device</Filter>
     </ClCompile>
@@ -86,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="Common\Half.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Device\WinApp.cpp">
+      <Filter>Device</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
