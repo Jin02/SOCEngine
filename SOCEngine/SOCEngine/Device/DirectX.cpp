@@ -1,5 +1,6 @@
 #include "DirectX.h"
 #include <assert.h>
+#include "Launcher.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -39,7 +40,7 @@ void DirectX::CreateRenderTargetView()
 	backBuffer->Release();
 }
 
-void DirectX::CreateDeviceAndSwapChain(const std::unique_ptr<WinApp>& win, const Size<uint>& viewportSize, bool useMSAA)
+void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA)
 {
 	//swapChain setting
 	DXGI_SWAP_CHAIN_DESC	sd;
@@ -49,8 +50,8 @@ void DirectX::CreateDeviceAndSwapChain(const std::unique_ptr<WinApp>& win, const
 	sd.BufferDesc.Height					= viewportSize.h;
 	sd.BufferCount							= 1;
 	sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow							= win->GetHandle();
-	sd.Windowed								= win->GetIsWindowMode();
+	sd.OutputWindow							= win.GetHandle();
+	sd.Windowed								= win.GetIsWindowMode();
 	sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -180,7 +181,7 @@ void DirectX::CreateBlendStates()
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &_blendAlpha)));
 }
 
-void DirectX::InitDevice(const std::unique_ptr<WinApp>& win, const Rect<uint>& viewport, bool useMSAA)
+void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA)
 {
 	CreateDeviceAndSwapChain(win, viewport.size, useMSAA);
 	CreateRenderTargetView();

@@ -14,6 +14,11 @@
 #include "Matrix.h"
 #include "Rect.h"
 
+namespace Core
+{
+	class Launcher;
+}
+
 namespace Device
 {
 	class DirectX final
@@ -26,19 +31,9 @@ namespace Device
 		DISALLOW_COPY_CONSTRUCTOR(DirectX);
 
 	public:
-		void InitDevice(const std::unique_ptr<WinApp>& win, const Rect<uint>& viewport, bool useMSAA);
-		unsigned int CalcFormatSize(DXGI_FORMAT format) const;
-		void ClearDeviceContext() const;
-		const Size<uint> FetchBackBufferSize();
-		void Destroy();
-
-	private:
-		void CreateRenderTargetView();
-		void CreateDeviceAndSwapChain(const std::unique_ptr<WinApp>& win, const Size<uint>& viewportSize, bool useMSAA);
-		void InitViewport(const Rect<uint>& rect);
-
-		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);
-		void CreateBlendStates();
+		unsigned int		CalcFormatSize(DXGI_FORMAT format) const;
+		void				ClearDeviceContext() const;
+		const Size<uint>	FetchBackBufferSize();
 
 	public:
 		GET_ACCESSOR(Device,										ID3D11Device*,				_device);
@@ -81,6 +76,18 @@ namespace Device
 
 		GET_ACCESSOR(FeatureLevel,									D3D_FEATURE_LEVEL,			_featureLevel);
 		GET_ACCESSOR(DriverType,									D3D_DRIVER_TYPE,			_driverType);
+
+	private:
+		friend class Core::Launcher;
+		void Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA);
+		void InitViewport(const Rect<uint>& rect);
+		void CreateRenderTargetView();
+		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
+		void CreateBlendStates();
+
+		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);
+
+		void Destroy();
 
 	private:
 		ID3D11Device*				_device;
