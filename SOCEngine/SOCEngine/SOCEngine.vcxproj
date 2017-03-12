@@ -11,11 +11,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common\Color.h" />
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\Container.h" />
     <ClInclude Include="Common\Half.h" />
+    <ClInclude Include="Common\Rect.h" />
+    <ClInclude Include="Core\ArrayVector.hpp" />
+    <ClInclude Include="Core\Engine.h" />
+    <ClInclude Include="Core\IndexBook.hpp" />
+    <ClInclude Include="Core\IScene.h" />
+    <ClInclude Include="Core\Launcher.h" />
+    <ClInclude Include="Core\ObjectId.hpp" />
+    <ClInclude Include="Core\ObjectIdManager.h" />
+    <ClInclude Include="Core\VectorIndexer.hpp" />
     <ClInclude Include="Device\DirectX.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Device\WinApp.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -25,18 +35,22 @@
     <ClInclude Include="Math\Matrix.h" />
     <ClInclude Include="Math\Plane.h" />
     <ClInclude Include="Math\Quaternion.h" />
-    <ClInclude Include="Math\Rect.h" />
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Math\Vector4.h" />
+    <ClInclude Include="Rendering\Shader\ShaderMacro.h" />
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Common\Color.cpp" />
     <ClCompile Include="Common\Half.cpp" />
+    <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\Launcher.cpp" />
+    <ClCompile Include="Core\ObjectIdManager.cpp" />
     <ClCompile Include="Device\DirectX.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Device\WinApp.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -47,6 +61,7 @@
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Math\Vector4.cpp" />
+    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D2F8E424-3F82-4761-840D-187B4405A969}</ProjectGuid>
@@ -81,7 +96,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Template;Math;Device;Core;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Core;Rendering/Shader;Template;Math;Device;Core;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>

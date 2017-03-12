@@ -13,6 +13,15 @@
     <Filter Include="Template">
       <UniqueIdentifier>{a1b897a3-343a-4ab2-8d90-b0042f075cd5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{70a6cc88-9417-4b96-b856-1e84990556c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader">
+      <UniqueIdentifier>{140e0627-0f0a-46e7-aa52-9ad050861f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{232f5b9f-32f4-403a-a45b-4ef00ffa3c24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -32,9 +41,6 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\Quaternion.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Rect.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\Vector2.h">
@@ -57,6 +63,39 @@
     </ClInclude>
     <ClInclude Include="Device\WinApp.h">
       <Filter>Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Rect.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Color.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderMacro.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectIdManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectId.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ArrayVector.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IndexBook.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\VectorIndexer.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IScene.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Launcher.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Engine.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +125,21 @@
     </ClCompile>
     <ClCompile Include="Device\WinApp.cpp">
       <Filter>Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Color.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ObjectIdManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Launcher.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Engine.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
