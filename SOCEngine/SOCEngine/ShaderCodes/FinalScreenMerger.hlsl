@@ -2,6 +2,7 @@
 
 #include "FullScreenShader.h"
 #include "ShaderCommon.h"
+#include "TBRParam.h"
 
 SamplerState		renderSceneSamplerState	: register( s0 );
 Texture2D<float4>	renderScene				: register( t0 );
@@ -13,8 +14,9 @@ Texture2D<float4> uiScene				: register( t1 );
 
 float4 PS( PS_INPUT input ) : SV_Target
 {
-	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 renderSceneColor = renderScene.Sample(renderSceneSamplerState, input.uv);
+	float4	finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4	renderSceneColor		= renderScene.Sample(renderSceneSamplerState, input.uv);
+			renderSceneColor.rgb	= ToGamma(renderSceneColor.rgb, GetGamma());
 
 #if defined(USE_UI)
 	float4 uiSceneColor = uiScene.Sample(uiSceneSamplerState, input.uv);

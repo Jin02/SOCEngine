@@ -24,9 +24,6 @@ using namespace Resource;
 
 VoxelConeTracing::VoxelConeTracing() : _shader(nullptr), _indirectColorMap(nullptr)
 {
-#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
-	_blur = nullptr;
-#endif
 }
 
 VoxelConeTracing::~VoxelConeTracing()
@@ -35,9 +32,6 @@ VoxelConeTracing::~VoxelConeTracing()
 
 	SAFE_DELETE(_shader);
 	SAFE_DELETE(_indirectColorMap);
-#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
-	SAFE_DELETE(_blur);
-#endif
 }
 
 void VoxelConeTracing::Initialize(const Device::DirectX* dx)
@@ -68,22 +62,11 @@ void VoxelConeTracing::Initialize(const Device::DirectX* dx)
 	_indirectColorMap = new RenderTexture;
 	_indirectColorMap->Initialize(mapSize,
 								  DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
-
-#if defined(USE_GAUSSIAN_BLUR)
-	_blur = new GaussianBlur;
-	_blur->Initialize(dx, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
-#elif defined(USE_BILATERAL_FILTERING)
-	_blur = new BilateralFiltering;
-	_blur->Initialize(BilateralFiltering::Type::Near, mapSize, DXGI_FORMAT_R8G8B8A8_UNORM);
-#endif
 }
 
 void VoxelConeTracing::Destroy()
 {
 	_indirectColorMap->Destroy();
-#if defined(USE_GAUSSIAN_BLUR) || defined(USE_BILATERAL_FILTERING)
-	_blur->Destroy();
-#endif
 }
 
 void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam,
@@ -131,11 +114,4 @@ void VoxelConeTracing::Run(const Device::DirectX* dx, const VoxelMap* injectionS
 
 	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIStaticInfoCB,						nullptr);
 	ComputeShader::BindConstBuffer(context,			ConstBufferBindIndex::VXGIDynamicInfoCB,					nullptr);
-
-
-#if defined(USE_GAUSSIAN_BLUR)
-	_blur->Render(dx, _indirectColorMap, _indirectColorMap);
-#elif defined(USE_BILATERAL_FILTERING)
-	_blur->Render(dx, _indirectColorMap, meshCam->GetOpaqueDepthBuffer(), _indirectColorMap);
-#endif
 }

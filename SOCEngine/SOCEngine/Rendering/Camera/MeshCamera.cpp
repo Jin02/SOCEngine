@@ -151,7 +151,7 @@ void MeshCamera::CullingWithUpdateCB(const Device::DirectX* dx, const std::vecto
 void MeshCamera::RenderMeshWithoutIASetVB(
 	const Device::DirectX* dx, const RenderManager* renderManager,
 	const Geometry::Mesh* mesh, RenderType renderType, 
-	const ConstBuffer* camMatConstBuffer)
+	const MeshCamera* camera)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
 
@@ -197,11 +197,19 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 			}
 
 			// Camera
-			if(camMatConstBuffer)
+			if(camera)
 			{
 				uint bindIndex = (uint)ConstBufferBindIndex::Camera;
-				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, camMatConstBuffer, true, gs != nullptr, false, false);
+				ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, camera->GetCameraConstBuffer(), true, gs != nullptr, false, false);
 				constBuffers.push_back(buf);
+		
+				// TBRParam
+				{
+					uint bindIndex = (uint)ConstBufferBindIndex::TBRParam;
+					ShaderForm::InputConstBuffer buf = ShaderForm::InputConstBuffer(bindIndex, camera->GetTBRParamConstBuffer(), true, true, true, true);
+					constBuffers.push_back(buf);
+				}
+
 			}
 		}
 
@@ -239,7 +247,7 @@ void MeshCamera::RenderMeshWithoutIASetVB(
 void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const Manager::RenderManager::MeshList& meshes, RenderType renderType,
-	const Buffer::ConstBuffer* camMatConstBuffer,
+	const MeshCamera* camera,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -276,7 +284,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 						updateVB = true;
 					}
 
-					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
+					RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camera);
 				}
 			}
 		}
@@ -286,7 +294,7 @@ void MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(
 void MeshCamera::RenderMeshesUsingMeshVector(
 	const Device::DirectX* dx, const Manager::RenderManager* renderManager,
 	const std::vector<const Geometry::Mesh*>& meshes, 
-	RenderType renderType, const Buffer::ConstBuffer* camMatConstBuffer,
+	RenderType renderType, const MeshCamera* camera,
 	std::function<bool(const Intersection::Sphere&)>* intersectFunc)
 {
 	ID3D11DeviceContext* context = dx->GetContext();
@@ -316,7 +324,7 @@ void MeshCamera::RenderMeshesUsingMeshVector(
 				Geometry::MeshFilter* filter = mesh->GetMeshFilter();
 				filter->GetVertexBuffer()->IASetBuffer(context);
 
-				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camMatConstBuffer);
+				MeshCamera::RenderMeshWithoutIASetVB(dx, renderManager, mesh, renderType, camera);
 			}
 		}
 	}
@@ -421,7 +429,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 			context->RSSetState( nullptr );
 
 			if(count > 0)
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, _camMatConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_Opaque, this);
 		}
 
 		//Alpha Test Mesh
@@ -438,7 +446,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 
 				context->RSSetState( dx->GetRasterizerStateCWDisableCulling() );
 		
-				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, _camMatConstBuffer);
+				MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, meshes, RenderType::GBuffer_AlphaBlend, this);
 
 				context->RSSetState( nullptr );
 
@@ -531,7 +539,7 @@ void MeshCamera::Render(const Device::DirectX* dx,
 				VertexShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, _tbrParamConstBuffer);
 				PixelShader::BindConstBuffer(context, ConstBufferBindIndex::TBRParam, _tbrParamConstBuffer);
 	
-				MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, _camMatConstBuffer);
+				MeshCamera::RenderMeshesUsingMeshVector(dx, renderManager, meshes, RenderType::Forward_Transparency, this);
 			}
 			lightManager->UnbindResources(dx, false, false, true);		
 

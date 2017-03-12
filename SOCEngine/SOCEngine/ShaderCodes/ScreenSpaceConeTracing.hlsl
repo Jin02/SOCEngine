@@ -60,7 +60,8 @@ float4 SSCT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	if(screenSpaceRay.w <= 0.0f)
 		return float4(fallbackColor, 1.0f);
 
-	float	linearDepth		= LinearizeDepth( GBufferDepth.Load(screenPos).r, GetCameraFar() );
+	// FIX
+	float	linearDepth			= 0.0f;//LinearizeDepth( GBufferDepth.Load(screenPos).r, GetCameraFar() ); 
 	float3	viewSpacePos		= input.viewRay * linearDepth;
 	float3	toViewSpacePos		= normalize(viewSpacePos);
 	

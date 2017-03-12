@@ -24,12 +24,6 @@ namespace Rendering
 			GPGPU::DirectCompute::ComputeShader*	_shader;
 			Texture::RenderTexture*					_indirectColorMap;
 
-#if defined(USE_GAUSSIAN_BLUR)
-			PostProcessing::GaussianBlur*			_blur;
-#elif defined(USE_BILATERAL_FILTERING)
-			PostProcessing::BilateralFiltering*		_blur;
-#endif
-
 		public:
 			VoxelConeTracing();
 			~VoxelConeTracing();

@@ -113,7 +113,7 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 	{
 		_globalParam.dt					= 0.0f;
 		_globalParam.bloomThreshold		= 0.01f;
-		_globalParam.exposureKey		= 0.1f;
+		_globalParam.exposureKey		= 0.4f;
 		_globalParam.exposureSpeed		= 0.4f;
 
 		{
@@ -122,7 +122,7 @@ void PostProcessPipeline::Initialize(const Device::DirectX* dx, const Math::Size
 		}
 
 		{
-			const float tempScale = 1.0f;
+			const float tempScale = 0.5f;
 
 			GaussianBlur::ParamCB param;
 			param.blurSize			= tempScale * 1.25f;
@@ -149,8 +149,8 @@ void PostProcessPipeline::Render(const Device::DirectX* dx,
 		return;
 
 	RenderTexture* mainScene	= mainMeshCamera->GetRenderTarget();
-	RenderTexture* back		= _result;
-	RenderTexture* front	= mainScene;
+	RenderTexture* back			= _result;
+	RenderTexture* front		= mainScene;
 
 	mainScene->GenerateMips(dx);
 

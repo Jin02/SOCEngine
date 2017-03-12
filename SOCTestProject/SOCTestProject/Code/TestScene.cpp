@@ -47,15 +47,15 @@ void TestScene::OnInitialize()
 	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
 
 //	GetPostProcessing()->SetUseSSAO(true);
-//	GetPostProcessing()->SetUseBloom(true);
+	GetPostProcessing()->SetUseBloom(false);
 //	GetPostProcessing()->SetUseDoF(true);
 
 	_camera = new Object("Default");
 	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
 	AddObject(_camera);
 
-#if 0 //GI Test
-//	ActivateGI(true, 256, 50.0f);
+#if 1 //GI Test
+	ActivateGI(true, 256, 50.0f);
 //	ActivateGI(true, 256, 15.0f);
 
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
@@ -65,7 +65,7 @@ void TestScene::OnInitialize()
 	//_pos = Vector3(-2.7f, 3.3f, 17.7f);
 	//_testObject2->GetTransform()->UpdatePosition(_pos);
 	//_testObject2->GetTransform()->UpdateScale(Vector3(2.5f, 2.5f, 2.5f));
-	//
+	//Z
 	//AddObject(_testObject2);
 
 	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
@@ -96,7 +96,7 @@ void TestScene::OnInitialize()
 
 	if(_vxgi)
 		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
-#elif 1
+#elif 0
 	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
 	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
 

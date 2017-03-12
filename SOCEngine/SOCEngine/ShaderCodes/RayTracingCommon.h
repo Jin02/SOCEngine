@@ -46,8 +46,9 @@ bool IntersectDepth(float z, float minZ, float maxZ)
 
 float FetchLinearDepthFromGBuffer(int2 screenPos)
 {
+	// FIX
 	float depth = GBufferDepth.Load(int3(screenPos, 0)).r;
-	return LinearizeDepth(depth, GetCameraFar());
+	return 0.0f;//LinearizeDepth(depth, GetCameraFar());
 }
 
 bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,

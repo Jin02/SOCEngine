@@ -41,7 +41,8 @@ float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 float3 BloomToneMapping(float3 color, float avgLum, float threshold)
 {
 	color = ComputeExposedColor(color, avgLum, threshold);
-	color = ToGamma(Uncharted2ToneMapping(color), GetGamma());
+	//color = ToGamma(Uncharted2ToneMapping(color), GetGamma());
+	color = Uncharted2ToneMapping(color);
 
 	return color;
 }

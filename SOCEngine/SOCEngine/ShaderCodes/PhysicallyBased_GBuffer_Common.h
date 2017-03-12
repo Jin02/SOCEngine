@@ -6,6 +6,7 @@
 #include "ShaderCommon.h"
 #include "PhysicallyBased_Common.h"
 #include "EnvIBL.h"
+#include "TBDRInput.h"
 
 struct GBuffer
 {
@@ -60,14 +61,14 @@ void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 		metallic = lerp(mtlMetallic, metallicTex, HasMetallicMap());
 	}
 
-	albedo_occlusion.rgb				= albedo;
+	albedo_occlusion.rgb				= ToLinear(albedo, GetGamma());
 	albedo_occlusion.a					= occlusion;
 	velocity_metallic_specularity.rg	= velocity * 0.5f + 0.5f;
 	velocity_metallic_specularity.b		= metallic;
 	velocity_metallic_specularity.a		= specularity;
 	normal_roughness.rgb				= normal;
 	normal_roughness.a					= roughness;
-	emission_materialFlag.rgb			= emissiveColor;
+	emission_materialFlag.rgb			= ToLinear(emissiveColor, GetGamma());
 	emission_materialFlag.a				= float(GetMaterialFlag()) * rcp(255.0f);
 }
 

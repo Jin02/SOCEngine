@@ -27,7 +27,7 @@ void MSAALighting(
 	uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
 {
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx, true);
+	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
 
 	float3 viewDir = normalize( camera_worldPos - surface.worldPos );
 
@@ -115,7 +115,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, 0, true);
+	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
 	float3 viewDir				= normalize( camera_worldPos - surface.worldPos );
 

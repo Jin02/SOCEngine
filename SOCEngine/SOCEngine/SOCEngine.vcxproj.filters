@@ -961,6 +961,9 @@
     <ClInclude Include="Structure\MultiLevelVector.h">
       <Filter>Structure</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\TBRParam.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Scene\Scene.cpp">
