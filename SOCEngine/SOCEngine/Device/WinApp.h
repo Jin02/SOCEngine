@@ -6,25 +6,39 @@
 #include "Common.h"
 #include "Rect.h"
 
+namespace Core
+{
+	class Launcher;
+}
+
 namespace Device
 {
 	class WinApp
 	{
+	public:
+		struct Param
+		{
+			const Rect<uint> &rect;
+			HINSTANCE Instance;
+			const std::string name;
+			bool windowMode;
+			bool isChild;
+			HWND parentHandle = NULL;
+		};
+
+	public:
+		WinApp(const Param& param);
+
+		GET_ACCESSOR(IsChild, bool, _options == (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN));
+		GET_ACCESSOR(IsWindowMode, bool, _windowsMode);
+		GET_ACCESSOR(Handle, HWND, _handle);
+
 	private:
+		friend class Core::Launcher;
 		static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	public:
-		WinApp(const Rect<uint> &rect, HINSTANCE Instance, const std::string& name, bool windowMode, bool isChild, HWND parentHandle = NULL);
-		~WinApp(void);
-
-	public:
-		bool Initialize();
+		void Initialize();
 		void Destroy();
-
-	public:
-		GET_ACCESSOR(IsChild,		bool,		_options == (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN));
-		GET_ACCESSOR(IsWindowMode,	bool,		_windowsMode);
-		GET_ACCESSOR(Handle,		HWND,		_handle);
 
 	private:
 		Rect<uint>	_rect;

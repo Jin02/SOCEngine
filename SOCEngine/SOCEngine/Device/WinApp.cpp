@@ -1,4 +1,5 @@
 #include "WinApp.h"
+#include "Launcher.h"
 
 using namespace Device;
 
@@ -8,11 +9,11 @@ LRESULT WinApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-WinApp::WinApp(const Rect<uint> &rect, HINSTANCE Instance, const std::string& name, bool windowMode, bool isChild, HWND parentHandle)
+WinApp::WinApp(const Param& param)
 {
 	_windowInfo.cbSize			= sizeof(WNDCLASSEX);
 	_windowInfo.style			= CS_CLASSDC;
-	_windowInfo.hInstance		= Instance;//GetModuleHandle(NULL);
+	_windowInfo.hInstance		= param.Instance;//GetModuleHandle(NULL);
 	_windowInfo.cbClsExtra		= 0L;
 	_windowInfo.cbWndExtra		= 0L;
 	_windowInfo.hIcon			= NULL;
@@ -20,22 +21,17 @@ WinApp::WinApp(const Rect<uint> &rect, HINSTANCE Instance, const std::string& na
 	_windowInfo.hbrBackground	= NULL;
 	_windowInfo.hIconSm			= NULL;
 	_windowInfo.lpszMenuName	= NULL;
-	_windowInfo.lpszClassName	= name.data();
+	_windowInfo.lpszClassName	= param.name.data();
 
 	_windowInfo.lpfnWndProc = WndProc;
 
-	_options				= isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
-	_rect					= rect;
-	_parentHandle			= parentHandle;
-	_windowsMode			= windowMode;
+	_options				= param.isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
+	_rect					= param.rect;
+	_parentHandle			= param.parentHandle;
+	_windowsMode			= param.windowMode;
 }
 
-WinApp::~WinApp(void)
-{
-	Destroy();
-}
-
-bool WinApp::Initialize()
+void WinApp::Initialize()
 {
 	RegisterClassEx(&_windowInfo);
 
@@ -46,8 +42,6 @@ bool WinApp::Initialize()
 
 	if (_options != (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN))
 		ShowWindow(_handle, SW_SHOWDEFAULT);
-
-	return true;
 }
 void WinApp::Destroy()
 {
