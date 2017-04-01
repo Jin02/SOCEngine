@@ -4,19 +4,9 @@
 using namespace Rendering::Texture;
 using namespace Rendering::View;
 
-Texture2D::Texture2D()
-	: _base(), _texture(nullptr), _size(0, 0)
-{
-}
-
 Texture2D::Texture2D(const ShaderResourceView& srv, const DXResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size)
 	: _base(srv), _texture(tex), _size(size)
 {
-}
-
-Texture2D::~Texture2D()
-{
-	Destroy();
 }
 
 void Texture2D::Initialize(Device::DirectX& dx,

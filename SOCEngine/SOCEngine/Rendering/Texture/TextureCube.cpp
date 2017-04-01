@@ -5,16 +5,6 @@ using namespace Rendering;
 using namespace Rendering::Texture;
 using namespace Rendering::View;
 
-TextureCube::TextureCube()
-	: Texture2D(), _rtv(nullptr)
-{
-}
-
-TextureCube::~TextureCube()
-{
-	Destroy();
-}
-
 void TextureCube::Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useMipmap)
 {
 	_useMipmap = useMipmap;
@@ -41,8 +31,7 @@ void TextureCube::Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_F
 	uint miscMipFlag = (mipLevel > 1) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | miscMipFlag;
 	
-	auto tex = dx.CreateTexture2D(texDesc);
-	SetTexture(tex);
+	_texture = dx.CreateTexture2D(texDesc);
 
 	// render target
 	if(useRTV)
@@ -55,21 +44,17 @@ void TextureCube::Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_F
 		rtvDesc.Texture2DArray.ArraySize		= 6;
 		rtvDesc.Texture2DArray.MipSlice			= 0;
 
-		_rtv = dx.CreateRenderTargetView(tex.GetRaw(), rtvDesc);
+		_rtv = dx.CreateRenderTargetView(_texture.GetRaw(), rtvDesc);
 	}
 
 	if(bindFlags & D3D11_BIND_SHADER_RESOURCE)
-	{
-		ShaderResourceView srv;
-		srv.InitializeUsingTexture(dx, tex, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
-
-		GetBase().SetShaderResourceView(srv);
-	}
+		_srv.InitializeUsingTexture(dx, _texture, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
 }
 
 void TextureCube::Destroy()
 {
-	Texture2D::Destroy();
+	_texture.Destroy();
+	_srv.Destroy();
 	_rtv.Destroy();
 }
 

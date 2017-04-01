@@ -7,11 +7,10 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class DepthBuffer : public Texture2D
+		class DepthBuffer
 		{
 		public:
-			DepthBuffer();
-			~DepthBuffer();
+			DepthBuffer() = default;
 
 		public:
 			// if SampleCount = 0, sampleCount = msaa.count
@@ -24,6 +23,7 @@ namespace Rendering
 
 		private:
 			DXResource<ID3D11DepthStencilView>		_depthStencilView;
+			Texture2D								_tex2D;
 		};
 	}
 }

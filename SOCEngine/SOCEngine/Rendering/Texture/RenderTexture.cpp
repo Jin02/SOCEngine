@@ -4,17 +4,6 @@
 using namespace Rendering::Texture;
 using namespace Device;
 
-RenderTexture::RenderTexture()
-	: Texture2D(), _renderTargetView(nullptr)
-{
-
-}
-
-RenderTexture::~RenderTexture()
-{
-	Destroy();
-}
-
 void RenderTexture::Initialize(
 	Device::DirectX& dx,
 	const Size<uint>& size,
@@ -23,7 +12,7 @@ void RenderTexture::Initialize(
 {
 	const uint bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | ((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS : 0) | optionalBindFlags;
 	
-	Texture2D::Initialize(dx, size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, mipLevel);
+	_tex2D.Initialize(dx, size.w, size.h, srvFormat, uavFormat, bindFlags, sampleCount, mipLevel);
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
@@ -31,12 +20,12 @@ void RenderTexture::Initialize(
 	renderTargetViewDesc.Format = rtvFormat;
 
 	D3D11_TEXTURE2D_DESC texDesc;
-	GetTexture().GetRaw()->GetDesc(&texDesc);
+	_tex2D.GetTexture().GetRaw()->GetDesc(&texDesc);
 
 	renderTargetViewDesc.ViewDimension = (texDesc.SampleDesc.Count > 1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	_renderTargetView = dx.CreateRenderTargetView(GetTexture().GetRaw(), renderTargetViewDesc);
+	_renderTargetView = dx.CreateRenderTargetView(_tex2D.GetTexture().GetRaw(), renderTargetViewDesc);
 }
 
 void RenderTexture::Initialize(Device::DirectX& dx,
@@ -45,13 +34,13 @@ void RenderTexture::Initialize(Device::DirectX& dx,
 	ASSERT_SUCCEEDED(rtv.IsCanUse());
 
 	_renderTargetView	= rtv;
-	SetSize(size);
+	_tex2D.SetSize(size);
 }
 
 void RenderTexture::Destroy()
 {
 	_renderTargetView.Destroy();
-	Texture2D::Destroy();
+	_tex2D.Destroy();
 }
 
 void RenderTexture::Clear(Device::DirectX& dx, const Color& color)

@@ -6,12 +6,8 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class TextureCube : public Texture2D
+		class TextureCube
 		{
-		public:
-			TextureCube();
-			virtual ~TextureCube();
-
 		public:
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useMipmap);
 			void Destroy();
@@ -23,7 +19,9 @@ namespace Rendering
 
 		private:
 			DXResource<ID3D11RenderTargetView>	_rtv;
-			bool								_useMipmap;
+			DXResource<ID3D11Texture2D>			_texture;
+			bool								_useMipmap = false;
+			View::ShaderResourceView			_srv;
 		};
 	}
 }

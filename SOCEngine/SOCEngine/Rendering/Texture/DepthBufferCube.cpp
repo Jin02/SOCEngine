@@ -4,16 +4,6 @@ using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-DepthBufferCube::DepthBufferCube() 
-	: Texture2D(), _depthStencilView(nullptr)
-{
-}
-
-DepthBufferCube::~DepthBufferCube()
-{
-	Destroy();
-}
-
 void DepthBufferCube::Initialize(Device::DirectX& dx, const Size<uint>& size, bool useShaderResource)
 {
 	uint bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
@@ -34,8 +24,7 @@ void DepthBufferCube::Initialize(Device::DirectX& dx, const Size<uint>& size, bo
 	texDesc.SampleDesc.Count	= 1;
 	texDesc.SampleDesc.Quality	= 0;
 
-	DXResource<ID3D11Texture2D> tex = dx.CreateTexture2D(texDesc);
-	SetTexture(tex);
+	_texture = dx.CreateTexture2D(texDesc);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	memset(&dsvDesc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -46,13 +35,7 @@ void DepthBufferCube::Initialize(Device::DirectX& dx, const Size<uint>& size, bo
 	dsvDesc.Texture2DArray.ArraySize		= 6;
 	dsvDesc.Texture2DArray.MipSlice			= 0;
 
-	_depthStencilView = dx.CreateDepthStencilView(tex.GetRaw(), dsvDesc);
-}
-
-void DepthBufferCube::Destroy()
-{
-	Texture2D::Destroy();
-	_depthStencilView.Destroy();
+	_depthStencilView = dx.CreateDepthStencilView(_texture.GetRaw(), dsvDesc);
 }
 
 void DepthBufferCube::Clear(Device::DirectX& dx, float depth, unsigned char stencil)

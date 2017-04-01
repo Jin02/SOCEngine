@@ -7,15 +7,11 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class DepthBufferCube : public Texture2D
+		class DepthBufferCube final
 		{
 		public:
-			DepthBufferCube(void);
-			virtual ~DepthBufferCube();
-
-		public:
+			DepthBufferCube(void) = default;
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, bool useShaderResource);
-			void Destroy();
 
 			void Clear(Device::DirectX& dx, float depth, unsigned char stencil);
 
@@ -23,6 +19,7 @@ namespace Rendering
 
 		private:
 			DXResource<ID3D11DepthStencilView>		_depthStencilView;
+			DXResource<ID3D11Texture2D>				_texture;
 		};
 	}
 }

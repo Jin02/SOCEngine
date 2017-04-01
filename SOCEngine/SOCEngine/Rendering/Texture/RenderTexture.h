@@ -6,13 +6,11 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class RenderTexture final : public Texture2D
+		class RenderTexture final
 		{
 		public:
-			RenderTexture();
-			~RenderTexture();
+			RenderTexture() = default;
 
-		public:
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0, uint mipLevel = 1);
 			void Initialize(Device::DirectX& dx, const DXResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size);
@@ -24,11 +22,8 @@ namespace Rendering
 			GET_CONST_ACCESSOR(RenderTargetView, const DXResource<ID3D11RenderTargetView>&, _renderTargetView);
 
 		private:
-			using Texture2D::Initialize;
-			using Texture2D::Destroy;
-
-		private:
 			DXResource<ID3D11RenderTargetView>	_renderTargetView;
+			Texture2D							_tex2D;
 		};
 	}
 }
