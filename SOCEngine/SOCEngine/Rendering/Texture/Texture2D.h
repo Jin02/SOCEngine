@@ -22,7 +22,6 @@ namespace Rendering
 
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
-			void Destroy();
 			void GenerateMips(Device::DirectX& dx);
 
 			const Size<uint>& FetchSize();
@@ -33,12 +32,12 @@ namespace Rendering
 
 			SET_ACCESSOR(Size, const Size<uint>&, _size);
 			SET_ACCESSOR(Texture, const DXResource<ID3D11Texture2D>&, _texture);
-			GET_ACCESSOR(Base, TextureGPUView&, _base);
 
 		private:
-			TextureGPUView						_base;
 			DXResource<ID3D11Texture2D>		_texture;
-			Size<uint>						_size = Size<uint>(0, 0);
+			Size<uint>				_size = Size<uint>(0, 0);
+			View::ShaderResourceView		_srv;
+			View::UnorderedAccessView		_uav;
 		};
 	}
 }
