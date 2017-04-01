@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "IScene.h"
 #include "MaterialManager.hpp"
-#include "BufferManager.h"
+#include "BufferManager.hpp"
 #include "ObjectManager.h"
 #include "MeshManager.hpp"
 #include "ShaderManager.h"
