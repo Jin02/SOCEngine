@@ -5,15 +5,15 @@ using namespace Rendering::View;
 using namespace Math;
 
 void Texture3D::Initialize(	Device::DirectX& dx,
-							uint width, uint height, uint depth,
-							DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
-							uint optionBindFlag, uint mipLevels )
+				uint width, uint height, uint depth,
+				DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
+				uint optionBindFlag, uint mipLevels )
 {
 	_size = Vector3(static_cast<float>(width), static_cast<float>(height), static_cast<float>(depth));
 
 	uint bindFlag = ((srvFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_SHADER_RESOURCE	: 0) |
-					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPS¿ª ªÁøÎ«œ∑¡∏È
-																		// D3D11_BIND_RENDER_TARGET º≥¡§µ» ªÛ≈¬ø©æﬂ «—¥Ÿ.
+					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPSÏùÑ ÏÇ¨Ïö©ÌïòÎ†§Î©¥
+																		// D3D11_BIND_RENDER_TARGET ÏÑ§Ï†ïÎêú ÏÉÅÌÉúÏó¨Ïïº ÌïúÎã§.
 					((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS	: 0) | optionBindFlag;
 
 	D3D11_TEXTURE3D_DESC textureDesc;
@@ -48,26 +48,8 @@ void Texture3D::Initialize(	Device::DirectX& dx,
 	}
 
 	if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
-	{
-		ShaderResourceView srv;
-		srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
-
-		_base.SetShaderResourceView(srv);
-	}
+		_srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
 
 	if (bindFlag & D3D11_BIND_UNORDERED_ACCESS)
-	{
-		UnorderedAccessView uav;
-		uav.Initialize(dx, uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
-
-		_base.SetUnorderedAccessView(uav);
-	}
-}
-
-void Texture3D::Destroy()
-{
-	_base.Destroy();
-	_texture.Destroy();
-	_rtv.Destroy();
-	_size = Vector3(0.0f, 0.0f, 0.0f);
+		_uav.Initialize(dx, uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
 }
