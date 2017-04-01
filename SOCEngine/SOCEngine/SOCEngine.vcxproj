@@ -162,7 +162,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
     <ClInclude Include="Rendering\Sky\SkyGeometry.h" />
-    <ClInclude Include="Rendering\Sky\SkyRenderer.h" />
+    <ClInclude Include="Rendering\Sky\SkyRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
@@ -307,7 +309,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
     <ClCompile Include="Rendering\Sky\SkyGeometry.cpp" />
-    <ClCompile Include="Rendering\Sky\SkyRenderer.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />

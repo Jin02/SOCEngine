@@ -274,9 +274,6 @@
     <Filter Include="Rendering\Sky\Box">
       <UniqueIdentifier>{0cea5a99-4942-4d6e-91ad-ab1328674f23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sky\Base">
-      <UniqueIdentifier>{b0ed3366-453f-4d71-ae10-1b9189218b9d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Sky\Renderer">
       <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
     </Filter>
@@ -342,6 +339,9 @@
     </Filter>
     <Filter Include="Rendering\Shadow\Spot">
       <UniqueIdentifier>{9c8426c3-fd5e-4c40-a129-fc396980703e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Geometry">
+      <UniqueIdentifier>{b0ed3366-453f-4d71-ae10-1b9189218b9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -746,7 +746,7 @@
       <Filter>Rendering\Material</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyGeometry.h">
-      <Filter>Rendering\Sky\Base</Filter>
+      <Filter>Rendering\Sky\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Light\BaseLight.h">
       <Filter>Rendering\Light\Base</Filter>
@@ -970,7 +970,7 @@
       <Filter>Rendering\Shader\Compute</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyGeometry.cpp">
-      <Filter>Rendering\Sky\Base</Filter>
+      <Filter>Rendering\Sky\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Light\BaseLight.cpp">
       <Filter>Rendering\Light\Base</Filter>
