@@ -1,6 +1,8 @@
 #include "DirectX.h"
 #include <assert.h>
 #include "Launcher.h"
+#include "BaseShader.h"
+#include "BaseBuffer.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -179,6 +181,120 @@ void DirectX::CreateBlendStates()
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &_blendAlpha)));
+}
+
+DXResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource * rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC & desc)
+{
+	ID3D11ShaderResourceView* srv = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateShaderResourceView(rawResource, &desc, &srv));
+
+	return DXResource<ID3D11ShaderResourceView>(srv);
+}
+
+DXResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAccessView(ID3D11Resource * rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC & desc)
+{
+	ID3D11UnorderedAccessView* uav = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateUnorderedAccessView(rawResource, &desc, &uav));
+
+	return DXResource<ID3D11UnorderedAccessView>(uav);
+}
+
+DXResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView(ID3D11Resource * rawResource, const D3D11_RENDER_TARGET_VIEW_DESC & desc)
+{
+	ID3D11RenderTargetView* rtv = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateRenderTargetView(rawResource, &desc, &rtv));
+
+	return DXResource<ID3D11RenderTargetView>(rtv);
+}
+
+DXResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView(ID3D11Resource * rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC & desc)
+{
+	ID3D11DepthStencilView* dsv = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateDepthStencilView(rawResource, &desc, &dsv));
+
+	return DXResource<ID3D11DepthStencilView>(dsv);
+}
+
+DXResource<ID3D11Buffer> Device::DirectX::CreateBuffer(const D3D11_BUFFER_DESC & desc, const void * data)
+{
+	ID3D11Buffer* buffer = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateBuffer(&desc, nullptr, &buffer));
+
+	return DXResource<ID3D11Buffer>(buffer);
+}
+
+DXResource<ID3D11GeometryShader> Device::DirectX::CreateGeometryShader(BaseShader& baseShader)
+{
+	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
+	assert(blob != nullptr);
+
+	ID3D11GeometryShader* shader = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader));
+
+	return DXResource<ID3D11GeometryShader>(shader);
+}
+
+DXResource<ID3D11PixelShader> Device::DirectX::CreatePixelShader(BaseShader& baseShader)
+{
+	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
+	assert(blob != nullptr);
+
+	ID3D11PixelShader* shader = nullptr;
+	ASSERT_SUCCEEDED(_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader));
+
+	return DXResource<ID3D11PixelShader>(shader);
+}
+
+DXResource<ID3D11VertexShader> Device::DirectX::CreateVertexShader(BaseShader& baseShader)
+{
+	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
+	assert(blob != nullptr);
+
+	ID3D11VertexShader* shader = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader));
+
+	return DXResource<ID3D11VertexShader>(shader);
+}
+
+DXResource<ID3D11ComputeShader> Device::DirectX::CreateComputeShader(BaseShader& baseShader)
+{
+	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
+	assert(blob != nullptr);
+
+	ID3D11ComputeShader* shader = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader));
+
+	return DXResource<ID3D11ComputeShader>(shader);
+}
+
+DXResource<ID3D11InputLayout> Device::DirectX::CreateInputLayout(BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+{
+	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
+	assert( (blob != nullptr) && (vertexDeclations.empty() == false) );
+
+	ID3D11InputLayout* layout = nullptr;
+	ASSERT_SUCCEEDED(
+		_device->CreateInputLayout(vertexDeclations.data(), vertexDeclations.size(),
+		blob->GetBufferPointer(), blob->GetBufferSize(), &layout)
+		);
+		
+	return DXResource<ID3D11InputLayout>(layout);
+}
+
+DXResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_TEXTURE2D_DESC & desc) 
+{
+	ID3D11Texture2D* texture = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateTexture2D(&desc, nullptr, &texture));
+
+	return DXResource<ID3D11Texture2D>(texture);
+}
+
+DXResource<ID3D11Texture3D> Device::DirectX::CreateTexture3D(const D3D11_TEXTURE3D_DESC & desc) 
+{
+	ID3D11Texture3D* texture = nullptr;
+	ASSERT_SUCCEEDED(_device->CreateTexture3D(&desc, nullptr, &texture));
+
+	return DXResource<ID3D11Texture3D>(texture);
 }
 
 void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA)

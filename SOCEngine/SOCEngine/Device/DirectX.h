@@ -14,9 +14,24 @@
 #include "Matrix.h"
 #include "Rect.h"
 
+#include "DXResource.h"
+
 namespace Core
 {
 	class Launcher;
+}
+
+namespace Rendering
+{
+	namespace Shader
+	{
+		class BaseShader;
+	}
+
+	namespace Buffer
+	{
+		class BaseBuffer;
+	}
 }
 
 namespace Device
@@ -36,46 +51,63 @@ namespace Device
 		const Size<uint>	FetchBackBufferSize();
 
 	public:
-		GET_ACCESSOR(Device,										ID3D11Device*,				_device);
-		GET_ACCESSOR(SwapChain,										IDXGISwapChain*,			_swapChain);
-		GET_ACCESSOR(Context,										ID3D11DeviceContext*,		_immediateContext);
+		GET_CONST_ACCESSOR(Device,										ID3D11Device*,				_device);
+		GET_CONST_ACCESSOR(SwapChain,										IDXGISwapChain*,			_swapChain);
+		GET_CONST_ACCESSOR(Context,										ID3D11DeviceContext*,		_immediateContext);
 
-		GET_ACCESSOR(BackBufferRTV,									ID3D11RenderTargetView*,	_renderTargetView);
+		GET_CONST_ACCESSOR(BackBufferRTV,									ID3D11RenderTargetView*,	_renderTargetView);
 
-		GET_ACCESSOR(RasterizerStateCCWDisableCulling,				ID3D11RasterizerState*,		_rasterizerCounterClockwiseDisableCulling);
-		GET_ACCESSOR(RasterizerStateCCWDefaultState,				ID3D11RasterizerState*,		_rasterizerCounterClockwiseDefault);
-		GET_ACCESSOR(RasterizerStateCWDisableCulling,				ID3D11RasterizerState*,		_rasterizerClockwiseDisableCulling);
-		GET_ACCESSOR(RasterizerStateCWDisableCullingWithClip,		ID3D11RasterizerState*,		_rasterizerClockwiseDisableCullingWithClip);
-		GET_ACCESSOR(RasterizerStateCWDefaultState,					ID3D11RasterizerState*,		_rasterizerClockwiseDefault);
+		GET_CONST_ACCESSOR(RasterizerStateCCWDisableCulling,				ID3D11RasterizerState*,		_rasterizerCounterClockwiseDisableCulling);
+		GET_CONST_ACCESSOR(RasterizerStateCCWDefaultState,				ID3D11RasterizerState*,		_rasterizerCounterClockwiseDefault);
+		GET_CONST_ACCESSOR(RasterizerStateCWDisableCulling,				ID3D11RasterizerState*,		_rasterizerClockwiseDisableCulling);
+		GET_CONST_ACCESSOR(RasterizerStateCWDisableCullingWithClip,		ID3D11RasterizerState*,		_rasterizerClockwiseDisableCullingWithClip);
+		GET_CONST_ACCESSOR(RasterizerStateCWDefaultState,					ID3D11RasterizerState*,		_rasterizerClockwiseDefault);
 
-		GET_ACCESSOR(BlendStateOpaque,								ID3D11BlendState*,			_blendOpaque);
-		GET_ACCESSOR(BlendStateAlphaToCoverage,						ID3D11BlendState*,			_blendAlphaToCoverage);
-		GET_ACCESSOR(BlendStateAlpha,								ID3D11BlendState*,			_blendAlpha);
+		GET_CONST_ACCESSOR(BlendStateOpaque,								ID3D11BlendState*,			_blendOpaque);
+		GET_CONST_ACCESSOR(BlendStateAlphaToCoverage,						ID3D11BlendState*,			_blendAlphaToCoverage);
+		GET_CONST_ACCESSOR(BlendStateAlpha,								ID3D11BlendState*,			_blendAlpha);
 
-		GET_ACCESSOR(DepthStateDisableDepthWrite,					ID3D11DepthStencilState*,	_depthDisableDepthWrite);
-		GET_ACCESSOR(DepthStateDisableDepthTest,					ID3D11DepthStencilState*,	_depthDisableDepthTest);
-		GET_ACCESSOR(DepthStateLess,								ID3D11DepthStencilState*,	_depthLess);
-		GET_ACCESSOR(DepthStateEqualAndDisableDepthWrite,			ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
-		GET_ACCESSOR(DepthStateGreater,								ID3D11DepthStencilState*,	_depthGreater);
-		GET_ACCESSOR(DepthStateGreaterAndDisableDepthWrite,			ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
-		GET_ACCESSOR(DepthStateGreaterEqualAndDisableDepthWrite,	ID3D11DepthStencilState*,	_depthGreaterEqualAndDisableDepthWrite);
-		GET_ACCESSOR(DepthStateLessEqual,							ID3D11DepthStencilState*,	_depthLessEqual);
+		GET_CONST_ACCESSOR(DepthStateDisableDepthWrite,					ID3D11DepthStencilState*,	_depthDisableDepthWrite);
+		GET_CONST_ACCESSOR(DepthStateDisableDepthTest,					ID3D11DepthStencilState*,	_depthDisableDepthTest);
+		GET_CONST_ACCESSOR(DepthStateLess,								ID3D11DepthStencilState*,	_depthLess);
+		GET_CONST_ACCESSOR(DepthStateEqualAndDisableDepthWrite,			ID3D11DepthStencilState*,	_depthEqualAndDisableDepthWrite);
+		GET_CONST_ACCESSOR(DepthStateGreater,								ID3D11DepthStencilState*,	_depthGreater);
+		GET_CONST_ACCESSOR(DepthStateGreaterAndDisableDepthWrite,			ID3D11DepthStencilState*,	_depthGreaterAndDisableDepthWrite);
+		GET_CONST_ACCESSOR(DepthStateGreaterEqualAndDisableDepthWrite,	ID3D11DepthStencilState*,	_depthGreaterEqualAndDisableDepthWrite);
+		GET_CONST_ACCESSOR(DepthStateLessEqual,							ID3D11DepthStencilState*,	_depthLessEqual);
 
-		GET_ACCESSOR(SamplerStateAnisotropic,						ID3D11SamplerState*,		_samplerAnisotropic);
-		GET_ACCESSOR(SamplerStateLinear,							ID3D11SamplerState*,		_samplerLinear);
-		GET_ACCESSOR(SamplerStatePoint,								ID3D11SamplerState*,		_samplerPoint);
-		GET_ACCESSOR(SamplerStateShadowLessEqual,					ID3D11SamplerState*,		_samplerShadowLessEqualComp);
-		GET_ACCESSOR(SamplerStateShadowGreaterEqual,				ID3D11SamplerState*,		_samplerShadowGreaterEqualComp);
-		GET_ACCESSOR(SamplerStateShadowLinear,						ID3D11SamplerState*,		_samplerShadowLinear);
-		GET_ACCESSOR(SamplerStateConeTracing,						ID3D11SamplerState*,		_samplerConeTracing);
+		GET_CONST_ACCESSOR(SamplerStateAnisotropic,						ID3D11SamplerState*,		_samplerAnisotropic);
+		GET_CONST_ACCESSOR(SamplerStateLinear,							ID3D11SamplerState*,		_samplerLinear);
+		GET_CONST_ACCESSOR(SamplerStatePoint,								ID3D11SamplerState*,		_samplerPoint);
+		GET_CONST_ACCESSOR(SamplerStateShadowLessEqual,					ID3D11SamplerState*,		_samplerShadowLessEqualComp);
+		GET_CONST_ACCESSOR(SamplerStateShadowGreaterEqual,				ID3D11SamplerState*,		_samplerShadowGreaterEqualComp);
+		GET_CONST_ACCESSOR(SamplerStateShadowLinear,						ID3D11SamplerState*,		_samplerShadowLinear);
+		GET_CONST_ACCESSOR(SamplerStateConeTracing,						ID3D11SamplerState*,		_samplerConeTracing);
 
-		GET_ACCESSOR(MSAADesc,										const DXGI_SAMPLE_DESC&,	_msaaDesc);
+		GET_CONST_ACCESSOR(MSAADesc,										const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		const Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 
-		GET_ACCESSOR(BackBufferSize,								const Size<uint>&,			_backBufferSize);
+		GET_CONST_ACCESSOR(BackBufferSize,								const Size<uint>&,			_backBufferSize);
 
-		GET_ACCESSOR(FeatureLevel,									D3D_FEATURE_LEVEL,			_featureLevel);
-		GET_ACCESSOR(DriverType,									D3D_DRIVER_TYPE,			_driverType);
+		GET_CONST_ACCESSOR(FeatureLevel,									D3D_FEATURE_LEVEL,			_featureLevel);
+		GET_CONST_ACCESSOR(DriverType,									D3D_DRIVER_TYPE,			_driverType);
+
+	public:
+		DXResource<ID3D11ShaderResourceView>	CreateShaderResourceView(ID3D11Resource* rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+		DXResource<ID3D11UnorderedAccessView>	CreateUnorderedAccessView(ID3D11Resource* rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
+		DXResource<ID3D11RenderTargetView>		CreateRenderTargetView(ID3D11Resource* rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
+		DXResource<ID3D11DepthStencilView>		CreateDepthStencilView(ID3D11Resource* rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
+
+		DXResource<ID3D11Buffer>				CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data);
+
+		DXResource<ID3D11GeometryShader>		CreateGeometryShader(Rendering::Shader::BaseShader& baseShader);
+		DXResource<ID3D11PixelShader>			CreatePixelShader(Rendering::Shader::BaseShader& baseShader);
+		DXResource<ID3D11VertexShader>			CreateVertexShader(Rendering::Shader::BaseShader& baseShader);
+		DXResource<ID3D11ComputeShader>			CreateComputeShader(Rendering::Shader::BaseShader& baseShader);
+
+		DXResource<ID3D11InputLayout>			CreateInputLayout(Rendering::Shader::BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+		DXResource<ID3D11Texture2D>				CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc);
+		DXResource<ID3D11Texture3D>				CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc);
 
 	private:
 		friend class Core::Launcher;

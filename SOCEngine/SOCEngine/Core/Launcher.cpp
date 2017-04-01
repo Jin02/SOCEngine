@@ -9,7 +9,7 @@ void Launcher::Run(const WinApp::Param& winParam, const Rect<uint>& viewport, bo
 {
 	WinApp win(winParam);
 	DirectX dx;
-	Engine engine;
+	Engine engine(dx);
 
 	// Init System
 	{

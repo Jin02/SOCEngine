@@ -28,12 +28,12 @@ const ObjectId ObjectIdManager::Acquire()
 
 bool ObjectIdManager::Has(ObjectId id) noexcept
 {
-	uint pos = id() / _bitSize;
-	return (pos >= _bitFields.size()) ? false : _bitFields[pos][id() % _bitSize];
+	uint pos = id / _bitSize;
+	return (pos >= _bitFields.size()) ? false : _bitFields[pos][id % _bitSize];
 }
 
 void ObjectIdManager::Delete(ObjectId id) noexcept
 {
 	if (Has(id))
-		_bitFields[id() / _bitSize][id() % _bitSize] = false;
+		_bitFields[id / _bitSize][id % _bitSize] = false;
 }

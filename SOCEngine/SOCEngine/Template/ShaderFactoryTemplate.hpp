@@ -18,25 +18,23 @@ namespace Rendering
 			};
 
 		private:
-			Rendering::Manager::ShaderManager	*_shaderMgr;
+			Manager::ShaderManager*	_shaderMgr;
 
 		public:
-			[ClassName](Rendering::Manager::ShaderManager* shaderManager)
-			{
-				_shaderMgr = shaderManager;
-			}
-
-			~[ClassName](void)
+			[ClassName](Manager::ShaderManager* shaderMgr)
+				: _shaderMgr(shaderMgr)
 			{
 			}
 
 		public:
-			LoadShaderResult LoadShader(const std::string& shaderName,
+			LoadShaderResult LoadShader(
+				Device::DirectX& dx,
+				const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName, const std::string& mainGSFuncName,
 				const std::vector<Shader::ShaderMacro>* macros,
-				Shader::VertexShader**		outVertexShader,
-				Shader::PixelShader**		outPixelShader,
-				Shader::GeometryShader**	outGeometryShader)
+				std::shared_ptr<Shader::VertexShader>*		outVertexShader,
+				std::shared_ptr<Shader::PixelShader>*		outPixelShader,
+				std::shared_ptr<Shader::GeometryShader>*	outGeometryShader)
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
@@ -64,19 +62,19 @@ namespace Rendering
 				/** Script Begin **/
 				/** Script End **/
 				
-				const std::string baseCommand = shaderName+':';
+				assert(_shaderMgr);
 
-				Shader::VertexShader* vs = nullptr;
-				if(mainVSFuncName.empty() == false)
-					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, macros);
+				std::shared_ptr<Shader::VertexShader> vs = nullptr;
+				if (mainVSFuncName.empty() == false)
+					vs = _shaderMgr->GetVertexShaderManager().LoadShader(dx, folderPath, shaderName, mainVSFuncName, true, vertexDeclations, macros, nullptr);
 
-				Shader::PixelShader* ps = nullptr;
-				if(mainPSFuncName.empty() == false)
-					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, macros);
+				std::shared_ptr<Shader::PixelShader> ps = nullptr;
+				if (mainPSFuncName.empty() == false)
+					ps = _shaderMgr->GetPixelShaderManager().LoadShader(dx, folderPath, shaderName, mainPSFuncName, true, macros, nullptr);
 
-				Shader::GeometryShader* gs = nullptr;
-				if(mainPSFuncName.empty() == false)
-					gs = _shaderMgr->LoadGeometryShader(folderPath, baseCommand + mainGSFuncName, true, macros);
+				std::shared_ptr<Shader::GeometryShader> gs = nullptr;
+				if (mainPSFuncName.empty() == false)
+					gs = _shaderMgr->GetGeometryShaderManager().LoadShader(dx, folderPath, shaderName, mainGSFuncName, true, macros, nullptr);
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;

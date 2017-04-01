@@ -21,7 +21,7 @@ namespace Core
 
 			auto& vector = _vectorArray[level];
 			vector.push_back(object);
-			return vector.size();
+			return vector.size() - 1;
 		}
 
 		template<uint level>

@@ -41,6 +41,9 @@ namespace Math
 		const Quaternion Normalized();
 		const Quaternion Inversed();
 		void FromEuler(const Vector3& v);
+		const Vector3 GetForward() const;
+		const Vector3 GetRight() const;
+		const Vector3 GetUp() const;
 
 	public:
 		float x, y, z, w;

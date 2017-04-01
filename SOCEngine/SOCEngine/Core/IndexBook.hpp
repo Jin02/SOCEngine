@@ -27,7 +27,7 @@ namespace Core
 			const auto& iter = _map.find(key);
 
 			bool found = iter != _map.end();
-			return found ? iter->second : std::numeric_limits<uint>::max();
+			return found ? iter->second : -1;//std::numeric_limits<uint>::max();
 		}
 
 		bool Has(const Key& key) const
@@ -57,7 +57,7 @@ namespace Core
 			_map.clear();
 		}
 
-		static constexpr uint FailIndex() { return std::numeric_limits<uint>::max(); }
+		static constexpr uint FailIndex() { return -1; }//std::numeric_limits<uint>::max(); }
 	};
 
 	template<typename Key>

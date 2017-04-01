@@ -9,6 +9,7 @@ namespace Core
 	class ObjectIdManager final
 	{
 	public:
+		ObjectIdManager() = default;
 		const ObjectId  Acquire();
 		bool            Has(ObjectId id) noexcept;
 		void            Delete(ObjectId id) noexcept;

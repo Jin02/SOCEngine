@@ -35,11 +35,7 @@ const Vector3 Vector3::operator + (const Vector3& a) const
 
 bool Vector3::operator == (const Vector3& b) const
 {
-	bool x = fabsf(x - b.x) < FLT_EPSILON;
-	bool y = fabsf(y - b.y) < FLT_EPSILON;
-	bool z = fabsf(z - b.z) < FLT_EPSILON;
-
-	return x & y & z;
+	return (fabsf(x - b.x) < FLT_EPSILON) & (fabsf(y - b.y) < FLT_EPSILON) & (fabsf(z - b.z) < FLT_EPSILON);
 }
 
 bool Vector3::operator != (const Vector3& b) const

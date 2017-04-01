@@ -4,7 +4,7 @@ template <typename Type>
 struct Size
 {
 public:
-	Size(Type _w, Type _h) : w(_w), h(_h) {}
+	Size(Type _w = 0, Type _h = 0) : w(_w), h(_h) {}
 
 public:
 	Type w, h;

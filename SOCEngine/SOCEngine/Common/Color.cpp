@@ -5,6 +5,14 @@ Color::Color(float _r, float _g, float _b, float _a) :
 {
 }
 
+Color::Color(uint uintColor)
+{
+	a = static_cast<float>( (uintColor & 0b11111111000000000000000000000000) >> 24 ) / 255.0f;
+	b = static_cast<float>( (uintColor & 0b00000000111111110000000000000000) >> 16 ) / 255.0f;
+	g = static_cast<float>( (uintColor & 0b00000000000000001111111100000000) >>  8 ) / 255.0f;
+	r = static_cast<float>( (uintColor & 0b00000000000000000000000011111111) >>  0 ) / 255.0f;
+}
+
 const Color Color::operator -(const Color& c)
 {
 	Color color = (*this);
@@ -157,6 +165,12 @@ unsigned long Color::Get32BitUintColor() const
 	unsigned long _a = static_cast<unsigned long>(a * 255.0f + 0.5);
 
 	return (_a << 24) | (_b << 16) | (_g << 8) | _r;
+}
+
+unsigned long Color::Get32BitUintColor(float r, float g, float b, float a)
+{
+	Color color(r, g, b, a);
+	return color.Get32BitUintColor();
 }
 
 void Color::Get16BitFloat4Color(std::array<Half, 4>& outArray) const

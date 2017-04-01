@@ -10,7 +10,7 @@
 #define MIPMAPPING_TILE_RES_HALF					8
 #define VOXEL_CONE_TRACING_TILE_RES					16
 #define NUM_ENV_FILTER_SAMPLER						32	
-#define MAXIMUM_LUMEN								25500
+#define MAXIMUM_LUMEN								25500.0
 #define PRE_INTEGRATE_TILE_RES						16
 #define BRDF_SAMPLES								64
 #define POINT_LIGHT_BUFFER_MAX_NUM					2048
@@ -22,5 +22,8 @@
 // Math
 #define PI											3.141592654f
 #define FLOAT_MAX									3.402823466e+38F
+#define DEG_2_RAD(X)								((PI * X) / 180.0f)
+#define RAD_2_DEG(X)								((180.0f * X) / PI)
+
 
 #endif

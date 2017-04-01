@@ -13,14 +13,335 @@
     <Filter Include="Template">
       <UniqueIdentifier>{a1b897a3-343a-4ab2-8d90-b0042f075cd5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{232f5b9f-32f4-403a-a45b-4ef00ffa3c24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Launcher">
+      <UniqueIdentifier>{6b48c397-058a-4a97-b936-1284a7a93e0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Engine">
+      <UniqueIdentifier>{8cded4e9-4984-41a5-b503-ad7b035a0a61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Transform">
+      <UniqueIdentifier>{ba97ae1a-739d-4976-a9e7-548c15c92a33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Scene">
+      <UniqueIdentifier>{dfe089c0-de7b-4e9d-a447-20d0787dd6f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Structure">
+      <UniqueIdentifier>{18f5818f-0603-4ab1-8122-9e34ca394c18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Matrix">
+      <UniqueIdentifier>{ae901bca-74df-4379-a2aa-dcdda1a0ba16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector">
+      <UniqueIdentifier>{5cd22010-0107-4e2a-89a7-e5f3cd4036c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\2">
+      <UniqueIdentifier>{01e31d22-8c17-4908-8d6e-d025936e3447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\3">
+      <UniqueIdentifier>{d629e147-e7f3-4c95-bc5b-271e75e741a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Vector\4">
+      <UniqueIdentifier>{d01d45cc-842a-4456-8b23-a74fd28f3160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Plane">
+      <UniqueIdentifier>{a09b34e3-72f8-48fd-877d-173b292f8f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Quaternion">
+      <UniqueIdentifier>{c7be0049-a83e-4bcd-8c9c-3afb0c0a81f0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{70a6cc88-9417-4b96-b856-1e84990556c1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Shader">
       <UniqueIdentifier>{140e0627-0f0a-46e7-aa52-9ad050861f51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{232f5b9f-32f4-403a-a45b-4ef00ffa3c24}</UniqueIdentifier>
+    <Filter Include="Core\Component">
+      <UniqueIdentifier>{81adeef0-8f98-44eb-b7ac-48fd1f08e94c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection">
+      <UniqueIdentifier>{59894b50-4014-4c1e-93e6-8ab4957da160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\BoundBox">
+      <UniqueIdentifier>{ade80053-a181-4a4c-80ff-62590dab2977}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\Cone">
+      <UniqueIdentifier>{5cfba063-b0f0-4407-9b81-d19a933559d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\Frustum">
+      <UniqueIdentifier>{45e894fb-8610-494a-b821-1e6ee5aa905a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\Ray">
+      <UniqueIdentifier>{4dc951d3-d1fa-4984-be97-d9485e7c34c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\Sphere">
+      <UniqueIdentifier>{859866c2-3018-420d-a9db-71b6c49f7317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes">
+      <UniqueIdentifier>{608eaa47-4913-4f19-865b-4908db25bbca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Common">
+      <UniqueIdentifier>{4557472b-2ac3-4fdc-b330-b89e338147e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI">
+      <UniqueIdentifier>{7838247d-7b6f-44b2-ae5f-e354b93e7b8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing">
+      <UniqueIdentifier>{4d0a2a8a-f14b-4a9b-8a17-30773e874283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Sky">
+      <UniqueIdentifier>{b9c4d244-76e6-4d0c-a1a0-c2f21ae07e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\Filter">
+      <UniqueIdentifier>{9e9b8bd9-f821-44c4-a910-6aef514731bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\PBR">
+      <UniqueIdentifier>{5dd7077f-b929-4daa-9718-43a20ee78a81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\LightCulling">
+      <UniqueIdentifier>{1b29cdbc-920d-4e08-9d6d-62e85459e471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Unused">
+      <UniqueIdentifier>{7947513b-c186-4a11-8e81-a048be9c00e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\ReflectionProbe">
+      <UniqueIdentifier>{f2cfdd2a-12d8-47a7-8b40-d0e806c1e93a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Shadow">
+      <UniqueIdentifier>{4d24e9f7-f44c-49a7-9b66-f3b6307fd24b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Material">
+      <UniqueIdentifier>{418e8d99-c613-45fd-aa29-5f22e6bb1537}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Merger">
+      <UniqueIdentifier>{d40f35ad-4a26-418f-8141-a5a99d9f40c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\TiledRendering">
+      <UniqueIdentifier>{df2a54cb-3c74-4ee1-a95d-1428a272e7e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\TiledRendering\Forward">
+      <UniqueIdentifier>{9b272a56-bb22-4ade-b5e6-80569c3998c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\TiledRendering\Deferred">
+      <UniqueIdentifier>{b39f3f34-6581-4cca-988f-0d0c5cfa259f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\TiledRendering\Deferred\GBuffer">
+      <UniqueIdentifier>{558d9e64-acf3-4169-a631-7405530596fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Clear">
+      <UniqueIdentifier>{51f94da3-6135-482c-bb83-09713d74e6fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Injection">
+      <UniqueIdentifier>{3c735467-9397-43ea-a159-d66715b2c1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Mipmap">
+      <UniqueIdentifier>{a97ca3ac-16cd-4b36-85d2-8526e312ee86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Voxelization">
+      <UniqueIdentifier>{4805d0ba-98f9-454c-acf5-5ca19e1cedc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Debug">
+      <UniqueIdentifier>{047ff906-6dc8-4398-88c7-c69737967de4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\RayTracing">
+      <UniqueIdentifier>{0a0166a0-e803-4774-bfd3-69d3a040d346}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\HDR">
+      <UniqueIdentifier>{e9434fb0-d71b-4346-9e62-594f5c389d5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\Effect">
+      <UniqueIdentifier>{a35ddc10-22ef-43fc-ab43-aedf37ac1613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\AO">
+      <UniqueIdentifier>{43a881d9-553e-446a-a532-f26231087dc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\TiledRendering\Forward\Optional">
+      <UniqueIdentifier>{bbe40f8f-2045-48aa-bd14-7a3990305cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\ReflectionProbe\Optional">
+      <UniqueIdentifier>{aec8aedb-baeb-4663-af97-78860d2b99f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer">
+      <UniqueIdentifier>{438b1cde-b2f7-4644-a485-8a799d567029}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer">
+      <UniqueIdentifier>{2f37acf2-95d0-49de-99f3-e509512187d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Base">
+      <UniqueIdentifier>{d6cfac69-f66a-4ca6-a11f-db84113bc1a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Const">
+      <UniqueIdentifier>{b695a523-5386-46c1-88cb-7d040f71ce44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\CPURead">
+      <UniqueIdentifier>{4f3fb771-83d5-4f64-b2bc-4b98a9977e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Index">
+      <UniqueIdentifier>{c32529c7-c4d6-46c3-9ce1-0a40b06723bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Raw">
+      <UniqueIdentifier>{ca66c953-2ea5-4d7f-91ea-b54b8fe04caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\ShaderResource">
+      <UniqueIdentifier>{cb6fb0c0-5ad9-4f18-b917-ad4b938e50f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\GPUUploadBuffer">
+      <UniqueIdentifier>{d6b1046d-667b-4bce-a871-1e451fc88caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\View">
+      <UniqueIdentifier>{5915fdc7-7a53-4e47-8b23-00e90abf8147}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Geometry">
+      <UniqueIdentifier>{553d8530-09b5-4d2c-b503-8fcf8a7a02c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Pixel">
+      <UniqueIdentifier>{3e6df27a-a4bd-4ea6-9052-750076d4838f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Vertex">
+      <UniqueIdentifier>{dbdac732-ca91-4986-bd52-9d7b551e73a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Macro">
+      <UniqueIdentifier>{7c2ec17c-465b-493a-bd85-b45dbb611d38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Manager">
+      <UniqueIdentifier>{cf30e36d-c504-4089-9ab4-e2154a85e255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shading">
+      <UniqueIdentifier>{bfd61c88-945f-4e8e-8685-c7634fac2880}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Offline">
+      <UniqueIdentifier>{875fe0ed-c869-4f8e-90f4-741155f089fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Base">
+      <UniqueIdentifier>{14ea7057-c16f-4901-be4c-e7347265698e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Manager\Vertex">
+      <UniqueIdentifier>{1994eb38-9f21-4571-bc68-2dd0946c6ccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Compute">
+      <UniqueIdentifier>{6957ff92-c03d-435e-8057-b070c79f08b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffer\Vertex">
+      <UniqueIdentifier>{c3749e66-9df2-48a2-bbb8-ce64c5ee7fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture">
+      <UniqueIdentifier>{8332ca01-10a2-46da-a4ce-1e2222a48f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\DepthBuffer">
+      <UniqueIdentifier>{edb91c14-7d56-48db-af40-4e07373d0bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Cube">
+      <UniqueIdentifier>{773d7a21-aecf-4481-8d80-0b16d90e991e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\RenderTarget">
+      <UniqueIdentifier>{51989f1d-9e9c-4df8-8cd3-c137e2bf88ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Texture2D">
+      <UniqueIdentifier>{b09c7318-b885-4e2b-af0c-6597bf8a9356}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Texture3D">
+      <UniqueIdentifier>{d4d82c95-613d-410a-9359-614b853710f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture\Base">
+      <UniqueIdentifier>{01ff5c15-9ba5-4ebc-873a-c710f96ea411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Manager\Compute">
+      <UniqueIdentifier>{ac7bd088-2616-47ab-9a4a-c02c0967d8cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material">
+      <UniqueIdentifier>{8c4b4c7f-e541-4de9-8fa6-4c3c7eb81487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material\Material">
+      <UniqueIdentifier>{3148a155-eb20-49a9-8751-89d87d0b6134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Material\PhysicallyBased">
+      <UniqueIdentifier>{e334fb2b-5b58-44af-a22e-36dc7de3735f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Mesh">
+      <UniqueIdentifier>{e3547351-623a-4e40-be74-217130dc99ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\DefaultShaderLoader">
+      <UniqueIdentifier>{d5ef8c48-b036-4a3f-bdd8-229586fdc96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky">
+      <UniqueIdentifier>{1af3d5a1-1903-401a-80df-71e53c5c40b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Atmospheric">
+      <UniqueIdentifier>{12cc15c9-1f67-4182-881e-ba1602a45b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Box">
+      <UniqueIdentifier>{0cea5a99-4942-4d6e-91ad-ab1328674f23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Base">
+      <UniqueIdentifier>{b0ed3366-453f-4d71-ae10-1b9189218b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Renderer">
+      <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Sky\Material">
+      <UniqueIdentifier>{a9f849e8-f639-44fe-b42b-bc63f9a02a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Object">
+      <UniqueIdentifier>{61a815ce-c204-4bd4-8591-70cdc2c634f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Object\Id">
+      <UniqueIdentifier>{eb3a5854-e697-4a4b-82c5-65a343b01265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light">
+      <UniqueIdentifier>{5244e4a0-d3c4-4648-adc5-7e9806f04074}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Base">
+      <UniqueIdentifier>{f8f89436-ecb1-44ca-9aa8-db796f6bd314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Directional">
+      <UniqueIdentifier>{1f3fb460-cb1d-4a8f-968a-3f1028ba2431}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Point">
+      <UniqueIdentifier>{e4d3053b-eef3-431d-8e7a-4b16894b39da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Spot">
+      <UniqueIdentifier>{c93e2168-b4a1-4617-80ec-f8f04d16ba93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Culling">
+      <UniqueIdentifier>{d74a10d5-746c-4454-a33f-b5b733971c00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Manager">
+      <UniqueIdentifier>{657ca648-f61b-4417-bd2e-e5efdb0aab7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Buffer">
+      <UniqueIdentifier>{96511848-9803-4bab-81f4-68a5d965f7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Buffer\Base">
+      <UniqueIdentifier>{5ed7c4dd-5b1a-4636-815f-966a0c6af188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Buffer\Directional">
+      <UniqueIdentifier>{f9d989ab-b12d-4f00-824d-6d16a33a8254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Buffer\Point">
+      <UniqueIdentifier>{d59cea5c-2b92-46b2-a574-2403ce704a47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light\Buffer\Spot">
+      <UniqueIdentifier>{348bc0ae-4430-4f0e-914f-a372c5863d02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera">
+      <UniqueIdentifier>{0350fb9d-dece-45dd-8bd5-e820bc672cf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow">
+      <UniqueIdentifier>{b016eb57-2dd8-4fa2-87f5-247f09be43aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Base">
+      <UniqueIdentifier>{fcb2dcde-2e69-4516-a3e9-5871694f9d63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Directional">
+      <UniqueIdentifier>{4fa61bfc-4679-4f11-9b0e-cfb803d8e7a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Point">
+      <UniqueIdentifier>{1e475d0f-fbc0-4522-bbe8-aee65a3b87cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Spot">
+      <UniqueIdentifier>{9c8426c3-fd5e-4c40-a129-fc396980703e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,24 +354,6 @@
     <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="Device\DirectX.h">
       <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Matrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Plane.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Quaternion.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Vector3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Vector4.h">
-      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\EngineMath.h">
       <Filter>Math</Filter>
@@ -70,55 +373,394 @@
     <ClInclude Include="Common\Color.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\ShaderMacro.h">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ObjectIdManager.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ObjectId.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ArrayVector.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\IndexBook.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\VectorIndexer.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\IScene.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Launcher.h">
-      <Filter>Core</Filter>
+      <Filter>Core\Launcher</Filter>
     </ClInclude>
     <ClInclude Include="Core\Engine.h">
-      <Filter>Core</Filter>
+      <Filter>Core\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectId.hpp">
+      <Filter>Core\Object\Id</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectIdManager.h">
+      <Filter>Core\Object\Id</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Transform.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IScene.h">
+      <Filter>Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\VectorIndexer.hpp">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ArrayVector.hpp">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IndexBook.hpp">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix.h">
+      <Filter>Math\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector2.h">
+      <Filter>Math\Vector\2</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector3.h">
+      <Filter>Math\Vector\3</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector4.h">
+      <Filter>Math\Vector\4</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Plane.h">
+      <Filter>Math\Plane</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Quaternion.h">
+      <Filter>Math\Quaternion</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ComponentSystem.hpp">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\Intersection.h">
+      <Filter>Intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\BoundBox.h">
+      <Filter>Intersection\BoundBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\Cone.h">
+      <Filter>Intersection\Cone</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\Frustum.h">
+      <Filter>Intersection\Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\Ray.h">
+      <Filter>Intersection\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Intersection\Sphere.h">
+      <Filter>Intersection\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Utility.hpp">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Singleton.h">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\CommonConstBuffer.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\GBufferParser.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\IsoscelesTriangle.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\BRDF.h">
+      <Filter>ShaderCodes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\DynamicLighting.h">
+      <Filter>ShaderCodes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\EnvIBL.h">
+      <Filter>ShaderCodes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\GICommon.h">
+      <Filter>ShaderCodes\VXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\LightCullingCommonCS.h">
+      <Filter>ShaderCodes\LightCulling</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\LightCullingCompareAtomicCS.h">
+      <Filter>ShaderCodes\LightCulling</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h">
+      <Filter>ShaderCodes\LightCulling</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
+      <Filter>ShaderCodes\ReflectionProbe</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Shadow.h">
+      <Filter>ShaderCodes\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\ShaderCommon.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\MonteCarlo.h">
+      <Filter>ShaderCodes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\NormalMapping.h">
+      <Filter>ShaderCodes\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Common.h">
+      <Filter>ShaderCodes\TiledRendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h">
+      <Filter>ShaderCodes\TiledRendering\Forward</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h">
+      <Filter>ShaderCodes\TiledRendering\Deferred\GBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\TBDRInput.h">
+      <Filter>ShaderCodes\TiledRendering\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Injection_Common.h">
+      <Filter>ShaderCodes\VXGI\Injection</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\Voxelization_Common.h">
+      <Filter>ShaderCodes\VXGI\Voxelization</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\RayTracingCommon.h">
+      <Filter>ShaderCodes\Postprocessing\RayTracing</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\HDRCommon.h">
+      <Filter>ShaderCodes\Postprocessing\HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\FullScreenShader.h">
+      <Filter>ShaderCodes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\SimpleImageEffect.h">
+      <Filter>ShaderCodes\Postprocessing\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\LensFlare.h">
+      <Filter>ShaderCodes\Postprocessing\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\ToneMapping.h">
+      <Filter>ShaderCodes\Postprocessing\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
+      <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\ImporterUtility.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\MeshImporter.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\G3djDataTypes.hpp">
+      <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\BufferManager.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\BaseBuffer.h">
+      <Filter>Rendering\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h">
+      <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\IndexBuffer.h">
+      <Filter>Rendering\Buffer\Index</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\RawBuffer.h">
+      <Filter>Rendering\Buffer\Raw</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
+      <Filter>Rendering\Buffer\ShaderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\VertexBuffer.h">
+      <Filter>Rendering\Buffer\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp">
+      <Filter>Rendering\Buffer\GPUUploadBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\UnorderedAccessView.h">
+      <Filter>Rendering\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\View\ShaderResourceView.h">
+      <Filter>Rendering\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\Shaders.h">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\GeometryShader.h">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\VertexShader.h">
+      <Filter>Rendering\Shader\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\PixelShader.h">
+      <Filter>Rendering\Shader\Pixel</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderMacro.h">
+      <Filter>Rendering\Shader\Macro</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderManager.h">
+      <Filter>Rendering\Shader\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shading\BindIndexInfo.h">
+      <Filter>Rendering\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthBufferCube.h">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\RenderTexture.h">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture2D.h">
+      <Filter>Rendering\Texture\Texture2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture3D.h">
+      <Filter>Rendering\Texture\Texture3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureCube.h">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
+      <Filter>Rendering\Offline</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\BaseShader.h">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\VertexShaderManager.h">
+      <Filter>Rendering\Shader\Manager\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderPool.hpp">
+      <Filter>Rendering\Shader\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\BufferPool.hpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\BaseTexture.h">
+      <Filter>Rendering\Texture\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\Texture2DManager.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="GPGPU\ComputeShader.h">
+      <Filter>Rendering\Shader\Compute</Filter>
+    </ClInclude>
+    <ClInclude Include="Device\DXResource.h">
+      <Filter>Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ComputeShaderManager.h">
+      <Filter>Rendering\Shader\Manager\Compute</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\Material.h">
+      <Filter>Rendering\Material\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\MaterialManager.hpp">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\Mesh.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp">
+      <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h">
+      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h">
+      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
+      <Filter>Rendering\Sky\Atmospheric</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyBox.h">
+      <Filter>Rendering\Sky\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyRenderer.h">
+      <Filter>Rendering\Sky\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\BaseSky.h">
+      <Filter>Rendering\Sky\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
+      <Filter>Rendering\Sky\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h">
+      <Filter>Rendering\Sky\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Object.h">
+      <Filter>Core\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectManager.h">
+      <Filter>Core\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\Lights.h">
+      <Filter>Rendering\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightForm.h">
+      <Filter>Rendering\Light\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\DirectionalLight.h">
+      <Filter>Rendering\Light\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\OnlyLightCulling.h">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightManager.h">
+      <Filter>Rendering\Light\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\SpotLight.h">
+      <Filter>Rendering\Light\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\PointLight.h">
+      <Filter>Rendering\Light\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\CommonLightingBuffer.h">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\DirectionalLightingBuffer.h">
+      <Filter>Rendering\Light\Buffer\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\SpotLightingBuffer.h">
+      <Filter>Rendering\Light\Buffer\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\PointLightingBuffer.h">
+      <Filter>Rendering\Light\Buffer\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightingBufferForm.hpp">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraManager.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\GBufferInfo.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\TransformCB.h">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\MeshCamera.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\MainCamera.h">
+      <Filter>Rendering\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\BaseShadow.h">
+      <Filter>Rendering\Shadow\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h">
+      <Filter>Rendering\Shadow\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadow.h">
+      <Filter>Rendering\Shadow\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
+      <Filter>Rendering\Shadow\Spot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
       <Filter>Device</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Matrix.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Plane.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Quaternion.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Vector2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Vector3.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Vector4.cpp">
-      <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Common\Half.cpp">
       <Filter>Common</Filter>
@@ -129,17 +771,343 @@
     <ClCompile Include="Common\Color.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\ObjectIdManager.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Launcher.cpp">
-      <Filter>Core</Filter>
+      <Filter>Core\Launcher</Filter>
     </ClCompile>
     <ClCompile Include="Core\Engine.cpp">
-      <Filter>Core</Filter>
+      <Filter>Core\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Core\ObjectIdManager.cpp">
+      <Filter>Core\Object\Id</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Transform.cpp">
+      <Filter>Core\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Matrix.cpp">
+      <Filter>Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vector2.cpp">
+      <Filter>Math\Vector\2</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vector3.cpp">
+      <Filter>Math\Vector\3</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vector4.cpp">
+      <Filter>Math\Vector\4</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane.cpp">
+      <Filter>Math\Plane</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Quaternion.cpp">
+      <Filter>Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\BoundBox.cpp">
+      <Filter>Intersection\BoundBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Cone.cpp">
+      <Filter>Intersection\Cone</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Frustum.cpp">
+      <Filter>Intersection\Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Ray.cpp">
+      <Filter>Intersection\Ray</Filter>
+    </ClCompile>
+    <ClCompile Include="Intersection\Sphere.cpp">
+      <Filter>Intersection\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\MeshImporter.cpp">
+      <Filter>Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\ImporterUtility.cpp">
+      <Filter>Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\BufferManager.cpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp">
+      <Filter>Rendering\Buffer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp">
+      <Filter>Rendering\Buffer\CPURead</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp">
+      <Filter>Rendering\Buffer\Index</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp">
+      <Filter>Rendering\Buffer\Raw</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
+      <Filter>Rendering\Buffer\ShaderResource</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp">
+      <Filter>Rendering\Buffer\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\UnorderedAccessView.cpp">
+      <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\View\ShaderResourceView.cpp">
+      <Filter>Rendering\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\GeometryShader.cpp">
+      <Filter>Rendering\Shader\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\VertexShader.cpp">
+      <Filter>Rendering\Shader\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\PixelShader.cpp">
+      <Filter>Rendering\Shader\Pixel</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
+      <Filter>Rendering\Shader\Macro</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
+      <Filter>Rendering\Shader\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
+      <Filter>Rendering\Buffer\Const</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
+      <Filter>Rendering\Texture\DepthBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture2D.cpp">
+      <Filter>Rendering\Texture\Texture2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture3D.cpp">
+      <Filter>Rendering\Texture\Texture3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureCube.cpp">
+      <Filter>Rendering\Texture\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
+      <Filter>Rendering\Offline</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
+      <Filter>Rendering\Shader\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\VertexShaderManager.cpp">
+      <Filter>Rendering\Shader\Manager\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\BaseTexture.cpp">
+      <Filter>Rendering\Texture\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\Texture2DManager.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GPGPU\ComputeShader.cpp">
+      <Filter>Rendering\Shader\Compute</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\ComputeShaderManager.cpp">
+      <Filter>Rendering\Shader\Manager\Compute</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\Material.cpp">
+      <Filter>Rendering\Material\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp">
+      <Filter>Rendering\Material\PhysicallyBased</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\Mesh.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
+      <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp">
+      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp">
+      <Filter>Rendering\Sky\Atmospheric</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyBox.cpp">
+      <Filter>Rendering\Sky\Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
+      <Filter>Rendering\Sky\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\BaseSky.cpp">
+      <Filter>Rendering\Sky\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
+      <Filter>Rendering\Sky\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp">
+      <Filter>Rendering\Sky\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ObjectManager.cpp">
+      <Filter>Core\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\LightForm.cpp">
+      <Filter>Rendering\Light\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
+      <Filter>Rendering\Light\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\OnlyLightCulling.cpp">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\LightManager.cpp">
+      <Filter>Rendering\Light\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\SpotLight.cpp">
+      <Filter>Rendering\Light\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\PointLight.cpp">
+      <Filter>Rendering\Light\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\CommonLightingBuffer.cpp">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\MeshCamera.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\SpotLightingBuffer.cpp">
+      <Filter>Rendering\Light\Buffer\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
+      <Filter>Rendering\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\MainCamera.cpp">
+      <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp">
+      <Filter>Rendering\Shadow\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
+      <Filter>Rendering\Shadow\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
+      <Filter>Rendering\Shadow\Spot</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
+      <Filter>ShaderCodes\Postprocessing\Filter</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Copy.hlsl">
+      <Filter>ShaderCodes\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\GaussianBlur.hlsl">
+      <Filter>ShaderCodes\Postprocessing\Filter</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl">
+      <Filter>ShaderCodes\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl">
+      <Filter>ShaderCodes\ReflectionProbe</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
+      <Filter>ShaderCodes\ReflectionProbe</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SkyBox.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
+      <Filter>ShaderCodes\VXGI</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
+      <Filter>ShaderCodes\Unused</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
+      <Filter>ShaderCodes\LightCulling</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
+      <Filter>ShaderCodes\Merger</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
+      <Filter>ShaderCodes\Merger</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Deferred\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Deferred\GBuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\TBDR.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Deferred</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
+      <Filter>ShaderCodes\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
+      <Filter>ShaderCodes\VXGI\Clear</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ClearVoxelRawMap.hlsl">
+      <Filter>ShaderCodes\VXGI\Clear</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
+      <Filter>ShaderCodes\VXGI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
+      <Filter>ShaderCodes\VXGI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl">
+      <Filter>ShaderCodes\VXGI\Injection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl">
+      <Filter>ShaderCodes\VXGI\Mipmap</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl">
+      <Filter>ShaderCodes\VXGI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Voxelization_TN_UV0.hlsl">
+      <Filter>ShaderCodes\VXGI\Voxelization</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
+      <Filter>ShaderCodes\VXGI\Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl">
+      <Filter>ShaderCodes\Postprocessing\RayTracing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
+      <Filter>ShaderCodes\Postprocessing\RayTracing</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\Bloom.hlsl">
+      <Filter>ShaderCodes\Postprocessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\DepthOfField.hlsl">
+      <Filter>ShaderCodes\Postprocessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\IBLPass.hlsl">
+      <Filter>ShaderCodes\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl">
+      <Filter>ShaderCodes\Postprocessing\HDR</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SSAO.hlsl">
+      <Filter>ShaderCodes\Postprocessing\AO</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
+      <Filter>ShaderCodes\ReflectionProbe\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
+      <Filter>ShaderCodes\ReflectionProbe\Optional</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

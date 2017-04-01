@@ -8,6 +8,7 @@ struct Color
 {
 public:
 	Color(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f);
+	Color(uint uintColor);
 
 public:
 	const Color operator -(const Color& c);
@@ -36,6 +37,8 @@ public:
 	void SetColor(const float* color);
 
 	unsigned long Get32BitUintColor() const;
+	static unsigned long Get32BitUintColor(float r, float g, float b, float a);
+
 	void Get16BitFloat4Color(std::array<Half, 4>& outArray) const;
 
 	const Color Normalized();

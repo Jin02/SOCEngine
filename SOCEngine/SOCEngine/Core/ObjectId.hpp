@@ -7,13 +7,24 @@ namespace Core
 	class ObjectId final
 	{
 	public:
-		uint operator()() { return _id; }
-		static constexpr uint Undefined() { return -1; }
+		using LiteralType = uint;
+//		LiteralType operator()() { return _id; }
+		operator LiteralType() { return _id; }
+		bool operator==(const ObjectId& rhs) const
+		{
+			return _id == rhs._id;
+		}
+		bool operator!=(const ObjectId& rhs) const
+		{
+			return !operator==(rhs);
+		}
+
+		static constexpr LiteralType Undefined() { return -1; }
 
 	private:
 		friend class ObjectIdManager;
-		explicit ObjectId(uint id = -1) : _id(id) {}
+		explicit ObjectId(LiteralType id = -1) : _id(id) {}
 
-		uint _id;
+		LiteralType _id;
 	};
 }

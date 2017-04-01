@@ -286,3 +286,24 @@ void Quaternion::FromEuler(const Vector3& v)
 {
 	FromEuler(*this, v);
 }
+
+const Vector3 Math::Quaternion::GetForward() const
+{
+	return Vector3(	2.0f * (x * z - y * w),
+					2.0f * (y *z + x * w),
+					1.0f - 2.0f * (x * x + y * y));
+}
+
+const Vector3 Math::Quaternion::GetRight() const
+{
+	return Vector3(	1.0f - 2.0f * (y * y + z * z),
+					2.0f * (x * y - z * w),
+					2.0f * (x * z + y * w));
+}
+
+const Vector3 Math::Quaternion::GetUp() const
+{
+	return Vector3(	2.0f * (x *y + z * w),
+					1.0f - 2.0f * (x * x + z * z),
+					2.0f * (y *z - x * w));
+}
