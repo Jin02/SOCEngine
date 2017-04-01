@@ -8,7 +8,6 @@ using namespace Intersection;
 using namespace Math;
 
 BoundBox::BoundBox() :
-	_center(0, 0, 0), _size(1.0f, 1.0f, 1.0f),
 	_extents(_size / 2.0f), _min(-_extents), _max(_extents)
 {
 }
@@ -63,7 +62,7 @@ bool BoundBox::Intersects(const BoundBox& bounds)
 	bool isOutY = realMax.y < otherMin.y || realMin.y > otherMax.y;
 	bool isOutZ = realMax.z < otherMin.z || realMin.z > otherMax.z;
 
-	return (isOutX && isOutY && isOutZ) == false;
+	return (isOutX & isOutY & isOutZ) == false;
 }
 
 float BoundBox::SqrDistance(const Vector3& point)
@@ -81,7 +80,7 @@ bool BoundBox::Contains(const Vector3& point)
 	bool isOutY = point.y < realMin.y || point.y > realMax.y;
 	bool isOutZ = point.z < realMin.z || point.z > realMax.z;
 
-	return (isOutX && isOutY && isOutZ) == false;
+	return (isOutX & isOutY & isOutZ) == false;
 }
 
 bool BoundBox::Intersects(const Ray& ray, Vector3 *outPickPoint, float gap)
@@ -124,16 +123,10 @@ bool BoundBox::Intersects(const Ray& ray, Vector3 *outPickPoint, float gap)
 
 bool BoundBox::operator !=(const BoundBox &box)
 {
-	if (_center != _center) return true;
-	if (_extents != _extents) return true;
-
-	return false;
+	return (_center != _center) & (_extents != _extents);
 }
 
 bool BoundBox::operator ==(const BoundBox &box)
 {
-	if (_center != _center) return false;
-	if (_extents != _extents) return false;
-
-	return true;
+	return operator!=(box);
 }
