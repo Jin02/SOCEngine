@@ -34,8 +34,8 @@ namespace Intersection
 
 
 	private:
-		Math::Vector3 _center;
-		Math::Vector3 _size;
+		Math::Vector3 _center	= Math::Vector3(0.0f, 0.0f, 0.0f);
+		Math::Vector3 _size	= Math::Vector3(1.0f, 1.0f, 1.0f);
 		Math::Vector3 _extents;
 		Math::Vector3 _min;
 		Math::Vector3 _max;
