@@ -39,7 +39,6 @@ void Launcher::Run(const WinApp::Param& winParam, const Rect<uint>& viewport, bo
 
 	// Destroy
 	{
-		dx.Destroy();
 		win.Destroy();
 		engine.Destroy();
 	}
