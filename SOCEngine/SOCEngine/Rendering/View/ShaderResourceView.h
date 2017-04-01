@@ -13,8 +13,8 @@ namespace Rendering
 		class ShaderResourceView final
 		{
 		public:
-			ShaderResourceView();
-			ShaderResourceView(const DXResource<ID3D11ShaderResourceView>& srv);
+			ShaderResourceView() = default;
+			ShaderResourceView(const DXResource<ID3D11ShaderResourceView>& srv) : _srv(srv) {}
 
 			GET_CONST_ACCESSOR(View, DXResource<ID3D11ShaderResourceView>, _srv);
 
@@ -25,7 +25,6 @@ namespace Rendering
 			}
 			void InitializeUsingBuffer(Device::DirectX& dx, DXResource<ID3D11Buffer>& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
 			void InitializeUsingBuffer(Device::DirectX& dx, const Buffer::BaseBuffer& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
-			void Destroy();
 
 		private:
 			void InitializeUsingTexture(Device::DirectX& dx, ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension);
