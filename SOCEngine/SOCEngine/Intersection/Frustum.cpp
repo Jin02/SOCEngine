@@ -3,11 +3,6 @@
 using namespace Math;
 using namespace Intersection;
 
-Frustum::Frustum(float gap)
-	: _plane(), _planeVertex(), _position(), _gap(gap)
-{
-}
-
 void Frustum::Make(const Matrix &viewProjection)
 {
 	Matrix matInv;
@@ -27,22 +22,21 @@ void Frustum::Make(const Matrix &viewProjection)
 
 	_position = (_planeVertex[0] + _planeVertex[5]) / 2.0f;
 
-	Plane::FromPoints(_plane[0], _planeVertex[4], _planeVertex[7], _planeVertex[6]);	// »ó Æò¸é(top)
-	Plane::FromPoints(_plane[1], _planeVertex[0], _planeVertex[1], _planeVertex[2]);	// ÇÏ Æò¸é(bottom)
-	Plane::FromPoints(_plane[2], _planeVertex[0], _planeVertex[4], _planeVertex[5]);	// ±Ù Æò¸é(near)
-	Plane::FromPoints(_plane[3], _planeVertex[2], _planeVertex[6], _planeVertex[7]);	// ¿ø Æò¸é(far)
-	Plane::FromPoints(_plane[4], _planeVertex[0], _planeVertex[3], _planeVertex[7]);	// ÁÂ Æò¸é(left)
-	Plane::FromPoints(_plane[5], _planeVertex[1], _planeVertex[5], _planeVertex[6]);	// ¿ì Æò¸é(right)
+	Plane::FromPoints(_plane[0], _planeVertex[4], _planeVertex[7], _planeVertex[6]);	// ìƒ í‰ë©´(top)
+	Plane::FromPoints(_plane[1], _planeVertex[0], _planeVertex[1], _planeVertex[2]);	// í•˜ í‰ë©´(bottom)
+	Plane::FromPoints(_plane[2], _planeVertex[0], _planeVertex[4], _planeVertex[5]);	// ê·¼ í‰ë©´(near)
+	Plane::FromPoints(_plane[3], _planeVertex[2], _planeVertex[6], _planeVertex[7]);	// ì› í‰ë©´(far)
+	Plane::FromPoints(_plane[4], _planeVertex[0], _planeVertex[3], _planeVertex[7]);	// ì¢Œ í‰ë©´(left)
+	Plane::FromPoints(_plane[5], _planeVertex[1], _planeVertex[5], _planeVertex[6]);	// ìš° í‰ë©´(right)
 }
 
 bool Frustum::In(const Vector3 &v, float radius) const
 {
-	float dist = 0.0f;
 	for(uint i=0; i<6; ++i)
 	{
-		dist = Plane::DotCoord(_plane[i], v);
+		float dist = Plane::DotCoord(_plane[i], v);
 
-		if(dist > (radius + _gap) )
+		if(dist > radius)
 			return false;
 	}
 
