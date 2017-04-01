@@ -10,13 +10,10 @@ namespace Rendering
 {
 	namespace Buffer
 	{
-		class ConstBuffer;
-
 		class CPUReadBuffer final
 		{
 		public:
 			CPUReadBuffer() = default;
-			DISALLOW_ASSIGN_COPY(CPUReadBuffer);
 
 			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format);
 			void Read(Device::DirectX& dx, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
@@ -26,7 +23,7 @@ namespace Rendering
 
 		private:
 			DXResource<ID3D11Buffer>				_readBuffer;
-			BaseBuffer								_baseBuffer;
+			BaseBuffer						_baseBuffer;
 			View::UnorderedAccessView				_uav;
 		};
 
