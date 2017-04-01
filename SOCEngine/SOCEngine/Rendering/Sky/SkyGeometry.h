@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DirectX.h"
-#include "BufferManager.h"
+#include "BufferManager.hpp"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
@@ -9,10 +9,10 @@ namespace Rendering
 {
 	namespace Sky
 	{
-		class BaseSky final
+		class SkyGeometry final
 		{
 		public:
-			BaseSky() = default;
+			SkyGeometry() = default;
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr);
 
 		private:

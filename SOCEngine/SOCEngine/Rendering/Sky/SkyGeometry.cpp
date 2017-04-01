@@ -1,4 +1,4 @@
-#include "BaseSky.h"
+#include "SkyGeometry.h"
 #include "BindIndexInfo.h"
 #include "BasicGeometryGenerator.h"
 
@@ -10,7 +10,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Geometry;
 using namespace Math;
 
-void BaseSky::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
+void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 {
 	auto CreateMeshContent = [this, &dx](const Mesh::CreateFuncArguments& args)
 	{
