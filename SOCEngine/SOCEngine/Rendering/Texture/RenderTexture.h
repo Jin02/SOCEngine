@@ -15,15 +15,13 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0, uint mipLevel = 1);
 			void Initialize(Device::DirectX& dx, const DXResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size);
 
-			void Destroy();
-
 			void Clear(Device::DirectX& dx, const Color& color);
 
 			GET_CONST_ACCESSOR(RenderTargetView, const DXResource<ID3D11RenderTargetView>&, _renderTargetView);
 
 		private:
 			DXResource<ID3D11RenderTargetView>	_renderTargetView;
-			Texture2D							_tex2D;
+			Texture2D				_tex2D;
 		};
 	}
 }
