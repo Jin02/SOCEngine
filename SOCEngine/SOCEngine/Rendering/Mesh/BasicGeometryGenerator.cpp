@@ -11,7 +11,7 @@ using namespace Rendering;
 
 bool BasicGeometryGenerator::HasFlag(uint vtxInputTypeFlag, DefaultVertexInputTypeFlag flag)
 {
-	return (uint(flag) & vtxInputTypeFlag) != 0;
+	return (static_cast<uint>(flag) & vtxInputTypeFlag) != 0;
 }
 
 std::string BasicGeometryGenerator::UintToStr(uint data)
@@ -185,7 +185,7 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 	Mesh::CreateFuncArguments args("@DefaultBox", key, indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertexDatas.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
 		args.vertices.data = vertexDatas.data();
 	}
 
@@ -265,7 +265,7 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
 
-	uint southPoleIndex = uint(vertexDatas.size() / (info.stride / 4)) - 1;
+	uint southPoleIndex = static_cast<uint>(vertexDatas.size() / (info.stride / 4)) - 1;
 	baseIndex = southPoleIndex - ringVertexCount;
 
 	for (uint i = 0; i < sliceCount; ++i)
@@ -286,7 +286,7 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 	Mesh::CreateFuncArguments args("@DefaultSphere", key, indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertexDatas.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
 		args.vertices.data = vertexDatas.data();
 	}
 
@@ -356,7 +356,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 	// TopCap
 	{
-		uint baseIndex = uint(vertices.size() / (info.stride / 4));
+		uint baseIndex = static_cast<uint>(vertices.size() / (info.stride / 4));
 
 		float y = 0.5f * height;
 		float dTheta = 2.0f * MATH_PI / float(sliceCount);
@@ -379,7 +379,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		AppendVertexData(vertices, Vector3(0.0f, y, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.5f, 0.5f), defautVertexInputTypeFlag);
 
 		// Index of center vertex.
-		uint centerIndex = uint(vertices.size() / (info.stride / 4)) - 1;
+		uint centerIndex = static_cast<uint>(vertices.size() / (info.stride / 4)) - 1;
 
 		for (uint i = 0; i < sliceCount; ++i)
 		{
@@ -391,7 +391,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 	// BotCap
 	{
-		uint baseIndex = uint(vertices.size() / (info.stride / 4));
+		uint baseIndex = static_cast<uint>(vertices.size() / (info.stride / 4));
 		float y = -0.5f * height;
 		float dTheta = 2.0f * MATH_PI / float(sliceCount);
 
@@ -410,7 +410,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		AppendVertexData(vertices, Vector3(0.0f, y, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.5f, 0.5f), defautVertexInputTypeFlag);
 
 		// Cache the index of center vertex.
-		uint centerIndex = uint(vertices.size() / (info.stride / 4)) - 1;
+		uint centerIndex = static_cast<uint>(vertices.size() / (info.stride / 4)) - 1;
 
 		for (uint i = 0; i < sliceCount; ++i)
 		{
@@ -434,7 +434,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 	Mesh::CreateFuncArguments args("@DefaultCylinder", key, indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertices.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));
 		args.vertices.data = vertices.data();
 	}
 
@@ -511,7 +511,7 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	Mesh::CreateFuncArguments args("@DefaultCylinder", key, indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertices.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));
 		args.vertices.data = vertices.data();
 	}
 

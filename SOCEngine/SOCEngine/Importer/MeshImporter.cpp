@@ -856,7 +856,7 @@ void MeshImporter::MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys
 
 				auto SetTextureToMaterial =[](Rendering::Material* material, Texture2D* texture, TextureBindIndex bind)
 				{
-					const uint bindIndex = uint(bind);
+					const uint bindIndex = static_cast<uint>(bind);
 					material->SetTextureUseBindIndex(bindIndex, texture, BaseShader::Usage(false, false, false, true));
 				};
 

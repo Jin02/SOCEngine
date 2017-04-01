@@ -164,7 +164,7 @@ void MeshCamera::UpdateCB(DirectX& dx, const Transform& transform)
 
 	_camCB.UpdateSubResource(dx, cbData);
 	
-	_camCBChangeState = TransformCB::ChangeState( (static_cast<uint>(_camCBChangeState) + 1) % uint(TransformCB::ChangeState::MAX) );
+	_camCBChangeState = TransformCB::ChangeState( (static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX) );
 	_prevViewProjMat = _viewProjMat;
 }
 
