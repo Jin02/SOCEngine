@@ -3,12 +3,6 @@
 
 using namespace Math;
 
-Plane::Plane() :
-	a(0), b(0), c(0), d(0)
-{
-
-}
-
 Plane::Plane(float _a, float _b, float _c, float _d)
 	: a(_a), b(_b), c(_c), d(_d)
 {
@@ -70,22 +64,15 @@ float Plane::ComputeDistanceWithPoint(const Plane& p, const Vector3& v)
 
 bool Plane::SameSide(const Plane& p, const Vector3& v)
 {
-	if( ComputeDistanceWithPoint(p, v) == 0.0f )
-		return true;
-
-	return false;
+	return ComputeDistanceWithPoint(p, v) == 0.0f;
 }
 
 Plane::Direction Plane::GetSide(const Plane& p, const Vector3& v)
 {
 	float dist = DotCoord(p, v);
 	
-	if( dist < 0.0f )
-		return Direction::BACK;
-
-	if( dist > 0.0f )
-		return Direction::FRONT;
-
+	if( dist < 0.0f )	return Direction::BACK;
+	else if( dist > 0.0f )	return Direction::FRONT;
 	return Direction::SAME;
 }
 
