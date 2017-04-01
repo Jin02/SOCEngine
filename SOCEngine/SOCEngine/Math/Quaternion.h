@@ -8,10 +8,8 @@ namespace Math
 	class Quaternion
 	{
 	public:
-		Quaternion();
-		Quaternion(float x, float y, float z, float w);
+		Quaternion(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
 
-	public:
 		const Quaternion operator + () const;
 		const Quaternion operator - () const;
 		const Quaternion operator + (const Quaternion& q) const;
