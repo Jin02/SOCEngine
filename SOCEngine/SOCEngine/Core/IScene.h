@@ -20,9 +20,9 @@ namespace Core
 	class NullScene : public IScene
 	{
 	public:
-		virtual void OnRenderPreview()	{/* NULL */}
-		virtual void OnUpdate()			{/* NULL */}
-		virtual void OnRenderPost()		{/* NULL */}
-		virtual void OnInput()			{/* NULL */}
+		virtual void OnRenderPreview()	override {/* NULL */ }
+		virtual void OnUpdate()			override {/* NULL */ }
+		virtual void OnRenderPost()		override {/* NULL */ }
+		virtual void OnInput()			override {/* NULL */ }
 	};
 }
