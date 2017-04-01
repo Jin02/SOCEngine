@@ -23,6 +23,5 @@
 #define ASSERT_SUCCEEDED(x) assert(SUCCEEDED(x))
 
 typedef unsigned int		uint;
-typedef unsigned __int64	address;
-typedef unsigned __int16	ushort;
+typedef unsigned short int	ushort;
 typedef unsigned char		uchar;
