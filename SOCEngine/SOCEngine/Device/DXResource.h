@@ -50,6 +50,11 @@ public:
 		_resource.reset();
 	}
 
+	std::shared_ptr<Resource>& operator->()
+	{
+		return _resource;
+	}
+
 private:
 	std::shared_ptr<Resource> _resource;
 };
