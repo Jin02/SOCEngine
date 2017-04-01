@@ -56,50 +56,50 @@ void VertexShader::UnBindInputLayoutToContext(Device::DirectX& dx)
 	dx.GetContext()->IASetInputLayout(nullptr);
 }
 
-void VertexShader::BindTexture(Device::DirectX& dx, TextureBindIndex bind, const std::weak_ptr<Texture::BaseTexture> tex)
+void VertexShader::BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex)
 {
-	ID3D11ShaderResourceView* srv = (tex.expired() == false) ? tex.lock().get()->GetShaderResourceView().GetView().GetRaw() : nullptr;
-	dx.GetContext()->VSSetShaderResources(uint(bind), 1, &srv);
+	ID3D11ShaderResourceView* srv = tex.GetShaderResourceView().GetView().GetRaw();
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void VertexShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, const std::weak_ptr<ID3D11SamplerState> samplerState)
+void VertexShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)
 {
-	ID3D11SamplerState* sampler = (samplerState.expired() == false) ? samplerState.lock().get() : nullptr;
-	dx.GetContext()->VSSetSamplers(uint(bind), 1, &sampler);
+	ID3D11SamplerState* sampler = samplerState.GetRaw();
+	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &sampler);
 }
 
-void VertexShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const std::weak_ptr<Buffer::ConstBuffer> cb)
+void VertexShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = (cb.expired() == false) ? cb.lock().get()->GetBaseBuffer().GetBuffer().GetRaw() : nullptr;
-	dx.GetContext()->VSSetConstantBuffers(uint(bind), 1, &buf);
+	ID3D11Buffer* buf = cb.GetBaseBuffer().GetBuffer().GetRaw();
+	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void VertexShader::BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const std::weak_ptr<Buffer::ShaderResourceBuffer> srBuffer)
+void VertexShader::BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer)
 {
-	ID3D11ShaderResourceView* srv = (srBuffer.expired() == false) ? srBuffer.lock().get()->GetShaderResourceView().GetView().GetRaw() : nullptr;
-	dx.GetContext()->VSSetShaderResources(uint(bind), 1, &srv);
+	ID3D11ShaderResourceView* srv = srBuffer.GetShaderResourceView().GetView().GetRaw();
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
 void VertexShader::UnBindTexture(Device::DirectX& dx, TextureBindIndex bind)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
-	dx.GetContext()->VSSetShaderResources(uint(bind), 1, &srv);
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
 void VertexShader::UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind)
 {
 	ID3D11SamplerState* sampler = nullptr;
-	dx.GetContext()->VSSetSamplers(uint(bind), 1, &sampler);
+	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &sampler);
 }
 
 void VertexShader::UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind)
 {
 	ID3D11Buffer* buf = nullptr;
-	dx.GetContext()->VSSetConstantBuffers(uint(bind), 1, &buf);
+	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
 void VertexShader::UnBindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
-	dx.GetContext()->VSSetShaderResources(uint(bind), 1, &srv);
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }

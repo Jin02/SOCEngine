@@ -1,37 +1,51 @@
 #pragma once
 
 #include "BaseShader.h"
+#include "ShaderResourceBuffer.h"
+#include "Texture2D.h"
+#include "BindIndexInfo.h"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class GeometryShader final
+		class ComputeShader final
 		{
 		public:
-			GeometryShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+			struct ThreadGroup
+			{
+				ThreadGroup(uint _x, uint _y, uint _z) : x(_x), y(_y), z(_z){}
+				bool IsValid() const { return x && y && z; }
 
+				uint x, y, z;
+			};
+
+		public:
+			ComputeShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+
+		public:
 			void Initialize(Device::DirectX& dx);
-			
-			void BindShaderToContext(Device::DirectX& dx);
-			void UnBindShaderToContext(Device::DirectX& dx);
+			void Dispatch(Device::DirectX& dx);
 			
 			static void BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex);
 			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
 			static void BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer);
+			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, const View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
 
 			static void UnBindTexture(Device::DirectX& dx, TextureBindIndex bind);
 			static void UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind);
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
 			static void UnBindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind);
+			static void UnBindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind);
 
-			static constexpr const char* GetCompileCode() { return "gs"; }
-			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
+			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
+			GET_CONST_ACCESSOR(Key, const std::string&, _base.GetKey());
 
 		private:
-			DXResource<ID3D11GeometryShader>	_shader;
-			BaseShader							_baseShader;
+			BaseShader								_base;
+			DXResource<ID3D11ComputeShader>			_shader;
+			ThreadGroup								_threadGroup;
 		};
 	}
 }
