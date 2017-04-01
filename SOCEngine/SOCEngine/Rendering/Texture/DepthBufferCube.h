@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture2D.h"
+#include "ShaderResourceView.h"
 #include "DirectX.h"
 
 namespace Rendering
@@ -19,7 +19,8 @@ namespace Rendering
 
 		private:
 			DXResource<ID3D11DepthStencilView>		_depthStencilView;
-			DXResource<ID3D11Texture2D>				_texture;
+			DXResource<ID3D11Texture2D>			_texture;
+			View::ShaderResourceView			_srv;
 		};
 	}
 }
