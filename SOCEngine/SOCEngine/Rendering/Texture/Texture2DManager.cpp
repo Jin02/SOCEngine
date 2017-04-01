@@ -38,12 +38,12 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 	else if(format == "dds")
 		ASSERT_SUCCEEDED(LoadFromDDSFile(wFilePath.c_str(), 0u,  &metaData, image));
 	else
-		ASSERT_SUCCEEDED(CreateWICTextureFromFile(dx.GetDevice(), dx.GetContext(), wFilePath.c_str(), &resource, &srv));
+		ASSERT_SUCCEEDED(CreateWICTextureFromFile(dx.GetDevice().GetRaw(), dx.GetContext().GetRaw(), wFilePath.c_str(), &resource, &srv));
 
 	bool notCreatedSRV = (format == "tga") || (format == "dds");
 	if (notCreatedSRV)
 	{
-		ASSERT_SUCCEEDED(CreateShaderResourceView(dx.GetDevice(), image.GetImages(), image.GetImageCount(), metaData, &srv));
+		ASSERT_SUCCEEDED(CreateShaderResourceView(dx.GetDevice().GetRaw(), image.GetImages(), image.GetImageCount(), metaData, &srv));
 		srv->GetResource(&resource);
 	}
 
