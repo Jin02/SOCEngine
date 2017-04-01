@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseTexture.h"
+#include "TextureGPUView.h"
 
 namespace Rendering
 {
@@ -9,8 +9,7 @@ namespace Rendering
 		class Texture3D final
 		{
 		public:
-			Texture3D();
-			~Texture3D();
+			Texture3D() = default;
 
 			void Initialize(Device::DirectX& dx,
 							uint width, uint height, uint depth,
@@ -23,9 +22,9 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Size,				const Math::Vector3&,						_size);
 
 		private:
-			BaseTexture								_base;
+			TextureGPUView							_base;
 			DXResource<ID3D11Texture3D>				_texture;
-			Math::Vector3							_size;
+			Math::Vector3							_size = Math::Vector3(0.0f, 0.0f, 0.0f);
 			DXResource<ID3D11RenderTargetView>		_rtv;
 		};
 	}

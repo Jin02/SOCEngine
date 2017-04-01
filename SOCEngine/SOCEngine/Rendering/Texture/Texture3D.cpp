@@ -4,16 +4,6 @@ using namespace Rendering::Texture;
 using namespace Rendering::View;
 using namespace Math;
 
-Texture3D::Texture3D()
-	: _base(), _texture(nullptr), _size(0, 0, 0), _rtv(nullptr)
-{
-}
-
-Texture3D::~Texture3D()
-{
-	Destroy();
-}
-
 void Texture3D::Initialize(	Device::DirectX& dx,
 							uint width, uint height, uint depth,
 							DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
