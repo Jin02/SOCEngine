@@ -37,8 +37,8 @@ void SkyBoxMaterial::UpdateCubeMap(TextureBindIndex bind, const Texture2D& tex)
 {
 	BindTextured2D bindData;
 	{
-		bindData.bindIndex = 0;
 		bindData.resource = tex;
+		bindData.bindIndex = static_cast<uint>(TextureBindIndex::SkyBoxCubeMap);
 		bindData.usePS = true;
 	}
 

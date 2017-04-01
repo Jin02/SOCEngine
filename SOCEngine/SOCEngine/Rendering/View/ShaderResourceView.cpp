@@ -23,7 +23,6 @@ void ShaderResourceView::InitializeUsingTexture(
 	D3D11_SRV_DIMENSION viewDimension)
 {
 	assert(_srv.GetRaw() == nullptr);
-	ID3D11Device* device = dx.GetDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srdesc;
 	memset(&srdesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -51,8 +50,6 @@ void ShaderResourceView::InitializeUsingTexture(
 
 void ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, DXResource<ID3D11Buffer>& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
 {
-	ID3D11Device* device = dx.GetDevice();
-
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	memset(&srvDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	srvDesc.Format = format;
