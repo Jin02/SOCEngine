@@ -24,11 +24,6 @@ void DepthBuffer::Initialize(Device::DirectX& dx,
 	_depthStencilView = dx.CreateDepthStencilView(_tex2D.GetTexture().GetRaw(), desc);
 }
 
-void DepthBuffer::Destroy()
-{
-	_depthStencilView.Destroy();
-}
-
 void DepthBuffer::Clear(Device::DirectX& dx, float depth, unsigned char stencil)
 {
 	dx.GetContext()->ClearDepthStencilView(_depthStencilView.GetRaw(), D3D11_CLEAR_DEPTH, depth, stencil);
