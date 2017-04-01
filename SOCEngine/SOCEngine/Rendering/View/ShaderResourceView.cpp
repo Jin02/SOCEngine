@@ -4,18 +4,6 @@
 using namespace Rendering::View;
 using namespace Math;
 
-ShaderResourceView::ShaderResourceView()
-	: _srv()
-{
-
-}
-
-ShaderResourceView::ShaderResourceView(const DXResource<ID3D11ShaderResourceView>& srv)
-	: _srv(srv)
-{
-
-}
-
 void ShaderResourceView::InitializeUsingTexture(
 	Device::DirectX& dx,
 	ID3D11Resource* resource,
@@ -64,10 +52,4 @@ void ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, DXResource<I
 void Rendering::View::ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, const Buffer::BaseBuffer & buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
 {
 	InitializeUsingBuffer(dx, buffer, num, format, isRawBuffer);
-}
-
-void Rendering::View::ShaderResourceView::Destroy()
-{
-	if(_srv.IsCanUse())
-		_srv.Destroy();
 }
