@@ -9,11 +9,11 @@ LRESULT WinApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-WinApp::WinApp(const Param& param)
+WinApp::WinApp(const Desc& desc)
 {
 	_windowInfo.cbSize			= sizeof(WNDCLASSEX);
 	_windowInfo.style			= CS_CLASSDC;
-	_windowInfo.hInstance		= param.Instance;//GetModuleHandle(NULL);
+	_windowInfo.hInstance		= desc.Instance;//GetModuleHandle(NULL);
 	_windowInfo.cbClsExtra		= 0L;
 	_windowInfo.cbWndExtra		= 0L;
 	_windowInfo.hIcon			= NULL;
@@ -21,14 +21,14 @@ WinApp::WinApp(const Param& param)
 	_windowInfo.hbrBackground	= NULL;
 	_windowInfo.hIconSm			= NULL;
 	_windowInfo.lpszMenuName	= NULL;
-	_windowInfo.lpszClassName	= param.name.data();
+	_windowInfo.lpszClassName	= desc.name.data();
 
 	_windowInfo.lpfnWndProc = WndProc;
 
-	_options				= param.isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
-	_rect					= param.rect;
-	_parentHandle			= param.parentHandle;
-	_windowsMode			= param.windowMode;
+	_options				= desc.isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
+	_rect					= desc.rect;
+	_parentHandle			= desc.parentHandle;
+	_windowsMode			= desc.windowMode;
 }
 
 void WinApp::Initialize()
