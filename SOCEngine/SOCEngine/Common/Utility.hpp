@@ -14,18 +14,18 @@ namespace Utility
 		//http://www.joinc.co.kr/modules/moniwiki/wiki.php/Site/C++/Documents/C++ProgramingHowToPerPage/standardstring.html
 		static void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ")
 		{
-			// ¸Ç Ã¹ ±ÛÀÚ°¡ ±¸ºĞÀÚÀÎ °æ¿ì ¹«½Ã
+			// ë§¨ ì²« ê¸€ìê°€ êµ¬ë¶„ìì¸ ê²½ìš° ë¬´ì‹œ
 			std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-			// ±¸ºĞÀÚ°¡ ¾Æ´Ñ Ã¹ ±ÛÀÚ¸¦ Ã£´Â´Ù
+			// êµ¬ë¶„ìê°€ ì•„ë‹Œ ì²« ê¸€ìë¥¼ ì°¾ëŠ”ë‹¤
 			std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
 
 			while (std::string::npos != pos || std::string::npos != lastPos)
 			{
-				// tokenÀ» Ã£¾ÒÀ¸´Ï vector¿¡ Ãß°¡ÇÑ´Ù
+				// tokenì„ ì°¾ì•˜ìœ¼ë‹ˆ vectorì— ì¶”ê°€í•œë‹¤
 				tokens.push_back(str.substr(lastPos, pos - lastPos));
-				// ±¸ºĞÀÚ¸¦ ¶Ù¾î³Ñ´Â´Ù.  "not_of"¿¡ ÁÖÀÇÇÏ¶ó
+				// êµ¬ë¶„ìë¥¼ ë›°ì–´ë„˜ëŠ”ë‹¤.  "not_of"ì— ì£¼ì˜í•˜ë¼
 				lastPos = str.find_first_not_of(delimiters, pos);
-				// ´ÙÀ½ ±¸ºĞÀÚ°¡ ¾Æ´Ñ ±ÛÀÚ¸¦ Ã£´Â´Ù
+				// ë‹¤ìŒ êµ¬ë¶„ìê°€ ì•„ë‹Œ ê¸€ìë¥¼ ì°¾ëŠ”ë‹¤
 				pos = str.find_first_of(delimiters, lastPos);
 			}
 		}
@@ -66,21 +66,4 @@ namespace Utility
 			return ParseNameAndFormat( &path.c_str()[fileNameStartPos+1] );
 		}
 	};
-
-	class Debug
-	{
-	public:
-		static void Log(const std::string& log)
-		{
-#if defined(_DEBUG)
-			std::string outputLog = "SOCEngine | ";
-			outputLog += log;
-			outputLog += "\n";
-
-			OutputDebugString(outputLog.c_str());
-#endif
-		}
-	};
 }
-
-#define DEBUG_LOG(message) Utility::Debug::Log(message);
