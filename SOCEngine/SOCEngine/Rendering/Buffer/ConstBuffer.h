@@ -11,7 +11,7 @@ namespace Rendering
 		class ConstBuffer
 		{
 		public:
-			ConstBuffer();
+			ConstBuffer() = default;
 			GET_CONST_ACCESSOR(BaseBuffer, const BaseBuffer&, _base);
 
 			void Initialize(Device::DirectX& dx, uint size);
@@ -19,26 +19,20 @@ namespace Rendering
 
 		private:
 			BaseBuffer			_base;
-			uint				_size;
+			uint				_size = 0;
 		};
 
 		template <typename Type>
-		class ExplicitConstBuffer : public ConstBuffer
+		class ExplicitConstBuffer 
 		{
 		public:
-			void Initialize(Device::DirectX& dx)
-			{
-				Initialize(dx, sizeof(Type));
-			}
-
-			void UpdateSubResource(Device::DirectX& dx, const Type& data)
-			{
-				UpdateSubResource(dx, &data);
-			}
+			ExplicitConstBuffer() = default;
+			
+			void Initialize(Device::DirectX& dx)				{ _cb.Initialize(dx, sizeof(Type)); }
+			void UpdateSubResource(Device::DirectX& dx, const Type& data)	{ _cb.UpdateSubResource(dx, &data); }
 
 		private:
-			using ConstBuffer::Initialize;
-			using ConstBuffer::UpdateSubResource;
+			ConstBuffer _cb;
 		};
 	}
 }
