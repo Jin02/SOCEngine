@@ -1,6 +1,7 @@
 #include "SpotLight.h"
 #include "Cone.h"
 #include "GlobalDefine.h"
+#include <assert.h>
 
 using namespace Intersection;
 using namespace Rendering;
@@ -26,6 +27,7 @@ bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) cons
 
 void SpotLight::MakeTransform(TransformType& outTransform, const Transform& transform) const
 {
+	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 forward = transform.GetWorldForward();
 	float radius = (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
 
@@ -35,6 +37,7 @@ void SpotLight::MakeTransform(TransformType& outTransform, const Transform& tran
 
 void SpotLight::MakeParam(Param& outParam, const Core::Transform& transform)
 {
+	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 forward = transform.GetWorldForward();
 
 	outParam.dirX = Half(forward.x);
