@@ -11,11 +11,11 @@ namespace Rendering
 	namespace Manager
 	{
 		template <class... Materials>
-		class MaterialSystem final
+		class MaterialPools final
 		{
 		public:
-			MaterialSystem() = default;
-			DISALLOW_ASSIGN_COPY(MaterialSystem);
+			MaterialPools() = default;
+			DISALLOW_ASSIGN_COPY(MaterialPools);
 
 			template <typename MaterialType>
 			void Add(const std::string& key, MaterialType& material)
@@ -58,7 +58,7 @@ namespace Rendering
 			}
 
 		private:
-			MaterialSystem<PhysicallyBasedMaterial, SkyBoxMaterial> _materialSystem;
+			MaterialPools<PhysicallyBasedMaterial, SkyBoxMaterial> _materialSystem;
 		};
 	}
 }
