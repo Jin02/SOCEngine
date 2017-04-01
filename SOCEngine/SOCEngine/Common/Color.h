@@ -39,7 +39,7 @@ public:
 	unsigned long Get32BitUintColor() const;
 	static unsigned long Get32BitUintColor(float r, float g, float b, float a);
 
-	void Get16BitFloat4Color(std::array<Half, 4>& outArray) const;
+	const std::array<Half, 4> Get16BitFloat4Color() const;
 
 	const Color Normalized();
 

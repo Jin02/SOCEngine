@@ -173,12 +173,9 @@ unsigned long Color::Get32BitUintColor(float r, float g, float b, float a)
 	return color.Get32BitUintColor();
 }
 
-void Color::Get16BitFloat4Color(std::array<Half, 4>& outArray) const
+const std::array<Half, 4> Color::Get16BitFloat4Color() const
 {
-	outArray[0] = Half(r);
-	outArray[1] = Half(g);
-	outArray[2] = Half(b);
-	outArray[3] = Half(a);
+	return{ Half(r), Half(g), Half(b), Half(a) };
 }
 
 const Color Color::Normalized()
