@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LightForm.h"
+#include "BaseLight.h"
 #include "GPUUploadBuffer.hpp"
 #include "ObjectId.hpp"
 
