@@ -36,6 +36,9 @@ void DepthBufferCube::Initialize(Device::DirectX& dx, const Size<uint>& size, bo
 	dsvDesc.Texture2DArray.MipSlice			= 0;
 
 	_depthStencilView = dx.CreateDepthStencilView(_texture.GetRaw(), dsvDesc);
+	
+	if(useShaderResource)
+		_srv.InitializeUsingTexture(dx, _texture, DXGI_FORMAT_R32_TYPELESS, 1, D3D11_SRV_DIMENSION_TEXTURE2D);
 }
 
 void DepthBufferCube::Clear(Device::DirectX& dx, float depth, unsigned char stencil)
