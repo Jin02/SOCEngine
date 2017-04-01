@@ -3,8 +3,9 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexShader.h"
-#include "BufferManager.h"
+#include "BufferManager.hpp"
 #include "ObjectId.hpp"
+#include "TransformCB.h"
 #include <string>
 
 namespace Rendering
@@ -14,7 +15,7 @@ namespace Rendering
 		class Mesh final
 		{
 		public:
-			Mesh(Core::ObjectId);
+			Mesh(Core::ObjectId id) : _id(id) {}
 
 			struct CreateFuncArguments
 			{
@@ -57,12 +58,13 @@ namespace Rendering
 				uint maxRecognizeBoneCount = 4) const;
 
 		private:
-			Buffer::VertexBuffer		_vertexBuffer;
-			Buffer::IndexBuffer			_indexBuffer;
-			std::vector<std::string>	_materialKeys;
+			Buffer::VertexBuffer						_vertexBuffer;
+			Buffer::IndexBuffer							_indexBuffer;
+			std::vector<std::string>					_materialKeys;
 
-			uint						_bufferFlag = 0;
-			Core::ObjectId				_id;
+			uint										_bufferFlag = 0;
+			Core::ObjectId								_id;
+			Buffer::ExplicitConstBuffer<TransformCB>	_tfCB;
 		};
 	}
 }

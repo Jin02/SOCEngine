@@ -9,10 +9,6 @@ using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Core;
 
-Mesh::Mesh(ObjectId id)
-	: _id(id)
-{
-}
 
 void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const CreateFuncArguments & args)
 {
@@ -21,7 +17,7 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 
 	std::string vbKey = args.fileName + ":" + args.key;
 
-	if (bufferMgr.GetVertexBuffer().Has(args.fileName, args.key) == false)
+	if (bufferMgr.GetPool<VertexBuffer>().Has(args.fileName, args.key) == false)
 	{
 		VertexBuffer::Param param;
 		{
@@ -31,16 +27,18 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 		}
 
 		_vertexBuffer.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
-		bufferMgr.GetVertexBuffer().Add(args.fileName, args.key, _vertexBuffer);
+		bufferMgr.GetPool<VertexBuffer>().Add(args.fileName, args.key, _vertexBuffer);
 	}
 
-	if (bufferMgr.GetIndexBuffer().Has(args.fileName, args.key) == false)
+	if (bufferMgr.GetPool<IndexBuffer>().Has(args.fileName, args.key) == false)
 	{
 		_indexBuffer.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
-		bufferMgr.GetIndexBuffer().Add(args.fileName, args.key, _indexBuffer);
+		bufferMgr.GetPool<IndexBuffer>().Add(args.fileName, args.key, _indexBuffer);
 	}	
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);
+
+	_tfCB.Initialize(dx);
 }
 
 void Mesh::Initialize(const Buffer::VertexBuffer & vertexBuffer, const Buffer::IndexBuffer & indexBuffer)
