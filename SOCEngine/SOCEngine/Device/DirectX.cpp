@@ -12,25 +12,20 @@ using namespace Device;
 using namespace Rendering::Shader;
 
 DirectX::DirectX(void) :
-	_device(nullptr), _swapChain(nullptr), _immediateContext(nullptr),
-	_renderTargetView(nullptr), _rasterizerClockwiseDisableCulling(nullptr),
-	_blendOpaque(nullptr), _blendAlphaToCoverage(nullptr),
-	_depthDisableDepthTest(nullptr), _depthLess(nullptr), 
-	_depthEqualAndDisableDepthWrite(nullptr), _depthGreater(nullptr),
-	_depthGreaterAndDisableDepthWrite(nullptr), _blendAlpha(nullptr),
-	_samplerAnisotropic(nullptr), _samplerLinear(nullptr), _samplerPoint(nullptr),
-	_rasterizerClockwiseDefault(nullptr), _rasterizerCounterClockwiseDisableCulling(nullptr),
-	_rasterizerCounterClockwiseDefault(nullptr), _samplerShadowLessEqualComp(nullptr), _samplerShadowGreaterEqualComp(nullptr), _samplerShadowLinear(nullptr),
-	_rasterizerClockwiseDisableCullingWithClip(nullptr),
-	_depthLessEqual(nullptr), _samplerConeTracing(nullptr), _depthGreaterEqualAndDisableDepthWrite(nullptr),
+	_device(), _swapChain(), _immediateContext(),
+	_renderTargetView(), _rasterizerClockwiseDisableCulling(),
+	_blendOpaque(), _blendAlphaToCoverage(),
+	_depthDisableDepthTest(), _depthLess(), 
+	_depthEqualAndDisableDepthWrite(), _depthGreater(),
+	_depthGreaterAndDisableDepthWrite(), _blendAlpha(),
+	_samplerAnisotropic(), _samplerLinear(), _samplerPoint(),
+	_rasterizerClockwiseDefault(), _rasterizerCounterClockwiseDisableCulling(),
+	_rasterizerCounterClockwiseDefault(), _samplerShadowLessEqualComp(), _samplerShadowGreaterEqualComp(), _samplerShadowLinear(),
+	_rasterizerClockwiseDisableCullingWithClip(),
+	_depthLessEqual(), _samplerConeTracing(), _depthGreaterEqualAndDisableDepthWrite(),
 	_backBufferSize(0, 0)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
-}
-
-DirectX::~DirectX(void)
-{
-	Destroy();
 }
 
 void DirectX::CreateRenderTargetView()
@@ -38,7 +33,11 @@ void DirectX::CreateRenderTargetView()
 	ID3D11Texture2D* backBuffer = nullptr;
 
 	assert(SUCCEEDED(_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)));
-	assert(SUCCEEDED(_device->CreateRenderTargetView(backBuffer, nullptr, &_renderTargetView)));
+
+	ID3D11RenderTargetView* rtv = nullptr;
+	assert(SUCCEEDED(_device->CreateRenderTargetView(backBuffer, nullptr, &rtv)));
+	_renderTargetView = DXResource<ID3D11RenderTargetView>(rtv);
+
 	backBuffer->Release();
 }
 
@@ -85,15 +84,25 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
+	ID3D11Device*			device = nullptr;
+	IDXGISwapChain*			swapChain = nullptr;
+	ID3D11DeviceContext*	immediateContext = nullptr;
+
 	uint driverTypeIndex = 0;
 	for(; driverTypeIndex<numDriverTypes; driverTypeIndex++ )
     {
         _driverType = driverTypes[driverTypeIndex];
         HRESULT hr = D3D11CreateDeviceAndSwapChain( NULL, _driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &sd, &_swapChain, &_device, &_featureLevel, &_immediateContext );
+			D3D11_SDK_VERSION, &sd, &swapChain, &device, &_featureLevel, &immediateContext);
 
-		if(SUCCEEDED(hr))
+		if (SUCCEEDED(hr))
+		{
+			_device = DXResource<ID3D11Device>(device);
+			_swapChain = DXResource<IDXGISwapChain>(swapChain);
+			_immediateContext = DXResource<ID3D11DeviceContext>(immediateContext);
+
 			break;
+		}
     }
 
 	assert(driverTypeIndex < numDriverTypes);
@@ -162,10 +171,18 @@ void DirectX::CreateBlendStates()
 	blendDesc.RenderTarget[1] = renderTargetBlendDesc;
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
-	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &_blendOpaque)));
+	{
+		ID3D11BlendState* blendOpaque = nullptr;
+		assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendOpaque)));
+		_blendOpaque = DXResource<ID3D11BlendState>(blendOpaque);
+	}
 
-	blendDesc.AlphaToCoverageEnable				= true;
-	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &_blendAlphaToCoverage)));
+	{
+		ID3D11BlendState* blendAlphaToCoverage = nullptr;
+		blendDesc.AlphaToCoverageEnable = true;
+		assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendAlphaToCoverage)));
+		_blendAlphaToCoverage = DXResource<ID3D11BlendState>(blendAlphaToCoverage);
+	}
 
 	blendDesc.AlphaToCoverageEnable				= false;
 	renderTargetBlendDesc.BlendEnable			= true;
@@ -180,7 +197,11 @@ void DirectX::CreateBlendStates()
 	blendDesc.RenderTarget[1] = renderTargetBlendDesc;
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
-	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &_blendAlpha)));
+	{
+		ID3D11BlendState* blendAlpha = nullptr;
+		assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendAlpha)));
+		_blendAlpha = DXResource<ID3D11BlendState>(blendAlpha);
+	}
 }
 
 DXResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource * rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC & desc)
@@ -320,24 +341,31 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 		desc.MultisampleEnable		= false;
 		desc.AntialiasedLineEnable	= false;
 
-		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &_rasterizerCounterClockwiseDisableCulling)));
+		ID3D11RasterizerState* rss = nullptr;
+		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
+		_rasterizerCounterClockwiseDisableCulling = DXResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= false;
-		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCulling)));
+		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
+		_rasterizerClockwiseDisableCulling = DXResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= true;
 		desc.CullMode = D3D11_CULL_BACK;
-		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &_rasterizerCounterClockwiseDefault)));
+		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
+		_rasterizerCounterClockwiseDefault = DXResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= false;
-		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDefault)));
+		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
+		_rasterizerClockwiseDefault = DXResource<ID3D11RasterizerState>(rss);
 
 		desc.FillMode				= D3D11_FILL_SOLID;
 		desc.CullMode				= D3D11_CULL_NONE;
 		desc.DepthClipEnable		= false;
 		desc.FrontCounterClockwise	= false;
 
-		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &_rasterizerClockwiseDisableCullingWithClip)));
+		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
+		_rasterizerClockwiseDisableCullingWithClip = DXResource<ID3D11RasterizerState>(rss);
+
 	}
 	
 	//Initialize Blend State
@@ -348,50 +376,90 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
-		desc.DepthEnable					= true; 
-		desc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL; 
-		desc.DepthFunc						= D3D11_COMPARISON_GREATER; //inverted depth
-		desc.StencilEnable					= false; 
-		desc.StencilReadMask				= D3D11_DEFAULT_STENCIL_READ_MASK; 
-		desc.StencilWriteMask				= D3D11_DEFAULT_STENCIL_WRITE_MASK;
+		desc.DepthEnable = true;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_GREATER; //inverted depth
+		desc.StencilEnable = false;
+		desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+		desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
-		desc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
-		desc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+		desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+		desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-		desc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
-		desc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
-		desc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
-		desc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+		desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+		desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthGreater)));
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
+
+			_depthGreater = DXResource<ID3D11DepthStencilState>(dss);
+		}
 
 		//disable depth write
-		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO; 
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthDisableDepthWrite)));
-		
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
+
+			_depthDisableDepthWrite = DXResource<ID3D11DepthStencilState>(dss);
+		}
+
 		//disable depth test
-		desc.DepthEnable		= false;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthDisableDepthTest)));
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthEnable = false;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 
-		desc.DepthEnable		= true;
-		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ZERO;
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthGreaterAndDisableDepthWrite)));
+			_depthDisableDepthTest = DXResource<ID3D11DepthStencilState>(dss);
+		}
 
-		desc.DepthFunc			= D3D11_COMPARISON_GREATER_EQUAL;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthGreaterEqualAndDisableDepthWrite)));
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthEnable = true;
+			desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			desc.DepthFunc = D3D11_COMPARISON_GREATER;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 
-		desc.DepthFunc			= D3D11_COMPARISON_EQUAL;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthEqualAndDisableDepthWrite)));
+			_depthGreaterAndDisableDepthWrite = DXResource<ID3D11DepthStencilState>(dss);
+		}
 
-		desc.DepthWriteMask		= D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc			= D3D11_COMPARISON_LESS;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthLess)));
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 
-		desc.DepthFunc			= D3D11_COMPARISON_LESS_EQUAL;
-		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &_depthLessEqual)));
+			_depthGreaterEqualAndDisableDepthWrite = DXResource<ID3D11DepthStencilState>(dss);
+		}
+
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthFunc = D3D11_COMPARISON_EQUAL;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
+
+			_depthEqualAndDisableDepthWrite = DXResource<ID3D11DepthStencilState>(dss);
+		}
+
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			desc.DepthFunc = D3D11_COMPARISON_LESS;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
+
+			_depthLess = DXResource<ID3D11DepthStencilState>(dss);
+		}
+
+		{
+			ID3D11DepthStencilState* dss = nullptr;
+			desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+			assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
+
+			_depthLessEqual = DXResource<ID3D11DepthStencilState>(dss);
+		}
 	}
 
 	//sampler
@@ -407,13 +475,18 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.ComparisonFunc	= D3D11_COMPARISON_NEVER;
 	desc.MinLOD			= -D3D11_FLOAT32_MAX;
 	desc.MaxLOD			= D3D11_FLOAT32_MAX;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerAnisotropic)));
+
+	ID3D11SamplerState* ss = nullptr;
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerAnisotropic = DXResource<ID3D11SamplerState>(ss);
 
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerLinear)));
-	
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerLinear = DXResource<ID3D11SamplerState>(ss);
+
 	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerPoint)));
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerPoint = DXResource<ID3D11SamplerState>(ss);
 
 	// Shadow Sampler State
 	desc.Filter			= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
@@ -422,10 +495,12 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.MaxAnisotropy	= 1;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerShadowLessEqualComp)));
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerShadowLessEqualComp = DXResource<ID3D11SamplerState>(ss);
 
 	desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerShadowGreaterEqualComp)));
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerShadowGreaterEqualComp = DXResource<ID3D11SamplerState>(ss);
 
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -437,7 +512,8 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0;
 	desc.MinLOD			= 0;
 	desc.MaxLOD			= 0;
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerShadowLinear)));
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerShadowLinear = DXResource<ID3D11SamplerState>(ss);
 
 	ZeroMemory(&desc, sizeof(desc));
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -453,7 +529,8 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.MinLOD			= 0;
 	desc.MaxLOD			= D3D11_FLOAT32_MAX;
 
-	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &_samplerConeTracing)));
+	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
+	_samplerConeTracing = DXResource<ID3D11SamplerState>(ss);
 }
 
 unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
@@ -483,7 +560,7 @@ unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
 	return 0;
 }
 
-void DirectX::ClearDeviceContext() const
+void DirectX::ClearDeviceContext()
 {
     ID3D11ShaderResourceView* pSRVs[16]		= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
     ID3D11RenderTargetView* pRTVs[16]		= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -515,8 +592,8 @@ void DirectX::ClearDeviceContext() const
     // States
     float BlendFactor[4] = { 0,0,0,0 };
     _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
-	_immediateContext->OMSetDepthStencilState( _depthGreater, 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(_rasterizerClockwiseDefault);
+	_immediateContext->OMSetDepthStencilState( _depthGreater.GetRaw(), 0x00 );  // we are using inverted 32-bit float depth for better precision
+	_immediateContext->RSSetState(_rasterizerClockwiseDefault.GetRaw());
 }
 
 const ShaderMacro DirectX::GetMSAAShaderMacro() const
@@ -534,40 +611,4 @@ const Size<uint> DirectX::FetchBackBufferSize()
 	_backBufferSize.h = static_cast<uint>(vp.Height);
 
 	return _backBufferSize;
-}
-
-void DirectX::Destroy()
-{
-	SAFE_RELEASE(_rasterizerClockwiseDisableCullingWithClip);
-	SAFE_RELEASE(_rasterizerClockwiseDisableCulling);
-	SAFE_RELEASE(_rasterizerClockwiseDefault);
-	SAFE_RELEASE(_rasterizerCounterClockwiseDisableCulling);
-	SAFE_RELEASE(_rasterizerCounterClockwiseDefault);
-
-	SAFE_RELEASE(_blendOpaque);
-	SAFE_RELEASE(_blendAlphaToCoverage);
-	SAFE_RELEASE(_blendAlpha);
-
-	SAFE_RELEASE(_depthDisableDepthTest);
-	SAFE_RELEASE(_depthDisableDepthWrite);
-	SAFE_RELEASE(_depthLess);
-	SAFE_RELEASE(_depthEqualAndDisableDepthWrite);
-	SAFE_RELEASE(_depthGreater);
-	SAFE_RELEASE(_depthGreaterAndDisableDepthWrite);
-	SAFE_RELEASE(_depthLessEqual);
-	SAFE_RELEASE(_depthGreaterEqualAndDisableDepthWrite);
-
-	SAFE_RELEASE(_samplerAnisotropic);
-	SAFE_RELEASE(_samplerLinear);
-	SAFE_RELEASE(_samplerPoint);
-	SAFE_RELEASE(_samplerShadowLessEqualComp);
-	SAFE_RELEASE(_samplerShadowGreaterEqualComp);
-	SAFE_RELEASE(_samplerShadowLinear);
-	SAFE_RELEASE(_samplerConeTracing);
-
-	SAFE_RELEASE(_renderTargetView);
-
-	SAFE_RELEASE(_immediateContext);
-	SAFE_RELEASE(_swapChain);
-	SAFE_RELEASE(_device);
 }
