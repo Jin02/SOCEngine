@@ -51,18 +51,8 @@ void TextureCube::Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_F
 		_srv.InitializeUsingTexture(dx, _texture, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
 }
 
-void TextureCube::Destroy()
-{
-	_texture.Destroy();
-	_srv.Destroy();
-	_rtv.Destroy();
-}
-
 void TextureCube::Clear(Device::DirectX& dx)
 {
-	if(_rtv.IsCanUse())
-	{
-		float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-		dx.GetContext()->ClearRenderTargetView(_rtv.GetRaw(), clearColor);
-	}
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	dx.GetContext()->ClearRenderTargetView(_rtv.GetRaw(), clearColor);
 }
