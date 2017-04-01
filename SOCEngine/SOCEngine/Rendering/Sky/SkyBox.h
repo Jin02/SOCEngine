@@ -1,11 +1,11 @@
 #pragma once
 
-#include "BaseSky.h"
+#include "SkyGeometry.h"
 #include "SkyBoxMaterial.h"
 #include "Texture2DManager.h"
 #include "DirectX.h"
 #include "ShaderManager.h"
-#include "BufferManager.h"
+#include "BufferManager.hpp"
 #include "MaterialManager.hpp"
 
 namespace Rendering
@@ -15,17 +15,12 @@ namespace Rendering
 		class SkyBox
 		{
 		private:
-			BaseSky									_base;
-			std::shared_ptr<SkyBoxMaterial>			_skyBoxMaterial;
+			SkyGeometry			_base;
+			std::string			_skyBoxMaterialKey = "";
 
 		public:
-			void Initialize(
-				Device::DirectX& dx,
-				Manager::ShaderManager& shaderMgr,
-				Manager::Texture2DManager& tex2DMgr,
-				Manager::BufferManager& bufferMgr,
-				Manager::MaterialManager& materialMgr,
-				const std::string& materialName, const std::string& cubeMapFilePath);
+			SkyBox() = default;
+			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const std::string& skyBoxMaterialKey);
 		};
 	}
 }
