@@ -15,12 +15,10 @@ namespace Rendering
 		class CPUReadBuffer final
 		{
 		public:
-			CPUReadBuffer();
-			~CPUReadBuffer();
-
+			CPUReadBuffer() = default;
 			DISALLOW_ASSIGN_COPY(CPUReadBuffer);
 
-			bool Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format);
+			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format);
 			void Read(Device::DirectX& dx, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
 
 			GET_CONST_ACCESSOR(Buffer, const BaseBuffer&, _baseBuffer);
