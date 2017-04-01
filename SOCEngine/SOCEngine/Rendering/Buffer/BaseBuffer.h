@@ -2,7 +2,6 @@
 
 #include "DirectX.h"
 #include "Common.h"
-#include <memory>
 
 namespace Rendering
 {
@@ -11,8 +10,8 @@ namespace Rendering
 		class BaseBuffer
 		{
 		public:
-			BaseBuffer();
-			BaseBuffer(const DXResource<ID3D11Buffer>& buffer);
+			BaseBuffer() = default;
+			BaseBuffer(const DXResource<ID3D11Buffer>& buffer) : _buffer(buffer) {}
 
 			SET_ACCESSOR(Buffer, const DXResource<ID3D11Buffer>&, _base);
 			GET_CONST_ACCESSOR(Buffer, DXResource<ID3D11Buffer>, _base);
@@ -22,7 +21,7 @@ namespace Rendering
 			void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint startOffset, uint size, D3D11_MAP mapType);
 
 		private:
-			DXResource<ID3D11Buffer>	_base;
+			DXResource<ID3D11Buffer> _buffer;
 		};
 	}
 }
