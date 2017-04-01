@@ -538,9 +538,6 @@
     <ClInclude Include="Importer\G3djDataTypes.hpp">
       <Filter>Importer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Buffer\BufferManager.h">
-      <Filter>Rendering\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Buffer\BaseBuffer.h">
       <Filter>Rendering\Buffer\Base</Filter>
     </ClInclude>
@@ -625,14 +622,8 @@
     <ClInclude Include="Rendering\Buffer\BufferPool.hpp">
       <Filter>Rendering\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\BaseTexture.h">
-      <Filter>Rendering\Texture\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Texture\Texture2DManager.h">
       <Filter>Rendering\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="GPGPU\ComputeShader.h">
-      <Filter>Rendering\Shader\Compute</Filter>
     </ClInclude>
     <ClInclude Include="Device\DXResource.h">
       <Filter>Device</Filter>
@@ -645,9 +636,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Material\MaterialManager.hpp">
-      <Filter>Rendering\Material</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
       <Filter>Rendering\Mesh</Filter>
@@ -676,13 +664,7 @@
     <ClInclude Include="Rendering\Sky\SkyRenderer.h">
       <Filter>Rendering\Sky\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\BaseSky.h">
-      <Filter>Rendering\Sky\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
-      <Filter>Rendering\Sky\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
     </ClInclude>
     <ClInclude Include="Core\Object.h">
@@ -693,9 +675,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Light\Lights.h">
       <Filter>Rendering\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\LightForm.h">
-      <Filter>Rendering\Light\Base</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Light\DirectionalLight.h">
       <Filter>Rendering\Light\Directional</Filter>
@@ -756,6 +735,24 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
       <Filter>Rendering\Shadow\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ComputeShader.h">
+      <Filter>Rendering\Shader\Compute</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Buffer\BufferManager.hpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\MaterialManager.hpp">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Sky\SkyGeometry.h">
+      <Filter>Rendering\Sky\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\BaseLight.h">
+      <Filter>Rendering\Light\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Texture\TextureGPUView.h">
+      <Filter>Rendering\Texture\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -821,9 +818,6 @@
     </ClCompile>
     <ClCompile Include="Importer\ImporterUtility.cpp">
       <Filter>Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Buffer\BufferManager.cpp">
-      <Filter>Rendering\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp">
       <Filter>Rendering\Buffer\Base</Filter>
@@ -894,14 +888,8 @@
     <ClCompile Include="Rendering\Shader\VertexShaderManager.cpp">
       <Filter>Rendering\Shader\Manager\Vertex</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\BaseTexture.cpp">
-      <Filter>Rendering\Texture\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Texture\Texture2DManager.cpp">
       <Filter>Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="GPGPU\ComputeShader.cpp">
-      <Filter>Rendering\Shader\Compute</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ComputeShaderManager.cpp">
       <Filter>Rendering\Shader\Manager\Compute</Filter>
@@ -930,20 +918,11 @@
     <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
       <Filter>Rendering\Sky\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Sky\BaseSky.cpp">
-      <Filter>Rendering\Sky\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
-      <Filter>Rendering\Sky\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp">
       <Filter>Rendering\Sky\Material</Filter>
     </ClCompile>
     <ClCompile Include="Core\ObjectManager.cpp">
       <Filter>Core\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\LightForm.cpp">
-      <Filter>Rendering\Light\Base</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
       <Filter>Rendering\Light\Directional</Filter>
@@ -986,6 +965,18 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <Filter>Rendering\Shadow\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\ComputeShader.cpp">
+      <Filter>Rendering\Shader\Compute</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Sky\SkyGeometry.cpp">
+      <Filter>Rendering\Sky\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\BaseLight.cpp">
+      <Filter>Rendering\Light\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\TextureGPUView.cpp">
+      <Filter>Rendering\Texture\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

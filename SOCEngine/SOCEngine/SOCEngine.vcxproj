@@ -39,9 +39,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
-    <ClInclude Include="GPGPU\ComputeShader.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Importer\G3djDataTypes.hpp" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h">
@@ -61,7 +58,7 @@
     <ClInclude Include="Math\Vector3.h" />
     <ClInclude Include="Math\Vector4.h" />
     <ClInclude Include="Rendering\Buffer\BaseBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\BufferManager.h">
+    <ClInclude Include="Rendering\Buffer\BufferManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\BufferPool.hpp" />
@@ -87,7 +84,7 @@
     <ClInclude Include="Rendering\Light\DirectionalLightingBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\LightForm.h">
+    <ClInclude Include="Rendering\Light\BaseLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\LightingBufferForm.hpp">
@@ -125,6 +122,7 @@
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="Rendering\Shader\ComputeShaderManager.h" />
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h" />
     <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h" />
@@ -162,9 +160,8 @@
     <ClInclude Include="Rendering\Sky\SkyBox.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyBoxCubeMaterial.h" />
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
-    <ClInclude Include="Rendering\Sky\BaseSky.h" />
+    <ClInclude Include="Rendering\Sky\SkyGeometry.h" />
     <ClInclude Include="Rendering\Sky\SkyRenderer.h" />
     <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
     <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
@@ -172,7 +169,7 @@
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\Texture3D.h" />
     <ClInclude Include="Rendering\Texture\TextureCube.h" />
-    <ClInclude Include="Rendering\Texture\BaseTexture.h" />
+    <ClInclude Include="Rendering\Texture\TextureGPUView.h" />
     <ClInclude Include="Rendering\Texture\Texture2DManager.h" />
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
@@ -222,9 +219,6 @@
     <ClCompile Include="Device\WinApp.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GPGPU\ComputeShader.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -241,9 +235,6 @@
     <ClCompile Include="Math\Vector3.cpp" />
     <ClCompile Include="Math\Vector4.cpp" />
     <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\BufferManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
@@ -259,7 +250,7 @@
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Light\LightForm.cpp">
+    <ClCompile Include="Rendering\Light\BaseLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Light\LightManager.cpp">
@@ -284,6 +275,7 @@
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShaderManager.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
@@ -313,9 +305,8 @@
     <ClCompile Include="Rendering\Sky\SkyBox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyBoxCubeMaterial.cpp" />
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
-    <ClCompile Include="Rendering\Sky\BaseSky.cpp" />
+    <ClCompile Include="Rendering\Sky\SkyGeometry.cpp" />
     <ClCompile Include="Rendering\Sky\SkyRenderer.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
@@ -323,7 +314,7 @@
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
     <ClCompile Include="Rendering\Texture\TextureCube.cpp" />
-    <ClCompile Include="Rendering\Texture\BaseTexture.cpp" />
+    <ClCompile Include="Rendering\Texture\TextureGPUView.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2DManager.cpp" />
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
