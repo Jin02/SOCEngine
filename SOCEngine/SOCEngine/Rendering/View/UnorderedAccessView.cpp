@@ -3,22 +3,6 @@
 
 using namespace Rendering::View;
 
-Rendering::View::UnorderedAccessView::UnorderedAccessView()
-	: _uav()
-{
-}
-
-UnorderedAccessView::UnorderedAccessView(const DXResource<ID3D11UnorderedAccessView>& uav)
-	: _uav(uav)
-{
-}
-
-void Rendering::View::UnorderedAccessView::Destroy()
-{
-	if(_uav.IsCanUse())
-		_uav.Destroy();
-}
-
 void UnorderedAccessView::Initialize(
 	Device::DirectX& dx,
 	DXGI_FORMAT format, uint numElements, ID3D11Resource* resource,
