@@ -19,6 +19,7 @@ Half::Half(float f)
 	ushort floatBit = *(reinterpret_cast<uint*>(&f));
 
 	int exponent = static_cast<int>((floatBit & 0x7F800000) >> 23) - 127 + 15;
+	assert(exponent < 31);
 
 	if (exponent <= 0)
 	{
