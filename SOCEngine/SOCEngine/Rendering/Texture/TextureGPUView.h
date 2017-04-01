@@ -8,12 +8,12 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class BaseTexture final
+		class TextureGPUView final
 		{
 		public:
-			BaseTexture();
-			explicit BaseTexture(const View::ShaderResourceView& srv);
-			explicit BaseTexture(const View::ShaderResourceView& srv, const View::UnorderedAccessView& uav);
+			TextureGPUView();
+			explicit TextureGPUView(const View::ShaderResourceView& srv);
+			explicit TextureGPUView(const View::ShaderResourceView& srv, const View::UnorderedAccessView& uav);
 
 			void Destroy();
 
