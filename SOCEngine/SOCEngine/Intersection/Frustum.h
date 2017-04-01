@@ -9,8 +9,6 @@ namespace Intersection
 	class Frustum
 	{
 	public:
-		Frustum(float gap = 0.0);
-
 		GET_CONST_ACCESSOR(Position, const Math::Vector3&, _position);
 
 		void Make(const Math::Matrix &viewProjection);
@@ -18,9 +16,8 @@ namespace Intersection
 
 
 	private:
-		std::array<Math::Plane, 6>		_plane;
+		std::array<Math::Plane, 6>	_plane;
 		std::array<Math::Vector3, 8>	_planeVertex;
-		Math::Vector3					_position;
-		float							_gap;
+		Math::Vector3			_position	= Math::Vector3(0.0f, 0.0f, 0.0f);
 	};
 }
