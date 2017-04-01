@@ -11,19 +11,7 @@
 using namespace Device;
 using namespace Rendering::Shader;
 
-DirectX::DirectX(void) :
-	_device(), _swapChain(), _immediateContext(),
-	_renderTargetView(), _rasterizerClockwiseDisableCulling(),
-	_blendOpaque(), _blendAlphaToCoverage(),
-	_depthDisableDepthTest(), _depthLess(), 
-	_depthEqualAndDisableDepthWrite(), _depthGreater(),
-	_depthGreaterAndDisableDepthWrite(), _blendAlpha(),
-	_samplerAnisotropic(), _samplerLinear(), _samplerPoint(),
-	_rasterizerClockwiseDefault(), _rasterizerCounterClockwiseDisableCulling(),
-	_rasterizerCounterClockwiseDefault(), _samplerShadowLessEqualComp(), _samplerShadowGreaterEqualComp(), _samplerShadowLinear(),
-	_rasterizerClockwiseDisableCullingWithClip(),
-	_depthLessEqual(), _samplerConeTracing(), _depthGreaterEqualAndDisableDepthWrite(),
-	_backBufferSize(0, 0)
+DirectX::DirectX() : _backBufferSize(0, 0)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -47,18 +35,18 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	DXGI_SWAP_CHAIN_DESC	sd;
 	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	sd.BufferDesc.Width						= viewportSize.w;
+	sd.BufferDesc.Width					= viewportSize.w;
 	sd.BufferDesc.Height					= viewportSize.h;
-	sd.BufferCount							= 1;
-	sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow							= win.GetHandle();
-	sd.Windowed								= win.GetIsWindowMode();
-	sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.BufferCount						= 1;
+	sd.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow						= win.GetHandle();
+	sd.Windowed						= win.GetIsWindowMode();
+	sd.SwapEffect						= DXGI_SWAP_EFFECT_DISCARD;
+	sd.Flags						= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator		= 0;
-	sd.BufferDesc.RefreshRate.Denominator	= 1;
-	sd.SampleDesc.Count						= useMSAA ? 4 : 1;
+	sd.BufferDesc.RefreshRate.Numerator			= 0;
+	sd.BufferDesc.RefreshRate.Denominator			= 1;
+	sd.SampleDesc.Count					= useMSAA ? 4 : 1;
 	sd.SampleDesc.Quality					= 0;
 
 	D3D_DRIVER_TYPE driverTypes[] =
@@ -84,39 +72,38 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	ID3D11Device*			device = nullptr;
-	IDXGISwapChain*			swapChain = nullptr;
-	ID3D11DeviceContext*	immediateContext = nullptr;
+	ID3D11Device*		device			= nullptr;
+	IDXGISwapChain*		swapChain		= nullptr;
+	ID3D11DeviceContext*	immediateContext	= nullptr;
 
 	uint driverTypeIndex = 0;
 	for(; driverTypeIndex<numDriverTypes; driverTypeIndex++ )
-    {
-        _driverType = driverTypes[driverTypeIndex];
-        HRESULT hr = D3D11CreateDeviceAndSwapChain( NULL, _driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &sd, &swapChain, &device, &_featureLevel, &immediateContext);
-
+	{
+		_driverType = driverTypes[driverTypeIndex];
+		
+		HRESULT hr = D3D11CreateDeviceAndSwapChain( NULL, _driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
+								D3D11_SDK_VERSION, &sd, &swapChain, &device, &_featureLevel, &immediateContext);
+		
 		if (SUCCEEDED(hr))
-		{
-			_device = DXResource<ID3D11Device>(device);
-			_swapChain = DXResource<IDXGISwapChain>(swapChain);
-			_immediateContext = DXResource<ID3D11DeviceContext>(immediateContext);
-
 			break;
-		}
-    }
+	}
 
 	assert(driverTypeIndex < numDriverTypes);
-	_msaaDesc = sd.SampleDesc;
+
+	_device			= DXResource<ID3D11Device>(device);
+	_swapChain		= DXResource<IDXGISwapChain>(swapChain);
+	_immediateContext	= DXResource<ID3D11DeviceContext>(immediateContext);	
+	_msaaDesc		= sd.SampleDesc;
 }
 
-void DirectX::InitViewport(const Rect<uint>& rect)
+void DirectX::InitViewport(const Rect<float>& rect)
 {
 	D3D11_VIEWPORT vp;
 
-	vp.TopLeftX		= static_cast<float>(rect.x);
-	vp.TopLeftY		= static_cast<float>(rect.y);
-	vp.Width		= static_cast<float>(rect.size.w);
-	vp.Height		= static_cast<float>(rect.size.h);
+	vp.TopLeftX		= rect.x;
+	vp.TopLeftY		= rect.y;
+	vp.Width		= rect.size.w;
+	vp.Height		= rect.size.h;
 	vp.MinDepth		= 0.0f;
 	vp.MaxDepth		= 1.0f;
 
