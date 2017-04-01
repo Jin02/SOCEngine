@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LightForm.h"
+#include "BaseLight.h"
 #include "Transform.h"
 
 namespace Rendering

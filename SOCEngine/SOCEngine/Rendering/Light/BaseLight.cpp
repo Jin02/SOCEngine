@@ -1,4 +1,4 @@
-#include "LightForm.h"
+#include "BaseLight.h"
 #include "GlobalDefine.h"
 
 using namespace Core;
