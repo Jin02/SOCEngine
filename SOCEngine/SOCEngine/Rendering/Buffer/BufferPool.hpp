@@ -19,11 +19,12 @@ namespace Rendering
 				_buffers.Add(file + ":" + key, bufferData);
 			}
 
-			//auto Find(const std::string& file, const std::string& key)
-			//{
-			//	std::string findKey = file + ":" + key;
-			//	return _buffers.Find(findKey);
-			//}
+			auto Find(const std::string& file, const std::string& key)
+			{
+				std::string findKey = file + ":" + key;
+				return _buffers.Find(findKey);
+			}
+
 			bool Has(const std::string& file, const std::string& key) const
 			{
 				return _buffers.GetIndexer().Has(file + ":" + key);
@@ -33,7 +34,8 @@ namespace Rendering
 			{
 				uint findIndex = _buffers.GetIndexer().Find(file + ":" + key);
 
-				if (findIndex != decltype(_buffers.GetIndexer())::FailIndex())
+				auto failIdx = Core::VectorMap<std::string, BufferType>::IndexyerType::FailIndex();
+				if (findIndex != failIdx)
 					_buffers.Delete(findIndex);
 			}
 
