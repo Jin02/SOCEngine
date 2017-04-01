@@ -5,7 +5,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::View;
 
 Texture2D::Texture2D(const ShaderResourceView& srv, const DXResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size)
-	: _base(srv), _texture(tex), _size(size)
+	: _texture(tex), _size(size)
 {
 }
 
@@ -72,25 +72,15 @@ void Texture2D::Initialize(Device::DirectX& dx,
 	_texture = dx.CreateTexture2D(textureDesc);
 
 	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
-	{
-		ShaderResourceView srv;
-		srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
-
-		_base.SetShaderResourceView(srv);
-	}
+		_srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
 
 	if (bindFlags & D3D11_BIND_UNORDERED_ACCESS)
-	{
-		UnorderedAccessView uav;
-		uav.Initialize(dx, uavFormat, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
-
-		_base.SetUnorderedAccessView(uav);
-	}
+		_uav.Initialize(dx, uavFormat, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
 }
 
 const Size<uint>& Texture2D::FetchSize()
 {
-	if( (_size.w != 0) && (_size.h != 0) )
+	if( (_size.w != 0) & (_size.h != 0) )
 		return _size;
 
 	D3D11_TEXTURE2D_DESC desc;
@@ -105,13 +95,13 @@ const Size<uint>& Texture2D::FetchSize()
 	}
 
 	ID3D11Resource* res = nullptr;
-	_base.GetShaderResourceView().GetView().GetRaw()->GetResource(&res);
+	_srv.GetView().GetRaw()->GetResource(&res);
 
-    ID3D11Texture2D* texture2d = nullptr;
-    HRESULT hr = res->QueryInterface(&texture2d);
+	ID3D11Texture2D* texture2d = nullptr;
+	HRESULT hr = res->QueryInterface(&texture2d);
 
-    if( SUCCEEDED(hr) )
-    {
+	if( SUCCEEDED(hr) )
+	{
 		texture2d->GetDesc(&desc);
 
 		_size.w = desc.Width;
@@ -119,19 +109,12 @@ const Size<uint>& Texture2D::FetchSize()
 	}
 
 	SAFE_RELEASE(texture2d);
-    SAFE_RELEASE(res);
+	SAFE_RELEASE(res);
 
 	return _size;
 }
 
-void Texture2D::Destroy()
-{
-	_base.Destroy();
-	_texture.Destroy();
-	_size		= Size<uint>(0, 0);
-}
-
 void Texture2D::GenerateMips(Device::DirectX& dx)
 {	
-	dx.GetContext()->GenerateMips(_base.GetShaderResourceView().GetView().GetRaw());
+	dx.GetContext()->GenerateMips(_srv.GetView().GetRaw());
 }
