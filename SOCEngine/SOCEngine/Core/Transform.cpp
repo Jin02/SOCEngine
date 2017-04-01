@@ -28,15 +28,6 @@ static void MakeRotationMatrix(	Matrix& outRotMat,
 	outRotMat._m[3][3] = 1.0f;
 }
 
-Transform::Transform(ObjectId id)
-	: _worldMat(), _localMat(),
-	_position(), _eulerAngle(), _quaternion(), _scale(),
-	_forward(0.0f, 0.0f, 1.0f), _up(0.0f, 1.0f, 0.0f), _right(1.0f, 0.0f, 0.0f),	
-	_objectId(id), _dirty(true), _childs(), _parent(nullptr)
-{
-
-}
-
 const Matrix & Transform::ComputeLocalMatrix()
 {
 	_localMat._11 = _scale.x * _right.x;

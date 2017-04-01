@@ -11,7 +11,7 @@ namespace Core
 	class Transform
 	{
 	public:
-		explicit Transform(ObjectId id);
+		explicit Transform(ObjectId id) : _objectId(id) {}
 
 		const Math::Vector3			GetWorldPosition()		const;
 		const Math::Vector3			GetWorldScale()			const;
@@ -72,19 +72,19 @@ namespace Core
 		Math::Matrix		_worldMat;
 		Math::Matrix		_localMat;
 
-		Math::Vector3		_position;
-		Math::Vector3		_eulerAngle;
-		Math::Quaternion	_quaternion;
-		Math::Vector3		_scale;
+		Math::Vector3		_position		= Math::Vector3(0.0f, 0.0f, 0.0f);
+		Math::Vector3		_eulerAngle		= Math::Vector3(0.0f, 0.0f, 0.0f);
+		Math::Quaternion	_quaternion		= Math::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+		Math::Vector3		_scale			= Math::Vector3(1.0f, 1.0f, 1.0f);
 
-		Math::Vector3		_forward;
-		Math::Vector3		_up;
-		Math::Vector3		_right;
+		Math::Vector3		_forward		= Math::Vector3(0.0f, 0.0f, 1.0f);
+		Math::Vector3		_up				= Math::Vector3(0.0f, 1.0f, 0.0f);
+		Math::Vector3		_right			= Math::Vector3(1.0f, 0.0f, 0.0f);
 
 		const ObjectId		_objectId;
-		bool				_dirty;
+		bool				_dirty			= true;;
 
-		TransformPtr		_parent;
+		TransformPtr		_parent			= nullptr;
 		Childs				_childs;
 	};
 
