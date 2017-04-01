@@ -16,7 +16,7 @@ namespace Device
 	class WinApp
 	{
 	public:
-		struct Param
+		struct Desc
 		{
 			const Rect<uint> &rect;
 			HINSTANCE Instance;
@@ -27,7 +27,7 @@ namespace Device
 		};
 
 	public:
-		WinApp(const Param& param);
+		WinApp(const Desc& desc);
 
 		GET_CONST_ACCESSOR(IsChild, bool, _options == (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN));
 		GET_CONST_ACCESSOR(IsWindowMode, bool, _windowsMode);
