@@ -106,7 +106,7 @@ namespace Device
 	private:
 		friend class Core::Launcher;
 		void Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA);
-		void InitViewport(const Rect<uint>& rect);
+		void InitViewport(const Rect<float>& rect);
 		void CreateRenderTargetView();
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();
