@@ -2,11 +2,6 @@
 
 using namespace Rendering::Buffer;
 
-Rendering::Buffer::ConstBuffer::ConstBuffer()
-	: _base(), _size(0)
-{
-}
-
 void ConstBuffer::Initialize(Device::DirectX& dx, uint size)
 {
 	assert(_base.GetBuffer().IsCanUse() == false);
