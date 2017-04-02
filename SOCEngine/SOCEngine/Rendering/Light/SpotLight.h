@@ -14,18 +14,18 @@ namespace Rendering
 			using TransformType = Math::Vector4;
 			struct Param
 			{
-				Half	dirX				= Half(0.0f);
-				Half	dirY				= Half(0.0f);
+				Half	dirX			= Half(0.0f);
+				Half	dirY			= Half(0.0f);
 				Half	outerConeCosAngle	= Half(0.0f);
 				Half	innerConeCosAngle	= Half(0.0f);
 			};
 
 		public:
-			SpotLight(Core::ObjectId);
+			SpotLight(Core::ObjectId id) : _base(id) {};
 
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
-			void MakeTransform(TransformType& outTransform, const Core::Transform& transform) const;
-			void MakeParam(Param& outParam, const Core::Transform& transform);
+			TransformType MakeTransform(const Core::Transform& transform) const;
+			Param MakeParam(const Core::Transform& transform);
 			inline void SetSpotAngleDegree(float d) { _spotAngleDegree = d; _dirty = true; }
 
 			GET_ACCESSOR(Base, BaseLight&, _base);
