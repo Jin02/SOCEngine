@@ -11,20 +11,18 @@ using namespace Math;
 using namespace Device;
 using namespace Rendering;
 
-SkyBoxMaterial::SkyBoxMaterial(const std::string& key)
-	: Material(key), _shader(), _wvpCB()
-{
-}
-
 void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
 	EngineShaderFactory factory(&shaderMgr);
 
-	ShaderGroup& shaderGroup = _shader;
-	factory.LoadShader(dx, "SkyBox", "VS", "PS", "", nullptr, &shaderGroup.vs, &shaderGroup.ps, &shaderGroup.gs);
+	ShaderGroup shaderGroup;
+	factory.LoadShader(dx, "SkyBox", "VS", "PS", "", nullptr, &shaderGroup.vs, &shaderGroup.ps, nullptr);
 
 	assert(shaderGroup.ableRender());
-
+	
+	_vs = (*shaderGroup.vs);
+	_ps = (*shaderGroup.ps);
+	
 	_wvpCB.Initialize(dx);
 }
 
