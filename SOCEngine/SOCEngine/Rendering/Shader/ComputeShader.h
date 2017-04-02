@@ -15,7 +15,7 @@ namespace Rendering
 			struct ThreadGroup
 			{
 				ThreadGroup(uint _x, uint _y, uint _z) : x(_x), y(_y), z(_z){}
-				bool IsValid() const { return x && y && z; }
+				bool IsValid() const { return x & y & z; }
 
 				uint x, y, z;
 			};
