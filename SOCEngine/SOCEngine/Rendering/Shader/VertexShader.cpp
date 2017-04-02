@@ -56,9 +56,9 @@ void VertexShader::UnBindInputLayoutToContext(Device::DirectX& dx)
 	dx.GetContext()->IASetInputLayout(nullptr);
 }
 
-void VertexShader::BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex)
+void VertexShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& view)
 {
-	ID3D11ShaderResourceView* srv = tex.GetShaderResourceView().GetView().GetRaw();
+	ID3D11ShaderResourceView* srv = view.GetView().GetRaw();
 	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
@@ -74,13 +74,7 @@ void VertexShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bin
 	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void VertexShader::BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer)
-{
-	ID3D11ShaderResourceView* srv = srBuffer.GetShaderResourceView().GetView().GetRaw();
-	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
-}
-
-void VertexShader::UnBindTexture(Device::DirectX& dx, TextureBindIndex bind)
+void VertexShader::UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
@@ -96,10 +90,4 @@ void VertexShader::UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex b
 {
 	ID3D11Buffer* buf = nullptr;
 	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
-}
-
-void VertexShader::UnBindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind)
-{
-	ID3D11ShaderResourceView* srv = nullptr;
-	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
