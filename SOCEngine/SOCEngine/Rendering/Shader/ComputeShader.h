@@ -27,10 +27,9 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx);
 			void Dispatch(Device::DirectX& dx);
 			
-			static void BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex);
+			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv);
 			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
-			static void BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer);
 			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, const View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
 
 			static void UnBindTexture(Device::DirectX& dx, TextureBindIndex bind);
