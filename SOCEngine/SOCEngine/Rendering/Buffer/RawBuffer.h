@@ -1,14 +1,13 @@
 #pragma once
 
-#include "ShaderResourceView.h"
+#include "ShaderResourceBuffer.h"
 #include "UnorderedAccessView.h"
-#include "BaseBuffer.h"
 
 namespace Rendering
 {
 	namespace Buffer
 	{
-		class RawBuffer final
+		class RawBuffer final : public ShaderResourceBuffer
 		{
 		public:
 			enum class Flag
@@ -26,8 +25,6 @@ namespace Rendering
 
 		private:
 			View::UnorderedAccessView		_uav;
-			View::ShaderResourceView		_srv;
-			BaseBuffer				_baseBuffer;
 		};
 	}
 }
