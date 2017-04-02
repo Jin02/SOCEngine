@@ -10,14 +10,9 @@ namespace Rendering
 		class ShaderResourceBuffer
 		{
 		public:
-			ShaderResourceBuffer();
-			virtual ~ShaderResourceBuffer();
+			ShaderResourceBuffer() = default;
 
-//			DISALLOW_COPY_CONSTRUCTOR(ShaderResourceBuffer);
-
-			void Initialize(Device::DirectX& dx, 
-							uint stride, uint num, DXGI_FORMAT format, const void* sysMem, bool useMapWriteNoOverWrite, uint optionalBindFlag, D3D11_USAGE usage);
-			void Destroy();
+			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format, const void* sysMem, bool useMapWriteNoOverWrite, uint optionalBindFlag, D3D11_USAGE usage);
 
 			inline void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint size)
 			{
@@ -36,7 +31,7 @@ namespace Rendering
 			SET_ACCESSOR(ShaderResourceView, const View::ShaderResourceView&, _srv);
 
 		private:
-			BaseBuffer					_baseBuffer;
+			BaseBuffer			_baseBuffer;
 			View::ShaderResourceView	_srv;
 		};
 	}
