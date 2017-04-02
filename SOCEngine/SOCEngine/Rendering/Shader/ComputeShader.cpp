@@ -22,7 +22,7 @@ void ComputeShader::Dispatch(Device::DirectX& dx)
 	dx.GetContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
-void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
+void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
 {	
 	ID3D11ShaderResourceView* srv = srv.GetView().GetRaw();
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
