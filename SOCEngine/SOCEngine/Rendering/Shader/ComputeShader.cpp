@@ -22,9 +22,9 @@ void ComputeShader::Dispatch(Device::DirectX& dx)
 	dx.GetContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
-void ComputeShader::BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex)
+void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
 {	
-	ID3D11ShaderResourceView* srv = tex.GetShaderResourceView().GetView().GetRaw();
+	ID3D11ShaderResourceView* srv = srv.GetView().GetRaw();
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
@@ -38,12 +38,6 @@ void ComputeShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bi
 {
 	ID3D11Buffer* buf = cb.GetBaseBuffer().GetBuffer().GetRaw();
 	dx.GetContext()->CSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
-}
-
-void ComputeShader::BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer)
-{
-	ID3D11ShaderResourceView* srv = srBuffer.GetShaderResourceView().GetView().GetRaw();
-	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
 void ComputeShader::BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, const View::UnorderedAccessView& uav, const uint* initialCounts)
