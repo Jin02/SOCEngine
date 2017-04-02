@@ -12,13 +12,12 @@ namespace Rendering
 		{
 		public:
 			using TransformType = std::pair<Half, Half>;
-			DirectionalLight(Core::ObjectId);
+			DirectionalLight(Core::ObjectId id) : _base(id) {};
 
 			void UpdateFlag(const Core::Transform& transform);
 //			void ComputeViewProjMatrix(const Core::Transform& transform, const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
 
-			void MakeTransform(TransformType& outDir, const Core::Transform& transform) const;
-
+			TransformType MakeTransform(const Core::Transform& transform) const;
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const { return true; }
 
 		public:
