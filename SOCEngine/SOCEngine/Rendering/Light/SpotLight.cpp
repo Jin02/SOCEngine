@@ -9,11 +9,6 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-SpotLight::SpotLight(ObjectId id)
-	: _base(id)
-{
-}
-
 bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) const
 {
 #if 0
@@ -25,24 +20,28 @@ bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) cons
 #endif
 }
 
-void SpotLight::MakeTransform(TransformType& outTransform, const Transform& transform) const
+TransformType SpotLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 forward = transform.GetWorldForward();
 	float radius = (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
 
 	Vector3 wp = transform.GetWorldPosition();
-	outTransform = Vector4(wp.x, wp.y, wp.z, radius);
+	return Vector4(wp.x, wp.y, wp.z, radius);
 }
 
-void SpotLight::MakeParam(Param& outParam, const Core::Transform& transform)
+Param SpotLight::MakeParam(const Core::Transform& transform)
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 forward = transform.GetWorldForward();
 
-	outParam.dirX = Half(forward.x);
-	outParam.dirY = Half(forward.y);
-
-	outParam.outerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree)));
-	outParam.innerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree * 0.3333f)));
+	Param param;
+	{
+		param.dirX = Half(forward.x);
+		param.dirY = Half(forward.y);
+		param.outerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree)));
+		param.innerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree * 0.3333f)));
+	}
+	
+	return param;
 }
