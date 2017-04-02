@@ -21,13 +21,13 @@ namespace Rendering
 		class BaseShader final
 		{
 		public:
-			BaseShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+			BaseShader(const DXResource<ID3DBlob>& blob, const std::string& key) : _blob(blob), _key(key) {}
 
 			GET_CONST_ACCESSOR(Blob, DXResource<ID3DBlob>, _blob);
 			GET_CONST_ACCESSOR(Key, const std::string&, _key);
 
 		private:
-			std::string					_key;
+			std::string			_key;
 			DXResource<ID3DBlob>		_blob;
 		};
 	}
