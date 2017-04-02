@@ -32,9 +32,9 @@ namespace Rendering
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
 			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, const View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
 
+			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
 			static void UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind);
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
-			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
 			static void UnBindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind);
 
 			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
