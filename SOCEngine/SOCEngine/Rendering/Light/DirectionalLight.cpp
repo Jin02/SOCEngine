@@ -9,11 +9,6 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-DirectionalLight::DirectionalLight(ObjectId id)
-	: _base(id)
-{
-}
-
 void DirectionalLight::UpdateFlag(const Transform& transform)
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
@@ -67,12 +62,10 @@ void DirectionalLight::ComputeViewProjMatrix(const Transform& transform, const I
 }
 */
 
-void DirectionalLight::MakeTransform(TransformType& outDir, const Transform& transform) const
+TransformType DirectionalLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 
 	const auto& forward = transform.GetForward();
-	
-	outDir.first	= Half(forward.x);
-	outDir.second	= Half(forward.y);
+	return std::make_pair(Half(forward.x), Half(forward.y));
 }
