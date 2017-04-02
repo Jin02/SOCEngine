@@ -11,7 +11,7 @@ void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 	auto indexer = GetConstBufferBook().GetIndexer();
 	uint findIdx = indexer.Find(Param::GetKey());
 
-	// Error, gbuffer const buffer was already allocated
+	// Error, param const buffer was already allocated
 	assert(findIdx == ConstBuffers::IndexerType::FailIndex());
 
 	BindConstBuffer bind;
