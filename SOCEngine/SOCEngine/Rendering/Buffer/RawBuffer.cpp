@@ -23,8 +23,14 @@ void RawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag 
 	desc.StructureByteStride	= stride;
 	desc.MiscFlags				= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
 
-	_baseBuffer.SetBuffer(dx.CreateBuffer(desc, nullptr));
+	_srBuffer.SetBaseBuffer(dx.CreateBuffer(desc, nullptr));
 
-	if(useSRV)	_srv.InitializeUsingBuffer(dx, GetBaseBuffer(), elemNum, DXGI_FORMAT_R32_UINT, true);
+	if(useSRV)
+	{
+		ShaderResourceView srv;
+		srv.InitializeUsingBuffer(dx, GetBaseBuffer(), elemNum, DXGI_FORMAT_R32_UINT, true);
+		
+		_srBuffer.SetShaderResourceView(srv);
+	}
 	if(useUAV)	_uav.Initialize(dx, DXGI_FORMAT_R32_TYPELESS, elemNum, GetBaseBuffer().GetBuffer(), D3D11_UAV_DIMENSION_BUFFER, 0, 0, D3D11_BUFFER_UAV_FLAG_RAW);
 }
