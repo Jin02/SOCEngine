@@ -16,7 +16,7 @@ namespace Rendering
 		using BindTextured2D = Shader::BindShaderData<Texture::Texture2D>;
 		using BindSRBuffer = Shader::BindShaderData<Buffer::ShaderResourceBuffer>;
 
-		Material(const std::string& name);
+		Material(const std::string& name) : _name(name) {}
 
 		GET_CONST_ACCESSOR(Name, const std::string&, _name);
 		GET_CONST_ACCESSOR(Textures, const std::vector<BindTextured2D>&, _textures.GetVector());
@@ -33,10 +33,10 @@ namespace Rendering
 
 	private:
 		ConstBuffers		_constBuffers;
-		Texture2Ds			_textures;
-		SRBuffers			_srBuffers;
+		Texture2Ds		_textures;
+		SRBuffers		_srBuffers;
 
-		std::string			_name;
-		float				_alpha;
+		std::string		_name	= "";
+		float			_alpha	= 1.0f;
 	};
 }
