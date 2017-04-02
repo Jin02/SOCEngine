@@ -19,12 +19,14 @@ namespace Rendering
 
 			RawBuffer() = default;
 
-			void Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag);			
+			void Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag);
+			
 			GET_CONST_ACCESSOR(UnorderedAccessView, const View::UnorderedAccessView&, _uav);
-			GET_CONST_ACCESSOR(ShaderResourceView, const View::ShaderResourceView&, _srv);
+			GET_CONST_ACCESSOR(ShaderResourceBuffer, const ShaderResourceBuffer&, _srBuffer);
 
 		private:
 			View::UnorderedAccessView		_uav;
+			ShaderResourceBuffer			_srBuffer;
 		};
 	}
 }
