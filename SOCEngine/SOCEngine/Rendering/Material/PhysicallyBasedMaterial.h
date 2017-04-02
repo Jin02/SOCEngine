@@ -11,16 +11,17 @@ namespace Rendering
 	class PhysicallyBasedMaterial : public Material
 	{
 	public:
-		struct GBufferParam
+		struct Param
 		{
-			uint mainColor_alpha						= 0;
-			uint emissiveColor_Metallic					= 0;
+			uint mainColor_alpha				= 0;
+			uint emissiveColor_Metallic			= 0;
 			uint roughness_specularity_existTextureFlag	= 0;
 
 			//상위 2비트는 아직 사용하지 않음
-			uint flag_ior								= 0;
+			uint flag_ior					= 0;
+			
+			static constexpr const char* GetKey() { return "PBRParam"; }
 		};
-		static constexpr const char* GetGBufferParamKey() { return "GBufferParam"; }
 
 	public:
 		using Material::Material;
