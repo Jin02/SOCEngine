@@ -6,11 +6,6 @@ using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Light;
 
-BaseLight::BaseLight(ObjectId id)
-	: _id(id)
-{
-}
-
 void BaseLight::SetIntensity(float intensity)
 {
 	_lumen = static_cast<uint>(intensity * static_cast<double>(MAXIMUM_LUMEN / 8.0));
