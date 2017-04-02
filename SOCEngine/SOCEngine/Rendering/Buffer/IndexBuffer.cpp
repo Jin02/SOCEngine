@@ -4,10 +4,6 @@
 using namespace Rendering::Buffer;
 using namespace Device;
 
-IndexBuffer::IndexBuffer() : _indexCount(0), _useVertexBufferKey(), _baseBuffer()
-{
-}
-
 void IndexBuffer::Initialize(
 	Device::DirectX& dx,
 	const std::vector<uint>& indices, const std::string& useVertexBufferKey, bool isDynamic)
