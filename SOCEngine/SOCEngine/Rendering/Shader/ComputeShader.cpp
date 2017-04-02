@@ -46,12 +46,6 @@ void ComputeShader::BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bi
 	dx.GetContext()->CSSetUnorderedAccessViews(static_cast<uint>(bind), 1, &view, initialCounts);
 }
 
-void ComputeShader::UnBindTexture(Device::DirectX& dx, TextureBindIndex bind)
-{
-	ID3D11ShaderResourceView* srv = nullptr;
-	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
-}
-
 void ComputeShader::UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind)
 {
 	ID3D11SamplerState* sampler = nullptr;
@@ -64,7 +58,7 @@ void ComputeShader::UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex 
 	dx.GetContext()->CSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void ComputeShader::UnBindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind)
+void ComputeShader::UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
