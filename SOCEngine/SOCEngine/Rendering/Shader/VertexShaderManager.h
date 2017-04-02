@@ -12,8 +12,6 @@ namespace Rendering
 		public:
 			using ShaderPool<Shader::VertexShader>::ShaderPool;
 
-			//DISALLOW_ASSIGN(VertexShaderManager);
-
 			ShaderPtr LoadShader(Device::DirectX& dx,
 				const std::string& folderPath,
 				const std::string& fileName,
