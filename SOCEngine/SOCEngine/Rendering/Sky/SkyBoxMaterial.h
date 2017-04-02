@@ -10,22 +10,19 @@ namespace Rendering
 	class SkyBoxMaterial : public Material
 	{
 	public:
-		SkyBoxMaterial(const std::string& key);
+		using Material::Material;
 
-	public:
 		void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 		void UpdateConstBuffer(Device::DirectX& dx, const Math::Matrix& transposedWVPMat);
 		void UpdateCubeMap(TextureBindIndex bind, const Texture::Texture2D& tex);
 
-		GET_CONST_ACCESSOR(Shaders, const Shader::ShaderGroup&, _shader);
 		GET_CONST_ACCESSOR(ConstBuffer, const Buffer::ExplicitConstBuffer<Math::Matrix>&, _wvpCB);
-
-	protected:
-		SET_ACCESSOR(Shaders, const Shader::ShaderGroup&, _shader);
-		SET_ACCESSOR(ConstBuffer, const Buffer::ExplicitConstBuffer<Math::Matrix>&, _wvpCB);
+		GET_CONST_ACCESSOR(VertexShader, const Shader::VertexShader&, _vs);
+		GET_CONST_ACCESSOR(PixelShader, const Shader::PixelShader&, _ps);
 
 	private:
-		Shader::ShaderGroup							_shader;
+		Shader::VertexShader				_vs;
+		Shader::PixelShader				_ps;
 		Buffer::ExplicitConstBuffer<Math::Matrix>	_wvpCB;
 	};
 }
