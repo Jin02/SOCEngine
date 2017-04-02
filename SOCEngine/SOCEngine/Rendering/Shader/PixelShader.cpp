@@ -23,9 +23,10 @@ void PixelShader::UnBindShaderToContext(Device::DirectX& dx)
 	dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }
 
-void PixelShader::BindTexture(Device::DirectX& dx, TextureBindIndex bind, const Texture::TextureGPUView& tex)
+
+void PixelShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& view)
 {
-	ID3D11ShaderResourceView* srv = tex.GetShaderResourceView().GetView().GetRaw();
+	ID3D11ShaderResourceView* srv = view.GetView().GetRaw();
 	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
@@ -41,13 +42,8 @@ void PixelShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind
 	dx.GetContext()->PSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void PixelShader::BindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind, const Buffer::ShaderResourceBuffer& srBuffer)
-{
-	ID3D11ShaderResourceView* srv = srBuffer.GetShaderResourceView().GetView().GetRaw();
-	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
-}
 
-void PixelShader::UnBindTexture(Device::DirectX& dx, TextureBindIndex bind)
+void PixelShader::UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
@@ -63,10 +59,4 @@ void PixelShader::UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bi
 {
 	ID3D11Buffer* buf = nullptr;
 	dx.GetContext()->PSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
-}
-
-void PixelShader::UnBindShaderResourceBuffer(Device::DirectX& dx, TextureBindIndex bind)
-{
-	ID3D11ShaderResourceView* srv = nullptr;
-	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
