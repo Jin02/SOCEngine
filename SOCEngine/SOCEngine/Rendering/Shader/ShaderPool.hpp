@@ -13,12 +13,12 @@ namespace Rendering
 	{
 		struct MakeShaderKeyParam
 		{
-			std::string folderPath;
-			std::string fileName;
-			std::string mainFunc;
-			std::string shaderType;
+			std::string folderPath	= "";
+			std::string fileName	= "";
+			std::string mainFunc	= "";
+			std::string shaderType	= "";
 
-			const std::vector<Shader::ShaderMacro>* macros;
+			const std::vector<Shader::ShaderMacro>* macros = nullptr;
 		};
 
 		template <class ShaderType>
@@ -27,16 +27,12 @@ namespace Rendering
 		public:
 			using ShaderPtr		= std::shared_ptr<ShaderType>;
 			using MakeKeyFunc	= std::function<std::string(const MakeShaderKeyParam& param)>;
-			using CreateBlobFunc= std::function<DXResource<ID3DBlob>(const MakeShaderKeyParam& param, bool useRecycle)>;
+			using CreateBlobFunc	= std::function<DXResource<ID3DBlob>(const MakeShaderKeyParam& param, bool useRecycle)>;
 
 		public:
 			DISALLOW_ASSIGN(ShaderPool);
 
-			ShaderPool()
-				: _shaders(), _makeFunc(nullptr), _createBlobFunc(nullptr)
-			{
-
-			}
+			ShaderPool() : _shaders(), _makeFunc(nullptr), _createBlobFunc(nullptr) { }
 			ShaderPool(const MakeKeyFunc& makeKey, const CreateBlobFunc& createBlob)
 				: _shaders(), _makeFunc(makeKey), _createBlobFunc(createBlob)	{ }
 
