@@ -5,16 +5,6 @@ using namespace Device;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
 
-ShaderResourceBuffer::ShaderResourceBuffer() 
-	: _baseBuffer(), _srv()
-{
-}
-
-ShaderResourceBuffer::~ShaderResourceBuffer()
-{
-	Destroy();
-}
-
 void ShaderResourceBuffer::Initialize(
 	Device::DirectX& dx,
 	uint stride, uint num, DXGI_FORMAT format,
@@ -36,9 +26,4 @@ void ShaderResourceBuffer::Initialize(
 
 	_baseBuffer.SetBuffer(dx.CreateBuffer(desc, sysMem ? &data : nullptr));
 	_srv.InitializeUsingBuffer(dx, _baseBuffer, num, format, false);
-}
-
-void ShaderResourceBuffer::Destroy()
-{
-	_srv.Destroy();
 }
