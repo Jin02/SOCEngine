@@ -16,7 +16,7 @@ namespace Rendering
 		class BaseLight final
 		{
 		public:
-			BaseLight(Core::ObjectId);
+			explicit BaseLight(Core::ObjectId id) : _id(id) {};
 
 			void SetIntensity(float intensity);
 			float GetIntensity() const;
