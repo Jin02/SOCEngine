@@ -9,15 +9,15 @@ using namespace Rendering::Texture;
 void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 {
 	auto indexer = GetConstBufferBook().GetIndexer();
-	uint findIdx = indexer.Find(GetGBufferParamKey());
+	uint findIdx = indexer.Find(Param::GetKey());
 
 	// Error, gbuffer const buffer was already allocated
 	assert(findIdx == ConstBuffers::IndexerType::FailIndex());
 
 	BindConstBuffer bind;
 	{
-		ConstBuffer& gbufferCB = bind.resource;
-		gbufferCB.Initialize(dx, sizeof(GBufferParam));
+		ConstBuffer& paramCB = bind.resource;
+		paramCB.Initialize(dx, sizeof(Param));
 
 		bind.bindIndex = static_cast<uint>(ConstBufferBindIndex::PhysicallyBasedMaterial);
 		bind.useCS = false;
@@ -26,7 +26,7 @@ void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 		bind.usePS = true;
 	}
 
-	GetConstBufferBook().Add(GetGBufferParamKey(), bind);
+	GetConstBufferBook().Add(Param::GetKey(), bind);
 }
 
 void PhysicallyBasedMaterial::Destroy()
@@ -35,7 +35,7 @@ void PhysicallyBasedMaterial::Destroy()
 
 void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 {
-	GBufferParam param;
+	Param param;
 
 	param.mainColor_alpha		= (	(static_cast<uint>(_mainColor.r * 255.0f) & 0xff) << 24 |
 									(static_cast<uint>(_mainColor.g * 255.0f) & 0xff) << 16 |
@@ -71,7 +71,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 	param.flag_ior = (static_cast<uint>(_flag) << 8) | static_cast<uint>(ior);
 
 	auto indexer = GetConstBufferBook().GetIndexer();
-	uint findIndex = indexer.Find(GetGBufferParamKey());
+	uint findIndex = indexer.Find(Param::GetKey());
 	assert(findIndex != decltype(indexer)::FailIndex());
 
 	GetConstBufferBook().Get(findIndex).resource.UpdateSubResource(dx, &param);
