@@ -11,7 +11,7 @@ namespace Rendering
 	class PhysicallyBasedMaterial : public Material
 	{
 	public:
-		struct Param
+		struct ParamCB
 		{
 			uint mainColor_alpha				= 0;
 			uint emissiveColor_Metallic			= 0;
