@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Material.h"
+#include "Material.hpp"
 
 #define SET_MATERIAL_ACCESSOR(name, type, variable)		inline void Set##name(type t)	{ variable = t; _dirty = true; }
 #define UPDATE_TEXTURE(name, bind)\
- inline void Update##name(const Texture::Texture2D& tex) {UpdateMap(Get##name##Key(), bind, tex);}
+ inline void Regist##name(const Texture::Texture2D& tex) {RegistTexture(Get##name##Key(), bind, tex);}
 
 namespace Rendering
 {
@@ -30,7 +30,7 @@ namespace Rendering
 		void Destroy();
 		void UpdateConstBuffer(Device::DirectX& dx);
 
-		void UpdateMap(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex);
+		void RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex);
 
 		static constexpr const char* GetDiffuseMapKey() { return "DiffuseMap"; }
 		static constexpr const char* GetNormalMapKey() { return "NormalMap"; }
