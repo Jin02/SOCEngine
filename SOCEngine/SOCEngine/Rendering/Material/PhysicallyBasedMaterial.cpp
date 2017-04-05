@@ -78,23 +78,23 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 	_dirty = false;	
 }
 
-void PhysicallyBasedMaterial::UpdateMap(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex)
+void PhysicallyBasedMaterial::RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex)
 {
 	auto& textureBook = GetTextureBook();
 	if (textureBook.GetIndexer().Has(key) == false)
 	{
-		//BindTextured2D bindTex2D;
-		//{
-		//	//bindTex2D.resource = tex;
-		//	//bindTex2D.bindIndex = static_cast<uint>(bind);
-		//	//bindTex2D.useVS = bindTex2D.useGS = bindTex2D.useCS = false;
-		//	//bindTex2D.usePS = true;
-		//}
-		//textureBook.Add(key, bindTex2D);
+		BindTextured2D bindTex2D;
+		{
+			bindTex2D.resource = tex;
+			bindTex2D.bindIndex = static_cast<uint>(bind);
+			bindTex2D.useVS = bindTex2D.useGS = bindTex2D.useCS = false;
+			bindTex2D.usePS = true;
+		}
+		textureBook.Add(key, bindTex2D);
 	}
 	else
 	{
 		uint findIdx = textureBook.GetIndexer().Find(key);
-		//textureBook.Get(findIdx).resource = tex;
+		textureBook.Get(findIdx).resource = tex;
 	}
 }
