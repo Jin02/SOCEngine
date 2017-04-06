@@ -18,19 +18,16 @@ void CommonLightingBuffer::Destroy()
 	_optionalParamIndexBuffer.Destroy();
 }
 
-void CommonLightingBuffer::UpdateBuffer(const BaseLight& light,
-				  const std::function<uchar(const BaseLight&)>& getShadowIndex,
-				  const std::function<uchar(const BaseLight&)>& getLightShaftIndex,
-				  bool existElem)
+void CommonLightingBuffer::UpdateBuffer(const Light::BaseLight& light, uint shadowIndex, uint lightShaftIndex, bool existElem)
 {	
 	auto key = light.GetObjectId();
 
 	// Compute Optional Param Index
-	ushort	shadowIndex			= getShadowIndex(light);
-	uchar	lightShaftIndex		= getLightShaftIndex(light) & 0x7f;
-	uchar	lightFlag			= light.GetFlag();
+	ushort	shadowIndex		= shadowIndex;
+	uchar	lightShaftIndex		= lightShaftIndex & 0x7f;
+	uchar	lightFlag		= light.GetFlag();
 	uint	optionalParamIndex	= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;	
-	uint	uintColor			= light.Get32BitMainColor();
+	uint	uintColor		= light.Get32BitMainColor();
 	
 	if(existElem)
 	{
