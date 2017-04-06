@@ -26,10 +26,7 @@ namespace Rendering
 				void Initialize(Device::DirectX& dx, uint count);
 				void Destroy();
 				
-				void UpdateBuffer(const Light::BaseLight& light,
-									const std::function<uchar(const Light::BaseLight&)>& getShadowIndex,
-									const std::function<uchar(const Light::BaseLight&)>& getLightShaftIndex,
-						 			bool existElem);
+				void UpdateBuffer(const Light::BaseLight& light, uint shadowIndex, uint lightShaftIndex, bool existElem);
 				void UpdateSRBuffer(Device::DirectX& dx);		
 				void Delete(KeyType key);
 				void DeleteAll();
