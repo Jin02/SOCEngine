@@ -11,10 +11,6 @@ namespace Core
 	template <typename Key, typename Object, template<typename K> class Indexer>
 	class VectorIndexer
 	{
-	private:
-		std::vector<Object>     _vector;
-		Indexer<Key>            _map;
-
 	public:
 		using IndexerType = Indexer<Key>;
 		using VectorType = std::vector<Object>;
@@ -97,6 +93,10 @@ namespace Core
 		inline const Indexer<Key> GetIndexer() const { return _map; }
 
 		GET_CONST_ACCESSOR(Size, unsigned int, _vector.size());
+
+	private:
+		std::vector<Object>     _vector;
+		Indexer<Key>            _map;
 	};
 
 	template<typename Key, typename Object>
