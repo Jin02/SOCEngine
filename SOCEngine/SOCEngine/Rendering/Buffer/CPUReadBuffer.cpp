@@ -32,7 +32,7 @@ void CPUReadBuffer::Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_
 void CPUReadBuffer::Read(Device::DirectX& dx, const std::function<void(const void* dataRecive)>& dataReceiveFunc)
 {
 	auto context = dx.GetContext();
-	context->CopyResource(_readBuffer.GetRaw(), _baseBuffer.GetBuffer().GetRaw());
+	context->CopyResource(_readBuffer.GetRaw(), _baseBuffer.GetRaw());
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	context->Map(_readBuffer.GetRaw(), 0, D3D11_MAP_READ, 0, &mappedData);

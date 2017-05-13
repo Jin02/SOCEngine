@@ -29,6 +29,8 @@ namespace Rendering
 			const Size<uint>& FetchSize();
 
 			GET_CONST_ACCESSOR(Texture, DXResource<ID3D11Texture2D>, _texture);
+			GET_ACCESSOR(RawTexture, auto, _texture.GetRaw());
+
 			GET_CONST_ACCESSOR(Size, const Size<uint>&, _size);
 			GET_CONST_ACCESSOR(CanUse, bool, _texture.IsCanUse());
 

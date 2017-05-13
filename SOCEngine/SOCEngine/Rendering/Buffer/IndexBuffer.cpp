@@ -28,5 +28,5 @@ void IndexBuffer::Initialize(
 
 void IndexBuffer::IASetBuffer(Device::DirectX& dx)
 {
-	dx.GetContext()->IASetIndexBuffer(_baseBuffer.GetBuffer().GetRaw(), DXGI_FORMAT_R32_UINT, 0);
+	dx.GetContext()->IASetIndexBuffer(_baseBuffer.GetRaw(), DXGI_FORMAT_R32_UINT, 0);
 }

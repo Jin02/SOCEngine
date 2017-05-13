@@ -116,5 +116,5 @@ const Size<uint>& Texture2D::FetchSize()
 
 void Texture2D::GenerateMips(Device::DirectX& dx)
 {	
-	dx.GetContext()->GenerateMips(_srv.GetView().GetRaw());
+	dx.GetContext()->GenerateMips(_srv.GetRaw());
 }

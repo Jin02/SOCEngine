@@ -15,6 +15,7 @@ namespace Rendering
 
 			SET_ACCESSOR(Buffer, const DXResource<ID3D11Buffer>&, _buffer);
 			GET_CONST_ACCESSOR(Buffer, DXResource<ID3D11Buffer>, _buffer);
+			GET_ACCESSOR(Raw, ID3D11Buffer*, _buffer.GetRaw());
 
 			void UpdateSubResource(Device::DirectX& dx, const void* data);
 			void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint size);

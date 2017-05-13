@@ -17,11 +17,12 @@ namespace Rendering
 
 			void Clear(Device::DirectX& dx, const Color& color);
 
-			GET_CONST_ACCESSOR(RenderTargetView, const DXResource<ID3D11RenderTargetView>&, _renderTargetView);
+			//GET_CONST_ACCESSOR(RenderTargetView, const DXResource<ID3D11RenderTargetView>&, _renderTargetView);
+			GET_ACCESSOR(Raw, auto, _renderTargetView.GetRaw());
 
 		private:
 			DXResource<ID3D11RenderTargetView>	_renderTargetView;
-			Texture2D				_tex2D;
+			Texture2D							_tex2D;
 		};
 	}
 }

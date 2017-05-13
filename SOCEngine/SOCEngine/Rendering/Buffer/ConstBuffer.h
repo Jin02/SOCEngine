@@ -13,6 +13,7 @@ namespace Rendering
 		public:
 			ConstBuffer() = default;
 			GET_CONST_ACCESSOR(BaseBuffer, const BaseBuffer&, _base);
+			GET_ACCESSOR(Raw, auto, _base.GetRaw());
 
 			void Initialize(Device::DirectX& dx, uint size);
 			void UpdateSubResource(Device::DirectX& dx, const void* data);

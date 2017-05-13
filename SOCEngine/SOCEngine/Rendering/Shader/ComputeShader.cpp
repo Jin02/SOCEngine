@@ -22,9 +22,9 @@ void ComputeShader::Dispatch(Device::DirectX& dx)
 	dx.GetContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
-void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
+void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& srv)
 {	
-	ID3D11ShaderResourceView* raw = srv.GetView().GetRaw();
+	ID3D11ShaderResourceView* raw = srv.GetRaw();
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
@@ -34,15 +34,15 @@ void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex 
 	dx.GetContext()->CSSetSamplers(static_cast<uint>(bind), 1, &sampler);
 }
 
-void ComputeShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb)
+void ComputeShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb.GetBaseBuffer().GetBuffer().GetRaw();
+	ID3D11Buffer* buf = cb.GetRaw();
 	dx.GetContext()->CSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void ComputeShader::BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, const View::UnorderedAccessView& uav, const uint* initialCounts)
+void ComputeShader::BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, View::UnorderedAccessView& uav, const uint* initialCounts)
 {
-	ID3D11UnorderedAccessView* view = uav.GetView().GetRaw();
+	ID3D11UnorderedAccessView* view = uav.GetRaw();
 	dx.GetContext()->CSSetUnorderedAccessViews(static_cast<uint>(bind), 1, &view, initialCounts);
 }
 

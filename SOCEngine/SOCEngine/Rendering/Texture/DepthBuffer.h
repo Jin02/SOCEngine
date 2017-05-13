@@ -17,6 +17,7 @@ namespace Rendering
 			void Clear(Device::DirectX& dx, float depth, unsigned char stencil);
 
 			GET_CONST_ACCESSOR(DepthStencilView, const DXResource<ID3D11DepthStencilView>&, _depthStencilView);
+			GET_CONST_ACCESSOR(RawDepthStencilView, auto, _depthStencilView.GetRaw());
 
 		private:
 			DXResource<ID3D11DepthStencilView>		_depthStencilView;
