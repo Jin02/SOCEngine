@@ -1,4 +1,5 @@
 #include "ObjectManager.h"
+#include "Object.h"
 
 using namespace Core;
 

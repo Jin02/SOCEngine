@@ -3,14 +3,14 @@
 #include "ObjectId.hpp"
 #include <memory>
 #include <string>
+#include "Engine.h"
 
 namespace Core
 {
-	class Engine;
 	class Object final
 	{
 	public:
-		Object(ObjectId id, const std::weak_ptr<Engine>& engine)
+		Object(ObjectId id, Engine* engine)
 			: _id(id), _engine(engine)
 		{
 
@@ -19,22 +19,19 @@ namespace Core
 		template <class Component>
 		Component& AddComponent()
 		{
-			assert(_engine.expired());
-			return _engine.lock()->AddComponent<Component>(_id);
+			return _engine->GetComponentSystem().Add<Component>(_id);
 		}
 
 		template <class Component>
 		void DeleteComponet()
 		{
-			assert(_engine.expired());
-			_engine.lock()->DeleteComponent<Component>(_id);
+			_engine->GetComponentSystem().Delete<Component>(_id);
 		}
 
 		template <class Component>
 		bool HasComponent() const
 		{
-			assert(_engine.expired());
-			return _engine.lock()->HasComponent<Component>();
+			return _engine->GetComponentSystem().Has<Component>(_id);
 		}
 
 	public:
@@ -43,7 +40,7 @@ namespace Core
 
 	private:
 		ObjectId				_id;
-		std::weak_ptr<Engine>	_engine;
 		std::string				_name = "";
+		Engine*					_engine;
 	};
 }

@@ -11,7 +11,7 @@ Engine::Engine(Device::DirectX& dx)
 	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
 	_tex2dManager(), _objectManager(), _dx(dx)
 {
-
+	_objectManager.SetEngine(this);
 }
 
 Engine::Engine(Device::DirectX& dx, IScene* scene)
@@ -19,7 +19,7 @@ Engine::Engine(Device::DirectX& dx, IScene* scene)
 	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
 	_tex2dManager(), _objectManager(), _dx(dx)
 {
-
+	_objectManager.SetEngine(this);
 } 
 
 void Engine::RunScene()

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Common.h"
-#include "Object.h"
 #include "VectorIndexer.hpp"
 #include "ObjectIdManager.h"
 #include "Singleton.h"
 
 namespace Core
 {
+	class Object;
 	class Engine;
 	class ObjectManager final : private Singleton<ObjectManager>
 	{
@@ -24,7 +24,7 @@ namespace Core
 
 	public:
 		GET_ACCESSOR(ObjectIdManager, ObjectIdManager&, _objIdMgr);
-		SET_ACCESSOR(Engine, const std::weak_ptr<Engine>&, _engine);
+		SET_ACCESSOR(Engine, Engine*, _engine);
 		GET_CONST_ACCESSOR(Objects, const std::vector<Object>&, _objects.GetVector());
 
 	private:
@@ -33,6 +33,6 @@ namespace Core
 	private:
 		VectorHashMap<std::string, Object>	_objects;
 		ObjectIdManager						_objIdMgr;
-		std::weak_ptr<Engine>				_engine;
+		Engine*								_engine;
 	};
 }

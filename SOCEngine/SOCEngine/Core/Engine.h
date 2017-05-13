@@ -38,24 +38,9 @@ namespace Core
 		void Render();
 		void Destroy();
 
-		// Component
-		template <class Component>
-		Component& AddComponent(ObjectId id)
-		{
-			return _componentSystem.Add<Component>(id);
-		}
-		template <class Component>
-		void DeleteComponent(Object Id)
-		{
-		}
-		template <class Component>
-		bool HasComponent(Object id) const
-		{
-			return false;
-		}
-
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager&, _bufferManager);
 		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
+		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
 
 	private:
 		static NullScene							_nullScene;
