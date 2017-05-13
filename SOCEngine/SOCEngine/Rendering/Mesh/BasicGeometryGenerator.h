@@ -4,7 +4,7 @@
 #include "Vector3.h"
 
 #include "Mesh.h"
-#include "Object.h"
+#include "Object.hpp"
 #include "DefaultRenderTypes.h"
 
 namespace Core

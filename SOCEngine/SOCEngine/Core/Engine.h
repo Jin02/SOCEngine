@@ -8,7 +8,7 @@
 #include "MeshManager.hpp"
 #include "ShaderManager.h"
 #include "Texture2DManager.h"
-#include "Object.h"
+#include "Object.hpp"
 #include "ComponentSystem.hpp"
 #include <memory>
 #include <chrono>

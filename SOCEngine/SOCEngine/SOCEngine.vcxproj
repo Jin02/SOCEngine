@@ -23,7 +23,7 @@
     <ClInclude Include="Core\IndexBook.hpp" />
     <ClInclude Include="Core\IScene.h" />
     <ClInclude Include="Core\Launcher.h" />
-    <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\Object.hpp" />
     <ClInclude Include="Core\ObjectId.hpp" />
     <ClInclude Include="Core\ObjectIdManager.h" />
     <ClInclude Include="Core\ObjectManager.h" />

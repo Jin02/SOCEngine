@@ -1,5 +1,5 @@
 #include "DirectionalLight.h"
-#include "Object.h"
+#include "Object.hpp"
 #include "MeshCamera.h"
 #include <assert.h>
 

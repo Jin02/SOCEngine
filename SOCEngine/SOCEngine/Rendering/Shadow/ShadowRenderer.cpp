@@ -1,6 +1,6 @@
 #include "ShadowRenderer.h"
 #include "Utility.h"
-#include "Object.h"
+#include "Object.hpp"
 
 using namespace Structure;
 using namespace Math;

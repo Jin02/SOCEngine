@@ -1,5 +1,5 @@
 #include "MeshCamera.h"
-#include "Object.h"
+#include "Object.hpp"
 #include <algorithm>
 
 using namespace Math;

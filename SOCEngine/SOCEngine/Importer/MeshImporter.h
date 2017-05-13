@@ -3,7 +3,7 @@
 #include <string>
 
 #include "VectorIndexer.hpp"
-#include "Object.h"
+#include "Object.hpp"
 #include "G3djDataTypes.hpp"
 #include <unordered_map>
 #include <rapidjson/document.h>

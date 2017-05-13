@@ -2,7 +2,7 @@
 #include "PointLight.h"
 #include "Transform.h"
 #include "CameraForm.h"
-#include "Object.h"
+#include "Object.hpp"
 
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;

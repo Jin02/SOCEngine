@@ -634,9 +634,6 @@
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Object.h">
-      <Filter>Core\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Core\ObjectManager.h">
       <Filter>Core\Object</Filter>
     </ClInclude>
@@ -729,6 +726,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\BaseShader.hpp">
       <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Object.hpp">
+      <Filter>Core\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

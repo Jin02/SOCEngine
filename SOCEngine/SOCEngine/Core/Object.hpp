@@ -16,6 +16,33 @@ namespace Core
 
 		}
 
+		/* Child */
+		void AddChild(Object& child)
+		{
+		}
+
+		void HasChild(Object& child)
+		{
+
+		}
+
+		void DeleteChild(Object& child)
+		{
+
+		}
+
+		void FindChild(Object& child)
+		{
+
+		}
+
+		void GetChild(uint index)
+		{
+
+		}
+
+
+		/* Component */
 		template <class Component>
 		Component& AddComponent()
 		{

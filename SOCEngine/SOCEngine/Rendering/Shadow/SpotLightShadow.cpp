@@ -1,7 +1,7 @@
 #include "SpotLightShadow.h"
 #include "SpotLight.h"
 #include "Transform.h"
-#include "Object.h"
+#include "Object.hpp"
 #include "CameraForm.h"
 
 using namespace Rendering::Shadow;
