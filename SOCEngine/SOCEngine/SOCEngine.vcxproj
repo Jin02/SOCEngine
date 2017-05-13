@@ -122,12 +122,15 @@
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
     <ClInclude Include="Rendering\Shader\ComputeShader.h" />
-    <ClInclude Include="Rendering\Shader\ComputeShaderManager.h" />
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h" />
     <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h" />
-    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp" />
+    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
+    <ClInclude Include="Rendering\Shader\ShaderCompiler.h" />
     <ClInclude Include="Rendering\Shader\ShaderPool.hpp" />
     <ClInclude Include="Rendering\Shader\PixelShader.h" />
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
@@ -135,7 +138,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\Shaders.h" />
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
-    <ClInclude Include="Rendering\Shader\VertexShaderManager.h" />
     <ClInclude Include="Rendering\Shading\BindIndexInfo.h" />
     <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -273,15 +275,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
-    <ClCompile Include="Rendering\Shader\ComputeShaderManager.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
+    <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp" />
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
-    <ClCompile Include="Rendering\Shader\VertexShaderManager.cpp" />
     <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
