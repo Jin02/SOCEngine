@@ -14,7 +14,7 @@ namespace Rendering
 		class DefaultShaderLoader
 		{
 		public:
-			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr);
+			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler);
 			void Destroy();
 			bool Has(uint bufferFlag, DefaultRenderType renderType) const;
 			bool Has(const std::string& fileName) const;
@@ -23,7 +23,7 @@ namespace Rendering
 			std::string MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const;
 
 		private:
-			const Shader::ShaderGroup& LoadDefaultSahder(Device::DirectX& dx, ShaderManager& shaderMgr,
+			const Shader::ShaderGroup& LoadDefaultSahder(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler,
 				DefaultRenderType renderType, uint defaultVertexInputTypeFlag,
 				const std::string* customShaderFileName, const std::vector<Shader::ShaderMacro>* macros);
 			void MakeDefaultShaderMainFuncNames(std::string& outVSMain, std::string& outGSMain, std::string& outPSMain, DefaultRenderType renderType);

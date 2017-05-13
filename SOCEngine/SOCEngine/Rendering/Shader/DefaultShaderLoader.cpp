@@ -6,7 +6,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
 const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
-	Device::DirectX& dx, ShaderManager& shaderMgr,
+	Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler,
 	DefaultRenderType renderType, uint defaultVertexInputTypeFlag,
 	const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
 {
@@ -42,7 +42,7 @@ const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
 		}
 	}
 
-	auto LoadShader = [&dx, &shaderMgr](
+	auto LoadShader = [&dx = dx, &shaderMgr = shaderMgr, &compiler = compiler](
 		const std::string& fileName,
 		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
 		const std::vector<ShaderMacro>* macros) -> ShaderGroup
@@ -69,7 +69,7 @@ const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
 	return _shaders.find(fileName)->second;
 }
 
-void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
+void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler)
 {
 	std::vector<ShaderMacro> macros;
 	{
@@ -81,11 +81,11 @@ void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderM
 	{
 		DefaultRenderType type = (DefaultRenderType)i;
 
-		LoadDefaultSahder(dx, shaderMgr, type,
+		LoadDefaultSahder(dx, shaderMgr, compiler, type,
 			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
 			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL), nullptr, &macros);
 
-		LoadDefaultSahder(dx, shaderMgr, type,
+		LoadDefaultSahder(dx, shaderMgr, compiler, type,
 			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
 			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL) | 
 			static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT), nullptr, &macros);

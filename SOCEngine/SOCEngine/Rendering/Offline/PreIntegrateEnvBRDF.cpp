@@ -2,6 +2,7 @@
 #include "ShaderManager.h"
 #include "ComputeShader.h"
 #include "DirectX.h"
+#include "EngineShaderFactory.hpp"
 
 using namespace Math;
 using namespace Device;
@@ -19,7 +20,8 @@ PreIntegrateEnvBRDF::PreIntegrateEnvBRDF() : _texture()
 
 const Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
-	std::shared_ptr<ComputeShader> shader = shaderMgr.GetComputeShaderManager().LoadShader(dx,"PreIntegrateEnvBRDF", "CS", nullptr, nullptr);
+	Factory::EngineShaderFactory factory(&shaderMgr);
+	std::shared_ptr<ComputeShader> shader = factory.LoadComputeShader(dx, "PreIntegrateEnvBRDF", "CS", nullptr, nullptr);
 
 	const Size<uint> size(256, 256);
 
@@ -37,7 +39,7 @@ const Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX&
 	shader->Dispatch(dx);
 
 	std::string key = shader->GetKey();
-	shaderMgr.GetComputeShaderManager().DeleteShader(key);
+	shaderMgr.GetPool<ComputeShader>().Delete(key);
 
 	return _texture;
 }

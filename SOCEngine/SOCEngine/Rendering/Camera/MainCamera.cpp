@@ -25,26 +25,12 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 
 	// Load Shader
 	{
-		Factory::EngineShaderFactory pathFind(nullptr);
-
-		std::string fullPath;
-		pathFind.FetchShaderFullPath(fullPath, "TBDR");
-
-		std::string folderPath, fileName, format;
-		String::ParseDirectory(fullPath, folderPath, fileName, format);
-
-		DXResource<ID3DBlob> blob = shaderMgr.CreateBlob(
-			folderPath, fileName + "." + format,
-			"cs", "TileBasedDeferredShadingCS",
-			false, &macros);
-		Shader::ComputeShader shader(blob, "@TBDR");
-		shader.Initialize(dx);
+		Factory::EngineShaderFactory factory(&shaderMgr);
+		_tbrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
 
 		Size<uint> size = ComputeThreadGroupSize(dx.GetBackBufferSize());
 		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
-		shader.SetThreadGroupInfo(threadGroup);
-
-		_tbrShader = shader;
+		_tbrShader.SetThreadGroupInfo(threadGroup);
 	}
 
 	Size<float> fltSize = Size<float>(	static_cast<float>(dx.GetBackBufferSize().w),
