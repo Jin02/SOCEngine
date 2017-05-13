@@ -27,7 +27,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Key, const std::string&, _key);
 
 		private:
-			std::string			_key;
+			std::string					_key;
 			DXResource<ID3DBlob>		_blob;
 		};
 	}
