@@ -12,6 +12,7 @@ namespace Rendering
 		public:
 			struct Desc
 			{
+				Desc() = default;
 				Desc(const std::string& _key, uint _stride, uint _vertexCount)
 					: key(_key), stride(_stride), vertexCount(_vertexCount) { }
 
@@ -26,14 +27,14 @@ namespace Rendering
 			void IASetBuffer(Device::DirectX& dx);
 			void UpdateVertexData(Device::DirectX& dx, const void* data, uint size);
 
-			GET_CONST_ACCESSOR(VertexCount, uint, _param.vertexCount);
-			GET_CONST_ACCESSOR(Key, const std::string&, _param.key);
+			GET_CONST_ACCESSOR(VertexCount, uint, _desc.vertexCount);
+			GET_CONST_ACCESSOR(Key, const std::string&, _desc.key);
 
 			GET_CONST_ACCESSOR(Semantics, const std::vector<Shader::VertexShader::SemanticInfo>&, _semantics);
 
 		private:
 			BaseBuffer	_baseBuffer;
-			Param		_desc;
+			Desc		_desc;
 
 			std::vector<Shader::VertexShader::SemanticInfo>	_semantics; //attributes
 		};

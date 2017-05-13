@@ -13,8 +13,8 @@ namespace Rendering
 			BaseBuffer() = default;
 			BaseBuffer(const DXResource<ID3D11Buffer>& buffer) : _buffer(buffer) {}
 
-			SET_ACCESSOR(Buffer, const DXResource<ID3D11Buffer>&, _base);
-			GET_CONST_ACCESSOR(Buffer, DXResource<ID3D11Buffer>, _base);
+			SET_ACCESSOR(Buffer, const DXResource<ID3D11Buffer>&, _buffer);
+			GET_CONST_ACCESSOR(Buffer, DXResource<ID3D11Buffer>, _buffer);
 
 			void UpdateSubResource(Device::DirectX& dx, const void* data);
 			void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint size);

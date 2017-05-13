@@ -1,7 +1,7 @@
 #include "DirectX.h"
 #include <assert.h>
 #include "Launcher.h"
-#include "BaseShader.h"
+#include "BaseShader.hpp"
 #include "BaseBuffer.h"
 
 #pragma comment(lib, "d3d11.lib")
@@ -96,14 +96,14 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	_msaaDesc		= sd.SampleDesc;
 }
 
-void DirectX::InitViewport(const Rect<float>& rect)
+void DirectX::InitViewport(const Rect<uint>& rect)
 {
 	D3D11_VIEWPORT vp;
 
-	vp.TopLeftX		= rect.x;
-	vp.TopLeftY		= rect.y;
-	vp.Width		= rect.size.w;
-	vp.Height		= rect.size.h;
+	vp.TopLeftX		= static_cast<float>(rect.x);
+	vp.TopLeftY		= static_cast<float>(rect.y);
+	vp.Width		= static_cast<float>(rect.size.w);
+	vp.Height		= static_cast<float>(rect.size.h);
 	vp.MinDepth		= 0.0f;
 	vp.MaxDepth		= 1.0f;
 

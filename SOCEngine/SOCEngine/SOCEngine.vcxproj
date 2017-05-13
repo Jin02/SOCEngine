@@ -48,7 +48,7 @@
     <ClInclude Include="Intersection\Cone.h" />
     <ClInclude Include="Intersection\Frustum.h" />
     <ClInclude Include="Intersection\Intersection.h" />
-    <ClInclude Include="Intersection\Ray.h" />
+    <ClInclude Include="Intersection\Ray.hpp" />
     <ClInclude Include="Intersection\Sphere.h" />
     <ClInclude Include="Math\EngineMath.h" />
     <ClInclude Include="Math\Matrix.h" />
@@ -109,7 +109,7 @@
     <ClInclude Include="Rendering\Light\SpotLightingBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\Material.h" />
+    <ClInclude Include="Rendering\Material\Material.hpp" />
     <ClInclude Include="Rendering\Material\MaterialManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -130,8 +130,6 @@
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\ShaderPool.hpp" />
     <ClInclude Include="Rendering\Shader\PixelShader.h" />
-    <ClInclude Include="Rendering\Shader\BaseShader.h" />
-    <ClInclude Include="Rendering\Shader\ShaderMacro.h" />
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -171,7 +169,6 @@
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\Texture3D.h" />
     <ClInclude Include="Rendering\Texture\TextureCube.h" />
-    <ClInclude Include="Rendering\Texture\TextureGPUView.h" />
     <ClInclude Include="Rendering\Texture\Texture2DManager.h" />
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
@@ -228,7 +225,6 @@
     <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
     <ClCompile Include="Intersection\Frustum.cpp" />
-    <ClCompile Include="Intersection\Ray.cpp" />
     <ClCompile Include="Intersection\Sphere.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\Plane.cpp" />
@@ -268,7 +264,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Light\SpotLightingBuffer.cpp" />
-    <ClCompile Include="Rendering\Material\Material.cpp" />
     <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp" />
     <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -282,8 +277,6 @@
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
-    <ClCompile Include="Rendering\Shader\BaseShader.cpp" />
-    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp" />
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -318,7 +311,6 @@
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
     <ClCompile Include="Rendering\Texture\TextureCube.cpp" />
-    <ClCompile Include="Rendering\Texture\TextureGPUView.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2DManager.cpp" />
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />

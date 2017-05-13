@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "BaseShader.hpp"
 #include "ShaderResourceBuffer.h"
 #include "Texture2D.h"
 #include "BindIndexInfo.h"
@@ -15,7 +15,7 @@ namespace Rendering
 			struct ThreadGroup
 			{
 				ThreadGroup(uint _x, uint _y, uint _z) : x(_x), y(_y), z(_z){}
-				bool IsValid() const { return x & y & z; }
+				bool IsValid() const { return (x != 0) & (y != 0) & (z != 0); }
 
 				uint x, y, z;
 			};

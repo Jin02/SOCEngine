@@ -14,20 +14,17 @@ void CommonLightingBuffer::Initialize(Device::DirectX& dx, uint count)
 
 void CommonLightingBuffer::Destroy()
 {
-	_colorBuffer.Destroy();
-	_optionalParamIndexBuffer.Destroy();
 }
 
-void CommonLightingBuffer::UpdateBuffer(const Light::BaseLight& light, uint shadowIndex, uint lightShaftIndex, bool existElem)
+void CommonLightingBuffer::UpdateBuffer(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex, bool existElem)
 {	
 	auto key = light.GetObjectId();
 
 	// Compute Optional Param Index
-	ushort	shadowIndex		= shadowIndex;
-	uchar	lightShaftIndex		= lightShaftIndex & 0x7f;
-	uchar	lightFlag		= light.GetFlag();
+	uchar	lightShaftIndex		= shaftIndex & 0x7f;
+	uchar	lightFlag			= light.GetFlag();
 	uint	optionalParamIndex	= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;	
-	uint	uintColor		= light.Get32BitMainColor();
+	uint	uintColor			= light.Get32BitMainColor();
 	
 	if(existElem)
 	{

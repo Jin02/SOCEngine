@@ -11,6 +11,7 @@ void RawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag 
 	bool useAll = flag == Flag::ALL_VIEW;
 	bool useSRV = (flag == Flag::ONLY_SRV) | useAll;
 	bool useUAV = (flag == Flag::ONLY_UAV) | useAll;
+	assert(useSRV | useUAV);
 
 	uint bindFlag = (useSRV ? D3D11_BIND_SHADER_RESOURCE : 0) | (useUAV ? D3D11_BIND_UNORDERED_ACCESS : 0);
 
@@ -23,14 +24,11 @@ void RawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag 
 	desc.StructureByteStride	= stride;
 	desc.MiscFlags				= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
 
-	_srBuffer.SetBaseBuffer(dx.CreateBuffer(desc, nullptr));
+	_buffer.SetBuffer(dx.CreateBuffer(desc, nullptr));
 
 	if(useSRV)
-	{
-		ShaderResourceView srv;
-		srv.InitializeUsingBuffer(dx, GetBaseBuffer(), elemNum, DXGI_FORMAT_R32_UINT, true);
-		
-		_srBuffer.SetShaderResourceView(srv);
-	}
-	if(useUAV)	_uav.Initialize(dx, DXGI_FORMAT_R32_TYPELESS, elemNum, GetBaseBuffer().GetBuffer(), D3D11_UAV_DIMENSION_BUFFER, 0, 0, D3D11_BUFFER_UAV_FLAG_RAW);
+		_srv.InitializeUsingBuffer(dx, _buffer, elemNum, DXGI_FORMAT_R32_UINT, true);
+
+	if(useUAV)
+		_uav.Initialize(dx, DXGI_FORMAT_R32_TYPELESS, elemNum, _buffer.GetBuffer(), D3D11_UAV_DIMENSION_BUFFER, 0, 0, D3D11_BUFFER_UAV_FLAG_RAW);
 }

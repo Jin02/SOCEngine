@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseShader.h"
+#include "BaseShader.hpp"
 #include "ConstBuffer.h"
 #include "BindIndexInfo.h"
 

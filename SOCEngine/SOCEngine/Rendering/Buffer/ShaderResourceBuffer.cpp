@@ -5,6 +5,11 @@ using namespace Device;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
 
+ShaderResourceBuffer::ShaderResourceBuffer(const BaseBuffer& buf, const ShaderResourceView& srv)
+	: _baseBuffer(buf), _srv(srv)
+{
+}
+
 void ShaderResourceBuffer::Initialize(
 	Device::DirectX& dx,
 	uint stride, uint num, DXGI_FORMAT format,

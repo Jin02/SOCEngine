@@ -7,6 +7,6 @@ namespace Core
 	class Launcher
 	{
 	public:
-		static void Run(const Device::WinApp::Param& winParam, const Rect<uint>& viewport, bool useMSAA);
+		static void Run(const Device::WinApp::Desc& desc, const Rect<uint>& viewport, bool useMSAA);
 	};
 }

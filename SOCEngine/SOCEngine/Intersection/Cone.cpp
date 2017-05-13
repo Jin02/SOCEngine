@@ -18,7 +18,7 @@ bool Cone::Intersects(const Sphere& sphere, const Cone& cone)
 	float invSin = 1.0f / sinAngle;
 	float cosSqr = cosAngle * cosAngle;
 
-	Vector3 CmV = sphere.center - cone.vertex;
+	Vector3 CmV = sphere.center - cone.axis;
 
 	if (CmV.Length() < cone.range)
 		return false;

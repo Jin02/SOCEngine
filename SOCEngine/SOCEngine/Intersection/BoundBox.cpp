@@ -1,6 +1,6 @@
 #include "BoundBox.h"
 #include "Common.h"
-#include "Ray.h"
+#include "Ray.hpp"
 #include <math.h>
 #include <algorithm>
 

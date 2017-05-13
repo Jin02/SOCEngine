@@ -16,14 +16,14 @@ void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 	{
 		std::string vbKey = args.fileName + ":" + args.key;
 
-		VertexBuffer::Param param;
+		VertexBuffer::Desc desc;
 		{
-			param.key = vbKey;
-			param.stride = args.vertices.byteWidth;
-			param.vertexCount = args.vertices.count;
+			desc.key = vbKey;
+			desc.stride = args.vertices.byteWidth;
+			desc.vertexCount = args.vertices.count;
 		}
 
-		_vertexBuffer.Initialize(dx, param, args.vertices.data, false, args.semanticInfos);
+		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);
 		_indexBuffer.Initialize(dx, args.indices, vbKey, false);
 	};
 

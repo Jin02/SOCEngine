@@ -16,24 +16,24 @@ void SpotLightingBuffer::UpdateBuffer(std::vector<SpotLight>& lights,
 	const std::function<uchar(const BaseLight&)>& getLightShaftIndex,
 	const Core::TransformPool & pool)
 {
-	std::function<void(SpotLight&, const Core::Transform&, bool)> func =
-		[this](SpotLight& light, const Core::Transform& transform, bool existElem) -> void
-	{
-		if (light.GetDirty() == false)
-			return;
+	//std::function<void(SpotLight&, const Core::Transform&, bool)> func =
+	//	[this](SpotLight& light, const Core::Transform& transform, bool existElem) -> void
+	//{
+	//	if (light.GetDirty() == false)
+	//		return;
 
-		SpotLight::Param param;
-		light.MakeParam(param, transform);
+	//	SpotLight::Param param;
+	//	light.MakeParam(param, transform);
 
-		auto key = light.GetObjectId();
+	//	auto key = light.GetObjectId();
 
-		if (existElem)	(*_paramSRBuffer.Find(key)) = param;
-		else			_paramSRBuffer.Add(key, param);
+	//	if (existElem)	(*_paramSRBuffer.Find(key)) = param;
+	//	else			_paramSRBuffer.Add(key, param);
 
-		light.SetDirty(false);
-	};
+	//	light.SetDirty(false);
+	//};
 
-	_base.UpdateBuffer(lights, getShadowIndex, getLightShaftIndex, pool, &func);
+	//_base.UpdateBuffer(lights, getShadowIndex, getLightShaftIndex, pool, &func);
 }
 
 void SpotLightingBuffer::UpdateSRBuffer(Device::DirectX & dx)

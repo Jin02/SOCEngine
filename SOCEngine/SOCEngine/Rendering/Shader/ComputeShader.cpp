@@ -24,8 +24,8 @@ void ComputeShader::Dispatch(Device::DirectX& dx)
 
 void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
 {	
-	ID3D11ShaderResourceView* srv = srv.GetView().GetRaw();
-	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &srv);
+	ID3D11ShaderResourceView* raw = srv.GetView().GetRaw();
+	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
 void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)

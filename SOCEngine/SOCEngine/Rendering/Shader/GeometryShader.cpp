@@ -26,8 +26,8 @@ void GeometryShader::UnBindShaderToContext(Device::DirectX& dx)
 
 void GeometryShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& srv)
 {
-	ID3D11ShaderResourceView* srv = srv.GetView().GetRaw();
-	dx.GetContext()->GSSetShaderResources(static_cast<uint>(bind), 1, &srv);
+	ID3D11ShaderResourceView* raw = srv.GetView().GetRaw();
+	dx.GetContext()->GSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
 void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)

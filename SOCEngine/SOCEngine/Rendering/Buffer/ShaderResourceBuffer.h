@@ -11,6 +11,7 @@ namespace Rendering
 		{
 		public:
 			ShaderResourceBuffer() = default;
+			ShaderResourceBuffer(const BaseBuffer&, const View::ShaderResourceView&);
 
 			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format, const void* sysMem, bool useMapWriteNoOverWrite, uint optionalBindFlag, D3D11_USAGE usage);
 
@@ -26,12 +27,8 @@ namespace Rendering
 			GET_CONST_ACCESSOR(ShaderResourceView, const View::ShaderResourceView&, _srv);
 			GET_CONST_ACCESSOR(BaseBuffer, const BaseBuffer&, _baseBuffer);
 
-		protected:
-			SET_ACCESSOR(BaseBuffer, const BaseBuffer&, _baseBuffer);
-			SET_ACCESSOR(ShaderResourceView, const View::ShaderResourceView&, _srv);
-
 		private:
-			BaseBuffer			_baseBuffer;
+			BaseBuffer					_baseBuffer;
 			View::ShaderResourceView	_srv;
 		};
 	}

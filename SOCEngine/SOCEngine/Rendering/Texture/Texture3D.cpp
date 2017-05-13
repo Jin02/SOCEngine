@@ -12,8 +12,8 @@ void Texture3D::Initialize(	Device::DirectX& dx,
 	_size = Vector3(static_cast<float>(width), static_cast<float>(height), static_cast<float>(depth));
 
 	uint bindFlag = ((srvFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_SHADER_RESOURCE	: 0) |
-					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPS을 사용하려면
-																		// D3D11_BIND_RENDER_TARGET 설정된 상태여야 한다.
+					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPS???�용?�려�?
+																		// D3D11_BIND_RENDER_TARGET ?�정???�태?�야 ?�다.
 					((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS	: 0) | optionBindFlag;
 
 	D3D11_TEXTURE3D_DESC textureDesc;

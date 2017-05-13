@@ -5,9 +5,9 @@
 using namespace Core;
 using namespace Device;
 
-void Launcher::Run(const WinApp::Param& winParam, const Rect<uint>& viewport, bool useMSAA)
+void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool useMSAA)
 {
-	WinApp win(winParam);
+	WinApp win(desc);
 	DirectX dx;
 	Engine engine(dx);
 

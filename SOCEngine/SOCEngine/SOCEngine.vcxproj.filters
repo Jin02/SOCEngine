@@ -73,9 +73,6 @@
     <Filter Include="Intersection\Frustum">
       <UniqueIdentifier>{45e894fb-8610-494a-b821-1e6ee5aa905a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Intersection\Ray">
-      <UniqueIdentifier>{4dc951d3-d1fa-4984-be97-d9485e7c34c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Intersection\Sphere">
       <UniqueIdentifier>{859866c2-3018-420d-a9db-71b6c49f7317}</UniqueIdentifier>
     </Filter>
@@ -202,9 +199,6 @@
     <Filter Include="Rendering\Shader\Vertex">
       <UniqueIdentifier>{dbdac732-ca91-4986-bd52-9d7b551e73a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Shader\Macro">
-      <UniqueIdentifier>{7c2ec17c-465b-493a-bd85-b45dbb611d38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shader\Manager">
       <UniqueIdentifier>{cf30e36d-c504-4089-9ab4-e2154a85e255}</UniqueIdentifier>
     </Filter>
@@ -213,9 +207,6 @@
     </Filter>
     <Filter Include="Rendering\Offline">
       <UniqueIdentifier>{875fe0ed-c869-4f8e-90f4-741155f089fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Shader\Base">
-      <UniqueIdentifier>{14ea7057-c16f-4901-be4c-e7347265698e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Shader\Manager\Vertex">
       <UniqueIdentifier>{1994eb38-9f21-4571-bc68-2dd0946c6ccf}</UniqueIdentifier>
@@ -244,17 +235,11 @@
     <Filter Include="Rendering\Texture\Texture3D">
       <UniqueIdentifier>{d4d82c95-613d-410a-9359-614b853710f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\Base">
-      <UniqueIdentifier>{01ff5c15-9ba5-4ebc-873a-c710f96ea411}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shader\Manager\Compute">
       <UniqueIdentifier>{ac7bd088-2616-47ab-9a4a-c02c0967d8cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Material">
       <UniqueIdentifier>{8c4b4c7f-e541-4de9-8fa6-4c3c7eb81487}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Material\Material">
-      <UniqueIdentifier>{3148a155-eb20-49a9-8751-89d87d0b6134}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Material\PhysicallyBased">
       <UniqueIdentifier>{e334fb2b-5b58-44af-a22e-36dc7de3735f}</UniqueIdentifier>
@@ -342,6 +327,9 @@
     </Filter>
     <Filter Include="Rendering\Sky\Geometry">
       <UniqueIdentifier>{b0ed3366-453f-4d71-ae10-1b9189218b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Intersection\Ray">
+      <UniqueIdentifier>{2e767eb7-64de-43cf-8660-7fd25f51ff9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -432,9 +420,6 @@
     </ClInclude>
     <ClInclude Include="Intersection\Frustum.h">
       <Filter>Intersection\Frustum</Filter>
-    </ClInclude>
-    <ClInclude Include="Intersection\Ray.h">
-      <Filter>Intersection\Ray</Filter>
     </ClInclude>
     <ClInclude Include="Intersection\Sphere.h">
       <Filter>Intersection\Sphere</Filter>
@@ -577,9 +562,6 @@
     <ClInclude Include="Rendering\Shader\PixelShader.h">
       <Filter>Rendering\Shader\Pixel</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\ShaderMacro.h">
-      <Filter>Rendering\Shader\Macro</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
       <Filter>Rendering\Shader\Manager</Filter>
     </ClInclude>
@@ -610,9 +592,6 @@
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <Filter>Rendering\Offline</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\BaseShader.h">
-      <Filter>Rendering\Shader\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\VertexShaderManager.h">
       <Filter>Rendering\Shader\Manager\Vertex</Filter>
     </ClInclude>
@@ -630,9 +609,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\ComputeShaderManager.h">
       <Filter>Rendering\Shader\Manager\Compute</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Material\Material.h">
-      <Filter>Rendering\Material\Material</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
@@ -751,8 +727,11 @@
     <ClInclude Include="Rendering\Light\BaseLight.h">
       <Filter>Rendering\Light\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\TextureGPUView.h">
-      <Filter>Rendering\Texture\Base</Filter>
+    <ClInclude Include="Intersection\Ray.hpp">
+      <Filter>Intersection\Ray</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\Material.hpp">
+      <Filter>Rendering\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -807,9 +786,6 @@
     <ClCompile Include="Intersection\Frustum.cpp">
       <Filter>Intersection\Frustum</Filter>
     </ClCompile>
-    <ClCompile Include="Intersection\Ray.cpp">
-      <Filter>Intersection\Ray</Filter>
-    </ClCompile>
     <ClCompile Include="Intersection\Sphere.cpp">
       <Filter>Intersection\Sphere</Filter>
     </ClCompile>
@@ -852,9 +828,6 @@
     <ClCompile Include="Rendering\Shader\PixelShader.cpp">
       <Filter>Rendering\Shader\Pixel</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shader\ShaderMacro.cpp">
-      <Filter>Rendering\Shader\Macro</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderManager.cpp">
       <Filter>Rendering\Shader\Manager</Filter>
     </ClCompile>
@@ -882,9 +855,6 @@
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <Filter>Rendering\Offline</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shader\BaseShader.cpp">
-      <Filter>Rendering\Shader\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shader\VertexShaderManager.cpp">
       <Filter>Rendering\Shader\Manager\Vertex</Filter>
     </ClCompile>
@@ -893,9 +863,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ComputeShaderManager.cpp">
       <Filter>Rendering\Shader\Manager\Compute</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Material\Material.cpp">
-      <Filter>Rendering\Material\Material</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
@@ -974,9 +941,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Light\BaseLight.cpp">
       <Filter>Rendering\Light\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture\TextureGPUView.cpp">
-      <Filter>Rendering\Texture\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

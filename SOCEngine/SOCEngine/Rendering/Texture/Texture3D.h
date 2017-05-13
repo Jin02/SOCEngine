@@ -1,6 +1,7 @@
 #pragma once
 
-#include "TextureGPUView.h"
+#include "ShaderResourceView.h"
+#include "UnorderedAccessView.h"
 
 namespace Rendering
 {

@@ -19,7 +19,7 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 
 	if (bufferMgr.GetPool<VertexBuffer>().Has(args.fileName, args.key) == false)
 	{
-		VertexBuffer::Param param;
+		VertexBuffer::Desc param;
 		{
 			param.stride		= args.vertices.byteWidth;
 			param.vertexCount	= args.vertices.count;

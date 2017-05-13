@@ -3,7 +3,9 @@
 #include "DirectX.h"
 #include "Color.h"
 #include "Rect.h"
-#include "TextureGPUView.h"
+
+#include "ShaderResourceView.h"
+#include "UnorderedAccessView.h"
 
 namespace Rendering
 {

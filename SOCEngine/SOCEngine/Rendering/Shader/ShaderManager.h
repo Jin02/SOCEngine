@@ -6,11 +6,11 @@
 #include "ShaderPool.hpp"
 #include "PixelShader.h"
 #include "GeometryShader.h"
-#include "ShaderMacro.h"
+#include "ShaderMacro.hpp"
 #include "VectorIndexer.hpp"
 #include "ComputeShaderManager.h"
 #include "DirectX.h"
-#include "ShaderMacro.h"
+#include "ShaderMacro.hpp"
 #include <tuple>
 
 namespace Rendering

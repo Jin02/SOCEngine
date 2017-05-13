@@ -2,7 +2,7 @@
 
 #include <string>
 #include <fstream>
-#include "ShaderMacro.h"
+#include "ShaderMacro.hpp"
 #include "DirectX.h"
 #include <functional>
 #include <unordered_map>

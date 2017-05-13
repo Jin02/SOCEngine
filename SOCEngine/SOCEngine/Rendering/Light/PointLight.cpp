@@ -15,7 +15,7 @@ bool PointLight::Intersect(const Sphere &sphere, const Transform& transform) con
 	return Sphere::Intersects(sphere, Sphere(wp, _base.GetRadius()));
 }
 
-TransformType PointLight::MakeTransform(const Transform& transform) const
+PointLight::TransformType PointLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 wp = transform.GetWorldPosition();

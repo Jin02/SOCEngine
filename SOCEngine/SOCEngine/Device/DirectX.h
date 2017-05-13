@@ -9,7 +9,7 @@
 #include "WinApp.h"
 
 #include "Color.h"
-#include "ShaderMacro.h"
+#include "ShaderMacro.hpp"
 
 #include "Matrix.h"
 #include "Rect.h"
@@ -106,7 +106,7 @@ namespace Device
 	private:
 		friend class Core::Launcher;
 		void Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA);
-		void InitViewport(const Rect<float>& rect);
+		void InitViewport(const Rect<uint>& rect);
 		void CreateRenderTargetView();
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();

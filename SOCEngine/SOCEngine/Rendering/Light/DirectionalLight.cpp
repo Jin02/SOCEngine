@@ -62,7 +62,7 @@ void DirectionalLight::ComputeViewProjMatrix(const Transform& transform, const I
 }
 */
 
-TransformType DirectionalLight::MakeTransform(const Transform& transform) const
+DirectionalLight::TransformType DirectionalLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 
