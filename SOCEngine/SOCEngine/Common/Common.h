@@ -22,6 +22,9 @@
 #define DEG_TO_RAD(a) (MATH_PI / 180.0f * a)
 #define ASSERT_SUCCEEDED(x) assert(SUCCEEDED(x))
 
+#define IN
+#define OUT
+
 typedef unsigned int		uint;
 typedef unsigned short int	ushort;
 typedef unsigned char		uchar;
