@@ -9,7 +9,7 @@ namespace Core
 	public:
 		using LiteralType = uint;
 //		LiteralType operator()() { return _id; }
-		operator LiteralType() { return _id; }
+		operator LiteralType() const { return _id; }
 		bool operator==(const ObjectId& rhs) const
 		{
 			return _id == rhs._id;
@@ -21,9 +21,11 @@ namespace Core
 
 		static constexpr LiteralType Undefined() { return -1; }
 
+		ObjectId() : _id(Undefined()) {}
+
 	private:
 		friend class ObjectIdManager;
-		explicit ObjectId(LiteralType id = -1) : _id(id) {}
+		explicit ObjectId(LiteralType id) : _id(id) {}
 
 		LiteralType _id;
 	};
