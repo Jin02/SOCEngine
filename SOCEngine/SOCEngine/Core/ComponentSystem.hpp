@@ -25,19 +25,19 @@ namespace Core
 			return components.Get( components.GetSize() - 1);
 		}
 		template <class Component>
-		void Delete(Object id)
+		void Delete(ObjectId id)
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
 			components.Delete(id);
 		}
 		template <class Component>
-		bool Has(Object id) const
+		bool Has(ObjectId id) const
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
 			return components.GetIndexer().Has(id);
 		}
 		template <class Component>
-		auto Find(Object id)
+		auto Find(ObjectId id)
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
 			return components.Find(id);
