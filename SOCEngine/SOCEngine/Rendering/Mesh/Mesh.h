@@ -5,7 +5,9 @@
 #include "VertexShader.h"
 #include "BufferManager.hpp"
 #include "ObjectId.hpp"
+#include "Transform.h"
 #include "TransformCB.h"
+#include "BoundBox.h"
 #include <string>
 
 namespace Rendering
@@ -15,7 +17,7 @@ namespace Rendering
 		class Mesh final
 		{
 		public:
-			Mesh(Core::ObjectId id) : _id(id) {}
+			Mesh(Core::ObjectId id) : _objectId(id) {}
 
 			struct CreateFuncArguments
 			{
@@ -46,11 +48,18 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(MaterialKeys, const std::vector<std::string>&, _materialKeys);
-			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _id);
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
 
 			void AddMaterialKey(const std::string& key);
 			bool HasMaterialKey(const std::string& key) const;
 			void DeleteMaterialKey(const std::string& key);
+
+			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform);
+			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
+
+			GET_SET_ACCESSOR(Radius,		float,							_radius);
+			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
+			GET_ACCESSOR(PrevWorldMat,		const Math::Matrix&,			_prevWorldMat);
 
 		private:
 			uint ComputeBufferFlag(
@@ -63,8 +72,18 @@ namespace Rendering
 			std::vector<std::string>					_materialKeys;
 
 			uint										_bufferFlag = 0;
-			Core::ObjectId								_id;
-			Buffer::ExplicitConstBuffer<TransformCB>	_tfCB;
+			Core::ObjectId								_objectId;
+			Buffer::ExplicitConstBuffer<TransformCB>	_transformCB;
+
+			float										_radius = 0.0f;
+			Intersection::BoundBox						_boundBox;
+
+			Math::Matrix								_prevWorldMat;
+			TransformCB::ChangeState					_tfChangeState;
+
+			bool										_culled = false;
+
+			friend class MeshUtility;
 		};
 	}
 }

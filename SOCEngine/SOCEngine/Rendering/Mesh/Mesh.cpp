@@ -2,13 +2,15 @@
 #include "DefaultRenderTypes.h"
 #include "DefaultShaderLoader.h"
 
+using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Geometry;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Core;
-
+using namespace Math;
+using namespace Intersection;
 
 void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const CreateFuncArguments & args)
 {
@@ -38,7 +40,7 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);
 
-	_tfCB.Initialize(dx);
+	_transformCB.Initialize(dx);
 }
 
 void Mesh::Initialize(const Buffer::VertexBuffer & vertexBuffer, const Buffer::IndexBuffer & indexBuffer)
@@ -115,5 +117,56 @@ void Mesh::DeleteMaterialKey(const std::string & key)
 			_materialKeys.erase( _materialKeys.begin() + i );
 			return;
 		}
+	}
+}
+
+void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform)
+{
+	bool dirty = transform.GetDirty();
+	if(dirty == false) return;
+
+	Vector3 extents = _boundBox.GetExtents();
+	Vector3 boxCenter = _boundBox.GetCenter();
+
+	const Matrix& worldMat = transform.GetWorldMatrix();
+	Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
+
+	Vector3 worldScale = transform.GetWorldScale();
+
+	Vector3 minPos = (worldPos - extents) * worldScale;
+	Vector3 maxPos = (worldPos + extents) * worldScale;
+
+	if (worldMin.x > minPos.x) worldMin.x = minPos.x;
+	if (worldMin.y > minPos.y) worldMin.y = minPos.y;
+	if (worldMin.z > minPos.z) worldMin.z = minPos.z;
+
+	if (worldMax.x < maxPos.x) worldMax.x = maxPos.x;
+	if (worldMax.y < maxPos.y) worldMax.y = maxPos.y;
+	if (worldMax.z < maxPos.z) worldMax.z = maxPos.z;
+}
+
+void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
+{
+	if (transform.GetDirty())
+		_tfChangeState = TransformCB::ChangeState::HasChanged;
+
+	TransformCB tfCB;
+
+	const Matrix& worldMat = transform.GetWorldMatrix();
+	bool needUpdateCB = (_tfChangeState != TransformCB::ChangeState::No);
+	if (needUpdateCB)
+	{
+		Matrix::Transpose(tfCB.world, worldMat);
+		Matrix::Transpose(tfCB.prevWorld, _prevWorldMat);
+
+		Matrix::Inverse(tfCB.worldInvTranspose, tfCB.world);
+	}
+
+	_transformCB.UpdateSubResource(dx, tfCB);
+
+	if (needUpdateCB)
+	{
+		_prevWorldMat = worldMat;
+		_tfChangeState = TransformCB::ChangeState((static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 	}
 }
