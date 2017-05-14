@@ -54,6 +54,11 @@ namespace Core
 			return _transformPool->Find(id);
 		}
 
+		inline uint GetChilcCount() const
+		{
+			return _transformPool->Find(_id)->GetChildCount();
+		}
+
 		/* Component */
 		template <class Component>
 		Component& AddComponent()
