@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="Common\Color.h" />
     <ClInclude Include="Common\Common.h" />
-    <ClInclude Include="Common\Container.h" />
     <ClInclude Include="Common\Half.h" />
     <ClInclude Include="Common\Rect.h" />
     <ClInclude Include="Common\Utility.hpp" />
@@ -120,6 +119,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp" />
+    <ClInclude Include="Rendering\Mesh\MeshUtility.h" />
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -272,6 +272,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
+    <ClCompile Include="Rendering\Mesh\MeshUtility.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

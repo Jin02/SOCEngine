@@ -333,9 +333,6 @@
     <ClInclude Include="Common\Common.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Container.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
     <ClInclude Include="Device\DirectX.h">
       <Filter>Device</Filter>
@@ -733,6 +730,9 @@
     <ClInclude Include="Core\MainSystemHeader.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshUtility.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -938,6 +938,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp">
       <Filter>Rendering\Shader\Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshUtility.cpp">
+      <Filter>Rendering\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
