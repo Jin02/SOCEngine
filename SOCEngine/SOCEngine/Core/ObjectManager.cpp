@@ -1,48 +1,35 @@
 #include "ObjectManager.h"
 #include "Object.hpp"
+#include "Engine.h"
 
 using namespace Core;
 
-void ObjectManager::ObjectDeleter(Object* obj)
+Object& ObjectManager::Add(const std::string & name)
 {
-	ObjectManager* objMgr = ObjectManager::SharedInstance();
-	objMgr->Delete(obj->GetName());
+	_objects.Add(name, Object(_objIdMgr.Acquire(), _engine.GetComponentSystem(), _engine.GetTransformPool()));
+	return _objects.Get(_objects.GetSize() - 1);
 }
 
-std::shared_ptr<Object> ObjectManager::Add(const std::string & name)
+void ObjectManager::Delete(const std::string& name)
 {
-	ObjectManager* objMgr = SharedInstance();
-	objMgr->_objects.Add(name, Object(objMgr->_objIdMgr.Acquire(), objMgr->_engine));
+	ObjectId id = _objects.Find(name)->GetId();
 
-	Object& obj = objMgr->_objects.Get(objMgr->_objects.GetSize() - 1);
-	return std::shared_ptr<Object>(&obj, ObjectDeleter);
+	_objects.Delete(name);
+	_objIdMgr.Delete(id);
 }
 
-void ObjectManager::Delete(const std::string & name)
+bool ObjectManager::Has(const std::string& name) const
 {
-	ObjectManager* objMgr = SharedInstance();
-	auto find = objMgr->_objects.Find(name);
-	if (find == nullptr)
-		return;
-
-	objMgr->_objIdMgr.Delete(find->GetId());
-	objMgr->_objects.Delete(name);
+	return _objects.GetIndexer().Has(name);
 }
 
-bool ObjectManager::Has(const std::string & name)
+auto ObjectManager::Find(const std::string& name)
 {
-	ObjectManager* objMgr = SharedInstance();
-	return objMgr->_objects.GetIndexer().Has(name);
-}
-
-auto ObjectManager::Find(const std::string & name)
-{
-	ObjectManager* objMgr = SharedInstance();
-	return objMgr->_objects.Find(name);
+	return _objects.Find(name);
 }
 
 void ObjectManager::DeleteAll()
 {
-	ObjectManager* objMgr = SharedInstance();
-	objMgr->_objects.DeleteAll();
+	_objects.DeleteAll();
+	_objIdMgr.DeleteAll();
 }
