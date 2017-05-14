@@ -14,7 +14,6 @@ namespace Core
 	public:
 		using IndexerType = Indexer<Key>;
 		using VectorType = std::vector<Object>;
-		using FindPtr = std::unique_ptr<Object, std::function<void(Object*)>>;
 
 		VectorIndexer() : _vector(), _map() {}
 
@@ -43,34 +42,17 @@ namespace Core
 			return const_cast<Object&>(static_cast<const VectorIndexer<Key, Object, Indexer>*>(this)->Get(index));
 		}
 
-		//const FindPtr Find(const Key& key) const
-		//{
-		//	uint findIndex = _map.Find(key);
-		//	bool isFound = findIndex != decltype(_map)::FailIndex();
-		//	return isFound ? FindPtr(&Get(findIndex), [](Object*) {}) : nullptr;
-		//}
-		
-		FindPtr Find(const Key& key)
+		const Object* Find(const Key& key) const
 		{
 			uint findIndex = _map.Find(key);
 			bool isFound = findIndex != decltype(_map)::FailIndex();
-			return isFound ? FindPtr(&Get(findIndex), [](Object*) {}) : nullptr;
+			return isFound ? &Get(findIndex) : nullptr;
 		}
 
-		//bool Find(Object& out, const Key& key)
-		//{
-		//	uint findIndex = _map.Find(GetGBufferParamKey());
-		//	bool isFound = findIndex != decltype(_map)::FailIndex();
-		//	if (isFound)
-		//		out = Get(findIndex);
-
-		//	return isFound;
-		//}
-
-		//bool Find(Object& out, const Key& key) const
-		//{
-		//	return static_cast<const VectorIndexer<Key, Object, Indexer>*>(this)->Find(out, key);
-		//}
+		Object* Find(const Key& key)
+		{
+			return const_cast<Object*>(static_cast<const VectorIndexer<Key, Object, Indexer>*>(this)->Find(key));
+		}
 
 		void Delete(const Key& key)
 		{
