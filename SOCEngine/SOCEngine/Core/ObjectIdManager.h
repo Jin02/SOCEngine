@@ -13,6 +13,7 @@ namespace Core
 		const ObjectId  Acquire();
 		bool            Has(ObjectId id) noexcept;
 		void            Delete(ObjectId id) noexcept;
+		void			DeleteAll();
 
 		DISALLOW_ASSIGN(ObjectIdManager);
 		DISALLOW_COPY_CONSTRUCTOR(ObjectIdManager);

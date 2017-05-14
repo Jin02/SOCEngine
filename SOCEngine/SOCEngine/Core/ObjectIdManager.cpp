@@ -37,3 +37,8 @@ void ObjectIdManager::Delete(ObjectId id) noexcept
 	if (Has(id))
 		_bitFields[id / _bitSize][id % _bitSize] = false;
 }
+
+void Core::ObjectIdManager::DeleteAll()
+{
+	_bitFields.clear();
+}
