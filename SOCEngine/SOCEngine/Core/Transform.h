@@ -51,8 +51,10 @@ namespace Core
 		using Childs = std::vector<ObjectId>;
 
 		void		AddChild(Transform& child);
-		ObjectId	GetChild(uint index)	{ return _childIds[index];	}
-		void		DeleteAllChilds()		{ _childIds.clear();		}
+		ObjectId	GetChild(uint index)		{ return _childIds[index];	}
+		ObjectId	GetChild(uint index) const	{ return _childIds[index]; }
+		void		DeleteAllChilds()			{ _childIds.clear();		}
+		uint		GetChildCount()	const		{ return _childIds.size();	}
 
 		bool		HasChild(ObjectId id) const;
 		void		DeleteChild(ObjectId id);

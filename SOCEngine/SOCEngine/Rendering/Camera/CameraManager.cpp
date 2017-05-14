@@ -10,7 +10,7 @@ std::shared_ptr<MeshCamera> CameraManager::GetMainMeshCamera()
 {
 	auto& meshCams = _cameraSystem.GetPool<MeshCamera>();
 	auto find = meshCams.Find(_mainMeshCamId);
-	return find ? std::shared_ptr<MeshCamera>(find.get(), [](MeshCamera*){}) : nullptr;
+	return find ? std::shared_ptr<MeshCamera>(find, [](MeshCamera*){}) : nullptr;
 }
 
 void CameraManager::SetMainMeshCamera(MeshCamera& cam)

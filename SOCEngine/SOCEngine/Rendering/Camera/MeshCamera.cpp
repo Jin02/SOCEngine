@@ -172,15 +172,13 @@ void MeshCamera::SortTransparentMeshRenderQueue(const Transform& transform, cons
 {
 	assert(transform.GetObjectId() == _id);
 
-	std::vector<ConstMeshRef> sortedMeshes;
-
-	auto nullDel = [](const Mesh*){};
-	const auto& meshes = meshMgr.GetPool<MeshManager::Transparency>().GetVector();
+	_transparentMeshes.clear();
+	const auto& meshes = meshMgr.GetPool<TransparencyTrait>().GetVector();
 	for (const auto& mesh : meshes)
-		sortedMeshes.emplace_back(ConstMeshRef(&mesh, nullDel));
+		_transparentMeshes.push_back(&mesh);
 
 	Vector3 camPos = transform.GetWorldPosition();
-	auto SortingByDistance = [&transformPool, camPos](ConstMeshRef& left, ConstMeshRef& right) -> bool
+	auto SortingByDistance = [&transformPool, camPos](const Mesh* left, const Mesh* right) -> bool
 	{
 		float leftDistance = D3D11_FLOAT32_MAX;
 		{
@@ -205,6 +203,5 @@ void MeshCamera::SortTransparentMeshRenderQueue(const Transform& transform, cons
 		return leftDistance < rightDistance;
 	};
 
-	std::sort(sortedMeshes.begin(), sortedMeshes.end(), SortingByDistance);
-	_transparentMeshes = std::move(sortedMeshes);
+	std::sort(_transparentMeshes.begin(), _transparentMeshes.end(), SortingByDistance);
 }

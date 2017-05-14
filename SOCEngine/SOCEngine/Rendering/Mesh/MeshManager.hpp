@@ -10,6 +10,11 @@ namespace Rendering
 {
 	namespace Manager
 	{
+		struct MeshTraits {};
+		struct OpaqueTrait : public MeshTraits {};
+		struct AlphaBlendTrait : public MeshTraits {};
+		struct TransparencyTrait : public MeshTraits {};
+
 		class MeshManager final
 		{
 		public:
@@ -23,11 +28,6 @@ namespace Rendering
 				DISALLOW_ASSIGN(MeshPool);
 			};
 			DISALLOW_ASSIGN_COPY(MeshManager);
-
-			struct MeshTraits {};
-			struct Opaque : public MeshTraits {};
-			struct AlphaBlend : public MeshTraits {};
-			struct Transparency : public MeshTraits {};
 
 			template <typename Trait>
 			MeshPool<Trait>& GetPool()
@@ -55,7 +55,7 @@ namespace Rendering
 			}
 
 		private:
-			std::tuple<MeshPool<Opaque>, MeshPool<AlphaBlend>, MeshPool<Transparency>> _tuple;
+			std::tuple<MeshPool<OpaqueTrait>, MeshPool<AlphaBlendTrait>, MeshPool<TransparencyTrait>> _tuple;
 		};
 	}
 }

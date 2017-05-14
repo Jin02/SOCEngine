@@ -57,8 +57,7 @@ namespace Rendering
 			std::shared_ptr<Param>						_param = nullptr;
 			bool										_dirty = true;
 
-			using ConstMeshRef = std::shared_ptr<const Geometry::Mesh>;
-			std::vector<ConstMeshRef>					_transparentMeshes;
+			std::vector<const Geometry::Mesh*>			_transparentMeshes;
 
 		public:
 			MeshCamera(Core::ObjectId);
