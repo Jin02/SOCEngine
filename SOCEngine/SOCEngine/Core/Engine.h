@@ -2,16 +2,14 @@
 
 #include "Common.h"
 #include "IScene.h"
-#include "MaterialManager.hpp"
-#include "BufferManager.hpp"
-#include "ObjectManager.h"
-#include "MeshManager.hpp"
-#include "ShaderManager.h"
-#include "Texture2DManager.h"
-#include "Object.hpp"
-#include "ComponentSystem.hpp"
 #include <memory>
 #include <chrono>
+#include "MainSystemHeader.h"
+#include "ObjectManager.h"
+#include "MaterialManager.hpp"
+#include "BufferManager.hpp"
+#include "ShaderManager.h"
+#include "Texture2DManager.h"
 
 namespace Device
 {
@@ -40,7 +38,9 @@ namespace Core
 
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager&, _bufferManager);
 		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
-		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
+		GET_ACCESSOR(ComponentSystem, DefaultComponentSystem&, _componentSystem);
+		GET_ACCESSOR(TransformPool, auto&, _transformPool);
+		GET_CONST_ACCESSOR(TransformPool, const auto&, _transformPool);
 
 	private:
 		static NullScene							_nullScene;
@@ -56,6 +56,7 @@ namespace Core
 		Rendering::Manager::Texture2DManager				_tex2dManager;
 		Core::ObjectManager									_objectManager;
 		Device::DirectX&									_dx;
-		Core::ComponentSystem<Rendering::Geometry::Mesh>	_componentSystem;
+		DefaultComponentSystem								_componentSystem;
+		Core::TransformPool									_transformPool;
 	};
 }

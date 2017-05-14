@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "DirectX.h"
+#include "ObjectManager.h"
 
 using namespace Core;
 using namespace std::chrono;
@@ -9,17 +10,15 @@ using namespace Rendering;
 Engine::Engine(Device::DirectX& dx)
 	: _scene(&_nullScene), _prevTime(), _lag(0.0),
 	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
-	_tex2dManager(), _objectManager(), _dx(dx)
+	_tex2dManager(), _dx(dx), _transformPool(), _objectManager(*this)
 {
-	_objectManager.SetEngine(this);
 }
 
 Engine::Engine(Device::DirectX& dx, IScene* scene)
 	: _scene(scene), _prevTime(), _lag(0.0),
 	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
-	_tex2dManager(), _objectManager(), _dx(dx)
+	_tex2dManager(), _dx(dx), _transformPool(), _objectManager(*this)
 {
-	_objectManager.SetEngine(this);
 } 
 
 void Engine::RunScene()
