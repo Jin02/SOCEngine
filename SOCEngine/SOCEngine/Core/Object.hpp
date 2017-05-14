@@ -30,7 +30,7 @@ namespace Core
 			auto found = _transformPool->GetIndexer().Has(childId);
 			assert(found);
 
-			_transformPool->Find(_id)->AddChild(childId);
+			_transformPool->Find(_id)->AddChild(*_transformPool->Find(childId));
 		}
 
 		bool HasChild(const Object& child) const

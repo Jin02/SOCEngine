@@ -132,6 +132,14 @@ void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
 	SetDirty();
 }
 
+void Transform::AddChild(Transform& child)
+{
+	child._parentId = _parentId;
+
+	assert(HasChild(child.GetObjectId()) == false);
+	_childIds.push_back(child.GetObjectId());
+}
+
 const Vector3 Transform::GetWorldPosition() const
 {
 	return Vector3(_worldMat._41, _worldMat._42, _worldMat._43);

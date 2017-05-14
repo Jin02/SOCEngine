@@ -50,7 +50,7 @@ namespace Core
 		
 		using Childs = std::vector<ObjectId>;
 
-		void		AddChild(ObjectId id)	{ _childIds.push_back(id);	}
+		void		AddChild(Transform& child);
 		ObjectId	GetChild(uint index)	{ return _childIds[index];	}
 		void		DeleteAllChilds()		{ _childIds.clear();		}
 
