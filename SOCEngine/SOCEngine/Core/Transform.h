@@ -8,6 +8,8 @@
 
 namespace Core
 {
+	class TransformPool;
+
 	class Transform
 	{
 	public:
@@ -41,19 +43,19 @@ namespace Core
 		GET_CONST_ACCESSOR(WorldMatrix, const Math::Matrix&, _worldMat);
 
 		GET_CONST_ACCESSOR(Dirty, bool, _dirty);
-		GET_CONST_ACCESSOR(ObjectId, const ObjectId&, _objectId);
+		GET_CONST_ACCESSOR(ObjectId, ObjectId, _objectId);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
+		
+		using Childs = std::vector<ObjectId>;
 
-		using TransformPtr = std::shared_ptr<Transform>;
-		using Childs = VectorHashMap<ObjectId::LiteralType, TransformPtr>;
+		void		AddChild(ObjectId id)	{ _childIds.push_back(id);	}
+		ObjectId	GetChild(uint index)	{ return _childIds[index];	}
+		void		DeleteAllChilds()		{ _childIds.clear();		}
 
-		void		     AddChild(ObjectId key, TransformPtr child);
-		TransformPtr	 FindChild(ObjectId id);
-		TransformPtr	 GetChild(uint index);
-		void		     DeleteChild(ObjectId id);
-		void		     DeleteAllChilds();
+		bool		HasChild(ObjectId id) const;
+		void		DeleteChild(ObjectId id);
 
 	private:
 		const Math::Vector3 GetWorldForward(const Math::Vector3& scale)	const;
@@ -62,11 +64,13 @@ namespace Core
 
 		const Math::Matrix& ComputeLocalMatrix();
 
-		void _ComputeWorldMatrix();
-		void ComputeWorldMatrix();
+		void _ComputeWorldMatrix(TransformPool& pool);
+		void ComputeWorldMatrix(TransformPool& pool);
 
-		void SetDirty();
-		inline void ResetDirty() { _dirty = false; }
+		void UpdateDirty(TransformPool& pool);
+
+		inline void SetDirty()		{ _dirty = true; }
+		inline void ResetDirty()	{ _dirty = false; }
 
 	private:
 		Math::Matrix		_worldMat;
@@ -81,17 +85,26 @@ namespace Core
 		Math::Vector3		_up				= Math::Vector3(0.0f, 1.0f, 0.0f);
 		Math::Vector3		_right			= Math::Vector3(1.0f, 0.0f, 0.0f);
 
-		const ObjectId		_objectId;
-		bool				_dirty			= true;;
+		ObjectId			_objectId;
+		bool				_dirty			= true;
 
-		TransformPtr		_parent			= nullptr;
-		Childs				_childs;
+		ObjectId			_parentId;
+		Childs				_childIds;
 	};
 
 	class TransformPool final : public Core::VectorHashMap<ObjectId::LiteralType, Transform>
 	{
 	public:
-		using Core::VectorHashMap<ObjectId::LiteralType, Transform>::VectorHashMap;
+		using Parent = Core::VectorHashMap<ObjectId::LiteralType, Transform>;
+		using Parent::Parent;
+		using Parent::Add;
+
 		DISALLOW_ASSIGN(TransformPool);
+
+		auto& Add(ObjectId id)
+		{
+			Transform newTransform(id);
+			return Parent::Add(id, newTransform);
+		}
 	};
 }

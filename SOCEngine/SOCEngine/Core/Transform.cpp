@@ -189,57 +189,52 @@ const Quaternion Transform::FetchWorldQuaternion() const
 	return q;
 }
 
-void Transform::AddChild(ObjectId key, TransformPtr child)
-{
-	_childs.Add(key, child);
-}
 
-Transform::TransformPtr Transform::FindChild(ObjectId id)
+bool Transform::HasChild(ObjectId id) const
 {
-	uint findIdx = _childs.GetIndexer().Find(id);
-	if (findIdx != Childs::IndexerType::FailIndex())
-		return _childs.Get(findIdx);
+	for (const auto& iter : _childIds)
+	{
+		if(iter == id)
+			return true;
+	}
 
-	return nullptr;
-}
-
-Transform::TransformPtr Transform::GetChild(uint index)
-{
-	return _childs.Get(index);
+	return false;
 }
 
 void Transform::DeleteChild(ObjectId id)
 {
-	_childs.Delete(id);
+	uint pos = 0;
+	for (pos; pos < _childIds.size() && _childIds[pos] != id; ++pos);
+
+	assert(pos == _childIds.size());
+	_childIds.erase(_childIds.begin() + pos);
 }
 
-void Transform::DeleteAllChilds()
+
+void Transform::UpdateDirty(TransformPool& pool)
 {
-	_childs.DeleteAll();
+	for (ObjectId id = _objectId; id != ObjectId::Undefined(); id = _parentId)
+		pool.Find(id)->_dirty |= _dirty;
 }
 
-void Transform::SetDirty()
+void Transform::_ComputeWorldMatrix(TransformPool& pool)
 {
-	for (auto* tf = this; tf != nullptr; tf = tf->_parent.get())
-		tf->SetDirty();
-}
-
-void Transform::_ComputeWorldMatrix()
-{
-	for (auto& child : _childs.GetVector())
+	for (auto childId : _childIds)
 	{
-		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
-		child->_ComputeWorldMatrix();
+		auto child = *pool.Find(childId);
+
+		child._worldMat = child.ComputeLocalMatrix() * _worldMat;
+		child._ComputeWorldMatrix(pool);
 	}
 }
 
-void Transform::ComputeWorldMatrix()
+void Transform::ComputeWorldMatrix(TransformPool& pool)
 {
 	// this func must be run in root
-	assert(_parent == nullptr);
+	assert(_parentId == ObjectId::Undefined());
 
 	if(_dirty == false)	return;
 	_worldMat = ComputeLocalMatrix();
 
-	_ComputeWorldMatrix();
+	_ComputeWorldMatrix(pool);
 }
