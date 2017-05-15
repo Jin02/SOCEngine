@@ -27,10 +27,10 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx);
 			void Dispatch(Device::DirectX& dx);
 			
-			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& srv);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
-			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb);
-			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
+			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, IN View::ShaderResourceView& srv);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, IN DXResource<ID3D11SamplerState>& samplerState);
+			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, IN Buffer::ConstBuffer& cb);
+			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, IN View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
 
 			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
 			static void UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind);
