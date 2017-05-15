@@ -9,10 +9,9 @@ using namespace Math;
 
 void Geometry::MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, TransformPool& transformPool)
 {
-	auto Cull = [&frustum, &meshMgr, &transformPool](auto trait) -> void
+	auto Cull = [&frustum, &meshMgr, &transformPool](auto& pool) -> void
 	{
-		auto& pool = meshMgr.GetPool<decltype(trait)>();
-		uint size = meshMgr.GetPool<decltype(trait)>().GetSize();
+		uint size = pool.GetSize();
 		for (uint meshIdx = 0; meshIdx < size; ++meshIdx)
 		{
 			auto& mesh = pool.Get(meshIdx);
@@ -25,7 +24,7 @@ void Geometry::MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr
 		}
 	};
 
-	Cull(OpaqueTrait());
-	Cull(TransparencyTrait());
-	Cull(AlphaBlendTrait());
+	Cull( meshMgr.GetPool<OpaqueTrait>() );
+	Cull( meshMgr.GetPool<TransparencyTrait>() );
+	Cull( meshMgr.GetPool<AlphaBlendTrait>() );
 }
