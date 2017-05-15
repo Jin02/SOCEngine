@@ -229,10 +229,11 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 {
 	for (auto childId : _childIds)
 	{
-		auto child = *pool.Find(childId);
+		auto child = pool.Find(childId);
+		assert(child);
 
-		child._worldMat = child.ComputeLocalMatrix() * _worldMat;
-		child._ComputeWorldMatrix(pool);
+		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
+		child->_ComputeWorldMatrix(pool);
 	}
 }
 
