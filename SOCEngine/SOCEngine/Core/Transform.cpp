@@ -200,9 +200,9 @@ const Quaternion Transform::FetchWorldQuaternion() const
 
 bool Transform::HasChild(ObjectId id) const
 {
-	for (const auto& iter : _childIds)
+	for (const auto childId : _childIds)
 	{
-		if(iter == id)
+		if(childId == id)
 			return true;
 	}
 
