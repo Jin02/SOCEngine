@@ -27,10 +27,10 @@ namespace Core
 		void AddChild(Object& child)
 		{
 			ObjectId childId = child.GetId();
-			auto found = _transformPool->GetIndexer().Has(childId);
+			auto found = _transformPool->Find(childId);
 			assert(found);
 
-			_transformPool->Find(_id)->AddChild(*_transformPool->Find(childId));
+			_transformPool->Find(_id)->AddChild(*found);
 		}
 
 		bool HasChild(const Object& child) const
