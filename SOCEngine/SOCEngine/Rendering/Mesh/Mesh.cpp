@@ -150,23 +150,17 @@ void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
 	if (transform.GetDirty())
 		_tfChangeState = TransformCB::ChangeState::HasChanged;
 
-	TransformCB tfCB;
+	if ((_tfChangeState != TransformCB::ChangeState::No) == false)
+		return;
 
 	const Matrix& worldMat = transform.GetWorldMatrix();
-	bool needUpdateCB = (_tfChangeState != TransformCB::ChangeState::No);
-	if (needUpdateCB)
-	{
-		Matrix::Transpose(tfCB.world, worldMat);
-		Matrix::Transpose(tfCB.prevWorld, _prevWorldMat);
-
-		Matrix::Inverse(tfCB.worldInvTranspose, tfCB.world);
-	}
-
+	
+	TransformCB tfCB;
+	Matrix::Transpose(tfCB.world, worldMat);	
+	Matrix::Transpose(tfCB.prevWorld, _prevWorldMat);
+	Matrix::Inverse(tfCB.worldInvTranspose, tfCB.world);
 	_transformCB.UpdateSubResource(dx, tfCB);
 
-	if (needUpdateCB)
-	{
-		_prevWorldMat = worldMat;
-		_tfChangeState = TransformCB::ChangeState((static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
-	}
+	_prevWorldMat = worldMat;
+	_tfChangeState = TransformCB::ChangeState((static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 }
