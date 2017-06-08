@@ -9,7 +9,7 @@ namespace Rendering
 		class PixelShader final
 		{
 		public:
-			PixelShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+			PixelShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 			void Initialize(Device::DirectX& dx);
 			
@@ -17,7 +17,7 @@ namespace Rendering
 			void UnBindShaderToContext(Device::DirectX& dx);
 			
 			static void BindShaderResourceView(Device::DirectX& dx,	TextureBindIndex bind, View::ShaderResourceView& view);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb);
 
 			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
@@ -29,7 +29,7 @@ namespace Rendering
 
 		private:
 			BaseShader _baseShader;
-			DXResource<ID3D11PixelShader> _shader;
+			DXSharedResource<ID3D11PixelShader> _shader;
 		};
 	}
 }

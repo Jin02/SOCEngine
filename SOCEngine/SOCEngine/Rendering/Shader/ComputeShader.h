@@ -21,14 +21,14 @@ namespace Rendering
 			};
 
 		public:
-			ComputeShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+			ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 		public:
 			void Initialize(Device::DirectX& dx);
 			void Dispatch(Device::DirectX& dx);
 			
 			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& srv);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb);
 			static void BindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind, View::UnorderedAccessView& uav, const uint* initialCounts = nullptr);
 
@@ -42,7 +42,7 @@ namespace Rendering
 
 		private:
 			BaseShader								_base;
-			DXResource<ID3D11ComputeShader>			_shader;
+			DXSharedResource<ID3D11ComputeShader>			_shader;
 			ThreadGroup								_threadGroup;
 		};
 	}

@@ -4,7 +4,7 @@ using namespace Device;
 using namespace Rendering::Shader;
 using namespace Rendering;
 
-ComputeShader::ComputeShader(const DXResource<ID3DBlob>& blob, const std::string& key)
+ComputeShader::ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _base(blob, key), _shader(nullptr), _threadGroup(0, 0, 0)
 {
 
@@ -28,7 +28,7 @@ void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)
+void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState)
 {
 	ID3D11SamplerState* sampler= samplerState.GetRaw();
 	dx.GetContext()->CSSetSamplers(static_cast<uint>(bind), 1, &sampler);

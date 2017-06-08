@@ -4,7 +4,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering;
 
-GeometryShader::GeometryShader(const DXResource<ID3DBlob>& blob, const std::string& key)
+GeometryShader::GeometryShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _shader(nullptr), _baseShader(blob, key)
 {
 }
@@ -30,7 +30,7 @@ void GeometryShader::BindShaderResourceView(Device::DirectX& dx, TextureBindInde
 	dx.GetContext()->GSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)
+void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState)
 {	
 	ID3D11SamplerState* sampler = samplerState.GetRaw();
 	dx.GetContext()->GSSetSamplers(static_cast<uint>(bind), 1, &sampler);

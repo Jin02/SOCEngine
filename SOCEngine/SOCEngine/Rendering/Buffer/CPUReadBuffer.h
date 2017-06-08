@@ -22,7 +22,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(UAV, const View::UnorderedAccessView&, _uav);
 
 		private:
-			DXResource<ID3D11Buffer>				_readBuffer;
+			DXSharedResource<ID3D11Buffer>				_readBuffer;
 			BaseBuffer						_baseBuffer;
 			View::UnorderedAccessView				_uav;
 		};

@@ -18,7 +18,7 @@ namespace Rendering
 				uint		size = 0;
 			};
 
-			VertexShader(const DXResource<ID3DBlob>& blob, const std::string& key);
+			VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 			GET_CONST_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
 			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
 
@@ -30,7 +30,7 @@ namespace Rendering
 			void UnBindInputLayoutToContext(Device::DirectX& dx);
 
 			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& view);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb);
 
 			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
@@ -41,8 +41,8 @@ namespace Rendering
 
 		private:
 			BaseShader			_baseShader;
-			DXResource<ID3D11VertexShader>	_shader;
-			DXResource<ID3D11InputLayout>	_layout;
+			DXSharedResource<ID3D11VertexShader>	_shader;
+			DXSharedResource<ID3D11InputLayout>	_layout;
 
 			std::vector<SemanticInfo> _semanticInfo;
 		};

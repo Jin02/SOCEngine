@@ -80,30 +80,30 @@ namespace Device
 		GET_ACCESSOR(SamplerStateShadowLinear,					ID3D11SamplerState*,		_samplerShadowLinear.GetRaw());
 		GET_ACCESSOR(SamplerStateConeTracing,					ID3D11SamplerState*,		_samplerConeTracing.GetRaw());
 
-		GET_CONST_ACCESSOR(MSAADesc,									const DXGI_SAMPLE_DESC&,	_msaaDesc);
+		GET_CONST_ACCESSOR(MSAADesc,							const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		const Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 
-		GET_CONST_ACCESSOR(BackBufferSize,								const Size<uint>&,			_backBufferSize);
+		GET_CONST_ACCESSOR(BackBufferSize,						const Size<uint>&,			_backBufferSize);
 
-		GET_CONST_ACCESSOR(FeatureLevel,								D3D_FEATURE_LEVEL,			_featureLevel);
-		GET_CONST_ACCESSOR(DriverType,									D3D_DRIVER_TYPE,			_driverType);
+		GET_CONST_ACCESSOR(FeatureLevel,						D3D_FEATURE_LEVEL,			_featureLevel);
+		GET_CONST_ACCESSOR(DriverType,							D3D_DRIVER_TYPE,			_driverType);
 
 	public:
-		DXResource<ID3D11ShaderResourceView>	CreateShaderResourceView(ID3D11Resource* rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
-		DXResource<ID3D11UnorderedAccessView>	CreateUnorderedAccessView(ID3D11Resource* rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
-		DXResource<ID3D11RenderTargetView>		CreateRenderTargetView(ID3D11Resource* rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
-		DXResource<ID3D11DepthStencilView>		CreateDepthStencilView(ID3D11Resource* rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
+		DXSharedResource<ID3D11ShaderResourceView>	CreateShaderResourceView(ID3D11Resource* rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+		DXSharedResource<ID3D11UnorderedAccessView>	CreateUnorderedAccessView(ID3D11Resource* rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
+		DXSharedResource<ID3D11RenderTargetView>	CreateRenderTargetView(ID3D11Resource* rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
+		DXSharedResource<ID3D11DepthStencilView>	CreateDepthStencilView(ID3D11Resource* rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
 
-		DXResource<ID3D11Buffer>				CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data);
+		DXSharedResource<ID3D11Buffer>				CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data);
 
-		DXResource<ID3D11GeometryShader>		CreateGeometryShader(Rendering::Shader::BaseShader& baseShader);
-		DXResource<ID3D11PixelShader>			CreatePixelShader(Rendering::Shader::BaseShader& baseShader);
-		DXResource<ID3D11VertexShader>			CreateVertexShader(Rendering::Shader::BaseShader& baseShader);
-		DXResource<ID3D11ComputeShader>			CreateComputeShader(Rendering::Shader::BaseShader& baseShader);
+		DXSharedResource<ID3D11GeometryShader>		CreateGeometryShader(Rendering::Shader::BaseShader& baseShader);
+		DXSharedResource<ID3D11PixelShader>			CreatePixelShader(Rendering::Shader::BaseShader& baseShader);
+		DXSharedResource<ID3D11VertexShader>		CreateVertexShader(Rendering::Shader::BaseShader& baseShader);
+		DXSharedResource<ID3D11ComputeShader>		CreateComputeShader(Rendering::Shader::BaseShader& baseShader);
 
-		DXResource<ID3D11InputLayout>			CreateInputLayout(Rendering::Shader::BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
-		DXResource<ID3D11Texture2D>				CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc);
-		DXResource<ID3D11Texture3D>				CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc);
+		DXSharedResource<ID3D11InputLayout>			CreateInputLayout(Rendering::Shader::BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+		DXSharedResource<ID3D11Texture2D>			CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc);
+		DXSharedResource<ID3D11Texture3D>			CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc);
 
 	private:
 		friend class Core::Launcher;
@@ -116,49 +116,33 @@ namespace Device
 		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);
 
 	private:
-		static void Release(IUnknown* resource) { resource->Release(); };
-
-		template<typename ResourceType>
-		class UniqueResource
-		{
-		public:
-			UniqueResource() : _resource(nullptr, nullptr) { }
-			UniqueResource(ResourceType* resource) : _resource(resource, Release) { }
-
-			ResourceType* operator->() const			{ return _resource.get(); }
-			inline ResourceType* GetRaw() const			{ return _resource.get(); }
-
-		private:
-			std::unique_ptr<ResourceType, std::function<void(IUnknown*)>> _resource;
-		};
-
-		UniqueResource<ID3D11Device>			_device;
-		UniqueResource<IDXGISwapChain>			_swapChain;
-		UniqueResource<ID3D11DeviceContext>		_immediateContext;
-		UniqueResource<ID3D11RenderTargetView>	_renderTargetView;
-		UniqueResource<ID3D11RasterizerState>	_rasterizerClockwiseDisableCulling;
-		UniqueResource<ID3D11RasterizerState>	_rasterizerClockwiseDefault;
-		UniqueResource<ID3D11RasterizerState>	_rasterizerCounterClockwiseDisableCulling;
-		UniqueResource<ID3D11RasterizerState>	_rasterizerClockwiseDisableCullingWithClip;
-		UniqueResource<ID3D11RasterizerState>	_rasterizerCounterClockwiseDefault;
-		UniqueResource<ID3D11BlendState>		_blendOpaque;
-		UniqueResource<ID3D11BlendState>		_blendAlphaToCoverage;
-		UniqueResource<ID3D11BlendState>		_blendAlpha;
-		UniqueResource<ID3D11DepthStencilState>	_depthDisableDepthTest;
-		UniqueResource<ID3D11DepthStencilState>	_depthDisableDepthWrite;
-		UniqueResource<ID3D11DepthStencilState>	_depthLess;
-		UniqueResource<ID3D11DepthStencilState>	_depthLessEqual;
-		UniqueResource<ID3D11DepthStencilState>	_depthEqualAndDisableDepthWrite;
-		UniqueResource<ID3D11DepthStencilState>	_depthGreater;
-		UniqueResource<ID3D11DepthStencilState>	_depthGreaterAndDisableDepthWrite;
-		UniqueResource<ID3D11DepthStencilState>	_depthGreaterEqualAndDisableDepthWrite;
-		UniqueResource<ID3D11SamplerState>		_samplerAnisotropic;
-		UniqueResource<ID3D11SamplerState>		_samplerLinear;
-		UniqueResource<ID3D11SamplerState>		_samplerPoint;
-		UniqueResource<ID3D11SamplerState>		_samplerShadowLessEqualComp;
-		UniqueResource<ID3D11SamplerState>		_samplerShadowGreaterEqualComp;
-		UniqueResource<ID3D11SamplerState>		_samplerShadowLinear;
-		UniqueResource<ID3D11SamplerState>		_samplerConeTracing;
+		DXUniqueResource<ID3D11Device>				_device;
+		DXUniqueResource<IDXGISwapChain>			_swapChain;
+		DXUniqueResource<ID3D11DeviceContext>		_immediateContext;
+		DXUniqueResource<ID3D11RenderTargetView>	_renderTargetView;
+		DXUniqueResource<ID3D11RasterizerState>		_rasterizerClockwiseDisableCulling;
+		DXUniqueResource<ID3D11RasterizerState>		_rasterizerClockwiseDefault;
+		DXUniqueResource<ID3D11RasterizerState>		_rasterizerCounterClockwiseDisableCulling;
+		DXUniqueResource<ID3D11RasterizerState>		_rasterizerClockwiseDisableCullingWithClip;
+		DXUniqueResource<ID3D11RasterizerState>		_rasterizerCounterClockwiseDefault;
+		DXUniqueResource<ID3D11BlendState>			_blendOpaque;
+		DXUniqueResource<ID3D11BlendState>			_blendAlphaToCoverage;
+		DXUniqueResource<ID3D11BlendState>			_blendAlpha;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthDisableDepthTest;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthDisableDepthWrite;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthLess;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthLessEqual;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthEqualAndDisableDepthWrite;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthGreater;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthGreaterAndDisableDepthWrite;
+		DXUniqueResource<ID3D11DepthStencilState>	_depthGreaterEqualAndDisableDepthWrite;
+		DXUniqueResource<ID3D11SamplerState>		_samplerAnisotropic;
+		DXUniqueResource<ID3D11SamplerState>		_samplerLinear;
+		DXUniqueResource<ID3D11SamplerState>		_samplerPoint;
+		DXUniqueResource<ID3D11SamplerState>		_samplerShadowLessEqualComp;
+		DXUniqueResource<ID3D11SamplerState>		_samplerShadowGreaterEqualComp;
+		DXUniqueResource<ID3D11SamplerState>		_samplerShadowLinear;
+		DXUniqueResource<ID3D11SamplerState>		_samplerConeTracing;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
 		Size<uint>					_backBufferSize;

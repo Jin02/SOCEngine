@@ -4,7 +4,7 @@
 using namespace Rendering::Texture;
 using namespace Rendering::View;
 
-Texture2D::Texture2D(const ShaderResourceView& srv, const DXResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size)
+Texture2D::Texture2D(const ShaderResourceView& srv, const DXSharedResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size)
 	: _texture(tex), _size(size)
 {
 }

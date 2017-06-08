@@ -29,7 +29,7 @@ void RenderTexture::Initialize(
 }
 
 void RenderTexture::Initialize(Device::DirectX& dx,
-	const DXResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size)
+	const DXSharedResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size)
 {
 	ASSERT_SUCCEEDED(rtv.IsCanUse());
 

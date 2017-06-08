@@ -3,7 +3,7 @@
 using namespace Rendering;
 using namespace Rendering::Shader;
 
-PixelShader::PixelShader(const DXResource<ID3DBlob>& blob, const std::string& key)
+PixelShader::PixelShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _baseShader(blob, key), _shader(nullptr)
 {
 }
@@ -30,7 +30,7 @@ void PixelShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex b
 	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void PixelShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXResource<ID3D11SamplerState>& samplerState)
+void PixelShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState)
 {
 	ID3D11SamplerState* sampler = samplerState.GetRaw();
 	dx.GetContext()->PSSetSamplers(static_cast<uint>(bind), 1, &sampler);

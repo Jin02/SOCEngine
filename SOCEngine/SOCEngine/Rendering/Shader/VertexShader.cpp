@@ -4,7 +4,7 @@ using namespace Device;
 using namespace Rendering::Shader;
 using namespace Rendering;
 
-VertexShader::VertexShader(const DXResource<ID3DBlob>& blob, const std::string& key)
+VertexShader::VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _baseShader(blob, key), _shader(nullptr), _layout(nullptr)
 {
 }
@@ -64,7 +64,7 @@ void VertexShader::BindShaderResourceView(OUT Device::DirectX& dx,
 }
 
 void VertexShader::BindSamplerState(OUT Device::DirectX& dx,
-	SamplerStateBindIndex bind, IN DXResource<ID3D11SamplerState>& samplerState)
+	SamplerStateBindIndex bind, IN DXSharedResource<ID3D11SamplerState>& samplerState)
 {
 	ID3D11SamplerState* sampler = samplerState.GetRaw();
 	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &sampler);

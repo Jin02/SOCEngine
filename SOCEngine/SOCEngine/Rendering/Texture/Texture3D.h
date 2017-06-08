@@ -17,17 +17,17 @@ namespace Rendering
 					DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
 					uint optionBindFlag, uint mipLevels);
 
-			GET_CONST_ACCESSOR(Texture,				const DXResource<ID3D11Texture3D>&,			_texture);
-			GET_CONST_ACCESSOR(RenderTargetView,	const DXResource<ID3D11RenderTargetView>&,	_rtv);
+			GET_CONST_ACCESSOR(Texture,				const DXSharedResource<ID3D11Texture3D>&,			_texture);
+			GET_CONST_ACCESSOR(RenderTargetView,	const DXSharedResource<ID3D11RenderTargetView>&,	_rtv);
 			GET_ACCESSOR(RawRenderTargetView,		auto,										_rtv.GetRaw());
 			GET_ACCESSOR(RawTexture,				auto,										_texture.GetRaw());
 
 			GET_CONST_ACCESSOR(Size,				const Math::Vector3&,				_size);
 
 		private:
-			DXResource<ID3D11Texture3D>			_texture;
+			DXSharedResource<ID3D11Texture3D>			_texture;
 			Math::Vector3					_size = Math::Vector3(0.0f, 0.0f, 0.0f);
-			DXResource<ID3D11RenderTargetView>		_rtv;
+			DXSharedResource<ID3D11RenderTargetView>		_rtv;
 			View::ShaderResourceView			_srv;
 			View::UnorderedAccessView			_uav;
 		};

@@ -40,7 +40,7 @@ std::string ShaderCompiler::MakeKey(const std::string& fileName, const std::stri
 	return key;
 }
 
-DXResource<ID3DBlob> ShaderCompiler::Compile(
+DXSharedResource<ID3DBlob> ShaderCompiler::Compile(
 	const std::string &fileFullPath, const std::string& shaderCode, const std::string& shaderModel,
 	const std::string& funcName, const std::vector<ShaderMacro>* macros)
 {
@@ -92,7 +92,7 @@ DXResource<ID3DBlob> ShaderCompiler::Compile(
 	if (pErrorBlob)
 		pErrorBlob->Release();
 
-	return DXResource<ID3DBlob>(blob);
+	return DXSharedResource<ID3DBlob>(blob);
 }
 
 std::string ShaderCompiler::MakeShaderFileFullPath(const std::string& folderPath, const std::string& fileName)
@@ -155,7 +155,7 @@ std::string ShaderCompiler::LoadShaderCode(const std::string& folderPath, const 
 	return resultCode;
 }
 
-DXResource<ID3DBlob> ShaderCompiler::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool useRecycle, const std::vector<ShaderMacro>* macros)
+DXSharedResource<ID3DBlob> ShaderCompiler::CreateBlob(const std::string& folderPath, const std::string& fileName, const std::string& shaderType, const std::string& mainFunc, bool useRecycle, const std::vector<ShaderMacro>* macros)
 {
 	std::string fullPath = MakeShaderFileFullPath(folderPath, fileName);
 	if (fullPath.empty())

@@ -10,9 +10,9 @@ namespace Rendering
 		{
 		public:
 			UnorderedAccessView() = default;
-			UnorderedAccessView(const DXResource<ID3D11UnorderedAccessView>& uav) : _uav(uav) {}
+			UnorderedAccessView(const DXSharedResource<ID3D11UnorderedAccessView>& uav) : _uav(uav) {}
 
-			GET_CONST_ACCESSOR(View, DXResource<ID3D11UnorderedAccessView>, _uav);
+			GET_CONST_ACCESSOR(View, DXSharedResource<ID3D11UnorderedAccessView>, _uav);
 			GET_ACCESSOR(Raw, auto, _uav.GetRaw());
 
 			template <class DXResourceType>
@@ -25,7 +25,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, D3D11_UAV_DIMENSION viewDimension, uint tex3dMipSlice = 0, uint tex3dWSize = 0, uint bufferFlags = 0);
 
 		private:
-			DXResource<ID3D11UnorderedAccessView>		_uav;
+			DXSharedResource<ID3D11UnorderedAccessView>		_uav;
 		};
 	}
 }
