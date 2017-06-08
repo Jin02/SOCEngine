@@ -18,7 +18,7 @@ void Geometry::MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr
 			auto& mesh = pool.Get(meshIdx);
 
 			ObjectId id = mesh.GetObjectId();
-			Transform* transform = transformPool.Find(id);
+			Transform* transform = transformPool.Find(id.Literal());
 			Vector3 worldPos = transform->GetWorldPosition();
 
 			mesh._culled = frustum.In(worldPos, mesh.GetRadius());

@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include "VectorIndexer.hpp"
-#include "ObjectIdManager.h"
+#include "ObjectId.hpp"
 #include "Singleton.h"
 #include "Object.hpp"
 

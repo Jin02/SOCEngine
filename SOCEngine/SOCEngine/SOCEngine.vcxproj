@@ -19,13 +19,14 @@
     <ClInclude Include="Core\ArrayVector.hpp" />
     <ClInclude Include="Core\ComponentSystem.hpp" />
     <ClInclude Include="Core\Engine.h" />
+    <ClInclude Include="Core\ObjectId.hpp" />
     <ClInclude Include="Core\IndexBook.hpp" />
     <ClInclude Include="Core\IScene.h" />
     <ClInclude Include="Core\Launcher.h" />
     <ClInclude Include="Core\MainSystemHeader.h" />
     <ClInclude Include="Core\Object.hpp" />
-    <ClInclude Include="Core\ObjectId.hpp" />
-    <ClInclude Include="Core\ObjectIdManager.h" />
+    <ClInclude Include="Core\UniqueId.hpp" />
+    <ClInclude Include="Core\UniqueIdManager.hpp" />
     <ClInclude Include="Core\ObjectManager.h" />
     <ClInclude Include="Core\Singleton.h" />
     <ClInclude Include="Core\Transform.h" />
@@ -212,7 +213,6 @@
     <ClCompile Include="Common\Half.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\Launcher.cpp" />
-    <ClCompile Include="Core\ObjectIdManager.cpp" />
     <ClCompile Include="Core\ObjectManager.cpp" />
     <ClCompile Include="Core\Transform.cpp" />
     <ClCompile Include="Device\DirectX.cpp">

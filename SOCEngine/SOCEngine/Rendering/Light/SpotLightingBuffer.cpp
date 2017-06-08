@@ -38,20 +38,20 @@ void SpotLightingBuffer::UpdateBuffer(std::vector<SpotLight>& lights,
 
 void SpotLightingBuffer::UpdateSRBuffer(Device::DirectX & dx)
 {
-	_base.UpdateSRBuffer(dx);
-	_paramSRBuffer.UpdateSRBuffer(dx);
+	//_base.UpdateSRBuffer(dx);
+	//_paramSRBuffer.UpdateSRBuffer(dx);
 
-	_mustUpdateParamSRBuffer = false;
+	//_mustUpdateParamSRBuffer = false;
 }
 
 void SpotLightingBuffer::Delete(Core::ObjectId id)
 {
-	_base.Delete(id);
-	_paramSRBuffer.Delete(id);
+//	_base.Delete(id);
+//	_paramSRBuffer.Delete(id);
 }
 
 void SpotLightingBuffer::DeleteAll()
 {
-	_base.DeleteAll();
-	_paramSRBuffer.DeleteAll();
+	//_base.DeleteAll();
+	//_paramSRBuffer.DeleteAll();
 }

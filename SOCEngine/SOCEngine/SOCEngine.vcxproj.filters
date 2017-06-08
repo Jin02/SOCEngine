@@ -262,9 +262,6 @@
     <Filter Include="Core\Object">
       <UniqueIdentifier>{61a815ce-c204-4bd4-8591-70cdc2c634f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Object\Id">
-      <UniqueIdentifier>{eb3a5854-e697-4a4b-82c5-65a343b01265}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Light">
       <UniqueIdentifier>{5244e4a0-d3c4-4648-adc5-7e9806f04074}</UniqueIdentifier>
     </Filter>
@@ -328,6 +325,9 @@
     <Filter Include="Rendering\Shader\Compiler">
       <UniqueIdentifier>{96168ae5-ff4c-4f27-a46b-1235a0e18114}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Id">
+      <UniqueIdentifier>{eb3a5854-e697-4a4b-82c5-65a343b01265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -360,12 +360,6 @@
     </ClInclude>
     <ClInclude Include="Core\Engine.h">
       <Filter>Core\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ObjectId.hpp">
-      <Filter>Core\Object\Id</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ObjectIdManager.h">
-      <Filter>Core\Object\Id</Filter>
     </ClInclude>
     <ClInclude Include="Core\Transform.h">
       <Filter>Core\Transform</Filter>
@@ -733,6 +727,15 @@
     <ClInclude Include="Rendering\Mesh\MeshUtility.h">
       <Filter>Rendering\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Core\UniqueIdManager.hpp">
+      <Filter>Core\Id</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UniqueId.hpp">
+      <Filter>Core\Id</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectId.hpp">
+      <Filter>Core\Id</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -752,9 +755,6 @@
     </ClCompile>
     <ClCompile Include="Core\Engine.cpp">
       <Filter>Core\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\ObjectIdManager.cpp">
-      <Filter>Core\Object\Id</Filter>
     </ClCompile>
     <ClCompile Include="Core\Transform.cpp">
       <Filter>Core\Transform</Filter>

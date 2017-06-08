@@ -106,7 +106,7 @@ namespace Core
 		auto& Add(ObjectId id)
 		{
 			Transform newTransform(id);
-			return Parent::Add(id, newTransform);
+			return Parent::Add(id.Literal(), newTransform);
 		}
 	};
 }

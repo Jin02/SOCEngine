@@ -1,32 +1,31 @@
 #pragma once
 
-#include "Common.h"
+#include "UniqueIdManager.hpp"
+#include "UniqueId.hpp"
 
 namespace Core
 {
-	class ObjectId final
+	class ObjectId : public UniqueId
+	{
+	private:
+		operator UniqueId::LiteralType() const { return Literal(); }
+
+	public:
+		using UniqueId::UniqueId;
+
+	public:
+		friend class ObjectIdManager;
+		friend class Transform;
+		friend class Object;
+	};
+
+	class ObjectIdManager : public UniqueIdManager<ObjectId>
 	{
 	public:
-		using LiteralType = uint;
-//		LiteralType operator()() { return _id; }
-		operator LiteralType() const { return _id; }
-		bool operator==(const ObjectId& rhs) const
+		ObjectId Acquire()
 		{
-			return _id == rhs._id;
+			uint literalId = UniqueIdManager<ObjectId>::Acquire();
+			return ObjectId(literalId);
 		}
-		bool operator!=(const ObjectId& rhs) const
-		{
-			return !operator==(rhs);
-		}
-
-		static constexpr LiteralType Undefined() { return -1; }
-
-		ObjectId() : _id(Undefined()) {}
-
-	private:
-		friend class ObjectIdManager;
-		explicit ObjectId(LiteralType id) : _id(id) {}
-
-		LiteralType _id;
 	};
 }

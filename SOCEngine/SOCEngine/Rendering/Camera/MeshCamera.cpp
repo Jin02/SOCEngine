@@ -183,7 +183,7 @@ void MeshCamera::SortTransparentMeshRenderQueue(const Transform& transform, cons
 		float leftDistance = D3D11_FLOAT32_MAX;
 		{
 			auto id = left->GetObjectId();
-			uint findIdx = transformPool.GetIndexer().Find(id);			
+			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
 			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
 			Vector3 leftPos = transformPool.Get(findIdx).GetWorldPosition();
@@ -193,7 +193,7 @@ void MeshCamera::SortTransparentMeshRenderQueue(const Transform& transform, cons
 		float rightDistance = D3D11_FLOAT32_MAX;
 		{
 			auto id = right->GetObjectId();
-			uint findIdx = transformPool.GetIndexer().Find(id);
+			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
 			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
 			Vector3 rightPos = transformPool.Get(findIdx).GetWorldPosition();

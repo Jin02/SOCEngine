@@ -21,26 +21,26 @@ namespace Core
 		Component& Add(ObjectId id)
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
-			components.Add(id, Component(id));
+			components.Add(id.Literal(), Component(id));
 			return components.Get( components.GetSize() - 1);
 		}
 		template <class Component>
 		void Delete(ObjectId id)
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
-			components.Delete(id);
+			components.Delete(id.Literal());
 		}
 		template <class Component>
 		bool Has(ObjectId id) const
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
-			return components.GetIndexer().Has(id);
+			return components.GetIndexer().Has(id.Literal());
 		}
 		template <class Component>
 		auto Find(ObjectId id)
 		{
 			auto& components = std::get<ComponentPool<Component>>(_components);
-			return components.Find(id);
+			return components.Find(id.Literal());
 		}
 
 	private:
