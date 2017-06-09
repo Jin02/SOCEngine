@@ -5,7 +5,6 @@
 
 namespace Core
 {
-	template<class IdType>
 	class UniqueIdManager 
 	{
 	public:
@@ -39,18 +38,18 @@ namespace Core
 		}
 
 	public:
-		bool Has(IdType id)
+		bool Has(uint id)
 		{
-			uint pos = id.Literal() / BitSize;
-			return (pos >= _bitFields.size()) ? false : (_bitFields[pos] & (1 << (id.Literal() % BitSize))) != 0;
+			uint pos = id / BitSize;
+			return (pos >= _bitFields.size()) ? false : (_bitFields[pos] & (1 << (id % BitSize))) != 0;
 		}
 
-		void Delete(IdType id)
+		void Delete(uint id)
 		{
 			if ( Has(id) )
 			{
-				uint& bits = _bitFields[id.Literal() / BitSize];
-				bits &= ~(1 << (id.Literal() % BitSize));
+				uint& bits = _bitFields[id / BitSize];
+				bits &= ~(1 << (id % BitSize));
 			}
 		}
 

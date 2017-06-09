@@ -19,13 +19,23 @@ namespace Core
 		friend class Object;
 	};
 
-	class ObjectIdManager : public UniqueIdManager<ObjectId>
+	class ObjectIdManager : public UniqueIdManager
 	{
 	public:
 		ObjectId Acquire()
 		{
-			uint literalId = UniqueIdManager<ObjectId>::Acquire();
+			uint literalId = UniqueIdManager::Acquire();
 			return ObjectId(literalId);
+		}
+
+		bool Has(ObjectId id)
+		{
+			return UniqueIdManager::Has(id.Literal());
+		}
+
+		void Delete(ObjectId id)
+		{
+			UniqueIdManager::Delete(id.Literal());
 		}
 	};
 }
