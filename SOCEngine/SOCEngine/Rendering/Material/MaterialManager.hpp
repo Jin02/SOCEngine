@@ -10,12 +10,11 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		template <class... Materials>
-		class MaterialPools final
+		class MaterialManager final
 		{
 		public:
-			MaterialPools() = default;
-			DISALLOW_ASSIGN_COPY(MaterialPools);
+			MaterialManager() = default;
+			DISALLOW_ASSIGN_COPY(MaterialManager);
 
 			template <typename MaterialType>
 			void Add(const std::string& key, MaterialType& material)
@@ -41,24 +40,10 @@ namespace Rendering
 
 		private:
 			template <class MaterialType>
-			class MaterialPool : public Core::VectorHashMap<std::string, MaterialType> {};
+			using MaterialPool = Core::VectorHashMap<std::string, MaterialType>;
 
-			std::tuple<MaterialPool<Materials>...>	_materials;
-		};
-
-		class MaterialManager final
-		{
-		public:
-			MaterialManager() = default;
-			DISALLOW_ASSIGN_COPY(MaterialManager);
-
-			auto& Get()
-			{
-				return _materialSystem;
-			}
-
-		private:
-			MaterialPools<PhysicallyBasedMaterial, SkyBoxMaterial> _materialSystem;
+			std::tuple<	MaterialPool<PhysicallyBasedMaterial>,
+						MaterialPool<SkyBoxMaterial> >	_materials;
 		};
 	}
 }
