@@ -32,7 +32,7 @@ namespace Rendering
 		GET_ACCESSOR(SRBufferBook, SRBuffers&, _srBuffers);
 
 	private:
-		ConstBuffers		_constBuffers;
+		ConstBuffers	_constBuffers;
 		Texture2Ds		_textures;
 		SRBuffers		_srBuffers;
 
