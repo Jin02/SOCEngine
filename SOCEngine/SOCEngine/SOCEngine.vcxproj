@@ -71,11 +71,7 @@
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\MainCamera.h" />
-    <ClInclude Include="Rendering\Camera\MeshCamera.h" />
     <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\GBufferInfo.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\CommonLightingBuffer.h">
@@ -245,11 +241,8 @@
     <ClCompile Include="Rendering\Buffer\RawBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
-    <ClCompile Include="Rendering\Camera\MeshCamera.cpp" />
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Rendering\Light\CommonLightingBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

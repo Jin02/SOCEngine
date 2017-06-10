@@ -664,14 +664,8 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\GBufferInfo.h">
-      <Filter>Rendering\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Core\TransformCB.h">
       <Filter>Core\Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Camera\MeshCamera.h">
-      <Filter>Rendering\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
       <Filter>Rendering\Shadow</Filter>
@@ -906,12 +900,6 @@
     <ClCompile Include="Rendering\Light\CommonLightingBuffer.cpp">
       <Filter>Rendering\Light\Buffer\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Camera\MeshCamera.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Light\SpotLightingBuffer.cpp">
       <Filter>Rendering\Light\Buffer\Spot</Filter>
     </ClCompile>
@@ -944,6 +932,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshUtility.cpp">
       <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

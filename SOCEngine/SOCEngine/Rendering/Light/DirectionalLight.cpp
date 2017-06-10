@@ -1,10 +1,8 @@
 #include "DirectionalLight.h"
 #include "Object.hpp"
-#include "MeshCamera.h"
 #include <assert.h>
 
 using namespace Rendering;
-using namespace Rendering::Camera;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;

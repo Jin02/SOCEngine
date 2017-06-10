@@ -21,6 +21,7 @@ namespace Rendering
 			};
 
 		public:
+			ComputeShader() = default;
 			ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 		public:
@@ -42,8 +43,8 @@ namespace Rendering
 
 		private:
 			BaseShader								_base;
-			DXSharedResource<ID3D11ComputeShader>			_shader;
-			ThreadGroup								_threadGroup;
+			DXSharedResource<ID3D11ComputeShader>	_shader;
+			ThreadGroup								_threadGroup = ThreadGroup(0, 0, 0);
 		};
 	}
 }

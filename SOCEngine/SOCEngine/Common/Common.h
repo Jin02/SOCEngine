@@ -11,6 +11,7 @@
 #define SAFE_RELEASE(x) { if(x){ x->Release(); x = nullptr; } }
 #define SAFE_DESTROY_DELTE(x) { if(x){ x->Destroy(); delete x; x = nullptr; } }
 
+#define SET_ACCESSOR_DIRTY(name, type, variable) inline void Set##name(type t)	{ variable = t; _dirty = true; }
 #define ENGINE_INDEX_TYPE unsigned int
 
 #define DISALLOW_COPY_CONSTRUCTOR(CLASS) CLASS(const CLASS&) = delete

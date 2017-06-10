@@ -9,8 +9,6 @@
 #include <functional>
 #include "VectorIndexer.hpp"
 
-#define SET_LIGHT_ACCESSOR(name, type, variable) inline void Set##name(type t)	{ variable = t; _dirty = true; }
-
 namespace Rendering
 {
 	namespace Light
@@ -26,10 +24,10 @@ namespace Rendering
 
 			uint Get32BitMainColor() const;
 
-			SET_LIGHT_ACCESSOR(Color, const Color&, _color);
-			SET_LIGHT_ACCESSOR(Radius, float, _radius);
-			SET_LIGHT_ACCESSOR(uint, uint, _lumen);
-			SET_LIGHT_ACCESSOR(Flag, uchar, _flag);
+			SET_ACCESSOR_DIRTY(Color, const Color&, _color);
+			SET_ACCESSOR_DIRTY(Radius, float, _radius);
+			SET_ACCESSOR_DIRTY(uint, uint, _lumen);
+			SET_ACCESSOR_DIRTY(Flag, uchar, _flag);
 
 			GET_CONST_ACCESSOR(Color, const Color&, _color);
 			GET_CONST_ACCESSOR(Radius, float, _radius);

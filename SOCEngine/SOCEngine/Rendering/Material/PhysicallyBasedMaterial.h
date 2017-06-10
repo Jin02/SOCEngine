@@ -2,7 +2,6 @@
 
 #include "Material.hpp"
 
-#define SET_MATERIAL_ACCESSOR(name, type, variable)		inline void Set##name(type t)	{ variable = t; _dirty = true; }
 #define UPDATE_TEXTURE(name, bind)\
  inline void Regist##name(const Texture::Texture2D& tex) {RegistTexture(Get##name##Key(), bind, tex);}
 
@@ -57,13 +56,13 @@ namespace Rendering
 		GET_CONST_ACCESSOR(Roughness,				float,			_roughness);
 		GET_CONST_ACCESSOR(Flag,					uchar,			_flag);
 		GET_CONST_ACCESSOR(IndexOfRefraction,		float,			_ior);
-		SET_MATERIAL_ACCESSOR(MainColor,			const Color&,	_mainColor);
-		SET_MATERIAL_ACCESSOR(EmissiveColor,		const Color&,	_emissiveColor);
-		SET_MATERIAL_ACCESSOR(Metallic,				float,			_metallic);
-		SET_MATERIAL_ACCESSOR(Specularity,			float,			_specularity);
-		SET_MATERIAL_ACCESSOR(Roughness,			float,			_roughness);
-		SET_MATERIAL_ACCESSOR(Flag,					uchar,			_flag);
-		SET_MATERIAL_ACCESSOR(IndexOfRefraction,	float,			_ior);
+		SET_ACCESSOR_DIRTY(MainColor,				const Color&,	_mainColor);
+		SET_ACCESSOR_DIRTY(EmissiveColor,			const Color&,	_emissiveColor);
+		SET_ACCESSOR_DIRTY(Metallic,				float,			_metallic);
+		SET_ACCESSOR_DIRTY(Specularity,				float,			_specularity);
+		SET_ACCESSOR_DIRTY(Roughness,				float,			_roughness);
+		SET_ACCESSOR_DIRTY(Flag,					uchar,			_flag);
+		SET_ACCESSOR_DIRTY(IndexOfRefraction,		float,			_ior);
 
 	private:
 		bool		_dirty			= true;
