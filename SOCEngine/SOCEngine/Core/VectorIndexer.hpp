@@ -82,7 +82,7 @@ namespace Core
 	};
 
 	template<typename Key, typename Object>
-	class VectorMap : public VectorIndexer<Key, Object, IndexMap> {};
+	using VectorMap = VectorIndexer<Key, Object, IndexMap>;
 	template<typename Key, typename Object>
-	class VectorHashMap : public VectorIndexer<Key, Object, IndexHashMap> {};
+	using VectorHashMap = VectorIndexer<Key, Object, IndexHashMap>;
 }

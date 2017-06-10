@@ -45,7 +45,7 @@ namespace Core
 
 	private:
 		template <class ComponentType>
-		class ComponentPool : public VectorHashMap<ObjectId::LiteralType, ComponentType> {};
+		using ComponentPool = VectorHashMap<ObjectId::LiteralType, ComponentType>;
 
 		std::tuple<ComponentPool<Components>...>                    _components;
 	};

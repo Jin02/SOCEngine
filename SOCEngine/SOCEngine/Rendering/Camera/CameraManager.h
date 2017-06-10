@@ -8,7 +8,7 @@ namespace Rendering
 	namespace Manager
 	{
 		template <class CameraType>
-		class CameraPool : public Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType> {};
+		using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;
 
 		template <class... CameraTypes>
 		class CameraSystem final

@@ -61,7 +61,7 @@ namespace Core
 	};
 
 	template<typename Key>
-	class IndexHashMap final : public IndexBook<Key, std::unordered_map<Key, uint>> {};
+	using IndexHashMap = IndexBook<Key, std::unordered_map<Key, uint>>;
 	template<typename Key>
-	class IndexMap final : public IndexBook<Key, std::map<Key, uint>> {};
+	using IndexMap = IndexBook<Key, std::map<Key, uint>>;
 }
