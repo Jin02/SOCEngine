@@ -78,6 +78,14 @@ namespace Core
 			return _componentSystem->Has<Component>(_id);
 		}
 
+		Object Clone() const
+		{
+			Object newObj(_id, *_componentSystem, *_transformPool);
+			newObj._name = "Clone_" + _name;
+
+			return newObj;
+		}
+
 	public:
 		GET_SET_ACCESSOR(Name, const std::string&, _name);
 		GET_CONST_ACCESSOR(Id, ObjectId, _id);
