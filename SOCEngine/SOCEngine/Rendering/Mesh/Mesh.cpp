@@ -122,8 +122,7 @@ void Mesh::DeleteMaterialKey(const std::string & key)
 
 void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform)
 {
-	bool dirty = transform.GetDirty();
-	if(dirty == false) return;
+	assert(transform.GetDirty());
 
 	Vector3 extents = _boundBox.GetExtents();
 	Vector3 boxCenter = _boundBox.GetCenter();
@@ -147,8 +146,8 @@ void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const
 
 void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
 {
-	if (transform.GetDirty())
-		_tfChangeState = TransformCB::ChangeState::HasChanged;
+	assert(transform.GetDirty());
+	_tfChangeState = TransformCB::ChangeState::HasChanged;
 
 	TransformCB tfCB;
 

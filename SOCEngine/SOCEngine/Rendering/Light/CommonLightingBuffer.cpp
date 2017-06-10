@@ -5,53 +5,42 @@ using namespace Rendering;
 using namespace Rendering::Light;
 using namespace Rendering::Light::LightingBuffer;
 
-void CommonLightingBuffer::Initialize(Device::DirectX& dx, uint count)
+void CommonLightingBuffer::Initialize(Device::DirectX& dx, uint count, const void* dummy)
 {
-	const __int32 dummy[2048]	= { 0, };
 	_colorBuffer.Initialize(dx, count, DXGI_FORMAT_R8G8B8A8_UNORM, dummy);
 	_optionalParamIndexBuffer.Initialize(dx, count, DXGI_FORMAT_R32_UINT, dummy);	
 }
 
-void CommonLightingBuffer::Destroy()
-{
+void CommonLightingBuffer::SetBufferData(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
+{	
+	uint lightId = light.GetLightId().Literal();
+
+	_colorBuffer.SetData(lightId, light.Get32BitMainColor());
+	_optionalParamIndexBuffer.SetData(lightId, ComputeOptionalParamIndex(light, shadowIndex, shaftIndex));
 }
 
-void CommonLightingBuffer::UpdateBuffer(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex, bool existElem)
-{	
-	//auto key = light.GetObjectId();
+void CommonLightingBuffer::AddBufferData(const Light::BaseLight & light, ushort shadowIndex, uint lightShaftIndex)
+{
+	uint lightId = light.GetLightId().Literal();
 
-	//// Compute Optional Param Index
-	//uchar	lightShaftIndex		= shaftIndex & 0x7f;
-	//uchar	lightFlag			= light.GetFlag();
-	//uint	optionalParamIndex	= (shadowIndex << 16) | (lightFlag << 8) | lightShaftIndex;	
-	//uint	uintColor			= light.Get32BitMainColor();
-	//
-	//if(existElem)
-	//{
-	//	(*_colorBuffer.Find(key)) = uintColor;
-	//	(*_optionalParamIndexBuffer.Find(key)) = optionalParamIndex;
-	//}
-	//else
-	//{
-	//	_colorBuffer.Add(key, uintColor);
-	//	_optionalParamIndexBuffer.Add(key, optionalParamIndex);
-	//}
+	_colorBuffer.AddData(lightId, light.Get32BitMainColor());
+	_optionalParamIndexBuffer.AddData(lightId, ComputeOptionalParamIndex(light, shadowIndex, lightShaftIndex));
 }
 
 void CommonLightingBuffer::UpdateSRBuffer(Device::DirectX& dx)
 {
-	//_colorBuffer.UpdateSRBuffer(dx);
-	//_optionalParamIndexBuffer.UpdateSRBuffer(dx);
+	_colorBuffer.UpdateSRBuffer(dx);
+	_optionalParamIndexBuffer.UpdateSRBuffer(dx);
 }
 
-void CommonLightingBuffer::Delete(KeyType key)
+void CommonLightingBuffer::Delete(LightId id)
 {
-//	_colorBuffer.Delete(key);
-//	_optionalParamIndexBuffer.Delete(key);	
+	_colorBuffer.Delete(id.Literal());
+	_optionalParamIndexBuffer.Delete(id.Literal());
 }
 
 void CommonLightingBuffer::DeleteAll()
 {
-//	_colorBuffer.DeleteAll();
-//	_optionalParamIndexBuffer.DeleteAll();
+	_colorBuffer.DeleteAll();
+	_optionalParamIndexBuffer.DeleteAll();
 }

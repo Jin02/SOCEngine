@@ -58,5 +58,8 @@ namespace Core
 		Device::DirectX&									_dx;
 		DefaultComponentSystem								_componentSystem;
 		Core::TransformPool									_transformPool;
+
+	private:
+		std::vector<Core::Transform*>						_dirtyTransforms;
 	};
 }

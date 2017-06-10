@@ -12,7 +12,7 @@ namespace Core
 
 		UniqueIdManager() = default;
 
-	protected:
+	public:
 		const uint Acquire()
 		{
 			uint bitFieldIdx = 0;
@@ -37,7 +37,6 @@ namespace Core
 			return bitFieldIdx * BitSize;
 		}
 
-	public:
 		bool Has(uint id)
 		{
 			uint pos = id / BitSize;

@@ -5,7 +5,9 @@
 #include "Common.h"
 #include "BoundBox.h"
 #include "ObjectId.hpp"
+#include "LightId.hpp"
 #include <functional>
+#include "VectorIndexer.hpp"
 
 #define SET_LIGHT_ACCESSOR(name, type, variable) inline void Set##name(type t)	{ variable = t; _dirty = true; }
 
@@ -16,7 +18,8 @@ namespace Rendering
 		class BaseLight final
 		{
 		public:
-			explicit BaseLight(Core::ObjectId id) : _id(id) {};
+			explicit BaseLight(Core::ObjectId id, LightId lightId)
+				: _objectId(id), _lightId(lightId) {};
 
 			void SetIntensity(float intensity);
 			float GetIntensity() const;
@@ -33,17 +36,23 @@ namespace Rendering
 			GET_CONST_ACCESSOR(uint, uint, _lumen);
 			GET_CONST_ACCESSOR(Flag, uchar, _flag);
 
-			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _id);
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
+			GET_CONST_ACCESSOR(LightId, LightId, _lightId);
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 
 		private:
-			Core::ObjectId			_id;
+			Core::ObjectId			_objectId;
+			LightId					_lightId;
+
 			Color					_color = Color::White();
 			float					_radius = 10.0f;
 			uint					_lumen = 500; //intensity]]
 			uchar					_flag = 0;
 			bool					_dirty = true;
 		};
+
+		template<class LightType>
+		using LightPool = Core::VectorHashMap<LightId::LiteralType, LightType>;
 	}
 }

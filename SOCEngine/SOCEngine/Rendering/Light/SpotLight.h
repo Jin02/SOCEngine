@@ -21,16 +21,17 @@ namespace Rendering
 			};
 
 		public:
-			SpotLight(Core::ObjectId id) : _base(id) {};
+			explicit SpotLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
 
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
 			TransformType MakeTransform(const Core::Transform& transform) const;
-			Param MakeParam(const Core::Transform& transform);
+			Param MakeParam(const Core::Transform& transform) const;
 			inline void SetSpotAngleDegree(float d) { _spotAngleDegree = d; _dirty = true; }
 
 			GET_ACCESSOR(Base, BaseLight&, _base);
 			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
 			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _base.GetObjectId());
+			GET_CONST_ACCESSOR(LightId, const LightId&, _base.GetLightId());
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 
 		private:

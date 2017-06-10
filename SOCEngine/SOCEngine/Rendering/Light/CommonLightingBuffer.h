@@ -2,7 +2,6 @@
 
 #include "BaseLight.h"
 #include "GPUUploadBuffer.hpp"
-#include "ObjectId.hpp"
 
 namespace Rendering
 {
@@ -13,26 +12,33 @@ namespace Rendering
 			class CommonLightingBuffer
 			{
 			public:
-				using KeyType					= Core::ObjectId::LiteralType;
-				using ColorBuffer				= Buffer::GPUUploadBuffer<KeyType, uint>;
-				using OptionalParamIndexBuffer	= Buffer::GPUUploadBuffer<KeyType, uint>;
-			
-				ColorBuffer						_colorBuffer;
-				OptionalParamIndexBuffer		_optionalParamIndexBuffer;
+				using ColorBuffer				= Buffer::GPUUploadBuffer<uint>;
+				using OptionalParamIndexBuffer	= Buffer::GPUUploadBuffer<uint>;
 			
 			public:
 				CommonLightingBuffer() = default;
 			
-				void Initialize(Device::DirectX& dx, uint count);
-				void Destroy();
+				void Initialize(Device::DirectX& dx, uint count, const void* dummy);
 				
-				void UpdateBuffer(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex, bool existElem);
+				void SetBufferData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
+				void AddBufferData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
+
 				void UpdateSRBuffer(Device::DirectX& dx);		
-				void Delete(KeyType key);
+				void Delete(LightId id);
 				void DeleteAll();
 
 				GET_ACCESSOR(ColorSRBuffer, const Buffer::ShaderResourceBuffer&, _colorBuffer.GetShaderResourceBuffer());
 				GET_ACCESSOR(OptionalParamIndexSRBuffer, const Buffer::ShaderResourceBuffer&, _optionalParamIndexBuffer.GetShaderResourceBuffer());
+
+			private:
+				inline uint ComputeOptionalParamIndex(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
+				{
+					return (shadowIndex << 16) | (light.GetFlag() << 8) | (shaftIndex & 0x7f);
+				}
+
+			private:
+				ColorBuffer						_colorBuffer;
+				OptionalParamIndexBuffer		_optionalParamIndexBuffer;
 			};
 		}
 	}

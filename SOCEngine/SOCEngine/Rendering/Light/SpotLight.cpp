@@ -30,7 +30,7 @@ SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) co
 	return Vector4(wp.x, wp.y, wp.z, radius);
 }
 
-SpotLight::Param SpotLight::MakeParam(const Core::Transform& transform)
+SpotLight::Param SpotLight::MakeParam(const Core::Transform& transform) const
 {
 	assert(transform.GetObjectId() == _base.GetObjectId());
 	Vector3 forward = transform.GetWorldForward();

@@ -12,7 +12,7 @@ namespace Rendering
 		{
 		public:
 			using TransformType = std::pair<Half, Half>;
-			DirectionalLight(Core::ObjectId id) : _base(id) {};
+			explicit DirectionalLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
 
 			void UpdateFlag(const Core::Transform& transform);
 //			void ComputeViewProjMatrix(const Core::Transform& transform, const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
@@ -29,6 +29,7 @@ namespace Rendering
 
 			GET_ACCESSOR(Base, BaseLight&, _base);
 			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _base.GetObjectId());
+			GET_CONST_ACCESSOR(LightId, const LightId&, _base.GetLightId());
 
 		private:
 			BaseLight					_base;

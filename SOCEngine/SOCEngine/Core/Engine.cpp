@@ -38,9 +38,22 @@ void Engine::RunScene()
 		_lag -= MS_PER_UPDATE;
 	}
 
+	// check dirty transform
+	{
+		uint size = _transformPool.GetSize();
+		for (uint i = 0; i < size; ++i)
+		{
+			auto& tf = _transformPool.Get(i);
+			if( tf.GetDirty() )
+				_dirtyTransforms.push_back(&tf);
+		}
+	}
+
 	_scene->OnRenderPreview();
 	Render();
 	_scene->OnRenderPost();
+
+	_dirtyTransforms.clear();
 }
 
 void Engine::ChangeScene(IScene* scene)
