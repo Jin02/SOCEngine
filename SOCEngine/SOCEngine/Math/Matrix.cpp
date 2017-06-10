@@ -58,11 +58,7 @@ Matrix& Matrix::operator-= (const Matrix& mat)
 
 Matrix& Matrix::operator*= (const Matrix& mat)
 {
-	Matrix res;
-	Multiply(res, (*this), mat);
-
-	(*this) = res;
-
+	(*this) = Multiply((*this), mat);
 	return (*this);
 }
 
@@ -104,10 +100,7 @@ const Matrix Matrix::operator- (const Matrix& mat) const
 
 const Matrix Matrix::operator* (const Matrix& mat)
 {
-	Matrix res;
-	Multiply(res, (*this), mat);
-
-	return res;
+	return Multiply((*this), mat);
 }
 
 const Matrix Matrix::operator* (float f) const
@@ -123,10 +116,7 @@ const Matrix Matrix::operator* (float f) const
 
 const Matrix Matrix::operator* (const Matrix& mat) const
 {
-	Matrix res;
-	Matrix::Multiply(res, (*this), mat);
-
-	return res;
+	return 	Matrix::Multiply((*this), mat);
 }
 
 const Matrix Matrix::operator/ (float f) const
@@ -168,30 +158,28 @@ const Vector4 Matrix::operator* (const Vector4& v) const
 	return res;
 }
 
-void Matrix::Transpose(Matrix& out, const Matrix& mat)
+Matrix Matrix::Transpose(const Matrix& mat)
 {
 	Matrix origin = mat;
 
-	out._12 = origin._21;
-	out._13 = origin._31;
-	out._14 = origin._41;
+	origin._12 = mat._21;
+	origin._13 = mat._31;
+	origin._14 = mat._41;
+	origin._21 = mat._12;
+	origin._23 = mat._32;
+	origin._24 = mat._42;
+	origin._31 = mat._13;
+	origin._32 = mat._23;
+	origin._34 = mat._43;
+	origin._41 = mat._14;
+	origin._42 = mat._24;
+	origin._43 = mat._34;
+	origin._11 = mat._11;
+	origin._22 = mat._22;
+	origin._33 = mat._33;
+	origin._44 = mat._44;
 
-	out._21 = origin._12;
-	out._23 = origin._32;
-	out._24 = origin._42;
-
-	out._31 = origin._13;
-	out._32 = origin._23;
-	out._34 = origin._43;
-
-	out._41 = origin._14;
-	out._42 = origin._24;
-	out._43 = origin._34;
-
-	out._11 = origin._11;
-	out._22 = origin._22;
-	out._33 = origin._33;
-	out._44 = origin._44;
+	return origin;
 }
 
 void Matrix::Set(float _11, float _12, float _13, float _14,
@@ -206,7 +194,7 @@ void Matrix::Set(float _11, float _12, float _13, float _14,
 	_m[3][0] = _41; _m[3][1] = _42; _m[3][2] = _43; _m[3][3] = _44;
 }
 
-void Matrix::Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
+Matrix Matrix::Multiply(const Matrix& lhs, const Matrix& rhs)
 {
 	Matrix res;
 	for (int i = 0; i < 4; ++i)
@@ -223,19 +211,21 @@ void Matrix::Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs)
 		}
 	}
 
-	out = res;
+	return res;
 }
 
-void Matrix::Identity(Matrix& out)
+Matrix Matrix::Identity()
 {
+	Matrix out;
 	memset(&out, 0, sizeof(Matrix));
 	out._11 = out._22 = out._33 = out._44 = 1.0f;
+	return out;
 }
 
-void Matrix::Inverse(Matrix& out, const Matrix& mat)
+Matrix Matrix::Inverse(const Matrix& mat)
 {
-	Matrix src;
-	Matrix::Transpose(src, mat);
+	Matrix out;
+	Matrix src = Matrix::Transpose(mat);
 
 	float tmpCofactors[12];
 	/* calculate pairs for first 8 elements (cofactors) */
@@ -310,11 +300,13 @@ void Matrix::Inverse(Matrix& out, const Matrix& mat)
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; ++j)
 			out._m[i][j] *= det;
+
+	return out;
 }
 
-void Matrix::RotateUsingQuaternion(Matrix& out, const Quaternion& q)
+Matrix Matrix::RotateUsingQuaternion(const Quaternion& q)
 {
-	Identity(out);
+	Matrix out = Identity();
 
 	out._m[0][0] = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
 	out._m[0][1] = 2.0f * (q.x *q.y + q.z * q.w);
@@ -325,11 +317,13 @@ void Matrix::RotateUsingQuaternion(Matrix& out, const Quaternion& q)
 	out._m[2][0] = 2.0f * (q.x * q.z + q.y * q.w);
 	out._m[2][1] = 2.0f * (q.y *q.z - q.x *q.w);
 	out._m[2][2] = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
+
+	return out;
 }
 
-void Matrix::PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf)
+Matrix Matrix::PerspectiveFovLH(float aspect, float fovy, float zn, float zf)
 {
-	Identity(out);
+	Matrix out = Identity();
 
 	float yScale = 1.0f / tanf(fovy / 2.0f);
 	float xScale = yScale / aspect;
@@ -340,11 +334,13 @@ void Matrix::PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, f
 	out._m[2][3] = 1.0f;
 	out._m[3][2] = -zn * zf / (zf - zn);
 	out._m[3][3] = 0.0f;
+
+	return out;
 }
 
-void Matrix::OrthoLH(Matrix& out, float w, float h, float zn, float zf)
+Matrix Matrix::OrthoLH(float w, float h, float zn, float zf)
 {
-	Identity(out);
+	Matrix out = Identity();
 
 	out._m[0][0] = 2.0f / w;
 	out._m[1][1] = 2.0f / h;
@@ -352,10 +348,13 @@ void Matrix::OrthoLH(Matrix& out, float w, float h, float zn, float zf)
 	out._m[3][3] = 1.0f;
 
 	out._m[3][2] = zn / (zn - zf);
+
+	return out;
 }
 
-void Matrix::RotateUsingAxis(Matrix& out, const Vector3& v, float angle)
+Matrix Matrix::RotateUsingAxis(const Vector3& v, float angle)
 {
+	Matrix out;
 	Vector3 nv = Vector3::Normalize(v);
 	float sangle, cangle, cdiff;
 
@@ -382,4 +381,6 @@ void Matrix::RotateUsingAxis(Matrix& out, const Vector3& v, float angle)
 	out._m[3][1] = 0.0f;
 	out._m[3][2] = 0.0f;
 	out._m[3][3] = 1.0f;
+
+	return out;
 }

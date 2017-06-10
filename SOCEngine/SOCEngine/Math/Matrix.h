@@ -34,10 +34,10 @@ namespace Math
 		const Vector4 operator* (const Vector4& v) const;
 
 	public:
-		static void RotateUsingQuaternion(Matrix& out, const Quaternion& q);
-		static void PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf);
-		static void OrthoLH(Matrix& out, float w, float h, float zn, float zf);
-		static void RotateUsingAxis(Matrix& out, const Vector3& v, float angle);
+		static Matrix RotateUsingQuaternion(const Quaternion& q);
+		static Matrix PerspectiveFovLH(float aspect, float fovy, float zn, float zf);
+		static Matrix OrthoLH(float w, float h, float zn, float zf);
+		static Matrix RotateUsingAxis(const Vector3& v, float angle);
 
 	public:
 		void Set( float _11, float _12, float _13, float _14,
@@ -45,10 +45,10 @@ namespace Math
 			float _31, float _32, float _33, float _34,
 			float _41, float _42, float _43, float _44 );
 
-		static void Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs);
-		static void Transpose(Matrix& out, const Matrix& mat);
-		static void Inverse(Matrix& out, const Matrix& mat); 		//using cramer's rule
-		static void Identity(Matrix& out);
+		static Matrix Multiply(const Matrix& lhs, const Matrix& rhs);
+		static Matrix Transpose(const Matrix& mat);
+		static Matrix Inverse(const Matrix& mat); 		//using cramer's rule
+		static Matrix Identity();
 
 	public:
 		union

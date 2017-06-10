@@ -5,8 +5,7 @@ using namespace Intersection;
 
 void Frustum::Make(const Matrix &viewProjection)
 {
-	Matrix matInv;
-	Matrix::Inverse(matInv, viewProjection);
+	Matrix matInv = Matrix::Inverse( viewProjection);
 
 	_planeVertex[0].x = -1.0f;	_planeVertex[0].y = -1.0f;	_planeVertex[0].z = 0.0f;
 	_planeVertex[1].x =  1.0f;	_planeVertex[1].y = -1.0f;	_planeVertex[1].z = 0.0f;
@@ -18,7 +17,7 @@ void Frustum::Make(const Matrix &viewProjection)
 	_planeVertex[7].x = -1.0f;	_planeVertex[7].y =  1.0f;	_planeVertex[7].z = 1.0f;
 
 	for(int i=0; i<8; ++i)
-		Vector3::TransformCoord(_planeVertex[i], _planeVertex[i], matInv);
+		_planeVertex[i] = Vector3::TransformCoord(_planeVertex[i], matInv);
 
 	_position = (_planeVertex[0] + _planeVertex[5]) / 2.0f;
 

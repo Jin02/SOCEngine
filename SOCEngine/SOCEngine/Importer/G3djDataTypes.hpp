@@ -35,8 +35,8 @@ namespace Importer
 		{
 			rotation.tf.w = 1.0f;
 
-			Math::Matrix::Identity(localMatrix);
-			Math::Matrix::Identity(worldMatrix);
+			localMatrix = Math::Matrix::Identity();
+			worldMatrix = Math::Matrix::Identity();
 		}
 
 		std::string						id;

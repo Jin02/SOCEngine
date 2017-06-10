@@ -158,9 +158,9 @@ void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
 	const Matrix& worldMat = transform.GetWorldMatrix();
 	
 	TransformCB tfCB;
-	Matrix::Transpose(tfCB.world, worldMat);	
-	Matrix::Transpose(tfCB.prevWorld, _prevWorldMat);
-	Matrix::Inverse(tfCB.worldInvTranspose, tfCB.world);
+	tfCB.world				= Matrix::Transpose(worldMat);
+	tfCB.prevWorld			= Matrix::Transpose(_prevWorldMat);
+	tfCB.worldInvTranspose	= Matrix::Inverse(tfCB.world);
 	_transformCB.UpdateSubResource(dx, tfCB);
 
 	_prevWorldMat = worldMat;

@@ -82,11 +82,10 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 	CameraCBData cbData;
 	{
+		cbData.viewMat = ComputeViewMatrix(worldMat);
 		Matrix& viewMat = cbData.viewMat;
-		ComputeViewMatrix(cbData.viewMat, worldMat);
-
-		Matrix projMat;
-		ComputePerspectiveMatrix(projMat, true);
+		
+		Matrix projMat = ComputePerspectiveMatrix(true);
 
 		_viewProjMat = viewMat * projMat;
 		cbData.viewProjMat = _viewProjMat;
@@ -99,14 +98,13 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 	// Make Frustum
 	if (changedTF)
 	{
-		Matrix notInvProj;
-		ComputePerspectiveMatrix(notInvProj, false);
+		Matrix notInvProj = ComputePerspectiveMatrix(false);
 		_frustum.Make(cbData.viewMat * notInvProj);
 	}
 
-	Matrix::Transpose(cbData.viewMat, cbData.viewMat);
-	Matrix::Transpose(cbData.viewProjMat, cbData.viewProjMat);
-	Matrix::Transpose(cbData.prevViewProjMat, cbData.prevViewProjMat);
+	cbData.viewMat			= Matrix::Transpose(cbData.viewMat);
+	cbData.viewProjMat		= Matrix::Transpose(cbData.viewProjMat);
+	cbData.prevViewProjMat	= Matrix::Transpose(cbData.prevViewProjMat);
 
 	_camCB.UpdateSubResource(dx, cbData);
 
@@ -130,7 +128,7 @@ uint Rendering::Camera::MainCamera::CalcMaxNumLightsInTile(const Size<uint>& siz
 	return (LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - (key * (size.h / 120)));
 }
 
-void MainCamera::ComputePerspectiveMatrix(Math::Matrix & outMatrix, bool isInverted) const
+Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
 {
 	float fovRadian = DEG_2_RAD(_desc.fieldOfViewDegree);
 
@@ -140,10 +138,10 @@ void MainCamera::ComputePerspectiveMatrix(Math::Matrix & outMatrix, bool isInver
 	if (isInverted)
 		std::swap(near, far);
 
-	Matrix::PerspectiveFovLH(outMatrix, _desc.aspect, fovRadian, near, far);
+	return Matrix::PerspectiveFovLH(_desc.aspect, fovRadian, near, far);
 }
 
-void Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(Math::Matrix & outMatrix, bool isInverted) const
+Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
 {
 	float near = _desc.near;
 	float far = _desc.far;
@@ -151,12 +149,12 @@ void Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(Math::Matrix & outMa
 	if (isInverted)
 		std::swap(near, far);
 
-	Matrix::OrthoLH(outMatrix, _desc.renderRect.size.w, _desc.renderRect.size.h, near, far);
+	return Matrix::OrthoLH(_desc.renderRect.size.w, _desc.renderRect.size.h, near, far);
 }
 
-void Rendering::Camera::MainCamera::ComputeViewMatrix(Math::Matrix & outMatrix, const Math::Matrix & worldMatrix)
+Math::Matrix Rendering::Camera::MainCamera::ComputeViewMatrix(const Math::Matrix & worldMatrix)
 {
-	outMatrix = worldMatrix;
+	Math::Matrix outMatrix = worldMatrix;
 
 	Vector3 worldPos;
 	worldPos.x = worldMatrix._41;
@@ -176,10 +174,14 @@ void Rendering::Camera::MainCamera::ComputeViewMatrix(Math::Matrix & outMatrix, 
 	outMatrix._42 = p.y;
 	outMatrix._43 = p.z;
 	outMatrix._44 = 1.0f;
+
+	return outMatrix;
 }
 
-void Rendering::Camera::MainCamera::ComputeViewportMatrix(Math::Matrix & outMat, const Rect<float>& rect)
+Math::Matrix Rendering::Camera::MainCamera::ComputeViewportMatrix(const Rect<float>& rect)
 {
+	Math::Matrix outMat;
+
 	outMat._11 = rect.size.w / 2.0f;
 	outMat._12 = 0.0f;
 	outMat._13 = 0.0f;
@@ -199,14 +201,14 @@ void Rendering::Camera::MainCamera::ComputeViewportMatrix(Math::Matrix & outMat,
 	outMat._42 = rect.y + rect.size.h / 2.0f;
 	outMat._43 = 0.0f;
 	outMat._44 = 1.0f;
+
+	return outMat;
 }
 
-void Rendering::Camera::MainCamera::ComputeInvViewportMatrix(Math::Matrix & outMat, const Rect<float>& rect)
+Math::Matrix Rendering::Camera::MainCamera::ComputeInvViewportMatrix(const Rect<float>& rect)
 {
-	Math::Matrix viewportMat;
-	ComputeViewportMatrix(viewportMat, rect);
-
-	Math::Matrix::Inverse(outMat, viewportMat);
+	Math::Matrix viewportMat = ComputeViewportMatrix(rect);
+	return Math::Matrix::Inverse(viewportMat);
 }
 
 void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager & meshMgr, const Core::TransformPool & transformPool)

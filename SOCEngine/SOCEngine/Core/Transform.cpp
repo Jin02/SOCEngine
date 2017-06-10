@@ -83,7 +83,7 @@ void Transform::UpdateForward(const Vector3& f)
 void Transform::UpdateEulerAngle(const Vector3 & e)
 {
 	_eulerAngle = e;
-	Quaternion::FromEuler(_quaternion, -e);
+	_quaternion = Quaternion::FromEuler(-e);
 
 	_right		= _quaternion.GetRight();
 	_up			= _quaternion.GetUp();
@@ -96,9 +96,8 @@ void Transform::UpdateQuaternion(const Quaternion & q)
 {
 	_quaternion = q;
 
-	Matrix rotationMatrix;
-	Matrix::RotateUsingQuaternion(rotationMatrix, _quaternion);
-	Vector3::FromRotationMatrix(_eulerAngle, rotationMatrix);
+	Matrix rotationMatrix = Matrix::RotateUsingQuaternion(_quaternion);
+	_eulerAngle = Vector3::FromRotationMatrix(rotationMatrix);
 
 	_right		= _quaternion.GetRight();
 	_up			= _quaternion.GetUp();
@@ -126,8 +125,8 @@ void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
 	Matrix rotMat;
 	MakeRotationMatrix(rotMat, _right, _up, _forward);
 
-	Vector3::FromRotationMatrix(_eulerAngle, rotMat);
-	Quaternion::FromRotationMatrix(_quaternion, rotMat);
+	_eulerAngle = Vector3::FromRotationMatrix(rotMat);
+	_quaternion = Quaternion::FromRotationMatrix(rotMat);
 
 	SetDirty();
 }
@@ -179,10 +178,7 @@ const Vector3 Transform::FetchWorldEulerAngle() const
 	Matrix rotMat;
 	MakeRotationMatrix(rotMat, GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
 
-	Vector3 euler;
-	Vector3::FromRotationMatrix(euler, rotMat);
-
-	return euler;
+	return Vector3::FromRotationMatrix(rotMat);
 }
 
 const Quaternion Transform::FetchWorldQuaternion() const
@@ -191,10 +187,7 @@ const Quaternion Transform::FetchWorldQuaternion() const
 	Matrix rotMat;
 	MakeRotationMatrix(rotMat, GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
 
-	Quaternion q;
-	Quaternion::FromRotationMatrix(q, rotMat);
-
-	return q;
+	return Quaternion::FromRotationMatrix(rotMat);
 }
 
 

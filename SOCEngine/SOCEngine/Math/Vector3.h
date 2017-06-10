@@ -48,9 +48,9 @@ namespace Math
 		static const Vector3 Project(const Vector3& vector, const Vector3& onNormal);
 		static const Vector3 Reflect(const Vector3& inDirection, const Vector3& inNormal);
 		static float SqrLegnth(const Vector3& a);
-		static void TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat);
-		static void TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat);
-		static void FromRotationMatrix(Vector3& out, const Matrix& rotMat);
+		static Vector3 TransformCoord(const Vector3& v, const Matrix& mat);
+		static Vector3 TransformNormal(const Vector3& v, const Matrix& mat);
+		static Vector3 FromRotationMatrix(const Matrix& rotMat);
 
 	public:
 		const Vector3 Normalized() const;

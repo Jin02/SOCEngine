@@ -75,11 +75,11 @@ namespace Rendering
 			const Size<uint> ComputeThreadGroupSize(const Size<uint>& size) const;
 			uint CalcMaxNumLightsInTile(const Size<uint>& size) const;
 
-			void		ComputePerspectiveMatrix(Math::Matrix &outMatrix, bool isInverted) const;
-			void		ComputeOrthogonalMatrix(Math::Matrix &outMatrix, bool isInverted) const;
-			static void ComputeViewMatrix(Math::Matrix &outMatrix, const Math::Matrix &worldMatrix);
-			static void ComputeViewportMatrix(Math::Matrix& outMat, const Rect<float>& rect);
-			static void ComputeInvViewportMatrix(Math::Matrix& outMat, const Rect<float>& rect);
+			Math::Matrix		ComputePerspectiveMatrix(bool isInverted) const;
+			Math::Matrix		ComputeOrthogonalMatrix(bool isInverted) const;
+			static Math::Matrix ComputeViewMatrix(const Math::Matrix &worldMatrix);
+			static Math::Matrix ComputeViewportMatrix(const Rect<float>& rect);
+			static Math::Matrix ComputeInvViewportMatrix(const Rect<float>& rect);
 
 			void SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager& meshMgr, const Core::TransformPool& transformPool);
 

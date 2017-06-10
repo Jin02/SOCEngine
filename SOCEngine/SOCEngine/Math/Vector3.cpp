@@ -247,33 +247,34 @@ void Vector3::Set(float newX, float newY, float newZ)
 	z = newZ;
 }
 
-void Vector3::TransformCoord(Vector3& out, const Vector3& v, const Matrix& mat)
+Vector3 Vector3::TransformCoord(const Vector3& v, const Matrix& mat)
 {
+	Vector3 out;
+
 	Vector3 src = v;
 	float w = mat._m[0][3] * src.x + mat._m[1][3] * src.y + mat._m[2][3] * src.z + mat._m[3][3];
 
 	if (w == 0.0f)
-	{
-		out.x = out.y = out.z = 0.0f;
-		return;
-	}
+		return Vector3(0.0f, 0.0f, 0.0f);
 
-	out.x = (mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z + mat._m[3][0]) / w;
-	out.y = (mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z + mat._m[3][1]) / w;
-	out.z = (mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z + mat._m[3][2]) / w;
+	return Vector3(
+	(mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z + mat._m[3][0]) / w,
+	(mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z + mat._m[3][1]) / w,
+	(mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z + mat._m[3][2]) / w );
 }
 
-void Vector3::TransformNormal(Vector3& out, const Vector3& v, const Matrix& mat)
+Vector3 Vector3::TransformNormal(const Vector3& v, const Matrix& mat)
 {
 	Vector3 src = v;
 
-	out.x = (mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z);
-	out.y = (mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z);
-	out.z = (mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z);
+	return Vector3(
+	(mat._m[0][0] * src.x + mat._m[1][0] * src.y + mat._m[2][0] * src.z),
+	(mat._m[0][1] * src.x + mat._m[1][1] * src.y + mat._m[2][1] * src.z),
+	(mat._m[0][2] * src.x + mat._m[1][2] * src.y + mat._m[2][2] * src.z) );
 }
 
 //http://www.gamedev.net/topic/643623-how-do-i-get-the-euler-angle-from-a-matrix/
-void Vector3::FromRotationMatrix(Vector3& out, const Matrix& matrix)
+Vector3 Vector3::FromRotationMatrix(const Matrix& matrix)
 {
 	Vector3 dotx = Vector3(matrix._11, matrix._12, matrix._13);
 	Vector3 doty = Vector3(matrix._21, matrix._22, matrix._23);
@@ -331,7 +332,5 @@ void Vector3::FromRotationMatrix(Vector3& out, const Matrix& matrix)
 		thetaZ = 0;
 	}
 
-	out.x = thetaX;
-	out.y = thetaY;
-	out.z = thetaZ;
+	return Vector3(thetaX, thetaY, thetaZ);
 }

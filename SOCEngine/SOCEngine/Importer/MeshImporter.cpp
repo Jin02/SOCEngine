@@ -79,7 +79,7 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node,
 
 	Matrix localMatrix, worldMatrix;
 	{
-		Matrix::RotateUsingQuaternion(localMatrix, rotation.tf);
+		localMatrix = Matrix::RotateUsingQuaternion(rotation.tf);
 
 		localMatrix._41 = translation.tf.x;
 		localMatrix._42 = translation.tf.y;
@@ -410,8 +410,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Node node;
-			Matrix identityMat;
-			Matrix::Identity(identityMat);
+			Matrix identityMat = Matrix::Identity();
 			ParseNode(node, nodes[i], identityMat);
 			outNodes.push_back(node);
 		}
