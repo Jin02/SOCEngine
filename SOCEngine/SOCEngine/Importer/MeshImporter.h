@@ -8,29 +8,43 @@
 #include <unordered_map>
 #include <rapidjson/document.h>
 #include <set>
+#include <memory>
+#include "MaterialManager.hpp"
+#include "ObjectManager.h"
+#include "BoundBox.h"
+#include "Texture2DManager.h"
 
 namespace Importer
 {
 	class MeshImporter
 	{
 	public:
+		struct ManagerParam
+		{
+			Rendering::Manager::BufferManager&		bufferManager;
+			Rendering::Manager::MaterialManager&	materialManager;
+			Core::ObjectManager&					objManager;
+			Core::TransformPool&					transformPool;
+			Rendering::Manager::Texture2DManager&	tex2DManager;
+			Device::DirectX&						dx;
+		};
+
 		//key is Node::Parts::MeshPartId
-		typedef std::unordered_map<std::string, const Node*>				NodeHashMap;
-		typedef std::unordered_map<std::string, const Mesh::Intersection*>	IntersectionHashMap;
+		typedef std::unordered_map<std::string, Node>				NodeHashMap;
+		typedef std::unordered_map<std::string, Mesh::Intersection>	IntersectionHashMap;
 
 		static constexpr int GetMaximumRecognizeBoneCount() { return 4; }
 
-		void Destroy();
-
 		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
-		void ParseBinary(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const void* buffer, uint size);
-		Core::Object* Load(const std::string& fileDir, bool useOriginalObject = false, bool useDynamicVB = false, bool useDynamicIB = false, Rendering::Material::Type materialType = Rendering::Material::Type::PhysicallyBasedModel);
+		Core::Object Load(ManagerParam managerParam, const std::string& fileDir, bool useOriginalObject = false, bool useDynamicVB = false, bool useDynamicIB = false);
 
 	private:
 		struct StoredOriginObject
 		{
 			bool			alreadyUsed;
-			Core::Object*	object;
+			Core::Object	object;
+
+			StoredOriginObject() = default;
 		};
 
 		void ParseNode(Node& outNodes, const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
@@ -45,17 +59,19 @@ namespace Importer
 
 		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
 
-		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
-		void MakeHierarchy(Core::Object* parent, const Node& node, const std::string& meshFileName, Rendering::Manager::BufferManager* bufferManager, Rendering::Manager::MaterialManager* materialManager, const IntersectionHashMap& intersectionHashMap);
-		StoredOriginObject* BuildMesh(std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
+		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
+		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
+		StoredOriginObject* BuildMesh(ManagerParam managerParam,
+			std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
-		void FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes);
+		void FetchNodeHashMap(NodeHashMap& recurRefParts, const std::vector<Node>& nodes);
 
 		// key is meshPartId, second value is materialId
 		void FetchAllPartsInHashMap_Recursive(
 			std::unordered_map<std::string, std::vector<std::string>>& outParts,
 			const Node& node);
 
+	private:
 		Core::VectorMap<std::string, StoredOriginObject>	_originObjects;
 	};
 }

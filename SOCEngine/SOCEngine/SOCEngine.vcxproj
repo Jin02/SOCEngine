@@ -43,7 +43,7 @@
     <ClInclude Include="Importer\G3djDataTypes.hpp" />
     <ClInclude Include="Importer\ImporterUtility.h" />
     <ClInclude Include="Importer\MeshImporter.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Intersection\BoundBox.h" />
     <ClInclude Include="Intersection\Cone.h" />
@@ -226,7 +226,7 @@
     </ClCompile>
     <ClCompile Include="Importer\ImporterUtility.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Intersection\BoundBox.cpp" />
     <ClCompile Include="Intersection\Cone.cpp" />
