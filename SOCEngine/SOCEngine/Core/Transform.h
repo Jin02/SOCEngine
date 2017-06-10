@@ -44,6 +44,7 @@ namespace Core
 
 		GET_CONST_ACCESSOR(Dirty, bool, _dirty);
 		GET_CONST_ACCESSOR(ObjectId, ObjectId, _objectId);
+		GET_CONST_ACCESSOR(ParentId, ObjectId, _parentId);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
