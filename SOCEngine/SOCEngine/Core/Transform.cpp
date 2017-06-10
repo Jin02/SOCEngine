@@ -200,9 +200,9 @@ const Quaternion Transform::FetchWorldQuaternion() const
 
 bool Transform::HasChild(ObjectId id) const
 {
-	for (const auto& iter : _childIds)
+	for (const auto childId : _childIds)
 	{
-		if(iter == id)
+		if(childId == id)
 			return true;
 	}
 
@@ -229,10 +229,11 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 {
 	for (auto childId : _childIds)
 	{
-		auto child = *pool.Find(childId);
+		auto child = pool.Find(childId);
+		assert(child);
 
-		child._worldMat = child.ComputeLocalMatrix() * _worldMat;
-		child._ComputeWorldMatrix(pool);
+		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
+		child->_ComputeWorldMatrix(pool);
 	}
 }
 
