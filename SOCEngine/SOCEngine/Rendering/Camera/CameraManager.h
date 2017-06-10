@@ -1,15 +1,16 @@
 #pragma once
 
-#include "MeshCamera.h"
 #include <tuple>
+#include "MainCamera.h"
+#include "Object.hpp"
+
+template <class CameraType>
+using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;
 
 namespace Rendering
 {
 	namespace Manager
 	{
-		template <class CameraType>
-		using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;
-
 		template <class... CameraTypes>
 		class CameraSystem final
 		{
@@ -56,19 +57,15 @@ namespace Rendering
 		class CameraManager final
 		{
 		public:
-			CameraManager() = default;
-			DISALLOW_ASSIGN_COPY(CameraManager);
-			auto& Get()
-			{
-				return _cameraSystem;
-			}
+			CameraManager();
 
-			std::shared_ptr<Camera::MeshCamera> GetMainMeshCamera();
-			void SetMainMeshCamera(Camera::MeshCamera& cam);
+		public:
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void SetMainCamera(Core::Object object);
 
 		private:
-			CameraSystem<Camera::MeshCamera>		_cameraSystem;
-			Core::ObjectId							_mainMeshCamId;
+//			CameraSystem<Camera::MeshCamera>		_cameraSystem;
+			Camera::MainCamera						_mainCamera;
 		};
 	}
 }
