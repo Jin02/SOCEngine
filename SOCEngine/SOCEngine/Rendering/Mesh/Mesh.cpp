@@ -93,6 +93,7 @@ uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& sema
 
 void Mesh::AddMaterialKey(const std::string & key)
 {
+	assert(key.empty() == false);
 	_materialKeys.push_back(key);
 }
 
