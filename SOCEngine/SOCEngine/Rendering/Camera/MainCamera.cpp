@@ -82,7 +82,7 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 	CameraCBData cbData;
 	{
-		cbData.viewMat = ComputeViewMatrix(worldMat);
+		cbData.viewMat = Matrix::ComputeViewMatrix(worldMat);
 		Matrix& viewMat = cbData.viewMat;
 		
 		Matrix projMat = ComputePerspectiveMatrix(true);
@@ -150,65 +150,6 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 		std::swap(near, far);
 
 	return Matrix::OrthoLH(_desc.renderRect.size.w, _desc.renderRect.size.h, near, far);
-}
-
-Math::Matrix Rendering::Camera::MainCamera::ComputeViewMatrix(const Math::Matrix & worldMatrix)
-{
-	Math::Matrix outMatrix = worldMatrix;
-
-	Vector3 worldPos;
-	worldPos.x = worldMatrix._41;
-	worldPos.y = worldMatrix._42;
-	worldPos.z = worldMatrix._43;
-
-	Math::Vector3 right = Math::Vector3(worldMatrix._11, worldMatrix._21, worldMatrix._31);
-	Math::Vector3 up = Math::Vector3(worldMatrix._12, worldMatrix._22, worldMatrix._32);
-	Math::Vector3 forward = Math::Vector3(worldMatrix._13, worldMatrix._23, worldMatrix._33);
-
-	Vector3 p;
-	p.x = -Vector3::Dot(right, worldPos);
-	p.y = -Vector3::Dot(up, worldPos);
-	p.z = -Vector3::Dot(forward, worldPos);
-
-	outMatrix._41 = p.x;
-	outMatrix._42 = p.y;
-	outMatrix._43 = p.z;
-	outMatrix._44 = 1.0f;
-
-	return outMatrix;
-}
-
-Math::Matrix Rendering::Camera::MainCamera::ComputeViewportMatrix(const Rect<float>& rect)
-{
-	Math::Matrix outMat;
-
-	outMat._11 = rect.size.w / 2.0f;
-	outMat._12 = 0.0f;
-	outMat._13 = 0.0f;
-	outMat._14 = 0.0f;
-
-	outMat._21 = 0.0f;
-	outMat._22 = -rect.size.h / 2.0f;
-	outMat._23 = 0.0f;
-	outMat._24 = 0.0f;
-
-	outMat._31 = 0.0f;
-	outMat._32 = 0.0f;
-	outMat._33 = 1.0f;
-	outMat._34 = 0.0f;
-
-	outMat._41 = rect.x + rect.size.w / 2.0f;
-	outMat._42 = rect.y + rect.size.h / 2.0f;
-	outMat._43 = 0.0f;
-	outMat._44 = 1.0f;
-
-	return outMat;
-}
-
-Math::Matrix Rendering::Camera::MainCamera::ComputeInvViewportMatrix(const Rect<float>& rect)
-{
-	Math::Matrix viewportMat = ComputeViewportMatrix(rect);
-	return Math::Matrix::Inverse(viewportMat);
 }
 
 void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager & meshMgr, const Core::TransformPool & transformPool)

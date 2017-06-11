@@ -77,9 +77,6 @@ namespace Rendering
 
 			Math::Matrix		ComputePerspectiveMatrix(bool isInverted) const;
 			Math::Matrix		ComputeOrthogonalMatrix(bool isInverted) const;
-			static Math::Matrix ComputeViewMatrix(const Math::Matrix &worldMatrix);
-			static Math::Matrix ComputeViewportMatrix(const Rect<float>& rect);
-			static Math::Matrix ComputeInvViewportMatrix(const Rect<float>& rect);
 
 			void SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager& meshMgr, const Core::TransformPool& transformPool);
 

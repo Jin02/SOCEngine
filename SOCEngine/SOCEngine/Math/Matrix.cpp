@@ -384,3 +384,100 @@ Matrix Matrix::RotateUsingAxis(const Vector3& v, float angle)
 
 	return out;
 }
+
+Matrix Matrix::ComputeViewMatrix(const Matrix & worldMatrix)
+{
+	Matrix outMatrix = worldMatrix;
+
+	Vector3 worldPos;
+	worldPos.x = worldMatrix._41;
+	worldPos.y = worldMatrix._42;
+	worldPos.z = worldMatrix._43;
+
+	Vector3 right = Vector3(worldMatrix._11, worldMatrix._21, worldMatrix._31);
+	Vector3 up = Vector3(worldMatrix._12, worldMatrix._22, worldMatrix._32);
+	Vector3 forward = Vector3(worldMatrix._13, worldMatrix._23, worldMatrix._33);
+
+	Vector3 p;
+	p.x = -Vector3::Dot(right, worldPos);
+	p.y = -Vector3::Dot(up, worldPos);
+	p.z = -Vector3::Dot(forward, worldPos);
+
+	outMatrix._41 = p.x;
+	outMatrix._42 = p.y;
+	outMatrix._43 = p.z;
+	outMatrix._44 = 1.0f;
+
+	return outMatrix;
+}
+
+Matrix Matrix::ComputeViewportMatrix(const Rect<float>& rect)
+{
+	Matrix outMat;
+
+	outMat._11 = rect.size.w / 2.0f;
+	outMat._12 = 0.0f;
+	outMat._13 = 0.0f;
+	outMat._14 = 0.0f;
+
+	outMat._21 = 0.0f;
+	outMat._22 = -rect.size.h / 2.0f;
+	outMat._23 = 0.0f;
+	outMat._24 = 0.0f;
+
+	outMat._31 = 0.0f;
+	outMat._32 = 0.0f;
+	outMat._33 = 1.0f;
+	outMat._34 = 0.0f;
+
+	outMat._41 = rect.x + rect.size.w / 2.0f;
+	outMat._42 = rect.y + rect.size.h / 2.0f;
+	outMat._43 = 0.0f;
+	outMat._44 = 1.0f;
+
+	return outMat;
+}
+
+Matrix Matrix::ComputeInvViewportMatrix(const Rect<float>& rect)
+{
+	Matrix viewportMat = ComputeViewportMatrix(rect);
+	return Matrix::Inverse(viewportMat);
+}
+
+inline Matrix Math::Matrix::MakeRotationMatrix(const Vector3 & right, const Vector3 & up, const Vector3 & forward)
+{
+	Matrix outRotMat;
+
+	outRotMat._m[0][0] = right.x;
+	outRotMat._m[0][1] = up.x;
+	outRotMat._m[0][2] = forward.x;
+	outRotMat._m[0][3] = 0.0f;
+
+	outRotMat._m[1][0] = right.y;
+	outRotMat._m[1][1] = up.y;
+	outRotMat._m[1][2] = forward.y;
+	outRotMat._m[1][3] = 0.0f;
+
+	outRotMat._m[2][0] = right.z;
+	outRotMat._m[2][1] = up.z;
+	outRotMat._m[2][2] = forward.z;
+	outRotMat._m[2][3] = 0.0f;
+
+	outRotMat._m[3][0] = 0;
+	outRotMat._m[3][1] = 0;
+	outRotMat._m[3][2] = 0;
+	outRotMat._m[3][3] = 1.0f;
+
+	return outRotMat;
+}
+
+Matrix Math::Matrix::LookAtDir(const Vector3 & targetDir, const Vector3 * upVec)
+{
+	Vector3 worldUp = upVec ? *upVec : Vector3::Up();
+
+	Vector3 forward = targetDir.Normalized();
+	Vector3 right = Vector3::Cross(worldUp, forward);
+	Vector3 up = Vector3::Cross(forward, right);
+
+	return Matrix::MakeRotationMatrix(right, up, forward);
+}

@@ -4,30 +4,6 @@
 using namespace Core;
 using namespace Math;
 
-static void MakeRotationMatrix(	Matrix& outRotMat,
-								const Vector3& right, const Vector3& up, const Vector3& forward	)
-{
-	outRotMat._m[0][0] = right.x;
-	outRotMat._m[0][1] = up.x;
-	outRotMat._m[0][2] = forward.x;
-	outRotMat._m[0][3] = 0.0f;
-
-	outRotMat._m[1][0] = right.y;
-	outRotMat._m[1][1] = up.y;
-	outRotMat._m[1][2] = forward.y;
-	outRotMat._m[1][3] = 0.0f;
-
-	outRotMat._m[2][0] = right.z;
-	outRotMat._m[2][1] = up.z;
-	outRotMat._m[2][2] = forward.z;
-	outRotMat._m[2][3] = 0.0f;
-
-	outRotMat._m[3][0] = 0;
-	outRotMat._m[3][1] = 0;
-	outRotMat._m[3][2] = 0;
-	outRotMat._m[3][3] = 1.0f;
-}
-
 const Matrix & Transform::ComputeLocalMatrix()
 {
 	_localMat._11 = _scale.x * _right.x;
@@ -116,14 +92,7 @@ void Transform::LookAtPos(const Vector3 & targetPos, const Vector3* upVec)
 
 void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
 {
-	Vector3 up = upVec ? *upVec : Vector3::Up();
-
-	_forward	= targetDir.Normalized();
-	_right		= Vector3::Cross(up, _forward);
-	_up			= Vector3::Cross(_forward, _right);
-
-	Matrix rotMat;
-	MakeRotationMatrix(rotMat, _right, _up, _forward);
+	Matrix rotMat = Matrix::LookAtDir(targetDir, upVec);
 
 	_eulerAngle = Vector3::FromRotationMatrix(rotMat);
 	_quaternion = Quaternion::FromRotationMatrix(rotMat);
@@ -175,8 +144,7 @@ const Vector3 Transform::GetWorldForward(const Vector3& scale)	const
 const Vector3 Transform::FetchWorldEulerAngle() const
 {
 	Vector3 scale = GetWorldScale();
-	Matrix rotMat;
-	MakeRotationMatrix(rotMat, GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
+	Matrix rotMat = Matrix::MakeRotationMatrix(GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
 
 	return Vector3::FromRotationMatrix(rotMat);
 }
@@ -184,12 +152,10 @@ const Vector3 Transform::FetchWorldEulerAngle() const
 const Quaternion Transform::FetchWorldQuaternion() const
 {
 	Vector3 scale = GetWorldScale();
-	Matrix rotMat;
-	MakeRotationMatrix(rotMat, GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
+	Matrix rotMat = Matrix::MakeRotationMatrix(GetWorldRight(scale), GetWorldUp(scale), GetWorldForward(scale));
 
 	return Quaternion::FromRotationMatrix(rotMat);
 }
-
 
 bool Transform::HasChild(ObjectId id) const
 {

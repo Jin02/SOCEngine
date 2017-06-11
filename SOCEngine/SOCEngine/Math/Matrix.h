@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Rect.h"
+
 namespace Math
 {
 	class Vector2;
@@ -38,6 +40,11 @@ namespace Math
 		static Matrix PerspectiveFovLH(float aspect, float fovy, float zn, float zf);
 		static Matrix OrthoLH(float w, float h, float zn, float zf);
 		static Matrix RotateUsingAxis(const Vector3& v, float angle);
+		static Matrix ComputeViewMatrix(const Matrix &worldMatrix);
+		static Matrix ComputeViewportMatrix(const Rect<float>& rect);
+		static Matrix ComputeInvViewportMatrix(const Rect<float>& rect);
+		static Matrix MakeRotationMatrix(const Vector3& right, const Vector3& up, const Vector3& forward);
+		static Matrix LookAtDir(const Vector3 & targetDir, const Vector3* upVec = nullptr);
 
 	public:
 		void Set( float _11, float _12, float _13, float _14,
