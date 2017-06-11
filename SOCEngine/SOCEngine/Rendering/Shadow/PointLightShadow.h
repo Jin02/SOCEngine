@@ -1,6 +1,9 @@
 #pragma once
 
 #include "BaseShadow.h"
+#include "BaseLight.h"
+#include "Transform.h"
+#include "PointLight.h"
 
 namespace Rendering
 {
@@ -9,11 +12,8 @@ namespace Rendering
 		class PointLightShadow final
 		{
 		public:
-			void ComputeViewProjMatrix();
-
-		public:
+			void ComputeViewProjMatrix(const Light::LightPool<Light::PointLight>& lightPool, const Core::TransformPool& tfPool);
 			std::array<Math::Matrix, 6> MakeMatrixParam() const;
-			std::array<Math::Matrix, 6> GetViewProjectionMatrices() const;
 
 		private:
 			Math::Matrix	_viewProjMat[6];

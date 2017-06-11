@@ -1,22 +1,23 @@
 #pragma once
 
-#include "ShadowCommon.h"
+#include "BaseShadow.h"
+#include "BaseLight.h"
+#include "Transform.h"
+#include "SpotLight.h"
 
 namespace Rendering
 {
 	namespace Shadow
 	{
-		class SpotLightShadow : public ShadowCommon
+		class SpotLightShadow final
 		{
 		public:
-			SpotLightShadow(const Light::LightForm* owner);
-			~SpotLightShadow();
+			void ComputeViewProjMatrix(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
+			Math::Matrix MakeMatrixParam() const;
 
-		public:
-			void ComputeViewProjMatrix();
-
-		public:
-			void MakeMatrixParam(Math::Matrix& outViewProjMat) const;
+		private:
+			Math::Matrix	_viewProjMat;
+			BaseShadow		_base;
 		};
 	}
 }

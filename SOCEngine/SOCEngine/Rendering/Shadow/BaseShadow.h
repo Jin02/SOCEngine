@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "Color.h"
 #include "ObjectId.hpp"
-#include <functional>
+#include "LightId.hpp"
 
 namespace Rendering
 {
@@ -14,45 +14,37 @@ namespace Rendering
 		public:
 			struct Param
 			{
-				Half	projFar			= Half(0.1f);
-				Half	projNear		= Half(32.0f);
+				float	projNear		= 0.1f;
 
 				Half	softness		= Half(1.0f);
 				Half	underScanSize	= Half(4.25f);
 
 				uchar	flag			= 0;
 				uchar	bias			= 1;
-				ushort	lightIndex		= 0;
+				ushort	lightIndex		= -1;
 
 				uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);
 
 				Param() = default;
-				explicit Param(ushort _lightIndex)
-					: lightIndex(_lightIndex)
-				{
-				}
 			};
 
 		private:
-			LightId				_lightId;
+			Light::LightId		_lightId;
 			Param				_param;
 			bool				_dirty = true;
 
 		public:
-			BaseShadow(LightId id, ushort lightIndex)
-				: _lightId(id), _param(lightIndex)
-			{
-			}
+			BaseShadow(Light::LightId id) : _lightId(id) { }
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 			GET_CONST_ACCESSOR(Param, const Param&, _param);
 
 		public:
-			SET_ACCESSOR_DIRTY(ProjNear, Half, _param.projNear);
-			GET_ACCESSOR(ProjNear, Half, _param.projNear);
+			SET_ACCESSOR_DIRTY(ProjNear, float, _param.projNear);
+			GET_ACCESSOR(ProjNear, float, _param.projNear);
 
-			SET_ACCESSOR_DIRTY(ProjFar, Half, _param.projFar);
-			GET_ACCESSOR(ProjFar, Half, _param.projFar);
+//			SET_ACCESSOR_DIRTY(ProjFar, Half, _param.projFar);
+//			GET_ACCESSOR(ProjFar, Half, _param.projFar);
 
 			SET_ACCESSOR_DIRTY(Softness, Half, _param.softness);
 			GET_ACCESSOR(Softness, Half, _param.softness);
@@ -63,7 +55,7 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Flag, uchar, _param.flag);
 			GET_ACCESSOR(Flag, uchar, _param.flag);
 
-			GET_CONST_ACCESSOR(LightId, LightId, _lightId);
+			GET_CONST_ACCESSOR(LightId, Light::LightId, _lightId);
 			GET_CONST_ACCESSOR(LightIndex, ushort, _param.lightIndex);
 
 			inline float GetBias() const { return static_cast<float>(_param.bias) * 1020.0f; }

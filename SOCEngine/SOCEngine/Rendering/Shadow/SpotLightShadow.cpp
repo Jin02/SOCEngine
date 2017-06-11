@@ -1,42 +1,37 @@
 #include "SpotLightShadow.h"
 #include "SpotLight.h"
-#include "Transform.h"
 #include "Object.hpp"
-#include "CameraForm.h"
 
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;
-using namespace Rendering::Camera;
 using namespace Math;
 using namespace Core;
 
-SpotLightShadow::SpotLightShadow(const LightForm* owner) : ShadowCommon(owner)
+Matrix SpotLightShadow::MakeMatrixParam() const
 {
+	return Matrix::Transpose(_viewProjMat);
 }
 
-SpotLightShadow::~SpotLightShadow()
+void SpotLightShadow::ComputeViewProjMatrix(
+	const LightPool<SpotLight>& lightPool, const TransformPool& tfPool)
 {
-}
+	assert(_base.GetDirty());
 
-void SpotLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat) const
-{
-	Math::Matrix::Transpose(outViewProjMat, _viewProjMat);
-}
+	auto light = lightPool.Find(_base.GetLightId().Literal());
+	assert(light);
 
-void SpotLightShadow::ComputeViewProjMatrix()
-{
-	Matrix view;
-	_owner->GetOwner()->GetTransform()->FetchWorldMatrix(view);
-	CameraForm::GetViewMatrix(view, view);
+	const auto& lightBase = light->GetBase();
 
-	const SpotLight* owner	= static_cast<const SpotLight*>(_owner);
-	float spotAngle			= Common::Deg2Rad(owner->GetSpotAngleDegree());
+	auto transform = tfPool.Find(lightBase.GetObjectId().Literal());
+	assert(transform);
 
-	float radius	= _owner->GetRadius();
-	float projNear	= GetProjectionNear();
 
-	Matrix proj;
-	Matrix::PerspectiveFovLH(proj, 1.0f, spotAngle, radius, projNear);
+	Matrix view = Matrix::ComputeViewMatrix(transform->GetWorldMatrix());
 
+	float spotAngle	= DEG_2_RAD(light->GetSpotAngleDegree());
+	float radius	= lightBase.GetRadius();
+	float projNear	= _base.GetProjNear();
+
+	Matrix proj = Matrix::PerspectiveFovLH(1.0f, spotAngle, radius, projNear);
 	_viewProjMat			= view * proj;
 }
