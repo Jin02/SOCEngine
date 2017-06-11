@@ -1,113 +1,122 @@
 #pragma once
 
-#include "Lights.h"
-#include "Frustum.h"
-#include "VectorHashMap.h"
-#include "ShaderResourceBuffer.h"
-
-#include <functional>
+#include "DirectionalLightingBuffer.h"
+#include "SpotLightingBuffer.h"
+#include "PointLightingBuffer.h"
+#include "Transform.h"
 
 namespace Rendering
 {
 	namespace Manager
 	{
-		class LightManager
+		template<class LightObject>
+		class LightBuffer final
 		{
 		public:
-			struct Lights
+			void Initialize(Device::DirectX& dx)
 			{
-				uint				prevTransformUpdateCounter;
-				Light::BaseLight*	light;
+				_buffer.Initialize(dx);
+			}
+			void Add(typename LightObject::LightingBufferType& light, const Core::Transform& lightTF, const Light::LightingBuffer::RequiredIndexBook& indexBooks)
+			{
+				_buffer.AddLight(light, lightTF, indexBooks);
+			}
+			void Delete(typename LightObject::LightingBufferType& light)
+			{
+				_buffer.Delete(light);
+			}
+			auto& GetLightingBuffer()
+			{
+				return _buffer;
+			}
+			const auto& GetLightingBuffer() const
+			{
+				return _buffer;
+			}
 
-				Lights(Light::BaseLight* _light, uint prevTFCounter) : light(_light), prevTransformUpdateCounter(prevTFCounter) {}
-				~Lights(){}
-			};
-
-		private:
-			Structure::VectorHashMap<address, Lights>										_lights;
-			Structure::VectorHashMap<address, Light::DirectionalLight*>						_directionalLights; // using for compute frustum
-			Structure::VectorHashMap<address, Light::PointLight*>							_pointLights;
-			Structure::VectorHashMap<address, Light::SpotLight*>							_spotLights;
-
-			Structure::VectorHashMap<address, Light::BaseLight::LightTransformBuffer>		_pointLightTransformBuffer;
-			Buffer::ShaderResourceBuffer*													_pointLightTransformSRBuffer;
-			Structure::VectorHashMap<address, uint>											_pointLightColorBuffer;
-			Buffer::ShaderResourceBuffer*													_pointLightColorSRBuffer;
-			Structure::VectorHashMap<address, uint>											_pointLightOptionalParamIndexBuffer;
-			Buffer::ShaderResourceBuffer*													_pointLightOptionalParamIndexSRBuffer;
-
-			Structure::VectorHashMap<address, std::pair<ushort, ushort>>					_directionalLightDirBuffer;
-			Buffer::ShaderResourceBuffer*													_directionalLightDirSRBuffer;
-			Structure::VectorHashMap<address, uint>											_directionalLightColorBuffer;
-			Buffer::ShaderResourceBuffer*													_directionalLightColorSRBuffer;
-			Structure::VectorHashMap<address, uint>											_directionalLightOptionalParamIndexBuffer;
-			Buffer::ShaderResourceBuffer*													_directionalLightOptionalParamIndexSRBuffer;
-
-			Structure::VectorHashMap<address, Light::BaseLight::LightTransformBuffer>		_spotLightTransformBuffer;
-			Buffer::ShaderResourceBuffer*													_spotLightTransformSRBuffer;
-			Structure::VectorHashMap<address, Light::SpotLight::Param>						_spotLightParamBuffer;
-			Buffer::ShaderResourceBuffer*													_spotLightParamSRBuffer;
-			Structure::VectorHashMap<address, uint>											_spotLightColorBuffer;
-			Buffer::ShaderResourceBuffer*													_spotLightColorSRBuffer;
-			Structure::VectorHashMap<address, uint>											_spotLightOptionalParamIndexBuffer;
-			Buffer::ShaderResourceBuffer*													_spotLightOptionalParamIndexSRBuffer;
-
-			BufferUpdateType																_pointLightBufferUpdateType;
-			BufferUpdateType																_spotLightBufferUpdateType;
-			BufferUpdateType																_directionalLightBufferUpdateType;
-
-			bool																			_forceUpdateDL;
-			bool																			_forceUpdatePL;
-			bool																			_forceUpdateSL;
-
-		public:
-			LightManager(void);
-			~LightManager(void);
+			GET_CONST_ACCESSOR(Size, uint, _buffer.GetSize());
 
 		private:
-			void UpdateSRBufferUsingMapDiscard(	ID3D11DeviceContext* context,
-												const std::function<ushort(const Light::BaseLight*)>& getShadowIndexInEachShadowLights,
-												const std::function<uchar(const Light::BaseLight*)>& getLightShaftIndex);
-			void UpdateSRBufferUsingMapNoOverWrite(ID3D11DeviceContext* context);
+			typename LightObject::LightingBufferType _buffer;
+		};
 
+		class LightManager final
+		{
 		public:
-			void InitializeAllShaderResourceBuffer();
-			void DestroyAllShaderReourceBuffer();
+			DISALLOW_COPY_CONSTRUCTOR(LightManager);
 
-			uint Add(Light::BaseLight*& light);
-			void UpdateSRBuffer(const Device::DirectX* dx,
-								const std::function<ushort(const Light::BaseLight*)>& getShadowIndexInEachShadowLights,
-								const std::function<uchar(const Light::BaseLight*)>& getLightShaftIndex);
-			void ComputeDirectionalLightViewProj(const Intersection::BoundBox& sceneBoundBox, float directionalLightShadowMapResolution);
+			void Initialize(Device::DirectX& dx);
 
-			bool Has(Light::BaseLight*& light) const;
-			uint FetchLightIndexInEachLights(const Light::BaseLight* light) const;
+			template <class LightType>
+			void Add(LightType& light, const Core::Transform& lightTF, const Light::LightingBuffer::RequiredIndexBook& indexBooks)
+			{
+				GetBuffer<LightType>().Add(light, lightTF, indexBooks);
+				GetPool<LightType>().Add(light.GetLightId().Literal(), light);
+			}
 
-			void Delete(const Light::BaseLight*& light);
-			void DeleteAll();
-			void Destroy();
+			template <class LightType>
+			void Delete(LightType& light)
+			{
+				GetBuffer<LightType>().Delete(light);
+				GetPool<LightType>().Delete(light.GetLightId().Literal());
+			}
 
 			uint GetPackedLightCount() const;
-			void BindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
-			void UnbindResources(const Device::DirectX* dx, bool bindVS, bool bindGS, bool bindPS) const;
 
-		public:
-			GET_ACCESSOR(PointLightTransformSRBuffer,			const Buffer::ShaderResourceBuffer*,	_pointLightTransformSRBuffer);
-			GET_ACCESSOR(PointLightColorSRBuffer,				const Buffer::ShaderResourceBuffer*,	_pointLightColorSRBuffer);
-			GET_ACCESSOR(PointLightOptionalParamIndexSRBuffer,			const Buffer::ShaderResourceBuffer*,	_pointLightOptionalParamIndexSRBuffer);
+			void UpdateTransformBuffer(const std::vector<Core::Transform*>& dirtyTransforms);
+			void UpdateParamBuffer(	const Light::LightingBuffer::RequiredIndexBook& indexBooks,
+									const Core::TransformPool& transformPool	);
+			void UpdateSRBuffer(Device::DirectX& dx);
 
-			GET_ACCESSOR(DirectionalLightDirXYSRBuffer,			const Buffer::ShaderResourceBuffer*,	_directionalLightDirSRBuffer);
-			GET_ACCESSOR(DirectionalLightColorSRBuffer,			const Buffer::ShaderResourceBuffer*,	_directionalLightColorSRBuffer);
-			GET_ACCESSOR(DirectionalLightOptionalParamIndexSRBuffer,		const Buffer::ShaderResourceBuffer*,	_directionalLightOptionalParamIndexSRBuffer);
+			void CheckDirtyLights();
+			void ClearDirtyLights();
 
-			GET_ACCESSOR(SpotLightTransformSRBuffer,			const Buffer::ShaderResourceBuffer*,	_spotLightTransformSRBuffer);
-			GET_ACCESSOR(SpotLightParamSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLightParamSRBuffer);
-			GET_ACCESSOR(SpotLightColorSRBuffer,				const Buffer::ShaderResourceBuffer*,	_spotLightColorSRBuffer);
-			GET_ACCESSOR(SpotLightOptionalParamIndexSRBuffer,			const Buffer::ShaderResourceBuffer*,	_spotLightOptionalParamIndexSRBuffer);
+			void BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS);
+			void UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const;
 
-			GET_ACCESSOR(DirectionalLightCount,				uint,					_directionalLightColorBuffer.GetSize());
-			GET_ACCESSOR(PointLightCount,					uint,					_pointLightColorBuffer.GetSize());
-			GET_ACCESSOR(SpotLightCount,					uint,					_spotLightColorBuffer.GetSize());	
+			template <class LightType> auto&		GetBuffer()
+			{
+				return std::get<LightBuffer<LightType>>(_lightBuffers);
+			}
+			template <class LightType> const auto&	GetBuffer() const
+			{
+				return std::get<LightBuffer<LightType>>(_lightBuffers);
+			}
+			template <class LightType> auto&		GetPool()
+			{
+				return std::get<Light::LightPool<LightType>>(_lightPools);
+			}
+			template <class LightType> const auto&	GetPool() const
+			{
+				return std::get<Light::LightPool<LightType>>(_lightPools);
+			}
+
+		private:
+			template <class LightType> auto&		GetDirtyLights()
+			{
+				return std::get<std::vector<LightType*>>(_dirtyLigts);
+			}
+			template <class LightType> const auto&	GetDirtyLights() const
+			{
+				return std::get<std::vector<LightType*>>(_dirtyLigts);
+			}
+
+		private:
+			std::tuple<
+					LightBuffer<Light::DirectionalLight>,
+					LightBuffer<Light::PointLight>,
+					LightBuffer<Light::SpotLight>
+			> _lightBuffers;
+			std::tuple<				
+				Light::LightPool<Light::DirectionalLight>,
+				Light::LightPool<Light::PointLight>,
+				Light::LightPool<Light::SpotLight>
+			> _lightPools;
+			std::tuple<
+				std::vector<Light::DirectionalLight*>,
+				std::vector<Light::PointLight*>,
+				std::vector<Light::SpotLight*>
+			> _dirtyLigts;
 		};	
 	}
 }

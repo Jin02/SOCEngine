@@ -8,10 +8,22 @@ namespace Rendering
 {
 	namespace Light
 	{
+		namespace LightingBuffer
+		{
+			class DirectionalLightingBuffer;
+		}
+
 		class DirectionalLight final
 		{
 		public:
-			using TransformType = std::pair<Half, Half>;
+			using LightingBufferType = LightingBuffer::DirectionalLightingBuffer;
+
+			struct TransformType
+			{
+				Half x = Half(0.0f), y = Half(0.0f);
+				TransformType() = default;
+				TransformType(Half _x, Half _y) : x(_x), y(_y) {}
+			};
 			explicit DirectionalLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
 
 			void UpdateFlag(const Core::Transform& transform);
@@ -28,8 +40,10 @@ namespace Rendering
 			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
 
 			GET_ACCESSOR(Base, BaseLight&, _base);
-			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _base.GetObjectId());
-			GET_CONST_ACCESSOR(LightId, const LightId&, _base.GetLightId());
+			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
+
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
+			GET_CONST_ACCESSOR(LightId, LightId, _base.GetLightId());
 
 		private:
 			BaseLight					_base;

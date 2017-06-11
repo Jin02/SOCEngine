@@ -35,9 +35,10 @@ namespace Rendering
 			inline void Delete(uint key)				{	_pool.Delete(key);				}
 			inline void DeleteAll()						{	_pool.DeleteAll();				}
 //			inline T& Get(uint index)					{	return _pool[index];			}
-			inline uint Getsize() const					{	return _pool.GetSize();			}
+			inline uint GetSize() const					{	return _pool.GetSize();			}
 
-			GET_CONST_ACCESSOR(ShaderResourceBuffer, const ShaderResourceBuffer&, _srBuffer);
+			GET_ACCESSOR(ShaderResourceBuffer,	auto&, _srBuffer);
+			GET_CONST_ACCESSOR(IndexBook,		const auto&, _pool.GetIndexer());
 
 		private:
 			Core::VectorMap<uint, T>	_pool;

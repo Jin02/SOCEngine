@@ -8,10 +8,17 @@ namespace Rendering
 {
 	namespace Light
 	{
+		namespace LightingBuffer
+		{
+			class SpotLightingBuffer;
+		}
+
 		class SpotLight final
 		{
 		public:
-			using TransformType = Math::Vector4;
+			using LightingBufferType	= LightingBuffer::SpotLightingBuffer;
+			using TransformType			= Math::Vector4;
+
 			struct Param
 			{
 				Half	dirX			= Half(0.0f);
@@ -29,9 +36,11 @@ namespace Rendering
 			inline void SetSpotAngleDegree(float d) { _spotAngleDegree = d; _dirty = true; }
 
 			GET_ACCESSOR(Base, BaseLight&, _base);
+			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
+
 			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
-			GET_CONST_ACCESSOR(ObjectId, const Core::ObjectId&, _base.GetObjectId());
-			GET_CONST_ACCESSOR(LightId, const LightId&, _base.GetLightId());
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
+			GET_CONST_ACCESSOR(LightId, LightId, _base.GetLightId());
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 
 		private:

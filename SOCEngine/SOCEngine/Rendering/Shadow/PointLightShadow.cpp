@@ -1,23 +1,12 @@
 #include "PointLightShadow.h"
 #include "PointLight.h"
 #include "Transform.h"
-#include "CameraForm.h"
 #include "Object.hpp"
 
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;
-using namespace Rendering::Camera;
 using namespace Math;
 using namespace Core;
-
-PointLightShadow::PointLightShadow(const LightForm* owner)
-	: ShadowCommon(owner)
-{
-}
-
-PointLightShadow::~PointLightShadow()
-{
-}
 
 void PointLightShadow::ComputeViewProjMatrix()
 {
@@ -41,10 +30,9 @@ void PointLightShadow::ComputeViewProjMatrix()
 	};
 
 	float radius	= _owner->GetRadius();
-	float projNear	= GetProjectionNear();
+	float projNear	= _base.GetProjNear();
 
-	Matrix proj;
-	Matrix::PerspectiveFovLH(proj, 1.0f, Common::Deg2Rad(90.0f), radius, projNear);
+	Matrix proj = Matrix::PerspectiveFovLH(1.0f, DEG_2_RAD(90.0f), radius, projNear);
 
 	auto ComputeViewProj = [](Matrix& outViewProj,
 		const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
@@ -84,20 +72,22 @@ void PointLightShadow::ComputeViewProjMatrix()
 	}
 }
 
-void PointLightShadow::MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const
+std::array<Math::Matrix, 6> PointLightShadow::MakeMatrixParam() const
 {
-	GetViewProjectionMatrices(outViewProjMat);
+	std::array<Math::Matrix, 6> viewProjMats = GetViewProjectionMatrices();
 
 	for(uint i=0; i<6; ++i)
-	{
-		Math::Matrix::Transpose(outViewProjMat[i], outViewProjMat[i]);
-	}
+		viewProjMats[i] = Math::Matrix::Transpose(viewProjMats[i]);
+
+	return viewProjMats;
 }
 
-void PointLightShadow::GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const
+std::array<Math::Matrix, 6> PointLightShadow::GetViewProjectionMatrices() const
 {
-	out[0] = ShadowCommon::_viewProjMat;
+	std::array<Math::Matrix, 6> viewProjMats;
 
 	for(uint i=1; i<6; ++i)
-		out[i] = _viewProjMat[i-1];
+		viewProjMats[i] = _viewProjMat[i-1];
+
+	return viewProjMats;
 }

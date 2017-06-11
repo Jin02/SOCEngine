@@ -65,5 +65,5 @@ DirectionalLight::TransformType DirectionalLight::MakeTransform(const Transform&
 	assert(transform.GetObjectId() == _base.GetObjectId());
 
 	const auto& forward = transform.GetForward();
-	return std::make_pair(Half(forward.x), Half(forward.y));
+	return TransformType(Half(forward.x), Half(forward.y));
 }

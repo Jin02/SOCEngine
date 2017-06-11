@@ -3,7 +3,7 @@
 #include "GPUUploadBuffer.hpp"
 #include "CommonLightingBuffer.h"
 #include "Transform.h"
-#include <functional>
+#include <assert.h>
 
 namespace Rendering
 {
@@ -11,6 +11,12 @@ namespace Rendering
 	{
 		namespace LightingBuffer
 		{
+			struct RequiredIndexBook
+			{
+				const Core::IndexHashMap<LightId::LiteralType>& shadowIndexBook;
+				const Core::IndexHashMap<LightId::LiteralType>& lightShaftIndexBook;
+			};
+
 			template<typename LightType>
 			class LightingBufferForm
 			{
@@ -23,51 +29,50 @@ namespace Rendering
 				
 				void Initialize(Device::DirectX& dx, uint maxLightCount, DXGI_FORMAT format)
 				{
-					const TransformType dummy[2048] = { 0, };
+					TransformType dummy[2048];
+					memset(dummy, 0, sizeof(TransformType) * 2048);
 					_transformBuffer.Initialize(dx, maxLightCount, format, dummy);
 
 					_commonBuffer.Initialize(dx, maxLightCount, dummy);
 				}
 
-				void RegistLight(const LightType& light,
-					const Core::IndexHashMap<LightId::LiteralType>& shadowIndexBook,
-					const Core::IndexHashMap<LightId::LiteralType>& lightShaftIndexBook)
+				void AddLight(const LightType& light, const Core::Transform& lightTransform, const RequiredIndexBook& indexBooks)
 				{
-					uint lightId = light->GetBase().GetLightId().Literal();
-					ushort shadowIdx = shadowIndexBook.Find(lightId);
-					uint lightShaftIdx = lightShaftIndexBook.Find(lightId);
+					assert(light.GetObjectId() == lightTransform.GetObjectId());
 
-					_transformBuffer.RegistData(lightId, light->MakeTransform(tfBufferElem, tf));
-					_commonBuffer.RegistData(light->GetBase(), shadowIdx, lightShaftIdx)
+					uint lightId = light.GetBase().GetLightId().Literal();
+					ushort shadowIdx = indexBooks.shadowIndexBook.Find(lightId);
+					uint lightShaftIdx = indexBooks.lightShaftIndexBook.Find(lightId);
+
+					_transformBuffer.AddData(lightId, light.MakeTransform(lightTransform));
+					_commonBuffer.AddData(light.GetBase(), shadowIdx, lightShaftIdx);
 				}
 
 				void UpdateTransformBuffer(	const std::vector<Core::Transform*>& dirtyTransform,
 											const LightPool<LightType>& lightPool)
 				{
-					for (auto& tf : dirtyTransform)
+					for (const auto& tf : dirtyTransform)
 					{
 						Core::ObjectId objId = tf->GetObjectId();
-						const LightType& light = lightPool.Find(objId);
+						const auto light = lightPool.Find(objId.Literal());
 						
 						uint lightId = light->GetBase().GetLightId().Literal();
-						_transformBuffer.SetData(lightId, light->MakeTransform(tfBufferElem, tf));
+						_transformBuffer.SetData(lightId, light->MakeTransform(*tf));
 					}
 
 					_mustUpdateTransformSRBuffer |= (dirtyTransform.empty() != false);
 				}
 
-				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyLights,
-											const Core::IndexHashMap<LightId::LiteralType>& shadowIndexBook,
-											const Core::IndexHashMap<LightId::LiteralType>& lightShaftIndexBook)
+				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyLights, RequiredIndexBook indexBooks)
 				{
 					for (auto& light : dirtyLights)
 					{
 						uint lightId = light->GetLightId().Literal();
 
-						ushort shadowIdx = shadowIndexBook.Find(lightId);
-						uint lightShaftIdx = lightShaftIndexBook.Find(lightId);
+						ushort shadowIdx = indexBooks.shadowIndexBook.Find(lightId);
+						uint lightShaftIdx = indexBooks.lightShaftIndexBook.Find(lightId);
 
-						_commonBuffer.SetBufferData(light->GetBase(), shadowIdx, lightShaftIdx);
+						_commonBuffer.SetData(light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 
 					_mustUpdateCommonSRBuffer |= (dirtyLights.empty() != false);
@@ -84,8 +89,8 @@ namespace Rendering
 				
 				void Delete(const LightType& light)
 				{
-					Core::ObjectId id = light.GetObjectId();
-					_transformBuffer.Delete(id);
+					LightId id = light.GetLightId();
+					_transformBuffer.Delete(id.Literal());
 					_commonBuffer.Delete(id);
 				}
 				
@@ -96,9 +101,12 @@ namespace Rendering
 				}
 				
 			public:
-				GET_CONST_ACCESSOR(TransformSRBuffer,			const Buffer::ShaderResourceBuffer&, _transformBuffer.GetShaderResourceBuffer());
-				GET_CONST_ACCESSOR(ColorSRBuffer,				const Buffer::ShaderResourceBuffer&, _commonBuffer.GetColorSRBuffer());
-				GET_CONST_ACCESSOR(OptionalParamIndexSRBuffer, 	const Buffer::ShaderResourceBuffer&, _commonBuffer.GetOptionalParamIndexSRBuffer());
+				GET_ACCESSOR(TransformSRBuffer,				auto&, _transformBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR(ColorSRBuffer,					auto&, _commonBuffer.GetColorSRBuffer());
+				GET_ACCESSOR(OptionalParamIndexSRBuffer, 	auto&, _commonBuffer.GetOptionalParamIndexSRBuffer());
+				GET_CONST_ACCESSOR(IndexBook,				const auto&, _transformBuffer.IndexBook());
+
+				GET_CONST_ACCESSOR(Size, uint, _transformBuffer.GetSize());
 
 			protected:
 				TransformBuffer					_transformBuffer;

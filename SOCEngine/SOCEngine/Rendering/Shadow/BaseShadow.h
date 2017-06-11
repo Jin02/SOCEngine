@@ -5,8 +5,6 @@
 #include "ObjectId.hpp"
 #include <functional>
 
-#define SET_BASE_SHADOW_ACCESSOR(name, type, variable) inline void Set##name(type t)	{ variable = t; _dirty = true;}
-
 namespace Rendering
 {
 	namespace Shadow
@@ -36,13 +34,13 @@ namespace Rendering
 			};
 
 		private:
-			Core::ObjectId				_id;
-			Param						_param;
-			bool						_dirty = true;
+			LightId				_lightId;
+			Param				_param;
+			bool				_dirty = true;
 
 		public:
-			BaseShadow(Core::ObjectId id, ushort lightIndex)
-				: _id(id), _param(lightIndex)
+			BaseShadow(LightId id, ushort lightIndex)
+				: _lightId(id), _param(lightIndex)
 			{
 			}
 
@@ -50,21 +48,22 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Param, const Param&, _param);
 
 		public:
-			SET_BASE_SHADOW_ACCESSOR(ProjNear, Half, _param.projNear);
+			SET_ACCESSOR_DIRTY(ProjNear, Half, _param.projNear);
 			GET_ACCESSOR(ProjNear, Half, _param.projNear);
 
-			SET_BASE_SHADOW_ACCESSOR(ProjFar, Half, _param.projFar);
+			SET_ACCESSOR_DIRTY(ProjFar, Half, _param.projFar);
 			GET_ACCESSOR(ProjFar, Half, _param.projFar);
 
-			SET_BASE_SHADOW_ACCESSOR(Softness, Half, _param.softness);
+			SET_ACCESSOR_DIRTY(Softness, Half, _param.softness);
 			GET_ACCESSOR(Softness, Half, _param.softness);
 
-			SET_BASE_SHADOW_ACCESSOR(UnderScanSize, Half, _param.underScanSize);
+			SET_ACCESSOR_DIRTY(UnderScanSize, Half, _param.underScanSize);
 			GET_ACCESSOR(UnderScanSize, Half, _param.underScanSize);
 
-			SET_BASE_SHADOW_ACCESSOR(Flag, uchar, _param.flag);
+			SET_ACCESSOR_DIRTY(Flag, uchar, _param.flag);
 			GET_ACCESSOR(Flag, uchar, _param.flag);
 
+			GET_CONST_ACCESSOR(LightId, LightId, _lightId);
 			GET_CONST_ACCESSOR(LightIndex, ushort, _param.lightIndex);
 
 			inline float GetBias() const { return static_cast<float>(_param.bias) * 1020.0f; }
@@ -75,5 +74,3 @@ namespace Rendering
 		};
 	}
 }
-
-#undef SET_BASE_SHADOW_ACCESSOR

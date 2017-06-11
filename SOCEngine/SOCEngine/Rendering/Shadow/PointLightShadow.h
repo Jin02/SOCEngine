@@ -8,15 +8,16 @@ namespace Rendering
 	{
 		class PointLightShadow final
 		{
-		private:
-			Math::Matrix	_viewProjMat[6];
-
 		public:
 			void ComputeViewProjMatrix();
 
 		public:
-			void MakeMatrixParam(std::array<Math::Matrix, 6>& outViewProjMat) const; //sr
-			void GetViewProjectionMatrices(std::array<Math::Matrix, 6>& out) const; //cb
+			std::array<Math::Matrix, 6> MakeMatrixParam() const;
+			std::array<Math::Matrix, 6> GetViewProjectionMatrices() const;
+
+		private:
+			Math::Matrix	_viewProjMat[6];
+			BaseShadow		_base;
 		};
 	}
 }

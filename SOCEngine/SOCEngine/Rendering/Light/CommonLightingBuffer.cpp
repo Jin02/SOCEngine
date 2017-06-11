@@ -11,7 +11,7 @@ void CommonLightingBuffer::Initialize(Device::DirectX& dx, uint count, const voi
 	_optionalParamIndexBuffer.Initialize(dx, count, DXGI_FORMAT_R32_UINT, dummy);	
 }
 
-void CommonLightingBuffer::SetBufferData(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
+void CommonLightingBuffer::SetData(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
 {	
 	uint lightId = light.GetLightId().Literal();
 
@@ -19,7 +19,7 @@ void CommonLightingBuffer::SetBufferData(const Light::BaseLight& light, ushort s
 	_optionalParamIndexBuffer.SetData(lightId, ComputeOptionalParamIndex(light, shadowIndex, shaftIndex));
 }
 
-void CommonLightingBuffer::AddBufferData(const Light::BaseLight & light, ushort shadowIndex, uint lightShaftIndex)
+void CommonLightingBuffer::AddData(const Light::BaseLight & light, ushort shadowIndex, uint lightShaftIndex)
 {
 	uint lightId = light.GetLightId().Literal();
 
