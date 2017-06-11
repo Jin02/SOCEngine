@@ -38,7 +38,7 @@ namespace Rendering
 			GET_ACCESSOR(Base, BaseLight&, _base);
 			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
 
-			GET_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
+			GET_CONST_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
 			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
 			GET_CONST_ACCESSOR(LightId, LightId, _base.GetLightId());
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
