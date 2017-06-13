@@ -6,6 +6,12 @@ struct Size
 public:
 	Size(Type _w, Type _h) : w(_w), h(_h) {}
 	Type w, h;
+
+	template <typename NewType>
+	Size<NewType> Cast() const
+	{
+		return Size<NewType>(static_cast<NewType>(w), static_cast<NewType>(h));
+	}
 };
 
 template <typename Type>
@@ -17,4 +23,10 @@ public:
 
 	Type x, y;
 	Size<Type> size;
+
+	template <typename NewType>
+	Rect<NewType> Cast() const
+	{
+		return Rect<NewType>(x, y, size.w, size.h);
+	}
 };
