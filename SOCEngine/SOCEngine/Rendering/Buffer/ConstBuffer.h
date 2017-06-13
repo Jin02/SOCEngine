@@ -12,6 +12,8 @@ namespace Rendering
 		{
 		public:
 			ConstBuffer() = default;
+			ConstBuffer(Device::DirectX& dx, uint size) { Initialize(dx, size); }
+
 			GET_CONST_ACCESSOR(BaseBuffer, const BaseBuffer&, _base);
 			GET_ACCESSOR(Raw, auto, _base.GetRaw());
 
@@ -28,9 +30,15 @@ namespace Rendering
 		{
 		public:
 			ExplicitConstBuffer() = default;
-			
+			ExplicitConstBuffer(Device::DirectX& dx) { Initialize(dx); }
+
 			void Initialize(Device::DirectX& dx)				{ _cb.Initialize(dx, sizeof(Type)); }
 			void UpdateSubResource(Device::DirectX& dx, const Type& data)	{ _cb.UpdateSubResource(dx, &data); }
+
+			operator ConstBuffer&()
+			{
+				return _cb;
+			}
 
 		private:
 			ConstBuffer _cb;
