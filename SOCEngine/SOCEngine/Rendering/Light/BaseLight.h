@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlobalDefine.h"
 #include "Sphere.h"
 #include "Color.h"
 #include "Common.h"

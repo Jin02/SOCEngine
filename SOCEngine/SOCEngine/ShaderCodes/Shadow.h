@@ -22,7 +22,6 @@ SamplerState pointSamplerState					:	register( s4 );
 struct ShadowParam
 {
 	float	lightNear;
-	float	lightFar;
 
 	float	underScanSize;
 	float	softness;
@@ -37,8 +36,7 @@ struct ShadowParam
 
 void ParseShadowParam(out ShadowParam outParam, uint4 param)
 {
-	outParam.lightNear		= f16tof32(param.x >> 16);
-	outParam.lightFar		= f16tof32(param.x & 0x0000ffff);
+	outParam.lightNear		= asfloat(param.x);
 
 	outParam.underScanSize	= f16tof32(param.y >> 16);
 	outParam.softness		= f16tof32(param.y & 0xffff);
@@ -214,7 +212,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 
 uint ComputeFaceIndex(float3 dir)
 {
-	// PointLight::ComputeViewProjMatrix 참고
+	// PointLight::MakeVPMatParam 참고
 
 	uint res = 0;
 
