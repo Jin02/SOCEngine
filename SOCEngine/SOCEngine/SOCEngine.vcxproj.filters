@@ -328,6 +328,12 @@
     <Filter Include="Core\Id">
       <UniqueIdentifier>{eb3a5854-e697-4a4b-82c5-65a343b01265}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shadow\Buffer">
+      <UniqueIdentifier>{665c5db5-a765-4c2f-bb9a-a18c97c671e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\MapCB">
+      <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -733,6 +739,33 @@
     <ClInclude Include="Rendering\Light\LightId.hpp">
       <Filter>Rendering\Light</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Light\LightCullingUtility.h">
+      <Filter>Rendering\Light\Culling</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowManager.h">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
+      <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowId.hpp">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp">
+      <Filter>Rendering\Shadow\MapCB</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
+      <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -935,6 +968,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
+      <Filter>Rendering\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadowBuffer.cpp">
+      <Filter>Rendering\Shadow\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
