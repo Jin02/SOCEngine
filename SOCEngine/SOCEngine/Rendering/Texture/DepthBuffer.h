@@ -18,10 +18,11 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(DepthStencilView, const DXSharedResource<ID3D11DepthStencilView>&, _depthStencilView);
 			GET_CONST_ACCESSOR(RawDepthStencilView, auto, _depthStencilView.GetRaw());
+			GET_ACCESSOR(Texture2D, Texture2D&, _tex2D);
 
 		private:
 			DXSharedResource<ID3D11DepthStencilView>		_depthStencilView;
-			Texture2D					_tex2D;
+			Texture2D										_tex2D;
 		};
 	}
 }
