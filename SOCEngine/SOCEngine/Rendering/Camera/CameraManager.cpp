@@ -10,9 +10,9 @@ CameraManager::CameraManager()
 
 }
 
-void CameraManager::Initialize(Device::DirectX & dx, ShaderManager & shaderMgr)
+void CameraManager::Initialize(Device::DirectX & dx, ShaderManager & shaderMgr, const Rect<uint>& mainCamRenderRect)
 {
-	_mainCamera.Initialize(dx, shaderMgr);
+	_mainCamera.Initialize(dx, shaderMgr, mainCamRenderRect);
 }
 
 void Rendering::Manager::CameraManager::SetMainCamera(Core::Object object)

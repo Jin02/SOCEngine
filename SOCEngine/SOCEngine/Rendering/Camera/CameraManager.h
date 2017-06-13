@@ -60,7 +60,7 @@ namespace Rendering
 			CameraManager();
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
 			void SetMainCamera(Core::Object object);
 
 		private:
