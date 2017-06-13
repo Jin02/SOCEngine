@@ -27,40 +27,40 @@ namespace Rendering
 			public:
 				LightingBufferForm() = default;
 				
-				void Initialize(Device::DirectX& dx, uint maxLightCount, DXGI_FORMAT format)
+				void Initialize(Device::DirectX& dx, uint maxLightCount, DXGI_FORMAT tfFormat)
 				{
-					TransformType dummy[2048];
-					memset(dummy, 0, sizeof(TransformType) * 2048);
-					_transformBuffer.Initialize(dx, maxLightCount, format, dummy);
+					TransformType dummy[POINT_LIGHT_BUFFER_MAX_NUM];
+					memset(dummy, 0, sizeof(TransformType) * POINT_LIGHT_BUFFER_MAX_NUM);
+					_transformBuffer.Initialize(dx, maxLightCount, tfFormat, dummy);
 
 					_commonBuffer.Initialize(dx, maxLightCount, dummy);
+
+					_mustUpdateTransformSRBuffer = true;
+					_mustUpdateCommonSRBuffer = true;
 				}
 
-				void AddLight(const LightType& light, const Core::Transform& lightTransform, const RequiredIndexBook& indexBooks)
+				void AddLight(const LightType& light)
 				{
-					assert(light.GetObjectId() == lightTransform.GetObjectId());
+					_transformBuffer.AddData(light.GetLightId().Literal(), LightType::TransformType());
+					_commonBuffer.AddData(light.GetBase(), -1, -1);
 
-					uint lightId = light.GetBase().GetLightId().Literal();
-					ushort shadowIdx = indexBooks.shadowIndexBook.Find(lightId);
-					uint lightShaftIdx = indexBooks.lightShaftIndexBook.Find(lightId);
-
-					_transformBuffer.AddData(lightId, light.MakeTransform(lightTransform));
-					_commonBuffer.AddData(light.GetBase(), shadowIdx, lightShaftIdx);
+					_mustUpdateTransformSRBuffer = true;
+					_mustUpdateCommonSRBuffer = true;
 				}
 
-				void UpdateTransformBuffer(	const std::vector<Core::Transform*>& dirtyTransform,
-											const LightPool<LightType>& lightPool)
+				void UpdateTransformBuffer(const std::vector<LightType*>& dirtyTFLights,
+											const Core::TransformPool& tfPool)
 				{
-					for (const auto& tf : dirtyTransform)
+					for (const auto& light : dirtyTFLights)
 					{
-						Core::ObjectId objId = tf->GetObjectId();
-						const auto light = lightPool.Find(objId.Literal());
-						
+						Core::ObjectId objId = light->GetObjectId();
+						const auto& tf = tfPool.Find(objId.Literal());
+
 						uint lightId = light->GetBase().GetLightId().Literal();
 						_transformBuffer.SetData(lightId, light->MakeTransform(*tf));
 					}
 
-					_mustUpdateTransformSRBuffer |= (dirtyTransform.empty() != false);
+					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 				}
 
 				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyLights, RequiredIndexBook indexBooks)
@@ -92,12 +92,18 @@ namespace Rendering
 					LightId id = light.GetLightId();
 					_transformBuffer.Delete(id.Literal());
 					_commonBuffer.Delete(id);
+
+					_mustUpdateTransformSRBuffer = true;
+					_mustUpdateCommonSRBuffer = true;
 				}
 				
 				void DeleteAll()
 				{
 					_transformBuffer.DeleteAll();
 					_commonBuffer.DeleteAll();
+
+					_mustUpdateTransformSRBuffer = true;
+					_mustUpdateCommonSRBuffer = true;
 				}
 				
 			public:
@@ -112,7 +118,6 @@ namespace Rendering
 				TransformBuffer					_transformBuffer;
 				CommonLightingBuffer			_commonBuffer;
 
-			private:
 				bool							_mustUpdateCommonSRBuffer		= true;
 				bool							_mustUpdateTransformSRBuffer	= true;
 			};

@@ -15,7 +15,7 @@ namespace Rendering
 				using LightingBufferForm<DirectionalLight>::LightingBufferForm;
 				void Initialize(Device::DirectX& dx)
 				{
-					Initialize(dx, 1024, DXGI_FORMAT_R16G16_FLOAT);
+					Initialize(dx, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16_FLOAT);
 				}
 
 			private:

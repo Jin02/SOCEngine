@@ -3,36 +3,40 @@
 using namespace Rendering::Light;
 using namespace Rendering::Light::LightingBuffer;
 
-void SpotLightingBuffer::AddLight(const SpotLight & light, const Core::Transform & lightTransform, const RequiredIndexBook& indexBooks)
+inline void Rendering::Light::LightingBuffer::SpotLightingBuffer::Initialize(Device::DirectX & dx)
 {
-	assert(light.GetObjectId() == lightTransform.GetObjectId());
+	Parent::Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
-	_paramSRBuffer.AddData(light.GetLightId().Literal(), light.MakeParam(lightTransform));
-	Parent::AddLight(light, lightTransform, indexBooks);
+	SpotLight::Param dummy[POINT_LIGHT_BUFFER_MAX_NUM];
+	_paramSRBuffer.Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16B16A16_FLOAT, dummy);
 }
 
-void SpotLightingBuffer::UpdateParamBuffer(const std::vector<SpotLight*>& dirtyLights,
-											const Core::TransformPool & transformPool)
+void SpotLightingBuffer::AddLight(const SpotLight& light)
 {
-	for (auto& light : dirtyLights)
+	_paramSRBuffer.AddData(light.GetLightId().Literal(), SpotLight::Param());
+	Parent::AddLight(light);
+}
+
+void SpotLightingBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
+												const Core::TransformPool& tfPool)
+{
+	for (const auto& light : dirtyTFLights)
 	{
-		uint lightId = light->GetLightId().Literal();
+		Core::ObjectId objId = light->GetObjectId();
+		const auto& tf = tfPool.Find(objId.Literal());
 
-		const auto& tf = transformPool.Find(light->GetObjectId().Literal());
-		assert(tf);
-
+		uint lightId = light->GetBase().GetLightId().Literal();
+		_transformBuffer.SetData(lightId, light->MakeTransform(*tf));
 		_paramSRBuffer.SetData(lightId, light->MakeParam(*tf));
 	}
 
-	_mustUpdateParamSRBuffer |= (dirtyLights.empty() != false);
+	_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 }
 
 void SpotLightingBuffer::UpdateSRBuffer(Device::DirectX & dx)
 {
-	if (_mustUpdateParamSRBuffer)
+	if (_mustUpdateTransformSRBuffer)
 		_paramSRBuffer.UpdateSRBuffer(dx);
-
-	_mustUpdateParamSRBuffer = false;
 
 	Parent::UpdateSRBuffer(dx);
 }
