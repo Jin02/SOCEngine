@@ -6,6 +6,11 @@
 
 namespace Rendering
 {
+	namespace Shadow
+	{
+		class SpotLightShadow;
+	}
+
 	namespace Light
 	{
 		namespace LightingBuffer
@@ -18,6 +23,7 @@ namespace Rendering
 		public:
 			using LightingBufferType	= LightingBuffer::SpotLightingBuffer;
 			using TransformType			= Math::Vector4;
+			using ShadowType			= Shadow::SpotLightShadow;
 
 			struct Param
 			{

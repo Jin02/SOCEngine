@@ -6,6 +6,11 @@
 
 namespace Rendering
 {
+	namespace Shadow
+	{
+		class DirectionalLightShadow;
+	}
+
 	namespace Light
 	{
 		namespace LightingBuffer
@@ -16,7 +21,8 @@ namespace Rendering
 		class DirectionalLight final
 		{
 		public:
-			using LightingBufferType = LightingBuffer::DirectionalLightingBuffer;
+			using LightingBufferType	= LightingBuffer::DirectionalLightingBuffer;
+			using ShadowType			= Shadow::DirectionalLightShadow;
 
 			struct TransformType
 			{
@@ -32,7 +38,7 @@ namespace Rendering
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const { return true; }
 
 		public:
-			GET_CONST_ACCESSOR(LightShaftSize,				float,								_base.GetRadius());
+			GET_CONST_ACCESSOR(LightShaftSize, float,_base.GetRadius());
 			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
 
 			GET_ACCESSOR(Base, BaseLight&, _base);

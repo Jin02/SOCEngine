@@ -5,6 +5,11 @@
 
 namespace Rendering
 {
+	namespace Shadow
+	{
+		class PointLightShadow;
+	}
+
 	namespace Light
 	{
 		namespace LightingBuffer
@@ -17,6 +22,7 @@ namespace Rendering
 		public:
 			using LightingBufferType	= LightingBuffer::PointLightingBuffer;
 			using TransformType			= Math::Vector4;
+			using ShadowType			= Shadow::PointLightShadow;
 
 			explicit PointLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
 
