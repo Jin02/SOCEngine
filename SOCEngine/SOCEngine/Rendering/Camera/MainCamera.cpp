@@ -2,6 +2,7 @@
 #include "EngineShaderFactory.hpp"
 #include "Utility.hpp"
 #include "Matrix.h"
+#include "LightCullingUtility.h"
 
 using namespace Utility;
 using namespace Device;
@@ -15,7 +16,7 @@ using namespace Math;
 using namespace Rendering::Manager;
 using namespace Rendering::Geometry;
 
-void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr)
+void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<uint>& rect)
 {
 	std::vector<Shader::ShaderMacro> macros;
 	{
@@ -31,26 +32,22 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 		Factory::EngineShaderFactory factory(&shaderMgr);
 		_tbrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
 
-		Size<uint> size = ComputeThreadGroupSize(dx.GetBackBufferSize());
+		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
 		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
 		_tbrShader.SetThreadGroupInfo(threadGroup);
 	}
-
-	Size<float> fltSize = Size<float>(	static_cast<float>(dx.GetBackBufferSize().w),
-										static_cast<float>(dx.GetBackBufferSize().h)	);
-	Rect<float> renderRect = Rect<float>(0.0f, 0.0f, fltSize.w, fltSize.h);
-
 	// setting desc
 	{
-		_desc.aspect = renderRect.size.w / renderRect.size.h;
-		_desc.renderRect = renderRect;
+		auto size = rect.size.Cast<float>();
+		_desc.aspect = size.w / size.h;
+		_desc.renderRect = rect;
 	}
 
 	// setting gbuffer, render target
 	{
-		Size<uint> size(static_cast<uint>(renderRect.size.w), static_cast<uint>(renderRect.size.h));
-		uint mipLevel = static_cast<uint>(log(max(renderRect.size.w, renderRect.size.h)) / log(2.0f)) + 1;
-		_renderTarget.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
+		const auto& size = _desc.renderRect.size;
+		uint mipLevel = static_cast<uint>(log(max(size.w, size.h)) / log(2.0f)) + 1;
+		_renderTarget.Initialize(dx, _desc.renderRect.size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 		_gbuffer.albedo_occlusion.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 		_gbuffer.normal_roughness.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
@@ -63,11 +60,12 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	}
 
 	_camCB.Initialize(dx);
+	_tbrCB.Initialize(dx);
 
 	_Initialized = true;
 }
 
-void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
+void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform, uint packedNumOfLights)
 {
 	assert(dirtyTransform.GetObjectId() == _objId);
 
@@ -80,52 +78,58 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 	const Matrix& worldMat = dirtyTransform.GetWorldMatrix();
 
-	CameraCBData cbData;
 	{
-		cbData.viewMat = Matrix::ComputeViewMatrix(worldMat);
-		Matrix& viewMat = cbData.viewMat;
+		_camCBData.viewMat = Matrix::ComputeViewMatrix(worldMat);
+		Matrix& viewMat = _camCBData.viewMat;
 		
 		Matrix projMat = ComputePerspectiveMatrix(true);
 
 		_viewProjMat = viewMat * projMat;
-		cbData.viewProjMat = _viewProjMat;
+		_camCBData.viewProjMat = _viewProjMat;
 
-		cbData.worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43);
-		cbData.prevViewProjMat = _prevViewProjMat;
-		cbData.packedCamNearFar = (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
+		_camCBData.worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43);
+		_camCBData.prevViewProjMat = _prevViewProjMat;
+		_camCBData.packedCamNearFar = (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
+
+		_tbrCBData.invProjMat = Matrix::Inverse(projMat);
+		_tbrCBData.invViewProjMat = Matrix::Inverse(_viewProjMat);
+
+		Matrix invViewportMat = Matrix::ComputeInvViewportMatrix(_desc.renderRect);
+		_tbrCBData.invViewProjViewport = invViewportMat * _tbrCBData.invViewProjMat;
 	}
 
 	// Make Frustum
 	if (changedTF)
 	{
 		Matrix notInvProj = ComputePerspectiveMatrix(false);
-		_frustum.Make(cbData.viewMat * notInvProj);
+		_frustum.Make(_camCBData.viewMat * notInvProj);
 	}
 
-	cbData.viewMat			= Matrix::Transpose(cbData.viewMat);
-	cbData.viewProjMat		= Matrix::Transpose(cbData.viewProjMat);
-	cbData.prevViewProjMat	= Matrix::Transpose(cbData.prevViewProjMat);
+	_camCBData.viewMat				= Matrix::Transpose(_camCBData.viewMat);
+	_camCBData.viewProjMat			= Matrix::Transpose(_camCBData.viewProjMat);
+	_camCBData.prevViewProjMat		= Matrix::Transpose(_camCBData.prevViewProjMat);
 
-	_camCB.UpdateSubResource(dx, cbData);
+	_camCB.UpdateSubResource(dx, _camCBData);
+
+	_tbrCBData.invProjMat			= Matrix::Transpose(_tbrCBData.invProjMat);
+	_tbrCBData.invViewProjMat		= Matrix::Transpose(_tbrCBData.invViewProjMat);
+	_tbrCBData.invViewProjViewport	= Matrix::Transpose(_tbrCBData.invViewProjViewport);
+
+	// packed tbr cb data
+	{
+		auto& packed = _tbrCBData.packedParam;
+		packed.maxNumOfperLightInTile	= Light::CullingUtility::CalcMaxNumLightsInTile(_desc.renderRect.size.Cast<uint>());
+		packed.packedNumOfLights		= packedNumOfLights;
+
+		packed.packedViewportSize		= (_desc.renderRect.x << 16) | _desc.renderRect.y;
+	}
+
+	_tbrCB.UpdateSubResource(dx, _tbrCBData);
 
 	_camCBChangeState = TransformCB::ChangeState((static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 	_prevViewProjMat = _viewProjMat;
 
 	_dirty = false;
-}
-
-const Size<uint> MainCamera::ComputeThreadGroupSize(const Size<uint>& size) const
-{
-	return Size<uint>(
-		static_cast<uint>((size.w + LIGHT_CULLING_TILE_RES - 1) / static_cast<float>(LIGHT_CULLING_TILE_RES)),
-		static_cast<uint>((size.h + LIGHT_CULLING_TILE_RES - 1) / static_cast<float>(LIGHT_CULLING_TILE_RES))
-		);
-}
-
-uint Rendering::Camera::MainCamera::CalcMaxNumLightsInTile(const Size<uint>& size) const
-{
-	const uint key = LIGHT_CULLING_TILE_RES;
-	return (LIGHT_CULLING_LIGHT_MAX_COUNT_IN_TILE - (key * (size.h / 120)));
 }
 
 Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
@@ -149,7 +153,8 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 	if (isInverted)
 		std::swap(near, far);
 
-	return Matrix::OrthoLH(_desc.renderRect.size.w, _desc.renderRect.size.h, near, far);
+	auto size = _desc.renderRect.size.Cast<float>();
+	return Matrix::OrthoLH(size.w, size.h, near, far);
 }
 
 void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager & meshMgr, const Core::TransformPool & transformPool)
