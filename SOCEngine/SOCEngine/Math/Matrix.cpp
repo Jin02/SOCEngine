@@ -411,7 +411,7 @@ Matrix Matrix::ComputeViewMatrix(const Matrix & worldMatrix)
 	return outMatrix;
 }
 
-Matrix Matrix::ComputeViewportMatrix(const Rect<float>& rect)
+Matrix Matrix::ComputeViewportMatrix(const Rect<uint>& rect)
 {
 	Matrix outMat;
 
@@ -438,7 +438,7 @@ Matrix Matrix::ComputeViewportMatrix(const Rect<float>& rect)
 	return outMat;
 }
 
-Matrix Matrix::ComputeInvViewportMatrix(const Rect<float>& rect)
+Matrix Matrix::ComputeInvViewportMatrix(const Rect<uint>& rect)
 {
 	Matrix viewportMat = ComputeViewportMatrix(rect);
 	return Matrix::Inverse(viewportMat);

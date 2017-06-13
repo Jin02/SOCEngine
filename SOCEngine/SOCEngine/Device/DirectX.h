@@ -49,7 +49,7 @@ namespace Device
 	public:
 		unsigned int		CalcFormatSize(DXGI_FORMAT format) const;
 		void				ClearDeviceContext();
-		const Size<uint>	FetchBackBufferSize();
+		const Size<float>	FetchBackBufferSize();
 
 	public:
 		GET_ACCESSOR(Device,									ID3D11Device*,				_device.GetRaw());
@@ -83,7 +83,7 @@ namespace Device
 		GET_CONST_ACCESSOR(MSAADesc,							const DXGI_SAMPLE_DESC&,	_msaaDesc);
 		const Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 
-		GET_CONST_ACCESSOR(BackBufferSize,						const Size<uint>&,			_backBufferSize);
+		GET_CONST_ACCESSOR(BackBufferSize,						const Size<float>&,			_backBufferSize);
 
 		GET_CONST_ACCESSOR(FeatureLevel,						D3D_FEATURE_LEVEL,			_featureLevel);
 		GET_CONST_ACCESSOR(DriverType,							D3D_DRIVER_TYPE,			_driverType);
@@ -108,7 +108,7 @@ namespace Device
 	private:
 		friend class Core::Launcher;
 		void Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA);
-		void InitViewport(const Rect<uint>& rect);
+		void SetViewport(const Rect<uint>& rect);
 		void CreateRenderTargetView();
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();
@@ -145,7 +145,7 @@ namespace Device
 		DXUniqueResource<ID3D11SamplerState>		_samplerConeTracing;
 
 		DXGI_SAMPLE_DESC			_msaaDesc;
-		Size<uint>					_backBufferSize;
+		Size<float>					_backBufferSize;
 		D3D_FEATURE_LEVEL			_featureLevel;
 		D3D_DRIVER_TYPE				_driverType;
 	};
