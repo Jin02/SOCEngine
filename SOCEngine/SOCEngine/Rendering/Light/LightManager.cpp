@@ -4,7 +4,7 @@
 #include "PixelShader.h"
 #include "GeometryShader.h"
 
-
+#include <type_traits>
 
 using namespace Core;
 using namespace Rendering;
@@ -17,9 +17,29 @@ using namespace Rendering::Light::LightingBuffer;
 
 void LightManager::Initialize(Device::DirectX& dx)
 {
-	GetBuffer<DirectionalLight>().Initialize(dx);
-	GetBuffer<PointLight>().Initialize(dx);
-	GetBuffer<SpotLight>().Initialize(dx);
+	GetBuffer<DirectionalLight>().GetLightingBuffer().Initialize(dx);
+	GetBuffer<PointLight>().GetLightingBuffer().Initialize(dx);
+	GetBuffer<SpotLight>().GetLightingBuffer().Initialize(dx);
+}
+
+void LightManager::DeleteAll()
+{
+	GetBuffer<DirectionalLight>().GetLightingBuffer().DeleteAll();
+	GetPool<DirectionalLight>().DeleteAll();
+	GetDirtyParamLights<DirectionalLight>().clear();
+	GetDirtyTFLights<DirectionalLight>().clear();
+
+	GetBuffer<SpotLight>().GetLightingBuffer().DeleteAll();
+	GetPool<SpotLight>().DeleteAll();
+	GetDirtyParamLights<SpotLight>().clear();
+	GetDirtyTFLights<SpotLight>().clear();
+
+	GetBuffer<PointLight>().GetLightingBuffer().DeleteAll();
+	GetPool<PointLight>().DeleteAll();
+	GetDirtyParamLights<PointLight>().clear();
+	GetDirtyTFLights<PointLight>().clear();
+
+	_idMgr.DeleteAll();
 }
 
 uint LightManager::GetPackedLightCount() const
@@ -31,14 +51,14 @@ uint LightManager::GetPackedLightCount() const
 	return (pointLightCount << 21) | (spotLightCount << 10) | directionalLightCount;
 }
 
-void LightManager::UpdateTransformBuffer(const std::vector<Core::Transform*>& dirtyTransforms)
+void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPool)
 {
 	GetBuffer<DirectionalLight>().GetLightingBuffer().
-		UpdateTransformBuffer(dirtyTransforms, GetPool<DirectionalLight>());
+		UpdateTransformBuffer(GetDirtyTFLights<DirectionalLight>(), transformPool);
 	GetBuffer<PointLight>().GetLightingBuffer().
-		UpdateTransformBuffer(dirtyTransforms, GetPool<PointLight>());
+		UpdateTransformBuffer(GetDirtyTFLights<PointLight>(), transformPool);
 	GetBuffer<SpotLight>().GetLightingBuffer().
-		UpdateTransformBuffer(dirtyTransforms, GetPool<SpotLight>());
+		UpdateTransformBuffer(GetDirtyTFLights<SpotLight>(), transformPool);
 }
 
 void LightManager::UpdateParamBuffer(
@@ -46,15 +66,13 @@ void LightManager::UpdateParamBuffer(
 	const Core::TransformPool& transformPool)
 {
 	GetBuffer<DirectionalLight>().GetLightingBuffer().
-		UpdateLightCommonBuffer(GetDirtyLights<DirectionalLight>(), indexBooks);
+		UpdateLightCommonBuffer(GetDirtyParamLights<DirectionalLight>(), indexBooks);
 
 	GetBuffer<PointLight>().GetLightingBuffer().
-		UpdateLightCommonBuffer(GetDirtyLights<PointLight>(), indexBooks);
+		UpdateLightCommonBuffer(GetDirtyParamLights<PointLight>(), indexBooks);
 
-	auto& spotLightingBuffer = GetBuffer<SpotLight>().GetLightingBuffer();
-	const auto& dirtySpotLights = GetDirtyLights<SpotLight>();
-	spotLightingBuffer.UpdateLightCommonBuffer(dirtySpotLights, indexBooks);
-	spotLightingBuffer.UpdateParamBuffer(dirtySpotLights, transformPool);
+	GetBuffer<SpotLight>().GetLightingBuffer().
+		UpdateLightCommonBuffer(GetDirtyParamLights<SpotLight>(), indexBooks);
 }
 
 void LightManager::UpdateSRBuffer(Device::DirectX& dx)
@@ -64,22 +82,27 @@ void LightManager::UpdateSRBuffer(Device::DirectX& dx)
 	GetBuffer<SpotLight>().GetLightingBuffer().UpdateSRBuffer(dx);
 }
 
-void LightManager::CheckDirtyLights()
+void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 {
-	auto UpdateDirtyLight = [](auto& pool, auto& dirtyLights)
+	auto UpdateDirtyLight = [&transformPool](auto& pool, auto& dirtyParamLights, auto& dirtyTFLights)
 	{
 		uint size = pool.GetSize();
 		for (uint i = 0; i < size; ++i)
 		{
 			auto& light = pool.Get(i);
 			if (light.GetBase().GetDirty())
-				dirtyLights.push_back(&light);
+				dirtyParamLights.push_back(&light);
+
+			uint objId = light.GetObjectId().Literal();
+			auto transform = transformPool.Find(objId);
+			if (transform->GetDirty())
+				dirtyTFLights.push_back(&light);
 		}
 	};
 
-	UpdateDirtyLight(GetPool<DirectionalLight>(),	GetDirtyLights<DirectionalLight>());
-	UpdateDirtyLight(GetPool<PointLight>(),			GetDirtyLights<PointLight>());
-	UpdateDirtyLight(GetPool<SpotLight>(),			GetDirtyLights<SpotLight>());
+	UpdateDirtyLight(GetPool<DirectionalLight>(),	GetDirtyParamLights<DirectionalLight>(),	GetDirtyTFLights<DirectionalLight>());
+	UpdateDirtyLight(GetPool<PointLight>(),			GetDirtyParamLights<PointLight>(),			GetDirtyTFLights<PointLight>());
+	UpdateDirtyLight(GetPool<SpotLight>(),			GetDirtyParamLights<SpotLight>(),			GetDirtyTFLights<SpotLight>());
 }
 
 void LightManager::ClearDirtyLights()
@@ -90,9 +113,13 @@ void LightManager::ClearDirtyLights()
 			light->GetBase().SetDirty(false);
 	};
 
-	UpdateDirtyLight(GetDirtyLights<DirectionalLight>());
-	UpdateDirtyLight(GetDirtyLights<PointLight>());
-	UpdateDirtyLight(GetDirtyLights<SpotLight>());
+	UpdateDirtyLight(GetDirtyParamLights<DirectionalLight>());
+	UpdateDirtyLight(GetDirtyParamLights<PointLight>());
+	UpdateDirtyLight(GetDirtyParamLights<SpotLight>());
+
+	UpdateDirtyLight(GetDirtyTFLights<DirectionalLight>());
+	UpdateDirtyLight(GetDirtyTFLights<PointLight>());
+	UpdateDirtyLight(GetDirtyTFLights<SpotLight>());
 }
 
 void LightManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)

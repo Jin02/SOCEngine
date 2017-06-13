@@ -5,6 +5,8 @@
 #include "PointLightingBuffer.h"
 #include "Transform.h"
 
+#include "LightId.hpp"
+
 namespace Rendering
 {
 	namespace Manager
@@ -13,18 +15,6 @@ namespace Rendering
 		class LightBuffer final
 		{
 		public:
-			void Initialize(Device::DirectX& dx)
-			{
-				_buffer.Initialize(dx);
-			}
-			void Add(typename LightObject::LightingBufferType& light, const Core::Transform& lightTF, const Light::LightingBuffer::RequiredIndexBook& indexBooks)
-			{
-				_buffer.AddLight(light, lightTF, indexBooks);
-			}
-			void Delete(typename LightObject::LightingBufferType& light)
-			{
-				_buffer.Delete(light);
-			}
 			auto& GetLightingBuffer()
 			{
 				return _buffer;
@@ -48,10 +38,19 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx);
 
 			template <class LightType>
-			void Add(LightType& light, const Core::Transform& lightTF, const Light::LightingBuffer::RequiredIndexBook& indexBooks)
+			LightType& Acquire(Core::ObjectId objId)
 			{
-				GetBuffer<LightType>().Add(light, lightTF, indexBooks);
-				GetPool<LightType>().Add(light.GetLightId().Literal(), light);
+				Light::LightId id = _idMgr.Acquire();
+				return Add(LightType(objId, id) );
+			}
+
+			template <class LightType>
+			LightType& Add(LightType& light)
+			{
+				light.GetBase().SetDirty(true);
+
+				GetBuffer<LightType>().Add(light);
+				return GetPool<LightType>().Add(light.GetLightId().Literal(), light);
 			}
 
 			template <class LightType>
@@ -59,16 +58,19 @@ namespace Rendering
 			{
 				GetBuffer<LightType>().Delete(light);
 				GetPool<LightType>().Delete(light.GetLightId().Literal());
+
+				_idMgr.Delete(light.GetLightId());
 			}
+			void DeleteAll();
 
 			uint GetPackedLightCount() const;
 
-			void UpdateTransformBuffer(const std::vector<Core::Transform*>& dirtyTransforms);
+			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
 			void UpdateParamBuffer(	const Light::LightingBuffer::RequiredIndexBook& indexBooks,
-									const Core::TransformPool& transformPool	);
+									const Core::TransformPool& transformPool );
 			void UpdateSRBuffer(Device::DirectX& dx);
 
-			void CheckDirtyLights();
+			void CheckDirtyLights(const Core::TransformPool& transformPool);
 			void ClearDirtyLights();
 
 			void BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS);
@@ -90,15 +92,19 @@ namespace Rendering
 			{
 				return std::get<Light::LightPool<LightType>>(_lightPools);
 			}
+			template <class LightType> const auto& GetIndexBook() const
+			{
+				return GetPool<LightType>().GetIndexer();
+			}
 
 		private:
-			template <class LightType> auto&		GetDirtyLights()
+			template <class LightType> auto&		GetDirtyParamLights()
 			{
-				return std::get<std::vector<LightType*>>(_dirtyLigts);
+				return std::get<std::vector<LightType*>>(_dirtyParamLigts);
 			}
-			template <class LightType> const auto&	GetDirtyLights() const
+			template <class LightType> auto&		GetDirtyTFLights()
 			{
-				return std::get<std::vector<LightType*>>(_dirtyLigts);
+				return std::get<std::vector<LightType*>>(_dirtyParamLigts);
 			}
 
 		private:
@@ -112,11 +118,20 @@ namespace Rendering
 				Light::LightPool<Light::PointLight>,
 				Light::LightPool<Light::SpotLight>
 			> _lightPools;
+
 			std::tuple<
 				std::vector<Light::DirectionalLight*>,
 				std::vector<Light::PointLight*>,
 				std::vector<Light::SpotLight*>
-			> _dirtyLigts;
+			> _dirtyParamLigts;
+
+			std::tuple<
+				std::vector<Light::DirectionalLight*>,
+				std::vector<Light::PointLight*>,
+				std::vector<Light::SpotLight*>
+			> _dirtyTFLigts;
+
+			Light::LightIdManager _idMgr;
 		};	
 	}
 }
