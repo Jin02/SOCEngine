@@ -1,84 +1,82 @@
 #include "OnlyLightCulling.h"
 #include "EngineShaderFactory.hpp"
+#include "LightCullingUtility.h"
 
 using namespace Rendering::Light;
-using namespace GPGPU::DirectCompute;
 using namespace Rendering::Texture;
 using namespace Rendering::Factory;
 using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
+using namespace Rendering::Manager;
 
-OnlyLightCulling::OnlyLightCulling()
-	: LightCulling(), _shaderResourceBuffer(nullptr), _uav(nullptr)
+void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera)
 {
-}
+	std::vector<ShaderMacro> macros{	ShaderMacro("USE_ATOMIC", ""),
+										ShaderMacro("USE_COMPUTE_SHADER", ""),
+										ShaderMacro("ENABLE_BLEND", ""),
+										dx.GetMSAAShaderMacro() };
 
-OnlyLightCulling::~OnlyLightCulling()
-{
-	SAFE_DELETE(_shaderResourceBuffer);
-	SAFE_DELETE(_uav);
-}
+	EngineShaderFactory factory(&shaderMgr);
+	_cs = *factory.LoadComputeShader(dx, "OnlyLightCullingCS", "OnlyLightCullingCS", &macros, "@OnlyLightCulling");
 
-void OnlyLightCulling::Initialize(
-	const DepthBuffer* opaqueDepthBuffer,
-	const DepthBuffer* blendedDepthBuffer,
-	const std::vector<ShaderMacro>* opationalMacros)
-{
-	std::string path = "";
+	auto renderRectSize = mainCamera.GetRenderRect().size;
+
+	ComputeShader::ThreadGroup threadGroup(0, 0, 0);
 	{
-		EngineFactory shaderFactory(nullptr); //only use FetchShaderFullPath
-		shaderFactory.FetchShaderFullPath(path, "OnlyLightCullingCS");
-
-		ASSERT_MSG_IF(path.empty() == false, "Error, path is null");
+		Size<uint> groupSize = CullingUtility::CalcThreadGroupSize(renderRectSize);
+		threadGroup.x = groupSize.w; threadGroup.y = groupSize.h; threadGroup.z = 1;
 	}
-
-	std::vector<ShaderMacro> macros;
-	{
-		// LightCulling시, Depth Bound 계산을 atomic 비교 방식을 사용함
-		macros.push_back(ShaderMacro("USE_ATOMIC", ""));
-
-		// Parallel 방식
-		//macros.push_back(ShaderMacro("USE_PARALLEL", ""));
-
-		if(opationalMacros)
-			macros.insert(macros.end(), opationalMacros->begin(), opationalMacros->end());
-	}
-
-	LightCulling::Initialize(path, "OnlyLightCullingCS",
-		opaqueDepthBuffer, blendedDepthBuffer, &macros);
+	_cs.SetThreadGroupInfo(threadGroup);
 
 	// Ouput Buffer Setting
 	{
-		Math::Size<unsigned int> size = CalcThreadGroupSize();
-		uint num = CalcMaxNumLightsInTile() * size.w * size.h;
+		Size<uint> size = CullingUtility::CalcThreadGroupSize(renderRectSize);
+		uint num = CullingUtility::CalcMaxNumLightsInTile(renderRectSize) * size.w * size.h;
 
-		_shaderResourceBuffer = new ShaderResourceBuffer;
-		_shaderResourceBuffer->Initialize(4, num, DXGI_FORMAT_R32_UINT, nullptr, false, D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
-
-		_uav = new UnorderedAccessView;
-		_uav->Initialize(DXGI_FORMAT_R32_UINT, num, _shaderResourceBuffer->GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
-
-		ShaderForm::InputUnorderedAccessView outputBuffer;
-		{
-			outputBuffer.bindIndex	= (uint)UAVBindIndex::Lightculling_LightIndexBuffer;
-			outputBuffer.uav		= _uav;
-		}
-
-		std::vector<ShaderForm::InputUnorderedAccessView> outputs;
-		outputs.push_back(outputBuffer);
-
-		SetOuputBuferToCS(outputs);
+		_srb.Initialize(dx, 4, num, DXGI_FORMAT_R32_UINT, nullptr, false,  D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+		_uav.Initialize(dx, DXGI_FORMAT_R32_UINT, num, _srb.GetBaseBuffer().GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
 	}
 
-	SetInputsToCS();
 }
 
-void OnlyLightCulling::Destroy()
+inline void OnlyLightCulling::Dispatch(Device::DirectX & dx, Camera::MainCamera & mainCamera, Manager::LightManager & lightMgr)
 {
-	LightCulling::Destroy();
+	ID3D11DeviceContext* context = dx.GetContext();
 
-	_shaderResourceBuffer->Destroy();
-	_uav->Destroy();
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mainCamera.GetTBRParamCB());
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
+
+	auto& plBuffer = lightMgr.GetBuffer<PointLight>().GetLightingBuffer();
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter, plBuffer.GetTransformSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex, plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+
+	auto& slBuffer = lightMgr.GetBuffer<SpotLight>().GetLightingBuffer();
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter, slBuffer.GetTransformSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex, slBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightParam, slBuffer.GetParamSRBuffer().GetShaderResourceView());
+
+	auto& gbuffers = mainCamera.GetGBuffers();
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth, gbuffers.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth, gbuffers.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
+
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer, _uav);
+
+	_cs.Dispatch(dx);
+
+	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer);
+
+	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
+	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Camera);
+
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter);
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex);
+
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter);
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex);
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightParam);
+
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth);
+	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth);
 }
