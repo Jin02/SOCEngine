@@ -63,4 +63,25 @@ namespace Core
 	private:
 		std::vector<uint> _bitFields;
 	};
+
+	template <typename IdType>
+	class IdManagerForm : public Core::UniqueIdManager
+	{
+	public:
+		IdType Acquire()
+		{
+			uint literalId = UniqueIdManager::Acquire();
+			return IdType(literalId);
+		}
+
+		bool Has(IdType id)
+		{
+			return UniqueIdManager::Has(id.Literal());
+		}
+
+		void Delete(IdType id)
+		{
+			UniqueIdManager::Delete(id.Literal());
+		}
+	};
 }
