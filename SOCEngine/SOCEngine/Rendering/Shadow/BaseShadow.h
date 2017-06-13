@@ -4,6 +4,8 @@
 #include "Color.h"
 #include "ObjectId.hpp"
 #include "LightId.hpp"
+#include "ShadowId.hpp"
+#include "VectorIndexer.hpp"
 
 namespace Rendering
 {
@@ -28,23 +30,19 @@ namespace Rendering
 				Param() = default;
 			};
 
-		private:
-			Light::LightId		_lightId;
-			Param				_param;
-			bool				_dirty = true;
-
 		public:
-			BaseShadow(Light::LightId id) : _lightId(id) { }
+			BaseShadow(Light::LightId lightId, Shadow::ShadowId shadowId)
+				: _lightId(lightId), _shadowId(shadowId)
+			{
+
+			}
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
-			GET_CONST_ACCESSOR(Param, const Param&, _param);
+			GET_CONST_ACCESSOR(Param, Param, _param);
 
 		public:
 			SET_ACCESSOR_DIRTY(ProjNear, float, _param.projNear);
 			GET_ACCESSOR(ProjNear, float, _param.projNear);
-
-//			SET_ACCESSOR_DIRTY(ProjFar, Half, _param.projFar);
-//			GET_ACCESSOR(ProjFar, Half, _param.projFar);
 
 			SET_ACCESSOR_DIRTY(Softness, Half, _param.softness);
 			GET_ACCESSOR(Softness, Half, _param.softness);
@@ -56,6 +54,8 @@ namespace Rendering
 			GET_ACCESSOR(Flag, uchar, _param.flag);
 
 			GET_CONST_ACCESSOR(LightId, Light::LightId, _lightId);
+			GET_CONST_ACCESSOR(ShadowId, Shadow::ShadowId, _shadowId);
+
 			GET_CONST_ACCESSOR(LightIndex, ushort, _param.lightIndex);
 
 			inline float GetBias() const { return static_cast<float>(_param.bias) * 1020.0f; }
@@ -63,6 +63,21 @@ namespace Rendering
 
 			inline Color GetColor() const { return Color(_param.shadowColor); }
 			inline void SetColor(const Color& c) { _param.shadowColor = c.Get32BitUintColor(); _dirty = true; }
+
+		private:
+			Light::LightId		_lightId;
+			Shadow::ShadowId	_shadowId;
+
+			Param				_param;
+			bool				_dirty = true;
+		};
+
+		template<class LightObjType>
+		class ShadowPool final : public Core::VectorHashMap<ShadowId::LiteralType, typename LightObjType::ShadowType>
+		{
+		public:
+			using LightType = LightObjType;
+			using ShadowType = typename LightObjType::ShadowType;
 		};
 	}
 }

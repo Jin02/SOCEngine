@@ -7,9 +7,7 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-void PointLightShadow::ComputeViewProjMatrix(
-	const LightPool<PointLight>& plPool,
-	const TransformPool& tfPool)
+PointLightShadow::ViewProjMatType PointLightShadow::MakeVPMatParam(const LightPool<PointLight>& plPool, const TransformPool& tfPool)
 {
 	assert(_base.GetDirty());
 
@@ -64,16 +62,8 @@ void PointLightShadow::ComputeViewProjMatrix(
 
 	Vector3 worldPos = transform->GetWorldPosition();
 
-	for(uint i=0; i<6; ++i)
-		_viewProjMat[i] = ComputeViewProj(worldPos, forwards[i], ups[i], proj);	
-}
+	for (uint i = 0; i < 6; ++i)
+		_transposedViewProjMat[i] = Matrix::Transpose( ComputeViewProj(worldPos, forwards[i], ups[i], proj) );
 
-std::array<Matrix, 6> PointLightShadow::MakeMatrixParam() const
-{
-	std::array<Math::Matrix, 6> viewProjMats;
-
-	for(uint i=0; i<6; ++i)
-		viewProjMats[i] = Matrix::Transpose(_viewProjMat[i]);
-
-	return viewProjMats;
+	return _transposedViewProjMat;
 }

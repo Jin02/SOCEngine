@@ -9,14 +9,33 @@ namespace Rendering
 {
 	namespace Shadow
 	{
+		namespace Buffer
+		{
+			class SpotLightShadowBuffer;
+		}
+
 		class SpotLightShadow final
 		{
 		public:
-			void ComputeViewProjMatrix(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
-			Math::Matrix MakeMatrixParam() const;
+			using ViewProjMatType	= Math::Matrix;
+			using ShadowBufferType	= Buffer::SpotLightShadowBuffer;
+			using LightType			= Light::SpotLight;
+
+		public:
+			SpotLightShadow(BaseShadow base) : _base(base) {}
+			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
+
+			GET_CONST_ACCESSOR(ViewProjectionMatrix, const auto&, _transposedViewProjMat);
+			GET_CONST_ACCESSOR(Base, const BaseShadow&, _base);
+
+			GET_CONST_ACCESSOR(LightId, Light::LightId, _base.GetLightId());
+			GET_CONST_ACCESSOR(ShadowId, Shadow::ShadowId, _base.GetShadowId());
+
+			inline void SetDirty(bool b) { _base.SetDirty(b); }
+			GET_CONST_ACCESSOR(Dirty, bool, _base.GetDirty());
 
 		private:
-			Math::Matrix	_viewProjMat;
+			Math::Matrix	_transposedViewProjMat;
 			BaseShadow		_base;
 		};
 	}

@@ -8,12 +8,7 @@ using namespace Math;
 using namespace Core;
 using namespace Intersection;
 
-Matrix DirectionalLightShadow::MakeMatrixParam() const
-{
-	return Matrix::Transpose(_viewProjMat);
-}
-
-void DirectionalLightShadow::ComputeViewProjMatrix(
+DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 	const LightPool<DirectionalLight>& lightPool,
 	const TransformPool& tfPool,
 	const BoundBox& sceneBoundBox)
@@ -48,7 +43,7 @@ void DirectionalLightShadow::ComputeViewProjMatrix(
 	Matrix proj = Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
 
 	// Done!
-	_viewProjMat = view * proj;
+	_transposedViewProjMat = Matrix::Transpose(view * proj);
 
 	// Compute Param
 	{
@@ -57,4 +52,6 @@ void DirectionalLightShadow::ComputeViewProjMatrix(
 		_param.invProj_34 = proj._34;
 		_param.invProj_44 = proj._44;
 	}
+
+	return _transposedViewProjMat;
 }

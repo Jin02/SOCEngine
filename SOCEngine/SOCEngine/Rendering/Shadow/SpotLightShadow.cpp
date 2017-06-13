@@ -7,14 +7,9 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-Matrix SpotLightShadow::MakeMatrixParam() const
-{
-	return Matrix::Transpose(_viewProjMat);
-}
-
-void SpotLightShadow::ComputeViewProjMatrix(
+SpotLightShadow::ViewProjMatType SpotLightShadow::MakeVPMatParam(
 	const LightPool<SpotLight>& lightPool, const TransformPool& tfPool)
-{
+{		
 	assert(_base.GetDirty());
 
 	auto light = lightPool.Find(_base.GetLightId().Literal());
@@ -33,5 +28,7 @@ void SpotLightShadow::ComputeViewProjMatrix(
 	float projNear	= _base.GetProjNear();
 
 	Matrix proj = Matrix::PerspectiveFovLH(1.0f, spotAngle, radius, projNear);
-	_viewProjMat			= view * proj;
+	_transposedViewProjMat = Matrix::Transpose(view * proj);
+
+	return _transposedViewProjMat;
 }

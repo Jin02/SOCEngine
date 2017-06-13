@@ -9,24 +9,41 @@ namespace Rendering
 {
 	namespace Shadow
 	{
+		namespace Buffer
+		{
+			class DirectionalLightShadowBuffer;
+		}
+
 		class DirectionalLightShadow final
 		{
 		public:
+			using ViewProjMatType	= Math::Matrix;
+			using ShadowBufferType	= Buffer::DirectionalLightShadowBuffer;
+			using LightType			= Light::DirectionalLight;
+
 			struct Param
 			{
 				float invProj_34 = 1.0f;
 				float invProj_44 = 1.0f;
 			};
 
-			Math::Matrix MakeMatrixParam() const;
-			void ComputeViewProjMatrix(const Light::LightPool<Light::DirectionalLight>& lightPool, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
+		public:
+			DirectionalLightShadow(BaseShadow base) : _base(base) {}
+			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::DirectionalLight>& lightPool, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
 
-			GET_ACCESSOR(ViewProjectionMatrix, const auto&, _viewProjMat);
-			GET_CONST_ACCESSOR(Param, const Param&, _param);
+			GET_CONST_ACCESSOR(ViewProjectionMatrix, const auto&, _transposedViewProjMat);
+			GET_CONST_ACCESSOR(Param, Param, _param);
 			GET_CONST_ACCESSOR(Base, const BaseShadow&, _base);
 
 			GET_SET_ACCESSOR(ProjectionSize, float, _projectionSize);
 			GET_SET_ACCESSOR(UseAutoProjectionLocation, bool, _useAutoProjectLocation);
+
+			GET_CONST_ACCESSOR(LightId, Light::LightId, _base.GetLightId());
+			GET_CONST_ACCESSOR(ShadowId, Shadow::ShadowId, _base.GetShadowId());
+
+			inline void SetDirty(bool b) { _base.SetDirty(b); }
+			GET_CONST_ACCESSOR(Dirty, bool, _base.GetDirty());
+
 
 		public:
 			constexpr static float FrustumMinZ = 1.0f;
@@ -34,7 +51,7 @@ namespace Rendering
 
 		private:
 			BaseShadow		_base;
-			Math::Matrix	_viewProjMat;
+			Math::Matrix	_transposedViewProjMat;
 			Param			_param;
 
 			float			_projectionSize = 0.0f;
