@@ -1,7 +1,6 @@
 #include "OnlyLightCulling.h"
 #include "EngineShaderFactory.hpp"
 #include "LightCullingUtility.h"
-#include "MainCamera.h"
 
 using namespace Rendering::Light;
 using namespace Rendering::Texture;
@@ -11,6 +10,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
 using namespace Rendering::Manager;
+using namespace Rendering::Renderer;
 
 void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderRectSize)
 {
@@ -40,11 +40,13 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 
 }
 
-inline void OnlyLightCulling::Dispatch(Device::DirectX & dx, Camera::MainCamera & mainCamera, Manager::LightManager & lightMgr)
+void OnlyLightCulling::Dispatch(
+	Device::DirectX& dx, Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr,
+	ExplicitConstBuffer<TBRCBData>& tbrCB, GBuffers& gbuffer)
 {
 	ID3D11DeviceContext* context = dx.GetContext();
 
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mainCamera.GetTBRParamCB());
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, tbrCB);
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
 
 	auto& plBuffer = lightMgr.GetBuffer<PointLight>().GetLightBuffer();
@@ -56,9 +58,8 @@ inline void OnlyLightCulling::Dispatch(Device::DirectX & dx, Camera::MainCamera 
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex, slBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightParam, slBuffer.GetParamSRBuffer().GetShaderResourceView());
 
-	auto& gbuffers = mainCamera.GetGBuffers();
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth, gbuffers.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth, gbuffers.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth, gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth, gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
 
 	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer, _uav);
 
