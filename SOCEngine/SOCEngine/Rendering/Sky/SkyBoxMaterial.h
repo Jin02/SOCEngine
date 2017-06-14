@@ -7,10 +7,18 @@
 
 namespace Rendering
 {
-	class SkyBoxMaterial : public Material
+	namespace Material
 	{
-	public:
-		using Material::Material;
-		void UpdateCubeMap(TextureBindIndex bind, const Texture::Texture2D& tex);
-	};
+		class SkyBoxMaterial : public MaterialForm
+		{
+		public:
+			using MaterialForm::MaterialForm;
+
+			void UpdateCubeMap(const Texture::Texture2D& tex);
+			GET_ACCESSOR(CubeMap, auto&, _cubeMap);
+
+		private:
+			Texture::Texture2D _cubeMap;
+		};
+	}
 }

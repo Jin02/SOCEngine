@@ -15,6 +15,7 @@ using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
+using namespace Rendering::Material;
 using namespace Rendering;
 using namespace Intersection;
 

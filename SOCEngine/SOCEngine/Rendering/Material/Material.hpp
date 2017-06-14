@@ -9,14 +9,14 @@
 
 namespace Rendering
 {
-	class Material
+	class MaterialForm
 	{
 	public:
 		using BindConstBuffer = Shader::BindShaderData<Buffer::ConstBuffer>;
 		using BindTextured2D = Shader::BindShaderData<Texture::Texture2D>;
 		using BindSRBuffer = Shader::BindShaderData<Buffer::ShaderResourceBuffer>;
 
-		Material(const std::string& name) : _name(name) {}
+		MaterialForm(const std::string& name) : _name(name) {}
 
 		GET_CONST_ACCESSOR(Name, const std::string&, _name);
 		GET_CONST_ACCESSOR(Textures, const std::vector<BindTextured2D>&, _textures.GetVector());

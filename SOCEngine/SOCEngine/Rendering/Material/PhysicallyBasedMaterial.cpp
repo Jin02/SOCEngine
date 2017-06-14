@@ -5,6 +5,7 @@ using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Texture;
+using namespace Rendering::Material;
 
 void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 {

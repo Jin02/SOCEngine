@@ -42,8 +42,8 @@ namespace Rendering
 			template <class MaterialType>
 			using MaterialPool = Core::VectorHashMap<std::string, MaterialType>;
 
-			std::tuple<	MaterialPool<PhysicallyBasedMaterial>,
-						MaterialPool<SkyBoxMaterial> >	_materials;
+			std::tuple<	MaterialPool<Material::PhysicallyBasedMaterial>,
+						MaterialPool<Material::SkyBoxMaterial> >	_materials;
 		};
 	}
 }
