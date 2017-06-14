@@ -12,7 +12,7 @@ namespace Rendering
 		{
 		public:
 			ShaderMacro() = default;
-			ShaderMacro(const std::string& name, const std::string& definition) : _name(name), _definition(definition) {}
+			ShaderMacro(const std::string& name, const std::string& definition = "") : _name(name), _definition(definition) {}
 
 			GET_SET_ACCESSOR(Name,		const std::string&,	_name);
 			GET_SET_ACCESSOR(Definition,	const std::string&,	_definition);

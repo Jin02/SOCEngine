@@ -27,8 +27,8 @@ namespace Rendering
 
 			struct Param
 			{
-				Half	dirX			= Half(0.0f);
-				Half	dirY			= Half(0.0f);
+				Half	dirX				= Half(0.0f);
+				Half	dirY				= Half(0.0f);
 				Half	outerConeCosAngle	= Half(0.0f);
 				Half	innerConeCosAngle	= Half(0.0f);
 			};
