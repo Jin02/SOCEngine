@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LightingBufferForm.hpp"
+#include "LightBufferForm.hpp"
 #include "SpotLight.h"
 #include <assert.h>
 
@@ -8,12 +8,12 @@ namespace Rendering
 {
 	namespace Light
 	{
-		namespace LightingBuffer
+		namespace Buffer
 		{
-			class SpotLightingBuffer final : public LightingBufferForm<SpotLight>
+			class SpotLightBuffer final : public LightBufferForm<SpotLight>
 			{
 			public:
-				SpotLightingBuffer() = default;
+				SpotLightBuffer() = default;
 				void Initialize(Device::DirectX& dx);
 
 				void AddLight(const SpotLight& light);
@@ -28,7 +28,7 @@ namespace Rendering
 				GET_ACCESSOR(ParamSRBuffer, auto&, _paramSRBuffer.GetShaderResourceBuffer());
 
 			private:
-				using Parent = LightingBufferForm<SpotLight>;
+				using Parent = LightBufferForm<SpotLight>;
 				using Parent::Initialize;
 				using Parent::AddLight;
 				using Parent::UpdateSRBuffer;
@@ -37,7 +37,7 @@ namespace Rendering
 				using Parent::UpdateTransformBuffer;
 
 			private:		
-				Buffer::GPUUploadBuffer<SpotLight::Param> _paramSRBuffer;
+				Rendering::Buffer::GPUUploadBuffer<SpotLight::Param> _paramSRBuffer;
 			};
 		}
 	}

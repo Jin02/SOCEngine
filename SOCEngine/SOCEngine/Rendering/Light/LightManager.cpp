@@ -13,28 +13,28 @@ using namespace Rendering::Buffer;
 using namespace Rendering::View;
 using namespace Rendering::Manager;
 using namespace Rendering::Light;
-using namespace Rendering::Light::LightingBuffer;
+using namespace Rendering::Light::Buffer;
 
 void LightManager::Initialize(Device::DirectX& dx)
 {
-	GetBuffer<DirectionalLight>().GetLightingBuffer().Initialize(dx);
-	GetBuffer<PointLight>().GetLightingBuffer().Initialize(dx);
-	GetBuffer<SpotLight>().GetLightingBuffer().Initialize(dx);
+	GetBuffer<DirectionalLight>().GetLightBuffer().Initialize(dx);
+	GetBuffer<PointLight>().GetLightBuffer().Initialize(dx);
+	GetBuffer<SpotLight>().GetLightBuffer().Initialize(dx);
 }
 
 void LightManager::DeleteAll()
 {
-	GetBuffer<DirectionalLight>().GetLightingBuffer().DeleteAll();
+	GetBuffer<DirectionalLight>().GetLightBuffer().DeleteAll();
 	GetPool<DirectionalLight>().DeleteAll();
 	GetDirtyParamLights<DirectionalLight>().clear();
 	GetDirtyTFLights<DirectionalLight>().clear();
 
-	GetBuffer<SpotLight>().GetLightingBuffer().DeleteAll();
+	GetBuffer<SpotLight>().GetLightBuffer().DeleteAll();
 	GetPool<SpotLight>().DeleteAll();
 	GetDirtyParamLights<SpotLight>().clear();
 	GetDirtyTFLights<SpotLight>().clear();
 
-	GetBuffer<PointLight>().GetLightingBuffer().DeleteAll();
+	GetBuffer<PointLight>().GetLightBuffer().DeleteAll();
 	GetPool<PointLight>().DeleteAll();
 	GetDirtyParamLights<PointLight>().clear();
 	GetDirtyTFLights<PointLight>().clear();
@@ -53,33 +53,33 @@ uint LightManager::GetPackedLightCount() const
 
 void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPool)
 {
-	GetBuffer<DirectionalLight>().GetLightingBuffer().
+	GetBuffer<DirectionalLight>().GetLightBuffer().
 		UpdateTransformBuffer(GetDirtyTFLights<DirectionalLight>(), transformPool);
-	GetBuffer<PointLight>().GetLightingBuffer().
+	GetBuffer<PointLight>().GetLightBuffer().
 		UpdateTransformBuffer(GetDirtyTFLights<PointLight>(), transformPool);
-	GetBuffer<SpotLight>().GetLightingBuffer().
+	GetBuffer<SpotLight>().GetLightBuffer().
 		UpdateTransformBuffer(GetDirtyTFLights<SpotLight>(), transformPool);
 }
 
 void LightManager::UpdateParamBuffer(
-	const LightingBuffer::RequiredIndexBook& indexBooks,
+	const Light::Buffer::RequiredIndexBook& indexBooks,
 	const Core::TransformPool& transformPool)
 {
-	GetBuffer<DirectionalLight>().GetLightingBuffer().
+	GetBuffer<DirectionalLight>().GetLightBuffer().
 		UpdateLightCommonBuffer(GetDirtyParamLights<DirectionalLight>(), indexBooks);
 
-	GetBuffer<PointLight>().GetLightingBuffer().
+	GetBuffer<PointLight>().GetLightBuffer().
 		UpdateLightCommonBuffer(GetDirtyParamLights<PointLight>(), indexBooks);
 
-	GetBuffer<SpotLight>().GetLightingBuffer().
+	GetBuffer<SpotLight>().GetLightBuffer().
 		UpdateLightCommonBuffer(GetDirtyParamLights<SpotLight>(), indexBooks);
 }
 
 void LightManager::UpdateSRBuffer(Device::DirectX& dx)
 {
-	GetBuffer<DirectionalLight>().GetLightingBuffer().UpdateSRBuffer(dx);
-	GetBuffer<PointLight>().GetLightingBuffer().UpdateSRBuffer(dx);
-	GetBuffer<SpotLight>().GetLightingBuffer().UpdateSRBuffer(dx);
+	GetBuffer<DirectionalLight>().GetLightBuffer().UpdateSRBuffer(dx);
+	GetBuffer<PointLight>().GetLightBuffer().UpdateSRBuffer(dx);
+	GetBuffer<SpotLight>().GetLightBuffer().UpdateSRBuffer(dx);
 }
 
 void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
@@ -132,21 +132,21 @@ void LightManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, 
 		if (bindPS)	PixelShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());
 	};
 
-	auto& plBuffer = GetBuffer<PointLight>().GetLightingBuffer();
+	auto& plBuffer = GetBuffer<PointLight>().GetLightBuffer();
 	{
 		Bind(TextureBindIndex::PointLightRadiusWithCenter,		plBuffer.GetTransformSRBuffer());
 		Bind(TextureBindIndex::PointLightColor,					plBuffer.GetColorSRBuffer());
 		Bind(TextureBindIndex::PointLightOptionalParamIndex,	plBuffer.GetOptionalParamIndexSRBuffer());
 	}
 
-	auto& dlBuffer = GetBuffer<DirectionalLight>().GetLightingBuffer();
+	auto& dlBuffer = GetBuffer<DirectionalLight>().GetLightBuffer();
 	{
 		Bind(TextureBindIndex::DirectionalLightDirXY,				dlBuffer.GetTransformSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightColor,				dlBuffer.GetColorSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightOptionalParamIndex,	dlBuffer.GetOptionalParamIndexSRBuffer());
 	}
 
-	auto& slBuffer = GetBuffer<SpotLight>().GetLightingBuffer();
+	auto& slBuffer = GetBuffer<SpotLight>().GetLightBuffer();
 	{
 		Bind(TextureBindIndex::SpotLightRadiusWithCenter,			slBuffer.GetTransformSRBuffer());
 		Bind(TextureBindIndex::SpotLightColor,						slBuffer.GetColorSRBuffer());

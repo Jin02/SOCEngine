@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DirectionalLightingBuffer.h"
-#include "SpotLightingBuffer.h"
-#include "PointLightingBuffer.h"
+#include "DirectionalLightBuffer.h"
+#include "SpotLightBuffer.h"
+#include "PointLightBuffer.h"
 #include "Transform.h"
 
 #include "LightId.hpp"
@@ -12,14 +12,14 @@ namespace Rendering
 	namespace Manager
 	{
 		template<class LightObject>
-		class LightBuffer final
+		class LightBufferObject final
 		{
 		public:
-			auto& GetLightingBuffer()
+			auto& GetLightBuffer()
 			{
 				return _buffer;
 			}
-			const auto& GetLightingBuffer() const
+			const auto& GetLightBuffer() const
 			{
 				return _buffer;
 			}
@@ -27,7 +27,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Size, uint, _buffer.GetSize());
 
 		private:
-			typename LightObject::LightingBufferType _buffer;
+			typename LightObject::LightBufferType _buffer;
 		};
 
 		class LightManager final
@@ -66,7 +66,7 @@ namespace Rendering
 			uint GetPackedLightCount() const;
 
 			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
-			void UpdateParamBuffer(	const Light::LightingBuffer::RequiredIndexBook& indexBooks,
+			void UpdateParamBuffer(	const Light::Buffer::RequiredIndexBook& indexBooks,
 									const Core::TransformPool& transformPool );
 			void UpdateSRBuffer(Device::DirectX& dx);
 
@@ -78,11 +78,11 @@ namespace Rendering
 
 			template <class LightType> auto&		GetBuffer()
 			{
-				return std::get<LightBuffer<LightType>>(_lightBuffers);
+				return std::get<LightBufferObject<LightType>>(_lightBuffers);
 			}
 			template <class LightType> const auto&	GetBuffer() const
 			{
-				return std::get<LightBuffer<LightType>>(_lightBuffers);
+				return std::get<LightBufferObject<LightType>>(_lightBuffers);
 			}
 			template <class LightType> auto&		GetPool()
 			{
@@ -109,9 +109,9 @@ namespace Rendering
 
 		private:
 			std::tuple<
-					LightBuffer<Light::DirectionalLight>,
-					LightBuffer<Light::PointLight>,
-					LightBuffer<Light::SpotLight>
+					LightBufferObject<Light::DirectionalLight>,
+					LightBufferObject<Light::PointLight>,
+					LightBufferObject<Light::SpotLight>
 			> _lightBuffers;
 			std::tuple<				
 				Light::LightPool<Light::DirectionalLight>,

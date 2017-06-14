@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GPUUploadBuffer.hpp"
-#include "CommonLightingBuffer.h"
+#include "CommonLightBuffer.h"
 #include "Transform.h"
 #include <assert.h>
 
@@ -9,7 +9,7 @@ namespace Rendering
 {
 	namespace Light
 	{
-		namespace LightingBuffer
+		namespace Buffer
 		{
 			struct RequiredIndexBook
 			{
@@ -18,14 +18,14 @@ namespace Rendering
 			};
 
 			template<typename LightType>
-			class LightingBufferForm
+			class LightBufferForm
 			{
 			public:
 				using TransformType				= typename LightType::TransformType;
-				using TransformBuffer			= Buffer::GPUUploadBuffer<TransformType>;
+				using TransformBuffer			= Rendering::Buffer::GPUUploadBuffer<TransformType>;
 				
 			public:
-				LightingBufferForm() = default;
+				LightBufferForm() = default;
 				
 				void Initialize(Device::DirectX& dx, uint maxLightCount, DXGI_FORMAT tfFormat)
 				{
@@ -116,7 +116,7 @@ namespace Rendering
 
 			protected:
 				TransformBuffer					_transformBuffer;
-				CommonLightingBuffer			_commonBuffer;
+				CommonLightBuffer				_commonBuffer;
 
 				bool							_mustUpdateCommonSRBuffer		= true;
 				bool							_mustUpdateTransformSRBuffer	= true;

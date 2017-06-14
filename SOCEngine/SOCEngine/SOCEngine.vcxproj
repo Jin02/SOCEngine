@@ -74,13 +74,13 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\CommonLightingBuffer.h">
+    <ClInclude Include="Rendering\Light\CommonLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\DirectionalLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\DirectionalLightingBuffer.h">
+    <ClInclude Include="Rendering\Light\DirectionalLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\BaseLight.h">
@@ -88,7 +88,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Light\LightCullingUtility.h" />
     <ClInclude Include="Rendering\Light\LightId.hpp" />
-    <ClInclude Include="Rendering\Light\LightingBufferForm.hpp">
+    <ClInclude Include="Rendering\Light\LightBufferForm.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\LightManager.h">
@@ -101,13 +101,13 @@
     <ClInclude Include="Rendering\Light\PointLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\PointLightingBuffer.h">
+    <ClInclude Include="Rendering\Light\PointLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\SpotLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\SpotLightingBuffer.h">
+    <ClInclude Include="Rendering\Light\SpotLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Material\Material.hpp" />
@@ -141,6 +141,9 @@
     <ClInclude Include="Rendering\Shader\Shaders.h" />
     <ClInclude Include="Rendering\Shader\VertexShader.h" />
     <ClInclude Include="Rendering\Shading\BindIndexInfo.h" />
+    <ClInclude Include="Rendering\Shading\TileBasedShading.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Shadow\DirectionalLightShadow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -161,9 +164,6 @@
     <ClInclude Include="Rendering\Shadow\ShadowId.hpp" />
     <ClInclude Include="Rendering\Shadow\ShadowManager.h" />
     <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp" />
-    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -258,7 +258,7 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
-    <ClCompile Include="Rendering\Light\CommonLightingBuffer.cpp">
+    <ClCompile Include="Rendering\Light\CommonLightBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Light\DirectionalLight.cpp">
@@ -279,7 +279,7 @@
     <ClCompile Include="Rendering\Light\SpotLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Light\SpotLightingBuffer.cpp">
+    <ClCompile Include="Rendering\Light\SpotLightBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp" />
@@ -300,6 +300,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shader\VertexShader.cpp" />
+    <ClCompile Include="Rendering\Shading\TileBasedShading.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Shadow\DirectionalLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -310,9 +313,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp" />
-    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

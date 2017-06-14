@@ -1,9 +1,9 @@
-#include "SpotLightingBuffer.h"
+#include "SpotLightBuffer.h"
 
 using namespace Rendering::Light;
-using namespace Rendering::Light::LightingBuffer;
+using namespace Rendering::Light::Buffer;
 
-inline void Rendering::Light::LightingBuffer::SpotLightingBuffer::Initialize(Device::DirectX & dx)
+inline void Rendering::Light::Buffer::SpotLightBuffer::Initialize(Device::DirectX & dx)
 {
 	Parent::Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
@@ -11,13 +11,13 @@ inline void Rendering::Light::LightingBuffer::SpotLightingBuffer::Initialize(Dev
 	_paramSRBuffer.Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16B16A16_FLOAT, dummy);
 }
 
-void SpotLightingBuffer::AddLight(const SpotLight& light)
+void SpotLightBuffer::AddLight(const SpotLight& light)
 {
 	_paramSRBuffer.AddData(light.GetLightId().Literal(), SpotLight::Param());
 	Parent::AddLight(light);
 }
 
-void SpotLightingBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
+void SpotLightBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
 												const Core::TransformPool& tfPool)
 {
 	for (const auto& light : dirtyTFLights)
@@ -33,7 +33,7 @@ void SpotLightingBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& d
 	_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 }
 
-void SpotLightingBuffer::UpdateSRBuffer(Device::DirectX & dx)
+void SpotLightBuffer::UpdateSRBuffer(Device::DirectX & dx)
 {
 	if (_mustUpdateTransformSRBuffer)
 		_paramSRBuffer.UpdateSRBuffer(dx);
@@ -41,13 +41,13 @@ void SpotLightingBuffer::UpdateSRBuffer(Device::DirectX & dx)
 	Parent::UpdateSRBuffer(dx);
 }
 
-void SpotLightingBuffer::Delete(const SpotLight & light)
+void SpotLightBuffer::Delete(const SpotLight & light)
 {
 	_paramSRBuffer.Delete(light.GetObjectId().Literal());
 	Parent::Delete(light);
 }
 
-void SpotLightingBuffer::DeleteAll()
+void SpotLightBuffer::DeleteAll()
 {
 	_paramSRBuffer.DeleteAll();
 	Parent::DeleteAll();

@@ -1,22 +1,22 @@
 #pragma once
 
-#include "LightingBufferForm.hpp"
+#include "LightBufferForm.hpp"
 #include "PointLight.h"
 
 namespace Rendering
 {
 	namespace Light
 	{
-		namespace LightingBuffer
+		namespace Buffer
 		{
-			class PointLightingBuffer : public LightingBufferForm<PointLight>
+			class PointLightBuffer : public LightBufferForm<PointLight>
 			{
 			public:
-				using LightingBufferForm<PointLight>::LightingBufferForm;
+				using LightBufferForm<PointLight>::LightBufferForm;
 				void Initialize(Device::DirectX& dx) { Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT); }
 
 			private:
-				using LightingBufferForm<PointLight>::Initialize;
+				using LightBufferForm<PointLight>::Initialize;
 			};
 		}
 	}

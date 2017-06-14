@@ -26,9 +26,9 @@ namespace Rendering
 			GET_ACCESSOR(LightIndexUAV,			auto&,	_uav);
 
 		private:
-			Buffer::ShaderResourceBuffer	_srb;
-			View::UnorderedAccessView		_uav;
-			Shader::ComputeShader			_cs;
+			Rendering::Buffer::ShaderResourceBuffer	_srb;
+			View::UnorderedAccessView				_uav;
+			Shader::ComputeShader					_cs;
 		};
 	}
 }

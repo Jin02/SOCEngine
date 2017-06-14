@@ -334,6 +334,21 @@
     <Filter Include="Rendering\Shadow\MapCB">
       <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Mesh\Generator">
+      <UniqueIdentifier>{a32dd566-161f-49c5-b164-4871b6ab2ea2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Mesh\Utility">
+      <UniqueIdentifier>{64fbff01-45ae-452c-ab98-b8f5898d65da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\Directional">
+      <UniqueIdentifier>{7599841d-a4ee-4f23-846c-7b854977a46c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\Spot">
+      <UniqueIdentifier>{a269860c-b59c-48bd-9cce-eec72e4e0e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\Point">
+      <UniqueIdentifier>{3dfad794-1615-4eb0-a367-d8ceb0b87936}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -601,12 +616,6 @@
     <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
-      <Filter>Rendering\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Mesh\Mesh.h">
-      <Filter>Rendering\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
       <Filter>Rendering\Mesh</Filter>
     </ClInclude>
@@ -652,29 +661,11 @@
     <ClInclude Include="Rendering\Light\PointLight.h">
       <Filter>Rendering\Light\Point</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\CommonLightingBuffer.h">
-      <Filter>Rendering\Light\Buffer\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\DirectionalLightingBuffer.h">
-      <Filter>Rendering\Light\Buffer\Directional</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\SpotLightingBuffer.h">
-      <Filter>Rendering\Light\Buffer\Spot</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\PointLightingBuffer.h">
-      <Filter>Rendering\Light\Buffer\Point</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Light\LightingBufferForm.hpp">
-      <Filter>Rendering\Light\Buffer\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <Filter>Rendering\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Core\TransformCB.h">
       <Filter>Core\Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowRenderer.h">
-      <Filter>Rendering\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Camera\MainCamera.h">
       <Filter>Rendering\Camera</Filter>
@@ -724,9 +715,6 @@
     <ClInclude Include="Core\MainSystemHeader.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshUtility.h">
-      <Filter>Rendering\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Core\UniqueIdManager.hpp">
       <Filter>Core\Id</Filter>
     </ClInclude>
@@ -745,15 +733,6 @@
     <ClInclude Include="Rendering\Shadow\ShadowManager.h">
       <Filter>Rendering\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shadow\DirectionalLightShadowBuffer.h">
-      <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\PointLightShadowBuffer.h">
-      <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\SpotLightShadowBuffer.h">
-      <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
     </ClInclude>
@@ -765,6 +744,42 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shading\TileBasedShading.h">
+      <Filter>Rendering\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
+      <Filter>Rendering\Mesh\Generator</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\Mesh.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshUtility.h">
+      <Filter>Rendering\Mesh\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadowBuffer.h">
+      <Filter>Rendering\Shadow\Buffer\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\CommonLightBuffer.h">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\LightBufferForm.hpp">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\DirectionalLightBuffer.h">
+      <Filter>Rendering\Light\Buffer\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\PointLightBuffer.h">
+      <Filter>Rendering\Light\Buffer\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Light\SpotLightBuffer.h">
+      <Filter>Rendering\Light\Buffer\Spot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -894,9 +909,6 @@
     <ClCompile Include="Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
-      <Filter>Rendering\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp">
       <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
     </ClCompile>
@@ -930,15 +942,6 @@
     <ClCompile Include="Rendering\Light\PointLight.cpp">
       <Filter>Rendering\Light\Point</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Light\CommonLightingBuffer.cpp">
-      <Filter>Rendering\Light\Buffer\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Light\SpotLightingBuffer.cpp">
-      <Filter>Rendering\Light\Buffer\Spot</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shadow\ShadowRenderer.cpp">
-      <Filter>Rendering\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Camera\MainCamera.cpp">
       <Filter>Rendering\Camera</Filter>
     </ClCompile>
@@ -963,17 +966,29 @@
     <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp">
       <Filter>Rendering\Shader\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Mesh\MeshUtility.cpp">
-      <Filter>Rendering\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
       <Filter>Rendering\Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Shading\TileBasedShading.cpp">
+      <Filter>Rendering\Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
+      <Filter>Rendering\Mesh\Generator</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshUtility.cpp">
+      <Filter>Rendering\Mesh\Utility</Filter>
+    </ClCompile>
     <ClCompile Include="Rendering\Shadow\DirectionalLightShadowBuffer.cpp">
-      <Filter>Rendering\Shadow\Buffer</Filter>
+      <Filter>Rendering\Shadow\Buffer\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\CommonLightBuffer.cpp">
+      <Filter>Rendering\Light\Buffer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Light\SpotLightBuffer.cpp">
+      <Filter>Rendering\Light\Buffer\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -13,16 +13,16 @@ namespace Rendering
 
 	namespace Light
 	{
-		namespace LightingBuffer
+		namespace Buffer
 		{
-			class DirectionalLightingBuffer;
+			class DirectionalLightBuffer;
 		}
 
 		class DirectionalLight final
 		{
 		public:
-			using LightingBufferType	= LightingBuffer::DirectionalLightingBuffer;
-			using ShadowType			= Shadow::DirectionalLightShadow;
+			using LightBufferType	= Buffer::DirectionalLightBuffer;
+			using ShadowType		= Shadow::DirectionalLightShadow;
 
 			struct TransformType
 			{

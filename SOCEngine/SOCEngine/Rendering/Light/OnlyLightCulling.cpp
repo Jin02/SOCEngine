@@ -47,11 +47,11 @@ inline void OnlyLightCulling::Dispatch(Device::DirectX & dx, Camera::MainCamera 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mainCamera.GetTBRParamCB());
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
 
-	auto& plBuffer = lightMgr.GetBuffer<PointLight>().GetLightingBuffer();
+	auto& plBuffer = lightMgr.GetBuffer<PointLight>().GetLightBuffer();
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter, plBuffer.GetTransformSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex, plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
-	auto& slBuffer = lightMgr.GetBuffer<SpotLight>().GetLightingBuffer();
+	auto& slBuffer = lightMgr.GetBuffer<SpotLight>().GetLightBuffer();
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter, slBuffer.GetTransformSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex, slBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightParam, slBuffer.GetParamSRBuffer().GetShaderResourceView());

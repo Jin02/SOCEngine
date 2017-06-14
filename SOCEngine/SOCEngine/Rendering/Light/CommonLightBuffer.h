@@ -7,16 +7,16 @@ namespace Rendering
 {
 	namespace Light
 	{
-		namespace LightingBuffer
+		namespace Buffer
 		{
-			class CommonLightingBuffer
+			class CommonLightBuffer
 			{
 			public:
-				using ColorBuffer				= Buffer::GPUUploadBuffer<uint>;
-				using OptionalParamIndexBuffer	= Buffer::GPUUploadBuffer<uint>;
+				using ColorBuffer				= Rendering::Buffer::GPUUploadBuffer<uint>;
+				using OptionalParamIndexBuffer	= Rendering::Buffer::GPUUploadBuffer<uint>;
 			
 			public:
-				CommonLightingBuffer() = default;
+				CommonLightBuffer() = default;
 			
 				void Initialize(Device::DirectX& dx, uint count, const void* dummy);
 				
@@ -27,8 +27,8 @@ namespace Rendering
 				void Delete(LightId id);
 				void DeleteAll();
 
-				GET_ACCESSOR(ColorSRBuffer, Buffer::ShaderResourceBuffer&, _colorBuffer.GetShaderResourceBuffer());
-				GET_ACCESSOR(OptionalParamIndexSRBuffer, Buffer::ShaderResourceBuffer&, _optionalParamIndexBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR(ColorSRBuffer,					auto&,		_colorBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR(OptionalParamIndexSRBuffer,	auto&,		_optionalParamIndexBuffer.GetShaderResourceBuffer());
 
 			private:
 				inline uint ComputeOptionalParamIndex(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
