@@ -49,7 +49,8 @@ namespace Device
 	public:
 		unsigned int		CalcFormatSize(DXGI_FORMAT format) const;
 		void				ClearDeviceContext();
-		const Size<float>	FetchBackBufferSize();
+		const Rect<float>	FetchViewportRect();
+		void				SetViewport(const Rect<float>& rect);
 
 	public:
 		GET_ACCESSOR(Device,									ID3D11Device*,				_device.GetRaw());
@@ -108,7 +109,6 @@ namespace Device
 	private:
 		friend class Core::Launcher;
 		void Initialize(const WinApp& win, const Rect<uint>& viewport, bool useMSAA);
-		void SetViewport(const Rect<uint>& rect);
 		void CreateRenderTargetView();
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();

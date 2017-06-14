@@ -96,21 +96,18 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	_msaaDesc			= sd.SampleDesc;
 }
 
-void DirectX::SetViewport(const Rect<uint>& rect)
+void DirectX::SetViewport(const Rect<float>& rect)
 {
 	D3D11_VIEWPORT vp;
 
-	vp.TopLeftX		= static_cast<float>(rect.x);
-	vp.TopLeftY		= static_cast<float>(rect.y);
-	vp.Width		= static_cast<float>(rect.size.w);
-	vp.Height		= static_cast<float>(rect.size.h);
+	vp.TopLeftX		= rect.x;
+	vp.TopLeftY		= rect.y;
+	vp.Width		= rect.size.w;
+	vp.Height		= rect.size.h;
 	vp.MinDepth		= 0.0f;
 	vp.MaxDepth		= 1.0f;
 
 	_immediateContext->RSSetViewports( 1, &vp );
-
-	_backBufferSize.w = vp.Width;
-	_backBufferSize.h = vp.Height;
 }
 
 void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format)
@@ -304,7 +301,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 
 	_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	SetViewport(viewport);
+	SetViewport(viewport.Cast<float>());
 
 	//Initialize rasterizer State
 	{
@@ -550,14 +547,11 @@ const ShaderMacro DirectX::GetMSAAShaderMacro() const
 	return ShaderMacro("MSAA_SAMPLES_COUNT", std::to_string(_msaaDesc.Count));
 }
 
-const Size<float> DirectX::FetchBackBufferSize()
+const Rect<float> DirectX::FetchViewportRect()
 {
 	uint num = 1;
 	D3D11_VIEWPORT vp;
 	_immediateContext->RSGetViewports(&num, &vp);
 
-	_backBufferSize.w = vp.Width;
-	_backBufferSize.h = vp.Height;
-
-	return _backBufferSize;
+	return Rect<float>(vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height);;
 }
