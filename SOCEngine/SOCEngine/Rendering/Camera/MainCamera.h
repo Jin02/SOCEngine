@@ -96,8 +96,8 @@ namespace Rendering
 			GET_ACCESSOR(TBRParamCB, auto&, _tbrCB);
 
 		private:
-//			Texture::RenderTexture						_diffuseLightBuffer;
-
+			Texture::RenderTexture						_diffuseLightBuffer;
+			Texture::RenderTexture						_specularLightBuffer;
 
 			Light::OnlyLightCulling						_blendedDepthLC;
 

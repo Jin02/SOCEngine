@@ -18,27 +18,6 @@ using namespace Rendering::Geometry;
 
 void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<uint>& rect)
 {
-	std::vector<Shader::ShaderMacro> macros;
-	{
-		ShaderMacro msaaMacro = dx.GetMSAAShaderMacro();
-		macros.push_back(msaaMacro);
-
-		macros.push_back(ShaderMacro("USE_COMPUTE_SHADER", ""));
-		macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
-	}
-
-	_blendedDepthLC.Initialize(dx, shaderMgr, rect.size);
-
-	//// Load Shader
-	//{
-	//	Factory::EngineShaderFactory factory(&shaderMgr);
-	//	_tbrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
-
-	//	Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
-	//	ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
-	//	_tbrShader.SetThreadGroupInfo(threadGroup);
-	//}
-
 	// setting desc
 	{
 		auto size = rect.size.Cast<float>();
@@ -46,11 +25,40 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 		_desc.renderRect = rect;
 	}
 
+	_blendedDepthLC.Initialize(dx, shaderMgr, rect.size);
+
+	// Load Shader
+	{
+		std::vector<Shader::ShaderMacro> macros{dx.GetMSAAShaderMacro(),
+												ShaderMacro("USE_COMPUTE_SHADER"),
+												ShaderMacro("ENABLE_BLEND")};
+
+		Factory::EngineShaderFactory factory(&shaderMgr);
+		ComputeShader shader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
+
+		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
+		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
+		shader.SetThreadGroupInfo(threadGroup);
+	}
+
+	// Light Buffer
+	{
+		auto size = dx.GetBackBufferSize().Cast<uint>();
+		{
+			if (dx.GetMSAADesc().Count > 1)
+			{
+				size.w *= 2;
+				size.h *= 2;
+			}
+		}
+
+		_diffuseLightBuffer.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
+		_specularLightBuffer.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
+	}
+
 	// setting gbuffer, render target
 	{
 		const auto& size = _desc.renderRect.size;
-		//uint mipLevel = static_cast<uint>(log(max(size.w, size.h)) / log(2.0f)) + 1;
-		//_renderTarget.Initialize(dx, _desc.renderRect.size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 		_gbuffer.albedo_occlusion.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 		_gbuffer.normal_roughness.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
