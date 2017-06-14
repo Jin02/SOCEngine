@@ -25,8 +25,6 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 		_desc.renderRect = rect;
 	}
 
-	_blendedDepthLC.Initialize(dx, shaderMgr, rect.size);
-
 	// Load Shader
 	{
 		std::vector<Shader::ShaderMacro> macros{dx.GetMSAAShaderMacro(),
@@ -41,42 +39,12 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 		shader.SetThreadGroupInfo(threadGroup);
 	}
 
-	// Light Buffer
-	{
-		auto size = dx.GetBackBufferSize().Cast<uint>();
-		{
-			if (dx.GetMSAADesc().Count > 1)
-			{
-				size.w *= 2;
-				size.h *= 2;
-			}
-		}
-
-		_diffuseLightBuffer.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
-		_specularLightBuffer.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_UNORDERED_ACCESS, 1);
-	}
-
-	// setting gbuffer, render target
-	{
-		const auto& size = _desc.renderRect.size;
-
-		_gbuffer.albedo_occlusion.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.normal_roughness.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.velocity_metallic_specularity.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-
-		_gbuffer.emission_materialFlag.Initialize(dx, size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
-
-		_gbuffer.opaqueDepthBuffer.Initialize(dx, size, true);
-		_gbuffer.blendedDepthBuffer.Initialize(dx, size, true);
-	}
-
 	_camCB.Initialize(dx);
-	_tbrCB.Initialize(dx);
 
 	_Initialized = true;
 }
 
-void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform, uint packedNumOfLights)
+bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
 {
 	assert(dirtyTransform.GetObjectId() == _objId);
 
@@ -85,7 +53,7 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 		_camCBChangeState = TransformCB::ChangeState::HasChanged;
 
 	if ((_camCBChangeState != TransformCB::ChangeState::No) == false)
-		return;
+		return false;
 
 	const Matrix& worldMat = dirtyTransform.GetWorldMatrix();
 
@@ -93,20 +61,14 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 		_camCBData.viewMat = Matrix::ComputeViewMatrix(worldMat);
 		Matrix& viewMat = _camCBData.viewMat;
 		
-		Matrix projMat = ComputePerspectiveMatrix(true);
+		_projMat = ComputePerspectiveMatrix(true);
+		_viewProjMat = viewMat * _projMat;
 
-		_viewProjMat = viewMat * projMat;
 		_camCBData.viewProjMat = _viewProjMat;
 
 		_camCBData.worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43);
 		_camCBData.prevViewProjMat = _prevViewProjMat;
 		_camCBData.packedCamNearFar = (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
-
-		_tbrCBData.invProjMat = Matrix::Inverse(projMat);
-		_tbrCBData.invViewProjMat = Matrix::Inverse(_viewProjMat);
-
-		Matrix invViewportMat = Matrix::ComputeInvViewportMatrix(_desc.renderRect);
-		_tbrCBData.invViewProjViewport = invViewportMat * _tbrCBData.invViewProjMat;
 	}
 
 	// Make Frustum
@@ -122,25 +84,11 @@ void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 	_camCB.UpdateSubResource(dx, _camCBData);
 
-	_tbrCBData.invProjMat			= Matrix::Transpose(_tbrCBData.invProjMat);
-	_tbrCBData.invViewProjMat		= Matrix::Transpose(_tbrCBData.invViewProjMat);
-	_tbrCBData.invViewProjViewport	= Matrix::Transpose(_tbrCBData.invViewProjViewport);
-
-	// packed tbr cb data
-	{
-		auto& packed = _tbrCBData.packedParam;
-		packed.maxNumOfperLightInTile	= Light::CullingUtility::CalcMaxNumLightsInTile(_desc.renderRect.size.Cast<uint>());
-		packed.packedNumOfLights		= packedNumOfLights;
-
-		packed.packedViewportSize		= (_desc.renderRect.x << 16) | _desc.renderRect.y;
-	}
-
-	_tbrCB.UpdateSubResource(dx, _tbrCBData);
-
 	_camCBChangeState = TransformCB::ChangeState((static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 	_prevViewProjMat = _viewProjMat;
 
 	_dirty = false;
+	return true;
 }
 
 Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
