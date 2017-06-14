@@ -1,6 +1,7 @@
 #include "OnlyLightCulling.h"
 #include "EngineShaderFactory.hpp"
 #include "LightCullingUtility.h"
+#include "MainCamera.h"
 
 using namespace Rendering::Light;
 using namespace Rendering::Texture;
@@ -11,7 +12,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::View;
 using namespace Rendering::Manager;
 
-void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera)
+void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderRectSize)
 {
 	std::vector<ShaderMacro> macros{	ShaderMacro("USE_ATOMIC", ""),
 										ShaderMacro("USE_COMPUTE_SHADER", ""),
@@ -20,8 +21,6 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 
 	EngineShaderFactory factory(&shaderMgr);
 	_cs = *factory.LoadComputeShader(dx, "OnlyLightCullingCS", "OnlyLightCullingCS", &macros, "@OnlyLightCulling");
-
-	auto renderRectSize = mainCamera.GetRenderRect().size;
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 0);
 	{

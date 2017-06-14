@@ -9,6 +9,7 @@
 #include "RenderTexture.h"
 #include "DepthBuffer.h"
 #include "ObjectId.hpp"
+#include "OnlyLightCulling.h"
 
 #undef near
 #undef far
@@ -95,8 +96,10 @@ namespace Rendering
 			GET_ACCESSOR(TBRParamCB, auto&, _tbrCB);
 
 		private:
-			Texture::RenderTexture						_renderTarget;
-			Shader::ComputeShader						_tbrShader;
+//			Texture::RenderTexture						_diffuseLightBuffer;
+
+
+			Light::OnlyLightCulling						_blendedDepthLC;
 
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;
 			Buffer::ExplicitConstBuffer<TBRCBData>		_tbrCB;
@@ -105,15 +108,16 @@ namespace Rendering
 
 			GBuffers									_gbuffer;
 
-			std::vector<const Geometry::Mesh*>			_transparentMeshes;
 			Math::Matrix								_viewProjMat;
 			Math::Matrix								_prevViewProjMat;
+			Intersection::Frustum						_frustum;
 			TransformCB::ChangeState					_camCBChangeState = TransformCB::ChangeState::HasChanged;
 			Desc										_desc;
 
-			Intersection::Frustum						_frustum;
-			Core::ObjectId								_objId; //1
-			bool										_dirty = true;  //2
+			std::vector<const Geometry::Mesh*>			_transparentMeshes;
+
+			Core::ObjectId								_objId;
+			bool										_dirty = true;
 			bool										_Initialized = false;
 		};
 	}

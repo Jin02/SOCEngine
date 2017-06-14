@@ -27,15 +27,18 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 		macros.push_back(ShaderMacro("ENABLE_BLEND", ""));
 	}
 
-	// Load Shader
-	{
-		Factory::EngineShaderFactory factory(&shaderMgr);
-		_tbrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
+	_blendedDepthLC.Initialize(dx, shaderMgr, rect.size);
 
-		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
-		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
-		_tbrShader.SetThreadGroupInfo(threadGroup);
-	}
+	//// Load Shader
+	//{
+	//	Factory::EngineShaderFactory factory(&shaderMgr);
+	//	_tbrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
+
+	//	Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
+	//	ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
+	//	_tbrShader.SetThreadGroupInfo(threadGroup);
+	//}
+
 	// setting desc
 	{
 		auto size = rect.size.Cast<float>();
@@ -46,8 +49,8 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 	// setting gbuffer, render target
 	{
 		const auto& size = _desc.renderRect.size;
-		uint mipLevel = static_cast<uint>(log(max(size.w, size.h)) / log(2.0f)) + 1;
-		_renderTarget.Initialize(dx, _desc.renderRect.size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
+		//uint mipLevel = static_cast<uint>(log(max(size.w, size.h)) / log(2.0f)) + 1;
+		//_renderTarget.Initialize(dx, _desc.renderRect.size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 		_gbuffer.albedo_occlusion.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 		_gbuffer.normal_roughness.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
