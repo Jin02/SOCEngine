@@ -121,10 +121,14 @@ namespace Rendering
 				return result;
 			}
 			
-			void FetchShaderFullPath(std::string& out, const std::string& fileName)
+			std::string FetchShaderFullPath(const std::string& fileName)
 			{
+				std::string out = "";
+
 				/** FullPath Script Begin **/
 				/** FullPath Script End **/
+
+				return out;
 			}
 
 			std::shared_ptr<Shader::ComputeShader> LoadComputeShader(
@@ -136,8 +140,7 @@ namespace Rendering
 				assert(_shaderMgr);
 				auto& compiler = _shaderMgr->GetCompiler();
 
-				std::string fullPath = "";
-				FetchShaderFullPath(fullPath, shaderName);
+				std::string fullPath = FetchShaderFullPath(shaderName);
 
 				std::string folderPath = "";
 				assert(Utility::String::ParseDirectory(fullPath, &folderPath, nullptr, nullptr));
