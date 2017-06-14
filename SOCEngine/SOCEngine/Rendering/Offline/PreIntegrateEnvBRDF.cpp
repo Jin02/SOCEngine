@@ -14,11 +14,7 @@ using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 using namespace Rendering::Manager;
 
-PreIntegrateEnvBRDF::PreIntegrateEnvBRDF() : _texture()
-{
-}
-
-const Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, ShaderManager& shaderMgr)
+Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
 	Factory::EngineShaderFactory factory(&shaderMgr);
 	std::shared_ptr<ComputeShader> shader = factory.LoadComputeShader(dx, "PreIntegrateEnvBRDF", "CS", nullptr, nullptr);
