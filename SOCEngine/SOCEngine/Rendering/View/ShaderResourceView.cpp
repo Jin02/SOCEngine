@@ -53,3 +53,8 @@ void Rendering::View::ShaderResourceView::InitializeUsingBuffer(Device::DirectX&
 {
 	InitializeUsingBuffer(dx, buffer, num, format, isRawBuffer);
 }
+
+inline void ShaderResourceView::Destroy()
+{
+	_srv.Destroy();
+}

@@ -14,6 +14,8 @@ namespace Rendering
 
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, bool useShaderResource, uint sampleCount = 0);
+			void Destroy();
+
 			void Clear(Device::DirectX& dx, float depth, unsigned char stencil);
 
 			GET_CONST_ACCESSOR(DepthStencilView, const DXSharedResource<ID3D11DepthStencilView>&, _depthStencilView);

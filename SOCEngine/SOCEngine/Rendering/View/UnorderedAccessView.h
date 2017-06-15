@@ -20,6 +20,7 @@ namespace Rendering
 			{				
 				Initialize(dx, format, numElements, resource.GetRaw(), viewDimension, tex3dMipSlice, tex3dWSize, bufferFlags);
 			}
+			void Destroy();
 
 		private:
 			void Initialize(Device::DirectX& dx, DXGI_FORMAT format, uint numElements, ID3D11Resource* resource, D3D11_UAV_DIMENSION viewDimension, uint tex3dMipSlice = 0, uint tex3dWSize = 0, uint bufferFlags = 0);

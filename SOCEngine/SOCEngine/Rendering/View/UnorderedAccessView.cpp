@@ -3,6 +3,11 @@
 
 using namespace Rendering::View;
 
+inline void UnorderedAccessView::Destroy()
+{
+	_uav.Destroy();
+}
+
 void UnorderedAccessView::Initialize(
 	Device::DirectX& dx,
 	DXGI_FORMAT format, uint numElements, ID3D11Resource* resource,

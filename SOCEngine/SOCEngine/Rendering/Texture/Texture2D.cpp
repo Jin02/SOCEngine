@@ -78,6 +78,14 @@ void Texture2D::Initialize(Device::DirectX& dx,
 		_uav.Initialize(dx, uavFormat, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
 }
 
+void Texture2D::Destroy()
+{
+	_texture.Destroy();
+	_srv.Destroy();
+	_uav.Destroy();
+	_size = Size<uint>(0, 0);
+}
+
 const Size<uint>& Texture2D::FetchSize()
 {
 	if( (_size.w != 0) & (_size.h != 0) )
