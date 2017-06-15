@@ -6,6 +6,8 @@
 #include "RenderTexture.h"
 #include "DepthBuffer.h"
 
+#include "ConstBuffer.h"
+
 namespace Rendering
 {
 	namespace Renderer
@@ -26,6 +28,8 @@ namespace Rendering
 			Packed			packedParam;
 			float			gamma = 2.2f;
 		};
+
+		using TBRParamCB = Buffer::ExplicitConstBuffer<TBRCBData>;
 
 		struct GBuffers
 		{

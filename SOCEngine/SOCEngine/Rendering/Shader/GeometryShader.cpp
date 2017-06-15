@@ -30,10 +30,9 @@ void GeometryShader::BindShaderResourceView(Device::DirectX& dx, TextureBindInde
 	dx.GetContext()->GSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState)
+void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
 {	
-	ID3D11SamplerState* sampler = samplerState.GetRaw();
-	dx.GetContext()->GSSetSamplers(static_cast<uint>(bind), 1, &sampler);
+	dx.GetContext()->GSSetSamplers(static_cast<uint>(bind), 1, &samplerState);
 }
 
 void GeometryShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)

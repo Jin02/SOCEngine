@@ -18,16 +18,5 @@ namespace Rendering
 			Texture::RenderTexture					halfSizeMap;
 			Texture::RenderTexture					minSizeMap;
 		};
-
-		struct Main
-		{
-			Renderer::MainRenderer& renderer;
-			Camera::MainCamera&		camera;
-
-			Main(Renderer::MainRenderer& _renderer, Camera::MainCamera& _camera)
-				: camera(_camera), renderer(_renderer)
-			{
-			}
-		};
 	}
 }

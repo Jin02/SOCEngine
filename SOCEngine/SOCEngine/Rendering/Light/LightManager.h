@@ -97,6 +97,11 @@ namespace Rendering
 				return GetPool<LightType>().GetIndexer();
 			}
 
+			template <class LightType> uint GetLightCount() const
+			{
+				return GetPool<LightType>().GetSize();
+			}
+
 		private:
 			template <class LightType> auto&		GetDirtyParamLights()
 			{

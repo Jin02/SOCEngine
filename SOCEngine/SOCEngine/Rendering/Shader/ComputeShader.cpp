@@ -28,10 +28,9 @@ void ComputeShader::BindShaderResourceView(Device::DirectX& dx, TextureBindIndex
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, DXSharedResource<ID3D11SamplerState>& samplerState)
+void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
 {
-	ID3D11SamplerState* sampler= samplerState.GetRaw();
-	dx.GetContext()->CSSetSamplers(static_cast<uint>(bind), 1, &sampler);
+	dx.GetContext()->CSSetSamplers(static_cast<uint>(bind), 1, &samplerState);
 }
 
 void ComputeShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)

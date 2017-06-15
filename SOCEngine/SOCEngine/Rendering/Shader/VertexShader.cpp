@@ -64,10 +64,9 @@ void VertexShader::BindShaderResourceView(OUT Device::DirectX& dx,
 }
 
 void VertexShader::BindSamplerState(OUT Device::DirectX& dx,
-	SamplerStateBindIndex bind, IN DXSharedResource<ID3D11SamplerState>& samplerState)
+	SamplerStateBindIndex bind, IN ID3D11SamplerState* samplerState)
 {
-	ID3D11SamplerState* sampler = samplerState.GetRaw();
-	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &sampler);
+	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &samplerState);
 }
 
 void VertexShader::BindConstBuffer(OUT Device::DirectX& dx,
