@@ -124,6 +124,27 @@
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\BilateralFiltering.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\Bloom.h" />
+    <ClInclude Include="Rendering\Postprocessing\Copy.h" />
+    <ClInclude Include="Rendering\Postprocessing\DepthOfField.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\FullScreen.h" />
+    <ClInclude Include="Rendering\Postprocessing\GaussianBlur.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\IBLPass.h" />
+    <ClInclude Include="Rendering\Postprocessing\LightBufferMerger.h" />
+    <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\SSAO.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
@@ -290,6 +311,26 @@
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\BilateralFiltering.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\Bloom.cpp" />
+    <ClCompile Include="Rendering\Postprocessing\Copy.cpp" />
+    <ClCompile Include="Rendering\Postprocessing\DepthOfField.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\FullScreen.cpp" />
+    <ClCompile Include="Rendering\Postprocessing\GaussianBlur.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp" />
+    <ClCompile Include="Rendering\Postprocessing\LightBufferMerger.cpp" />
+    <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\SSAO.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
@@ -421,7 +462,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Renderer;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Renderer;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/Postprocessing;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>

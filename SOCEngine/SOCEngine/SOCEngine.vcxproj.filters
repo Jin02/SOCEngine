@@ -97,9 +97,6 @@
     <Filter Include="ShaderCodes\PBR">
       <UniqueIdentifier>{5dd7077f-b929-4daa-9718-43a20ee78a81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\LightCulling">
-      <UniqueIdentifier>{1b29cdbc-920d-4e08-9d6d-62e85459e471}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Unused">
       <UniqueIdentifier>{7947513b-c186-4a11-8e81-a048be9c00e1}</UniqueIdentifier>
     </Filter>
@@ -351,6 +348,42 @@
     </Filter>
     <Filter Include="Rendering\Renderer">
       <UniqueIdentifier>{36140203-469d-4944-8d59-b8fd955119f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing">
+      <UniqueIdentifier>{ad5a72e2-44bd-4920-bf35-1932a22a2388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\Filter">
+      <UniqueIdentifier>{60579beb-1a39-47b6-8caa-6e2d2f37cccd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\DepthOfField">
+      <UniqueIdentifier>{27640cae-9231-421a-a6c3-9c79c7128e53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\FullScreen">
+      <UniqueIdentifier>{dba591a1-d482-495a-bed2-4eccdd0ae75c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\AmbientOcclusion">
+      <UniqueIdentifier>{ba094229-f6c6-48b9-b527-198291b70faa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\LightCulling">
+      <UniqueIdentifier>{1b29cdbc-920d-4e08-9d6d-62e85459e471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\IBL">
+      <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Main">
+      <UniqueIdentifier>{aa5613c9-00cf-4e6a-9c93-db2414304664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\Renderer">
+      <UniqueIdentifier>{f00b15b4-7573-4e54-a083-50939c61ade8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Main\Merger">
+      <UniqueIdentifier>{4533ce0c-2b2b-4a2c-af17-786de31640e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\Bloom">
+      <UniqueIdentifier>{179e467e-4149-417b-9a78-be44ade9d44f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\Copy">
+      <UniqueIdentifier>{ca3b2eea-bf65-4501-99e5-dac128634995}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -781,11 +814,44 @@
     <ClInclude Include="Rendering\Light\SpotLightBuffer.h">
       <Filter>Rendering\Light\Buffer\Spot</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\MainRenderer.h">
-      <Filter>Rendering\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h">
       <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\BilateralFiltering.h">
+      <Filter>Rendering\Postprocessing\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\GaussianBlur.h">
+      <Filter>Rendering\Postprocessing\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\DepthOfField.h">
+      <Filter>Rendering\Postprocessing\DepthOfField</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\SSAO.h">
+      <Filter>Rendering\Postprocessing\AmbientOcclusion</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\FullScreen.h">
+      <Filter>Rendering\Postprocessing\FullScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\IBLPass.h">
+      <Filter>Rendering\Postprocessing\IBL</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
+      <Filter>Rendering\Postprocessing\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\LightBufferMerger.h">
+      <Filter>Rendering\Renderer\Main\Merger</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\MainRenderer.h">
+      <Filter>Rendering\Renderer\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\Bloom.h">
+      <Filter>Rendering\Postprocessing\Bloom</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\Copy.h">
+      <Filter>Rendering\Postprocessing\Copy</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\PPCommon.h">
+      <Filter>Rendering\Postprocessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -993,8 +1059,38 @@
     <ClCompile Include="Rendering\Light\SpotLightBuffer.cpp">
       <Filter>Rendering\Light\Buffer\Spot</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\BilateralFiltering.cpp">
+      <Filter>Rendering\Postprocessing\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\GaussianBlur.cpp">
+      <Filter>Rendering\Postprocessing\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\DepthOfField.cpp">
+      <Filter>Rendering\Postprocessing\DepthOfField</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\SSAO.cpp">
+      <Filter>Rendering\Postprocessing\AmbientOcclusion</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\FullScreen.cpp">
+      <Filter>Rendering\Postprocessing\FullScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp">
+      <Filter>Rendering\Postprocessing\IBL</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
+      <Filter>Rendering\Postprocessing\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\LightBufferMerger.cpp">
+      <Filter>Rendering\Renderer\Main\Merger</Filter>
+    </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Rendering\Renderer\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\Bloom.cpp">
+      <Filter>Rendering\Postprocessing\Bloom</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\Copy.cpp">
+      <Filter>Rendering\Postprocessing\Copy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
