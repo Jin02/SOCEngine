@@ -21,7 +21,7 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT,
-						Main& mains, Material::SkyBoxMaterial& skyBox);
+						MainRenderingSystemParam& mains, Material::SkyBoxMaterial& skyBox);
 
 		private:
 			FullScreen						_screen;

@@ -12,6 +12,7 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Sky;
 using namespace Rendering::Manager;
 using namespace Rendering::Material;
+using namespace Rendering;
 using namespace Device;
 
 void IBLPass::Initialize(DirectX& dx, ShaderManager& shaderMgr)
@@ -29,7 +30,7 @@ void IBLPass::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 }
 
 void IBLPass::Render(	DirectX& dx, RenderTexture& outResultRT,
-						Main& mains, SkyBoxMaterial& skyBox)
+						MainRenderingSystemParam& mains, SkyBoxMaterial& skyBox)
 {
 
 	auto& gbuffer = mains.renderer.GetGBuffers();

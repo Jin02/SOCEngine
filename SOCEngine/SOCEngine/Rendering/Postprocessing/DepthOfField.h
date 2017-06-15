@@ -29,7 +29,7 @@ namespace Rendering
 			void UpdateParam(Device::DirectX& dx, const ParamCBData& param);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, 
 				Texture::RenderTexture& inColorMap,
-				Main& mains, Copy& copy, TempTextures& tempTextures);
+				MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures);
 
 		private:
 			FullScreen									_screen;

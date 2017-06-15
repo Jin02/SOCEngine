@@ -25,9 +25,9 @@ void ShadowManager::Initialize(Device::DirectX & dx)
 {
 	_globalCB.Initialize(dx);
 
-	GetBufferObject<DirectionalLightShadow>().GetBuffer().Initialize(dx);
-	GetBufferObject<SpotLightShadow>().GetBuffer().Initialize(dx, SPOT_LIGHT_BUFFER_MAX_NUM);
-	GetBufferObject<PointLightShadow>().GetBuffer().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
+	GetBuffer<DirectionalLightShadow>().GetBuffer().Initialize(dx);
+	GetBuffer<SpotLightShadow>().GetBuffer().Initialize(dx, SPOT_LIGHT_BUFFER_MAX_NUM);
+	GetBuffer<PointLightShadow>().GetBuffer().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
 
 void ShadowManager::UpdateGlobalCB(Device::DirectX & dx)
@@ -37,9 +37,9 @@ void ShadowManager::UpdateGlobalCB(Device::DirectX & dx)
 
 	ShadowGlobalParam param;
 	{
-		auto& dlsBufferObj = GetBufferObject<DirectionalLightShadow>();
-		auto& plsBufferObj = GetBufferObject<PointLightShadow>();
-		auto& slsBufferObj = GetBufferObject<SpotLightShadow>();
+		auto& dlsBufferObj = GetBuffer<DirectionalLightShadow>();
+		auto& plsBufferObj = GetBuffer<PointLightShadow>();
+		auto& slsBufferObj = GetBuffer<SpotLightShadow>();
 
 		auto Pack = [](uint d, uint s, uint p) -> uint
 		{
@@ -98,9 +98,9 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 	Check(GetPool<SpotLight>());
 	Check(GetPool<DirectionalLight>());
 
-	_dirtyGlobalParam |=	GetBufferObject<DirectionalLightShadow>().GetDirty() |
-							GetBufferObject<PointLightShadow>().GetDirty()		 |
-							GetBufferObject<SpotLightShadow>().GetDirty();
+	_dirtyGlobalParam |=	GetBuffer<DirectionalLightShadow>().GetDirty() |
+							GetBuffer<PointLightShadow>().GetDirty()		 |
+							GetBuffer<SpotLightShadow>().GetDirty();
 }
 
 void ShadowManager::ClearDirtyShadows()
@@ -125,18 +125,18 @@ void ShadowManager::UpdateNotInitedCB(Device::DirectX& dx)
 
 void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox)
 {	
-	GetBufferObject<DirectionalLightShadow>().GetBuffer().UpdateBuffer(
+	GetBuffer<DirectionalLightShadow>().GetBuffer().UpdateBuffer(
 		GetDirtyShadows<DirectionalLightShadow>(),
 		lightMgr.GetPool<DirectionalLight>(),
 		tfPool, sceneBoundBox
 	);
 
-	GetBufferObject<PointLightShadow>().GetBuffer().UpdateBuffer(
+	GetBuffer<PointLightShadow>().GetBuffer().UpdateBuffer(
 		GetDirtyShadows<PointLightShadow>(),
 		lightMgr.GetPool<PointLight>(), tfPool
 	);
 
-	GetBufferObject<SpotLightShadow>().GetBuffer().UpdateBuffer(
+	GetBuffer<SpotLightShadow>().GetBuffer().UpdateBuffer(
 		GetDirtyShadows<SpotLightShadow>(),
 		lightMgr.GetPool<SpotLight>(), tfPool
 	);
@@ -144,9 +144,9 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 
 void ShadowManager::UpdateSRBuffer(Device::DirectX & dx)
 {
-	GetBufferObject<DirectionalLightShadow>().GetBuffer().UpdateSRBuffer(dx);
-	GetBufferObject<PointLightShadow>().GetBuffer().UpdateSRBuffer(dx);
-	GetBufferObject<SpotLightShadow>().GetBuffer().UpdateSRBuffer(dx);
+	GetBuffer<DirectionalLightShadow>().GetBuffer().UpdateSRBuffer(dx);
+	GetBuffer<PointLightShadow>().GetBuffer().UpdateSRBuffer(dx);
+	GetBuffer<SpotLightShadow>().GetBuffer().UpdateSRBuffer(dx);
 
 	GetShadowMapCB<DirectionalLight>().UpdateSubResource(dx, GetDirtyShadows<DirectionalLightShadow>());
 	GetShadowMapCB<PointLight>().UpdateSubResource(dx, GetDirtyShadows<PointLightShadow>());
@@ -155,9 +155,9 @@ void ShadowManager::UpdateSRBuffer(Device::DirectX & dx)
 
 void ShadowManager::DeleteAll()
 {
-	GetBufferObject<PointLightShadow>().GetBuffer().DeleteAll();
-	GetBufferObject<SpotLightShadow>().GetBuffer().DeleteAll();
-	GetBufferObject<DirectionalLightShadow>().GetBuffer().DeleteAll();
+	GetBuffer<PointLightShadow>().GetBuffer().DeleteAll();
+	GetBuffer<SpotLightShadow>().GetBuffer().DeleteAll();
+	GetBuffer<DirectionalLightShadow>().GetBuffer().DeleteAll();
 
 	GetPool<PointLight>().DeleteAll();
 	GetPool<SpotLight>().DeleteAll();
@@ -180,19 +180,19 @@ void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS
 		if (bindPS)	PixelShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());
 	};
 
-	auto& plBuffer = GetBufferObject<PointLightShadow>().GetBuffer();
+	auto& plBuffer = GetBuffer<PointLightShadow>().GetBuffer();
 	{
 		Bind(TextureBindIndex::PointLightShadowParam, plBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::PointLightShadowViewProjMatrix,plBuffer.GetViewProjMatSRBuffer());
 	}
 
-	auto& dlBuffer = GetBufferObject<DirectionalLightShadow>().GetBuffer();
+	auto& dlBuffer = GetBuffer<DirectionalLightShadow>().GetBuffer();
 	{
 		Bind(TextureBindIndex::DirectionalLightShadowParam, dlBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightShadowViewProjMatrix, dlBuffer.GetViewProjMatSRBuffer());
 	}
 
-	auto& slBuffer = GetBufferObject<SpotLightShadow>().GetBuffer();
+	auto& slBuffer = GetBuffer<SpotLightShadow>().GetBuffer();
 	{
 		Bind(TextureBindIndex::SpotLightShadowParam, slBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::SpotLightShadowViewProjMatrix, slBuffer.GetViewProjMatSRBuffer());

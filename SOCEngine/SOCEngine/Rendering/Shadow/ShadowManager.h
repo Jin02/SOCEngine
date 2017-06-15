@@ -25,6 +25,11 @@ namespace Rendering
 				uint packedNumOfShadows;
 				uint dummy;
 			};
+			using GlobalParamCB = Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParam>;
+
+			constexpr static const uint DirectionalLightInitCount = 1;
+			constexpr static const uint SpotLightInitCount = 1;
+			constexpr static const uint PointLightInitCount = 1;
 
 		public:
 			void Initialize(Device::DirectX& dx);
@@ -48,7 +53,7 @@ namespace Rendering
 			ShadowType& Add(ShadowType& shadow)
 			{
 				uint id = shadow.GetShadowId().Literal();
-				GetBufferObject<ShadowType>().GetBuffer().AddShadow(shadow);
+				GetBuffer<ShadowType>().GetBuffer().AddShadow(shadow);
 				GetShadowMapCB<ShadowType::LightType>().Add(shadow.GetShadowId());
 
 				shadow.SetDirty(true);
@@ -62,7 +67,7 @@ namespace Rendering
 				uint id = shadow.GetShadowId().Literal();
 
 				GetPool<ShadowType::LightType>().Delete(id);
-				GetBufferObject<ShadowType>().GetBuffer().Delete(shadow);
+				GetBuffer<ShadowType>().GetBuffer().Delete(shadow);
 				GetShadowMapCB<ShadowType::LightType>().Delete(shadow.GetShadowId());
 
 				_dirtyGlobalParam = true;
@@ -90,21 +95,21 @@ namespace Rendering
 			{
 				return std::get<Shadow::Buffer::ShadowMapCB<LightType::ShadowType>>(_shadowMapCBs);
 			}
+			template <class ShadowType>	auto& GetBuffer()
+			{
+				return std::get<Shadow::Buffer::ShadowBufferObject<ShadowType>>(_shadowBuffers);
+			}
+			template <class ShadowType>	const auto& GetBuffer() const
+			{
+				return std::get<Shadow::Buffer::ShadowBufferObject<ShadowType>>(_shadowBuffers);
+			}
+			GET_ACCESSOR(GlobalParamCB, auto&, _globalCB);
 
 		private:
-			template <class ShadowType>	auto& GetBufferObject()
-			{
-				return std::get<ShadowBufferObject<ShadowType>>(_shadowBuffers);
-			}
-			template <class ShadowType>	const auto& GetBufferObject() const
-			{
-				return std::get<ShadowBufferObject<ShadowType>>(_shadowBuffers);
-			}
 			template <class ShadowType>	auto& GetDirtyShadows()
 			{
 				return std::get<std::vector<ShadowType*>>(_dirtyShadows);
 			}
-
 
 		private:
 			std::tuple<
@@ -128,7 +133,7 @@ namespace Rendering
 				Shadow::Buffer::ShadowMapCB<Shadow::DirectionalLightShadow>
 			> _shadowMapCBs;
 
-			Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParam> _globalCB;
+			GlobalParamCB _globalCB;
 			bool _dirtyGlobalParam = true;
 
 			Shadow::ShadowIdManager _idMgr;

@@ -34,20 +34,31 @@ namespace Rendering
 			GET_ACCESSOR(SpecularLightBuffer, auto&, _specularLightBuffer);
 
 		private:
-			LightBufferMerger							_merger;
+			LightBufferMerger			_merger;
 
-			Texture::RenderTexture						_resultMap;
+			Texture::RenderTexture		_resultMap;
 
-			Texture::RenderTexture						_diffuseLightBuffer;
-			Texture::RenderTexture						_specularLightBuffer;
+			Texture::RenderTexture		_diffuseLightBuffer;
+			Texture::RenderTexture		_specularLightBuffer;
 
-			Light::OnlyLightCulling						_blendedDepthLC;
+			Light::OnlyLightCulling		_blendedDepthLC;
 
-			Buffer::ExplicitConstBuffer<TBRCBData>		_tbrCB;
-			TBRCBData									_tbrCBData;
+			TBRParamCB					_tbrCB;
+			TBRCBData					_tbrCBData;
 
-			GBuffers									_gbuffer;
-			bool										_dirty = true;
+			GBuffers					_gbuffer;
+			bool						_dirty = true;
 		};
 	}
+
+	struct MainRenderingSystemParam
+	{
+		Renderer::MainRenderer& renderer;
+		Camera::MainCamera&		camera;
+
+		MainRenderingSystemParam(Renderer::MainRenderer& _renderer, Camera::MainCamera& _camera)
+			: camera(_camera), renderer(_renderer)
+		{
+		}
+	};
 }

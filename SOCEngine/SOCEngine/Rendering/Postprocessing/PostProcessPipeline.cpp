@@ -41,7 +41,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 									MainRenderer& mainRenderer,
 									MainCamera& mainMeshCamera	)
 {
-	Main mains(mainRenderer, mainMeshCamera);
+	MainRenderingSystemParam mains(mainRenderer, mainMeshCamera);
 
 	RenderTexture& mainScene	= mainRenderer.GetResultMap();
 	mainScene.GetTexture2D().GenerateMips(dx);

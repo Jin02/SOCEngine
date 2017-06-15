@@ -34,7 +34,7 @@ void DepthOfField::UpdateParam(Device::DirectX& dx, const ParamCBData& param)
 
 void DepthOfField::Render(	DirectX& dx, RenderTexture& outRT,
 							RenderTexture& inColorMap,
-							Main& mains, Copy& copy, TempTextures& tempTextures	)
+							MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures	)
 {
 	// Blur color map
 	{
