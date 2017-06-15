@@ -74,6 +74,29 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h" />
+    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h" />
+    <ClInclude Include="Rendering\GI\InjectRadianceUtility.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGI.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGICommon.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Light\CommonLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -146,6 +169,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\ShadowRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
     <ClInclude Include="Rendering\Shader\ComputeShader.h" />
@@ -179,6 +203,7 @@
     <ClInclude Include="Rendering\Shadow\PointLightShadowBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h" />
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp" />
     <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp" />
     <ClInclude Include="Rendering\Shadow\ShadowId.hpp" />
@@ -278,6 +303,26 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
+    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp" />
+    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp" />
+    <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\Voxelization.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VXGI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Light\CommonLightBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -332,6 +377,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\ShadowRenderer.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
@@ -350,6 +396,7 @@
     <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowAtlasMap.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -462,7 +509,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Renderer;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/Postprocessing;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Renderer;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/GI;Rendering/Postprocessing;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>

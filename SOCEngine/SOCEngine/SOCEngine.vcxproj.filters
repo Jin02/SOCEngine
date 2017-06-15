@@ -385,6 +385,39 @@
     <Filter Include="Rendering\Postprocessing\Copy">
       <UniqueIdentifier>{ca3b2eea-bf65-4501-99e5-dac128634995}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\GI">
+      <UniqueIdentifier>{57ebef0e-b743-4e59-b8c2-6693ff620e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Injection">
+      <UniqueIdentifier>{cc30caea-f109-403a-a661-58a517e05795}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Mipmap">
+      <UniqueIdentifier>{825d389c-c186-4198-848a-57a4bcb7e2ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxelization">
+      <UniqueIdentifier>{c164c026-d821-425f-bf84-80bcea24cc8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Voxelization\Map">
+      <UniqueIdentifier>{ba1e511e-2208-4f86-b957-6335f11254d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\ConTracing">
+      <UniqueIdentifier>{554ed2d9-f878-484e-bcf2-84554f95b206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow">
+      <UniqueIdentifier>{79fbc019-c6d7-4ed4-aa50-6fdccd3bd076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\AtlasMap">
+      <UniqueIdentifier>{caff92fc-03fc-4195-973f-ab9021372043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Injection\Utility">
+      <UniqueIdentifier>{9dcf102f-bc3e-40b5-a80d-f2b1ad53aa8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Injection\Spot">
+      <UniqueIdentifier>{a3e6e0d8-473c-498f-ac9a-4dfe8e85f6a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\Injection\Point">
+      <UniqueIdentifier>{08054428-0545-48a9-8794-aca937a3450b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -853,6 +886,39 @@
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h">
       <Filter>Rendering\Postprocessing</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGI.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGICommon.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
+      <Filter>Rendering\GI\Mipmap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\Voxelization.h">
+      <Filter>Rendering\GI\Voxelization</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelMap.h">
+      <Filter>Rendering\GI\Voxelization\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
+      <Filter>Rendering\GI\ConTracing</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\ShadowRenderer.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h">
+      <Filter>Rendering\Shadow\AtlasMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceUtility.h">
+      <Filter>Rendering\GI\Injection\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
+      <Filter>Rendering\GI\Injection\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h">
+      <Filter>Rendering\GI\Injection\Spot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1091,6 +1157,36 @@
     </ClCompile>
     <ClCompile Include="Rendering\Postprocessing\Copy.cpp">
       <Filter>Rendering\Postprocessing\Copy</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VXGI.cpp">
+      <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
+      <Filter>Rendering\GI\Mipmap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\Voxelization.cpp">
+      <Filter>Rendering\GI\Voxelization</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelMap.cpp">
+      <Filter>Rendering\GI\Voxelization\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
+      <Filter>Rendering\GI\ConTracing</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\ShadowRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowAtlasMap.cpp">
+      <Filter>Rendering\Shadow\AtlasMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
+      <Filter>Rendering\GI\Injection\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp">
+      <Filter>Rendering\GI\Injection\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp">
+      <Filter>Rendering\GI\Injection\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
