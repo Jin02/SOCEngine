@@ -415,13 +415,13 @@ Matrix Matrix::ComputeViewportMatrix(const Rect<uint>& rect)
 {
 	Matrix outMat;
 
-	outMat._11 = rect.size.w / 2.0f;
+	outMat._11 = static_cast<float>(rect.size.w) / 2.0f;
 	outMat._12 = 0.0f;
 	outMat._13 = 0.0f;
 	outMat._14 = 0.0f;
 
 	outMat._21 = 0.0f;
-	outMat._22 = -rect.size.h / 2.0f;
+	outMat._22 = -static_cast<float>(rect.size.h) / 2.0f;
 	outMat._23 = 0.0f;
 	outMat._24 = 0.0f;
 
@@ -430,8 +430,8 @@ Matrix Matrix::ComputeViewportMatrix(const Rect<uint>& rect)
 	outMat._33 = 1.0f;
 	outMat._34 = 0.0f;
 
-	outMat._41 = rect.x + rect.size.w / 2.0f;
-	outMat._42 = rect.y + rect.size.h / 2.0f;
+	outMat._41 = static_cast<float>(rect.x + rect.size.w) / 2.0f;
+	outMat._42 = static_cast<float>(rect.y + rect.size.h) / 2.0f;
 	outMat._43 = 0.0f;
 	outMat._44 = 1.0f;
 
