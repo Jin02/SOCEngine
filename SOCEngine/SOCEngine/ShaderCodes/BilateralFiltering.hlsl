@@ -8,6 +8,14 @@ Texture2D<float4> DepthBuffer			: register( t1 );
 SamplerState DefaultSampler				: register( s0 );
 SamplerState ShadowSampler				: register( s1 );
 
+cbuffer BlurParam : register(b0)
+{
+	float BlurParam_sigma;
+	float BlurParam_sigmaz;
+	float BlurParam_scale;			// dummy
+	float dummy;
+};
+
 float GaussWeight(int sampleDist, float sigma)
 {
 	float g = 1.0f / sqrt(2.0f * 3.14159f * sigma * sigma);
@@ -92,13 +100,13 @@ float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma
 
 
 #if defined(BLUR_VERTICAL)
-float4 BilateralGaussNear_InFullScreen_PS(PS_INPUT input) : SV_TARGET
+float4 BilateralGauss_InFullScreen_PS(PS_INPUT input) : SV_TARGET
 {
-    return BilateralGaussNear(input.uv, float2(0.0f, 1.0f), 2.5f, 0.005f);
+    return BilateralGaussNear(input.uv, float2(0.0f, BlurParam_scale), BlurParam_sigma, BlurParam_sigmaz);
 }
 #elif defined(BLUR_HORIZONTAL)
-float4 BilateralGaussNear_InFullScreen_PS(PS_INPUT input) : SV_TARGET
+float4 BilateralGauss_InFullScreen_PS(PS_INPUT input) : SV_TARGET
 {
-    return BilateralGaussNear(input.uv, float2(1.0f, 0.0f), 2.5f, 0.005f);
+    return BilateralGaussNear(input.uv, float2(BlurParam_scale, 0.0f), BlurParam_sigma, BlurParam_sigmaz);
 }
 #endif
