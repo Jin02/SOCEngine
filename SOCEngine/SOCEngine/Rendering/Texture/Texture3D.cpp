@@ -6,7 +6,7 @@ using namespace Math;
 
 void Texture3D::Initialize(	Device::DirectX& dx,
 				uint width, uint height, uint depth,
-				DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
+				DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
 				uint optionBindFlag, uint mipLevels )
 {
 	_size = Vector3(static_cast<float>(width), static_cast<float>(height), static_cast<float>(depth));
@@ -27,7 +27,7 @@ void Texture3D::Initialize(	Device::DirectX& dx,
 	textureDesc.MipLevels		= mipLevels;
 	textureDesc.MiscFlags		= mipLevels > 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 
-	textureDesc.Format			= typelessFormat;
+	textureDesc.Format			= tex3DFormat;
 	textureDesc.Usage			= D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags		= bindFlag;
 	textureDesc.CPUAccessFlags	= 0;
