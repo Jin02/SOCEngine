@@ -27,6 +27,9 @@ public:
 	template <typename NewType>
 	Rect<NewType> Cast() const
 	{
-		return Rect<NewType>(x, y, size.w, size.h);
+		return Rect<NewType>(	static_cast<NewType>(x),
+								static_cast<NewType>(y),
+								static_cast<NewType>(size.w),
+								static_cast<NewType>(size.h)	);
 	}
 };
