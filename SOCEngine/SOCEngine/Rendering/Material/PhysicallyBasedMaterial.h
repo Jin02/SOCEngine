@@ -18,7 +18,7 @@ namespace Rendering
 				uint emissiveColor_Metallic = 0;
 				uint roughness_specularity_existTextureFlag = 0;
 
-				//ìƒìœ„ 2ë¹„íŠ¸ëŠ” ì•„ì§ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
+				//»óÀ§ 2ºñÆ®´Â ¾ÆÁ÷ »ç¿ëÇÏÁö ¾ÊÀ½
 				uint flag_ior = 0;
 
 				static constexpr const char* GetKey() { return "PBRParam"; }
