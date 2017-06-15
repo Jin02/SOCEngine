@@ -11,6 +11,7 @@
 #include "ShadowManager.h"
 
 #include "TileBasedShadingHeader.h"
+#include "LightBufferMerger.h"
 
 namespace Rendering
 {
@@ -28,7 +29,15 @@ namespace Rendering
 			GET_ACCESSOR(GBuffers, auto&, _gbuffer);
 			GET_ACCESSOR(TBRParamCB, auto&, _tbrCB);
 
+			GET_ACCESSOR(ResultMap, auto&, _resultMap);
+			GET_ACCESSOR(DiffuseLightBuffer, auto&, _diffuseLightBuffer);
+			GET_ACCESSOR(SpecularLightBuffer, auto&, _specularLightBuffer);
+
 		private:
+			LightBufferMerger							_merger;
+
+			Texture::RenderTexture						_resultMap;
+
 			Texture::RenderTexture						_diffuseLightBuffer;
 			Texture::RenderTexture						_specularLightBuffer;
 

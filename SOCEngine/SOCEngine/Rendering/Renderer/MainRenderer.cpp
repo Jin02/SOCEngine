@@ -8,11 +8,14 @@ using namespace Math;
 
 void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const MainCamera& mainCamera)
 {
+	_merger.Initialize(dx, shaderMgr);
 	_blendedDepthLC.Initialize(dx, shaderMgr, mainCamera.GetRenderRect().size);
+
+	auto backBufferSize = dx.GetBackBufferSize().Cast<uint>();
 
 	// Light Buffer
 	{
-		auto size = dx.GetBackBufferSize().Cast<uint>();
+		auto size = backBufferSize;
 		{
 			if (dx.GetMSAADesc().Count > 1)
 			{
@@ -27,17 +30,19 @@ void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 
 	// setting gbuffer, render target
 	{
-		const auto& size = mainCamera.GetRenderRect().size;
+		_gbuffer.albedo_occlusion.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.normal_roughness.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.velocity_metallic_specularity.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 
-		_gbuffer.albedo_occlusion.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.normal_roughness.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.velocity_metallic_specularity.Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.emission_materialFlag.Initialize(dx, backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
 
-		_gbuffer.emission_materialFlag.Initialize(dx, size, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
-
-		_gbuffer.opaqueDepthBuffer.Initialize(dx, size, true);
-		_gbuffer.blendedDepthBuffer.Initialize(dx, size, true);
+		_gbuffer.opaqueDepthBuffer.Initialize(dx, backBufferSize, true);
+		_gbuffer.blendedDepthBuffer.Initialize(dx, backBufferSize, true);
 	}
+
+	float maxLength = static_cast<float>( max(backBufferSize.w, backBufferSize.h) );
+	uint mipLevel = static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
+	_resultMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 	_tbrCB.Initialize(dx);
 }
