@@ -28,7 +28,7 @@ namespace Rendering
 				void Delete(const DirectionalLightShadow& shadow);
 				void DeleteAll();
 
-				GET_ACCESSOR(DLParamSRBuffer, auto&, _dlParamBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR(InvProjParamSRBuffer, auto&, _dlParamBuffer.GetShaderResourceBuffer());
 
 			private:
 				using Parent = Buffer::ShadowBufferForm<Shadow::DirectionalLightShadow>;

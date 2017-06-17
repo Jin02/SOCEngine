@@ -133,7 +133,7 @@
     <ClInclude Include="Rendering\Light\SpotLightBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\Material.hpp" />
+    <ClInclude Include="Rendering\Material\MaterialForm.hpp" />
     <ClInclude Include="Rendering\Material\MaterialManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>

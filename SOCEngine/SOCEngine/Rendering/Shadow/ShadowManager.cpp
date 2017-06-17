@@ -190,6 +190,7 @@ void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS
 	{
 		Bind(TextureBindIndex::DirectionalLightShadowParam, dlBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightShadowViewProjMatrix, dlBuffer.GetViewProjMatSRBuffer());
+		Bind(TextureBindIndex::DirectionalLightShadowInvProjParam, dlBuffer.GetInvProjParamSRBuffer());
 	}
 
 	auto& slBuffer = GetBuffer<SpotLightShadow>().GetBuffer();

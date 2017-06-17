@@ -15,9 +15,9 @@ namespace Rendering
 		public:
 			GPUUploadBuffer() = default;
 
-			void Initialize(Device::DirectX& dx, uint size, DXGI_FORMAT format, const void* dummy = nullptr)
+			void Initialize(Device::DirectX& dx, uint count, DXGI_FORMAT format, const void* dummy = nullptr)
 			{
-				_srBuffer.Initialize(dx, sizeof(T), size, format, dummy, false, 0, D3D11_USAGE_DYNAMIC);
+				_srBuffer.Initialize(dx, sizeof(T), count, format, dummy, false, 0, D3D11_USAGE_DYNAMIC);
 			}
 
 			// _srBuffer

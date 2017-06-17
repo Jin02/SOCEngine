@@ -1,5 +1,4 @@
 #include "MainCamera.h"
-#include "EngineShaderFactory.hpp"
 #include "Utility.hpp"
 #include "Matrix.h"
 #include "LightCullingUtility.h"
@@ -25,22 +24,7 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 		_desc.renderRect = rect;
 	}
 
-	// Load Shader
-	{
-		std::vector<Shader::ShaderMacro> macros{dx.GetMSAAShaderMacro(),
-												ShaderMacro("USE_COMPUTE_SHADER"),
-												ShaderMacro("ENABLE_BLEND")};
-
-		Factory::EngineShaderFactory factory(&shaderMgr);
-		ComputeShader shader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
-
-		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(rect.size);
-		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
-		shader.SetThreadGroupInfo(threadGroup);
-	}
-
 	_camCB.Initialize(dx);
-
 	_Initialized = true;
 }
 

@@ -6,7 +6,7 @@
 cbuffer HDRGlobalParam : register(b1)
 {
 	float hdr_timeDelta;
-	float hdr_exposureKey;
+	float hdr_exposureStrength;
 	float hdr_exposureSpeed;
 
 	float bloom_threshold;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Material.hpp"
+#include "MaterialForm.hpp"
 
 #define UPDATE_TEXTURE(name, bind)\
  inline void Regist##name(const Texture::Texture2D& tex) {RegistTexture(Get##name##Key(), bind, tex);}

@@ -2,7 +2,6 @@
 
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
-using namespace Rendering::Manager;
 
 CameraManager::CameraManager()
 	: _mainCamera(Core::ObjectId())

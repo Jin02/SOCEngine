@@ -1,8 +1,10 @@
 #include "MainRenderer.h"
 #include "LightCullingUtility.h"
+#include "EngineShaderFactory.hpp"
 
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Shader;
 using namespace Rendering::Renderer;
 using namespace Math;
 
@@ -45,6 +47,20 @@ void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 	_resultMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 
 	_tbrCB.Initialize(dx);
+
+	// Load Shader
+	{
+		std::vector<Shader::ShaderMacro> macros{ dx.GetMSAAShaderMacro(),
+			ShaderMacro("USE_COMPUTE_SHADER"),
+			ShaderMacro("ENABLE_BLEND") };
+
+		Factory::EngineShaderFactory factory(&shaderMgr);
+		_tbdrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
+
+		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(backBufferSize);
+		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
+		_tbdrShader.SetThreadGroupInfo(threadGroup);
+	}
 }
 
 void MainRenderer::UpdateCB(Device::DirectX & dx, const MainCamera& mainCamera, Manager::LightManager& lightMgr)

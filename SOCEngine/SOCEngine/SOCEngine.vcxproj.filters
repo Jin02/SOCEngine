@@ -769,9 +769,6 @@
     <ClInclude Include="Intersection\Ray.hpp">
       <Filter>Intersection\Ray</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Material\Material.hpp">
-      <Filter>Rendering\Material</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderCompiler.h">
       <Filter>Rendering\Shader\Compiler</Filter>
     </ClInclude>
@@ -918,6 +915,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h">
       <Filter>Rendering\GI\Injection\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\MaterialForm.hpp">
+      <Filter>Rendering\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

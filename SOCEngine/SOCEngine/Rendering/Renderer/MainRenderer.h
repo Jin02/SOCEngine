@@ -12,6 +12,7 @@
 
 #include "TileBasedShadingHeader.h"
 #include "LightBufferMerger.h"
+#include "ComputeShader.h"
 
 namespace Rendering
 {
@@ -40,6 +41,7 @@ namespace Rendering
 
 			Texture::RenderTexture		_diffuseLightBuffer;
 			Texture::RenderTexture		_specularLightBuffer;
+			Shader::ComputeShader		_tbdrShader;
 
 			Light::OnlyLightCulling		_blendedDepthLC;
 

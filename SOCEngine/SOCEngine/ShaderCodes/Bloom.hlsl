@@ -20,7 +20,7 @@ float3 ComputeExposedColor(float3 color, float avgLum, float threshold)
 {
 	avgLum = max(avgLum, 0.0001f);
 
-	float linearExposure	= (hdr_exposureKey / avgLum);
+	float linearExposure	= (hdr_exposureStrength / avgLum);
 
 	float	exposure = log2( max(linearExposure, 0.001f) );
 			exposure -= threshold;

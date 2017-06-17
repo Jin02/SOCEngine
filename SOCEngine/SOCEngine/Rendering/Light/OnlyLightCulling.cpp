@@ -44,8 +44,6 @@ void OnlyLightCulling::Dispatch(
 	Device::DirectX& dx, Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr,
 	ExplicitConstBuffer<TBRCBData>& tbrCB, GBuffers& gbuffer)
 {
-	ID3D11DeviceContext* context = dx.GetContext();
-
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, tbrCB);
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
 

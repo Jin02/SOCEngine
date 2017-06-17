@@ -3,7 +3,7 @@
 #include "DirectX.h"
 #include "Matrix.h"
 #include "ShaderManager.h"
-#include "Material.hpp"
+#include "MaterialForm.hpp"
 
 namespace Rendering
 {

@@ -17,7 +17,7 @@ namespace Rendering
 			{
 			public:
 				using ViewProjMatType = typename ShadowType::ViewProjMatType;
-				using TransformBuffer = Rendering::Buffer::GPUUploadBuffer<ViewProjMatType>;
+				using ViewProjMatBuffer = Rendering::Buffer::GPUUploadBuffer<ViewProjMatType>;
 				using ParamBuffer = Rendering::Buffer::GPUUploadBuffer<BaseShadow::Param>;
 
 			public:
@@ -89,7 +89,7 @@ namespace Rendering
 				GET_ACCESSOR(ParamSRBuffer, auto&, _paramBuffer.GetShaderResourceBuffer());
 
 			protected:
-				TransformBuffer	_tfBuffer;
+				ViewProjMatBuffer	_tfBuffer;
 				ParamBuffer		_paramBuffer;
 				bool			_mustUpdateTransformSRBuffer = true;
 				bool			_mustUpdateParamSRBuffer = true;
