@@ -55,7 +55,6 @@ namespace Rendering
 			GET_ACCESSOR(Near,						float,			_desc.near);
 			GET_ACCESSOR(Far,						float,			_desc.far);
 			GET_ACCESSOR(ClearColor,				const Color&,	_desc.clearColor);
-			GET_ACCESSOR(Initialized,				bool,			_Initialized);
 			SET_ACCESSOR_DIRTY(FieldOfViewDegree,	float,			_desc.fieldOfViewDegree);
 			SET_ACCESSOR_DIRTY(Near,				float,			_desc.near);
 			SET_ACCESSOR_DIRTY(Far,					float,			_desc.far);
@@ -83,7 +82,6 @@ namespace Rendering
 
 			Core::ObjectId								_objId;
 			bool										_dirty = true;
-			bool										_Initialized = false;
 		};
 	}
 }
