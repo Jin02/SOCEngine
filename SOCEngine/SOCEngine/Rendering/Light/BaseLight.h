@@ -52,6 +52,6 @@ namespace Rendering
 		};
 
 		template<class LightType>
-		using LightPool = Core::VectorHashMap<LightId::LiteralType, LightType>;
+		using LightPool = Core::VectorHashMap<Core::ObjectId::LiteralType, LightType>;
 	}
 }
