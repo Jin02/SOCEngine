@@ -12,11 +12,17 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class MeshManager;
+	}
+
 	namespace Geometry
 	{
 		class Mesh final
 		{
 		public:
+			using ManagerType = Manager::MeshManager;
 			Mesh(Core::ObjectId id) : _objectId(id) {}
 
 			struct CreateFuncArguments

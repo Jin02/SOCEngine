@@ -2,6 +2,7 @@
 #include "Cone.h"
 #include "GlobalDefine.h"
 #include <assert.h>
+#include "LightManager.h"
 
 using namespace Intersection;
 using namespace Rendering;

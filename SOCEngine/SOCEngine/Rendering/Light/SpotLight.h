@@ -11,6 +11,11 @@ namespace Rendering
 		class SpotLightShadow;
 	}
 
+	namespace Manager
+	{
+		class LightManager;
+	}
+
 	namespace Light
 	{
 		namespace Buffer
@@ -21,6 +26,7 @@ namespace Rendering
 		class SpotLight final
 		{
 		public:
+			using ManagerType		= Manager::LightManager;
 			using LightBufferType	= Buffer::SpotLightBuffer;
 			using TransformType		= Math::Vector4;
 			using ShadowType		= Shadow::SpotLightShadow;

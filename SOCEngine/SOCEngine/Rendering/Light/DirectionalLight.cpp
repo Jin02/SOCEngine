@@ -1,6 +1,7 @@
 #include "DirectionalLight.h"
 #include "Object.h"
 #include <assert.h>
+#include "LightManager.h"
 
 using namespace Rendering;
 using namespace Rendering::Light;

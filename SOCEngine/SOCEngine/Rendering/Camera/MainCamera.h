@@ -15,11 +15,18 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class CameraManager;
+	}
+
 	namespace Camera
 	{
 		class MainCamera final
 		{
 		public:
+			using ManagerType = Manager::CameraManager;
+
 			struct CameraCBData
 			{
 				Math::Matrix	viewMat;
@@ -38,8 +45,6 @@ namespace Rendering
 				Color									clearColor = Color::Black();
 				Rect<uint>								renderRect = Rect<uint>(0, 0, 0, 0);
 			};
-
-			DISALLOW_COPY_CONSTRUCTOR(MainCamera);
 
 		public:
 			MainCamera(Core::ObjectId objId) : _objId(objId) {}

@@ -1,5 +1,6 @@
 #include "PointLight.h"
 #include <assert.h>
+#include "LightManager.h"
 
 using namespace Intersection;
 using namespace Rendering;

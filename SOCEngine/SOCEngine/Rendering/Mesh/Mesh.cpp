@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "DefaultRenderTypes.h"
 #include "DefaultShaderLoader.h"
+#include "MeshManager.hpp"
 
 using namespace Device;
 using namespace Rendering;

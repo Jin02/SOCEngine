@@ -2,6 +2,7 @@
 #include "Utility.hpp"
 #include "Matrix.h"
 #include "LightCullingUtility.h"
+#include "CameraManager.h"
 
 using namespace Utility;
 using namespace Device;

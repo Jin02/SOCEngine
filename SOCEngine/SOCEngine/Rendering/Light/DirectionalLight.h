@@ -11,6 +11,11 @@ namespace Rendering
 		class DirectionalLightShadow;
 	}
 
+	namespace Manager
+	{
+		class LightManager;
+	}
+
 	namespace Light
 	{
 		namespace Buffer
@@ -21,6 +26,7 @@ namespace Rendering
 		class DirectionalLight final
 		{
 		public:
+			using ManagerType		= Manager::LightManager;
 			using LightBufferType	= Buffer::DirectionalLightBuffer;
 			using ShadowType		= Shadow::DirectionalLightShadow;
 

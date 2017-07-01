@@ -10,6 +10,11 @@ namespace Rendering
 		class PointLightShadow;
 	}
 
+	namespace Manager
+	{
+		class LightManager;
+	}
+
 	namespace Light
 	{
 		namespace Buffer
@@ -20,6 +25,7 @@ namespace Rendering
 		class PointLight final
 		{
 		public:
+			using ManagerType		= Manager::LightManager;
 			using LightBufferType	= Buffer::PointLightBuffer;
 			using TransformType		= Math::Vector4;
 			using ShadowType		= Shadow::PointLightShadow;
