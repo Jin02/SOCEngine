@@ -775,19 +775,10 @@
     <ClInclude Include="Rendering\Shader\BaseShader.hpp">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Object.hpp">
-      <Filter>Core\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\MainSystemHeader.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\UniqueIdManager.hpp">
       <Filter>Core\Id</Filter>
     </ClInclude>
     <ClInclude Include="Core\UniqueId.hpp">
-      <Filter>Core\Id</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ObjectId.hpp">
       <Filter>Core\Id</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Light\LightId.hpp">
@@ -918,6 +909,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialForm.hpp">
       <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Object.h">
+      <Filter>Core\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectId.hpp">
+      <Filter>Core\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1187,6 +1184,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp">
       <Filter>Rendering\GI\Injection\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Object.cpp">
+      <Filter>Core\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
