@@ -26,7 +26,6 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 	}
 
 	_camCB.Initialize(dx);
-	_Initialized = true;
 }
 
 bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
