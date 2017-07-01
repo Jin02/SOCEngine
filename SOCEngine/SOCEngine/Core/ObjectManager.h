@@ -4,7 +4,7 @@
 #include "VectorIndexer.hpp"
 #include "ObjectId.hpp"
 #include "Singleton.h"
-#include "Object.hpp"
+#include "Object.h"
 
 namespace Core
 {
@@ -12,14 +12,14 @@ namespace Core
 	class ObjectManager final
 	{
 	public:
-		ObjectManager(ComponentSystem* compoSystem) : _compoSystem(compoSystem) {}
+		ObjectManager() = default;
 		DISALLOW_ASSIGN_COPY(ObjectManager);
 
 	public:
-		Object& Add(const std::string& name);
+		Object& Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
 		void Delete(const std::string& name);
 		bool Has(const std::string& name) const;
-		auto Find(const std::string& name);
+		Object* Find(const std::string& name);
 		void DeleteAll();
 
 		GET_ACCESSOR(ObjectIdManager, ObjectIdManager&, _objIdMgr);
@@ -27,6 +27,5 @@ namespace Core
 	private:
 		VectorHashMap<std::string, Object>	_objects;
 		ObjectIdManager						_objIdMgr;
-		ComponentSystem*					_compoSystem;
 	};
 }
