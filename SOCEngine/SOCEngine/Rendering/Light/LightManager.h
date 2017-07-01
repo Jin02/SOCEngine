@@ -33,6 +33,7 @@ namespace Rendering
 		class LightManager final
 		{
 		public:
+			LightManager() = default;
 			DISALLOW_COPY_CONSTRUCTOR(LightManager);
 
 			void Initialize(Device::DirectX& dx);

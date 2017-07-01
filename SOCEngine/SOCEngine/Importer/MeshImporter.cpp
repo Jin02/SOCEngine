@@ -448,7 +448,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 	}
 }
 
-Object& MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB, bool useDynamicIB)
+Object* MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB, bool useDynamicIB)
 {
 	std::string fileName, fileFormat, folderDir;
 	assert( Utility::String::ParseDirectory(fileDir, folderDir, fileName, fileFormat) );
@@ -457,7 +457,7 @@ Object& MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir
 	{
 		StoredOriginObject* found = _originObjects.Find(fileDir); 
 		if (found)
-			return *managerParam.objManager.Find(found->objectId);
+			return managerParam.objManager.Find(fileName);
 	}
 
 	std::ifstream g3dFile;
@@ -501,7 +501,7 @@ Object& MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir
 	auto storedObject = BuildMesh(managerParam, meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, fileDir);
 	storedObject->alreadyUsed = true;
 
-	return *managerParam.objManager.Find(fileDir);
+	return managerParam.objManager.Find(fileDir);
 }
 
 MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
@@ -699,7 +699,7 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	}
 
 	// Make Hierachy
-	auto& root = managerParam.objManager.Add(meshFileName, managerParam.compoSystem);
+	auto& root = managerParam.objManager.Add(meshFileName, &managerParam.compoSystem, &managerParam.transformPool);
 		
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
@@ -814,7 +814,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 									const IntersectionHashMap& intersectionHashMap	)
 {
 	auto& objManager = managerParam.objManager;
-	Object object = objManager.Add(node.id, managerParam.compoSystem);
+	Object object = objManager.Add(node.id, &managerParam.compoSystem, &managerParam.transformPool);
 
 	uint objId = object.GetObjectId().Literal();
 	ObjectId parentId = parent.GetObjectId();
@@ -887,7 +887,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 			{
 				const std::string& subMeshName = iter->meshPartId;
-				Object subMeshObj = objManager.Add(subMeshName, managerParam.compoSystem);
+				Object subMeshObj = objManager.Add(subMeshName, &managerParam.compoSystem, &managerParam.transformPool);
 				object.AddChild(subMeshObj);
 
 				AttachMeshComponent(subMeshObj, *iter);

@@ -39,7 +39,7 @@ namespace Importer
 		static constexpr int GetMaximumRecognizeBoneCount() { return 4; }
 
 		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
-		Core::Object& Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
+		Core::Object* Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
 
 	private:
 		struct StoredOriginObject
