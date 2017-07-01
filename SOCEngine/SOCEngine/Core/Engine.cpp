@@ -36,11 +36,10 @@ void Engine::RunScene()
 
 	// check dirty transform
 	{
-		auto& tfPool = _componentSystem.GetTransformPool();
-		uint size = tfPool.GetSize();
+		uint size = _transformPool.GetSize();
 		for (uint i = 0; i < size; ++i)
 		{
-			auto& tf = tfPool.Get(i);
+			auto& tf = _transformPool.Get(i);
 			if( tf.GetDirty() )
 				_dirtyTransforms.push_back(&tf);
 		}

@@ -39,6 +39,7 @@ namespace Core
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager&, _bufferManager);
 		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
 		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
+		GET_ACCESSOR(TransformPool, auto&, _transformPool);
 
 	private:
 		static NullScene							_nullScene;
@@ -54,6 +55,7 @@ namespace Core
 		Core::ObjectManager									_objectManager;
 		Device::DirectX&									_dx;
 		Core::ComponentSystem								_componentSystem;
+		Core::TransformPool									_transformPool;
 
 	private:
 		std::vector<Core::Transform*>						_dirtyTransforms;

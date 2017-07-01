@@ -1,13 +1,9 @@
 #pragma once
 
-#include "Common.h"
-#include "VectorIndexer.hpp"
 #include "ObjectId.hpp"
-#include <memory>
-#include <tuple>
-
-#include "Transform.h"
 #include "MeshManager.hpp"
+#include "LightManager.h"
+//#include "CameraManager.h"
 
 namespace Core
 {
@@ -36,11 +32,9 @@ namespace Core
 		{
 		}
 
-	public:
-		GET_ACCESSOR(TransformPool, auto&, _transformPool);
-
 	private:
-		Core::TransformPool									_transformPool;
-		Rendering::Manager::MeshManager						_meshManager;
+		std::tuple<	Rendering::Manager::MeshManager,
+					Rendering::Manager::LightManager
+/*					Rendering::Manager::CameraManager*/	>	_componentMgrs;
 	};
 }
