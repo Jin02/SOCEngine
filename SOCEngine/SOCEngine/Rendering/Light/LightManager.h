@@ -42,8 +42,26 @@ namespace Rendering
 			LightType& Acquire(Core::ObjectId objId)
 			{
 				Light::LightId id = _idMgr.Acquire();
-				return Add(LightType(objId, id) );
+				return Add(LightType(objId, id));
 			}
+
+			template <class LightType>
+			void Delete(Core::ObjectId objId)
+			{
+			}
+
+			template <class LightType>
+			bool Has(Core::ObjectId objId)
+			{
+
+			}
+
+			template <class Component>
+			auto Find(Core::ObjectId id)
+			{
+
+			}
+
 
 			template <class LightType>
 			LightType& Add(LightType& light)
@@ -51,17 +69,19 @@ namespace Rendering
 				light.GetBase().SetDirty(true);
 
 				GetBuffer<LightType>().Add(light);
-				return GetPool<LightType>().Add(light.GetLightId().Literal(), light);
+				return GetPool<LightType>().Add(light.GetObjectId().Literal(), light);
 			}
 
 			template <class LightType>
 			void Delete(LightType& light)
 			{
 				GetBuffer<LightType>().Delete(light);
-				GetPool<LightType>().Delete(light.GetLightId().Literal());
+				GetPool<LightType>().Delete(light.GetObjectId().Literal());
 
 				_idMgr.Delete(light.GetLightId());
 			}
+
+
 			void DeleteAll();
 
 			uint GetPackedLightCount() const;

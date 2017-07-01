@@ -15,19 +15,42 @@ namespace Rendering
 		struct AlphaBlendTrait : public MeshTraits {};
 		struct TransparencyTrait : public MeshTraits {};
 
+		template <typename Trait>
+		class MeshPool : public Core::VectorHashMap<Core::ObjectId::LiteralType, Geometry::Mesh>
+		{
+		public:
+			MeshPool() = default;
+			DISALLOW_ASSIGN(MeshPool);
+		};
+
 		class MeshManager final
 		{
 		public:
 			MeshManager() = default;
-
-			template <typename Trait>
-			class MeshPool : public Core::VectorHashMap<Core::ObjectId::LiteralType, Geometry::Mesh>
-			{
-			public:
-				MeshPool() = default;
-				DISALLOW_ASSIGN(MeshPool);
-			};
 			DISALLOW_ASSIGN_COPY(MeshManager);
+
+		public:
+			template <class Trait>
+			Geometry::Mesh& Acquire(Core::ObjectId objId)
+			{
+			}
+
+			template <class Trait>
+			void Delete(Core::ObjectId objId)
+			{
+			}
+
+			template <class Trait>
+			bool Has(Core::ObjectId objId)
+			{
+
+			}
+
+			template <class Component>
+			auto Find(Core::ObjectId id)
+			{
+
+			}
 
 			template <typename Trait>
 			MeshPool<Trait>& GetPool()

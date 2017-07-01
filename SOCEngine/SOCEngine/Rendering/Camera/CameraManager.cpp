@@ -1,4 +1,5 @@
 #include "CameraManager.h"
+#include "Object.h"
 
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;

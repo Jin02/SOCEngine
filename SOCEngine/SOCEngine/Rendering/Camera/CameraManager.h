@@ -2,10 +2,14 @@
 
 #include <tuple>
 #include "MainCamera.h"
-#include "Object.h"
 
 template <class CameraType>
 using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;
+
+namespace Core
+{
+	class Object;
+}
 
 namespace Rendering
 {
@@ -62,6 +66,32 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
 			void SetMainCamera(Core::Object object);
+
+		public:
+			template <class CameraType>
+			CameraType& Acquire(Core::ObjectId objId)
+			{
+			}
+
+			template <class CameraType>
+			void Delete(Core::ObjectId objId)
+			{
+			}
+
+			template <class CameraType>
+			bool Has(Core::ObjectId objId)
+			{
+
+			}
+
+			template <class Component>
+			auto Find(Core::ObjectId id)
+			{
+
+			}
+
+		public:
+			GET_ACCESSOR(MainCamera, auto&, _mainCamera);
 
 		private:
 //			CameraSystem<Camera::MeshCamera>		_cameraSystem;
