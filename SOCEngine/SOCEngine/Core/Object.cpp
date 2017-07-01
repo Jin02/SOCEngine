@@ -4,8 +4,8 @@
 
 using namespace Core;
 
-Object::Object(ObjectId id, TransformPool* tfPool)
-	: _id(id), _tfPool(tfPool)
+Object::Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool)
+	: _id(id), _tfPool(tfPool), _compoSystem(compoSystem)
 {
 	_tfPool->Add(id);
 }

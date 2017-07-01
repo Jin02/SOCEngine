@@ -4,6 +4,7 @@
 #include <string>
 
 #include "ObjectId.hpp"
+#include "ComponentSystem.hpp"
 
 namespace Core
 {
@@ -11,7 +12,7 @@ namespace Core
 	class Object final
 	{
 	public:
-		Object(ObjectId id, TransformPool* tfPool);
+		Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool);
 		~Object();
 
 		void AddChild(Object & child);
@@ -21,7 +22,27 @@ namespace Core
 
 		uint GetChildCount() const;
 
-
+		/* Component */
+		template <class Component>
+		Component& AddComponent()
+		{
+			return _compoSystem->Add<Component>(_id);
+		}
+		template <class Component>
+		void DeleteComponet()
+		{
+			_compoSystem->Delete<Component>(_id);
+		}
+		template <class Component>
+		bool HasComponent() const
+		{
+			_compoSystem->Has<Component>(_id);
+		}
+		template <class Component>
+		Component& GetComponent()
+		{
+			return _compoSystem->Find<Compoent>(_id);
+		}
 
 	public:
 		GET_CONST_ACCESSOR(Name, auto&, _name);
@@ -31,5 +52,6 @@ namespace Core
 		std::string			_name;
 		ObjectId			_id;
 		TransformPool*		_tfPool;
+		ComponentSystem*	_compoSystem;
 	};
 }
