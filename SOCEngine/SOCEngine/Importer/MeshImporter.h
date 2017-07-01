@@ -3,7 +3,7 @@
 #include <string>
 
 #include "VectorIndexer.hpp"
-#include "Object.hpp"
+#include "Object.h"
 #include "G3djDataTypes.hpp"
 #include <unordered_map>
 #include <rapidjson/document.h>
@@ -13,6 +13,8 @@
 #include "ObjectManager.h"
 #include "BoundBox.h"
 #include "Texture2DManager.h"
+#include "BufferManager.hpp"
+#include "ComponentSystem.hpp"
 
 namespace Importer
 {
@@ -26,6 +28,7 @@ namespace Importer
 			Core::ObjectManager&					objManager;
 			Core::TransformPool&					transformPool;
 			Rendering::Manager::Texture2DManager&	tex2DManager;
+			Core::ComponentSystem&					compoSystem;
 			Device::DirectX&						dx;
 		};
 
@@ -36,15 +39,13 @@ namespace Importer
 		static constexpr int GetMaximumRecognizeBoneCount() { return 4; }
 
 		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
-		Core::Object Load(ManagerParam managerParam, const std::string& fileDir, bool useOriginalObject = false, bool useDynamicVB = false, bool useDynamicIB = false);
+		Core::Object& Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
 
 	private:
 		struct StoredOriginObject
 		{
 			bool			alreadyUsed;
-			Core::Object	object;
-
-			StoredOriginObject() = default;
+			Core::ObjectId	objectId;
 		};
 
 		void ParseNode(Node& outNodes, const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,

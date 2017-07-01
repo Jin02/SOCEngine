@@ -5,6 +5,7 @@
 #include "BoundBox.h"
 #include "Utility.hpp"
 #include <unordered_set>
+#include "ObjectManager.h"
 
 using namespace Importer;
 using namespace Core;
@@ -447,7 +448,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 	}
 }
 
-Object MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir, bool useOriginalObject, bool useDynamicVB, bool useDynamicIB)
+Object& MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB, bool useDynamicIB)
 {
 	std::string fileName, fileFormat, folderDir;
 	assert( Utility::String::ParseDirectory(fileDir, folderDir, fileName, fileFormat) );
@@ -456,12 +457,7 @@ Object MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir,
 	{
 		StoredOriginObject* found = _originObjects.Find(fileDir); 
 		if (found)
-		{
-			// error, already aloocated object
-			assert(useOriginalObject & found->alreadyUsed);
-
-			return found->object.Clone();
-		}
+			return *managerParam.objManager.Find(found->objectId);
 	}
 
 	std::ifstream g3dFile;
@@ -478,7 +474,6 @@ Object MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir,
 			break;
 	}
 
-	
 	// "Error, Invalid Mesh File"
 	assert((g3dFile.is_open() == false) | (g3dFile.good() == false));
 
@@ -503,19 +498,10 @@ Object MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir,
 
 	delete buffer;
 
-	auto storedObject			= BuildMesh(managerParam, meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, fileDir);
-	assert(storedObject);
-	Object returnObj			= storedObject->object;
-	storedObject->alreadyUsed	= useOriginalObject;
+	auto storedObject = BuildMesh(managerParam, meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, fileDir);
+	storedObject->alreadyUsed = true;
 
-	if (useOriginalObject == false)
-	{
-		std::string originName = storedObject->object.GetName();
-		returnObj = returnObj.Clone();
-		returnObj.SetName(originName);
-	}
-
-	return returnObj;
+	return *managerParam.objManager.Find(fileDir);
 }
 
 MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
@@ -713,12 +699,12 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	}
 
 	// Make Hierachy
-	Object root = managerParam.objManager.Add(meshFileName);
+	auto& root = managerParam.objManager.Add(meshFileName, managerParam.compoSystem);
 		
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
 
-	_originObjects.Add(registKey, { false, root });
+	_originObjects.Add(registKey, { false, root.GetId() });
 
 	return _originObjects.Find(registKey);
 }
@@ -828,7 +814,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 									const IntersectionHashMap& intersectionHashMap	)
 {
 	auto& objManager = managerParam.objManager;
-	Object object = objManager.Add(node.id);
+	Object object = objManager.Add(node.id, managerParam.compoSystem);
 
 	uint objId = object.GetId().Literal();
 	ObjectId parentId = parent.GetId();
@@ -901,7 +887,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 			{
 				const std::string& subMeshName = iter->meshPartId;
-				Object subMeshObj = objManager.Add(subMeshName);
+				Object subMeshObj = objManager.Add(subMeshName, managerParam.compoSystem);
 				object.AddChild(subMeshObj);
 
 				AttachMeshComponent(subMeshObj, *iter);
