@@ -161,7 +161,7 @@ bool Transform::HasChild(ObjectId id) const
 {
 	for (const auto childId : _childIds)
 	{
-		if(childId == id)
+		if(childId.Literal() == id.Literal())
 			return true;
 	}
 
@@ -180,7 +180,7 @@ void Transform::DeleteChild(ObjectId id)
 
 void Transform::UpdateDirty(TransformPool& pool)
 {
-	for (ObjectId id = _objectId; id != ObjectId::Undefined(); id = _parentId)
+	for (uint id = _objectId.Literal(); id != ObjectId::Undefined(); id = _parentId.Literal())
 		pool.Find(id)->_dirty |= _dirty;
 }
 
@@ -188,7 +188,7 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 {
 	for (auto childId : _childIds)
 	{
-		auto child = pool.Find(childId);
+		auto child = pool.Find(childId.Literal());
 		assert(child);
 
 		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
@@ -199,7 +199,7 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 void Transform::ComputeWorldMatrix(TransformPool& pool)
 {
 	// this func must be run in root
-	assert(_parentId == ObjectId::Undefined());
+	assert(_parentId.Literal() == ObjectId::Undefined());
 
 	if(_dirty == false)	return;
 	_worldMat = ComputeLocalMatrix();

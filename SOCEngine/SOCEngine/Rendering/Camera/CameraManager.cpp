@@ -16,5 +16,5 @@ void CameraManager::Initialize(Device::DirectX & dx, ShaderManager & shaderMgr, 
 
 void Rendering::Manager::CameraManager::SetMainCamera(Core::Object object)
 {
-	_mainCamera.SetObjectId(object.GetId());
+	_mainCamera.SetObjectId(object.GetObjectId());
 }

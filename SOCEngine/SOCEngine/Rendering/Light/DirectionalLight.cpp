@@ -1,5 +1,5 @@
 #include "DirectionalLight.h"
-#include "Object.hpp"
+#include "Object.h"
 #include <assert.h>
 
 using namespace Rendering;

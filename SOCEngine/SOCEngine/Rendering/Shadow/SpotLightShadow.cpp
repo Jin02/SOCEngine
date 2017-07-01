@@ -1,6 +1,7 @@
 #include "SpotLightShadow.h"
 #include "SpotLight.h"
-#include "Object.hpp"
+#include "Object.h"
+#include <assert.h>
 
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;

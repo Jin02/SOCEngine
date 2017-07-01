@@ -49,9 +49,6 @@ namespace Core
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
 
-		static void LookAtDir(const Math::Vector3& targetDir, bool t, const Math::Vector3* up = nullptr);
-
-
 		using Childs = std::vector<ObjectId>;
 
 		void		AddChild(Transform& child);

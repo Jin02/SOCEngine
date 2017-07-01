@@ -2,7 +2,7 @@
 
 #include <tuple>
 #include "MainCamera.h"
-#include "Object.hpp"
+#include "Object.h"
 
 template <class CameraType>
 using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;

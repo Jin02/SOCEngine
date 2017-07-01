@@ -704,7 +704,7 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
 
-	_originObjects.Add(registKey, { false, root.GetId() });
+	_originObjects.Add(registKey, { false, root.GetObjectId() });
 
 	return _originObjects.Find(registKey);
 }
@@ -816,8 +816,8 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 	auto& objManager = managerParam.objManager;
 	Object object = objManager.Add(node.id, managerParam.compoSystem);
 
-	uint objId = object.GetId().Literal();
-	ObjectId parentId = parent.GetId();
+	uint objId = object.GetObjectId().Literal();
+	ObjectId parentId = parent.GetObjectId();
 	if (parentId.Literal() != ObjectId::Undefined())
 		parent.AddChild(object);
 

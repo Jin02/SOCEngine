@@ -8,12 +8,12 @@ using namespace Rendering::Manager;
 using namespace Rendering;
 
 Engine::Engine(Device::DirectX& dx)
-	: _dx(dx), _scene(&_nullScene), _componentSystem(), _objectManager(&_componentSystem)
+	: _dx(dx), _scene(&_nullScene)
 {
 }
 
 Engine::Engine(Device::DirectX& dx, IScene* scene)
-	: _dx(dx), _scene(scene), _componentSystem(), _objectManager(&_componentSystem)
+	: _dx(dx), _scene(scene)
 {
 } 
 
