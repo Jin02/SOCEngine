@@ -30,26 +30,22 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
-			template <class Trait>
 			Geometry::Mesh& Acquire(Core::ObjectId objId)
 			{
+				auto mesh = Geometry::Mesh(objId);
+				return GetPool<OpaqueTrait>().Add(objId.Literal(), mesh);
 			}
 
-			template <class Trait>
 			void Delete(Core::ObjectId objId)
 			{
 			}
 
-			template <class Trait>
 			bool Has(Core::ObjectId objId)
 			{
-
 			}
 
-			template <class Component>
 			auto Find(Core::ObjectId id)
 			{
-
 			}
 
 			template <typename Trait>

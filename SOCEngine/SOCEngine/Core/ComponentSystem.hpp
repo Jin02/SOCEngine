@@ -21,6 +21,14 @@ namespace Core
 			auto& mgr = GetManager<Component>();
 			return mgr.Acquire<Component>(id);
 		}
+		template <>
+		Rendering::Geometry::Mesh& Add<Rendering::Geometry::Mesh>(ObjectId id)
+		{
+			auto& mgr = GetManager<Rendering::Geometry::Mesh>();
+			return mgr.Acquire(id);
+		}
+
+
 		template <class Component>
 		void Delete(ObjectId id)
 		{
