@@ -872,7 +872,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
 		mesh.Initialize(*vertexBuffer, *indexBuffer);
-		mesh.AddMaterialKey(material ? material->GetName() : "");
+		mesh.AddMaterialKey(material ? material->GetName() : "@Default");
 		mesh.SetBoundBox(boundBox);
 		mesh.SetRadius(radius);
 	};
