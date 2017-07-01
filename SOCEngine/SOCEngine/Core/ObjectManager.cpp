@@ -1,12 +1,13 @@
 #include "ObjectManager.h"
 #include "Object.hpp"
 #include "Engine.h"
+#include "ComponentSystem.hpp"
 
 using namespace Core;
 
-Object& ObjectManager::Add(const std::string & name)
+Object& ObjectManager::Add(const std::string& name)
 {
-	_objects.Add(name, Object(_objIdMgr.Acquire(), _engine.GetComponentSystem(), _engine.GetTransformPool()));
+	_objects.Add(name, Object(_objIdMgr.Acquire(), _compoSystem));
 	return _objects.Get(_objects.GetSize() - 1);
 }
 

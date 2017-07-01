@@ -8,16 +8,12 @@ using namespace Rendering::Manager;
 using namespace Rendering;
 
 Engine::Engine(Device::DirectX& dx)
-	: _scene(&_nullScene), _prevTime(), _lag(0.0),
-	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
-	_tex2dManager(), _dx(dx), _transformPool(), _objectManager(*this)
+	: _dx(dx), _scene(&_nullScene), _componentSystem(), _objectManager(&_componentSystem)
 {
 }
 
 Engine::Engine(Device::DirectX& dx, IScene* scene)
-	: _scene(scene), _prevTime(), _lag(0.0),
-	_materialManager(), _bufferManager(), _meshManager(), _shaderManager(),
-	_tex2dManager(), _dx(dx), _transformPool(), _objectManager(*this)
+	: _dx(dx), _scene(scene), _componentSystem(), _objectManager(&_componentSystem)
 {
 } 
 
@@ -40,10 +36,11 @@ void Engine::RunScene()
 
 	// check dirty transform
 	{
-		uint size = _transformPool.GetSize();
+		auto& tfPool = _componentSystem.GetTransformPool();
+		uint size = tfPool.GetSize();
 		for (uint i = 0; i < size; ++i)
 		{
-			auto& tf = _transformPool.Get(i);
+			auto& tf = tfPool.Get(i);
 			if( tf.GetDirty() )
 				_dirtyTransforms.push_back(&tf);
 		}

@@ -8,11 +8,11 @@
 
 namespace Core
 {
-	class Engine;
+	class ComponentSystem;
 	class ObjectManager final
 	{
 	public:
-		ObjectManager(Engine& engine) : _engine(engine) {}
+		ObjectManager(ComponentSystem* compoSystem) : _compoSystem(compoSystem) {}
 		DISALLOW_ASSIGN_COPY(ObjectManager);
 
 	public:
@@ -27,6 +27,6 @@ namespace Core
 	private:
 		VectorHashMap<std::string, Object>	_objects;
 		ObjectIdManager						_objIdMgr;
-		Engine&								_engine;
+		ComponentSystem*					_compoSystem;
 	};
 }

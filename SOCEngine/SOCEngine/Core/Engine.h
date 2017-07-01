@@ -4,7 +4,7 @@
 #include "IScene.h"
 #include <memory>
 #include <chrono>
-#include "MainSystemHeader.h"
+#include "ComponentSystem.hpp"
 #include "ObjectManager.h"
 #include "MaterialManager.hpp"
 #include "BufferManager.hpp"
@@ -38,26 +38,22 @@ namespace Core
 
 		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager&, _bufferManager);
 		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
-		GET_ACCESSOR(ComponentSystem, DefaultComponentSystem&, _componentSystem);
-		GET_ACCESSOR(TransformPool, auto&, _transformPool);
-		GET_CONST_ACCESSOR(TransformPool, const auto&, _transformPool);
+		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
 
 	private:
 		static NullScene							_nullScene;
 		IScene*										_scene;
 
 		std::chrono::system_clock::time_point		_prevTime;
-		double										_lag;
+		double										_lag = 0.0f;
 
 		Rendering::Manager::MaterialManager					_materialManager;
 		Rendering::Manager::BufferManager					_bufferManager;
-		Rendering::Manager::MeshManager						_meshManager;
 		Rendering::Manager::ShaderManager					_shaderManager;
 		Rendering::Manager::Texture2DManager				_tex2dManager;
 		Core::ObjectManager									_objectManager;
 		Device::DirectX&									_dx;
-		DefaultComponentSystem								_componentSystem;
-		Core::TransformPool									_transformPool;
+		Core::ComponentSystem								_componentSystem;
 
 	private:
 		std::vector<Core::Transform*>						_dirtyTransforms;
