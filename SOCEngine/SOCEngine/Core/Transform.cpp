@@ -190,8 +190,8 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 	{
 		auto child = pool.Find(childId.Literal());
 		assert(child);
-
-		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
+				// parent   <-   child
+		child->_worldMat = _worldMat * child->ComputeLocalMatrix();
 		child->_ComputeWorldMatrix(pool);
 	}
 }
