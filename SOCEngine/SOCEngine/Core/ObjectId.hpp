@@ -15,6 +15,7 @@ namespace Core
 
 	public:
 		friend class ObjectIdManager;
+		friend class ObjectManager;
 	};
 
 	class ObjectIdManager : public UniqueIdManager

@@ -16,16 +16,23 @@ namespace Core
 		DISALLOW_ASSIGN_COPY(ObjectManager);
 
 	public:
-		Object& Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
-		void Delete(const std::string& name);
-		bool Has(const std::string& name) const;
-		Object* Find(const std::string& name);
-		void DeleteAll();
+		Object&		Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
+		void		Delete(const std::string& name);
+		bool		Has(const std::string& name) const;
+		Object*		Find(const std::string& name);
+
+		void		Delete(ObjectId id);
+		bool		Has(ObjectId id) const;
+		Object*		Find(ObjectId id);
+
+		void		DeleteAll();
 
 		GET_ACCESSOR(ObjectIdManager, ObjectIdManager&, _objIdMgr);
 
 	private:
-		VectorHashMap<std::string, Object>	_objects;
-		ObjectIdManager						_objIdMgr;
+		VectorHashMap<ObjectId::LiteralType, Object>		_objects;
+		IndexHashMap<std::string>							_toIndex;
+
+		ObjectIdManager										_objIdMgr;
 	};
 }

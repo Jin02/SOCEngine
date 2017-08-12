@@ -17,6 +17,11 @@ namespace Core
 
 		VectorIndexer() : _vector(), _map() {}
 
+		Object& Add(const Key& key, Object&& object)
+		{
+			return Add(key, object);
+		}
+
 		Object& Add(const Key& key, Object& object)
 		{
 			_vector.push_back(object);
