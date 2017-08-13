@@ -1,7 +1,6 @@
 #include "MeshImporter.h"
 #include <fstream>
 #include "PhysicallyBasedMaterial.h"
-#include "ImporterUtility.h"
 #include "BoundBox.h"
 #include "Utility.hpp"
 #include <unordered_set>
@@ -19,6 +18,97 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Material;
 using namespace Rendering;
 using namespace Intersection;
+
+std::vector<Vector3> CalculateTangents(
+	const std::vector<Mesh::Part>& parts,
+	const std::vector<float>& vertexDatas,
+	uint originStrideSize, uint uv0PosInAttributes)
+{
+	uint elemCountInStride = originStrideSize / sizeof(float);
+	uint totalSize = vertexDatas.size() / elemCountInStride;
+
+	std::vector<Vector3> sdir(totalSize);
+	std::vector<Vector3> tdir(totalSize);
+
+	for (auto iter = parts.begin(); iter != parts.end(); ++iter)
+	{
+		const auto& indices = iter->indices;
+		uint size = indices.size();
+		for (uint i = 0; i<size; i += 3)
+		{
+			uint idx0 = indices[i + 0];
+			uint idx1 = indices[i + 1];
+			uint idx2 = indices[i + 2];
+
+			std::array<Math::Vector3, 3> vertices;
+			{
+				vertices[0].x = vertexDatas[idx0 * elemCountInStride + 0];
+				vertices[0].y = vertexDatas[idx0 * elemCountInStride + 1];
+				vertices[0].z = vertexDatas[idx0 * elemCountInStride + 2];
+				vertices[1].x = vertexDatas[idx1 * elemCountInStride + 0];
+				vertices[1].y = vertexDatas[idx1 * elemCountInStride + 1];
+				vertices[1].z = vertexDatas[idx1 * elemCountInStride + 2];
+				vertices[2].x = vertexDatas[idx2 * elemCountInStride + 0];
+				vertices[2].y = vertexDatas[idx2 * elemCountInStride + 1];
+				vertices[2].z = vertexDatas[idx2 * elemCountInStride + 2];
+			}
+
+			std::array<Math::Vector2, 3> uvs;
+			{
+				uvs[0].x = vertexDatas[idx0 * elemCountInStride + uv0PosInAttributes + 0];
+				uvs[0].y = vertexDatas[idx0 * elemCountInStride + uv0PosInAttributes + 1];
+
+				uvs[1].x = vertexDatas[idx1 * elemCountInStride + uv0PosInAttributes + 0];
+				uvs[1].y = vertexDatas[idx1 * elemCountInStride + uv0PosInAttributes + 1];
+
+				uvs[2].x = vertexDatas[idx2 * elemCountInStride + uv0PosInAttributes + 0];
+				uvs[2].y = vertexDatas[idx2 * elemCountInStride + uv0PosInAttributes + 1];
+			}
+
+			Vector3 vtx_21 = vertices[1] - vertices[0];
+			Vector3 vtx_31 = vertices[2] - vertices[0];
+			Vector2 uv_21 = uvs[1] - uvs[0];
+			Vector2 uv_31 = uvs[2] - uvs[0];
+
+			float r = 1.0f / (uv_21.x * uv_31.y - uv_21.y * uv_31.x);
+
+			Math::Vector3 tangent;	//sdir
+			{
+				tangent.x = (uv_31.y * vtx_21.x - uv_31.x * vtx_31.x) * r;
+				tangent.y = (uv_31.y * vtx_21.y - uv_31.x * vtx_31.y) * r;
+				tangent.z = (uv_31.y * vtx_21.z - uv_31.x * vtx_31.z) * r;
+			}
+
+			Math::Vector3 binormal;	//tdir
+			{
+				binormal.x = (uv_21.x * vtx_31.x - uv_21.y * vtx_21.x) * r;
+				binormal.y = (uv_21.x * vtx_31.y - uv_21.y * vtx_21.y) * r;
+				binormal.z = (uv_21.x * vtx_31.z - uv_21.y * vtx_21.z) * r;
+			}
+
+			sdir[idx0] += tangent;
+			sdir[idx1] += tangent;
+			sdir[idx2] += tangent;
+
+			tdir[idx0] += binormal;
+			tdir[idx1] += binormal;
+			tdir[idx2] += binormal;
+		}
+	}
+
+	std::vector<Vector3> tangent(totalSize);
+	for (uint i = 0; i < totalSize; ++i)
+	{
+		Vector3 normal(vertexDatas[i * elemCountInStride + 0 + 3],
+			vertexDatas[i * elemCountInStride + 1 + 3],
+			vertexDatas[i * elemCountInStride + 2 + 3]);
+
+		float handedness = (Vector3::Dot(Vector3::Cross(normal, sdir[i]), tdir[i]) < 0.0f) ? -1.0f : 1.0f;
+		tangent[i] = (sdir[i] - normal * Vector3::Dot(sdir[i], normal)).Normalized() / handedness;
+	}
+
+	return tangent;
+}
 
 void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node,
 							 const Math::Matrix& parentWorldMatrix,
@@ -645,12 +735,14 @@ Core::Object& MeshImporter::BuildMesh(
 
 				if(hasNormalMap)
 				{
+					//tangent를 버퍼에 끼워넣는 작업.
+
 					uint originStride = stride;
 					stride += sizeof(Vector3);
 					auto& vertexDatas = meshIter->vertexDatas;
 
-					std::vector<Vector3> tangents;
-					CalculateTangents(tangents, meshIter->parts, meshIter->vertexDatas, originStride, uv0Pos);
+					std::vector<Vector3> tangents =
+						CalculateTangents(meshIter->parts, meshIter->vertexDatas, originStride, uv0Pos);
 
 					// Tangent를 쓴다는건, 이미 앞에 Normal을 사용한다는 것과 같다.
 					// 그래서 그냥 고정값임. 사실은 귀찮기도하고, 그래 귀찮다.
@@ -893,87 +985,6 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 	auto& childs = node.childs;
 	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
 		MakeHierarchy(object, *iter, meshFileName, managerParam, intersectionHashMap);
-}
-
-void MeshImporter::CalculateTangents(
-	std::vector<Math::Vector3>& outTangents, 
-	const std::vector<Importer::Mesh::Part>& parts,
-	const std::vector<float>& vertexDatas,
-	uint originStrideSize, uint uv0PosInAttributes)
-{
-	uint elemCountInStride = originStrideSize / sizeof(float);
-	uint totalSize = vertexDatas.size() / elemCountInStride;
-#if 0
-	std::vector<std::pair<Math::Vector3, uint>> tangents(totalSize);
-#else
-	outTangents.clear();
-	outTangents.resize(totalSize);
-#endif
-
-	for(auto iter = parts.begin(); iter != parts.end(); ++iter)
-	{
-		const auto& indices = iter->indices;
-		uint size = indices.size();
-		for(uint i=0; i<size; i+=3)
-		{
-			uint idx0 = indices[i + 0];
-			uint idx1 = indices[i + 1];
-			uint idx2 = indices[i + 2];
-
-			std::array<Math::Vector3, 3> vertices;
-			{
-				vertices[0].x = vertexDatas[idx0 * elemCountInStride + 0];
-				vertices[0].y = vertexDatas[idx0 * elemCountInStride + 1];
-				vertices[0].z = vertexDatas[idx0 * elemCountInStride + 2];
-
-				vertices[1].x = vertexDatas[idx1 * elemCountInStride + 0];
-				vertices[1].y = vertexDatas[idx1 * elemCountInStride + 1];
-				vertices[1].z = vertexDatas[idx1 * elemCountInStride + 2];
-
-				vertices[2].x = vertexDatas[idx2 * elemCountInStride + 0];
-				vertices[2].y = vertexDatas[idx2 * elemCountInStride + 1];
-				vertices[2].z = vertexDatas[idx2 * elemCountInStride + 2];
-			}
-
-			std::array<Math::Vector2, 3> uvs;
-			{
-				uvs[0].x = vertexDatas[idx0 * elemCountInStride + uv0PosInAttributes + 0];
-				uvs[0].y = vertexDatas[idx0 * elemCountInStride + uv0PosInAttributes + 1];
-
-				uvs[1].x = vertexDatas[idx1 * elemCountInStride + uv0PosInAttributes + 0];
-				uvs[1].y = vertexDatas[idx1 * elemCountInStride + uv0PosInAttributes + 1];
-
-				uvs[2].x = vertexDatas[idx2 * elemCountInStride + uv0PosInAttributes + 0];
-				uvs[2].y = vertexDatas[idx2 * elemCountInStride + uv0PosInAttributes + 1];
-			}
-
-			Math::Vector3 tangent;
-			ImporterUtility::CalculateTangent(tangent, vertices, uvs);
-#if 0
-			tangents[idx0].first += tangent;	tangents[idx0].second++;
-			tangents[idx1].first += tangent;	tangents[idx1].second++;
-			tangents[idx2].first += tangent;	tangents[idx2].second++;
-#else
-			outTangents[idx0] = tangent;
-			outTangents[idx1] = tangent;
-			outTangents[idx2] = tangent;
-#endif
-		}
-	}
-
-	// Normalize Tangents and Save ouput
-	{
-#if 0
-		for(auto iter = tangents.begin(); iter != tangents.end(); ++iter)
-		{
-			uint count = iter->second;
-			Math::Vector3 tangent = iter->first / (float)count;
-			tangent = tangent.Normalize();
-			outTangents.push_back(tangent);
-		}
-#endif
-	}
-
 }
 
 void MeshImporter::FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes)
