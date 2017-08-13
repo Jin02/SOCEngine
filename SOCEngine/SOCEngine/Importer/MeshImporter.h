@@ -52,11 +52,6 @@ namespace Importer
 			bool isSettedParentTranslation = false, bool isSettedParentRotation = false, bool isSettedParentScale = false);
 		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
 		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
-		void CalculateTangents(
-			std::vector<Math::Vector3>& outTangents,
-			const std::vector<Mesh::Part>& parts,
-			const std::vector<float>& vertices,
-			uint originStrideSize, uint uv0PosInAttributes);
 
 		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
 
