@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <type_traits>
 
 namespace Core
 {
@@ -62,6 +63,7 @@ namespace Core
 
 	template<typename Key>
 	using IndexHashMap = IndexBook<Key, std::unordered_map<Key, uint>>;
+
 	template<typename Key>
 	using IndexMap = IndexBook<Key, std::map<Key, uint>>;
 }

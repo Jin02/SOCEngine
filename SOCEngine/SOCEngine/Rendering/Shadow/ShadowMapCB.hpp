@@ -4,7 +4,10 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "GeometryShader.h"
-#include "ShadowId.hpp"
+
+#include <queue>
+
+#include "ShadowBufferForm.hpp"
 
 namespace Rendering
 {
@@ -19,50 +22,58 @@ namespace Rendering
 				using ConstBufferType = Rendering::Buffer::ExplicitConstBuffer<typename ShadowType::ViewProjMatType>;
 
 			public:
-				void Add(Shadow::ShadowId id)
+				void PushConstBufferToQueue()
 				{
-					_notInitializedCBs(&_vpCBs.Add(id, ConstBufferType()));
+					_preparedConstBuffers.push_back(ConstBufferType());
 				}
-				void Delete(Shadow::ShadowId id)
+
+				void InitializePreparedCB(Device::DirectX& dx)
 				{
-					_vpCBs.Delete(id.Literal());
+					if (_preparedConstBuffers.empty())
+						return;
+
+					for(auto& iter : _preparedConstBuffers)
+						iter.Initialize(dx);
+
+					_constBuffers.insert(_constBuffers.end(), _preparedConstBuffers.begin(), _preparedConstBuffers.end());
+					_preparedConstBuffers.clear();
 				}
-				void UpdateSubResource(Device::DirectX& dx, std::vector<ShadowType*>& dirtyShadows)
+
+				void Delete(uint index)
+				{
+					auto iter = _constBuffers.begin() + index;
+					_constBuffers.erase(iter);
+				}
+				void UpdateSubResource(Device::DirectX& dx,
+					const std::vector<ShadowType*>& dirtyShadows,
+					const ShadowDatasIndexer& indexer)
 				{
 					for (auto shadow : dirtyShadows)
 					{
-						uint id = shadow->GetShadowId().Literal();
-						auto find = _vpCBs.Find(id); assert(find);
+						Core::ObjectId objId = shadow->GetObjectId();
+						uint index = indexer.Find(objId.Literal());
 
-						find->UpdateSubResource(dx, shadow->GetViewProjectionMatrix());
+						_constBuffers[index].UpdateSubResource(dx, shadow->GetViewProjectionMatrix());
 					}
 				}
-				void BindConstBuffer(Device::DirectX& dx, Shadow::ShadowId shadowId, bool bindVS, bool bindGS, bool bindPS)
+				void BindConstBuffer(Device::DirectX& dx, uint index, bool bindVS, bool bindGS, bool bindPS)
 				{
-					auto cb = _vpCBs.Find(shadowId.Literal());
-					assert(cb); // not found!
+					auto& cb = _constBuffers[index];
 
 					if (bindVS) Shader::VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
 					if (bindGS) Shader::GeometryShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
 					if (bindPS) Shader::PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
 				}
-				void UnbindConstBuffer(Device::DirectX& dx, Shadow::ShadowId shadowId, bool bindVS, bool bindGS, bool bindPS)
+				void UnbindConstBuffer(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
 				{
 					if (bindVS) Shader::VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
 					if (bindGS) Shader::GeometryShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
 					if (bindPS) Shader::PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
 				}
-				void Init_NotInitedCBs(Device::DirectX& dx)
-				{
-					for (auto cb : _notInitializedCBs)
-						cb->Initialize(dx);
-
-					_notInitializedCBs.clear();
-				}
 
 			private:
-				Core::VectorHashMap<Shadow::ShadowId::LiteralType, ConstBufferType> _vpCBs;
-				std::vector<ConstBufferType*> _notInitializedCBs;
+				std::vector<ConstBufferType>	_preparedConstBuffers;
+				std::vector<ConstBufferType>	_constBuffers;
 			};
 		}
 	}

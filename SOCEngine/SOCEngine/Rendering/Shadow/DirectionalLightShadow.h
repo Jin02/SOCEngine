@@ -38,12 +38,10 @@ namespace Rendering
 			GET_SET_ACCESSOR(ProjectionSize, float, _projectionSize);
 			GET_SET_ACCESSOR(UseAutoProjectionLocation, bool, _useAutoProjectLocation);
 
-			GET_CONST_ACCESSOR(LightId, Light::LightId, _base.GetLightId());
-			GET_CONST_ACCESSOR(ShadowId, Shadow::ShadowId, _base.GetShadowId());
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
 
 			inline void SetDirty(bool b) { _base.SetDirty(b); }
 			GET_CONST_ACCESSOR(Dirty, bool, _base.GetDirty());
-
 
 		public:
 			constexpr static float FrustumMinZ = 1.0f;

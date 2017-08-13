@@ -25,7 +25,7 @@ void InjectRadianceFromPointLight::Initialize(DirectX& dx, ShaderManager& shader
 
 void InjectRadianceFromPointLight::Inject(DirectX& dx, LightManager& lightMgr, ShadowSystemParam& shadowSystem, InjectRadianceFormUtility::BindParam& bindParam)
 {
-	auto& plBuffer = lightMgr.GetBuffer<PointLight>().GetLightBuffer();
+	auto& plBuffer = lightMgr.GetBuffer<PointLight>();
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter, plBuffer.GetTransformSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightColor, plBuffer.GetColorSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex, plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());

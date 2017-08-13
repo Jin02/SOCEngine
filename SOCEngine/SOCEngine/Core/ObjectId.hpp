@@ -2,6 +2,7 @@
 
 #include "UniqueIdManager.hpp"
 #include "UniqueId.hpp"
+#include "VectorIndexer.hpp"
 
 namespace Core
 {
@@ -16,6 +17,8 @@ namespace Core
 	public:
 		friend class ObjectIdManager;
 		friend class ObjectManager;
+		friend class IndexBook<ObjectId, std::unordered_map<ObjectId::LiteralType, uint>>;
+		friend class IndexBook<ObjectId, std::map<ObjectId::LiteralType, uint>>;
 	};
 
 	class ObjectIdManager : public UniqueIdManager

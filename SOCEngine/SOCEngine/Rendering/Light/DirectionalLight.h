@@ -36,7 +36,7 @@ namespace Rendering
 				TransformType() = default;
 				TransformType(Half _x, Half _y) : x(_x), y(_y) {}
 			};
-			explicit DirectionalLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
+			explicit DirectionalLight(Core::ObjectId objId) : _base(objId) {};
 
 			void UpdateFlag(const Core::Transform& transform);
 
@@ -51,7 +51,6 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
 
 			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
-			GET_CONST_ACCESSOR(LightId, LightId, _base.GetLightId());
 
 		private:
 			BaseLight					_base;

@@ -40,7 +40,7 @@ namespace Rendering
 			};
 
 		public:
-			explicit SpotLight(Core::ObjectId objId, LightId lightId) : _base(objId, lightId) {};
+			explicit SpotLight(Core::ObjectId objId) : _base(objId) {};
 
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
 			TransformType MakeTransform(const Core::Transform& transform) const;
@@ -52,7 +52,6 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(SpotAngleDegree, float, _spotAngleDegree);
 			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
-			GET_CONST_ACCESSOR(LightId, LightId, _base.GetLightId());
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 
 		private:

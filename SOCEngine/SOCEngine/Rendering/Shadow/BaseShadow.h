@@ -3,8 +3,6 @@
 #include "Common.h"
 #include "Color.h"
 #include "ObjectId.hpp"
-#include "LightId.hpp"
-#include "ShadowId.hpp"
 #include "VectorIndexer.hpp"
 
 namespace Rendering
@@ -31,11 +29,7 @@ namespace Rendering
 			};
 
 		public:
-			BaseShadow(Light::LightId lightId, Shadow::ShadowId shadowId)
-				: _lightId(lightId), _shadowId(shadowId)
-			{
-
-			}
+			BaseShadow(Core::ObjectId id) : _objectId(id) { }
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 			GET_CONST_ACCESSOR(Param, Param, _param);
@@ -53,8 +47,7 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Flag, uchar, _param.flag);
 			GET_ACCESSOR(Flag, uchar, _param.flag);
 
-			GET_CONST_ACCESSOR(LightId, Light::LightId, _lightId);
-			GET_CONST_ACCESSOR(ShadowId, Shadow::ShadowId, _shadowId);
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
 
 			GET_CONST_ACCESSOR(LightIndex, ushort, _param.lightIndex);
 
@@ -65,19 +58,18 @@ namespace Rendering
 			inline void SetColor(const Color& c) { _param.shadowColor = c.Get32BitUintColor(); _dirty = true; }
 
 		private:
-			Light::LightId		_lightId;
-			Shadow::ShadowId	_shadowId;
+			Core::ObjectId		_objectId;
 
 			Param				_param;
 			bool				_dirty = true;
 		};
 
-		template<class LightObjType>
-		class ShadowPool final : public Core::VectorHashMap<ShadowId::LiteralType, typename LightObjType::ShadowType>
+		template<class ShadowClass>
+		class ShadowPool final : public Core::VectorHashMap<Core::ObjectId::LiteralType, typename ShadowClass>
 		{
 		public:
-			using LightType = LightObjType;
-			using ShadowType = typename LightObjType::ShadowType;
+			using LightType		= typename ShadowClass::LightType;
+			using ShadowType	= ShadowClass;
 		};
 	}
 }

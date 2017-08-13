@@ -73,8 +73,12 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h" />
-    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h" />
+    <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceUtility.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -109,7 +113,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Light\LightCullingUtility.h" />
-    <ClInclude Include="Rendering\Light\LightId.hpp" />
     <ClInclude Include="Rendering\Light\LightBufferForm.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -203,11 +206,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp" />
-    <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp" />
-    <ClInclude Include="Rendering\Shadow\ShadowId.hpp" />
-    <ClInclude Include="Rendering\Shadow\ShadowManager.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp" />
+    <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -303,8 +313,12 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp" />
-    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp" />
+    <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -397,7 +411,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowAtlasMap.cpp" />
-    <ClCompile Include="Rendering\Shadow\ShadowManager.cpp" />
+    <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

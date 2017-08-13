@@ -20,11 +20,11 @@ namespace Rendering
 			
 				void Initialize(Device::DirectX& dx, uint count, const void* dummy);
 				
-				void SetData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
-				void AddData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
+				void SetData(uint index, const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
+				void PushData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
 
-				void UpdateSRBuffer(Device::DirectX& dx);		
-				void Delete(LightId id);
+				void UpdateSRBuffer(Device::DirectX& dx);
+				void Delete(uint index);
 				void DeleteAll();
 
 				GET_ACCESSOR(ColorSRBuffer,					auto&,		_colorBuffer.GetShaderResourceBuffer());

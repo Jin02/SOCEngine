@@ -90,7 +90,7 @@ void Voxelization::Voxelize(
 	
 	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
 
-	auto& dlBuffer = lightMgr.GetBuffer<DirectionalLight>().GetLightBuffer();
+	auto& dlBuffer = lightMgr.GetBuffer<DirectionalLight>();
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightDirXY,					dlBuffer.GetTransformSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightColor,					dlBuffer.GetColorSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,		dlBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());

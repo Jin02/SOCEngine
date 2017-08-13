@@ -781,9 +781,6 @@
     <ClInclude Include="Core\UniqueId.hpp">
       <Filter>Core\Id</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Light\LightId.hpp">
-      <Filter>Rendering\Light</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Light\LightCullingUtility.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
@@ -792,9 +789,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowId.hpp">
-      <Filter>Rendering\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp">
       <Filter>Rendering\Shadow\MapCB</Filter>

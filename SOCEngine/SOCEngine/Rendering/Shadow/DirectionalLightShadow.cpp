@@ -15,7 +15,7 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 {
 	assert(_base.GetDirty());
 
-	auto light = lightPool.Find(_base.GetLightId().Literal());
+	auto light = lightPool.Find(_base.GetObjectId().Literal());
 	assert(light);
 
 	const auto& lightBase = light->GetBase();

@@ -6,7 +6,6 @@
 #include "Common.h"
 #include "BoundBox.h"
 #include "ObjectId.hpp"
-#include "LightId.hpp"
 #include <functional>
 #include "VectorIndexer.hpp"
 
@@ -17,8 +16,7 @@ namespace Rendering
 		class BaseLight final
 		{
 		public:
-			explicit BaseLight(Core::ObjectId id, LightId lightId)
-				: _objectId(id), _lightId(lightId) {};
+			explicit BaseLight(Core::ObjectId id) : _objectId(id) {};
 
 			void SetIntensity(float intensity);
 			float GetIntensity() const;
@@ -36,17 +34,15 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Flag, uchar, _flag);
 
 			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
-			GET_CONST_ACCESSOR(LightId, LightId, _lightId);
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 
 		private:
 			Core::ObjectId			_objectId;
-			LightId					_lightId;
 
 			Color					_color = Color::White();
 			float					_radius = 10.0f;
-			uint					_lumen = 500; //intensity]]
+			uint					_lumen = 500; //intensity
 			uchar					_flag = 0;
 			bool					_dirty = true;
 		};

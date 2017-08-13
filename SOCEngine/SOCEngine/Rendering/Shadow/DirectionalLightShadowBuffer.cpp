@@ -16,12 +16,10 @@ void DirectionalLightShadowBuffer::Initialize(Device::DirectX & dx)
 	_mustUpdateDLParamSRBuffer = true;
 }
 
-void DirectionalLightShadowBuffer::AddShadow(DirectionalLightShadow & shadow)
+void DirectionalLightShadowBuffer::PushShadow(DirectionalLightShadow & shadow)
 {
-	uint id = shadow.GetShadowId().Literal();
-
-	Parent::AddShadow(shadow);
-	_dlParamBuffer.AddData(id, shadow.GetParam());
+	Parent::PushShadow(shadow);
+	_dlParamBuffer.PushData(shadow.GetParam());
 
 	_mustUpdateDLParamSRBuffer = true;
 }
@@ -30,16 +28,18 @@ void DirectionalLightShadowBuffer::UpdateBuffer(
 	const std::vector<DirectionalLightShadow*>& dirtyShadows,
 	const Light::LightPool<Light::DirectionalLight>& lightPool,
 	const Core::TransformPool& tfPool,
+	const ShadowDatasIndexer& indexer,
 	const Intersection::BoundBox& sceneBoundBox)
 {
 	for (auto& shadow : dirtyShadows)
 	{
 		auto& base = shadow->GetBase();
-		uint id = base.GetShadowId().Literal();
+		Core::ObjectId objId = base.GetObjectId();
 
-		_paramBuffer.SetData(id, base.GetParam());
-		_tfBuffer.SetData(id, shadow->MakeVPMatParam(lightPool, tfPool, sceneBoundBox));
-		_dlParamBuffer.SetData(id, shadow->GetParam());
+		uint index = indexer.Find(objId.Literal());
+		_paramBuffer[index]		= base.GetParam();
+		_transformBuffer[index]	= shadow->MakeVPMatParam(lightPool, tfPool, sceneBoundBox);
+		_dlParamBuffer[index]	= shadow->GetParam();
 	}
 
 	_mustUpdateParamSRBuffer |= (dirtyShadows.empty() != false);
@@ -57,12 +57,10 @@ void DirectionalLightShadowBuffer::UpdateSRBuffer(Device::DirectX & dx)
 	_mustUpdateDLParamSRBuffer = false;
 }
 
-void DirectionalLightShadowBuffer::Delete(const DirectionalLightShadow & shadow)
+void DirectionalLightShadowBuffer::Delete(uint index)
 {
-	uint id = shadow.GetShadowId().Literal();
-
-	_dlParamBuffer.Delete(id);
-	Parent::Delete(shadow);
+	_dlParamBuffer.Delete(index);
+	Parent::Delete(index);
 
 	_mustUpdateDLParamSRBuffer = true;
 }

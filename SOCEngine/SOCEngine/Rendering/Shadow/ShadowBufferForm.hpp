@@ -12,6 +12,8 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
+			using ShadowDatasIndexer = Core::IndexHashMap<Core::ObjectId::LiteralType>;
+
 			template <class ShadowType>
 			class ShadowBufferForm
 			{
@@ -28,31 +30,32 @@ namespace Rendering
 					ViewProjMatType dummy[POINT_LIGHT_BUFFER_MAX_NUM];
 					memset(dummy, 0, sizeof(dummy));
 
-					_tfBuffer.Initialize(dx, maxShadowCount, DXGI_FORMAT_UNKNOWN, dummy);
+					_transformBuffer.Initialize(dx, maxShadowCount, DXGI_FORMAT_UNKNOWN, dummy);
 					_paramBuffer.Initialize(dx, maxShadowCount, DXGI_FORMAT_R32G32B32A32_UINT, dummy);
 				}
-				void AddShadow(ShadowType& shadow)
+				void PushShadow(const ShadowType& shadow)
 				{
 					const auto& base = shadow.GetBase();
-					uint shadowId = base.GetShadowId().Literal();
 
-					_tfBuffer.AddData(shadowId, ShadowType::ViewProjMatType());
-					_paramBuffer.AddData(shadowId, base.GetParam());
+					_transformBuffer.PushData(ShadowType::ViewProjMatType());
+					_paramBuffer.PushData(base.GetParam());
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = true;
 				}
 				void UpdateBuffer(	const std::vector<ShadowType*>& dirtyShadows,
 									const Light::LightPool<typename ShadowType::LightType>& lightPool,
-									const Core::TransformPool& tfPool	)
+									const Core::TransformPool& tfPool,
+									const ShadowDatasIndexer& indexer)
 				{
 					for (auto& shadow : dirtyShadows)
 					{
 						const auto& base = shadow->GetBase();
-						uint id = base.GetShadowId().Literal();
+						Core::ObjectId objId = base.GetObjectId();
 
-						_paramBuffer.SetData(id, base.GetParam());
-						_tfBuffer.SetData(id, shadow->MakeVPMatParam(lightPool, tfPool));
+						uint index = indexer.Find(objId.Literal());
+						_paramBuffer[index] = base.GetParam();
+						_transformBuffer[index] = shadow->MakeVPMatParam(lightPool, tfPool);
 					}
 
 					_mustUpdateParamSRBuffer |= (dirtyShadows.empty() != false);
@@ -60,39 +63,37 @@ namespace Rendering
 				}
 				void UpdateSRBuffer(Device::DirectX& dx)
 				{
-					if (_mustUpdateTransformSRBuffer)	_tfBuffer.UpdateSRBuffer(dx);
+					if (_mustUpdateTransformSRBuffer)	_transformBuffer.UpdateSRBuffer(dx);
 					if (_mustUpdateParamSRBuffer)		_paramBuffer.UpdateSRBuffer(dx);
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = false;
 				}
-				void Delete(const ShadowType& shadow)
+				void Delete(uint index)
 				{
-					uint shadowId = shadow.GetBase().GetShadowId().Literal();
-
-					_tfBuffer.Delete(shadowId);
-					_paramBuffer.Delete(shadowId);
+					_transformBuffer.Delete(index);
+					_paramBuffer.Delete(index);
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = true;
 				}
 				void DeleteAll()
 				{
-					_tfBuffer.DeleteAll();
+					_transformBuffer.DeleteAll();
 					_paramBuffer.DeleteAll();
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = true;
 				}
 
-				GET_ACCESSOR(ViewProjMatSRBuffer, auto&, _tfBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR(ViewProjMatSRBuffer, auto&, _transformBuffer.GetShaderResourceBuffer());
 				GET_ACCESSOR(ParamSRBuffer, auto&, _paramBuffer.GetShaderResourceBuffer());
 
 			protected:
-				ViewProjMatBuffer	_tfBuffer;
-				ParamBuffer		_paramBuffer;
-				bool			_mustUpdateTransformSRBuffer = true;
-				bool			_mustUpdateParamSRBuffer = true;
+				ViewProjMatBuffer	_transformBuffer;
+				ParamBuffer			_paramBuffer;
+				bool				_mustUpdateTransformSRBuffer = true;
+				bool				_mustUpdateParamSRBuffer = true;
 			};
 		}
 	}

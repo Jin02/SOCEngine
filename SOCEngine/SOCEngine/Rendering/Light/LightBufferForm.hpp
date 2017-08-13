@@ -11,10 +11,12 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			struct RequiredIndexBook
+			using LightDatasIndexer = Core::IndexHashMap<Core::ObjectId::LiteralType>;
+
+			struct RequiredIndexer
 			{
-				const Core::IndexHashMap<LightId::LiteralType>& shadowIndexBook;
-				const Core::IndexHashMap<LightId::LiteralType>& lightShaftIndexBook;
+				const LightDatasIndexer& shadowIndexBook;
+				const LightDatasIndexer& lightShaftIndexBook;
 			};
 
 			template<typename LightType>
@@ -39,43 +41,56 @@ namespace Rendering
 					_mustUpdateCommonSRBuffer = true;
 				}
 
-				void AddLight(const LightType& light)
+				void PushLight(const LightType& light)
 				{
-					_transformBuffer.AddData(light.GetLightId().Literal(), LightType::TransformType());
-					_commonBuffer.AddData(light.GetBase(), -1, -1);
+					_transformBuffer.PushData(LightType::TransformType());
+					_commonBuffer.PushData(light.GetBase(), -1, -1);
 
 					_mustUpdateTransformSRBuffer = true;
 					_mustUpdateCommonSRBuffer = true;
 				}
 
-				void UpdateTransformBuffer(const std::vector<LightType*>& dirtyTFLights,
-											const Core::TransformPool& tfPool)
+				void DeleteAll()
+				{
+					_transformBuffer.DeleteAll();
+					_commonBuffer.DeleteAll();
+
+					_mustUpdateTransformSRBuffer = true;
+					_mustUpdateCommonSRBuffer = true;
+				}
+
+			public:
+				void UpdateTransformBuffer(	const std::vector<LightType*>& dirtyTFLights,
+											const Core::TransformPool& tfPool,
+											const LightDatasIndexer& indexer)
 				{
 					for (const auto& light : dirtyTFLights)
 					{
 						Core::ObjectId objId = light->GetObjectId();
 						const auto& tf = tfPool.Find(objId.Literal());
-
-						uint lightId = light->GetBase().GetLightId().Literal();
-						_transformBuffer.SetData(lightId, light->MakeTransform(*tf));
+						
+						uint index = indexer.Find(objId.Literal());
+						_transformBuffer[index] = light->MakeTransform(*tf);
 					}
 
 					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 				}
 
-				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyLights, RequiredIndexBook indexBooks)
+				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const LightDatasIndexer& indexer)
 				{
-					for (auto& light : dirtyLights)
+					for (auto& light : dirtyParamLights)
 					{
-						uint lightId = light->GetLightId().Literal();
+						Core::ObjectId objId = light->GetObjectId();
+						uint literalId = objId.Literal();
 
-						ushort shadowIdx = indexBooks.shadowIndexBook.Find(lightId);
-						uint lightShaftIdx = indexBooks.lightShaftIndexBook.Find(lightId);
+						ushort shadowIdx = indexers.shadowIndexBook.Find(literalId);
+						uint lightShaftIdx = indexers.lightShaftIndexBook.Find(literalId);
 
-						_commonBuffer.SetData(light->GetBase(), shadowIdx, lightShaftIdx);
+						uint index = indexer.Find(literalId);
+						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 
-					_mustUpdateCommonSRBuffer |= (dirtyLights.empty() != false);
+					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() != false);
 				}
 
 				void UpdateSRBuffer(Device::DirectX& dx)
@@ -86,25 +101,15 @@ namespace Rendering
 					_mustUpdateCommonSRBuffer =
 					_mustUpdateTransformSRBuffer = false;
 				}
-				
-				void Delete(const LightType& light)
+				void Delete(uint index)
 				{
-					LightId id = light.GetLightId();
-					_transformBuffer.Delete(id.Literal());
-					_commonBuffer.Delete(id);
+					_transformBuffer.Delete(index);
+					_commonBuffer.Delete(index);
 
 					_mustUpdateTransformSRBuffer = true;
 					_mustUpdateCommonSRBuffer = true;
 				}
 				
-				void DeleteAll()
-				{
-					_transformBuffer.DeleteAll();
-					_commonBuffer.DeleteAll();
-
-					_mustUpdateTransformSRBuffer = true;
-					_mustUpdateCommonSRBuffer = true;
-				}
 				
 			public:
 				GET_ACCESSOR(TransformSRBuffer,				auto&, _transformBuffer.GetShaderResourceBuffer());

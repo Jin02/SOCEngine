@@ -16,13 +16,14 @@ namespace Rendering
 				SpotLightBuffer() = default;
 				void Initialize(Device::DirectX& dx);
 
-				void AddLight(const SpotLight& light);
+				void PushLight(const SpotLight& light);
 
 				void UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
-											const Core::TransformPool& transformPool );
+											const Core::TransformPool& transformPool,
+											const LightDatasIndexer& indexer );
 				void UpdateSRBuffer(Device::DirectX& dx);
 
-				void Delete(const SpotLight& light);
+				void Delete(uint index);
 				void DeleteAll();
 
 				GET_ACCESSOR(ParamSRBuffer, auto&, _paramSRBuffer.GetShaderResourceBuffer());
@@ -30,7 +31,7 @@ namespace Rendering
 			private:
 				using Parent = LightBufferForm<SpotLight>;
 				using Parent::Initialize;
-				using Parent::AddLight;
+				using Parent::PushLight;
 				using Parent::UpdateSRBuffer;
 				using Parent::Delete;
 				using Parent::DeleteAll;

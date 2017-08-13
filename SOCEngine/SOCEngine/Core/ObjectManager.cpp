@@ -29,12 +29,12 @@ bool ObjectManager::Has(const std::string& name) const
 
 Object* ObjectManager::Find(const std::string& name)
 {
-	return _objects.Find(_toIndex.Find(name));
+	return _objects.Find( ObjectId(_toIndex.Find(name)) );
 }
 
 void Core::ObjectManager::Delete(ObjectId id)
 {
-	Object* findObj = _objects.Find(id.Literal());
+	Object* findObj = _objects.Find(id);
 	if(findObj == nullptr) return;
 
 	_toIndex.Delete(findObj->GetName());

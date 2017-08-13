@@ -4,6 +4,7 @@
 #include "VectorIndexer.hpp"
 #include <memory>
 #include "DirectX.h"
+#include <assert.h>
 
 namespace Rendering
 {
@@ -23,25 +24,31 @@ namespace Rendering
 			// _srBuffer
 			void UpdateSRBuffer(Device::DirectX& dx)
 			{
-				const void* raw = _pool.GetVector().data();
-				_srBuffer.UpdateResourceUsingMapUnMap(dx, raw, _pool.GetSize() * sizeof(T));
+				const void* raw = _pool.data();
+				_srBuffer.UpdateResourceUsingMapUnMap(dx, raw, _pool.size() * sizeof(T));
 			}
 
 			// _buffer
-			inline void AddData(uint key, T& data)		{	_pool.Add(key, data);			}
-			inline void AddData(uint key, T&& data)		{	_pool.Add(key, data);			}
-			inline void SetData(uint key, T& data)		{	(*_pool.Find(key)) = data;		}
-			inline void SetData(uint key, T&& data)		{	(*_pool.Find(key)) = data;		}
-			inline void Delete(uint key)				{	_pool.Delete(key);				}
-			inline void DeleteAll()						{	_pool.DeleteAll();				}
-//			inline T& Get(uint index)					{	return _pool[index];			}
-			inline uint GetSize() const					{	return _pool.GetSize();			}
+			inline void PushData(T& data)				{	_pool.push_back(data);			}
+			inline void PushData(T&& data)				{	_pool.push_back(data);			}
+			inline void DeleteAll()						{	_pool.clear();					}
+			inline uint GetSize() const					{	return _pool.size();			}
+			inline T& operator[](uint index)
+			{
+				assert( (0 <= index) & (index < _pool.size()));
+				return _pool[index];
+			}
 
-			GET_ACCESSOR(ShaderResourceBuffer,	auto&, _srBuffer);
-			GET_CONST_ACCESSOR(IndexBook,		const auto&, _pool.GetIndexer());
+			inline void Delete(uint index)
+			{
+				auto iter = _pool.begin() + index;
+				_pool.erase(iter);
+			}
+
+			GET_ACCESSOR(ShaderResourceBuffer, auto&, _srBuffer);
 
 		private:
-			Core::VectorMap<uint, T>	_pool;
+			std::vector<T>				_pool;
 			ShaderResourceBuffer		_srBuffer;
 		};
 	}

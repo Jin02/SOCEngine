@@ -5,31 +5,10 @@
 #include "PointLightBuffer.h"
 #include "Transform.h"
 
-#include "LightId.hpp"
-
 namespace Rendering
 {
 	namespace Manager
 	{
-		template<class LightObject>
-		class LightBufferObject final
-		{
-		public:
-			auto& GetLightBuffer()
-			{
-				return _buffer;
-			}
-			const auto& GetLightBuffer() const
-			{
-				return _buffer;
-			}
-
-			GET_CONST_ACCESSOR(Size, uint, _buffer.GetSize());
-
-		private:
-			typename LightObject::LightBufferType _buffer;
-		};
-
 		class LightManager final
 		{
 		public:
@@ -41,53 +20,61 @@ namespace Rendering
 			template <class LightType>
 			LightType& Acquire(Core::ObjectId objId)
 			{
-				Light::LightId id = _idMgr.Acquire();
-				return Add(LightType(objId, id));
+				return Add(LightType(objId));
 			}
 
 			template <class LightType>
 			void Delete(Core::ObjectId objId)
 			{
+				auto& pool = GetPool<LightType>();
+				uint index = pool.GetIndexer().Find(objId.Literal());
+
+				GetBuffer<LightType>().Delete(index);
+				pool.Delete(objId.Literal());
+
+				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 
 			template <class LightType>
-			bool Has(Core::ObjectId objId)
+			bool Has(Core::ObjectId objId) const
 			{
-
+				return GetPool<LightType>().GetIndexer().Has(objId.Literal());
 			}
 
-			template <class Component>
+			template <class LightType>
 			auto Find(Core::ObjectId id)
 			{
-
+				return GetPool<LightType>().Find(id.Literal());
 			}
-
 
 			template <class LightType>
 			LightType& Add(LightType& light)
 			{
 				light.GetBase().SetDirty(true);
 
-				GetBuffer<LightType>().Add(light);
-				return GetPool<LightType>().Add(light.GetObjectId().Literal(), light);
+				GetBuffer<LightType>().PushLight(light);
+
+				Core::ObjectId id = light.GetObjectId();
+				return GetPool<LightType>().Add(id.Literal(), light);
 			}
 
 			template <class LightType>
 			void Delete(LightType& light)
 			{
-				GetBuffer<LightType>().Delete(light);
-				GetPool<LightType>().Delete(light.GetObjectId().Literal());
+				Core::ObjectId id = light.GetObjectId();
+				Delete<LightType>(id);
 
-				_idMgr.Delete(light.GetLightId());
+				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
-
 
 			void DeleteAll();
 
 			uint GetPackedLightCount() const;
 
 			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
-			void UpdateParamBuffer(	const Light::Buffer::RequiredIndexBook& indexBooks,
+			void UpdateParamBuffer(	const Light::Buffer::RequiredIndexer& indexer,
 									const Core::TransformPool& transformPool );
 			void UpdateSRBuffer(Device::DirectX& dx);
 
@@ -99,65 +86,62 @@ namespace Rendering
 
 			template <class LightType> auto&		GetBuffer()
 			{
-				return std::get<LightBufferObject<LightType>>(_lightBuffers);
+				return GetLightDatas<LightType>().lightBuffer;
 			}
 			template <class LightType> const auto&	GetBuffer() const
 			{
-				return std::get<LightBufferObject<LightType>>(_lightBuffers);
+				return GetLightDatas<LightType>().lightBuffer;
 			}
-			template <class LightType> auto&		GetPool()
+			template <class LightType> Light::LightPool<LightType>&	GetPool()
 			{
-				return std::get<Light::LightPool<LightType>>(_lightPools);
+				return GetLightDatas<LightType>().pool;
 			}
-			template <class LightType> const auto&	GetPool() const
+			template <class LightType> const Light::LightPool<LightType>& GetPool() const
 			{
-				return std::get<Light::LightPool<LightType>>(_lightPools);
+				return GetLightDatas<LightType>().pool;
 			}
-			template <class LightType> const auto& GetIndexBook() const
+			template <class LightType> const auto&	GetIndexer() const
 			{
 				return GetPool<LightType>().GetIndexer();
 			}
-
 			template <class LightType> uint GetLightCount() const
 			{
 				return GetPool<LightType>().GetSize();
 			}
 
 		private:
+			template <class LightType> auto&		GetLightDatas()
+			{
+				return std::get<LightDatas<LightType>>(_lightDatas);
+			}
+			template <class LightType> const auto&	GetLightDatas() const
+			{
+				return std::get<LightDatas<LightType>>(_lightDatas);
+			}
+
 			template <class LightType> auto&		GetDirtyParamLights()
 			{
-				return std::get<std::vector<LightType*>>(_dirtyParamLigts);
+				return GetLightDatas<LightType>().dirtyParamLights;
 			}
-			template <class LightType> auto&		GetDirtyTFLights()
+			template <class LightType> auto&		GetDirtyTransformLights()
 			{
-				return std::get<std::vector<LightType*>>(_dirtyParamLigts);
+				return GetLightDatas<LightType>().dirtyTransformLights;
 			}
 
 		private:
-			std::tuple<
-					LightBufferObject<Light::DirectionalLight>,
-					LightBufferObject<Light::PointLight>,
-					LightBufferObject<Light::SpotLight>
-			> _lightBuffers;
-			std::tuple<				
-				Light::LightPool<Light::DirectionalLight>,
-				Light::LightPool<Light::PointLight>,
-				Light::LightPool<Light::SpotLight>
-			> _lightPools;
+			template <class LightType>
+			struct LightDatas
+			{
+				Light::LightPool<LightType>			pool;
+				typename LightType::LightBufferType	lightBuffer;
+				std::vector<LightType*>				dirtyParamLights;
+				std::vector<LightType*>				dirtyTransformLights;
+				uint								reupdateMinIndex = 0;
+			};
 
-			std::tuple<
-				std::vector<Light::DirectionalLight*>,
-				std::vector<Light::PointLight*>,
-				std::vector<Light::SpotLight*>
-			> _dirtyParamLigts;
-
-			std::tuple<
-				std::vector<Light::DirectionalLight*>,
-				std::vector<Light::PointLight*>,
-				std::vector<Light::SpotLight*>
-			> _dirtyTFLigts;
-
-			Light::LightIdManager _idMgr;
+			std::tuple<	LightDatas<Light::PointLight>,
+						LightDatas<Light::SpotLight>,
+						LightDatas<Light::DirectionalLight>>		_lightDatas;
 		};	
 	}
 }

@@ -38,105 +38,125 @@ namespace Rendering
 			void CheckDirtyShadows(const LightManager& lightMgr, const Core::TransformPool& tfPool);			
 			void ClearDirtyShadows();
 
-			void UpdateNotInitedCB(Device::DirectX& dx);
 			void UpdateBuffer(const LightManager& lightMgr, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
 			void UpdateSRBuffer(Device::DirectX& dx);
+			void UpdateConstBuffer(Device::DirectX& dx);
 
 			template <class ShadowType>
-			ShadowType& Acquire(Light::LightId lightId)
+			ShadowType& Acquire(Core::ObjectId objId)
 			{
-				Shadow::ShadowId id = _idMgr.Acquire();
-				return Add( ShadowType(lightId, id) );
+				return Add( ShadowType(objId) );
 			}
 
-			template <class ShadowType>
-			ShadowType& Add(ShadowType& shadow)
+			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
 			{
-				uint id = shadow.GetShadowId().Literal();
-				GetBuffer<ShadowType>().GetBuffer().AddShadow(shadow);
-				GetShadowMapCB<ShadowType::LightType>().Add(shadow.GetShadowId());
+				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
+				GetShadowMapCB<ShadowType::LightType>().PushConstBufferToQueue();
 
 				shadow.SetDirty(true);
 				_dirtyGlobalParam = true;
 
-				return GetPool<ShadowType::LightType>().Add(id, shadow);
+				uint objLiteralId = shadow.GetObjectId().Literal();
+				return GetPool<ShadowType::LightType>().Add(objLiteralId, shadow);
 			}
-			template <class ShadowType>
-			void Delete(ShadowType& shadow)
+			template <class ShadowType>	void Delete(ShadowType& shadow)
 			{
-				uint id = shadow.GetShadowId().Literal();
+				Core::ObjectId objId = shadow.GetObjectId();
+			
+				uint index = GetPool<ShadowType>().GetIndexer().Find(objId.Literal());
 
-				GetPool<ShadowType::LightType>().Delete(id);
-				GetBuffer<ShadowType>().GetBuffer().Delete(shadow);
-				GetShadowMapCB<ShadowType::LightType>().Delete(shadow.GetShadowId());
+				GetPool<ShadowType>().Delete(objId.Literal());
+				GetBuffer<ShadowType>().GetBuffer().Delete(index);
+				GetShadowMapCB<ShadowType>().Delete(index);
+
+				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIdx);
 
 				_dirtyGlobalParam = true;
-				_idMgr.Delete(shadow.GetShadowId());
 			}
+			template <class ShadowType>	bool Has(Core::ObjectId objId) const
+			{
+				return GetPool<ShadowType>().GetIndexer().Has(objId.Literal());
+			}
+			template <class ShadowType>	auto Find(Core::ObjectId id)
+			{
+				return GetPool<ShadowType>().Find(id.Literal());
+			}
+
 			void DeleteAll();
 
 			void BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS);
 			void UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const;
 
 		public:
-			template <class LightType>	auto& GetPool()
+			template <class ShadowType>	auto& GetPool()
 			{
-				return std::get<Shadow::ShadowPool<LightType>>(_shadowPool);
+				return GetShadowDatas<ShadowType>().pool;
 			}
-			template <class LightType>	const auto& GetPool() const
+			template <class ShadowType>	const auto& GetPool() const
 			{
-				return std::get<Shadow::ShadowPool<LightType>>(_shadowPool);
+				return GetShadowDatas<ShadowType>().pool;
 			}
-			template <class LightType>	const auto& GetIndexBook() const
+			template <class ShadowType>	const auto& GetIndexBook() const
 			{
-				return GetPool<LightType>().GetIndexer();
+				return GetPool<ShadowType>().GetIndexer();
 			}
-			template <class LightType>	auto& GetShadowMapCB()
+
+			template <class ShadowType>	auto& GetShadowMapCB()
 			{
-				return std::get<Shadow::Buffer::ShadowMapCB<LightType::ShadowType>>(_shadowMapCBs);
+				return GetShadowDatas<ShadowType>().constBuffers;
+			}
+			template <class ShadowType> const auto& GetShadowMapCB() const
+			{
+				return GetShadowDatas<ShadowType>().constBuffers;
 			}
 			template <class ShadowType>	auto& GetBuffer()
 			{
-				return std::get<Shadow::Buffer::ShadowBufferObject<ShadowType>>(_shadowBuffers);
+				return GetShadowDatas<ShadowType>().buffers;
 			}
 			template <class ShadowType>	const auto& GetBuffer() const
 			{
-				return std::get<Shadow::Buffer::ShadowBufferObject<ShadowType>>(_shadowBuffers);
+				return GetShadowDatas<ShadowType>().buffers;
 			}
+
 			GET_ACCESSOR(GlobalParamCB, auto&, _globalCB);
 
 		private:
+			template <class ShadowType> auto&		GetShadowDatas()
+			{
+				return std::get<ShadowDatas<ShadowType>>(_datas);
+			}
+			template <class ShadowType> const auto&	GetShadowDatas() const
+			{
+				return std::get<ShadowDatas<ShadowType>>(_datas);
+			}
+
 			template <class ShadowType>	auto& GetDirtyShadows()
 			{
-				return std::get<std::vector<ShadowType*>>(_dirtyShadows);
+				return GetShadowDatas<ShadowType>().dirtyShadows;
+			}
+			template <class ShadowType>	const auto& GetDirtyShadows() const
+			{
+				return GetShadowDatas<ShadowType>().dirtyShadows;
 			}
 
 		private:
-			std::tuple<
-				Shadow::Buffer::ShadowBufferObject<Shadow::SpotLightShadow>,
-				Shadow::Buffer::ShadowBufferObject<Shadow::PointLightShadow>,
-				Shadow::Buffer::ShadowBufferObject<Shadow::DirectionalLightShadow>
-			> _shadowBuffers;
-			std::tuple<
-				std::vector<Shadow::SpotLightShadow*>,
-				std::vector<Shadow::PointLightShadow*>,
-				std::vector<Shadow::DirectionalLightShadow*>
-			> _dirtyShadows;
-			std::tuple<
-				Shadow::ShadowPool<Light::SpotLight>,
-				Shadow::ShadowPool<Light::PointLight>,
-				Shadow::ShadowPool<Light::DirectionalLight>
-			> _shadowPool;
-			std::tuple<
-				Shadow::Buffer::ShadowMapCB<Shadow::SpotLightShadow>,
-				Shadow::Buffer::ShadowMapCB<Shadow::PointLightShadow>,
-				Shadow::Buffer::ShadowMapCB<Shadow::DirectionalLightShadow>
-			> _shadowMapCBs;
+			template <typename ShadowType>
+			struct ShadowDatas
+			{
+				Shadow::ShadowPool<ShadowType>					pool;
+				std::vector<ShadowType*>						dirtyShadows;
+				Shadow::Buffer::ShadowBufferObject<ShadowType>	buffers;
+				Shadow::Buffer::ShadowMapCB<ShadowType>			constBuffers;
+				uint											reupdateMinIndex = 0;
+			};
 
-			GlobalParamCB _globalCB;
-			bool _dirtyGlobalParam = true;
+			std::tuple<	ShadowDatas<Shadow::SpotLightShadow>,
+						ShadowDatas<Shadow::PointLightShadow>,
+						ShadowDatas<Shadow::DirectionalLightShadow>	> _datas;
 
-			Shadow::ShadowIdManager _idMgr;
+			GlobalParamCB		_globalCB;
+			bool				_dirtyGlobalParam = true;
 		};
 	}
 }

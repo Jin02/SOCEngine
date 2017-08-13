@@ -8,11 +8,11 @@
 
 namespace Core
 {
-	template <typename Key, typename Object, template<typename K> class Indexer>
+	template <typename Key, typename Object, class IndexerClass>
 	class VectorIndexer
 	{
 	public:
-		using IndexerType = Indexer<Key>;
+		using IndexerType = IndexerClass;
 		using VectorType = std::vector<Object>;
 
 		VectorIndexer() : _vector(), _map() {}
@@ -44,7 +44,7 @@ namespace Core
 
 		Object& Get(unsigned int index)
 		{
-			return const_cast<Object&>(static_cast<const VectorIndexer<Key, Object, Indexer>*>(this)->Get(index));
+			return const_cast<Object&>(static_cast<const VectorIndexer<Key, Object, IndexerType>*>(this)->Get(index));
 		}
 
 		const Object* Find(const Key& key) const
@@ -56,13 +56,13 @@ namespace Core
 
 		Object* Find(const Key& key)
 		{
-			return const_cast<Object*>(static_cast<const VectorIndexer<Key, Object, Indexer>*>(this)->Find(key));
+			return const_cast<Object*>(static_cast<const VectorIndexer<Key, Object, IndexerType>*>(this)->Find(key));
 		}
 
 		void Delete(const Key& key)
 		{
 			uint findIdx = _map.Find(key);
-			if (findIdx == Indexer<Key>::FailIndex())
+			if (findIdx == IndexerType::FailIndex())
 				return;
 
 			uint ereaseIdx = findIdx;
@@ -77,17 +77,17 @@ namespace Core
 		}
 
 		inline const std::vector<Object>& GetVector() const { return _vector; }
-		inline const Indexer<Key> GetIndexer() const { return _map; }
+		inline const IndexerType GetIndexer() const { return _map; }
 
 		GET_CONST_ACCESSOR(Size, unsigned int, _vector.size());
 
 	private:
 		std::vector<Object>     _vector;
-		Indexer<Key>            _map;
+		IndexerType				_map;
 	};
 
 	template<typename Key, typename Object>
-	using VectorMap = VectorIndexer<Key, Object, IndexMap>;
+	using VectorMap = VectorIndexer<Key, Object, IndexMap<Key>>;
 	template<typename Key, typename Object>
-	using VectorHashMap = VectorIndexer<Key, Object, IndexHashMap>;
+	using VectorHashMap = VectorIndexer<Key, Object, IndexHashMap<Key>>;
 }

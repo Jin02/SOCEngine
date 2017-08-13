@@ -17,15 +17,16 @@ namespace Rendering
 
 				void Initialize(Device::DirectX& dx);
 
-				void AddShadow(DirectionalLightShadow& shadow);
+				void PushShadow(DirectionalLightShadow& shadow);
 
 				void UpdateBuffer(	const std::vector<DirectionalLightShadow*>& dirtyShadows,
 									const Light::LightPool<Light::DirectionalLight>& lightPool,
 									const Core::TransformPool& tfPool,
+									const ShadowDatasIndexer& indexer,
 									const Intersection::BoundBox& sceneBoundBox);
 				void UpdateSRBuffer(Device::DirectX& dx);
 
-				void Delete(const DirectionalLightShadow& shadow);
+				void Delete(uint index);
 				void DeleteAll();
 
 				GET_ACCESSOR(InvProjParamSRBuffer, auto&, _dlParamBuffer.GetShaderResourceBuffer());
