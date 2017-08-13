@@ -30,22 +30,51 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
+			template<typename MeshTraits> Geometry::Mesh& Acquire(Core::ObjectId objId)
+			{
+				auto mesh = Geometry::Mesh(objId);
+				return GetPool<MeshTraits>().Add(objId.Literal(), mesh);
+			}
+			template<typename MeshTraits> void Delete(Core::ObjectId objId)
+			{
+				GetPool<MeshTraits>().Delete(objId.Literal());
+			}
+			template<typename MeshTraits> bool Has(Core::ObjectId objId) const
+			{
+				return	GetPool<MeshTraits>().GetIndexer().Has(objId.Literal());
+			}
+			template<typename MeshTraits> auto Find(Core::ObjectId id)
+			{
+				return GetPool<MeshTraits>().Find(id.Literal());
+			}
+
 			Geometry::Mesh& Acquire(Core::ObjectId objId)
 			{
 				auto mesh = Geometry::Mesh(objId);
 				return GetPool<OpaqueTrait>().Add(objId.Literal(), mesh);
 			}
-
 			void Delete(Core::ObjectId objId)
 			{
+				GetPool<OpaqueTrait>().Delete(objId.Literal());
+				GetPool<AlphaBlendTrait>().Delete(objId.Literal());
+				GetPool<TransparencyTrait>().Delete(objId.Literal());
 			}
-
-			bool Has(Core::ObjectId objId)
+			bool Has(Core::ObjectId objId) const
 			{
+				return	GetPool<OpaqueTrait>().GetIndexer().Has(objId.Literal())		|
+						GetPool<AlphaBlendTrait>().GetIndexer().Has(objId.Literal())	|
+						GetPool<TransparencyTrait>().GetIndexer().Has(objId.Literal());
 			}
-
 			auto Find(Core::ObjectId id)
 			{
+				auto opaque = GetPool<OpaqueTrait>().Find(id.Literal());			
+				if(opaque) return opaque;
+
+				auto alpha = GetPool<AlphaBlendTrait>().Find(id.Literal());				
+				if(alpha) return alpha;
+
+				auto transparency = GetPool<TransparencyTrait>().Find(id.Literal());
+				return transparency;
 			}
 
 			template <typename Trait>
@@ -60,7 +89,7 @@ namespace Rendering
 			}
 
 			template <typename FromTrait, typename ToTrait>
-			bool Move(Core::ObjectId id)
+			bool ChangeTrait(Core::ObjectId id)
 			{
 				auto& fromIndexer	= GetPool<FromTrait>().GetIndexer();
 				auto& toIndexer		= GetPool<ToTrait>().GetIndexer();
