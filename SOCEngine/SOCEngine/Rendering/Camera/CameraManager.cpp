@@ -19,3 +19,8 @@ void Rendering::Manager::CameraManager::SetMainCamera(Core::Object object)
 {
 	_mainCamera.SetObjectId(object.GetObjectId());
 }
+
+void CameraManager::DeleteAll()
+{
+	// Nothing
+}
