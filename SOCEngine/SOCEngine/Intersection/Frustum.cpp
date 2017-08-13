@@ -21,12 +21,12 @@ void Frustum::Make(const Matrix &viewProjection)
 
 	_position = (_planeVertex[0] + _planeVertex[5]) / 2.0f;
 
-	Plane::FromPoints(_plane[0], _planeVertex[4], _planeVertex[7], _planeVertex[6]);	// 상 평면(top)
-	Plane::FromPoints(_plane[1], _planeVertex[0], _planeVertex[1], _planeVertex[2]);	// 하 평면(bottom)
-	Plane::FromPoints(_plane[2], _planeVertex[0], _planeVertex[4], _planeVertex[5]);	// 근 평면(near)
-	Plane::FromPoints(_plane[3], _planeVertex[2], _planeVertex[6], _planeVertex[7]);	// 원 평면(far)
-	Plane::FromPoints(_plane[4], _planeVertex[0], _planeVertex[3], _planeVertex[7]);	// 좌 평면(left)
-	Plane::FromPoints(_plane[5], _planeVertex[1], _planeVertex[5], _planeVertex[6]);	// 우 평면(right)
+	_plane[0] = Plane::FromPoints(_planeVertex[4], _planeVertex[7], _planeVertex[6]);	// 상 평면(top)
+	_plane[1] = Plane::FromPoints(_planeVertex[0], _planeVertex[1], _planeVertex[2]);	// 하 평면(bottom)
+	_plane[2] = Plane::FromPoints(_planeVertex[0], _planeVertex[4], _planeVertex[5]);	// 근 평면(near)
+	_plane[3] = Plane::FromPoints(_planeVertex[2], _planeVertex[6], _planeVertex[7]);	// 원 평면(far)
+	_plane[4] = Plane::FromPoints(_planeVertex[0], _planeVertex[3], _planeVertex[7]);	// 좌 평면(left)
+	_plane[5] = Plane::FromPoints(_planeVertex[1], _planeVertex[5], _planeVertex[6]);	// 우 평면(right)
 }
 
 bool Frustum::In(const Vector3 &v, float radius) const
