@@ -22,7 +22,9 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
-			void SetMainCamera(Core::Object object);
+
+			void SetMainCamera(Core::ObjectId objectId);
+			GET_ACCESSOR(MainCamera, auto&, _mainCamera);
 
 		public:
 			template <class CameraType> CameraType& Acquire(Core::ObjectId objId)
@@ -91,7 +93,6 @@ namespace Rendering
 				return GetCameraDatas<CameraType>().dirty;
 			}
 
-			GET_ACCESSOR(MainCamera, auto&, _mainCamera);
 
 		private:
 //			std::tuple<CameraDatas<>>				_cameras;
