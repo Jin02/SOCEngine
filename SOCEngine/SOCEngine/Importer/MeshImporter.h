@@ -62,7 +62,7 @@ namespace Importer
 
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
 		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
-		StoredOriginObject* BuildMesh(ManagerParam managerParam,
+		Core::Object& BuildMesh(ManagerParam managerParam,
 			std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
 		void FetchNodeHashMap(NodeHashMap& recurRefParts, const std::vector<Node>& nodes);

@@ -453,9 +453,10 @@ Object* MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir
 	std::string fileName, fileFormat, folderDir;
 	assert( Utility::String::ParseDirectory(fileDir, folderDir, fileName, fileFormat) );
 
+	auto key = fileDir;
 	// Check duplicated object
 	{
-		StoredOriginObject* found = _originObjects.Find(fileDir); 
+		StoredOriginObject* found = _originObjects.Find(key); 
 		if (found)
 			return managerParam.objManager.Find(fileName);
 	}
@@ -498,13 +499,10 @@ Object* MeshImporter::Load(ManagerParam managerParam, const std::string& fileDir
 
 	delete buffer;
 
-	auto storedObject = BuildMesh(managerParam, meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, fileDir);
-	storedObject->alreadyUsed = true;
-
-	return managerParam.objManager.Find(fileDir);
+	return &BuildMesh(managerParam, meshes, materials, nodes, folderDir, fileName, useDynamicVB, useDynamicIB, key);
 }
 
-MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
+Core::Object& MeshImporter::BuildMesh(
 	ManagerParam managerParam,
 	std::vector<Importer::Mesh>& meshes,
 	const std::vector<Importer::Material>& materials, const std::vector<Node>& nodes,
@@ -704,9 +702,8 @@ MeshImporter::StoredOriginObject* MeshImporter::BuildMesh(
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
 
-	_originObjects.Add(registKey, { false, root.GetObjectId() });
-
-	return _originObjects.Find(registKey);
+	_originObjects.Add(registKey, { true, root.GetObjectId() });
+	return root;
 }
 
 void MeshImporter::FetchAllPartsInHashMap_Recursive(
@@ -817,16 +814,12 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 	Object object = objManager.Add(node.id, &managerParam.compoSystem, &managerParam.transformPool);
 
 	uint objId = object.GetObjectId().Literal();
-	ObjectId parentId = parent.GetObjectId();
-	if (parentId.Literal() != ObjectId::Undefined())
-		parent.AddChild(object);
+	parent.AddChild(object);
 
 	// Setting Transform
 	auto& transformPool = managerParam.transformPool;
 	Transform* thisTF = transformPool.Find(objId);
 	{
-		assert(thisTF->GetParentId() == parentId);
-
 		thisTF->UpdatePosition(node.translation.tf);
 		thisTF->UpdateQuaternion(node.rotation.tf);
 		thisTF->UpdateScale(node.scale.tf);
