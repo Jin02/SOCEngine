@@ -847,12 +847,9 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 
 		std::string vbChunkKey = "";
 		{
-			std::vector<std::string> tokens;
-			{
-				const std::string& vertexBufferKey = indexBuffer->GetUseVertexBufferKey();
-				Utility::String::Tokenize(vertexBufferKey, tokens, ":");
-			}
+			const std::string& vertexBufferKey = indexBuffer->GetUseVertexBufferKey();
 
+			std::vector<std::string> tokens = Utility::String::Tokenize(vertexBufferKey, ":");
 			vbChunkKey = tokens.back();
 		}
 		

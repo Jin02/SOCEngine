@@ -12,8 +12,10 @@ namespace Utility
 	{
 	public:
 		//http://www.joinc.co.kr/modules/moniwiki/wiki.php/Site/C++/Documents/C++ProgramingHowToPerPage/standardstring.html
-		static void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ")
+		static std::vector<std::string> Tokenize(const std::string& str, const std::string& delimiters = " ")
 		{
+			std::vector<std::string> tokens;
+
 			// 맨 첫 글자가 구분자인 경우 무시
 			std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
 			// 구분자가 아닌 첫 글자를 찾는다
@@ -28,6 +30,8 @@ namespace Utility
 				// 다음 구분자가 아닌 글자를 찾는다
 				pos = str.find_first_of(delimiters, lastPos);
 			}
+
+			return tokens;
 		}
 
 		static bool ParseDirectory(const std::string& path, std::string& outFolderPath, std::string& outFileName, std::string& outFileFormat)
