@@ -64,7 +64,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float2 velocity		= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 
 	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
 	float3 normal		= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
 
 	MakeGBuffer(normal, velocity, input.uv, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);

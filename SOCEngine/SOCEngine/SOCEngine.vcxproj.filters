@@ -592,9 +592,6 @@
     <ClInclude Include="ShaderCodes\OptionalRendering_Forward.h">
       <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
     </ClInclude>
-    <ClInclude Include="Importer\ImporterUtility.h">
-      <Filter>Importer</Filter>
-    </ClInclude>
     <ClInclude Include="Importer\MeshImporter.h">
       <Filter>Importer</Filter>
     </ClInclude>
@@ -964,9 +961,6 @@
       <Filter>Intersection\Sphere</Filter>
     </ClCompile>
     <ClCompile Include="Importer\MeshImporter.cpp">
-      <Filter>Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Importer\ImporterUtility.cpp">
       <Filter>Importer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\BaseBuffer.cpp">

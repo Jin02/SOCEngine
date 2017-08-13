@@ -72,7 +72,7 @@ void GS(triangle GS_REFLECTION_PROBE_INPUT input[3], inout TriangleStream<PS_REF
 float4 PS(GS_REFLECTION_PROBE_INPUT input) : SV_TARGET
 {
 	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
 	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
 
 	return ReflectionProbeLighting(normal, input.worldPos, input.uv);

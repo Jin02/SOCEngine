@@ -36,7 +36,7 @@ PS_SCENE_INPUT VS(VS_INPUT input)
 float4 PS(PS_SCENE_INPUT input) : SV_Target
 {
 	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent, input.uv);
+	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
 	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
 
 	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
