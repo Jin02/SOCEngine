@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "RenderTexture.h"
@@ -14,14 +16,17 @@ namespace Rendering
 		public:
 			struct InitParam
 			{
-				std::string shaderFileName;
-				std::string psName;
-				const std::vector<Shader::ShaderMacro>* macros;
+				std::string shaderFileName							= "";
+				std::string psName									= "";
+				const std::vector<Shader::ShaderMacro>* psMacros	= nullptr;
+				bool useViewInfo									= false;
+				bool useMSAAMacro									= false;
 
 				InitParam() = default;
-				InitParam(const std::string& fileName, const std::string& psFuncName, const std::vector<Shader::ShaderMacro>* macro)
-					: shaderFileName(fileName), psName(psFuncName), macros(macro)
-				{				
+				InitParam(std::string _shaderFileName, std::string _psName, decltype(psMacros) _psMacros, bool _useViewInfo = false, bool _useMSAAMacro = false)
+					: shaderFileName(_shaderFileName), psName(_psName), psMacros(_psMacros), useViewInfo(_useViewInfo), useMSAAMacro(_useMSAAMacro)
+				{
+
 				}
 			};
 
@@ -29,12 +34,10 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, const InitParam& param, Manager::ShaderManager& shaderManager);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT, bool useOutRTViewportSize = false);
 
-			GET_CONST_ACCESSOR(VSUniqueKey, const auto&, _vsUniqueKey);
-
 		private:
-			std::string				_vsUniqueKey = "";
-			Shader::VertexShader	_vs;
-			Shader::PixelShader		_ps;
+			std::string								_psUniqueKey = "";
+			std::shared_ptr<Shader::VertexShader>	_vs;
+			std::shared_ptr<Shader::PixelShader>	_ps;
 		};
 	}
 }

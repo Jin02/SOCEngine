@@ -9,40 +9,73 @@ using namespace Rendering::Manager;
 
 void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderManager& shaderManager)
 {
-	Factory::EngineShaderFactory pathFinder(nullptr);
-	
-	std::string path = pathFinder.FetchShaderFullPath(param.shaderFileName);
-	
 	std::string folderPath = "";
-	bool success = Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
-	assert(success);// "Error!, Invalid File Path"
-
-	// Setting Vertex Shader
 	{
-		std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
+		Factory::EngineShaderFactory pathFinder(nullptr);
 
-		// setting vs uniqueKey
+		std::string path = pathFinder.FetchShaderFullPath(param.shaderFileName);
+
+		Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
+	}
+	assert(folderPath.empty() == false);// "Error!, Invalid File Path"
+
+#pragma region MacroKey
+	std::vector<ShaderMacro> vsMacro;
+
+	std::string vsKey = "FullScreenVS";
+	_psUniqueKey = param.shaderFileName + ":" + param.psName;
+
+	// VS
+	{
+		if (param.useViewInfo)
 		{
-			_vsUniqueKey = "FullScreenVS";
-
-			if (param.macros)
-			{
-				for (auto iter : (*param.macros))
-					_vsUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
-			}
+			vsMacro.emplace_back("USE_VIEW_INFORMATION");
+			vsKey += ":[ViewInfoMacro]:";
 		}
 
-		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "vs", "FullScreenVS", false, param.macros);
-		_vs = VertexShader(blob, _vsUniqueKey);
-		_vs.Initialize(dx, nullDeclations);
+		if (param.useMSAAMacro)
+		{
+			vsMacro.push_back(dx.GetMSAAShaderMacro());
+
+			constexpr char* key = ":[MSAA]:";
+			vsKey += key;
+			_psUniqueKey += key;
+		}
 	}
 
-	// Setting Pixel Shader
+	if (param.psMacros)
 	{
-		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "vs", "FullScreenVS", false, param.macros);
-		_ps = PixelShader(blob, param.shaderFileName + ":" + param.psName);
-		_ps.Initialize(dx);
+		for (auto iter : (*param.psMacros))
+			_psUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
 	}
+#pragma endregion MacroKey
+
+#pragma region VertexShader
+	if (shaderManager.GetPool<VertexShader>().Has(vsKey) == false)
+	{
+		// Setting Vertex Shader
+		{
+			std::vector<D3D11_INPUT_ELEMENT_DESC> nullDeclations;
+
+			auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "vs", "FullScreenVS", false, &vsMacro);
+			_vs = std::make_shared<VertexShader>(blob, vsKey);
+			_vs->Initialize(dx, nullDeclations);
+
+			shaderManager.GetPool<VertexShader>().Add(vsKey, _vs);
+		}
+	}
+#pragma endregion VertexShader
+
+#pragma region PixelShader
+	if (shaderManager.GetPool<PixelShader>().Has(_psUniqueKey) == false)
+	{
+		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "vs", "FullScreenVS", false, param.psMacros);
+		_ps = std::make_shared<PixelShader>(blob, _psUniqueKey);
+		_ps->Initialize(dx);
+
+		shaderManager.GetPool<PixelShader>().Add(_psUniqueKey, _ps);
+	}
+#pragma endregion PixelShader
 }
 
 void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool useOutRTViewportSize)
@@ -61,10 +94,10 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 	context->OMSetRenderTargets(1, &rtv, nullDSV);
 	context->OMSetDepthStencilState(dx.GetDepthStateDisableDepthTest(), 0x00);
 
-	_vs.BindShaderToContext(dx);
-	_vs.BindInputLayoutToContext(dx);
+	_vs->BindShaderToContext(dx);
+	_vs->BindInputLayoutToContext(dx);
 	
-	_ps.BindShaderToContext(dx);
+	_ps->BindShaderToContext(dx);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	context->RSSetState( nullptr );
