@@ -99,12 +99,12 @@ std::vector<Vector3> CalculateTangents(
 	std::vector<Vector3> tangent(totalSize);
 	for (uint i = 0; i < totalSize; ++i)
 	{
-		Vector3 normal(vertexDatas[i * elemCountInStride + 0 + 3],
-			vertexDatas[i * elemCountInStride + 1 + 3],
-			vertexDatas[i * elemCountInStride + 2 + 3]);
+		Vector3 normal(	vertexDatas[i * elemCountInStride + 0 + 3],
+						vertexDatas[i * elemCountInStride + 1 + 3],
+						vertexDatas[i * elemCountInStride + 2 + 3]	);
 
 		float handedness = (Vector3::Dot(Vector3::Cross(normal, sdir[i]), tdir[i]) < 0.0f) ? -1.0f : 1.0f;
-		tangent[i] = (sdir[i] - normal * Vector3::Dot(sdir[i], normal)).Normalized() / handedness;
+		tangent[i] = (sdir[i] - normal * Vector3::Dot(sdir[i], normal)).Normalized() * handedness;
 	}
 
 	return tangent;
