@@ -15,6 +15,8 @@ namespace Core
 		ObjectManager() = default;
 		DISALLOW_ASSIGN_COPY(ObjectManager);
 
+		friend class Object;
+
 	public:
 		Object&		Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
 		void		Delete(const std::string& name);
@@ -27,6 +29,7 @@ namespace Core
 
 		void		DeleteAll();
 
+	private:
 		GET_ACCESSOR(ObjectIdManager, ObjectIdManager&, _objIdMgr);
 
 	private:

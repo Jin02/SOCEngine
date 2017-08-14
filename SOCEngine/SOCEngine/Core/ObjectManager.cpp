@@ -10,7 +10,7 @@ Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem
 	ObjectId key = _objIdMgr.Acquire();
 	_toIndex.Add(name, key.Literal());
 
-	return _objects.Add(key, Object(key, compoSystem, tfPool));
+	return _objects.Add(key, Object(key, compoSystem, tfPool, this));
 }
 
 void ObjectManager::Delete(const std::string& name)

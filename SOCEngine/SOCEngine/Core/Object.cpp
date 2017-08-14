@@ -1,11 +1,12 @@
 #include "Object.h"
 #include "Transform.h"
 #include <assert.h>
+#include "ObjectManager.h"
 
 using namespace Core;
 
-Object::Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool)
-	: _id(id), _tfPool(tfPool), _compoSystem(compoSystem)
+Object::Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool, ObjectManager* objMgr)
+	: _id(id), _tfPool(tfPool), _compoSystem(compoSystem), _objectMgr(objMgr)
 {
 	_tfPool->Add(id);
 }
@@ -47,3 +48,10 @@ uint Object::GetChildCount() const
 {
 	return _tfPool->Find(_id.Literal())->GetChildCount();
 }
+
+//Object Object::Clone() const
+//{
+//	Object cloneObj = _objectMgr->Add(_name + "_Clone", _compoSystem, _tfPool);
+//
+//	
+//}
