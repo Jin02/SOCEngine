@@ -40,11 +40,11 @@ namespace Rendering
 			static constexpr const char* GetCompileCode() { return "vs"; }
 
 		private:
-			BaseShader			_baseShader;
+			BaseShader								_baseShader;
 			DXSharedResource<ID3D11VertexShader>	_shader;
-			DXSharedResource<ID3D11InputLayout>	_layout;
+			DXSharedResource<ID3D11InputLayout>		_layout;
 
-			std::vector<SemanticInfo> _semanticInfo;
+			std::vector<SemanticInfo>				_semanticInfo;
 		};
 	}
 }

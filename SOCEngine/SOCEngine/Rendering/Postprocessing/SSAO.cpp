@@ -11,7 +11,7 @@ void SSAO::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 {
 	FullScreen::InitParam param;
 	{
-		param.macros = nullptr;
+		param.psMacros = nullptr;
 		param.psName = "SSAO_InFullScreen_PS";
 		param.shaderFileName = "SSAO";
 	}

@@ -13,7 +13,7 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 {
 	FullScreen::InitParam param;
 	{
-		param.macros = nullptr;
+		param.psMacros = nullptr;
 		param.psName = "DoF_InFullScreen_PS";
 		param.shaderFileName = "DepthOfField";
 	}

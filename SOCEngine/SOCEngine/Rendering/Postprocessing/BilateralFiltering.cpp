@@ -15,7 +15,7 @@ void BilateralFiltering::Initialize(Device::DirectX& dx, ShaderManager& shaderMg
 
 	FullScreen::InitParam param;
 	{
-		param.macros			= &macros;
+		param.psMacros			= &macros;
 		param.psName			= "BilateralGauss_InFullScreen_PS";
 		param.shaderFileName	= "BilateralFiltering";
 	}

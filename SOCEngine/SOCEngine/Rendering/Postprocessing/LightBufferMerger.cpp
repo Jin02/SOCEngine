@@ -13,7 +13,7 @@ void LightBufferMerger::Initialize(Device::DirectX& dx, Manager::ShaderManager& 
 {
 	FullScreen::InitParam param;
 	{
-		param.macros			= nullptr;
+		param.psMacros			= nullptr;
 		param.psName			= "PS";
 		param.shaderFileName	= "DeferredMainOffScreen";
 	}

@@ -10,16 +10,13 @@ using namespace Device;
 
 void GaussianBlur::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
-	/*
-	recycle shader?
-	*/
 	// Init Shader
 	{
 		std::vector<ShaderMacro> macros{ ShaderMacro("BLUR_VERTICAL") };
 
 		FullScreen::InitParam param;
 		{
-			param.macros = &macros;
+			param.psMacros = &macros;
 			param.psName = "GuassianBlur_InFullScreen_PS";
 			param.shaderFileName = "GaussianBlur";
 		}

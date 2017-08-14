@@ -19,7 +19,7 @@ void IBLPass::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
 	FullScreen::InitParam param;
 	{
-		param.macros = nullptr;
+		param.psMacros = nullptr;
 		param.psName = "PS";
 		param.shaderFileName = "IBLPass";
 	}
