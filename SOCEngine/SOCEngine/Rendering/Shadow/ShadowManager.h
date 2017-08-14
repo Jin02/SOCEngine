@@ -51,25 +51,23 @@ namespace Rendering
 			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
 			{
 				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
-				GetShadowMapCB<ShadowType::LightType>().PushConstBufferToQueue();
+				GetShadowMapCB<ShadowType>().PushConstBufferToQueue();
 
 				shadow.SetDirty(true);
 				_dirtyGlobalParam = true;
 
 				uint objLiteralId = shadow.GetObjectId().Literal();
-				return GetPool<ShadowType::LightType>().Add(objLiteralId, shadow);
+				return GetPool<ShadowType>().Add(objLiteralId, shadow);
 			}
-			template <class ShadowType>	void Delete(ShadowType& shadow)
-			{
-				Core::ObjectId objId = shadow.GetObjectId();
-			
+			template <class ShadowType>	void Delete(Core::ObjectId objId)
+			{			
 				uint index = GetPool<ShadowType>().GetIndexer().Find(objId.Literal());
 
 				GetPool<ShadowType>().Delete(objId.Literal());
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
 				GetShadowMapCB<ShadowType>().Delete(index);
 
-				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				uint prevDeleteIdx = GetShadowDatas<ShadowType>().reupdateMinIndex;
 				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIdx);
 
 				_dirtyGlobalParam = true;
