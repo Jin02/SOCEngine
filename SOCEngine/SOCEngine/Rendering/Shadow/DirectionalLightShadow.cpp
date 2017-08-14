@@ -1,5 +1,6 @@
 #include "DirectionalLightShadow.h"
 #include "DirectionalLight.h"
+#include "ShadowManager.h"
 #include <assert.h>
 
 using namespace Rendering::Shadow;

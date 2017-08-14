@@ -7,6 +7,11 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class ShadowManager;
+	}
+
 	namespace Shadow
 	{
 		namespace Buffer
@@ -20,6 +25,7 @@ namespace Rendering
 			using ViewProjMatType	= Math::Matrix;
 			using ShadowBufferType	= Buffer::DirectionalLightShadowBuffer;
 			using LightType			= Light::DirectionalLight;
+			using ManagerType		= Rendering::Manager::ShadowManager;
 
 			struct Param
 			{

@@ -7,6 +7,11 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class ShadowManager;
+	}
+
 	namespace Shadow
 	{
 		namespace Buffer
@@ -20,6 +25,7 @@ namespace Rendering
 			using ViewProjMatType	= std::array<Math::Matrix, 6>;
 			using ShadowBufferType	= Buffer::PointLightShadowBuffer;
 			using LightType			= Light::PointLight;
+			using ManagerType		= Rendering::Manager::ShadowManager;
 
 		public:
 			PointLightShadow(BaseShadow base) : _base(base) {}

@@ -7,6 +7,11 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class ShadowManager;
+	}
+
 	namespace Shadow
 	{
 		namespace Buffer
@@ -20,6 +25,7 @@ namespace Rendering
 			using ViewProjMatType	= Math::Matrix;
 			using ShadowBufferType	= Buffer::SpotLightShadowBuffer;
 			using LightType			= Light::SpotLight;
+			using ManagerType		= Rendering::Manager::ShadowManager;
 
 		public:
 			SpotLightShadow(BaseShadow base) : _base(base) {}
