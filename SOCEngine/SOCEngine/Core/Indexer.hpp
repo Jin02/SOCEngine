@@ -9,14 +9,14 @@
 namespace Core
 {
 	template <typename Key, class Map>
-	class IndexBook
+	class Indexer
 	{
 	private:
 		Map	_map;
 
 	public:
-		IndexBook(void) {}
-		~IndexBook(void) {}
+		Indexer(void) {}
+		~Indexer(void) {}
 
 		void Add(const Key& key, uint index)
 		{
@@ -62,8 +62,8 @@ namespace Core
 	};
 
 	template<typename Key>
-	using IndexHashMap = IndexBook<Key, std::unordered_map<Key, uint>>;
+	using IndexHashMap = Indexer<Key, std::unordered_map<Key, uint>>;
 
 	template<typename Key>
-	using IndexMap = IndexBook<Key, std::map<Key, uint>>;
+	using IndexMap = Indexer<Key, std::map<Key, uint>>;
 }
