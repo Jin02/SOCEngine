@@ -14,12 +14,16 @@ namespace Core
 	public:
 		using UniqueId::UniqueId;
 
+		using IndexMap = Core::IndexMap<Core::ObjectId::LiteralType>;
+		using IndexHashMap = Core::IndexHashMap<Core::ObjectId::LiteralType>;
+
 	public:
 		friend class ObjectIdManager;
 		friend class ObjectManager;
-		friend class IndexBook<ObjectId, std::unordered_map<ObjectId::LiteralType, uint>>;
-		friend class IndexBook<ObjectId, std::map<ObjectId::LiteralType, uint>>;
+		friend class Indexer<ObjectId, std::unordered_map<ObjectId::LiteralType, uint>>;
+		friend class Indexer<ObjectId, std::map<ObjectId::LiteralType, uint>>;
 	};
+
 
 	class ObjectIdManager : public UniqueIdManager
 	{

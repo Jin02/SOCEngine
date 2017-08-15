@@ -95,7 +95,7 @@ namespace Rendering
 			{
 				return GetShadowDatas<ShadowType>().pool;
 			}
-			template <class ShadowType>	const auto& GetIndexBook() const
+			template <class ShadowType>	const auto& GetIndexer() const
 			{
 				return GetPool<ShadowType>().GetIndexer();
 			}

@@ -19,7 +19,7 @@ void SpotLightBuffer::PushLight(const SpotLight& light)
 
 void SpotLightBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
 												const Core::TransformPool& tfPool,
-												const LightDatasIndexer& indexer)
+												const Core::ObjectId::IndexHashMap& indexer)
 {
 	for (const auto& light : dirtyTFLights)
 	{

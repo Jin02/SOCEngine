@@ -11,12 +11,17 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			using LightDatasIndexer = Core::IndexHashMap<Core::ObjectId::LiteralType>;
-
 			struct RequiredIndexer
 			{
-				const LightDatasIndexer& shadowIndexBook;
-				const LightDatasIndexer& lightShaftIndexBook;
+				const Core::ObjectId::IndexHashMap& shadowIndexer;
+				const Core::ObjectId::IndexHashMap& lightShaftIndexer;
+				RequiredIndexer(
+					const Core::ObjectId::IndexHashMap& _shadowIndexer,
+					const Core::ObjectId::IndexHashMap& _lightShaftIndexer)
+					: shadowIndexer(_shadowIndexer), lightShaftIndexer(_lightShaftIndexer)
+				{
+
+				}
 			};
 
 			template<typename LightType>
@@ -62,7 +67,7 @@ namespace Rendering
 			public:
 				void UpdateTransformBuffer(	const std::vector<LightType*>& dirtyTFLights,
 											const Core::TransformPool& tfPool,
-											const LightDatasIndexer& indexer)
+											const Core::ObjectId::IndexHashMap& indexer)
 				{
 					for (const auto& light : dirtyTFLights)
 					{
@@ -76,15 +81,15 @@ namespace Rendering
 					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 				}
 
-				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const LightDatasIndexer& indexer)
+				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const Core::ObjectId::IndexHashMap& indexer)
 				{
 					for (auto& light : dirtyParamLights)
 					{
 						Core::ObjectId objId = light->GetObjectId();
 						uint literalId = objId.Literal();
 
-						ushort shadowIdx = indexers.shadowIndexBook.Find(literalId);
-						uint lightShaftIdx = indexers.lightShaftIndexBook.Find(literalId);
+						ushort shadowIdx = indexers.shadowIndexer.Find(literalId);
+						uint lightShaftIdx = indexers.lightShaftIndexer.Find(literalId);
 
 						uint index = indexer.Find(literalId);
 						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
@@ -115,7 +120,6 @@ namespace Rendering
 				GET_ACCESSOR(TransformSRBuffer,				auto&, _transformBuffer.GetShaderResourceBuffer());
 				GET_ACCESSOR(ColorSRBuffer,					auto&, _commonBuffer.GetColorSRBuffer());
 				GET_ACCESSOR(OptionalParamIndexSRBuffer, 	auto&, _commonBuffer.GetOptionalParamIndexSRBuffer());
-				GET_CONST_ACCESSOR(IndexBook,				const auto&, _transformBuffer.IndexBook());
 
 				GET_CONST_ACCESSOR(Size, uint, _transformBuffer.GetSize());
 
