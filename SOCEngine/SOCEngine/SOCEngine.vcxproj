@@ -20,7 +20,7 @@
     <ClInclude Include="Core\ComponentSystem.hpp" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\ObjectId.hpp" />
-    <ClInclude Include="Core\IndexBook.hpp" />
+    <ClInclude Include="Core\Indexer.hpp" />
     <ClInclude Include="Core\IScene.h" />
     <ClInclude Include="Core\Launcher.h" />
     <ClInclude Include="Core\Object.h" />
@@ -278,6 +278,7 @@
   <ItemGroup>
     <ClCompile Include="Common\Color.cpp" />
     <ClCompile Include="Common\Half.cpp" />
+    <ClCompile Include="Core\ComponentSystem.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\Launcher.cpp" />
     <ClCompile Include="Core\Object.cpp" />
@@ -364,6 +365,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
+    <ClCompile Include="Rendering\Mesh\MeshManager.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshUtility.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

@@ -463,9 +463,6 @@
     <ClInclude Include="Core\ArrayVector.hpp">
       <Filter>Core\Structure</Filter>
     </ClInclude>
-    <ClInclude Include="Core\IndexBook.hpp">
-      <Filter>Core\Structure</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Matrix.h">
       <Filter>Math\Matrix</Filter>
     </ClInclude>
@@ -907,6 +904,9 @@
     <ClInclude Include="Core\ObjectId.hpp">
       <Filter>Core\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Indexer.hpp">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1175,6 +1175,12 @@
     </ClCompile>
     <ClCompile Include="Core\Object.cpp">
       <Filter>Core\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ComponentSystem.cpp">
+      <Filter>Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
+      <Filter>Rendering\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
