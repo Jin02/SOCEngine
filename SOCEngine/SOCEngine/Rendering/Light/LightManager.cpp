@@ -4,6 +4,8 @@
 #include "PixelShader.h"
 #include "GeometryShader.h"
 
+#include "ShadowManager.h"
+
 #include <type_traits>
 
 using namespace Core;
@@ -14,6 +16,7 @@ using namespace Rendering::View;
 using namespace Rendering::Manager;
 using namespace Rendering::Light;
 using namespace Rendering::Light::Buffer;
+using namespace Rendering::Shadow;
 
 void LightManager::Initialize(Device::DirectX& dx)
 {
@@ -61,17 +64,29 @@ void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPoo
 }
 
 void LightManager::UpdateParamBuffer(
-	const Light::Buffer::RequiredIndexer& indexer,
-	const Core::TransformPool& transformPool)
+	const ShadowManager& shadowMgr,
+	const Core::ObjectId::IndexHashMap& shaftIndexer)
 {
 	GetBuffer<DirectionalLight>().
-		UpdateLightCommonBuffer(GetDirtyParamLights<DirectionalLight>(), indexer, GetPool<DirectionalLight>().GetIndexer());
+		UpdateLightCommonBuffer(
+			GetDirtyParamLights<DirectionalLight>(),
+			RequiredIndexer(shadowMgr.GetIndexer<DirectionalLightShadow>(), shaftIndexer),
+			GetPool<DirectionalLight>().GetIndexer()
+		);
 
 	GetBuffer<PointLight>().
-		UpdateLightCommonBuffer(GetDirtyParamLights<PointLight>(), indexer, GetPool<PointLight>().GetIndexer());
+		UpdateLightCommonBuffer(
+			GetDirtyParamLights<PointLight>(),
+			RequiredIndexer(shadowMgr.GetIndexer<PointLightShadow>(), shaftIndexer),
+			GetPool<PointLight>().GetIndexer()
+		);
 
 	GetBuffer<SpotLight>().
-		UpdateLightCommonBuffer(GetDirtyParamLights<SpotLight>(), indexer, GetPool<SpotLight>().GetIndexer());
+		UpdateLightCommonBuffer(
+			GetDirtyParamLights<SpotLight>(), 
+			RequiredIndexer(shadowMgr.GetIndexer<SpotLightShadow>(), shaftIndexer),
+			GetPool<SpotLight>().GetIndexer()
+		);
 }
 
 void LightManager::UpdateSRBuffer(Device::DirectX& dx)

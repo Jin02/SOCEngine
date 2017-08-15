@@ -9,6 +9,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
+		class ShadowManager;
 		class LightManager final
 		{
 		public:
@@ -74,8 +75,7 @@ namespace Rendering
 			uint GetPackedLightCount() const;
 
 			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
-			void UpdateParamBuffer(	const Light::Buffer::RequiredIndexer& indexer,
-									const Core::TransformPool& transformPool );
+			void UpdateParamBuffer(const ShadowManager& shadowMgr, const Core::ObjectId::IndexHashMap& shaftIndexer );
 			void UpdateSRBuffer(Device::DirectX& dx);
 
 			void CheckDirtyLights(const Core::TransformPool& transformPool);
