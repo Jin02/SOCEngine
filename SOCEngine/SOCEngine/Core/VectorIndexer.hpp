@@ -4,7 +4,7 @@
 #include <memory>
 #include <utility>
 #include <functional>
-#include "IndexBook.hpp"
+#include "Indexer.hpp"
 
 namespace Core
 {
