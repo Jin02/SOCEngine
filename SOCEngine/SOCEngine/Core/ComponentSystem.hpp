@@ -28,7 +28,14 @@ namespace Core
 		DISALLOW_ASSIGN(ComponentSystem);
 		DISALLOW_COPY_CONSTRUCTOR(ComponentSystem);
 
+	public:
+		void UpdateBuffer(Device::DirectX& dx,
+			Math::Vector3& worldMin, Math::Vector3& worldMax,
+			const Core::TransformPool& transformPool,
+			const Core::ObjectId::IndexHashMap& lightShaftIndexer,
+			const Intersection::BoundBox& sceneBoundBox);
 
+	public:
 #pragma region MultiTypeComponents
 		template <class Component>
 		Component& Add(ObjectId id)
@@ -170,6 +177,10 @@ namespace Core
 #pragma endregion MainCamera
 
 	private:
+		template <class ManagerType> auto& GetManager_Direct()
+		{
+			return std::get<ManagerType>(_componentMgrs);
+		}
 		template <class Component> auto& GetManager()
 		{
 			return std::get<Component::ManagerType>(_componentMgrs);
@@ -184,5 +195,6 @@ namespace Core
 					Rendering::Manager::LightManager,
 					Rendering::Manager::CameraManager,
 					Rendering::Manager::ShadowManager >	_componentMgrs;
+
 	};
 }
