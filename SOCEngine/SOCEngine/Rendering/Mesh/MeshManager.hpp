@@ -10,11 +10,6 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		struct MeshTraits {};
-		struct OpaqueTrait : public MeshTraits {};
-		struct AlphaBlendTrait : public MeshTraits {};
-		struct TransparencyTrait : public MeshTraits {};
-
 		template <typename Trait>
 		class MeshPool : public Core::VectorHashMap<Core::ObjectId::LiteralType, Geometry::Mesh>
 		{
@@ -43,67 +38,34 @@ namespace Rendering
 			{
 				return	GetPool<MeshTraits>().GetIndexer().Has(objId.Literal());
 			}
-			template<typename MeshTraits> auto Find(Core::ObjectId id)
+			template<typename MeshTraits> Geometry::Mesh* Find(Core::ObjectId id)
 			{
 				return GetPool<MeshTraits>().Find(id.Literal());
 			}
 
-			Geometry::Mesh& Acquire(Core::ObjectId objId)
-			{
-				auto mesh = Geometry::Mesh(objId);
-				return GetPool<OpaqueTrait>().Add(objId.Literal(), mesh);
-			}
-			void Delete(Core::ObjectId objId)
-			{
-				GetPool<OpaqueTrait>().Delete(objId.Literal());
-				GetPool<AlphaBlendTrait>().Delete(objId.Literal());
-				GetPool<TransparencyTrait>().Delete(objId.Literal());
-			}
-			bool Has(Core::ObjectId objId) const
-			{
-				return	GetPool<OpaqueTrait>().GetIndexer().Has(objId.Literal())		|
-						GetPool<AlphaBlendTrait>().GetIndexer().Has(objId.Literal())	|
-						GetPool<TransparencyTrait>().GetIndexer().Has(objId.Literal());
-			}
-			auto Find(Core::ObjectId id)
-			{
-				auto opaque = GetPool<OpaqueTrait>().Find(id.Literal());			
-				if(opaque) return opaque;
+			Geometry::Mesh& Acquire(Core::ObjectId objId);
+			void Delete(Core::ObjectId objId);
+			bool Has(Core::ObjectId objId) const;
+			Geometry::Mesh* Find(Core::ObjectId id);
 
-				auto alpha = GetPool<AlphaBlendTrait>().Find(id.Literal());				
-				if(alpha) return alpha;
+			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;
+			void UpdateTransformCB(Device::DirectX& dx, const Core::TransformPool& tfPool);
 
-				auto transparency = GetPool<TransparencyTrait>().Find(id.Literal());
-				return transparency;
-			}
+			void UpdateTraits();
 
-			template <typename Trait>
-			MeshPool<Trait>& GetPool()
+			template <typename Trait> MeshPool<Trait>& GetPool()
 			{
 				return std::get<MeshPool<Trait>>(_tuple);
 			}
-			template <typename Trait>
-			const MeshPool<Trait>& GetPool() const
+			template <typename Trait> const MeshPool<Trait>& GetPool() const
 			{
 				return std::get<MeshPool<Trait>>(_tuple);
-			}
-
-			template <typename FromTrait, typename ToTrait>
-			bool ChangeTrait(Core::ObjectId id)
-			{
-				auto& fromIndexer	= GetPool<FromTrait>().GetIndexer();
-				auto& toIndexer		= GetPool<ToTrait>().GetIndexer();
-
-				assert(fromIndexer.Has(id) == false);
-				assert(toIndexer.Has(id) == false);
-
-				uint idx = fromIndexer.Find(id);
-				GetPool<ToTrait>().Add(id, GetPool<FromTrait>().Get(idx));
-				GetPool<FromTrait>().Delete(id);
 			}
 
 		private:
-			std::tuple<MeshPool<OpaqueTrait>, MeshPool<AlphaBlendTrait>, MeshPool<TransparencyTrait>> _tuple;
+			std::tuple<	MeshPool<Geometry::OpaqueTrait>,
+						MeshPool<Geometry::AlphaBlendTrait>,
+						MeshPool<Geometry::TransparencyTrait>> _tuple;
 		};
 	}
 }

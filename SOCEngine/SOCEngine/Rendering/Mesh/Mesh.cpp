@@ -122,7 +122,7 @@ void Mesh::DeleteMaterialKey(const std::string & key)
 	}
 }
 
-void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform)
+void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const
 {
 	assert(transform.GetDirty());
 

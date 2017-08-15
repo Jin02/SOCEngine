@@ -19,6 +19,19 @@ namespace Rendering
 
 	namespace Geometry
 	{
+		enum class Trait
+		{
+			Opaque,
+			AlphaBlend,
+			Transparency
+		};
+		struct OpaqueTrait		
+		{ constexpr static Trait Trait = Trait::Opaque;			};
+		struct AlphaBlendTrait	
+		{ constexpr static Trait Trait = Trait::AlphaBlend;		};
+		struct TransparencyTrait
+		{ constexpr static Trait Trait = Trait::Transparency;	};
+
 		class Mesh final
 		{
 		public:
@@ -52,20 +65,35 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const CreateFuncArguments& args);
 			void Initialize(const Buffer::VertexBuffer& vertexBuffer, const Buffer::IndexBuffer& indexBuffer);
 
-		public:
-			GET_ACCESSOR(MaterialKeys, const std::vector<std::string>&, _materialKeys);
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
+			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const;
+			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
 
+			template <typename ToTrait>
+			void ChangeTrait()
+			{
+				if (_trait == ToTrait::Trait)
+					return;
+
+				_trait = ToTrait::Trait;
+				_changedTrait = true;
+			}
+			void ClearDirty() { _changedTrait = false; }
+
+		public:
 			void AddMaterialKey(const std::string& key);
 			bool HasMaterialKey(const std::string& key) const;
 			void DeleteMaterialKey(const std::string& key);
 
-			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform);
-			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
+		public:
+			GET_ACCESSOR(MaterialKeys, const std::vector<std::string>&, _materialKeys);
+			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
 
 			GET_SET_ACCESSOR(Radius,		float,							_radius);
 			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
 			GET_ACCESSOR(PrevWorldMat,		const Math::Matrix&,			_prevWorldMat);
+
+			GET_CONST_ACCESSOR(ChangedTrait, bool, _changedTrait);
+			GET_CONST_ACCESSOR(Trait, Trait, _trait);
 
 		private:
 			uint ComputeBufferFlag(
@@ -88,6 +116,9 @@ namespace Rendering
 			TransformCB::ChangeState					_tfChangeState;
 
 			bool										_culled = false;
+
+			Trait										_trait = Trait::Opaque;
+			bool										_changedTrait;
 
 			friend class MeshUtility;
 		};
