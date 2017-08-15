@@ -64,7 +64,7 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Near,				float,			_desc.near);
 			SET_ACCESSOR_DIRTY(Far,					float,			_desc.far);
 			SET_ACCESSOR_DIRTY(ClearColor,			const Color&,	_desc.clearColor);
-			SET_ACCESSOR(ObjectId,					Core::ObjectId,	_objId);
+			GET_SET_ACCESSOR(ObjectId,				Core::ObjectId,	_objId);
 			GET_CONST_ACCESSOR(RenderRect,			const auto&,	_desc.renderRect);
 			GET_CONST_ACCESSOR(ViewProjMatrix,		const auto&,	_viewProjMat);
 			GET_CONST_ACCESSOR(ProjMatrix,			const auto&,	_projMat);

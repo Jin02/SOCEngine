@@ -109,30 +109,40 @@ void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform
 	for (const auto& mesh : meshes)
 		_transparentMeshes.push_back(&mesh);
 
-	Vector3 camPos = transform.GetWorldPosition();
-	auto SortingByDistance = [&transformPool, camPos](const Mesh* left, const Mesh* right) -> bool
+	//camCBData was transposed.
+	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
+								_camCBData.viewMat._32,
+								_camCBData.viewMat._33	);
+
+	//	Vector3 camPos = transform.GetWorldPosition();
+	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
 	{
-		float leftDistance = D3D11_FLOAT32_MAX;
+		auto SortKey = [&viewDir](Vector3 pos) -> float
+		{
+			return Vector3::Dot(pos, viewDir);
+		};
+
+		float leftKey = D3D11_FLOAT32_MAX;
 		{
 			auto id = left->GetObjectId();
 			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
 			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
 			Vector3 leftPos = transformPool.Get(findIdx).GetWorldPosition();
-			leftDistance = Vector3::Distance(leftPos, camPos);
+			leftKey = SortKey(leftPos);
 		}
 
-		float rightDistance = D3D11_FLOAT32_MAX;
+		float rightKey = D3D11_FLOAT32_MAX;
 		{
 			auto id = right->GetObjectId();
 			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
 			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
 			Vector3 rightPos = transformPool.Get(findIdx).GetWorldPosition();
-			rightDistance = Vector3::Distance(rightPos, camPos);
+			rightKey = SortKey(rightPos);
 		}
 
-		return leftDistance < rightDistance;
+		return leftKey < rightKey;
 	};
 
 	std::sort(_transparentMeshes.begin(), _transparentMeshes.end(), SortingByDistance);
