@@ -5,6 +5,15 @@ using namespace Rendering;
 using namespace Rendering::Material;
 using namespace Rendering::Manager;
 
+void MaterialManager::Initialize(Device::DirectX& dx)
+{
+	PhysicallyBasedMaterial materal("@Default");
+	materal.Initialize(dx);
+	materal.SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	Add<PhysicallyBasedMaterial>("@Default", materal);
+}
+
 void MaterialManager::UpdateConstBuffer(DirectX & dx)
 {
 	auto CheckDirty = [](auto& materialDatas)

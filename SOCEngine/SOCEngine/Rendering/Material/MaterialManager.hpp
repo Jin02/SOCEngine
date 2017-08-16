@@ -17,6 +17,7 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MaterialManager);
 
 		public:
+			void Initialize(Device::DirectX& dx);
 			void UpdateConstBuffer(Device::DirectX& dx);
 
 		public:
