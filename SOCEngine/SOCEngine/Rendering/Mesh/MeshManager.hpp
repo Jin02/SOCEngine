@@ -48,10 +48,12 @@ namespace Rendering
 			bool Has(Core::ObjectId objId) const;
 			Geometry::Mesh* Find(Core::ObjectId id);
 
+			void CheckDirty(const Core::TransformPool& tfPool);
 			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::TransformPool& tfPool);
 
 			void UpdateTraits();
+			void ClearDirty() { _dirtyMeshes.clear(); }
 
 			template <typename Trait> MeshPool<Trait>& GetPool()
 			{
@@ -62,10 +64,14 @@ namespace Rendering
 				return std::get<MeshPool<Trait>>(_tuple);
 			}
 
+			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
+
 		private:
 			std::tuple<	MeshPool<Geometry::OpaqueTrait>,
 						MeshPool<Geometry::AlphaBlendTrait>,
 						MeshPool<Geometry::TransparencyTrait>> _tuple;
+
+			std::vector<Geometry::Mesh*> _dirtyMeshes;
 		};
 	}
 }

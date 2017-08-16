@@ -39,6 +39,27 @@ Mesh* MeshManager::Find(Core::ObjectId id)
 	return transparency;
 }
 
+void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
+{
+	auto& dirty = _dirtyMeshes;
+	auto Check = [&dirty, &tfPool](auto& pool)
+	{
+		uint size = pool.GetSize();
+		for (uint i=0; i<size; ++i)
+		{
+			auto& mesh = pool.Get(i);
+			auto tf = tfPool.Find(mesh.GetObjectId().Literal()); assert(tf);
+
+			if (tf->GetDirty())
+				dirty.push_back(&mesh);
+		}
+	};
+
+	Check(GetPool<OpaqueTrait>());
+	Check(GetPool<AlphaBlendTrait>());
+	Check(GetPool<TransparencyTrait>());
+}
+
 void MeshManager::ComputeWorldSize(
 	Vector3& refWorldMin, Vector3& refWorldMax,
 	const TransformPool& tfPool) const
@@ -47,36 +68,30 @@ void MeshManager::ComputeWorldSize(
 	{
 		for (auto& iter : vector)
 		{
-			ObjectId id = iter.GetObjectId();
+			ObjectId id = iter->GetObjectId();
 
 			const Transform* tf = tfPool.Find(id.Literal()); assert(tf);
-			iter.CalcWorldSize(refWorldMin, refWorldMax, *tf);
+			iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
 		}
 	};
 
-	Compute(GetPool<OpaqueTrait>().GetVector());
-	Compute(GetPool<AlphaBlendTrait>().GetVector());
-	Compute(GetPool<TransparencyTrait>().GetVector());
+	Compute(_dirtyMeshes);
 }
 
 void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPool)
 {
-	auto Update = [&dx, &tfPool](auto& pool)
+	auto Update = [&dx, &tfPool](auto& vector)
 	{		
-		uint size = pool.GetSize();
-		for (uint i=0; i<size; ++i)
+		for (auto& mesh : vector)
 		{
-			auto& mesh = pool.Get(i);
-			uint id = mesh.GetObjectId().Literal();
+			uint id = mesh->GetObjectId().Literal();
 			
 			const Transform* tf = tfPool.Find(id); assert(tf);
-			mesh.UpdateTransformCB(dx, *tf);
+			mesh->UpdateTransformCB(dx, *tf);
 		}
 	};
 
-	Update(GetPool<OpaqueTrait>());
-	Update(GetPool<AlphaBlendTrait>());
-	Update(GetPool<TransparencyTrait>());
+	Update(_dirtyMeshes);
 }
 
 void MeshManager::UpdateTraits()
