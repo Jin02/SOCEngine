@@ -16,34 +16,69 @@ namespace Rendering
 			MaterialManager() = default;
 			DISALLOW_ASSIGN_COPY(MaterialManager);
 
-			template <typename MaterialType>
-			void Add(const std::string& key, MaterialType& material)
+		public:
+			void UpdateConstBuffer(Device::DirectX& dx);
+
+		public:
+			template <typename MaterialType> MaterialType& Add(const std::string& key, MaterialType& material)
 			{
-				std::get<MaterialPool<MaterialType>>(_materials).Add(key, material);
+				return GetPool<MaterialType>().Add(key, material);
 			}
-			template <typename MaterialType>
-			void Delete(const std::string& key)
+			template <typename MaterialType> void Delete(const std::string& key)
 			{
-				std::get<MaterialPool<MaterialType>>(_materials).Delete(key);
+				GetPool<MaterialType>().Delete(key);
 			}
-			template <typename MaterialType>
-			auto Find(const std::string& key)
+			template <typename MaterialType> auto Find(const std::string& key)
 			{
-				return std::get<MaterialPool<MaterialType>>(_materials).Find(key);
+				return GetPool<MaterialType>().Find(key);
+			}
+			template <typename MaterialType> bool Has(const std::string& key) const
+			{
+				return GetPool<MaterialType>().GetIndexer().Has(key);
 			}
 
-			template <typename MaterialType>
-			const std::vector<MaterialType>& GetMaterials() const
+		public:
+			template <typename MaterialType> auto& GetPool()
 			{
-				return std::get<MaterialPool<MaterialType>>(_materials).GetVector();
+				return GetMaterialDatas<MaterialType>().pool;
+			}
+			template <typename MaterialType> const auto& GetPool() const
+			{
+				return GetMaterialDatas<MaterialType>().pool;
+			}
+
+		private:
+			template <typename MaterialType> auto& GetDirty()
+			{
+				return GetMaterialDatas<MaterialType>().dirty;
+			}
+			template <typename MaterialType> const auto& GetDirty() const
+			{
+				return GetMaterialDatas<MaterialType>().dirty;
+			}
+
+			template <typename MaterialType> auto& GetMaterialDatas()
+			{
+				return std::get<MaterialDatas<MaterialType>>(_materials);
+			}
+			template <typename MaterialType> const auto& GetMaterialDatas() const
+			{
+				return std::get<MaterialDatas<MaterialType>>(_materials);
 			}
 
 		private:
 			template <class MaterialType>
 			using MaterialPool = Core::VectorHashMap<std::string, MaterialType>;
 
-			std::tuple<	MaterialPool<Material::PhysicallyBasedMaterial>,
-						MaterialPool<Material::SkyBoxMaterial> >	_materials;
+			template <class MaterialType>
+			struct MaterialDatas
+			{
+				MaterialPool<MaterialType> pool;
+				std::vector<MaterialType*> dirty;
+			};
+
+			std::tuple<	MaterialDatas<Material::PhysicallyBasedMaterial>,
+						MaterialDatas<Material::SkyBoxMaterial> >	_materials;
 		};
 	}
 }
