@@ -70,6 +70,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(ProjMatrix,			const auto&,	_projMat);
 			GET_ACCESSOR(CameraCB,					auto&,			_camCB);
 			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
+			GET_CONST_ACCESSOR(Frustum,				const auto&,	_frustum);
 
 		private:
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;
