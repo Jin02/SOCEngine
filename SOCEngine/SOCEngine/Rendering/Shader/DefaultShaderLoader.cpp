@@ -1,6 +1,8 @@
 #include "DefaultShaderLoader.h"
 #include "EngineShaderFactory.hpp"
+#include "Utility.hpp"
 
+using namespace Utility;
 using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
@@ -65,7 +67,7 @@ DefaultShaderLoader::LoadDefaultSahder(
 	return Add(key, shader);
 }
 
-void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler)
+void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
 	std::vector<ShaderMacro> macros;
 	{
@@ -164,8 +166,8 @@ void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
 uint DefaultShaderLoader::MakeKey(	uint bufferFlag,
 									DefaultRenderType renderType	)
 {
-	uint bitOffset = 0; //컴파일 과정에서 상수로 치환된다.
-	for (;((1 << bitOffset) & static_cast<uint>(BufferFlag::MAX)) == 0; ++bitOffset);
+	constexpr uint bitOffset = 
+		Compute_2_Exp<static_cast<uint>(BufferFlag::MAX)>::value;
 
 	uint key = (static_cast<uint>(renderType) << bitOffset) | bufferFlag;
 	return key;

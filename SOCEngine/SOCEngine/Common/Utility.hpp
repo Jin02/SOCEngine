@@ -70,4 +70,24 @@ namespace Utility
 			return ParseNameAndFormat( &path.c_str()[fileNameStartPos+1] );
 		}
 	};
+
+	template <unsigned int CheckValue, unsigned int searchPos = sizeof(int) * 8 - 1>
+	class Compute_2_Exp
+	{
+	public:
+		template <int n, int pn = searchPos + 1>
+		struct CheckBit
+		{
+			constexpr static unsigned int value =
+				CheckBit<uint(((1 << n) & CheckValue) == 0) * n - 1, n>::value;
+		};
+
+		template <int pn>
+		struct CheckBit<-1, pn>
+		{
+			constexpr static unsigned int value = pn;
+		};
+
+		constexpr static unsigned int value = CheckBit<searchPos>::value;
+	};
 }

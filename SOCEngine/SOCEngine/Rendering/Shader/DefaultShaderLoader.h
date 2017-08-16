@@ -25,7 +25,7 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler);
+			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr);
 			void Destroy();
 
 			Shaders& Add(uint key, const Shader::ShaderGroup& shaders);
