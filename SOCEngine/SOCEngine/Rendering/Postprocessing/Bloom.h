@@ -2,7 +2,7 @@
 
 #include "FullScreen.h"
 #include "GaussianBlur.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 
 #include "MainRenderer.h"
 #include "MainCamera.h"

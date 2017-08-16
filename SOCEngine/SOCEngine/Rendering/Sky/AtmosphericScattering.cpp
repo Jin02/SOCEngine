@@ -236,7 +236,7 @@ void AtmosphericScattering::_Render(const Device::DirectX* dx,
 
 void AtmosphericScattering::Render(const Device::DirectX* dx, const CameraForm* camera,
 						   const Rendering::Texture::RenderTexture* out,
-						   const Rendering::Texture::DepthBuffer* depthBuffer,
+						   const Rendering::Texture::DepthMap* depthMap,
 						   const LightManager* lightMgr)
 {
 	const MeshCamera* meshCam = dynamic_cast<const MeshCamera*>(camera);
@@ -247,7 +247,7 @@ void AtmosphericScattering::Render(const Device::DirectX* dx, const CameraForm* 
 
 void AtmosphericScattering::Render(const Device::DirectX* dx, const ReflectionProbe* probe,
 						   const Rendering::Texture::TextureCube* out,
-						   const Rendering::Texture::DepthBufferCube* depthBuffer,
+						   const Rendering::Texture::DepthBufferCube* depthMap,
 						   const LightManager* lightMgr)
 {
 	// null

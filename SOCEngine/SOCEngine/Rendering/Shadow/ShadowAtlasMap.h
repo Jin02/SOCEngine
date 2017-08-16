@@ -1,16 +1,16 @@
 #pragma once
 
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 
 namespace Rendering
 {
 	namespace Shadow
 	{
 		template <class ShadowType>
-		class ShadowAtlasMap : public Texture::DepthBuffer
+		class ShadowAtlasMap : public Texture::DepthMap
 		{
 		public:
-			using Parent = Texture::DepthBuffer;
+			using Parent = Texture::DepthMap;
 			using Parent::Parent;
 
 			void Initialize(Device::DirectX& dx, const Size<uint>& size,

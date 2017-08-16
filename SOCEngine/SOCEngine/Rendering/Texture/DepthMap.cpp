@@ -1,9 +1,9 @@
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-void DepthBuffer::Initialize(Device::DirectX& dx,
+void DepthMap::Initialize(Device::DirectX& dx,
 	const Size<uint>& size, bool useShaderResource, uint sampleCount)
 {
 	unsigned int bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
@@ -24,13 +24,13 @@ void DepthBuffer::Initialize(Device::DirectX& dx,
 	_depthStencilView = dx.CreateDepthStencilView(_tex2D.GetTexture().GetRaw(), desc);
 }
 
-inline void DepthBuffer::Destroy()
+inline void DepthMap::Destroy()
 {
 	_depthStencilView.Destroy();
 	_tex2D.Destroy();
 }
 
-void DepthBuffer::Clear(Device::DirectX& dx, float depth, unsigned char stencil)
+void DepthMap::Clear(Device::DirectX& dx, float depth, unsigned char stencil)
 {
 	dx.GetContext()->ClearDepthStencilView(_depthStencilView.GetRaw(), D3D11_CLEAR_DEPTH, depth, stencil);
 }

@@ -4,7 +4,7 @@
 #include "Common.h"
 
 #include "RenderTexture.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 
 #include "ConstBuffer.h"
 
@@ -37,8 +37,8 @@ namespace Rendering
 			Texture::RenderTexture		normal_roughness;
 			Texture::RenderTexture		velocity_metallic_specularity;
 			Texture::RenderTexture		emission_materialFlag;
-			Texture::DepthBuffer		opaqueDepthBuffer;
-			Texture::DepthBuffer		blendedDepthBuffer;
+			Texture::DepthMap		opaqueDepthBuffer;
+			Texture::DepthMap		blendedDepthBuffer;
 		};
 	}
 }

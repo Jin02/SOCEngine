@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FullScreen.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 #include "ConstBuffer.h"
 
 namespace Rendering
@@ -23,7 +23,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
 				const Size<uint>& size, DXGI_FORMAT format);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT,
-				Texture::DepthBuffer& depthBuffer, Texture::RenderTexture& inputColorMap,
+				Texture::DepthMap& depthMap, Texture::RenderTexture& inputColorMap,
 				Texture::RenderTexture& tempMap);
 			void UpdateParamCB(Device::DirectX& dx, const ParamCBData& data);
 

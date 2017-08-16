@@ -214,9 +214,6 @@
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{8332ca01-10a2-46da-a4ce-1e2222a48f40}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\DepthBuffer">
-      <UniqueIdentifier>{edb91c14-7d56-48db-af40-4e07373d0bd0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Texture\Cube">
       <UniqueIdentifier>{773d7a21-aecf-4481-8d80-0b16d90e991e}</UniqueIdentifier>
     </Filter>
@@ -418,7 +415,10 @@
     <Filter Include="Rendering\Postprocessing\IBL">
       <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Renderer\Renderer">
+    <Filter Include="Rendering\Texture\DepthMap">
+      <UniqueIdentifier>{edb91c14-7d56-48db-af40-4e07373d0bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Sky">
       <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -646,9 +646,6 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\DepthBuffer.h">
-      <Filter>Rendering\Texture\DepthBuffer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Texture\DepthBufferCube.h">
       <Filter>Rendering\Texture\Cube</Filter>
     </ClInclude>
@@ -701,7 +698,7 @@
       <Filter>Rendering\Sky\Box</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyRenderer.h">
-      <Filter>Rendering\Renderer\Renderer</Filter>
+      <Filter>Rendering\Renderer\Sky</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
@@ -910,6 +907,12 @@
     <ClInclude Include="Core\ObjectID.hpp">
       <Filter>Core\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthMap.h">
+      <Filter>Rendering\Texture\DepthMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\MeshRenderer.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1005,9 +1008,6 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp">
-      <Filter>Rendering\Texture\DepthBuffer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp">
       <Filter>Rendering\Texture\Cube</Filter>
     </ClCompile>
@@ -1045,7 +1045,7 @@
       <Filter>Rendering\Sky\Box</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
-      <Filter>Rendering\Renderer\Renderer</Filter>
+      <Filter>Rendering\Renderer\Sky</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
       <Filter>Rendering\Sky\Material</Filter>
@@ -1164,9 +1164,6 @@
     <ClCompile Include="Rendering\Renderer\ShadowRenderer.cpp">
       <Filter>Rendering\Renderer\Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shadow\ShadowAtlasMap.cpp">
-      <Filter>Rendering\Shadow\AtlasMap</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
       <Filter>Rendering\GI\Injection\Utility</Filter>
     </ClCompile>
@@ -1187,6 +1184,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthMap.cpp">
+      <Filter>Rendering\Texture\DepthMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp">
+      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 
 #include "ShadowManager.h"
 #include "Rect.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 #include "ShadowAtlasMap.h"
 
 namespace Rendering
@@ -51,9 +51,9 @@ namespace Rendering
 					if (useDestroy)
 						GetShadowAtlasMap<ShadowType>().Destroy();
 
-					auto MakeMap = [&dx, &param](auto& depthBuffer, const Size<uint>& mapSize)
+					auto MakeMap = [&dx, &param](auto& depthMap, const Size<uint>& mapSize)
 					{
-						depthBuffer.Initialize(dx, mapSize, param.mapResolution, param.capacity);
+						depthMap.Initialize(dx, mapSize, param.mapResolution, param.capacity);
 					};
 
 					Size<uint> mapSize = ComputeShadowAtlasMapSize<ShadowType>(param);

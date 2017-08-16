@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderTexture.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 #include "OnlyLightCulling.h"
 #include "ConstBuffer.h"
 #include "MainCamera.h"

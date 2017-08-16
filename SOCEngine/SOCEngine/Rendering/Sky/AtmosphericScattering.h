@@ -90,9 +90,9 @@ namespace Rendering
 
 		public:
 			virtual void Render(const Device::DirectX* dx, const Camera::CameraForm* camera,
-								const Texture::RenderTexture* out, const Texture::DepthBuffer* depthBuffer, const Manager::LightManager* lightMgr);
+								const Texture::RenderTexture* out, const Texture::DepthMap* depthMap, const Manager::LightManager* lightMgr);
 			virtual void Render(const Device::DirectX* dx, const Camera::ReflectionProbe* probe,
-								const Texture::TextureCube* out, const Texture::DepthBufferCube* depthBuffer, const Manager::LightManager* lightMgr);
+								const Texture::TextureCube* out, const Texture::DepthBufferCube* depthMap, const Manager::LightManager* lightMgr);
 
 		public:
 			void Initialize(const Device::DirectX* dx);

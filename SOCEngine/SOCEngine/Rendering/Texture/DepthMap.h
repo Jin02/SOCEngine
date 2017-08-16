@@ -7,10 +7,10 @@ namespace Rendering
 {
 	namespace Texture
 	{
-		class DepthBuffer
+		class DepthMap
 		{
 		public:
-			DepthBuffer() = default;
+			DepthMap() = default;
 
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, bool useShaderResource, uint sampleCount = 0);

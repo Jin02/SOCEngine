@@ -7,7 +7,7 @@
 #include "MeshManager.hpp"
 #include "Frustum.h"
 #include "RenderTexture.h"
-#include "DepthBuffer.h"
+#include "DepthMap.h"
 #include "ObjectID.hpp"
 
 #undef near

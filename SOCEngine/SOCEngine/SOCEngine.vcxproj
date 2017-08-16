@@ -170,6 +170,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\MeshRenderer.h" />
     <ClInclude Include="Rendering\Renderer\ShadowRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
@@ -234,7 +235,7 @@
     <ClInclude Include="Rendering\Sky\SkyRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\DepthBuffer.h" />
+    <ClInclude Include="Rendering\Texture\DepthMap.h" />
     <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
@@ -392,6 +393,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\ShadowRenderer.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
@@ -411,7 +413,6 @@
     <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Shadow\ShadowAtlasMap.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -429,7 +430,7 @@
     <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\DepthBuffer.cpp" />
+    <ClCompile Include="Rendering\Texture\DepthMap.cpp" />
     <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
