@@ -31,9 +31,9 @@ void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 		_tempTextures.minSizeMap.Initialize(dx, _tempTextures.downScaledTextures.back().GetSize(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 	}
 
-	_depthOfField.Initialize(dx, shaderMgr);
-	_bloom.Initialize(dx, shaderMgr);
-	_ssao.Initialize(dx, shaderMgr);
+	GetPostproessing<DepthOfField>().Initialize(dx, shaderMgr);
+	GetPostproessing<Bloom>().Initialize(dx, shaderMgr);
+	GetPostproessing<SSAO>().Initialize(dx, shaderMgr);
 	_copy.Initialize(dx, shaderMgr);
 }
 
@@ -51,20 +51,27 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	dx.ClearDeviceContext();
 
-	_bloom.RenderThresholdMap(dx, mainScene, _copy, _tempTextures, mainRenderer);
+	GetPostproessing<Bloom>().RenderThresholdMap(dx, mainScene, _copy, _tempTextures, mainRenderer);
 
 	if(_useSSAO)
 	{
-		_ssao.Render(dx, back, front, mainRenderer);
+		GetPostproessing<SSAO>().Render(dx, back, front, mainRenderer);
 		std::swap(front, back);
 	}
 
 	if(_useDoF)
 	{
-		_depthOfField.Render(dx, back, front, mains, _copy, _tempTextures);
+		GetPostproessing<DepthOfField>().Render(dx, back, front, mains, _copy, _tempTextures);
 		std::swap(front, back);
 	}
 
-	_bloom.RenderBloom(dx, back, front, mainRenderer);
+	GetPostproessing<Bloom>().RenderBloom(dx, back, front, mainRenderer);
 	std::swap(front, back);
+}
+
+void PostProcessPipeline::UpdateCB(DirectX & dx)
+{
+	GetPostproessing<DepthOfField>().UpdateParamCB(dx);
+	GetPostproessing<Bloom>().UpdateParamCB(dx);
+	GetPostproessing<SSAO>().UpdateParamCB(dx);
 }
