@@ -67,7 +67,10 @@ namespace Rendering
 			{
 				return GetIDIndexer<MaterialType>().Has(id);
 			}
-
+			template <typename MaterialType> MaterialID FindID(const std::string& key)
+			{
+				return MaterialID(GetIDIndexer<MaterialType>().Find(key));
+			}
 		public:
 			template <typename MaterialType> auto& GetPool()
 			{
