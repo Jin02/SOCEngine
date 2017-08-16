@@ -27,9 +27,12 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 	_blurredColorMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
-void DepthOfField::UpdateParam(Device::DirectX& dx, const ParamCBData& param)
+void DepthOfField::UpdateParamCB(Device::DirectX& dx)
 {
-	_paramCB.UpdateSubResource(dx, param);
+	if(_dirty == false) return;
+
+	_paramCB.UpdateSubResource(dx, _paramData);
+	_dirty = false;
 }
 
 void DepthOfField::Render(	DirectX& dx, RenderTexture& outRT,

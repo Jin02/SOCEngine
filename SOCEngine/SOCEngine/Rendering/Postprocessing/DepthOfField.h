@@ -26,10 +26,14 @@ namespace Rendering
 			};
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void UpdateParam(Device::DirectX& dx, const ParamCBData& param);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, 
 				Texture::RenderTexture& inColorMap,
 				MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures);
+
+			void UpdateParamCB(Device::DirectX& dx);
+
+			SET_ACCESSOR_DIRTY(Param, const ParamCBData&, _paramData);
+			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);
 
 		private:
 			FullScreen									_screen;
@@ -37,6 +41,8 @@ namespace Rendering
 
 			Texture::RenderTexture						_blurredColorMap;
 			Buffer::ExplicitConstBuffer<ParamCBData>	_paramCB;
+			ParamCBData									_paramData;
+			bool										_dirty = true;
 		};
 	}
 }

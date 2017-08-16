@@ -28,9 +28,10 @@ void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 	_bloomThresholdMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
-void Bloom::UpdateParam(Device::DirectX& dx, const ParamCBData& param)
+void Bloom::UpdateParamCB(Device::DirectX& dx)
 {
-	_paramCB.UpdateSubResource(dx, param);
+	// dt때문에 계속 업데이트를 할 수 밖에 없다.
+	_paramCB.UpdateSubResource(dx, _paramData);
 }
 
 void Bloom::RenderThresholdMap(DirectX& dx, 

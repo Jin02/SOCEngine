@@ -29,13 +29,15 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void UpdateParam(Device::DirectX& dx, const ParamCBData& param);
+			void UpdateParamCB(Device::DirectX& dx);
 
 			void RenderThresholdMap(
 				Device::DirectX& dx, Texture::RenderTexture& inColorMap, Copy& copy,
 				TempTextures& tempTextures, Renderer::MainRenderer& renderer);
 
 			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, Texture::RenderTexture& inputColorMap, Renderer::MainRenderer& mainRenderer);
+			GET_SET_ACCESSOR(Param, const ParamCBData&, _paramData);
+			SET_ACCESSOR(ElapsedTime, float, _paramData.dt);
 
 		private:
 			FullScreen									_eyeAdaptation;
@@ -50,6 +52,8 @@ namespace Rendering
 			Texture::RenderTexture						_bloomThresholdMap;
 
 			bool										_currentAdaptedLuminanceIndx = false;
+			
+			ParamCBData									_paramData;
 		};
 	}
 }

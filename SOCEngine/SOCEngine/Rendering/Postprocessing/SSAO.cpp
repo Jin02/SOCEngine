@@ -21,9 +21,12 @@ void SSAO::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 }
 
-void SSAO::UpdateParam(Device::DirectX& dx, const ParamCBData& param)
+void SSAO::UpdateParamCB(Device::DirectX& dx)
 {
-	_paramCB.UpdateSubResource(dx, param);
+	if(_dirty == false) return;
+
+	_paramCB.UpdateSubResource(dx, _paramData);
+	_dirty = false;
 }
 
 void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, RenderTexture& inColorMap, MainRenderer& mainRenderer)
