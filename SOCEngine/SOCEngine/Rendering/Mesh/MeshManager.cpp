@@ -22,9 +22,9 @@ void MeshManager::Delete(Core::ObjectID objID)
 
 bool MeshManager::Has(Core::ObjectID objID) const
 {
-	return	GetPool<OpaqueTrait>().GetIndexer().Has(objID.Literal()) |
-		GetPool<AlphaBlendTrait>().GetIndexer().Has(objID.Literal()) |
-		GetPool<TransparencyTrait>().GetIndexer().Has(objID.Literal());
+	return	GetPool<OpaqueTrait>().Has(objID.Literal()) |
+		GetPool<AlphaBlendTrait>().Has(objID.Literal()) |
+		GetPool<TransparencyTrait>().Has(objID.Literal());
 }
 
 Mesh* MeshManager::Find(Core::ObjectID id)

@@ -40,7 +40,7 @@ namespace Rendering
 			template <class LightType>
 			bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<LightType>().GetIndexer().Has(objID.Literal());
+				return GetPool<LightType>().Has(objID.Literal());
 			}
 
 			template <class LightType>

@@ -82,7 +82,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 void PhysicallyBasedMaterial::RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex)
 {
 	auto& textureBook = GetTextureBook();
-	if (textureBook.GetIndexer().Has(key) == false)
+	if (textureBook.Has(key) == false)
 	{
 		BindTextured2D bindTex2D;
 		{

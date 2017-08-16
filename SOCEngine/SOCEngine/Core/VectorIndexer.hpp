@@ -58,6 +58,11 @@ namespace Core
 			return const_cast<Object*>(static_cast<const VectorIndexer<Key, Object, IndexerType>*>(this)->Find(key));
 		}
 
+		bool Has(const Key& key) const
+		{
+			return _indexer.Has(key);
+		}
+
 		void Delete(const Key& key)
 		{
 			uint findIDx = _indexer.Find(key);

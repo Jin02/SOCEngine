@@ -74,7 +74,7 @@ namespace Rendering
 			}
 			template <class ShadowType>	bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<ShadowType>().GetIndexer().Has(objID.Literal());
+				return GetPool<ShadowType>().Has(objID.Literal());
 			}
 			template <class ShadowType>	auto Find(Core::ObjectID id)
 			{

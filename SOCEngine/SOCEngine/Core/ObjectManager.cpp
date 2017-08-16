@@ -57,7 +57,7 @@ void Core::ObjectManager::Delete(ObjectID id)
 
 bool Core::ObjectManager::Has(ObjectID id) const
 {
-	return _objects.GetIndexer().Has(id);
+	return _objects.Has(id);
 }
 
 Object * Core::ObjectManager::Find(ObjectID id)
@@ -82,7 +82,7 @@ void ObjectManager::CheckRootObjectIDs(const TransformPool& tfPool)
 
 		if (parentID == ObjectID::Undefined())
 		{
-			if (_rootObjectIDs.GetIndexer().Has(newID) == false)
+			if (_rootObjectIDs.Has(newID) == false)
 				_rootObjectIDs.Add(newID, newID);
 		}
 	}

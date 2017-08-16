@@ -27,7 +27,7 @@ namespace Rendering
 
 			bool Has(const std::string& file, const std::string& key) const
 			{
-				return _buffers.GetIndexer().Has(file + ":" + key);
+				return _buffers.Has(file + ":" + key);
 			}
 
 			void DeleteBuffer(const std::string& file, const std::string& key)

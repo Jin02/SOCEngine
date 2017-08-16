@@ -50,7 +50,7 @@ namespace Rendering
 			}
 			template <class CameraType> bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<CameraType>().GetIndexer().Has(objID.Literal());
+				return GetPool<CameraType>().Has(objID.Literal());
 			}
 			template <class CameraType> auto Find(Core::ObjectID id)
 			{

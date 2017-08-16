@@ -36,7 +36,7 @@ namespace Rendering
 			}
 			template<typename MeshTraits> bool Has(Core::ObjectID objID) const
 			{
-				return	GetPool<MeshTraits>().GetIndexer().Has(objID.Literal());
+				return	GetPool<MeshTraits>().Has(objID.Literal());
 			}
 			template<typename MeshTraits> Geometry::Mesh* Find(Core::ObjectID id)
 			{

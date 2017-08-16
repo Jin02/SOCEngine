@@ -34,7 +34,7 @@ namespace Rendering
 			}
 			template <typename MaterialType> bool Has(const std::string& key) const
 			{
-				return GetPool<MaterialType>().GetIndexer().Has(key);
+				return GetPool<MaterialType>().Has(key);
 			}
 
 		public:
