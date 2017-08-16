@@ -6,40 +6,15 @@
 
 namespace Rendering
 {
-	class MaterialID : public Core::UniqueID
-	{
-	private:
-		operator Core::UniqueID::LiteralType() const { return Literal(); }
-
-	public:
-		using Core::UniqueID::UniqueID;
-
-		using IndexMap = Core::IndexMap<MaterialID::LiteralType>;
-		using IndexHashMap = Core::IndexHashMap<MaterialID::LiteralType>;
-
-	public:
-		friend class MaterialIDManager;
-		friend class Core::Indexer<MaterialID, std::unordered_map<MaterialID::LiteralType, uint>>;
-		friend class Core::Indexer<MaterialID, std::map<MaterialID::LiteralType, uint>>;
-	};
-
-	class MaterialIDManager : public Core::UniqueIDManager
+	class MaterialID : public Core::UniqueID<MaterialID>
 	{
 	public:
-		MaterialID Acquire()
-		{
-			uint literalID = Core::UniqueIDManager::Acquire();
-			return MaterialID(literalID);
-		}
+		using Parent = Core::UniqueID<MaterialID>;
+		using Parent::UniqueID;
+		using Parent::Literal;
 
-		bool Has(MaterialID id)
-		{
-			return UniqueIDManager::Has(id.Literal());
-		}
-
-		void Delete(MaterialID id)
-		{
-			UniqueIDManager::Delete(id.Literal());
-		}
+		friend class Core::IDManagerForm<MaterialID>;
 	};
+
+	using MaterialIDManager = Core::IDManagerForm<MaterialID>;
 }
