@@ -114,7 +114,7 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 							GetBuffer<SpotLightShadow>().GetDirty();
 }
 
-void ShadowManager::ClearDirtyShadows()
+void ShadowManager::ClearDirty()
 {	
 	auto Clear = [](auto& datas)
 	{

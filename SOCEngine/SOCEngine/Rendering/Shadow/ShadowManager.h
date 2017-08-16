@@ -36,7 +36,7 @@ namespace Rendering
 			void UpdateGlobalCB(Device::DirectX& dx);
 
 			void CheckDirtyShadows(const LightManager& lightMgr, const Core::TransformPool& tfPool);			
-			void ClearDirtyShadows();
+			void ClearDirty();
 
 			void UpdateBuffer(const LightManager& lightMgr, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
 			void UpdateSRBuffer(Device::DirectX& dx);
