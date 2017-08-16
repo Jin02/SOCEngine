@@ -95,6 +95,12 @@ namespace Rendering
 			GET_CONST_ACCESSOR(ChangedTrait, bool, _changedTrait);
 			GET_CONST_ACCESSOR(Trait, Trait, _trait);
 
+			GET_ACCESSOR(VertexBuffer, auto&, _vertexBuffer);
+			GET_ACCESSOR(IndexBuffer, auto&, _indexBuffer);
+			GET_ACCESSOR(TransformCB, auto&, _transformCB);
+
+			GET_CONST_ACCESSOR(BufferFlag, uint, _bufferFlag);
+
 		private:
 			uint ComputeBufferFlag(
 				const std::vector<Shader::VertexShader::SemanticInfo>& semantics,
@@ -118,7 +124,7 @@ namespace Rendering
 			bool										_culled = false;
 
 			Trait										_trait = Trait::Opaque;
-			bool										_changedTrait;
+			bool										_changedTrait = true;
 
 			friend class MeshUtility;
 		};
