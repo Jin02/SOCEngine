@@ -7,7 +7,7 @@ using namespace Rendering::Manager;
 using namespace Core;
 using namespace Math;
 
-void Geometry::MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, TransformPool& transformPool)
+void MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, const TransformPool& transformPool)
 {
 	auto Cull = [&frustum, &meshMgr, &transformPool](auto& pool) -> void
 	{
@@ -17,7 +17,7 @@ void Geometry::MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr
 			auto& mesh = pool.Get(meshIdx);
 
 			ObjectId id = mesh.GetObjectId();
-			Transform* transform = transformPool.Find(id.Literal());
+			const Transform* transform = transformPool.Find(id.Literal());
 			Vector3 worldPos = transform->GetWorldPosition();
 
 			mesh._culled = frustum.In(worldPos, mesh.GetRadius());

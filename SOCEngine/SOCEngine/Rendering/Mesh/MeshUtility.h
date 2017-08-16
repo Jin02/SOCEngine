@@ -12,7 +12,8 @@ namespace Rendering
 	{
 		class MeshUtility final
 		{
-			void Culling(const Intersection::Frustum& frustum, Manager::MeshManager& meshMgr, Core::TransformPool& transformPool);
+		public:
+			static void Culling(const Intersection::Frustum& frustum, Manager::MeshManager& meshMgr, const Core::TransformPool& transformPool);
 		};
 	}
 }
