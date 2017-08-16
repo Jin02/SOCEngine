@@ -360,6 +360,7 @@
     <ClCompile Include="Rendering\Light\SpotLightBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Material\MaterialManager.cpp" />
     <ClCompile Include="Rendering\Material\PhysicallyBasedMaterial.cpp" />
     <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

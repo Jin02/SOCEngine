@@ -367,9 +367,6 @@
     <Filter Include="ShaderCodes\LightCulling">
       <UniqueIdentifier>{1b29cdbc-920d-4e08-9d6d-62e85459e471}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Postprocessing\IBL">
-      <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Renderer\Main">
       <UniqueIdentifier>{aa5613c9-00cf-4e6a-9c93-db2414304664}</UniqueIdentifier>
     </Filter>
@@ -417,6 +414,12 @@
     </Filter>
     <Filter Include="Rendering\GI\Injection\Point">
       <UniqueIdentifier>{08054428-0545-48a9-8794-aca937a3450b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\Common">
+      <UniqueIdentifier>{f8d029e7-482f-476c-b4f3-8855769c6998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\IBL">
+      <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -859,9 +862,6 @@
     <ClInclude Include="Rendering\Postprocessing\Copy.h">
       <Filter>Rendering\Postprocessing\Copy</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Postprocessing\PPCommon.h">
-      <Filter>Rendering\Postprocessing</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\VXGI.h">
       <Filter>Rendering\GI</Filter>
     </ClInclude>
@@ -906,6 +906,9 @@
     </ClInclude>
     <ClInclude Include="Core\Indexer.hpp">
       <Filter>Core\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\PPCommon.h">
+      <Filter>Rendering\Postprocessing\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1181,6 +1184,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
       <Filter>Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Material\MaterialManager.cpp">
+      <Filter>Rendering\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
