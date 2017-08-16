@@ -6,6 +6,8 @@
 #include "VectorIndexer.hpp"
 #include <tuple>
 
+#include "MaterialID.hpp"
+
 namespace Rendering
 {
 	namespace Manager
@@ -21,21 +23,49 @@ namespace Rendering
 			void UpdateConstBuffer(Device::DirectX& dx);
 
 		public:
-			template <typename MaterialType> MaterialType& Add(const std::string& key, MaterialType& material)
+			template <typename MaterialType> 
+			std::pair<MaterialID, MaterialType&> Add(const std::string& strKey, MaterialType& material)
 			{
-				return GetPool<MaterialType>().Add(key, material);
+				MaterialID key = GetIDManager<MaterialType>().Acquire();
+				GetIDIndexer<MaterialType>().Add(strKey, key.Literal());
+
+				return std::pair<MaterialID, MaterialType&>(
+					key,
+					GetPool<MaterialType>().Add(key.Literal(), material));
 			}
+
 			template <typename MaterialType> void Delete(const std::string& key)
 			{
-				GetPool<MaterialType>().Delete(key);
+				uint literalID = GetIDIndexer<MaterialType>().Find(key);
+
+				GetPool<MaterialType>().Delete(MaterialID(literalID));
+				GetIDIndexer<MaterialType>().Delete(key);
+				GetIDManager<MaterialType>().Delete(MaterialID(literalID));
 			}
 			template <typename MaterialType> auto Find(const std::string& key)
 			{
-				return GetPool<MaterialType>().Find(key);
+				return GetPool<MaterialType>().Find(GetIDIndexer<MaterialType>().Find(key));
 			}
 			template <typename MaterialType> bool Has(const std::string& key) const
 			{
-				return GetPool<MaterialType>().Has(key);
+				return GetIDIndexer<MaterialType>().Has(key);
+			}
+			template <typename MaterialType> void Delete(MaterialID id)
+			{
+				auto findMaterial = GetPool<MaterialType>().Find(id);
+				if(findMaterial == nullptr) return;
+
+				GetIDIndexer<MaterialType>().Delete(findMaterial->GetName());
+				GetPool<MaterialType>().Delete(literalID);
+				GetIDManager<MaterialType>().Delete(id);
+			}
+			template <typename MaterialType> auto Find(MaterialID id)
+			{
+				return GetPool<MaterialType>().Find(id);
+			}
+			template <typename MaterialType> bool Has(MaterialID id) const
+			{
+				return GetIDIndexer<MaterialType>().Has(id);
 			}
 
 		public:
@@ -57,6 +87,22 @@ namespace Rendering
 			{
 				return GetMaterialDatas<MaterialType>().dirty;
 			}
+			template <typename MaterialType> auto& GetIDIndexer()
+			{
+				return GetMaterialDatas<MaterialType>().idIndexer;
+			}
+			template <typename MaterialType> const auto& GetIDIndexer() const
+			{
+				return GetMaterialDatas<MaterialType>().idIndexer;
+			}
+			template <typename MaterialType> auto& GetIDManager()
+			{
+				return GetMaterialDatas<MaterialType>().idMgr;
+			}
+			template <typename MaterialType> const auto& GetIDManager() const
+			{
+				return GetMaterialDatas<MaterialType>().idMgr;
+			}
 
 			template <typename MaterialType> auto& GetMaterialDatas()
 			{
@@ -69,17 +115,22 @@ namespace Rendering
 
 		private:
 			template <class MaterialType>
-			using MaterialPool = Core::VectorHashMap<std::string, MaterialType>;
+			using MaterialPool = Core::VectorHashMap<MaterialID::LiteralType, MaterialType>;
 
 			template <class MaterialType>
 			struct MaterialDatas
 			{
-				MaterialPool<MaterialType> pool;
-				std::vector<MaterialType*> dirty;
+				MaterialPool<MaterialType>		pool;
+				std::vector<MaterialType*>		dirty;
+
+				Core::IndexHashMap<std::string>	idIndexer;
+				MaterialIDManager				idMgr;
 			};
 
 			std::tuple<	MaterialDatas<Material::PhysicallyBasedMaterial>,
 						MaterialDatas<Material::SkyBoxMaterial> >	_materials;
+
+			MaterialID _pbmDefaultKey;
 		};
 	}
 }
