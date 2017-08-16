@@ -134,7 +134,7 @@ void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 	UpdateDirtyLight(GetLightDatas<SpotLight>());
 }
 
-void LightManager::ClearDirtyLights()
+void LightManager::ClearDirty()
 {
 	auto UpdateDirtyLight = [](auto& dirtyLights)
 	{
