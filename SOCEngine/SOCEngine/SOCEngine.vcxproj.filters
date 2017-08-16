@@ -250,9 +250,6 @@
     <Filter Include="Rendering\Sky\Box">
       <UniqueIdentifier>{0cea5a99-4942-4d6e-91ad-ab1328674f23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sky\Renderer">
-      <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Sky\Material">
       <UniqueIdentifier>{a9f849e8-f639-44fe-b42b-bc63f9a02a09}</UniqueIdentifier>
     </Filter>
@@ -420,6 +417,9 @@
     </Filter>
     <Filter Include="Rendering\Postprocessing\IBL">
       <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Renderer">
+      <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -701,7 +701,7 @@
       <Filter>Rendering\Sky\Box</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyRenderer.h">
-      <Filter>Rendering\Sky\Renderer</Filter>
+      <Filter>Rendering\Renderer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
@@ -1045,7 +1045,7 @@
       <Filter>Rendering\Sky\Box</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
-      <Filter>Rendering\Sky\Renderer</Filter>
+      <Filter>Rendering\Renderer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
       <Filter>Rendering\Sky\Material</Filter>
