@@ -86,11 +86,11 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 			
 			if (i < shadowDatas.reupdateMinIndex)
 			{
-				Core::ObjectId objId = shadow.GetObjectId();
+				Core::ObjectID objID = shadow.GetObjectID();
 				using ShadowPoolType = std::decay_t<decltype(pool)>;
 
-				auto light = lightMgr.GetPool<ShadowPoolType::LightType>().Find(objId.Literal()); assert(light);
-				auto transform = tfPool.Find(objId.Literal()); assert(transform);
+				auto light = lightMgr.GetPool<ShadowPoolType::LightType>().Find(objID.Literal()); assert(light);
+				auto transform = tfPool.Find(objID.Literal()); assert(transform);
 
 				bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | transform->GetDirty();
 				if (dirty)

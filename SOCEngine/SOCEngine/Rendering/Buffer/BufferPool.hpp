@@ -34,8 +34,8 @@ namespace Rendering
 			{
 				uint findIndex = _buffers.GetIndexer().Find(file + ":" + key);
 
-				auto failIdx = Core::VectorMap<std::string, BufferType>::IndexyerType::FailIndex();
-				if (findIndex != failIdx)
+				auto failIDx = Core::VectorMap<std::string, BufferType>::IndexyerType::FailIndex();
+				if (findIndex != failIDx)
 					_buffers.Delete(findIndex);
 			}
 

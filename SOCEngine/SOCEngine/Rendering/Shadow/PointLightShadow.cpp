@@ -13,12 +13,12 @@ PointLightShadow::ViewProjMatType PointLightShadow::MakeVPMatParam(const LightPo
 {
 	assert(_base.GetDirty());
 
-	auto light = plPool.Find(_base.GetObjectId().Literal());
+	auto light = plPool.Find(_base.GetObjectID().Literal());
 	assert(light); // error! light is null
 
 	const auto& lightBase = light->GetBase();
 
-	auto transform = tfPool.Find(lightBase.GetObjectId().Literal());
+	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
 	assert(transform);
 
 

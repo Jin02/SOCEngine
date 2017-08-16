@@ -19,14 +19,14 @@ void SpotLightBuffer::PushLight(const SpotLight& light)
 
 void SpotLightBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
 												const Core::TransformPool& tfPool,
-												const Core::ObjectId::IndexHashMap& indexer)
+												const Core::ObjectID::IndexHashMap& indexer)
 {
 	for (const auto& light : dirtyTFLights)
 	{
-		Core::ObjectId objId = light->GetObjectId();
-		const auto& tf = tfPool.Find(objId.Literal());
+		Core::ObjectID objID = light->GetObjectID();
+		const auto& tf = tfPool.Find(objID.Literal());
 
-		uint index = indexer.Find(objId.Literal());
+		uint index = indexer.Find(objID.Literal());
 		_transformBuffer[index] = light->MakeTransform(*tf);
 		_paramSRBuffer[index] = light->MakeParam(*tf);
 	}

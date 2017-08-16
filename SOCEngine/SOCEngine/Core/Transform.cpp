@@ -104,8 +104,8 @@ void Transform::AddChild(Transform& child)
 {
 	child.SetParent(this);
 
-	assert(HasChild(child.GetObjectId()) == false);
-	_childIds.push_back(child.GetObjectId());
+	assert(HasChild(child.GetObjectID()) == false);
+	_childIDs.push_back(child.GetObjectID());
 }
 
 const Vector3 Transform::GetWorldPosition() const
@@ -157,30 +157,30 @@ const Quaternion Transform::FetchWorldQuaternion() const
 	return Quaternion::FromRotationMatrix(rotMat);
 }
 
-bool Transform::HasChild(ObjectId id) const
+bool Transform::HasChild(ObjectID id) const
 {
-	for (const auto childId : _childIds)
+	for (const auto childID : _childIDs)
 	{
-		if(childId.Literal() == id.Literal())
+		if(childID.Literal() == id.Literal())
 			return true;
 	}
 
 	return false;
 }
 
-void Transform::DeleteChild(ObjectId id)
+void Transform::DeleteChild(ObjectID id)
 {
 	uint pos = 0;
-	for (pos; pos < _childIds.size() && _childIds[pos] != id; ++pos);
+	for (pos; pos < _childIDs.size() && _childIDs[pos] != id; ++pos);
 
-	assert(pos == _childIds.size());
-	_childIds.erase(_childIds.begin() + pos);
+	assert(pos == _childIDs.size());
+	_childIDs.erase(_childIDs.begin() + pos);
 }
 
 void Transform::Update(TransformPool& pool)
 {
 	// this func must be run in root
-	assert(_parentId.Literal() == ObjectId::Undefined());
+	assert(_parentID.Literal() == ObjectID::Undefined());
 
 	UpdateDirty(pool);
 	ComputeWorldMatrix(pool);
@@ -194,7 +194,7 @@ void Transform::ClearDirty()
 
 void Transform::UpdateDirty(TransformPool& pool)
 {
-	for (uint id = _objectId.Literal(); id != ObjectId::Undefined(); id = _parentId.Literal())
+	for (uint id = _objectID.Literal(); id != ObjectID::Undefined(); id = _parentID.Literal())
 		pool.Find(id)->_dirty |= _dirty;
 }
 
@@ -202,21 +202,21 @@ void Transform::SetParent(Transform* newParent)
 {
 	if (newParent == nullptr)	// root
 	{
-		_parentId = ObjectId();
+		_parentID = ObjectID();
 		_parentChangeState = ParentState::NowRoot;
 	}
-	else if (_parentId.Literal() == ObjectId::Undefined())
+	else if (_parentID.Literal() == ObjectID::Undefined())
 	{
-		_parentId = newParent->GetObjectId();
+		_parentID = newParent->GetObjectID();
 		_parentChangeState = ParentState::NowChild;
 	}
 }
 
 void Transform::_ComputeWorldMatrix(TransformPool& pool)
 {
-	for (auto childId : _childIds)
+	for (auto childID : _childIDs)
 	{
-		auto child = pool.Find(childId.Literal());
+		auto child = pool.Find(childID.Literal());
 		assert(child);
 
 		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
@@ -227,7 +227,7 @@ void Transform::_ComputeWorldMatrix(TransformPool& pool)
 void Transform::ComputeWorldMatrix(TransformPool& pool)
 {
 	// this func must be run in root
-	assert(_parentId.Literal() == ObjectId::Undefined());
+	assert(_parentID.Literal() == ObjectID::Undefined());
 
 	if(_dirty == false)	return;
 	_worldMat = ComputeLocalMatrix();

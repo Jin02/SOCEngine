@@ -4,7 +4,7 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "BufferManager.hpp"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "Transform.h"
 #include "TransformCB.h"
 #include "BoundBox.h"
@@ -36,7 +36,7 @@ namespace Rendering
 		{
 		public:
 			using ManagerType = Manager::MeshManager;
-			Mesh(Core::ObjectId id) : _objectId(id) {}
+			Mesh(Core::ObjectID id) : _objectID(id) {}
 
 			struct CreateFuncArguments
 			{
@@ -86,7 +86,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(MaterialKeys, const std::vector<std::string>&, _materialKeys);
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
+			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _objectID);
 
 			GET_SET_ACCESSOR(Radius,		float,							_radius);
 			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
@@ -106,7 +106,7 @@ namespace Rendering
 			std::vector<std::string>					_materialKeys;
 
 			uint										_bufferFlag = 0;
-			Core::ObjectId								_objectId;
+			Core::ObjectID								_objectID;
 			Buffer::ExplicitConstBuffer<TransformCB>	_transformCB;
 
 			float										_radius = 0.0f;

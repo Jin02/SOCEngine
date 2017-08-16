@@ -10,7 +10,7 @@ using namespace Core;
 
 void DirectionalLight::UpdateFlag(const Transform& transform)
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 
 	bool isNegDirZSign = transform.GetWorldMatrix()._33 < 0.0f;
 	_base.SetFlag( (_base.GetFlag() & 0xfe) | (isNegDirZSign ? 1 : 0) );
@@ -18,7 +18,7 @@ void DirectionalLight::UpdateFlag(const Transform& transform)
 
 DirectionalLight::TransformType DirectionalLight::MakeTransform(const Transform& transform) const
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 
 	const auto& forward = transform.GetForward();
 	return TransformType(Half(forward.x), Half(forward.y));

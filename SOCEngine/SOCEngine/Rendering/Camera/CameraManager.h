@@ -13,7 +13,7 @@ namespace Rendering
 	namespace Manager
 	{
 		template <class CameraType>
-		using CameraPool = Core::VectorHashMap<Core::ObjectId::LiteralType, CameraType>;
+		using CameraPool = Core::VectorHashMap<Core::ObjectID::LiteralType, CameraType>;
 
 		class CameraManager final
 		{
@@ -23,36 +23,36 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
 
-			void SetMainCamera(Core::ObjectId objectId);
+			void SetMainCamera(Core::ObjectID objectID);
 			GET_ACCESSOR(MainCamera, auto&, _mainCamera);
 
 		public:
-			template <class CameraType> CameraType& Acquire(Core::ObjectId objId)
+			template <class CameraType> CameraType& Acquire(Core::ObjectID objID)
 			{
-				return Add(CameraType(objId));
+				return Add(CameraType(objID));
 			}
 			template <class CameraType> CameraType& Add(CameraType& camera)
 			{
 				camera.SetDirty(true);
 
-				Core::ObjectId id = camera.GetObjectId();
+				Core::ObjectID id = camera.GetObjectID();
 				return GetPool<CameraType>().Add(id.Literal(), camera);
 			}
-			template <class CameraType> void Delete(Core::ObjectId objId)
+			template <class CameraType> void Delete(Core::ObjectID objID)
 			{
 				auto& pool = GetPool<CameraType>();
-				uint index = pool.GetIndexer().Find(objId.Literal());
+				uint index = pool.GetIndexer().Find(objID.Literal());
 
-				pool.Delete(objId.Literal());
+				pool.Delete(objID.Literal());
 
-				uint prevDeleteIdx = GetCameraDatas<CameraType>().reupdateMinIndex;
-				GetCameraDatas<CameraType>().reupdateMinIndex = min(index, prevDeleteIdx);
+				uint prevDeleteIDx = GetCameraDatas<CameraType>().reupdateMinIndex;
+				GetCameraDatas<CameraType>().reupdateMinIndex = min(index, prevDeleteIDx);
 			}
-			template <class CameraType> bool Has(Core::ObjectId objId) const
+			template <class CameraType> bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<CameraType>().GetIndexer().Has(objId.Literal());
+				return GetPool<CameraType>().GetIndexer().Has(objID.Literal());
 			}
-			template <class CameraType> auto Find(Core::ObjectId id)
+			template <class CameraType> auto Find(Core::ObjectID id)
 			{
 				return GetPool<CameraType>().Find(id.Literal());
 			}

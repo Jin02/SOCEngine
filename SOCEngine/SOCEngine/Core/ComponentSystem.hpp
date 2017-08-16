@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "MeshManager.hpp"
 #include "LightManager.h"
 #include "CameraManager.h"
@@ -31,31 +31,31 @@ namespace Core
 	public:
 		void UpdateBuffer(Device::DirectX& dx,
 			const Core::TransformPool& transformPool,
-			const Core::ObjectId::IndexHashMap& lightShaftIndexer);
+			const Core::ObjectID::IndexHashMap& lightShaftIndexer);
 
 	public:
 #pragma region MultiTypeComponents
 		template <class Component>
-		Component& Add(ObjectId id)
+		Component& Add(ObjectID id)
 		{
 			auto& mgr = GetManager<Component>();
 			return mgr.Acquire<Component>(id);
 		}
 
 		template <class Component>
-		void Delete(ObjectId id)
+		void Delete(ObjectID id)
 		{
 			auto& mgr = GetManager<Component>();
 			mgr.Delete<Component>(id);
 		}
 		template <class Component>
-		bool Has(ObjectId id) const
+		bool Has(ObjectID id) const
 		{
 			auto& mgr = GetManager<Component>();
 			return mgr.Has<Component>(id);
 		}
 		template <class Component>
-		auto Find(ObjectId id)
+		auto Find(ObjectID id)
 		{
 			auto& mgr = GetManager<Component>();
 			return mgr.Find<Component>(id);
@@ -63,7 +63,7 @@ namespace Core
 #pragma endregion Light, Shadow, Etc..
 
 #pragma region Light
-		template <> void Delete<DL>(ObjectId id)
+		template <> void Delete<DL>(ObjectID id)
 		{
 			auto& shadowMgr = GetManager<DL::ShadowType>();
 			if (shadowMgr.Has<DL::ShadowType>(id))
@@ -72,7 +72,7 @@ namespace Core
 			auto& lightMgr = GetManager<DL>();
 			lightMgr.Delete<DL>(id);
 		}
-		template <> void Delete<PL>(ObjectId id)
+		template <> void Delete<PL>(ObjectID id)
 		{
 			auto& shadowMgr = GetManager<PL::ShadowType>();
 			if (shadowMgr.Has<PL::ShadowType>(id))
@@ -81,7 +81,7 @@ namespace Core
 			auto& lightMgr = GetManager<PL>();
 			lightMgr.Delete<PL>(id);
 		}
-		template <> void Delete<SL>(ObjectId id)
+		template <> void Delete<SL>(ObjectID id)
 		{
 			auto& shadowMgr = GetManager<SL::ShadowType>();
 			if (shadowMgr.Has<SL::ShadowType>(id))
@@ -93,7 +93,7 @@ namespace Core
 #pragma endregion Light
 
 #pragma region Shadow
-		template <> DLShadow& Add<DLShadow>(ObjectId id)
+		template <> DLShadow& Add<DLShadow>(ObjectID id)
 		{
 			auto& lightMgr = GetManager<DLShadow::LightType>();
 			assert(lightMgr.Has<DLShadow::LightType>(id));
@@ -101,7 +101,7 @@ namespace Core
 			auto& shadowMgr = GetManager<DLShadow>();
 			return shadowMgr.Acquire<DLShadow>(id);
 		}
-		template <> PLShadow& Add<PLShadow>(ObjectId id)
+		template <> PLShadow& Add<PLShadow>(ObjectID id)
 		{
 			auto& lightMgr = GetManager<PLShadow::LightType>();
 			assert(lightMgr.Has<PLShadow::LightType>(id));
@@ -109,7 +109,7 @@ namespace Core
 			auto& shadowMgr = GetManager<PLShadow>();
 			return shadowMgr.Acquire<PLShadow>(id);
 		}
-		template <> SLShadow& Add<SLShadow>(ObjectId id)
+		template <> SLShadow& Add<SLShadow>(ObjectID id)
 		{
 			auto& lightMgr = GetManager<SLShadow::LightType>();
 			assert(lightMgr.Has<SLShadow::LightType>(id));
@@ -120,22 +120,22 @@ namespace Core
 #pragma endregion Shadow
 
 #pragma region Mesh
-		template <> Mesh& Add<Mesh>(ObjectId id)
+		template <> Mesh& Add<Mesh>(ObjectID id)
 		{
 			auto& mgr = GetManager<Mesh>();
 			return mgr.Acquire(id);
 		}
-		template <> void Delete<Mesh>(ObjectId id)
+		template <> void Delete<Mesh>(ObjectID id)
 		{
 			auto& mgr = GetManager<Mesh>();
 			mgr.Delete(id);
 		}
-		template <> bool Has<Mesh>(ObjectId id) const
+		template <> bool Has<Mesh>(ObjectID id) const
 		{
 			auto& mgr = GetManager<Mesh>();
 			return mgr.Has(id);
 		}
-		template <> auto Find<Mesh>(ObjectId id)
+		template <> auto Find<Mesh>(ObjectID id)
 		{
 			auto& mgr = GetManager<Mesh>();
 			return mgr.Find(id);
@@ -143,24 +143,24 @@ namespace Core
 #pragma endregion Mesh
 
 #pragma region MainCamera
-		template <> MainCamera& Add<MainCamera>(ObjectId id)
+		template <> MainCamera& Add<MainCamera>(ObjectID id)
 		{
 			assert(!"MainCamera must use SetMainCamera");
 		}
-		template <> void Delete<MainCamera>(ObjectId id)
+		template <> void Delete<MainCamera>(ObjectID id)
 		{
 			assert(!"Invalid Call");
 		}
-		template <> bool Has<MainCamera>(ObjectId id) const
+		template <> bool Has<MainCamera>(ObjectID id) const
 		{
 			return true;
 		}
-		template <> auto Find<MainCamera>(ObjectId id)
+		template <> auto Find<MainCamera>(ObjectID id)
 		{
 			assert(!"MainCamera must use GetMainCamera");
 		}
 
-		MainCamera& SetMainCamera(ObjectId id)
+		MainCamera& SetMainCamera(ObjectID id)
 		{
 			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
 			mgr.SetMainCamera(id);

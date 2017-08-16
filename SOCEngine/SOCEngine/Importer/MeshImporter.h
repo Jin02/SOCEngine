@@ -32,7 +32,7 @@ namespace Importer
 			Device::DirectX&						dx;
 		};
 
-		//key is Node::Parts::MeshPartId
+		//key is Node::Parts::MeshPartID
 		typedef std::unordered_map<std::string, Node>				NodeHashMap;
 		typedef std::unordered_map<std::string, Mesh::Intersection>	IntersectionHashMap;
 
@@ -45,7 +45,7 @@ namespace Importer
 		struct StoredOriginObject
 		{
 			bool			alreadyUsed;
-			Core::ObjectId	objectId;
+			Core::ObjectID	objectID;
 		};
 
 		void ParseNode(Node& outNodes, const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
@@ -53,7 +53,7 @@ namespace Importer
 		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
 		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 
-		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
+		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIDx, std::string* outChunkKey) const;
 
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
 		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
@@ -62,7 +62,7 @@ namespace Importer
 		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
 		void FetchNodeHashMap(NodeHashMap& recurRefParts, const std::vector<Node>& nodes);
 
-		// key is meshPartId, second value is materialId
+		// key is meshPartID, second value is materialID
 		void FetchAllPartsInHashMap_Recursive(
 			std::unordered_map<std::string, std::vector<std::string>>& outParts,
 			const Node& node);

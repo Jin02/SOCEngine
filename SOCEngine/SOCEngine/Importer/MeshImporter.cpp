@@ -206,9 +206,9 @@ void MeshImporter::ParseNode(Node& outNodes, const rapidjson::Value& node,
 			Node::Parts parts;
 
 			if(node.HasMember("meshpartid"))
-				parts.meshPartId = node["meshpartid"].GetString();
+				parts.meshPartID = node["meshpartid"].GetString();
 			if(node.HasMember("materialid"))
-				parts.materialId = node["materialid"].GetString();
+				parts.materialID = node["materialid"].GetString();
 
 			outParts.push_back(parts);
 		}
@@ -277,9 +277,9 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 	{
 		const auto& texturesNode = matNode["textures"];
 		uint texSize = texturesNode.Size();
-		for(uint texIdx = 0; texIdx < texSize; ++texIdx)
+		for(uint texIDx = 0; texIDx < texSize; ++texIDx)
 		{
-			const auto& texInfoNode = texturesNode[texIdx];
+			const auto& texInfoNode = texturesNode[texIDx];
 			Material::Texture texInfo;
 			texInfo.id			= texInfoNode["id"].GetString();
 			texInfo.fileName	= std::string("Textures/") + texInfoNode["filename"].GetString();
@@ -304,7 +304,7 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 }
 
 void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& meshNode,
-							 const NodeHashMap& nodeHashMap) //key is Node::Parts::MeshPartId
+							 const NodeHashMap& nodeHashMap) //key is Node::Parts::MeshPartID
 {
 	uint stride		= 0;
 	bool hasNormal	= false;
@@ -404,7 +404,7 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			Mesh::Part part;
 
 			const auto& node = partsNode[i];
-			part.meshPartId = node["id"].GetString();
+			part.meshPartID = node["id"].GetString();
 			
 			const auto& indicesNode = node["indices"];
 			uint indicesCount = indicesNode.Size();
@@ -412,7 +412,7 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			Vector3	botOffset(0.0f, 0.0f, 0.0f);
 			bool	isSetupTranslation = false;
 			{
-				auto findIter = nodeHashMap.find(part.meshPartId);
+				auto findIter = nodeHashMap.find(part.meshPartID);
 				if(findIter != nodeHashMap.end())
 				{
 					isSetupTranslation = findIter->second.translation.has;
@@ -435,11 +435,11 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			for(uint i=0; i<indicesCount; ++i) //CW
 			{
 				uint index = indicesNode[i].GetUint();
-				uint posIdxOffsetInVertices = index * lineCount;
+				uint posIDxOffsetInVertices = index * lineCount;
 
-				float& x = vertices[posIdxOffsetInVertices + 0];
-				float& y = vertices[posIdxOffsetInVertices + 1];
-				float& z = vertices[posIdxOffsetInVertices + 2];
+				float& x = vertices[posIDxOffsetInVertices + 0];
+				float& y = vertices[posIDxOffsetInVertices + 1];
+				float& z = vertices[posIDxOffsetInVertices + 2];
 
 				if(isSetupTranslation)
 				{
@@ -502,7 +502,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Node node;
-			Matrix identityMat = Matrix::Identity();
+			Matrix identityMat = Matrix::IDentity();
 			ParseNode(node, nodes[i], identityMat);
 			outNodes.push_back(node);
 		}
@@ -602,32 +602,32 @@ Core::Object& MeshImporter::BuildMesh(
 	std::set<std::string> normalMapMaterialKeys;
 	MakeMaterials(normalMapMaterialKeys, managerParam, materials, folderDir, meshFileName);
 
-	// key is meshPartId, second value is materialId
-	std::unordered_map<std::string, std::vector<std::string>> meshMaterialIdInAllParts;
+	// key is meshPartID, second value is materialID
+	std::unordered_map<std::string, std::vector<std::string>> meshMaterialIDInAllParts;
 	//auto FetchAllPartsInHashMap = [&]()
 	{
 		for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
-			FetchAllPartsInHashMap_Recursive(meshMaterialIdInAllParts, *iter);
+			FetchAllPartsInHashMap_Recursive(meshMaterialIDInAllParts, *iter);
 	};
 
 	IntersectionHashMap intersectionHashMap;
 
 	// Setting VB, IB
 	{
-		uint meshIterIdx = 0;
-		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter, ++meshIterIdx)
+		uint meshIterIDx = 0;
+		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter, ++meshIterIDx)
 		{
 			std::string vbChunkKey = "";
-			std::string vertexBufferKey = GetVertexBufferKey(meshFileName, meshIterIdx, &vbChunkKey);
+			std::string vertexBufferKey = GetVertexBufferKey(meshFileName, meshIterIDx, &vbChunkKey);
 
-			std::vector<std::string> meshPartIdKeys;
+			std::vector<std::string> meshPartIDKeys;
 
 			// Make IndexBuffer
 			{
 				const auto& parts = meshIter->parts;
 				for(auto partsIter = parts.begin(); partsIter != parts.end(); ++partsIter)
 				{
-					intersectionHashMap.insert(std::make_pair(partsIter->meshPartId, partsIter->intersection));
+					intersectionHashMap.insert(std::make_pair(partsIter->meshPartID, partsIter->intersection));
 
 					const auto& indices = partsIter->indices;
 
@@ -635,27 +635,27 @@ Core::Object& MeshImporter::BuildMesh(
 					indexBuffer.Initialize(managerParam.dx, indices, vertexBufferKey, useDynamicIB);
 
 					auto& ibPool = managerParam.bufferManager.GetPool<IndexBuffer>();
-					ibPool.Add(meshFileName, partsIter->meshPartId, indexBuffer);
+					ibPool.Add(meshFileName, partsIter->meshPartID, indexBuffer);
 
-					meshPartIdKeys.push_back(partsIter->meshPartId);
+					meshPartIDKeys.push_back(partsIter->meshPartID);
 				}
 			}
 
 			bool hasNormalMap = false;
-			for(auto iter = meshPartIdKeys.begin();
-				(iter != meshPartIdKeys.end()) && (hasNormalMap == false);
+			for(auto iter = meshPartIDKeys.begin();
+				(iter != meshPartIDKeys.end()) && (hasNormalMap == false);
 				++iter)
 			{
-				auto findIter = meshMaterialIdInAllParts.find(*iter);
+				auto findIter = meshMaterialIDInAllParts.find(*iter);
 
-				//Error, Invalid meshPartId
-				assert(findIter != meshMaterialIdInAllParts.end());
+				//Error, Invalid meshPartID
+				assert(findIter != meshMaterialIDInAllParts.end());
 
-				const auto& matIds = findIter->second;
-				for(auto matIdsIter = matIds.begin(); matIdsIter != matIds.end(); ++matIdsIter)
+				const auto& matIDs = findIter->second;
+				for(auto matIDsIter = matIDs.begin(); matIDsIter != matIDs.end(); ++matIDsIter)
 				{
-					const std::string& materialId	= *matIdsIter;
-					auto normalMapMatFindIter		= normalMapMaterialKeys.find(materialId);
+					const std::string& materialID	= *matIDsIter;
+					auto normalMapMatFindIter		= normalMapMaterialKeys.find(materialID);
 
 					if(normalMapMatFindIter != normalMapMaterialKeys.end())
 					{
@@ -752,11 +752,11 @@ Core::Object& MeshImporter::BuildMesh(
 					const uint next = originStride / sizeof(float);
 					uint size = vertexDatas.size();
 
-					uint tanIdx = 0;
+					uint tanIDx = 0;
 					uint start = (sizeof(Vector3) * 2) / sizeof(float);
 					for(uint i= start; i<size; i+=next)
 					{
-						const Vector3& tangent = tangents[tanIdx++];
+						const Vector3& tangent = tangents[tanIDx++];
 
 						vertexDatas.insert( vertexDatas.begin() + i, tangent.z );	//z
 						vertexDatas.insert( vertexDatas.begin() + i, tangent.y );	//y
@@ -794,7 +794,7 @@ Core::Object& MeshImporter::BuildMesh(
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
 
-	_originObjects.Add(registKey, { true, root.GetObjectId() });
+	_originObjects.Add(registKey, { true, root.GetObjectID() });
 	return root;
 }
 
@@ -804,15 +804,15 @@ void MeshImporter::FetchAllPartsInHashMap_Recursive(
 	const auto& parts = node.parts;
 	for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 	{
-		auto findIter = recurRefParts.find(iter->materialId);
+		auto findIter = recurRefParts.find(iter->materialID);
 		if(findIter != recurRefParts.end())
-			findIter->second.push_back(iter->materialId);
+			findIter->second.push_back(iter->materialID);
 		else
 		{
-			std::vector<std::string> materialIds;
-			materialIds.push_back(iter->materialId);
+			std::vector<std::string> materialIDs;
+			materialIDs.push_back(iter->materialID);
 
-			recurRefParts.insert(std::make_pair(iter->meshPartId, materialIds));
+			recurRefParts.insert(std::make_pair(iter->meshPartID, materialIDs));
 		}
 	}
 
@@ -827,12 +827,12 @@ void MeshImporter::FetchNormalMapMeshKeyLists(
 	const std::string& meshFileName)
 {
 	for(auto iter = node.parts.begin(); iter != node.parts.end(); ++iter)
-		const std::string& materialId = iter->materialId;
+		const std::string& materialID = iter->materialID;
 }
 
-std::string MeshImporter::GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const
+std::string MeshImporter::GetVertexBufferKey(const std::string& meshFileName, uint meshIDx, std::string* outChunkKey) const
 {
-	std::string chunkKey = "Chunk" + std::to_string(meshIdx);
+	std::string chunkKey = "Chunk" + std::to_string(meshIDx);
 	if(outChunkKey)	(*outChunkKey) = chunkKey;
 	return meshFileName + ":" + chunkKey;
 }
@@ -905,12 +905,12 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 	auto& objManager = managerParam.objManager;
 	Object object = objManager.Add(node.id, &managerParam.compoSystem, &managerParam.transformPool);
 
-	uint objId = object.GetObjectId().Literal();
+	uint objID = object.GetObjectID().Literal();
 	parent.AddChild(object);
 
 	// Setting Transform
 	auto& transformPool = managerParam.transformPool;
-	Transform* thisTF = transformPool.Find(objId);
+	Transform* thisTF = transformPool.Find(objID);
 	{
 		thisTF->UpdatePosition(node.translation.tf);
 		thisTF->UpdateQuaternion(node.rotation.tf);
@@ -923,7 +923,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		BoundBox boundBox;
 		float radius = 0.0f;
 		{
-			auto findIter = intersectionHashMap.find(part.meshPartId);
+			auto findIter = intersectionHashMap.find(part.meshPartID);
 			if(findIter != intersectionHashMap.end())
 			{
 				boundBox.SetMinMax(findIter->second.boundBoxMin, findIter->second.boundBoxMax);
@@ -934,7 +934,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		auto& buferMgr = managerParam.bufferManager;
 		auto& materialMgr = managerParam.materialManager;
 
-		IndexBuffer* indexBuffer = buferMgr.GetPool<IndexBuffer>().Find(meshFileName, part.meshPartId);
+		IndexBuffer* indexBuffer = buferMgr.GetPool<IndexBuffer>().Find(meshFileName, part.meshPartID);
 		assert(indexBuffer); // "Error, Invalid mesh part id"
 
 		std::string vbChunkKey = "";
@@ -950,7 +950,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(meshFileName, vbChunkKey);
 		assert(vertexBuffer); // "Error, Invalid vb Chunk Key"
 
-		auto material = materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialId);
+		auto material = materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialID);
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
 		mesh.Initialize(*vertexBuffer, *indexBuffer);
@@ -968,7 +968,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		{
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 			{
-				const std::string& subMeshName = iter->meshPartId;
+				const std::string& subMeshName = iter->meshPartID;
 				Object subMeshObj = objManager.Add(subMeshName, &managerParam.compoSystem, &managerParam.transformPool);
 				object.AddChild(subMeshObj);
 
@@ -993,7 +993,7 @@ void MeshImporter::FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vect
 	{
 		const auto& parts = iter->parts;
 		for(auto partsIter = parts.begin(); partsIter != parts.end(); ++partsIter)
-			outNodeHashMap.insert( std::make_pair(partsIter->meshPartId, *iter) );
+			outNodeHashMap.insert( std::make_pair(partsIter->meshPartID, *iter) );
 
 		const auto& childs = iter->childs;
 		if(childs.empty() == false)

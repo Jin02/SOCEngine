@@ -10,10 +10,10 @@ using namespace Rendering::Material;
 void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 {
 	auto indexer = GetConstBufferBook().GetIndexer();
-	uint findIdx = indexer.Find(ParamCB::GetKey());
+	uint findIDx = indexer.Find(ParamCB::GetKey());
 
 	// Error, param const buffer was already allocated
-	assert(findIdx == ConstBuffers::IndexerType::FailIndex());
+	assert(findIDx == ConstBuffers::IndexerType::FailIndex());
 
 	BindConstBuffer bind;
 	{
@@ -95,7 +95,7 @@ void PhysicallyBasedMaterial::RegistTexture(const std::string& key, TextureBindI
 	}
 	else
 	{
-		uint findIdx = textureBook.GetIndexer().Find(key);
-		textureBook.Get(findIdx).resource = tex;
+		uint findIDx = textureBook.GetIndexer().Find(key);
+		textureBook.Get(findIDx).resource = tex;
 	}
 }

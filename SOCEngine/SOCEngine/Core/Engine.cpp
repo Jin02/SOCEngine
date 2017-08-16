@@ -45,25 +45,25 @@ void Engine::RunScene()
 				_dirtyTransforms.push_back(&tf);
 
 			if (tf.GetParentState() == Transform::ParentState::NowRoot)
-				_objectManager.AddNewRootObject(tf.GetObjectId());
+				_objectManager.AddNewRootObject(tf.GetObjectID());
 			else if (tf.GetParentState() == Transform::ParentState::NowChild)
-				_objectManager.DeleteRootObject(tf.GetObjectId());
+				_objectManager.DeleteRootObject(tf.GetObjectID());
 		}
 	}
 
 	// Update Root Transform
 	{
 		_objectManager.CheckRootObjectIDs(_transformPool);
-		auto& rootIds = _objectManager.GetRootObjectIDs();
-		for (uint rootId : rootIds)
+		auto& rootIDs = _objectManager.GetRootObjectIDs();
+		for (uint rootID : rootIDs)
 		{
-			auto transform = _transformPool.Find(rootId); assert(transform);
+			auto transform = _transformPool.Find(rootID); assert(transform);
 			transform->Update(_transformPool);
 		}
 	}
 
 	// TODO : LightShaftMgr 구현하면 바꿔야함
-	ObjectId::IndexHashMap nullIndexer;
+	ObjectID::IndexHashMap nullIndexer;
 	_componentSystem.UpdateBuffer(_dx, _transformPool, nullIndexer);
 
 	_scene->OnRenderPreview();

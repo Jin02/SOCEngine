@@ -13,11 +13,11 @@ namespace Rendering
 		{
 			struct RequiredIndexer
 			{
-				const Core::ObjectId::IndexHashMap& shadowIndexer;
-				const Core::ObjectId::IndexHashMap& lightShaftIndexer;
+				const Core::ObjectID::IndexHashMap& shadowIndexer;
+				const Core::ObjectID::IndexHashMap& lightShaftIndexer;
 				RequiredIndexer(
-					const Core::ObjectId::IndexHashMap& _shadowIndexer,
-					const Core::ObjectId::IndexHashMap& _lightShaftIndexer)
+					const Core::ObjectID::IndexHashMap& _shadowIndexer,
+					const Core::ObjectID::IndexHashMap& _lightShaftIndexer)
 					: shadowIndexer(_shadowIndexer), lightShaftIndexer(_lightShaftIndexer)
 				{
 
@@ -67,32 +67,32 @@ namespace Rendering
 			public:
 				void UpdateTransformBuffer(	const std::vector<LightType*>& dirtyTFLights,
 											const Core::TransformPool& tfPool,
-											const Core::ObjectId::IndexHashMap& indexer)
+											const Core::ObjectID::IndexHashMap& indexer)
 				{
 					for (const auto& light : dirtyTFLights)
 					{
-						Core::ObjectId objId = light->GetObjectId();
-						const auto& tf = tfPool.Find(objId.Literal());
+						Core::ObjectID objID = light->GetObjectID();
+						const auto& tf = tfPool.Find(objID.Literal());
 						
-						uint index = indexer.Find(objId.Literal());
+						uint index = indexer.Find(objID.Literal());
 						_transformBuffer[index] = light->MakeTransform(*tf);
 					}
 
 					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 				}
 
-				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const Core::ObjectId::IndexHashMap& indexer)
+				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const Core::ObjectID::IndexHashMap& indexer)
 				{
 					for (auto& light : dirtyParamLights)
 					{
-						Core::ObjectId objId = light->GetObjectId();
-						uint literalId = objId.Literal();
+						Core::ObjectID objID = light->GetObjectID();
+						uint literalID = objID.Literal();
 
-						ushort shadowIdx = indexers.shadowIndexer.Find(literalId);
-						uint lightShaftIdx = indexers.lightShaftIndexer.Find(literalId);
+						ushort shadowIDx = indexers.shadowIndexer.Find(literalID);
+						uint lightShaftIDx = indexers.lightShaftIndexer.Find(literalID);
 
-						uint index = indexer.Find(literalId);
-						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
+						uint index = indexer.Find(literalID);
+						_commonBuffer.SetData(index, light->GetBase(), shadowIDx, lightShaftIDx);
 					}
 
 					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() != false);

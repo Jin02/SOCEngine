@@ -65,7 +65,7 @@ void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPoo
 
 void LightManager::UpdateParamBuffer(
 	const ShadowManager& shadowMgr,
-	const Core::ObjectId::IndexHashMap& shaftIndexer)
+	const Core::ObjectID::IndexHashMap& shaftIndexer)
 {
 	GetBuffer<DirectionalLight>().
 		UpdateLightCommonBuffer(
@@ -114,8 +114,8 @@ void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 				if (light.GetBase().GetDirty())
 					dirtyParamLights.push_back(&light);
 
-				uint objId = light.GetObjectId().Literal();
-				auto transform = transformPool.Find(objId);
+				uint objID = light.GetObjectID().Literal();
+				auto transform = transformPool.Find(objID);
 				if (transform->GetDirty())
 					dirtyTFLights.push_back(&light);
 			}

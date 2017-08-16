@@ -12,7 +12,7 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			using ShadowDatasIndexer = Core::IndexHashMap<Core::ObjectId::LiteralType>;
+			using ShadowDatasIndexer = Core::IndexHashMap<Core::ObjectID::LiteralType>;
 
 			template <class ShadowType>
 			class ShadowBufferForm
@@ -51,9 +51,9 @@ namespace Rendering
 					for (auto& shadow : dirtyShadows)
 					{
 						const auto& base = shadow->GetBase();
-						Core::ObjectId objId = base.GetObjectId();
+						Core::ObjectID objID = base.GetObjectID();
 
-						uint index = indexer.Find(objId.Literal());
+						uint index = indexer.Find(objID.Literal());
 						_paramBuffer[index] = base.GetParam();
 						_transformBuffer[index] = shadow->MakeVPMatParam(lightPool, tfPool);
 					}

@@ -43,12 +43,12 @@ namespace Core
 			if (iter == _map.end())
 				return;
 
-			uint ereaseIdx = iter->second;
+			uint ereaseIDx = iter->second;
 			_map.erase(iter);
 
 			for (auto& mapIter : _map)
 			{
-				if (mapIter.second < ereaseIdx)
+				if (mapIter.second < ereaseIDx)
 					mapIter.second -= 1;
 			}
 		}

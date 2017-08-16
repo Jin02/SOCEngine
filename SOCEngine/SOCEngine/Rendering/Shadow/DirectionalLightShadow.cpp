@@ -16,12 +16,12 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 {
 	assert(_base.GetDirty());
 
-	auto light = lightPool.Find(_base.GetObjectId().Literal());
+	auto light = lightPool.Find(_base.GetObjectID().Literal());
 	assert(light);
 
 	const auto& lightBase = light->GetBase();
 
-	auto transform = tfPool.Find(lightBase.GetObjectId().Literal());
+	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
 	assert(transform);
 
 

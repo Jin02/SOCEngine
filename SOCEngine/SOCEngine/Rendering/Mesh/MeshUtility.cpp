@@ -12,11 +12,11 @@ void MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, const Tr
 	auto Cull = [&frustum, &meshMgr, &transformPool](auto& pool) -> void
 	{
 		uint size = pool.GetSize();
-		for (uint meshIdx = 0; meshIdx < size; ++meshIdx)
+		for (uint meshIDx = 0; meshIDx < size; ++meshIDx)
 		{
-			auto& mesh = pool.Get(meshIdx);
+			auto& mesh = pool.Get(meshIDx);
 
-			ObjectId id = mesh.GetObjectId();
+			ObjectID id = mesh.GetObjectID();
 			const Transform* transform = transformPool.Find(id.Literal());
 			Vector3 worldPos = transform->GetWorldPosition();
 

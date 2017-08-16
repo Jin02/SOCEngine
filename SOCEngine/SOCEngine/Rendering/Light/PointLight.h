@@ -30,7 +30,7 @@ namespace Rendering
 			using TransformType		= Math::Vector4;
 			using ShadowType		= Shadow::PointLightShadow;
 
-			explicit PointLight(Core::ObjectId objId) : _base(objId) {};
+			explicit PointLight(Core::ObjectID objID) : _base(objID) {};
 
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
 			TransformType MakeTransform(const Core::Transform& transform) const;
@@ -38,7 +38,7 @@ namespace Rendering
 			GET_ACCESSOR(Base, BaseLight&, _base);
 			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
 
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
+			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _base.GetObjectID());
 
 		private:
 			BaseLight					_base;

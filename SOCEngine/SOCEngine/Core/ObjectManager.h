@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include "VectorIndexer.hpp"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "Singleton.h"
 #include "Object.h"
 
@@ -24,31 +24,31 @@ namespace Core
 		bool		Has(const std::string& name) const;
 		Object*		Find(const std::string& name);
 
-		void		Delete(ObjectId id);
-		bool		Has(ObjectId id) const;
-		Object*		Find(ObjectId id);
+		void		Delete(ObjectID id);
+		bool		Has(ObjectID id) const;
+		Object*		Find(ObjectID id);
 
 		void		DeleteAll();
 
 	public:
 		void CheckRootObjectIDs(const TransformPool& tfPool);
-		void AddNewRootObject(ObjectId id);
-		void DeleteRootObject(ObjectId id);
+		void AddNewRootObject(ObjectID id);
+		void DeleteRootObject(ObjectID id);
 
-		GET_CONST_ACCESSOR(RootObjectIDs, const auto&, _rootObjectIds.GetVector());
-
-	private:
-		GET_ACCESSOR(ObjectIdManager, ObjectIdManager&, _objIdMgr);
+		GET_CONST_ACCESSOR(RootObjectIDs, const auto&, _rootObjectIDs.GetVector());
 
 	private:
-		VectorHashMap<ObjectId::LiteralType, Object>		_objects;
-		std::vector<ObjectId::LiteralType>					_newObjectIds;
+		GET_ACCESSOR(ObjectIDManager, ObjectIDManager&, _objIDMgr);
 
-		VectorHashMap<	ObjectId::LiteralType,
-						ObjectId::LiteralType>				_rootObjectIds;
+	private:
+		VectorHashMap<ObjectID::LiteralType, Object>		_objects;
+		std::vector<ObjectID::LiteralType>					_newObjectIDs;
+
+		VectorHashMap<	ObjectID::LiteralType,
+						ObjectID::LiteralType>				_rootObjectIDs;
 
 		IndexHashMap<std::string>							_toIndex;
 
-		ObjectIdManager										_objIdMgr;
+		ObjectIDManager										_objIDMgr;
 	};
 }

@@ -8,31 +8,31 @@ using namespace Core;
 
 Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool)
 {
-	ObjectId key = _objIdMgr.Acquire();
+	ObjectID key = _objIDMgr.Acquire();
 	_toIndex.Add(name, key.Literal());
 
-	_newObjectIds.push_back(key);
+	_newObjectIDs.push_back(key);
 	return _objects.Add(key, Object(key, compoSystem, tfPool, this));
 }
 
 void ObjectManager::Delete(const std::string& name)
 {
-	uint objLiteralId = _toIndex.Find(name);
+	uint objLiteralID = _toIndex.Find(name);
 
-	uint size = _rootObjectIds.GetSize();
+	uint size = _rootObjectIDs.GetSize();
 	for(uint i=0; i<size;)
 	{
-		uint id = _rootObjectIds.Get(i);
-		if (id != objLiteralId)
+		uint id = _rootObjectIDs.Get(i);
+		if (id != objLiteralID)
 			continue;
 
-		_rootObjectIds.Delete(id);
+		_rootObjectIDs.Delete(id);
 		break;
 	}
 
-	_objects.Delete(ObjectId(objLiteralId));
+	_objects.Delete(ObjectID(objLiteralID));
 	_toIndex.Delete(name);
-	_objIdMgr.Delete(ObjectId(objLiteralId));
+	_objIDMgr.Delete(ObjectID(objLiteralID));
 }
 
 bool ObjectManager::Has(const std::string& name) const
@@ -42,25 +42,25 @@ bool ObjectManager::Has(const std::string& name) const
 
 Object* ObjectManager::Find(const std::string& name)
 {
-	return _objects.Find( ObjectId(_toIndex.Find(name)) );
+	return _objects.Find( ObjectID(_toIndex.Find(name)) );
 }
 
-void Core::ObjectManager::Delete(ObjectId id)
+void Core::ObjectManager::Delete(ObjectID id)
 {
 	Object* findObj = _objects.Find(id);
 	if(findObj == nullptr) return;
 
 	_toIndex.Delete(findObj->GetName());
 	_objects.Delete(id);
-	_objIdMgr.Delete(id);
+	_objIDMgr.Delete(id);
 }
 
-bool Core::ObjectManager::Has(ObjectId id) const
+bool Core::ObjectManager::Has(ObjectID id) const
 {
 	return _objects.GetIndexer().Has(id);
 }
 
-Object * Core::ObjectManager::Find(ObjectId id)
+Object * Core::ObjectManager::Find(ObjectID id)
 {
 	return _objects.Find(id);
 }
@@ -70,32 +70,32 @@ void ObjectManager::DeleteAll()
 	_objects.DeleteAll();
 	_toIndex.DeleteAll();
 		
-	_objIdMgr.DeleteAll();
+	_objIDMgr.DeleteAll();
 }
 
 void ObjectManager::CheckRootObjectIDs(const TransformPool& tfPool)
 {
-	for (uint newID : _newObjectIds)
+	for (uint newID : _newObjectIDs)
 	{
 		auto tf = tfPool.Find(newID); assert(tf);
-		uint parentId = tf->GetParentId().Literal();
+		uint parentID = tf->GetParentID().Literal();
 
-		if (parentId == ObjectId::Undefined())
+		if (parentID == ObjectID::Undefined())
 		{
-			if (_rootObjectIds.GetIndexer().Has(newID) == false)
-				_rootObjectIds.Add(newID, newID);
+			if (_rootObjectIDs.GetIndexer().Has(newID) == false)
+				_rootObjectIDs.Add(newID, newID);
 		}
 	}
 
-	_newObjectIds.clear();
+	_newObjectIDs.clear();
 }
 
-void ObjectManager::AddNewRootObject(ObjectId id)
+void ObjectManager::AddNewRootObject(ObjectID id)
 {
-	_newObjectIds.push_back(id.Literal());
+	_newObjectIDs.push_back(id.Literal());
 }
 
-void ObjectManager::DeleteRootObject(ObjectId id)
+void ObjectManager::DeleteRootObject(ObjectID id)
 {
-	_rootObjectIds.Delete(id);
+	_rootObjectIDs.Delete(id);
 }

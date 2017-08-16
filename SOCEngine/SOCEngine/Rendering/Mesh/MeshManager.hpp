@@ -2,7 +2,7 @@
 
 #include "VectorIndexer.hpp"
 #include "Mesh.h"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include <tuple>
 #include <assert.h>
 
@@ -11,7 +11,7 @@ namespace Rendering
 	namespace Manager
 	{
 		template <typename Trait>
-		class MeshPool : public Core::VectorHashMap<Core::ObjectId::LiteralType, Geometry::Mesh>
+		class MeshPool : public Core::VectorHashMap<Core::ObjectID::LiteralType, Geometry::Mesh>
 		{
 		public:
 			MeshPool() = default;
@@ -25,28 +25,28 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
-			template<typename MeshTraits> Geometry::Mesh& Acquire(Core::ObjectId objId)
+			template<typename MeshTraits> Geometry::Mesh& Acquire(Core::ObjectID objID)
 			{
-				auto mesh = Geometry::Mesh(objId);
-				return GetPool<MeshTraits>().Add(objId.Literal(), mesh);
+				auto mesh = Geometry::Mesh(objID);
+				return GetPool<MeshTraits>().Add(objID.Literal(), mesh);
 			}
-			template<typename MeshTraits> void Delete(Core::ObjectId objId)
+			template<typename MeshTraits> void Delete(Core::ObjectID objID)
 			{
-				GetPool<MeshTraits>().Delete(objId.Literal());
+				GetPool<MeshTraits>().Delete(objID.Literal());
 			}
-			template<typename MeshTraits> bool Has(Core::ObjectId objId) const
+			template<typename MeshTraits> bool Has(Core::ObjectID objID) const
 			{
-				return	GetPool<MeshTraits>().GetIndexer().Has(objId.Literal());
+				return	GetPool<MeshTraits>().GetIndexer().Has(objID.Literal());
 			}
-			template<typename MeshTraits> Geometry::Mesh* Find(Core::ObjectId id)
+			template<typename MeshTraits> Geometry::Mesh* Find(Core::ObjectID id)
 			{
 				return GetPool<MeshTraits>().Find(id.Literal());
 			}
 
-			Geometry::Mesh& Acquire(Core::ObjectId objId);
-			void Delete(Core::ObjectId objId);
-			bool Has(Core::ObjectId objId) const;
-			Geometry::Mesh* Find(Core::ObjectId id);
+			Geometry::Mesh& Acquire(Core::ObjectID objID);
+			void Delete(Core::ObjectID objID);
+			bool Has(Core::ObjectID objID) const;
+			Geometry::Mesh* Find(Core::ObjectID id);
 
 			void CheckDirty(const Core::TransformPool& tfPool);
 			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;

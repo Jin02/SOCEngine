@@ -7,27 +7,27 @@ using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Math;
 
-Mesh& MeshManager::Acquire(Core::ObjectId objId)
+Mesh& MeshManager::Acquire(Core::ObjectID objID)
 {
-	auto mesh = Mesh(objId);
-	return GetPool<OpaqueTrait>().Add(objId.Literal(), mesh);
+	auto mesh = Mesh(objID);
+	return GetPool<OpaqueTrait>().Add(objID.Literal(), mesh);
 }
 
-void MeshManager::Delete(Core::ObjectId objId)
+void MeshManager::Delete(Core::ObjectID objID)
 {
-	GetPool<OpaqueTrait>().Delete(objId.Literal());
-	GetPool<AlphaBlendTrait>().Delete(objId.Literal());
-	GetPool<TransparencyTrait>().Delete(objId.Literal());
+	GetPool<OpaqueTrait>().Delete(objID.Literal());
+	GetPool<AlphaBlendTrait>().Delete(objID.Literal());
+	GetPool<TransparencyTrait>().Delete(objID.Literal());
 }
 
-bool MeshManager::Has(Core::ObjectId objId) const
+bool MeshManager::Has(Core::ObjectID objID) const
 {
-	return	GetPool<OpaqueTrait>().GetIndexer().Has(objId.Literal()) |
-		GetPool<AlphaBlendTrait>().GetIndexer().Has(objId.Literal()) |
-		GetPool<TransparencyTrait>().GetIndexer().Has(objId.Literal());
+	return	GetPool<OpaqueTrait>().GetIndexer().Has(objID.Literal()) |
+		GetPool<AlphaBlendTrait>().GetIndexer().Has(objID.Literal()) |
+		GetPool<TransparencyTrait>().GetIndexer().Has(objID.Literal());
 }
 
-Mesh* MeshManager::Find(Core::ObjectId id)
+Mesh* MeshManager::Find(Core::ObjectID id)
 {
 	auto opaque = GetPool<OpaqueTrait>().Find(id.Literal());
 	if (opaque) return opaque;
@@ -48,7 +48,7 @@ void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
 		for (uint i=0; i<size; ++i)
 		{
 			auto& mesh = pool.Get(i);
-			auto tf = tfPool.Find(mesh.GetObjectId().Literal()); assert(tf);
+			auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 
 			if (tf->GetDirty())
 				dirty.push_back(&mesh);
@@ -68,7 +68,7 @@ void MeshManager::ComputeWorldSize(
 	{
 		for (auto& iter : vector)
 		{
-			ObjectId id = iter->GetObjectId();
+			ObjectID id = iter->GetObjectID();
 
 			const Transform* tf = tfPool.Find(id.Literal()); assert(tf);
 			iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
@@ -84,7 +84,7 @@ void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPo
 	{		
 		for (auto& mesh : vector)
 		{
-			uint id = mesh->GetObjectId().Literal();
+			uint id = mesh->GetObjectID().Literal();
 			
 			const Transform* tf = tfPool.Find(id); assert(tf);
 			mesh->UpdateTransformCB(dx, *tf);
@@ -106,7 +106,7 @@ void MeshManager::UpdateTraits()
 			if (mesh.GetChangedTrait())
 			{
 				changedMeshes.push_back(mesh);
-				pool.Delete(mesh.GetObjectId().Literal());
+				pool.Delete(mesh.GetObjectID().Literal());
 			}
 		}
 	};
@@ -118,11 +118,11 @@ void MeshManager::UpdateTraits()
 	for (auto iter : changedMeshes)
 	{
 		if( iter.GetTrait() == Trait::Opaque )
-			GetPool<OpaqueTrait>().Add(iter.GetObjectId().Literal(), iter);
+			GetPool<OpaqueTrait>().Add(iter.GetObjectID().Literal(), iter);
 		else if(iter.GetTrait() == Trait::AlphaBlend )
-			GetPool<AlphaBlendTrait>().Add(iter.GetObjectId().Literal(), iter);
+			GetPool<AlphaBlendTrait>().Add(iter.GetObjectID().Literal(), iter);
 		else if (iter.GetTrait() == Trait::Transparency)
-			GetPool<TransparencyTrait>().Add(iter.GetObjectId().Literal(), iter);
+			GetPool<TransparencyTrait>().Add(iter.GetObjectID().Literal(), iter);
 
 		iter.ClearDirty();
 	}

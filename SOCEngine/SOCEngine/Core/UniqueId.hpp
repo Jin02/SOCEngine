@@ -4,26 +4,26 @@
 
 namespace Core
 {
-	class UniqueId
+	class UniqueID
 	{
 	public:
 		using LiteralType = uint;
 		inline LiteralType Literal() const { return _id; }
-		bool operator==(const UniqueId& rhs) const
+		bool operator==(const UniqueID& rhs) const
 		{
 			return _id == rhs._id;
 		}
-		bool operator!=(const UniqueId& rhs) const
+		bool operator!=(const UniqueID& rhs) const
 		{
 			return !operator==(rhs);
 		}
 
 		static constexpr LiteralType Undefined() { return -1; }
 
-		UniqueId() : _id(Undefined()) {}
+		UniqueID() : _id(Undefined()) {}
 
 	protected:
-		explicit UniqueId(LiteralType id) : _id(id) {}
+		explicit UniqueID(LiteralType id) : _id(id) {}
 		LiteralType _id;
 	};
 }

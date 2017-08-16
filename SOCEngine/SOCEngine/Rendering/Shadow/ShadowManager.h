@@ -43,9 +43,9 @@ namespace Rendering
 			void UpdateConstBuffer(Device::DirectX& dx);
 
 			template <class ShadowType>
-			ShadowType& Acquire(Core::ObjectId objId)
+			ShadowType& Acquire(Core::ObjectID objID)
 			{
-				return Add( ShadowType(objId) );
+				return Add( ShadowType(objID) );
 			}
 
 			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
@@ -56,27 +56,27 @@ namespace Rendering
 				shadow.SetDirty(true);
 				_dirtyGlobalParam = true;
 
-				uint objLiteralId = shadow.GetObjectId().Literal();
-				return GetPool<ShadowType>().Add(objLiteralId, shadow);
+				uint objLiteralID = shadow.GetObjectID().Literal();
+				return GetPool<ShadowType>().Add(objLiteralID, shadow);
 			}
-			template <class ShadowType>	void Delete(Core::ObjectId objId)
+			template <class ShadowType>	void Delete(Core::ObjectID objID)
 			{			
-				uint index = GetPool<ShadowType>().GetIndexer().Find(objId.Literal());
+				uint index = GetPool<ShadowType>().GetIndexer().Find(objID.Literal());
 
-				GetPool<ShadowType>().Delete(objId.Literal());
+				GetPool<ShadowType>().Delete(objID.Literal());
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
 				GetShadowMapCB<ShadowType>().Delete(index);
 
-				uint prevDeleteIdx = GetShadowDatas<ShadowType>().reupdateMinIndex;
-				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIdx);
+				uint prevDeleteIDx = GetShadowDatas<ShadowType>().reupdateMinIndex;
+				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIDx);
 
 				_dirtyGlobalParam = true;
 			}
-			template <class ShadowType>	bool Has(Core::ObjectId objId) const
+			template <class ShadowType>	bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<ShadowType>().GetIndexer().Has(objId.Literal());
+				return GetPool<ShadowType>().GetIndexer().Has(objID.Literal());
 			}
-			template <class ShadowType>	auto Find(Core::ObjectId id)
+			template <class ShadowType>	auto Find(Core::ObjectID id)
 			{
 				return GetPool<ShadowType>().Find(id.Literal());
 			}

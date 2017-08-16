@@ -14,8 +14,8 @@ namespace Importer
 	{
 		struct Parts final
 		{
-			std::string meshPartId;
-			std::string materialId;
+			std::string meshPartID;
+			std::string materialID;
 		};
 
 		template <typename Type>
@@ -35,8 +35,8 @@ namespace Importer
 		{
 			rotation.tf.w = 1.0f;
 
-			localMatrix = Math::Matrix::Identity();
-			worldMatrix = Math::Matrix::Identity();
+			localMatrix = Math::Matrix::IDentity();
+			worldMatrix = Math::Matrix::IDentity();
 		}
 
 		std::string						id;
@@ -106,9 +106,9 @@ namespace Importer
 
 		struct Part final
 		{
-			Part() : meshPartId(), indices(), intersection() {}
+			Part() : meshPartID(), indices(), intersection() {}
 
-			std::string meshPartId;
+			std::string meshPartID;
 			std::vector<unsigned int> indices;
 
 			Intersection intersection;

@@ -3,7 +3,7 @@
 #include "Common.h"
 #include <string>
 
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "ComponentSystem.hpp"
 
 namespace Core
@@ -14,7 +14,7 @@ namespace Core
 	class Object final
 	{
 	public:
-		Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool, ObjectManager* objMgr);
+		Object(ObjectID id, ComponentSystem* compoSystem, TransformPool* tfPool, ObjectManager* objMgr);
 		~Object();
 
 		void AddChild(Object & child);
@@ -50,11 +50,11 @@ namespace Core
 
 	public:
 		GET_CONST_ACCESSOR(Name, auto&, _name);
-		GET_CONST_ACCESSOR(ObjectId, auto, _id);
+		GET_CONST_ACCESSOR(ObjectID, auto, _id);
 
 	private:
 		std::string			_name;
-		ObjectId			_id;
+		ObjectID			_id;
 
 		TransformPool*		_tfPool;
 		ComponentSystem*	_compoSystem;

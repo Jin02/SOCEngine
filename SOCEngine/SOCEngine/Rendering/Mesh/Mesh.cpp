@@ -148,7 +148,7 @@ void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const
 
 void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
 {
-	assert(transform.GetObjectId() == _objectId);
+	assert(transform.GetObjectID() == _objectID);
 
 	if(transform.GetDirty())
 		_tfChangeState = TransformCB::ChangeState::HasChanged;

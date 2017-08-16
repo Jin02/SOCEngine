@@ -901,14 +901,14 @@
     <ClInclude Include="Core\Object.h">
       <Filter>Core\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Core\ObjectId.hpp">
-      <Filter>Core\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Indexer.hpp">
       <Filter>Core\Structure</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h">
       <Filter>Rendering\Postprocessing\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectID.hpp">
+      <Filter>Core\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

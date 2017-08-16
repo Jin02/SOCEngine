@@ -8,7 +8,7 @@
 #include "Frustum.h"
 #include "RenderTexture.h"
 #include "DepthBuffer.h"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 
 #undef near
 #undef far
@@ -47,7 +47,7 @@ namespace Rendering
 			};
 
 		public:
-			MainCamera(Core::ObjectId objId) : _objId(objId) {}
+			MainCamera(Core::ObjectID objID) : _objID(objID) {}
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
 			bool UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
 
@@ -64,7 +64,7 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Near,				float,			_desc.near);
 			SET_ACCESSOR_DIRTY(Far,					float,			_desc.far);
 			SET_ACCESSOR_DIRTY(ClearColor,			const Color&,	_desc.clearColor);
-			GET_SET_ACCESSOR(ObjectId,				Core::ObjectId,	_objId);
+			GET_SET_ACCESSOR(ObjectID,				Core::ObjectID,	_objID);
 			GET_CONST_ACCESSOR(RenderRect,			const auto&,	_desc.renderRect);
 			GET_CONST_ACCESSOR(ViewProjMatrix,		const auto&,	_viewProjMat);
 			GET_CONST_ACCESSOR(ProjMatrix,			const auto&,	_projMat);
@@ -86,7 +86,7 @@ namespace Rendering
 
 			std::vector<const Geometry::Mesh*>			_transparentMeshes;
 
-			Core::ObjectId								_objId;
+			Core::ObjectID								_objID;
 			bool										_dirty = true;
 		};
 	}

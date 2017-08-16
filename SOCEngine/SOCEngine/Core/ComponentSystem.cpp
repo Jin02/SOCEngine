@@ -15,7 +15,7 @@ using namespace Intersection;
 
 void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const TransformPool& transformPool,
-	const ObjectId::IndexHashMap& lightShaftIndexer)
+	const ObjectID::IndexHashMap& lightShaftIndexer)
 {
 	ShadowManager& shadowMgr = GetManager_Direct<ShadowManager>();
 	LightManager& lightMgr = GetManager_Direct<LightManager>();
@@ -47,7 +47,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	// Update MainCamera
 	{
 		auto& mainCamera = camMgr.GetMainCamera();
-		auto transform = transformPool.Find(mainCamera.GetObjectId().Literal());
+		auto transform = transformPool.Find(mainCamera.GetObjectID().Literal());
 		assert(transform);
 
 		mainCamera.UpdateCB(dx, *transform);

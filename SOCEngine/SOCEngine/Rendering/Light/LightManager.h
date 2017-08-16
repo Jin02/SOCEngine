@@ -19,32 +19,32 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx);
 
 			template <class LightType>
-			LightType& Acquire(Core::ObjectId objId)
+			LightType& Acquire(Core::ObjectID objID)
 			{
-				return Add(LightType(objId));
+				return Add(LightType(objID));
 			}
 
 			template <class LightType>
-			void Delete(Core::ObjectId objId)
+			void Delete(Core::ObjectID objID)
 			{
 				auto& pool = GetPool<LightType>();
-				uint index = pool.GetIndexer().Find(objId.Literal());
+				uint index = pool.GetIndexer().Find(objID.Literal());
 
 				GetBuffer<LightType>().Delete(index);
-				pool.Delete(objId.Literal());
+				pool.Delete(objID.Literal());
 
-				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
+				uint prevDeleteIDx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIDx);
 			}
 
 			template <class LightType>
-			bool Has(Core::ObjectId objId) const
+			bool Has(Core::ObjectID objID) const
 			{
-				return GetPool<LightType>().GetIndexer().Has(objId.Literal());
+				return GetPool<LightType>().GetIndexer().Has(objID.Literal());
 			}
 
 			template <class LightType>
-			auto Find(Core::ObjectId id)
+			auto Find(Core::ObjectID id)
 			{
 				return GetPool<LightType>().Find(id.Literal());
 			}
@@ -56,18 +56,18 @@ namespace Rendering
 
 				GetBuffer<LightType>().PushLight(light);
 
-				Core::ObjectId id = light.GetObjectId();
+				Core::ObjectID id = light.GetObjectID();
 				return GetPool<LightType>().Add(id.Literal(), light);
 			}
 
 			template <class LightType>
 			void Delete(LightType& light)
 			{
-				Core::ObjectId id = light.GetObjectId();
+				Core::ObjectID id = light.GetObjectID();
 				Delete<LightType>(id);
 
-				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
+				uint prevDeleteIDx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIDx);
 			}
 
 			void DeleteAll();
@@ -75,7 +75,7 @@ namespace Rendering
 			uint GetPackedLightCount() const;
 
 			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
-			void UpdateParamBuffer(const ShadowManager& shadowMgr, const Core::ObjectId::IndexHashMap& shaftIndexer );
+			void UpdateParamBuffer(const ShadowManager& shadowMgr, const Core::ObjectID::IndexHashMap& shaftIndexer );
 			void UpdateSRBuffer(Device::DirectX& dx);
 
 			void CheckDirtyLights(const Core::TransformPool& transformPool);

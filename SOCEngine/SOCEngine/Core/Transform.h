@@ -2,7 +2,7 @@
 
 #include "EngineMath.h"
 #include "Common.h"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "VectorIndexer.hpp"
 #include <memory>
 
@@ -20,7 +20,7 @@ namespace Core
 			NowChild
 		};
 
-		explicit Transform(ObjectId id) : _objectId(id) {}
+		explicit Transform(ObjectID id) : _objectID(id) {}
 
 		const Math::Vector3			GetWorldPosition()		const;
 		const Math::Vector3			GetWorldScale()			const;
@@ -50,24 +50,24 @@ namespace Core
 		GET_CONST_ACCESSOR(WorldMatrix, const Math::Matrix&, _worldMat);
 
 		GET_CONST_ACCESSOR(Dirty, bool, _dirty);
-		GET_CONST_ACCESSOR(ObjectId, ObjectId, _objectId);
+		GET_CONST_ACCESSOR(ObjectID, ObjectID, _objectID);
 
-		GET_CONST_ACCESSOR(ParentId, ObjectId, _parentId);
+		GET_CONST_ACCESSOR(ParentID, ObjectID, _parentID);
 		GET_CONST_ACCESSOR(ParentState, ParentState, _parentChangeState);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
 
-		using Childs = std::vector<ObjectId>;
+		using Childs = std::vector<ObjectID>;
 
 		void		AddChild(Transform& child);
-		ObjectId	GetChild(uint index)		{ return _childIds[index];	}
-		ObjectId	GetChild(uint index) const	{ return _childIds[index]; }
-		void		DeleteAllChilds()			{ _childIds.clear();		}
-		uint		GetChildCount()	const		{ return _childIds.size();	}
+		ObjectID	GetChild(uint index)		{ return _childIDs[index];	}
+		ObjectID	GetChild(uint index) const	{ return _childIDs[index]; }
+		void		DeleteAllChilds()			{ _childIDs.clear();		}
+		uint		GetChildCount()	const		{ return _childIDs.size();	}
 
-		bool		HasChild(ObjectId id) const;
-		void		DeleteChild(ObjectId id);
+		bool		HasChild(ObjectID id) const;
+		void		DeleteChild(ObjectID id);
 
 		void Update(TransformPool& pool);
 		void ClearDirty();
@@ -101,25 +101,25 @@ namespace Core
 		Math::Vector3		_up				= Math::Vector3(0.0f, 1.0f, 0.0f);
 		Math::Vector3		_right			= Math::Vector3(1.0f, 0.0f, 0.0f);
 
-		ObjectId			_objectId;
+		ObjectID			_objectID;
 		bool				_dirty			= true;
 
-		Childs				_childIds;
+		Childs				_childIDs;
 
-		ObjectId			_parentId;
+		ObjectID			_parentID;
 		ParentState			_parentChangeState = ParentState::NotChanged;
 	};
 
-	class TransformPool final : public Core::VectorHashMap<ObjectId::LiteralType, Transform>
+	class TransformPool final : public Core::VectorHashMap<ObjectID::LiteralType, Transform>
 	{
 	public:
-		using Parent = Core::VectorHashMap<ObjectId::LiteralType, Transform>;
+		using Parent = Core::VectorHashMap<ObjectID::LiteralType, Transform>;
 		using Parent::Parent;
 		using Parent::Add;
 
 		DISALLOW_ASSIGN(TransformPool);
 
-		auto& Add(ObjectId id)
+		auto& Add(ObjectID id)
 		{
 			Transform newTransform(id);
 			return Parent::Add(id.Literal(), newTransform);

@@ -30,7 +30,7 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 
 bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
 {
-	assert(dirtyTransform.GetObjectId() == _objId);
+	assert(dirtyTransform.GetObjectID() == _objID);
 
 	bool changedTF = dirtyTransform.GetDirty() | _dirty;
 	if (changedTF)
@@ -102,7 +102,7 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 
 void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager & meshMgr, const Core::TransformPool & transformPool)
 {
-	assert(transform.GetObjectId() == _objId);
+	assert(transform.GetObjectID() == _objID);
 
 	_transparentMeshes.clear();
 	const auto& meshes = meshMgr.GetPool<TransparencyTrait>().GetVector();
@@ -124,21 +124,21 @@ void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform
 
 		float leftKey = D3D11_FLOAT32_MAX;
 		{
-			auto id = left->GetObjectId();
-			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIdx != TransformPool::IndexerType::FailIndex());
+			auto id = left->GetObjectID();
+			uint findIDx = transformPool.GetIndexer().Find(id.Literal());
+			assert(findIDx != TransformPool::IndexerType::FailIndex());
 
-			Vector3 leftPos = transformPool.Get(findIdx).GetWorldPosition();
+			Vector3 leftPos = transformPool.Get(findIDx).GetWorldPosition();
 			leftKey = SortKey(leftPos);
 		}
 
 		float rightKey = D3D11_FLOAT32_MAX;
 		{
-			auto id = right->GetObjectId();
-			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIdx != TransformPool::IndexerType::FailIndex());
+			auto id = right->GetObjectID();
+			uint findIDx = transformPool.GetIndexer().Find(id.Literal());
+			assert(findIDx != TransformPool::IndexerType::FailIndex());
 
-			Vector3 rightPos = transformPool.Get(findIdx).GetWorldPosition();
+			Vector3 rightPos = transformPool.Get(findIDx).GetWorldPosition();
 			rightKey = SortKey(rightPos);
 		}
 

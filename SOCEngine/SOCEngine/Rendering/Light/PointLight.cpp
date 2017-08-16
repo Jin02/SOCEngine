@@ -10,7 +10,7 @@ using namespace Core;
 
 bool PointLight::Intersect(const Sphere &sphere, const Transform& transform) const
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 	Vector3 wp = transform.GetWorldPosition();
 
 	return Sphere::Intersects(sphere, Sphere(wp, _base.GetRadius()));
@@ -18,7 +18,7 @@ bool PointLight::Intersect(const Sphere &sphere, const Transform& transform) con
 
 PointLight::TransformType PointLight::MakeTransform(const Transform& transform) const
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 	Vector3 wp = transform.GetWorldPosition();
 
 	return Vector4(wp.x, wp.y, wp.z, _base.GetRadius());

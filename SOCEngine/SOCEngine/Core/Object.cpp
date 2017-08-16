@@ -5,7 +5,7 @@
 
 using namespace Core;
 
-Object::Object(ObjectId id, ComponentSystem* compoSystem, TransformPool* tfPool, ObjectManager* objMgr)
+Object::Object(ObjectID id, ComponentSystem* compoSystem, TransformPool* tfPool, ObjectManager* objMgr)
 	: _id(id), _tfPool(tfPool), _compoSystem(compoSystem), _objectMgr(objMgr)
 {
 	_tfPool->Add(id);
@@ -18,8 +18,8 @@ Object::~Object()
 
 void Object::AddChild(Object& child)
 {
-	ObjectId childId = child.GetObjectId();
-	auto foundtf = _tfPool->Find(childId.Literal());
+	ObjectID childID = child.GetObjectID();
+	auto foundtf = _tfPool->Find(childID.Literal());
 	assert(foundtf);
 
 	_tfPool->Find(_id.Literal())->AddChild(*foundtf);
@@ -27,20 +27,20 @@ void Object::AddChild(Object& child)
 
 bool Object::HasChild(const Object& child) const
 {
-	auto childId = child.GetObjectId();
-	return _tfPool->Find(_id.Literal())->HasChild(childId);
+	auto childID = child.GetObjectID();
+	return _tfPool->Find(_id.Literal())->HasChild(childID);
 }
 
 void Object::DeleteChild(Object& child)
 {
-	_tfPool->Find(_id.Literal())->DeleteChild(child.GetObjectId());
+	_tfPool->Find(_id.Literal())->DeleteChild(child.GetObjectID());
 }
 
 auto Object::FindChildUsingIndex(uint index)
 {
 	auto thisTF = _tfPool->Find(_id.Literal());
 
-	ObjectId id = thisTF->GetChild(index);
+	ObjectID id = thisTF->GetChild(index);
 	return _tfPool->Find(id.Literal());
 }
 

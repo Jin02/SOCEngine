@@ -19,11 +19,11 @@
     <ClInclude Include="Core\ArrayVector.hpp" />
     <ClInclude Include="Core\ComponentSystem.hpp" />
     <ClInclude Include="Core\Engine.h" />
-    <ClInclude Include="Core\ObjectId.hpp" />
     <ClInclude Include="Core\Indexer.hpp" />
     <ClInclude Include="Core\IScene.h" />
     <ClInclude Include="Core\Launcher.h" />
     <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\ObjectID.hpp" />
     <ClInclude Include="Core\UniqueId.hpp" />
     <ClInclude Include="Core\UniqueIdManager.hpp" />
     <ClInclude Include="Core\ObjectManager.h" />

@@ -6,21 +6,21 @@
 
 namespace Core
 {
-	class UniqueIdManager 
+	class UniqueIDManager 
 	{
 	public:
 		constexpr static const uint BitSize = sizeof(uint);
 
-		UniqueIdManager() = default;
+		UniqueIDManager() = default;
 
 	public:
 		const uint Acquire()
 		{
-			uint bitFieldIdx = 0;
+			uint bitFieldIDx = 0;
 			uint allSet = -1;
-			for (; bitFieldIdx < _bitFields.size(); ++bitFieldIdx)
+			for (; bitFieldIDx < _bitFields.size(); ++bitFieldIDx)
 			{
-				auto& bitField = _bitFields[bitFieldIdx];
+				auto& bitField = _bitFields[bitFieldIDx];
 				if (bitField == allSet)
 					continue;
 
@@ -30,12 +30,12 @@ namespace Core
 				if (--pos != BitSize)
 				{
 					bitField |= (1 << pos);
-					return pos + bitFieldIdx * BitSize;
+					return pos + bitFieldIDx * BitSize;
 				}
 			}
 
 			_bitFields.push_back(1);
-			return bitFieldIdx * BitSize;
+			return bitFieldIDx * BitSize;
 		}
 
 		bool Has(uint id)
@@ -58,31 +58,31 @@ namespace Core
 			_bitFields.clear();
 		}
 
-		DISALLOW_ASSIGN(UniqueIdManager);
-		DISALLOW_COPY_CONSTRUCTOR(UniqueIdManager);
+		DISALLOW_ASSIGN(UniqueIDManager);
+		DISALLOW_COPY_CONSTRUCTOR(UniqueIDManager);
 
 	private:
 		std::vector<uint> _bitFields;
 	};
 
-	template <typename IdType>
-	class IdManagerForm : public Core::UniqueIdManager
+	template <typename IDType>
+	class IDManagerForm : public Core::UniqueIDManager
 	{
 	public:
-		IdType Acquire()
+		IDType Acquire()
 		{
-			uint literalId = UniqueIdManager::Acquire();
-			return IdType(literalId);
+			uint literalID = UniqueIDManager::Acquire();
+			return IDType(literalID);
 		}
 
-		bool Has(IdType id)
+		bool Has(IDType id)
 		{
-			return UniqueIdManager::Has(id.Literal());
+			return UniqueIDManager::Has(id.Literal());
 		}
 
-		void Delete(IdType id)
+		void Delete(IDType id)
 		{
-			UniqueIdManager::Delete(id.Literal());
+			UniqueIDManager::Delete(id.Literal());
 		}
 	};
 }

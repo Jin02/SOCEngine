@@ -60,12 +60,12 @@ namespace Core
 
 		void Delete(const Key& key)
 		{
-			uint findIdx = _indexer.Find(key);
-			if (findIdx == IndexerType::FailIndex())
+			uint findIDx = _indexer.Find(key);
+			if (findIDx == IndexerType::FailIndex())
 				return;
 
-			uint ereaseIdx = findIdx;
-			_vector.erase(_vector.begin() + ereaseIdx);
+			uint ereaseIDx = findIDx;
+			_vector.erase(_vector.begin() + ereaseIDx);
 			_indexer.Delete(key);
 		}
 

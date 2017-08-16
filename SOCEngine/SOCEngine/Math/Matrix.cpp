@@ -214,7 +214,7 @@ Matrix Matrix::Multiply(const Matrix& lhs, const Matrix& rhs)
 	return res;
 }
 
-Matrix Matrix::Identity()
+Matrix Matrix::IDentity()
 {
 	Matrix out;
 	memset(&out, 0, sizeof(Matrix));
@@ -306,7 +306,7 @@ Matrix Matrix::Inverse(const Matrix& mat)
 
 Matrix Matrix::RotateUsingQuaternion(const Quaternion& q)
 {
-	Matrix out = Identity();
+	Matrix out = IDentity();
 
 	out._m[0][0] = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
 	out._m[0][1] = 2.0f * (q.x *q.y + q.z * q.w);
@@ -323,7 +323,7 @@ Matrix Matrix::RotateUsingQuaternion(const Quaternion& q)
 
 Matrix Matrix::PerspectiveFovLH(float aspect, float fovy, float zn, float zf)
 {
-	Matrix out = Identity();
+	Matrix out = IDentity();
 
 	float yScale = 1.0f / tanf(fovy / 2.0f);
 	float xScale = yScale / aspect;
@@ -340,7 +340,7 @@ Matrix Matrix::PerspectiveFovLH(float aspect, float fovy, float zn, float zf)
 
 Matrix Matrix::OrthoLH(float w, float h, float zn, float zf)
 {
-	Matrix out = Identity();
+	Matrix out = IDentity();
 
 	out._m[0][0] = 2.0f / w;
 	out._m[1][1] = 2.0f / h;

@@ -50,8 +50,8 @@ namespace Rendering
 				{
 					for (auto shadow : dirtyShadows)
 					{
-						Core::ObjectId objId = shadow->GetObjectId();
-						uint index = indexer.Find(objId.Literal());
+						Core::ObjectID objID = shadow->GetObjectID();
+						uint index = indexer.Find(objID.Literal());
 
 						_constBuffers[index].UpdateSubResource(dx, shadow->GetViewProjectionMatrix());
 					}

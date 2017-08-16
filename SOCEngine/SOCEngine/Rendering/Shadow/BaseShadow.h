@@ -2,7 +2,7 @@
 
 #include "Common.h"
 #include "Color.h"
-#include "ObjectId.hpp"
+#include "ObjectID.hpp"
 #include "VectorIndexer.hpp"
 
 namespace Rendering
@@ -29,7 +29,7 @@ namespace Rendering
 			};
 
 		public:
-			BaseShadow(Core::ObjectId id) : _objectId(id) { }
+			BaseShadow(Core::ObjectID id) : _objectID(id) { }
 
 			GET_SET_ACCESSOR(Dirty, bool, _dirty);
 			GET_CONST_ACCESSOR(Param, Param, _param);
@@ -47,7 +47,7 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Flag, uchar, _param.flag);
 			GET_ACCESSOR(Flag, uchar, _param.flag);
 
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _objectId);
+			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _objectID);
 
 			GET_CONST_ACCESSOR(LightIndex, ushort, _param.lightIndex);
 
@@ -58,14 +58,14 @@ namespace Rendering
 			inline void SetColor(const Color& c) { _param.shadowColor = c.Get32BitUintColor(); _dirty = true; }
 
 		private:
-			Core::ObjectId		_objectId;
+			Core::ObjectID		_objectID;
 
 			Param				_param;
 			bool				_dirty = true;
 		};
 
 		template<class ShadowClass>
-		class ShadowPool final : public Core::VectorHashMap<Core::ObjectId::LiteralType, typename ShadowClass>
+		class ShadowPool final : public Core::VectorHashMap<Core::ObjectID::LiteralType, typename ShadowClass>
 		{
 		public:
 			using LightType		= typename ShadowClass::LightType;

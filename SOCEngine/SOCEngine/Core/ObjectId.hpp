@@ -1,47 +1,47 @@
 #pragma once
 
-#include "UniqueIdManager.hpp"
-#include "UniqueId.hpp"
+#include "UniqueIDManager.hpp"
+#include "UniqueID.hpp"
 #include "VectorIndexer.hpp"
 
 namespace Core
 {
-	class ObjectId : public UniqueId
+	class ObjectID : public UniqueID
 	{
 	private:
-		operator UniqueId::LiteralType() const { return Literal(); }
+		operator UniqueID::LiteralType() const { return Literal(); }
 
 	public:
-		using UniqueId::UniqueId;
+		using UniqueID::UniqueID;
 
-		using IndexMap = Core::IndexMap<Core::ObjectId::LiteralType>;
-		using IndexHashMap = Core::IndexHashMap<Core::ObjectId::LiteralType>;
+		using IndexMap = Core::IndexMap<Core::ObjectID::LiteralType>;
+		using IndexHashMap = Core::IndexHashMap<Core::ObjectID::LiteralType>;
 
 	public:
-		friend class ObjectIdManager;
+		friend class ObjectIDManager;
 		friend class ObjectManager;
-		friend class Indexer<ObjectId, std::unordered_map<ObjectId::LiteralType, uint>>;
-		friend class Indexer<ObjectId, std::map<ObjectId::LiteralType, uint>>;
+		friend class Indexer<ObjectID, std::unordered_map<ObjectID::LiteralType, uint>>;
+		friend class Indexer<ObjectID, std::map<ObjectID::LiteralType, uint>>;
 	};
 
 
-	class ObjectIdManager : public UniqueIdManager
+	class ObjectIDManager : public UniqueIDManager
 	{
 	public:
-		ObjectId Acquire()
+		ObjectID Acquire()
 		{
-			uint literalId = UniqueIdManager::Acquire();
-			return ObjectId(literalId);
+			uint literalID = UniqueIDManager::Acquire();
+			return ObjectID(literalID);
 		}
 
-		bool Has(ObjectId id)
+		bool Has(ObjectID id)
 		{
-			return UniqueIdManager::Has(id.Literal());
+			return UniqueIDManager::Has(id.Literal());
 		}
 
-		void Delete(ObjectId id)
+		void Delete(ObjectID id)
 		{
-			UniqueIdManager::Delete(id.Literal());
+			UniqueIDManager::Delete(id.Literal());
 		}
 	};
 }

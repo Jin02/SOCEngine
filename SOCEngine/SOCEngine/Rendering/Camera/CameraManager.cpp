@@ -5,7 +5,7 @@ using namespace Rendering::Camera;
 using namespace Rendering::Manager;
 
 CameraManager::CameraManager()
-	: _mainCamera(Core::ObjectId())
+	: _mainCamera(Core::ObjectID())
 {
 
 }
@@ -15,9 +15,9 @@ void CameraManager::Initialize(Device::DirectX & dx, ShaderManager & shaderMgr, 
 	_mainCamera.Initialize(dx, shaderMgr, mainCamRenderRect);
 }
 
-void Rendering::Manager::CameraManager::SetMainCamera(Core::ObjectId objectId)
+void Rendering::Manager::CameraManager::SetMainCamera(Core::ObjectID objectID)
 {
-	_mainCamera.SetObjectId(objectId);
+	_mainCamera.SetObjectID(objectID);
 }
 
 void CameraManager::DeleteAll()

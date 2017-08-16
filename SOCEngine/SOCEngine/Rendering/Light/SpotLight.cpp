@@ -23,7 +23,7 @@ bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) cons
 
 SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) const
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 	Vector3 forward = transform.GetWorldForward();
 	float radius = (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
 
@@ -33,7 +33,7 @@ SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) co
 
 SpotLight::Param SpotLight::MakeParam(const Core::Transform& transform) const
 {
-	assert(transform.GetObjectId() == _base.GetObjectId());
+	assert(transform.GetObjectID() == _base.GetObjectID());
 	Vector3 forward = transform.GetWorldForward();
 
 	Param param;

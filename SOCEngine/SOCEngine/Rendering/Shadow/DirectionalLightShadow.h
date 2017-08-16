@@ -44,7 +44,7 @@ namespace Rendering
 			GET_SET_ACCESSOR(ProjectionSize, float, _projectionSize);
 			GET_SET_ACCESSOR(UseAutoProjectionLocation, bool, _useAutoProjectLocation);
 
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
+			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _base.GetObjectID());
 
 			inline void SetDirty(bool b) { _base.SetDirty(b); }
 			GET_CONST_ACCESSOR(Dirty, bool, _base.GetDirty());

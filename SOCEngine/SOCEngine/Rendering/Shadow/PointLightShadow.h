@@ -34,7 +34,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(ViewProjectionMatrix, const auto&, _transposedViewProjMat);
 			GET_CONST_ACCESSOR(Base, const BaseShadow&, _base);
 
-			GET_CONST_ACCESSOR(ObjectId, Core::ObjectId, _base.GetObjectId());
+			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _base.GetObjectID());
 
 			inline void SetDirty(bool b) { _base.SetDirty(b); }
 			GET_CONST_ACCESSOR(Dirty, bool, _base.GetDirty());
