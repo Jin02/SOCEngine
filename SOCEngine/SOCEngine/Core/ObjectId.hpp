@@ -14,8 +14,8 @@ namespace Core
 	public:
 		using UniqueID::UniqueID;
 
-		using IndexMap = Core::IndexMap<Core::ObjectID::LiteralType>;
-		using IndexHashMap = Core::IndexHashMap<Core::ObjectID::LiteralType>;
+		using IndexMap = Core::IndexMap<ObjectID::LiteralType>;
+		using IndexHashMap = Core::IndexHashMap<ObjectID::LiteralType>;
 
 	public:
 		friend class ObjectIDManager;
