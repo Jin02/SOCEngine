@@ -5,21 +5,18 @@ using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
-	Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler,
-	DefaultRenderType renderType, uint defaultVertexInputTypeFlag,
-	const std::string* customShaderFileName, const std::vector<ShaderMacro>* macros)
+DefaultShaderLoader::Shaders& 
+DefaultShaderLoader::LoadDefaultSahder(
+	Device::DirectX& dx, ShaderManager& shaderMgr,
+	DefaultRenderType renderType, uint bufferFlag,
+	const std::vector<ShaderMacro>* macros)
 {
-	std::string fileName = 
-		(customShaderFileName == nullptr)? 
-		MakeDefaultSahderFileName(renderType, defaultVertexInputTypeFlag) : 
-		(*customShaderFileName);
+	uint key = MakeKey(bufferFlag, renderType);
 
 	// check exist
 	{
-		auto findIter = _shaders.find(fileName);
-		if (findIter != _shaders.end())
-			return findIter->second;
+		if (Has(key))
+			return Find(key);
 	}
 
 	std::vector<ShaderMacro> targetShaderMacros;
@@ -42,7 +39,9 @@ const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
 		}
 	}
 
-	auto LoadShader = [&dx = dx, &shaderMgr = shaderMgr, &compiler = compiler](
+	std::string fileName = MakeDefaultSahderFileName(renderType, bufferFlag);
+
+	auto LoadShader = [&dx = dx, &shaderMgr = shaderMgr](
 		const std::string& fileName,
 		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
 		const std::vector<ShaderMacro>* macros) -> ShaderGroup
@@ -57,16 +56,13 @@ const ShaderGroup& DefaultShaderLoader::LoadDefaultSahder(
 	};
 
 	ShaderGroup shader;
-	{
-		std::string vsMainFunc = "", gsMainFunc = "", psMainFunc = "";
-		MakeDefaultShaderMainFuncNames(vsMainFunc, gsMainFunc, psMainFunc, renderType);
+	std::string vsMainFunc = "", gsMainFunc = "", psMainFunc = "";
+	MakeDefaultShaderMainFuncNames(vsMainFunc, gsMainFunc, psMainFunc, renderType);
 
-		shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros);
-		if(shader.IsAllEmpty() == false)
-			_shaders.insert(std::make_pair(fileName, shader));
-	}
+	shader = LoadShader(fileName, vsMainFunc, psMainFunc, gsMainFunc, &targetShaderMacros);
+	assert(shader.IsAllEmpty() == false);
 
-	return _shaders.find(fileName)->second;
+	return Add(key, shader);
 }
 
 void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler)
@@ -77,24 +73,44 @@ void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderM
 		macros.push_back(msaaMacro);	
 	}
 
-	for(uint i=0; i< ((uint)DefaultRenderType::MAX_NUM); ++i)
+	for(uint i=0; i< static_cast<uint>(DefaultRenderType::MAX_NUM); ++i)
 	{
-		DefaultRenderType type = (DefaultRenderType)i;
+		DefaultRenderType type = static_cast<DefaultRenderType>(i);
 
-		LoadDefaultSahder(dx, shaderMgr, compiler, type,
+		LoadDefaultSahder(dx, shaderMgr, type,
 			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
-			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL), nullptr, &macros);
+			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL), &macros);
 
-		LoadDefaultSahder(dx, shaderMgr, compiler, type,
+		LoadDefaultSahder(dx, shaderMgr, type,
 			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
 			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL) | 
-			static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT), nullptr, &macros);
+			static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT), &macros);
 	}
 }
 
 void DefaultShaderLoader::Destroy()
 {
 	_shaders.clear();
+}
+
+DefaultShaderLoader::Shaders&
+	DefaultShaderLoader::Add(uint key, const ShaderGroup& shaders)
+{
+	Shaders shader(shaders);
+	_shaders.insert(std::make_pair(key, shader));
+
+	return _shaders[key];
+}
+
+bool DefaultShaderLoader::Has(uint key) const
+{
+	auto iter = _shaders.find(key);
+	return iter != _shaders.end();
+}
+
+DefaultShaderLoader::Shaders& DefaultShaderLoader::Find(uint key)
+{
+	return _shaders[key];
 }
 
 void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
@@ -145,28 +161,14 @@ void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
 	outPSMain	= psMain;
 }
 
-bool DefaultShaderLoader::FindShader(ShaderGroup& out,
-	uint bufferFlag, DefaultRenderType renderType) const
+uint DefaultShaderLoader::MakeKey(	uint bufferFlag,
+									DefaultRenderType renderType	)
 {
-	std::string key = MakeDefaultSahderFileName(renderType, bufferFlag);
+	uint bitOffset = 0; //컴파일 과정에서 상수로 치환된다.
+	for (;((1 << bitOffset) & static_cast<uint>(BufferFlag::MAX)) == 0; ++bitOffset);
 
-	auto iter = _shaders.find(key);
-	if(iter == _shaders.end())
-		return false;
-
-	out = iter->second;
-	return true;
-}
-
-bool DefaultShaderLoader::Has(uint bufferFlag, DefaultRenderType renderType) const
-{
-	std::string key = MakeDefaultSahderFileName(renderType, bufferFlag);
-	return _shaders.find(key) != _shaders.end();
-}
-
-bool DefaultShaderLoader::Has(const std::string & fileName) const
-{
-	return _shaders.find(fileName) != _shaders.end();
+	uint key = (static_cast<uint>(renderType) << bitOffset) | bufferFlag;
+	return key;
 }
 
 std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const
@@ -212,4 +214,9 @@ std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType ren
 	}
 
 	return frontFileName + defaultVertexInputTypeStr;
+}
+
+DefaultShaderLoader::Shaders::Shaders(const ShaderGroup& shaderGroup)
+	: vs(*shaderGroup.vs), ps(*shaderGroup.ps), gs(*shaderGroup.gs)
+{
 }

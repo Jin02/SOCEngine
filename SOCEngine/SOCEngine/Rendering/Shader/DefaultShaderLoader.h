@@ -14,22 +14,34 @@ namespace Rendering
 		class DefaultShaderLoader
 		{
 		public:
+			struct Shaders
+			{
+				Shader::VertexShader	vs;
+				Shader::PixelShader		ps;
+				Shader::GeometryShader	gs;
+
+				Shaders() = default;
+				Shaders(const Shader::ShaderGroup& shaderGroup);
+			};
+
+		public:
 			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler);
 			void Destroy();
-			bool Has(uint bufferFlag, DefaultRenderType renderType) const;
-			bool Has(const std::string& fileName) const;
-			bool FindShader(Shader::ShaderGroup& out, uint bufferFlag, DefaultRenderType renderType) const;
 
+			Shaders& Add(uint key, const Shader::ShaderGroup& shaders);
+			bool Has(uint key) const;
+			Shaders& Find(uint key);
+
+			static uint MakeKey(uint bufferFlag, DefaultRenderType renderType);
 			std::string MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const;
 
 		private:
-			const Shader::ShaderGroup& LoadDefaultSahder(Device::DirectX& dx, ShaderManager& shaderMgr, Shader::ShaderCompiler& compiler,
-				DefaultRenderType renderType, uint defaultVertexInputTypeFlag,
-				const std::string* customShaderFileName, const std::vector<Shader::ShaderMacro>* macros);
+			Shaders& LoadDefaultSahder(Device::DirectX& dx, ShaderManager& shaderMgr,
+				DefaultRenderType renderType, uint bufferFlag, const std::vector<Shader::ShaderMacro>* macros);
 			void MakeDefaultShaderMainFuncNames(std::string& outVSMain, std::string& outGSMain, std::string& outPSMain, DefaultRenderType renderType);
 
 		private:
-			std::unordered_map<std::string, Shader::ShaderGroup> _shaders;
+			std::unordered_map<uint, Shaders> _shaders; 
 		};
 	}
 }
