@@ -30,10 +30,8 @@ namespace Core
 
 	public:
 		void UpdateBuffer(Device::DirectX& dx,
-			Math::Vector3& worldMin, Math::Vector3& worldMax,
 			const Core::TransformPool& transformPool,
-			const Core::ObjectId::IndexHashMap& lightShaftIndexer,
-			const Intersection::BoundBox& sceneBoundBox);
+			const Core::ObjectId::IndexHashMap& lightShaftIndexer);
 
 	public:
 #pragma region MultiTypeComponents
@@ -196,5 +194,6 @@ namespace Core
 					Rendering::Manager::CameraManager,
 					Rendering::Manager::ShadowManager >	_componentMgrs;
 
+		Intersection::BoundBox	_sceneBoundBox;
 	};
 }
