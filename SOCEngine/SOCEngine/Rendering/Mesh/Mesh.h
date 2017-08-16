@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "TransformCB.h"
 #include "BoundBox.h"
+#include "MaterialID.hpp"
 #include <string>
 
 namespace Rendering
@@ -80,12 +81,12 @@ namespace Rendering
 			void ClearDirty() { _changedTrait = false; }
 
 		public:
-			void AddMaterialKey(const std::string& key);
-			bool HasMaterialKey(const std::string& key) const;
-			void DeleteMaterialKey(const std::string& key);
+			void AddMaterialID(MaterialID id);
+			bool HasMaterialID(MaterialID id) const;
+			void DeleteMaterialID(MaterialID id);
 
 		public:
-			GET_ACCESSOR(MaterialKeys, const std::vector<std::string>&, _materialKeys);
+			GET_ACCESSOR(MaterialIDs, const std::vector<MaterialID>&, _materialIDs);
 			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _objectID);
 
 			GET_SET_ACCESSOR(Radius,		float,							_radius);
@@ -109,7 +110,7 @@ namespace Rendering
 		private:
 			Buffer::VertexBuffer						_vertexBuffer;
 			Buffer::IndexBuffer							_indexBuffer;
-			std::vector<std::string>					_materialKeys;
+			std::vector<MaterialID>						_materialIDs;
 
 			uint										_bufferFlag = 0;
 			Core::ObjectID								_objectID;

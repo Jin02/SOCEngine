@@ -92,31 +92,31 @@ uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& sema
 	return flag;
 }
 
-void Mesh::AddMaterialKey(const std::string & key)
+void Mesh::AddMaterialID(MaterialID id)
 {
-	assert(key.empty() == false);
-	_materialKeys.push_back(key);
+	assert(id.Literal() != MaterialID::Undefined());
+	_materialIDs.push_back(id);
 }
 
-bool Mesh::HasMaterialKey(const std::string & key) const
+bool Mesh::HasMaterialID(MaterialID id) const
 {
-	for (auto& iter : _materialKeys)
+	for (auto& iter : _materialIDs)
 	{
-		if (iter == key)
+		if (iter == id)
 			return true;
 	}
 
 	return false;
 }
 
-void Mesh::DeleteMaterialKey(const std::string & key)
+void Mesh::DeleteMaterialID(MaterialID id)
 {
-	uint size = _materialKeys.size();
+	uint size = _materialIDs.size();
 	for (uint i = 0; i < size; ++i)
 	{
-		if (_materialKeys[i] == key)
+		if (_materialIDs[i] == id)
 		{
-			_materialKeys.erase( _materialKeys.begin() + i );
+			_materialIDs.erase( _materialIDs.begin() + i );
 			return;
 		}
 	}

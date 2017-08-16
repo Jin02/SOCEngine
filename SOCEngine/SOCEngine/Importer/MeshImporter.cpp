@@ -950,13 +950,15 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(meshFileName, vbChunkKey);
 		assert(vertexBuffer); // "Error, Invalid vb Chunk Key"
 
-		auto material = materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialID);
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
 		mesh.Initialize(*vertexBuffer, *indexBuffer);
-		mesh.AddMaterialKey(material ? material->GetName() : "@Default");
 		mesh.SetBoundBox(boundBox);
 		mesh.SetRadius(radius);
+
+		auto material = materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialID);
+		MaterialID matID = managerParam.materialManager.FindID<PhysicallyBasedMaterial>(material ? material->GetName() : "@Default");
+		mesh.AddMaterialID(matID);
 	};
 
 	// attach submesh and mesh component.
