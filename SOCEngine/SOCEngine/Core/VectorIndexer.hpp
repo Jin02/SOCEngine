@@ -12,10 +12,10 @@ namespace Core
 	class VectorIndexer
 	{
 	public:
-		using IndexerType = IndexerClass;
-		using VectorType = std::vector<Object>;
+		using IndexerType	= IndexerClass;
+		using VectorType	= std::vector<Object>;
 
-		VectorIndexer() : _vector(), _map() {}
+		VectorIndexer() : _vector(), _indexer() {}
 
 		Object& Add(const Key& key, Object&& object)
 		{
@@ -24,11 +24,10 @@ namespace Core
 
 		Object& Add(const Key& key, Object& object)
 		{
+			uint idx = _vector.size();
+			_indexer.Add(key, idx);
+
 			_vector.push_back(object);
-
-			uint idx = _vector.size() - 1;
-			_map.Add(key, idx);
-
 			return _vector[idx];
 		}
 
@@ -49,8 +48,8 @@ namespace Core
 
 		const Object* Find(const Key& key) const
 		{
-			uint findIndex = _map.Find(key);
-			bool isFound = findIndex != decltype(_map)::FailIndex();
+			uint findIndex = _indexer.Find(key);
+			bool isFound = findIndex != decltype(_indexer)::FailIndex();
 			return isFound ? &Get(findIndex) : nullptr;
 		}
 
@@ -61,29 +60,28 @@ namespace Core
 
 		void Delete(const Key& key)
 		{
-			uint findIdx = _map.Find(key);
+			uint findIdx = _indexer.Find(key);
 			if (findIdx == IndexerType::FailIndex())
 				return;
 
 			uint ereaseIdx = findIdx;
 			_vector.erase(_vector.begin() + ereaseIdx);
-			_map.Delete(key);
+			_indexer.Delete(key);
 		}
 
 		void DeleteAll()
 		{
 			_vector.clear();
-			_map.DeleteAll();
+			_indexer.DeleteAll();
 		}
 
-		inline const std::vector<Object>& GetVector() const { return _vector; }
-		inline const IndexerType GetIndexer() const { return _map; }
-
-		GET_CONST_ACCESSOR(Size, unsigned int, _vector.size());
+		GET_CONST_ACCESSOR(Vector,		const auto&,	_vector);
+		GET_CONST_ACCESSOR(Indexer,		const auto&,	_indexer);
+		GET_CONST_ACCESSOR(Size,		unsigned int,	_vector.size());
 
 	private:
 		std::vector<Object>     _vector;
-		IndexerType				_map;
+		IndexerType				_indexer;
 	};
 
 	template<typename Key, typename Object>
