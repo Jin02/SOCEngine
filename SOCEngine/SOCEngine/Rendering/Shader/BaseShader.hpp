@@ -26,6 +26,7 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(Blob, DXSharedResource<ID3DBlob>, _blob);
 			GET_CONST_ACCESSOR(Key, const std::string&, _key);
+			GET_CONST_ACCESSOR(IsCanUse, bool, _blob.IsCanUse());
 
 		private:
 			std::string					_key = "";

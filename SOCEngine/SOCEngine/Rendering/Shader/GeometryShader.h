@@ -9,6 +9,7 @@ namespace Rendering
 		class GeometryShader final
 		{
 		public:
+			GeometryShader() = default;
 			GeometryShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 			void Initialize(Device::DirectX& dx);
@@ -26,10 +27,11 @@ namespace Rendering
 
 			static constexpr const char* GetCompileCode() { return "gs"; }
 			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
 
 		private:
 			DXSharedResource<ID3D11GeometryShader>	_shader;
-			BaseShader							_baseShader;
+			BaseShader								_baseShader;
 		};
 	}
 }

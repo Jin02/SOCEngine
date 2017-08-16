@@ -18,9 +18,11 @@ namespace Rendering
 				uint		size = 0;
 			};
 
+			VertexShader() = default;
 			VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 			GET_CONST_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
 			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
 
 			void Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
 

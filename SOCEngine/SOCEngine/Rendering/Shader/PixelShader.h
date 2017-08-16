@@ -9,6 +9,7 @@ namespace Rendering
 		class PixelShader final
 		{
 		public:
+			PixelShader() = default;
 			PixelShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 			void Initialize(Device::DirectX& dx);
@@ -25,7 +26,9 @@ namespace Rendering
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
 
 			static constexpr const char* GetCompileCode() { return "ps"; }
+
 			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
 
 		private:
 			BaseShader _baseShader;
