@@ -10,6 +10,7 @@
 #include "BufferManager.hpp"
 #include "ShaderManager.h"
 #include "Texture2DManager.h"
+#include "PostProcessPipeline.h"
 
 namespace Device
 {
@@ -45,19 +46,20 @@ namespace Core
 		static NullScene							_nullScene;
 		IScene*										_scene;
 
-		std::chrono::system_clock::time_point		_prevTime;
-		double										_lag = 0.0f;
+		clock_t										_prevTime	= 0;
+		clock_t										_lag		= 0;
 
-		Rendering::Manager::MaterialManager					_materialManager;
-		Rendering::Manager::BufferManager					_bufferManager;
-		Rendering::Manager::ShaderManager					_shaderManager;
-		Rendering::Manager::Texture2DManager				_tex2dManager;
-		Core::ObjectManager									_objectManager;
-		Device::DirectX&									_dx;
-		Core::ComponentSystem								_componentSystem;
-		Core::TransformPool									_transformPool;
+		Rendering::Manager::MaterialManager			_materialManager;
+		Rendering::Manager::BufferManager			_bufferManager;
+		Rendering::Manager::ShaderManager			_shaderManager;
+		Rendering::Manager::Texture2DManager		_tex2dManager;
+		Core::ObjectManager							_objectManager;
+		Device::DirectX&							_dx;
+		Core::ComponentSystem						_componentSystem;
+		Core::TransformPool							_transformPool;
+		Rendering::Manager::PostProcessPipeline		_postProcessing;
 
 	private:
-		std::vector<Core::Transform*>						_dirtyTransforms;
+		std::vector<Core::Transform*>				_dirtyTransforms;
 	};
 }

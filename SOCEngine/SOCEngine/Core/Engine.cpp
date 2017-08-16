@@ -3,7 +3,6 @@
 #include "ObjectManager.h"
 
 using namespace Core;
-using namespace std::chrono;
 using namespace Rendering::Manager;
 using namespace Rendering;
 
@@ -19,15 +18,15 @@ Engine::Engine(Device::DirectX& dx, IScene* scene)
 
 void Engine::RunScene()
 {
-	auto curTime = system_clock::now();
-	duration<double> elapsed = curTime - _prevTime;
+	clock_t curTime = clock();
+	clock_t elapsed = curTime - _prevTime;
 
 	_prevTime = curTime;
-	_lag += elapsed.count();
+	_lag += elapsed;
 
 	_scene->OnInput();
 
-	const double MS_PER_UPDATE = 8.0;
+	constexpr clock_t MS_PER_UPDATE = 100;
 	while (_lag >= MS_PER_UPDATE)
 	{
 		_scene->OnUpdate();
@@ -40,16 +39,47 @@ void Engine::RunScene()
 		for (uint i = 0; i < size; ++i)
 		{
 			auto& tf = _transformPool.Get(i);
-			if( tf.GetDirty() )
+			tf.Update(_transformPool);
+
+			if (tf.GetDirty())
 				_dirtyTransforms.push_back(&tf);
+
+			if (tf.GetParentState() == Transform::ParentState::NowRoot)
+				_objectManager.AddNewRootObject(tf.GetObjectId());
+			else if (tf.GetParentState() == Transform::ParentState::NowChild)
+				_objectManager.DeleteRootObject(tf.GetObjectId());
 		}
 	}
+
+	// Update Root Transform
+	{
+		_objectManager.CheckRootObjectIDs(_transformPool);
+		auto& rootIds = _objectManager.GetRootObjectIDs();
+		for (uint rootId : rootIds)
+		{
+			auto transform = _transformPool.Find(rootId); assert(transform);
+			transform->Update(_transformPool);
+		}
+	}
+
+	// TODO : LightShaftMgr 구현하면 바꿔야함
+	ObjectId::IndexHashMap nullIndexer;
+	_componentSystem.UpdateBuffer(_dx, _transformPool, nullIndexer);
 
 	_scene->OnRenderPreview();
 	Render();
 	_scene->OnRenderPost();
 
+	for (auto& iter : _dirtyTransforms)
+		iter->ClearDirty();
+
 	_dirtyTransforms.clear();
+
+	_materialManager.UpdateConstBuffer(_dx);
+
+	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
+	_postProcessing.SetElapsedTime(dt);
+	_postProcessing.UpdateCB(_dx);
 }
 
 void Engine::ChangeScene(IScene* scene)
