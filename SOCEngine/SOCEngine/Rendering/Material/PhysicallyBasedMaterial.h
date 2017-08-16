@@ -66,6 +66,8 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Flag, uchar, _flag);
 			SET_ACCESSOR_DIRTY(IndexOfRefraction, float, _ior);
 
+			GET_CONST_ACCESSOR(Dirty, bool, _dirty);
+
 		private:
 			bool		_dirty = true;
 			Color		_mainColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
