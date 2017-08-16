@@ -13,6 +13,13 @@ namespace Core
 	class Transform
 	{
 	public:
+		enum class ParentState
+		{
+			NotChanged,
+			NowRoot,
+			NowChild
+		};
+
 		explicit Transform(ObjectId id) : _objectId(id) {}
 
 		const Math::Vector3			GetWorldPosition()		const;
@@ -44,7 +51,9 @@ namespace Core
 
 		GET_CONST_ACCESSOR(Dirty, bool, _dirty);
 		GET_CONST_ACCESSOR(ObjectId, ObjectId, _objectId);
+
 		GET_CONST_ACCESSOR(ParentId, ObjectId, _parentId);
+		GET_CONST_ACCESSOR(ParentState, ParentState, _parentChangeState);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
@@ -60,6 +69,9 @@ namespace Core
 		bool		HasChild(ObjectId id) const;
 		void		DeleteChild(ObjectId id);
 
+		void Update(TransformPool& pool);
+		void ClearDirty();
+
 	private:
 		const Math::Vector3 GetWorldForward(const Math::Vector3& scale)	const;
 		const Math::Vector3	GetWorldRight(const Math::Vector3& scale) const;
@@ -68,12 +80,13 @@ namespace Core
 		const Math::Matrix& ComputeLocalMatrix();
 
 		void _ComputeWorldMatrix(TransformPool& pool);
-		void ComputeWorldMatrix(TransformPool& pool);
 
+		void ComputeWorldMatrix(TransformPool& pool);
 		void UpdateDirty(TransformPool& pool);
 
+		void SetParent(Transform* newParent);
+
 		inline void SetDirty()		{ _dirty = true; }
-		inline void ResetDirty()	{ _dirty = false; }
 
 	private:
 		Math::Matrix		_worldMat;
@@ -91,8 +104,10 @@ namespace Core
 		ObjectId			_objectId;
 		bool				_dirty			= true;
 
-		ObjectId			_parentId;
 		Childs				_childIds;
+
+		ObjectId			_parentId;
+		ParentState			_parentChangeState = ParentState::NotChanged;
 	};
 
 	class TransformPool final : public Core::VectorHashMap<ObjectId::LiteralType, Transform>
