@@ -98,7 +98,7 @@ void Voxelization::Voxelize(
 	auto& dlsBuffer = shadowSystem.manager.GetBuffer<DirectionalLightShadow>().GetBuffer();
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowParam,				dlsBuffer.GetParamSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		dlsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowSystem.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetDepthBuffer().GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowSystem.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,						infoCB.staticInfoCB);
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,					infoCB.dynamicInfoCB);

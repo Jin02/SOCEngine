@@ -20,6 +20,7 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(DepthStencilView, const DXSharedResource<ID3D11DepthStencilView>&, _depthStencilView);
 			GET_CONST_ACCESSOR(RawDepthStencilView, auto, _depthStencilView.GetRaw());
+			GET_CONST_ACCESSOR(Size, const auto&, _tex2D.GetSize());
 			GET_ACCESSOR(Texture2D, Texture2D&, _tex2D);
 
 		private:
