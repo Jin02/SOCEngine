@@ -6,6 +6,11 @@
 
 namespace Rendering
 {
+	namespace Manager
+	{
+		class MaterialManager;
+	}
+
 	class MaterialID : public Core::UniqueID<MaterialID>
 	{
 	public:
@@ -14,6 +19,7 @@ namespace Rendering
 		using Parent::Literal;
 
 		friend class Core::IDManagerForm<MaterialID>;
+		friend class Manager::MaterialManager;
 	};
 
 	using MaterialIDManager = Core::IDManagerForm<MaterialID>;
