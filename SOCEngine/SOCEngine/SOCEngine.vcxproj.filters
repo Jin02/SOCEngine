@@ -913,6 +913,9 @@
     <ClInclude Include="Rendering\Renderer\MeshRenderer.h">
       <Filter>Rendering\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Material\MaterialID.hpp">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
