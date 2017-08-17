@@ -54,7 +54,7 @@ namespace Rendering
 
 				const std::string			fileName;
 				const std::string			ibPartID;
-				uint						vbChunkKey;
+				uint						vbChunkKey		= -1;
 
 				const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos;
 
