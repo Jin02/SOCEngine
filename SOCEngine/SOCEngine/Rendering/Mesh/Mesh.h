@@ -53,14 +53,16 @@ namespace Rendering
 				bool						useDynamicIB	= false;
 
 				const std::string			fileName;
-				const std::string			key;
+				const std::string			ibPartID;
+				uint						vbChunkKey;
 
 				const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos;
 
-				CreateFuncArguments(const std::string& _fileName, const std::string& _key,
+				CreateFuncArguments(const std::string& _fileName,
+					uint _vbChunkKey, const std::string& _ibPartID,
 					const std::vector<uint>& _indices,
 					const std::vector<Shader::VertexShader::SemanticInfo>& _semanticInfos)
-					:fileName(_fileName), key(_key), indices(_indices), semanticInfos(_semanticInfos)
+					:fileName(_fileName), vbChunkKey(_vbChunkKey), ibPartID(_ibPartID), indices(_indices), semanticInfos(_semanticInfos)
 				{}
 			};
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const CreateFuncArguments& args);

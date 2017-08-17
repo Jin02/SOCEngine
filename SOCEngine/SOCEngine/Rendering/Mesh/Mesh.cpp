@@ -13,14 +13,14 @@ using namespace Core;
 using namespace Math;
 using namespace Intersection;
 
-void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const CreateFuncArguments & args)
+void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const CreateFuncArguments& args)
 {
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices.size();
 
-	std::string vbKey = args.fileName + ":" + args.key;
+	uint vbKey = VBPool::MakeKey(args.fileName, args.vbChunkKey);
 
-	if (bufferMgr.GetPool<VertexBuffer>().Has(args.fileName, args.key) == false)
+	if (bufferMgr.GetPool<VertexBuffer>().Has(args.fileName, args.vbChunkKey) == false)
 	{
 		VertexBuffer::Desc param;
 		{
@@ -30,13 +30,13 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 		}
 
 		_vertexBuffer.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
-		bufferMgr.GetPool<VertexBuffer>().Add(args.fileName, args.key, _vertexBuffer);
+		bufferMgr.GetPool<VertexBuffer>().Add(args.fileName, args.vbChunkKey, _vertexBuffer);
 	}
 
-	if (bufferMgr.GetPool<IndexBuffer>().Has(args.fileName, args.key) == false)
+	if (bufferMgr.GetPool<IndexBuffer>().Has(args.fileName, args.ibPartID) == false)
 	{
 		_indexBuffer.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
-		bufferMgr.GetPool<IndexBuffer>().Add(args.fileName, args.key, _indexBuffer);
+		bufferMgr.GetPool<IndexBuffer>().Add(args.fileName, args.ibPartID, _indexBuffer);
 	}	
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);
