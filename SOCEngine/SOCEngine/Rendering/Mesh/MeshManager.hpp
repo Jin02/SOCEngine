@@ -10,12 +10,14 @@ namespace Rendering
 {
 	namespace Manager
 	{
+		using MeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Geometry::Mesh>;
+
 		template <typename Trait>
-		class MeshPool : public Core::VectorHashMap<Core::ObjectID::LiteralType, Geometry::Mesh>
+		class MeshPoolTrait : public MeshPool
 		{
 		public:
-			MeshPool() = default;
-			DISALLOW_ASSIGN(MeshPool);
+			MeshPoolTrait() = default;
+			DISALLOW_ASSIGN(MeshPoolTrait);
 		};
 
 		class MeshManager final
@@ -55,21 +57,21 @@ namespace Rendering
 			void UpdateTraits();
 			void ClearDirty() { _dirtyMeshes.clear(); }
 
-			template <typename Trait> MeshPool<Trait>& GetPool()
+			template <typename Trait> MeshPool& GetPool()
 			{
-				return std::get<MeshPool<Trait>>(_tuple);
+				return std::get<MeshPoolTrait<Trait>>(_tuple);
 			}
-			template <typename Trait> const MeshPool<Trait>& GetPool() const
+			template <typename Trait> const MeshPool& GetPool() const
 			{
-				return std::get<MeshPool<Trait>>(_tuple);
+				return std::get<MeshPoolTrait<Trait>>(_tuple);
 			}
 
 			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
 
 		private:
-			std::tuple<	MeshPool<Geometry::OpaqueTrait>,
-						MeshPool<Geometry::AlphaBlendTrait>,
-						MeshPool<Geometry::TransparencyTrait>> _tuple;
+			std::tuple<	MeshPoolTrait<Geometry::OpaqueTrait>,
+						MeshPoolTrait<Geometry::AlphaBlendTrait>,
+						MeshPoolTrait<Geometry::TransparencyTrait>> _tuple;
 
 			std::vector<Geometry::Mesh*> _dirtyMeshes;
 		};
