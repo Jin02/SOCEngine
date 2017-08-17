@@ -19,9 +19,9 @@ namespace Rendering
 		MaterialForm(const std::string& name) : _name(name) {}
 
 		GET_CONST_ACCESSOR(Name, const std::string&, _name);
-		GET_CONST_ACCESSOR(Textures, const std::vector<BindTextured2D>&, _textures.GetVector());
-		GET_CONST_ACCESSOR(ConstBuffers, const std::vector<BindConstBuffer>&, _constBuffers.GetVector());
-		GET_CONST_ACCESSOR(ShaderResourceBuffers, const std::vector<BindSRBuffer>&, _srBuffers.GetVector());
+		GET_ACCESSOR(Textures, auto&, _textures);
+		GET_ACCESSOR(ConstBuffers, auto&, _constBuffers);
+		GET_ACCESSOR(ShaderResourceBuffers, auto&, _srBuffers);
 
 	protected:
 		using Texture2Ds = Core::VectorHashMap<std::string, BindTextured2D>;

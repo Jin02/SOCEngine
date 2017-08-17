@@ -77,7 +77,7 @@ namespace Rendering
 	enum class ConstBufferBindIndex : unsigned int
 	{
 		TBRParam						= 0,
-		World							= 1,
+		Transform						= 1,
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
