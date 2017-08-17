@@ -182,7 +182,7 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
-	Mesh::CreateFuncArguments args("@DefaultBox", key, indices, info.semantics);
+	Mesh::CreateFuncArguments args("@DefaultBox", std::hash<std::string>()(key), "[Box]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
 		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
@@ -283,7 +283,7 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 		key += UintToStr(defautVertexInputTypeFlag);
 	}
 
-	Mesh::CreateFuncArguments args("@DefaultSphere", key, indices, info.semantics);
+	Mesh::CreateFuncArguments args("@DefaultSphere", std::hash<std::string>()(key), "[Sphere]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
 		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
@@ -431,7 +431,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		key += UintToStr(defautVertexInputTypeFlag);
 	}
 
-	Mesh::CreateFuncArguments args("@DefaultCylinder", key, indices, info.semantics);
+	Mesh::CreateFuncArguments args("@DefaultCylinder", std::hash<std::string>()(key), "[Cylinder]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
 		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));
@@ -508,7 +508,7 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
 
-	Mesh::CreateFuncArguments args("@DefaultCylinder", key, indices, info.semantics);
+	Mesh::CreateFuncArguments args("@DefaultCylinder", std::hash<std::string>()(key), "[Plane]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
 		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));

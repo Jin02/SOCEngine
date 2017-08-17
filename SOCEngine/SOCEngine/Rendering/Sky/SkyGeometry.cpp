@@ -14,7 +14,7 @@ void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 {
 	auto CreateMeshContent = [this, &dx](const Mesh::CreateFuncArguments& args)
 	{
-		std::string vbKey = args.fileName + ":" + args.key;
+		uint vbKey = VBPool::MakeKey(args.fileName, args.vbChunkKey);
 
 		VertexBuffer::Desc desc;
 		{
@@ -24,7 +24,7 @@ void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 		}
 
 		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);
-		_indexBuffer.Initialize(dx, args.indices, vbKey, false);
+		_indexBuffer.Initialize(dx, args.indices, args.vbChunkKey, false);
 	};
 
 	BasicGeometryGenerator gen;
