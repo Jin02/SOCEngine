@@ -13,12 +13,13 @@ namespace Rendering
 			struct Desc
 			{
 				Desc() = default;
-				Desc(const std::string& _key, uint _stride, uint _vertexCount)
-					: key(_key), stride(_stride), vertexCount(_vertexCount) { }
+				Desc(const std::string& _strKey, uint _key, uint _stride, uint _vertexCount)
+					: strKey(_strKey), key(_key), stride(_stride), vertexCount(_vertexCount) { }
 
-				std::string	key		= "";
-				uint		stride		= 0;
-				uint		vertexCount	= 0;
+				std::string		strKey		= "";
+				uint			key			= -1;
+				uint			stride		= 0;
+				uint			vertexCount	= 0;
 			};
 
 			VertexBuffer() = default;
@@ -28,7 +29,8 @@ namespace Rendering
 			void UpdateVertexData(Device::DirectX& dx, const void* data, uint size);
 
 			GET_CONST_ACCESSOR(VertexCount, uint, _desc.vertexCount);
-			GET_CONST_ACCESSOR(Key, const std::string&, _desc.key);
+			GET_CONST_ACCESSOR(Key, uint, _desc.key);
+			GET_CONST_ACCESSOR(StrKey, const auto&, _desc.strKey);
 
 			GET_CONST_ACCESSOR(Semantics, const std::vector<Shader::VertexShader::SemanticInfo>&, _semantics);
 
