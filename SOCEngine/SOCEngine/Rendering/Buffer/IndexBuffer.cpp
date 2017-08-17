@@ -6,10 +6,10 @@ using namespace Device;
 
 void IndexBuffer::Initialize(
 	Device::DirectX& dx,
-	const std::vector<uint>& indices, const std::string& useVertexBufferKey, bool isDynamic)
+	const std::vector<uint>& indices, uint vbChunkKey, bool isDynamic)
 {
 	_indexCount = indices.size();
-	_useVertexBufferKey = useVertexBufferKey;
+	_vbChunkKey = vbChunkKey;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
