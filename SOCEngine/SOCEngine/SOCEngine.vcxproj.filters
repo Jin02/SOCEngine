@@ -175,9 +175,6 @@
     <Filter Include="Rendering\Buffer\Index">
       <UniqueIdentifier>{c32529c7-c4d6-46c3-9ce1-0a40b06723bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Buffer\Raw">
-      <UniqueIdentifier>{ca66c953-2ea5-4d7f-91ea-b54b8fe04caa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Buffer\ShaderResource">
       <UniqueIdentifier>{cb6fb0c0-5ad9-4f18-b917-ad4b938e50f6}</UniqueIdentifier>
     </Filter>
@@ -421,6 +418,9 @@
     <Filter Include="Rendering\Renderer\Sky">
       <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Buffer\Index\Raw">
+      <UniqueIdentifier>{ca66c953-2ea5-4d7f-91ea-b54b8fe04caa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -608,7 +608,7 @@
       <Filter>Rendering\Buffer\Index</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\RawBuffer.h">
-      <Filter>Rendering\Buffer\Raw</Filter>
+      <Filter>Rendering\Buffer\Index\Raw</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
@@ -982,7 +982,7 @@
       <Filter>Rendering\Buffer\Index</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\RawBuffer.cpp">
-      <Filter>Rendering\Buffer\Raw</Filter>
+      <Filter>Rendering\Buffer\Index\Raw</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
