@@ -617,7 +617,7 @@ Core::Object& MeshImporter::BuildMesh(
 		uint meshIndex = 0;
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter, ++meshIndex)
 		{
-			uint vbKey = VBPool::MakeKey(meshFileName, meshIndex);
+			VertexBuffer::Key vbKey = VBPool::MakeKey(meshFileName, meshIndex);
 
 			std::vector<std::string> meshPartIDKeys;
 
@@ -929,7 +929,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		IndexBuffer* indexBuffer = buferMgr.GetPool<IndexBuffer>().Find(meshFileName, part.meshPartID);
 		assert(indexBuffer); // "Error, Invalid mesh part id"
 
-		uint vbChunkKey = indexBuffer->GetVBChunkKey();
+		VertexBuffer::Key vbChunkKey = indexBuffer->GetVBChunkKey();
 		assert(vbChunkKey != -1); // "Error, Invalid vb Chunk Key"
 
 		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(meshFileName, vbChunkKey);

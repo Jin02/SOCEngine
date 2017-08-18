@@ -39,8 +39,7 @@ namespace Rendering
 			{
 				uint findIndex = _buffers.GetIndexer().Find(file + ":" + key);
 
-				auto failIDx = Core::VectorMap<std::string, BufferType>::IndexyerType::FailIndex();
-				if (findIndex != failIDx)
+				if (findIndex != -1)
 					_buffers.Delete(findIndex);
 			}
 
@@ -60,16 +59,16 @@ namespace Rendering
 			BufferPool() = default;
 			DISALLOW_ASSIGN_COPY(BufferPool);
 
-			static uint MakeKey(const std::string& fileName, uint vbChunkKey)
+			static uint MakeKey(const std::string& fileName, Buffer::VertexBuffer::Key vbChunkKey)
 			{
 				return std::hash<std::string>()(fileName + std::to_string(vbChunkKey));
 			}
-			static std::string MakeStrKey(const std::string& fileName, uint vbChunkKey)
+			static std::string MakeStrKey(const std::string& fileName, Buffer::VertexBuffer::Key vbChunkKey)
 			{
 				return fileName + ":" + std::to_string(vbChunkKey);
 			}
 
-			void Add(const std::string& file, uint vbChunkKey, const Buffer::VertexBuffer& bufferData)
+			void Add(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey, const Buffer::VertexBuffer& bufferData)
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
 
@@ -77,18 +76,18 @@ namespace Rendering
 				_buffers.Add(bufferData.GetKey(), bufferData);
 			}
 
-			auto Find(const std::string& file, uint vbChunkKey)
+			auto Find(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey)
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
 
 				uint hashKey = _indexer.Find(strKey);
 				return _buffers.Find(hashKey);
 			}
-			bool Has(const std::string& file, uint vbChunkKey) const
+			bool Has(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey) const
 			{
 				return _indexer.Has(MakeStrKey(file, vbChunkKey));
 			}
-			void DeleteBuffer(const std::string& file, uint vbChunkKey)
+			void DeleteBuffer(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey)
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
 				uint findKey = _indexer.Find(strKey);
@@ -100,15 +99,15 @@ namespace Rendering
 				}
 			}
 
-			auto Find(uint vbKey)
+			auto Find(Buffer::VertexBuffer::Key vbKey)
 			{
 				return _buffers.Find(vbKey);
 			}
-			bool Has(uint vbKey) const
+			bool Has(Buffer::VertexBuffer::Key vbKey) const
 			{
 				return _buffers.Has(vbKey);
 			}
-			void DeleteBuffer(uint vbKey)
+			void DeleteBuffer(Buffer::VertexBuffer::Key vbKey)
 			{
 				auto vb = _buffers.Find(vbKey);
 				if (vb == nullptr) return;
