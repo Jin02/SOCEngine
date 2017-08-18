@@ -10,60 +10,54 @@ using namespace Math;
 Mesh& MeshManager::Acquire(Core::ObjectID objID)
 {
 	auto mesh = Mesh(objID);
-	AddMeshIDToTraitArray<OpaqueTrait>(mesh);
-
-	return _pool.Add(objID.Literal(), mesh);
+	return GetPool<OpaqueTrait>().Add(objID.Literal(), mesh);
 }
+
 void MeshManager::Delete(Core::ObjectID objID)
 {
-	auto mesh = _pool.Find(objID.Literal());
-	DeleteMeshIDToTraitArray<OpaqueTrait>(*mesh);
-	_pool.Delete(objID.Literal());
+	GetPool<OpaqueTrait>().Delete(objID.Literal());
+	GetPool<AlphaBlendTrait>().Delete(objID.Literal());
+	GetPool<TransparencyTrait>().Delete(objID.Literal());
 }
+
 bool MeshManager::Has(Core::ObjectID objID) const
 {
-	return _pool.Has(objID.Literal());
+	return	GetPool<OpaqueTrait>().Has(objID.Literal()) |
+		GetPool<AlphaBlendTrait>().Has(objID.Literal()) |
+		GetPool<TransparencyTrait>().Has(objID.Literal());
 }
+
 Mesh* MeshManager::Find(Core::ObjectID id)
 {
-	return _pool.Find(id.Literal());
+	auto opaque = GetPool<OpaqueTrait>().Find(id.Literal());
+	if (opaque) return opaque;
+
+	auto alpha = GetPool<AlphaBlendTrait>().Find(id.Literal());
+	if (alpha) return alpha;
+
+	auto transparency = GetPool<TransparencyTrait>().Find(id.Literal());
+	return transparency;
 }
 
-void MeshManager::CheckTraitWithDirty(const Core::TransformPool& tfPool)
+void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
 {
 	auto& dirty = _dirtyMeshes;
-
-	uint size = _pool.GetSize();
-	for (uint i = 0; i<size; ++i)
+	auto Check = [&dirty, &tfPool](auto& pool)
 	{
-		Mesh& mesh = _pool.Get(i);
-		auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
-
-		if (tf->GetDirty())
-			dirty.push_back(&mesh);
-
-		if (mesh.GetChangedTrait())
+		uint size = pool.GetSize();
+		for (uint i=0; i<size; ++i)
 		{
-			/*
-			기존껀? 어딘가에 추가되있을거야
-			그럼 그 값을 가져오고, 기존에 있는걸 제거해
-			그리고 가져온 값을 새곳에 추가해. 그럼 되잖아.
-			*/
+			auto& mesh = pool.Get(i);
+			auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 
-
-			if (mesh.GetPrevTrait() == Trait::Opaque)
-			{
-			}
-			else if (mesh.GetPrevTrait() == Trait::AlphaBlend)
-			{
-
-			}
-			else if (mesh.GetPrevTrait() == Trait::Transparency)
-			{
-
-			}
+			if (tf->GetDirty())
+				dirty.push_back(&mesh);
 		}
-	}
+	};
+
+	Check(GetPool<OpaqueTrait>());
+	Check(GetPool<AlphaBlendTrait>());
+	Check(GetPool<TransparencyTrait>());
 }
 
 void MeshManager::ComputeWorldSize(
@@ -100,10 +94,36 @@ void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPo
 	Update(_dirtyMeshes);
 }
 
-void MeshManager::ClearDirty()
+void MeshManager::UpdateTraits()
 {
-	for (auto iter : _dirtyMeshes)
-		iter->ClearDirty();
+	std::vector<Mesh> changedMeshes;
+	auto Check = [&changedMeshes](auto& pool)
+	{
+		uint size = pool.GetSize();
+		for (uint i = 0; i < size;)
+		{
+			auto& mesh = pool.Get(i);
+			if (mesh.GetChangedTrait())
+			{
+				changedMeshes.push_back(mesh);
+				pool.Delete(mesh.GetObjectID().Literal());
+			}
+		}
+	};
 
-	_dirtyMeshes.clear();
+	Check(GetPool<OpaqueTrait>());
+	Check(GetPool<AlphaBlendTrait>());
+	Check(GetPool<TransparencyTrait>());
+
+	for (auto iter : changedMeshes)
+	{
+		if( iter.GetTrait() == Trait::Opaque )
+			GetPool<OpaqueTrait>().Add(iter.GetObjectID().Literal(), iter);
+		else if(iter.GetTrait() == Trait::AlphaBlend )
+			GetPool<AlphaBlendTrait>().Add(iter.GetObjectID().Literal(), iter);
+		else if (iter.GetTrait() == Trait::Transparency)
+			GetPool<TransparencyTrait>().Add(iter.GetObjectID().Literal(), iter);
+
+		iter.ClearDirty();
+	}
 }
