@@ -77,10 +77,13 @@ namespace Rendering
 				if (_trait == ToTrait::Trait)
 					return;
 
+				_prevTrait = _trait;
 				_trait = ToTrait::Trait;
-				_changedTrait = true;
 			}
-			void ClearDirty() { _changedTrait = false; }
+			void ClearDirty()
+			{
+				_prevTrait = _trait;
+			}
 
 		public:
 			void AddMaterialID(MaterialID id);
@@ -95,8 +98,9 @@ namespace Rendering
 			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
 			GET_ACCESSOR(PrevWorldMat,		const Math::Matrix&,			_prevWorldMat);
 
-			GET_CONST_ACCESSOR(ChangedTrait, bool, _changedTrait);
+			GET_CONST_ACCESSOR(ChangedTrait, bool, _prevTrait != _trait);
 			GET_CONST_ACCESSOR(Trait, Trait, _trait);
+			GET_CONST_ACCESSOR(PrevTrait, Trait, _prevTrait);
 
 			GET_ACCESSOR(VertexBuffer, auto&, _vertexBuffer);
 			GET_ACCESSOR(IndexBuffer, auto&, _indexBuffer);
@@ -127,7 +131,7 @@ namespace Rendering
 			bool										_culled = false;
 
 			Trait										_trait = Trait::Opaque;
-			bool										_changedTrait = true;
+			Trait										_prevTrait = Trait::AlphaBlend;
 
 			friend class MeshUtility;
 		};
