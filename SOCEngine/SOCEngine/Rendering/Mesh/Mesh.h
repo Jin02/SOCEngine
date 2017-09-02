@@ -53,7 +53,7 @@ namespace Rendering
 				{}
 			};
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const CreateFuncArguments& args);
-			void Initialize(const Buffer::VertexBuffer& vertexBuffer, const Buffer::IndexBuffer& indexBuffer);
+			void Initialize(const Buffer::VertexBuffer::Semantics& semantics, Buffer::BaseBuffer::Key vbKey, Buffer::BaseBuffer::Key ibKey);
 
 			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
@@ -71,8 +71,8 @@ namespace Rendering
 			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
 			GET_ACCESSOR(PrevWorldMat,		const Math::Matrix&,			_prevWorldMat);
 
-			GET_ACCESSOR(VertexBuffer, auto&, _vertexBuffer);
-			GET_ACCESSOR(IndexBuffer, auto&, _indexBuffer);
+			GET_ACCESSOR(VBKey, Buffer::BaseBuffer::Key, _vbKey);
+			GET_ACCESSOR(IBKey, Buffer::BaseBuffer::Key, _ibKey);
 			GET_ACCESSOR(TransformCB, auto&, _transformCB);
 
 			GET_CONST_ACCESSOR(BufferFlag, uint, _bufferFlag);
@@ -84,8 +84,8 @@ namespace Rendering
 				uint maxRecognizeBoneCount = 4) const;
 
 		private:
-			Buffer::VertexBuffer						_vertexBuffer;
-			Buffer::IndexBuffer							_indexBuffer;
+			Buffer::BaseBuffer::Key						_vbKey;
+			Buffer::BaseBuffer::Key						_ibKey;
 			std::vector<MaterialID>						_materialIDs;
 
 			uint										_bufferFlag = 0;

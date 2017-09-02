@@ -20,7 +20,6 @@ void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 
 		VertexBuffer::Desc desc;
 		{
-			desc.key = vbKey;
 			desc.stride = args.vertices.byteWidth;
 			desc.vertexCount = args.vertices.count;
 		}

@@ -29,18 +29,23 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 		{
 			param.stride		= args.vertices.byteWidth;
 			param.vertexCount	= args.vertices.count;
-			param.key			= vbKey;
 		}
 
-		_vertexBuffer.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
-		bufferMgr.GetPool<VertexBuffer>().Add(vbKey, _vertexBuffer);
+		VertexBuffer vb;
+		vb.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
+
+		bufferMgr.GetPool<VertexBuffer>().Add(vbKey, vb);
+		_vbKey = vbKey;
 	}
 
 	uint ibKey = String::MakeKey({ args.fileName, args.ibPartID });
 	if (bufferMgr.GetPool<IndexBuffer>().Has(ibKey) == false)
 	{
-		_indexBuffer.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
-		bufferMgr.GetPool<IndexBuffer>().Add(ibKey, _indexBuffer);
+		IndexBuffer ib;
+		ib.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
+
+		bufferMgr.GetPool<IndexBuffer>().Add(ibKey, ib);
+		_ibKey = ibKey;
 	}	
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);
@@ -48,12 +53,12 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 	_transformCB.Initialize(dx);
 }
 
-void Mesh::Initialize(const Buffer::VertexBuffer & vertexBuffer, const Buffer::IndexBuffer & indexBuffer)
+void Mesh::Initialize(const VertexBuffer::Semantics& semantics, BaseBuffer::Key vbKey, BaseBuffer::Key ibKey)
 {
-	_vertexBuffer	= vertexBuffer;
-	_indexBuffer	= indexBuffer;
+	_vbKey = vbKey;
+	_ibKey = ibKey;
 
-	_bufferFlag = ComputeBufferFlag(vertexBuffer.GetSemantics());
+	_bufferFlag = ComputeBufferFlag(semantics);
 }
 
 uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& semantics, uint maxRecognizeBoneCount) const

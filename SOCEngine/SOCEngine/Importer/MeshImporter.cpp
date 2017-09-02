@@ -778,7 +778,7 @@ Core::Object& MeshImporter::BuildMesh(
 				// Make Vertex Buffer
 				{
 					auto& vertices = meshIter->vertexDatas;
-					VertexBuffer::Desc desc(vbKey, stride, vertices.size() / (stride / 4));
+					VertexBuffer::Desc desc(stride, vertices.size() / (stride / 4));
 
 					VertexBuffer vertexBuffer;
 					vertexBuffer.Initialize(managerParam.dx, desc, vertices.data(), useDynamicVB, semantics);
@@ -940,7 +940,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		assert(vertexBuffer); // "Error, Invalid vb Chunk Key"
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
-		mesh.Initialize(*vertexBuffer, *indexBuffer);
+		mesh.Initialize(vertexBuffer->GetSemantics(), vbKey, ibKey);
 		mesh.SetBoundBox(boundBox);
 		mesh.SetRadius(radius);
 
