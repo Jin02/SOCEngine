@@ -33,8 +33,8 @@ namespace Rendering
 				GetBuffer<LightType>().Delete(index);
 				pool.Delete(objID.Literal());
 
-				uint prevDeleteIDx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIDx);
+				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 
 			template <class LightType>
@@ -66,8 +66,8 @@ namespace Rendering
 				Core::ObjectID id = light.GetObjectID();
 				Delete<LightType>(id);
 
-				uint prevDeleteIDx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIDx);
+				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
+				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 
 			void DeleteAll();

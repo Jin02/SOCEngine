@@ -45,8 +45,8 @@ namespace Rendering
 
 				pool.Delete(objID.Literal());
 
-				uint prevDeleteIDx = GetCameraDatas<CameraType>().reupdateMinIndex;
-				GetCameraDatas<CameraType>().reupdateMinIndex = min(index, prevDeleteIDx);
+				uint prevDeleteIdx = GetCameraDatas<CameraType>().reupdateMinIndex;
+				GetCameraDatas<CameraType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 			template <class CameraType> bool Has(Core::ObjectID objID) const
 			{

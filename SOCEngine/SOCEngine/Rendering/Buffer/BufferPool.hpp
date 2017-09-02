@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "VectorIndexer.hpp"
+#include "Bookmark.hpp"
 
 namespace Rendering
 {
@@ -72,7 +73,7 @@ namespace Rendering
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
 
-				_indexer.Add(strKey, bufferData.GetKey());
+				_idMarker.Add(strKey, bufferData.GetKey());
 				_buffers.Add(bufferData.GetKey(), bufferData);
 			}
 
@@ -80,22 +81,22 @@ namespace Rendering
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
 
-				uint hashKey = _indexer.Find(strKey);
+				uint hashKey = _idMarker.Find(strKey);
 				return _buffers.Find(hashKey);
 			}
 			bool Has(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey) const
 			{
-				return _indexer.Has(MakeStrKey(file, vbChunkKey));
+				return _idMarker.Has(MakeStrKey(file, vbChunkKey));
 			}
 			void DeleteBuffer(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey)
 			{
 				std::string strKey = MakeStrKey(file, vbChunkKey);
-				uint findKey = _indexer.Find(strKey);
+				uint findKey = _idMarker.Find(strKey);
 
 				if (findKey != -1)
 				{
 					_buffers.Delete(findKey);
-					_indexer.Delete(strKey);
+					_idMarker.Delete(strKey);
 				}
 			}
 
@@ -113,18 +114,18 @@ namespace Rendering
 				if (vb == nullptr) return;
 
 				_buffers.Delete(vbKey);
-				_indexer.Delete(vb->GetStrKey());
+				_idMarker.Delete(vb->GetStrKey());
 			}
 
 
 			void Destroy()
 			{
 				_buffers.DeleteAll();
-				_indexer.DeleteAll();
+				_idMarker.DeleteAll();
 			}
 
 		private:
-			Core::IndexHashMap<std::string>				_indexer;
+			Core::BookHashMapmark<std::string>			_idMarker;
 			Core::VectorMap<uint, Buffer::VertexBuffer> _buffers;
 		};
 

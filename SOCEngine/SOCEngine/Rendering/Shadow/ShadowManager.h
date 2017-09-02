@@ -67,8 +67,8 @@ namespace Rendering
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
 				GetShadowMapCB<ShadowType>().Delete(index);
 
-				uint prevDeleteIDx = GetShadowDatas<ShadowType>().reupdateMinIndex;
-				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIDx);
+				uint prevDeleteIdx = GetShadowDatas<ShadowType>().reupdateMinIndex;
+				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIdx);
 
 				_dirtyGlobalParam = true;
 			}

@@ -277,9 +277,9 @@ void MeshImporter::ParseMaterial(Importer::Material& outMaterial, const rapidjso
 	{
 		const auto& texturesNode = matNode["textures"];
 		uint texSize = texturesNode.Size();
-		for(uint texIDx = 0; texIDx < texSize; ++texIDx)
+		for(uint texIdx = 0; texIdx < texSize; ++texIdx)
 		{
-			const auto& texInfoNode = texturesNode[texIDx];
+			const auto& texInfoNode = texturesNode[texIdx];
 			Material::Texture texInfo;
 			texInfo.id			= texInfoNode["id"].GetString();
 			texInfo.fileName	= std::string("Textures/") + texInfoNode["filename"].GetString();
@@ -435,11 +435,11 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			for(uint i=0; i<indicesCount; ++i) //CW
 			{
 				uint index = indicesNode[i].GetUint();
-				uint posIDxOffsetInVertices = index * lineCount;
+				uint posIdxOffsetInVertices = index * lineCount;
 
-				float& x = vertices[posIDxOffsetInVertices + 0];
-				float& y = vertices[posIDxOffsetInVertices + 1];
-				float& z = vertices[posIDxOffsetInVertices + 2];
+				float& x = vertices[posIdxOffsetInVertices + 0];
+				float& y = vertices[posIdxOffsetInVertices + 1];
+				float& z = vertices[posIdxOffsetInVertices + 2];
 
 				if(isSetupTranslation)
 				{
@@ -502,7 +502,7 @@ void MeshImporter::ParseJson(std::vector<Importer::Mesh>& outMeshes, std::vector
 		for(uint i=0; i<size; ++i)
 		{
 			Node node;
-			Matrix identityMat = Matrix::IDentity();
+			Matrix identityMat = Matrix::Identity();
 			ParseNode(node, nodes[i], identityMat);
 			outNodes.push_back(node);
 		}
@@ -751,11 +751,11 @@ Core::Object& MeshImporter::BuildMesh(
 					const uint next = originStride / sizeof(float);
 					uint size = vertexDatas.size();
 
-					uint tanIDx = 0;
+					uint tanIdx = 0;
 					uint start = (sizeof(Vector3) * 2) / sizeof(float);
 					for(uint i= start; i<size; i+=next)
 					{
-						const Vector3& tangent = tangents[tanIDx++];
+						const Vector3& tangent = tangents[tanIdx++];
 
 						vertexDatas.insert( vertexDatas.begin() + i, tangent.z );	//z
 						vertexDatas.insert( vertexDatas.begin() + i, tangent.y );	//y

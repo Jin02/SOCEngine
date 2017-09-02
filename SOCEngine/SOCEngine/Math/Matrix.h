@@ -56,7 +56,7 @@ namespace Math
 		static Matrix Multiply(const Matrix& lhs, const Matrix& rhs);
 		static Matrix Transpose(const Matrix& mat);
 		static Matrix Inverse(const Matrix& mat); 		//using cramer's rule
-		static Matrix IDentity();
+		static Matrix Identity();
 
 	public:
 		union

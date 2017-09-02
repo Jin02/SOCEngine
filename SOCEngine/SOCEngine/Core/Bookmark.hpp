@@ -9,7 +9,7 @@
 namespace Core
 {
 	template <typename Key, class Map>
-	class Indexer
+	class Bookmark
 	{
 	public:
 		void Add(const Key& key, uint index)
@@ -32,19 +32,9 @@ namespace Core
 
 		void Delete(const Key& key)
 		{
-			const auto& iter = _map.find(key);
-
-			if (iter == _map.end())
-				return;
-
-			uint ereaseIDx = iter->second;
-			_map.erase(iter);
-
-			for (auto& mapIter : _map)
-			{
-				if (mapIter.second < ereaseIDx)
-					mapIter.second -= 1;
-			}
+			auto found = _map.find(key);			
+			if (found != _map.end())
+				_map.erase(found);
 		}
 
 		void DeleteAll()
@@ -59,8 +49,8 @@ namespace Core
 	};
 
 	template<typename Key>
-	using IndexHashMap = Indexer<Key, std::unordered_map<Key, uint>>;
+	using BookHashMapmark = Bookmark<Key, std::unordered_map<Key, uint>>;
 
 	template<typename Key>
-	using IndexMap = Indexer<Key, std::map<Key, uint>>;
+	using BookMapmark = Bookmark<Key, std::map<Key, uint>>;
 }

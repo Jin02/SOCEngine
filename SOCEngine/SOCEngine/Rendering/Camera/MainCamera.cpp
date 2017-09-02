@@ -125,20 +125,20 @@ void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform
 		float leftKey = D3D11_FLOAT32_MAX;
 		{
 			auto id = left->GetObjectID();
-			uint findIDx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIDx != TransformPool::IndexerType::FailIndex());
+			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
+			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
-			Vector3 leftPos = transformPool.Get(findIDx).GetWorldPosition();
+			Vector3 leftPos = transformPool.Get(findIdx).GetWorldPosition();
 			leftKey = SortKey(leftPos);
 		}
 
 		float rightKey = D3D11_FLOAT32_MAX;
 		{
 			auto id = right->GetObjectID();
-			uint findIDx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIDx != TransformPool::IndexerType::FailIndex());
+			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
+			assert(findIdx != TransformPool::IndexerType::FailIndex());
 
-			Vector3 rightPos = transformPool.Get(findIDx).GetWorldPosition();
+			Vector3 rightPos = transformPool.Get(findIdx).GetWorldPosition();
 			rightKey = SortKey(rightPos);
 		}
 

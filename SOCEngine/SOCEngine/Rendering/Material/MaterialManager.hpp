@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "MaterialID.hpp"
+#include "Bookmark.hpp"
 
 namespace Rendering
 {
@@ -92,11 +93,11 @@ namespace Rendering
 			}
 			template <typename MaterialType> auto& GetIDIndexer()
 			{
-				return GetMaterialDatas<MaterialType>().idIndexer;
+				return GetMaterialDatas<MaterialType>().idMarker;
 			}
 			template <typename MaterialType> const auto& GetIDIndexer() const
 			{
-				return GetMaterialDatas<MaterialType>().idIndexer;
+				return GetMaterialDatas<MaterialType>().idMarker;
 			}
 			template <typename MaterialType> auto& GetIDManager()
 			{
@@ -123,11 +124,11 @@ namespace Rendering
 			template <class MaterialType>
 			struct MaterialDatas
 			{
-				MaterialPool<MaterialType>		pool;
-				std::vector<MaterialType*>		dirty;
+				MaterialPool<MaterialType>			pool;
+				std::vector<MaterialType*>			dirty;
 
-				Core::IndexHashMap<std::string>	idIndexer;
-				MaterialIDManager				idMgr;
+				Core::BookHashMapmark<std::string>	idMarker;
+				MaterialIDManager					idMgr;
 			};
 
 			std::tuple<	MaterialDatas<Material::PhysicallyBasedMaterial>,

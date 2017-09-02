@@ -16,11 +16,11 @@ namespace Core
 	public:
 		const uint Acquire()
 		{
-			uint bitFieldIDx = 0;
+			uint bitFieldIdx = 0;
 			uint allSet = -1;
-			for (; bitFieldIDx < _bitFields.size(); ++bitFieldIDx)
+			for (; bitFieldIdx < _bitFields.size(); ++bitFieldIdx)
 			{
-				auto& bitField = _bitFields[bitFieldIDx];
+				auto& bitField = _bitFields[bitFieldIdx];
 				if (bitField == allSet)
 					continue;
 
@@ -30,12 +30,12 @@ namespace Core
 				if (--pos != BitSize)
 				{
 					bitField |= (1 << pos);
-					return pos + bitFieldIDx * BitSize;
+					return pos + bitFieldIdx * BitSize;
 				}
 			}
 
 			_bitFields.push_back(1);
-			return bitFieldIDx * BitSize;
+			return bitFieldIdx * BitSize;
 		}
 
 		bool Has(uint id)

@@ -88,11 +88,11 @@ namespace Rendering
 						Core::ObjectID objID = light->GetObjectID();
 						uint literalID = objID.Literal();
 
-						ushort shadowIDx = indexers.shadowIndexer.Find(literalID);
-						uint lightShaftIDx = indexers.lightShaftIndexer.Find(literalID);
+						ushort shadowIdx = indexers.shadowIndexer.Find(literalID);
+						uint lightShaftIdx = indexers.lightShaftIndexer.Find(literalID);
 
 						uint index = indexer.Find(literalID);
-						_commonBuffer.SetData(index, light->GetBase(), shadowIDx, lightShaftIDx);
+						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 
 					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() != false);

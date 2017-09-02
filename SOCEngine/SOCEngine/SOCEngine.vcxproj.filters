@@ -916,6 +916,9 @@
     <ClInclude Include="Rendering\Material\MaterialID.hpp">
       <Filter>Rendering\Material</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Bookmark.hpp">
+      <Filter>Core\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">

@@ -5,6 +5,7 @@
 #include "ObjectID.hpp"
 #include "Singleton.h"
 #include "Object.h"
+#include "Bookmark.hpp"
 
 namespace Core
 {
@@ -47,7 +48,7 @@ namespace Core
 		VectorHashMap<	ObjectID::LiteralType,
 						ObjectID::LiteralType>				_rootObjectIDs;
 
-		IndexHashMap<std::string>							_toIndex;
+		BookHashMapmark<std::string>						_idMarker;
 
 		ObjectIDManager										_objIDMgr;
 	};

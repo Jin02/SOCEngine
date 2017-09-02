@@ -53,7 +53,7 @@ namespace Importer
 		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
 		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 
-		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIDx, std::string* outChunkKey) const;
+		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
 
 		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
 		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);

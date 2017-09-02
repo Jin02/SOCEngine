@@ -74,7 +74,7 @@ void AtmosphericScattering::Material::UpdateTransform(const CameraForm* camera)
 	
 		Vector3 camWorldPos(world._41, world._42, world._43);
 	
-		Matrix::IDentity(world);
+		Matrix::Identity(world);
 		world._41 = camWorldPos.x;
 		world._42 = camWorldPos.y;
 		world._43 = camWorldPos.z;
