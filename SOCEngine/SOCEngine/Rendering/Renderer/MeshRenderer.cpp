@@ -26,6 +26,7 @@ void BindBasicCB(DirectX& dx, Mesh& mesh, ConstBuffer& camCB)
 	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera, camCB);
 }
 
+/*
 void MeshRenderer::RenderWithoutIASetVB(RenderParam param, Mesh& mesh)
 {	
 	//auto& indexBuffer = mesh.GetIndexBuffer();
@@ -106,3 +107,5 @@ void MeshRenderer::RenderUsingSortedMeshVectorByVB(RenderParam param, MeshPool& 
 
 	}
 }
+
+*/

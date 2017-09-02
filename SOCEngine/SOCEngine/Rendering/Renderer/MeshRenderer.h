@@ -29,8 +29,8 @@ namespace Rendering
 				) : dx(_dx), materialMgr(_materialMgr), renderType(_renderType), camCB(_camCB) {}
 			};
 
-			void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);
-			void RenderUsingSortedMeshVectorByVB(RenderParam param, Manager::MeshPool& meshes);
+			//void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);
+			//void RenderUsingSortedMeshVectorByVB(RenderParam param, Manager::MeshPool& meshes);
 
 		private:
 			Manager::DefaultShaderLoader _loader;
