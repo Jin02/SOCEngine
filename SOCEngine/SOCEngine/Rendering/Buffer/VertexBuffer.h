@@ -10,6 +10,7 @@ namespace Rendering
 		class VertexBuffer
 		{
 		public:
+			using Key = BaseBuffer::Key;
 			using Semantics = std::vector<Shader::VertexShader::SemanticInfo>;
 			struct Desc
 			{

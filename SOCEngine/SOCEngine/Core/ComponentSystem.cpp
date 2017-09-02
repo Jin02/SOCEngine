@@ -26,23 +26,22 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	{
 		lightMgr.CheckDirtyLights(transformPool);
 		shadowMgr.CheckDirtyShadows(lightMgr, transformPool);
-//		meshMgr.CheckDirty(transformPool);
-//		meshMgr.UpdateTraits();
+		meshMgr.CheckDirty(transformPool);
 	}
 
-//	bool isDirtyMesh = meshMgr.GetHasDirtyMeshes();
-//	if (meshMgr.GetHasDirtyMeshes())
-//	{
-//		uint	value = 0xff7fffff; float fltMin = (*(float*)&value);
-//		value = 0x7f7fffff;	float fltMax = (*(float*)&value);
-//
-//		Vector3 worldMin = Vector3(fltMax, fltMax, fltMax);
-//		Vector3 worldMax = Vector3(fltMin, fltMin, fltMin);
-////		meshMgr.ComputeWorldSize(worldMin, worldMax, transformPool);
-//		_sceneBoundBox.SetMinMax(worldMin, worldMax);
-//	}
+	bool isDirtyMesh = meshMgr.GetHasDirtyMeshes();
+	if (meshMgr.GetHasDirtyMeshes())
+	{
+		uint	value = 0xff7fffff; float fltMin = (*(float*)&value);
+		value = 0x7f7fffff;	float fltMax = (*(float*)&value);
 
-//	meshMgr.UpdateTransformCB(dx, transformPool);
+		Vector3 worldMin = Vector3(fltMax, fltMax, fltMax);
+		Vector3 worldMax = Vector3(fltMin, fltMin, fltMin);
+		meshMgr.ComputeWorldSize(worldMin, worldMax, transformPool);
+		_sceneBoundBox.SetMinMax(worldMin, worldMax);
+	}
+
+	meshMgr.UpdateTransformCB(dx, transformPool);
 
 	// Update MainCamera
 	{
@@ -69,6 +68,6 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	{
 		lightMgr.ClearDirty();
 		shadowMgr.ClearDirty();
-//		meshMgr.ClearDirty();
+		meshMgr.ClearDirty();
 	}
 }
