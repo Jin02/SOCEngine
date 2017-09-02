@@ -12,9 +12,9 @@ namespace Core
 	class Bookmark
 	{
 	public:
-		void Add(const Key& key, uint index)
+		void Add(const Key& key, uint markValue)
 		{
-			_map.insert(std::make_pair(key, index));
+			_map.insert(std::make_pair(key, markValue));
 		}
 
 		uint Find(const Key& key) const
@@ -42,7 +42,7 @@ namespace Core
 			_map.clear();
 		}
 
-		static constexpr uint FailIndex() { return -1; }//std::numeric_limits<uint>::max(); }
+		static constexpr uint Fail() { return -1; }//std::numeric_limits<uint>::max(); }
 
 	private:
 		Map	_map;
