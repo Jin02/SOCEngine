@@ -67,9 +67,6 @@ namespace Rendering
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
 				GetShadowMapCB<ShadowType>().Delete(index);
 
-				uint prevDeleteIdx = GetShadowDatas<ShadowType>().reupdateMinIndex;
-				GetShadowDatas<ShadowType>().reupdateMinIndex = min(index, prevDeleteIdx);
-
 				_dirtyGlobalParam = true;
 			}
 			template <class ShadowType>	bool Has(Core::ObjectID objID) const
@@ -146,7 +143,6 @@ namespace Rendering
 				std::vector<ShadowType*>						dirtyShadows;
 				Shadow::Buffer::ShadowBufferObject<ShadowType>	buffers;
 				Shadow::Buffer::ShadowMapCB<ShadowType>			constBuffers;
-				uint											reupdateMinIndex = 0;
 			};
 
 			std::tuple<	ShadowDatas<Shadow::SpotLightShadow>,
