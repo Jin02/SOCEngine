@@ -69,6 +69,16 @@ namespace Utility
 
 			return ParseNameAndFormat( &path.c_str()[fileNameStartPos+1] );
 		}
+
+		static uint MakeKey(const std::vector<std::string>& keys)
+		{
+			std::string result = "";
+			for (auto& iter : keys)
+				result += iter;
+
+			return std::hash<std::string>()(result);
+		}
+
 	};
 
 	template <unsigned int CheckValue, unsigned int searchPos = sizeof(int) * 8 - 1>
