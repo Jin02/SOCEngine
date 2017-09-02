@@ -2,6 +2,7 @@
 #include "DefaultRenderTypes.h"
 #include "DefaultShaderLoader.h"
 #include "MeshManager.hpp"
+#include "Utility.hpp"
 
 using namespace Device;
 using namespace Rendering;
@@ -10,6 +11,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Core;
+using namespace Utility;
 using namespace Math;
 using namespace Intersection;
 
@@ -18,9 +20,10 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices.size();
 
-	uint vbKey = VBPool::MakeKey(args.fileName, args.vbChunkKey);
+	String::MakeKey({ args.fileName, args.ibPartID });
+	uint vbKey = Utility::String::MakeKey({ args.fileName, std::to_string(args.vbUserHashKey) });
 
-	if (bufferMgr.GetPool<VertexBuffer>().Has(args.fileName, args.vbChunkKey) == false)
+	if (bufferMgr.GetPool<VertexBuffer>().Has(vbKey) == false)
 	{
 		VertexBuffer::Desc param;
 		{
@@ -30,13 +33,14 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 		}
 
 		_vertexBuffer.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
-		bufferMgr.GetPool<VertexBuffer>().Add(args.fileName, args.vbChunkKey, _vertexBuffer);
+		bufferMgr.GetPool<VertexBuffer>().Add(vbKey, _vertexBuffer);
 	}
 
-	if (bufferMgr.GetPool<IndexBuffer>().Has(args.fileName, args.ibPartID) == false)
+	uint ibKey = String::MakeKey({ args.fileName, args.ibPartID });
+	if (bufferMgr.GetPool<IndexBuffer>().Has(ibKey) == false)
 	{
 		_indexBuffer.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
-		bufferMgr.GetPool<IndexBuffer>().Add(args.fileName, args.ibPartID, _indexBuffer);
+		bufferMgr.GetPool<IndexBuffer>().Add(ibKey, _indexBuffer);
 	}	
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);

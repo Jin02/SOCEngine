@@ -41,15 +41,15 @@ namespace Rendering
 
 				const std::string			fileName;
 				const std::string			ibPartID;
-				uint						vbChunkKey		= -1;
+				uint						vbUserHashKey;
 
 				const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos;
 
 				CreateFuncArguments(const std::string& _fileName,
-					uint _vbChunkKey, const std::string& _ibPartID,
+					uint _vbUserHashKey, const std::string& _ibPartID,
 					const std::vector<uint>& _indices,
 					const std::vector<Shader::VertexShader::SemanticInfo>& _semanticInfos)
-					:fileName(_fileName), vbChunkKey(_vbChunkKey), ibPartID(_ibPartID), indices(_indices), semanticInfos(_semanticInfos)
+					:fileName(_fileName), vbUserHashKey(_vbUserHashKey), ibPartID(_ibPartID), indices(_indices), semanticInfos(_semanticInfos)
 				{}
 			};
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const CreateFuncArguments& args);
