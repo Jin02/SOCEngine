@@ -84,25 +84,16 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 		{
 			auto& shadow = pool.Get(i);
 			
-			if (i < shadowDatas.reupdateMinIndex)
-			{
-				Core::ObjectID objID = shadow.GetObjectID();
-				using ShadowPoolType = std::decay_t<decltype(pool)>;
+			Core::ObjectID objID = shadow.GetObjectID();
+			using ShadowPoolType = std::decay_t<decltype(pool)>;
 
-				auto light = lightMgr.GetPool<ShadowPoolType::LightType>().Find(objID.Literal()); assert(light);
-				auto transform = tfPool.Find(objID.Literal()); assert(transform);
+			auto light = lightMgr.GetPool<ShadowPoolType::LightType>().Find(objID.Literal()); assert(light);
+			auto transform = tfPool.Find(objID.Literal()); assert(transform);
 
-				bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | transform->GetDirty();
-				if (dirty)
-					dirtys.push_back(&shadow);
-			}
-			else
-			{
+			bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | transform->GetDirty();
+			if (dirty)
 				dirtys.push_back(&shadow);
-			}
 		}
-
-		shadowDatas.reupdateMinIndex = size;
 	};
 
 	UpdateDirtyShadow(GetShadowDatas<PointLightShadow>());
@@ -122,8 +113,6 @@ void ShadowManager::ClearDirty()
 
 		for(auto shadow : dirtys)
 			shadow->SetDirty(false);
-
-		datas.reupdateMinIndex = 0;
 	};
 
 	Clear(GetShadowDatas<DirectionalLightShadow>());
@@ -185,10 +174,6 @@ void ShadowManager::DeleteAll()
 	GetDirtyShadows<PointLightShadow>().clear();
 	GetDirtyShadows<SpotLightShadow>().clear();
 	GetDirtyShadows<DirectionalLightShadow>().clear();
-
-	GetShadowDatas<SpotLightShadow>().reupdateMinIndex = 0;
-	GetShadowDatas<PointLightShadow>().reupdateMinIndex = 0;
-	GetShadowDatas<DirectionalLightShadow>().reupdateMinIndex = 0;
 }
 
 void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS, bool bindPS)
