@@ -146,6 +146,8 @@
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp" />
+    <ClInclude Include="Rendering\Mesh\MeshPool.h" />
+    <ClInclude Include="Rendering\Mesh\MeshRawPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshUtility.h" />
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -370,6 +372,8 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp" />
+    <ClCompile Include="Rendering\Mesh\MeshPool.cpp" />
+    <ClCompile Include="Rendering\Mesh\MeshRawPool.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshUtility.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

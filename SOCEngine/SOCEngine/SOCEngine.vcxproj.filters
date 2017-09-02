@@ -421,6 +421,12 @@
     <Filter Include="Rendering\Buffer\Raw">
       <UniqueIdentifier>{ca66c953-2ea5-4d7f-91ea-b54b8fe04caa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Mesh\Pool">
+      <UniqueIdentifier>{e493560a-792e-4772-96e1-20bc33613b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Mesh\Pool\Raw">
+      <UniqueIdentifier>{b596d396-16f0-41b5-8c4c-620880fe6186}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -919,6 +925,12 @@
     <ClInclude Include="Rendering\Buffer\GPURawBuffer.h">
       <Filter>Rendering\Buffer\Raw</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshPool.h">
+      <Filter>Rendering\Mesh\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshRawPool.h">
+      <Filter>Rendering\Mesh\Pool\Raw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1196,6 +1208,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\GPURawBuffer.cpp">
       <Filter>Rendering\Buffer\Raw</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshRawPool.cpp">
+      <Filter>Rendering\Mesh\Pool\Raw</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshPool.cpp">
+      <Filter>Rendering\Mesh\Pool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
