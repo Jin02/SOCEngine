@@ -41,15 +41,12 @@ namespace Rendering
 				_buffers.Delete(hashKey);
 				_idMarker.Delete(vb->GetStrKey());
 			}
-
 			void Destroy()
 			{
 				_buffers.DeleteAll();
-				_idMarker.DeleteAll();
 			}
 
 		private:
-			Core::BookHashMapmark<std::string>	_marker;
 			Core::VectorMap<uint, BufferType>	_buffers;
 		};
 
