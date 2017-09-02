@@ -44,9 +44,6 @@ namespace Rendering
 				uint index = pool.GetIndexer().Find(objID.Literal());
 
 				pool.Delete(objID.Literal());
-
-				uint prevDeleteIdx = GetCameraDatas<CameraType>().reupdateMinIndex;
-				GetCameraDatas<CameraType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 			template <class CameraType> bool Has(Core::ObjectID objID) const
 			{
@@ -73,7 +70,6 @@ namespace Rendering
 			{
 				CameraPool<CameraType>		pool;
 				std::vector<CameraType*>	dirty;
-				uint						reupdateMinIndex = 0;
 			};
 
 			template <class CameraType> auto&		GetCameraDatas()
