@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <map>
 #include <type_traits>
+#include <limits>
 
 namespace Core
 {
@@ -12,7 +13,7 @@ namespace Core
 	class Bookmark
 	{
 	public:
-		void Add(const Key& key, uint markValue)
+		void Add(const Key& key, Map::mapped_type markValue)
 		{
 			_map.insert(std::make_pair(key, markValue));
 		}
@@ -22,7 +23,7 @@ namespace Core
 			const auto& iter = _map.find(key);
 
 			bool found = iter != _map.end();
-			return found ? iter->second : -1;//std::numeric_limits<uint>::max();
+			return found ? iter->second : std::numeric_limits<Map::mapped_type>::max();
 		}
 
 		bool Has(const Key& key) const
@@ -42,15 +43,15 @@ namespace Core
 			_map.clear();
 		}
 
-		static constexpr uint Fail() { return -1; }//std::numeric_limits<uint>::max(); }
+		static constexpr uint Fail() { return std::numeric_limits<Map::mapped_type>::max(); }
 
 	private:
 		Map	_map;
 	};
 
-	template<typename Key>
-	using BookHashMapmark = Bookmark<Key, std::unordered_map<Key, uint>>;
+	template<typename Key, typename MarkValueType = uint>
+	using BookHashMapmark = Bookmark<Key, std::unordered_map<Key, MarkValueType>>;
 
-	template<typename Key>
-	using BookMapmark = Bookmark<Key, std::map<Key, uint>>;
+	template<typename Key, typename MarkValueType = uint>
+	using BookMapmark = Bookmark<Key, std::map<Key, MarkValueType>>;
 }
