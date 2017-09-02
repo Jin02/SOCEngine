@@ -3,22 +3,22 @@
 using namespace Rendering;
 using namespace Rendering::Geometry;
 
-Mesh* MeshRawPool::Find(Core::ObjectID id)
+Mesh* MeshRawPool::Find(Core::ObjectID::LiteralType id)
 {
 	for (auto& iter : _meshes)
 	{
-		if( iter.GetObjectID() == id )
+		if( iter.GetObjectID().Literal() == id )
 			return &iter;
 	}
 
 	return nullptr;
 }
 
-void MeshRawPool::Delete(Core::ObjectID id)
+void MeshRawPool::Delete(Core::ObjectID::LiteralType id)
 {
 	for (auto iter = _meshes.begin(); iter != _meshes.end(); ++iter)
 	{
-		if (iter->GetObjectID() == id)
+		if (iter->GetObjectID().Literal() == id)
 		{
 			_meshes.erase(iter);
 			return;
@@ -26,11 +26,11 @@ void MeshRawPool::Delete(Core::ObjectID id)
 	}
 }
 
-bool MeshRawPool::Has(Core::ObjectID id) const
+bool MeshRawPool::Has(Core::ObjectID::LiteralType id) const
 {
 	for (auto& iter : _meshes)
 	{
-		if (iter.GetObjectID() == id)
+		if (iter.GetObjectID().Literal() == id)
 			return true;
 	}
 

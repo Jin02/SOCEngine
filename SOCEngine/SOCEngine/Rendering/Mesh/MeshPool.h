@@ -17,12 +17,12 @@ namespace Rendering
 			VBSortedMeshPool() = default;
 
 			Mesh& Add(Mesh& mesh);
-			void Delete(Mesh& mesh)		{ Delete(mesh.GetObjectID());		}
-			bool Has(Mesh& mesh) const	{ return Has(mesh.GetObjectID());	}
+			void Delete(Mesh& mesh)		{ Delete(mesh.GetObjectID().Literal());		}
+			bool Has(Mesh& mesh) const	{ return Has(mesh.GetObjectID().Literal());	}
 
-			void Delete(Core::ObjectID id);
-			bool Has(Core::ObjectID id) const;
-			Mesh* Find(Core::ObjectID id);
+			void Delete(Core::ObjectID::LiteralType id);
+			bool Has(Core::ObjectID::LiteralType id) const;
+			Mesh* Find(Core::ObjectID::LiteralType id);
 
 			bool HasVBKey(Buffer::VertexBuffer::Key key) const;
 
@@ -41,7 +41,7 @@ namespace Rendering
 			}
 
 		private:
-			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_marker;
+			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
 			Core::VectorHashMap<Buffer::VertexBuffer::Key, MeshRawPool> _pool;
 		};
 	}

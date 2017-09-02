@@ -7,9 +7,9 @@ using namespace Rendering::Buffer;
 Mesh& VBSortedMeshPool::Add(Mesh& mesh)
 {
 	const auto& vbKey = mesh.GetVBKey();
-	assert(_marker.Has(mesh.GetObjectID().Literal()) == false);
+	assert(_bookmark.Has(mesh.GetObjectID().Literal()) == false);
 
-	_marker.Add(mesh.GetObjectID().Literal(), vbKey);
+	_bookmark.Add(mesh.GetObjectID().Literal(), vbKey);
 
 	if (HasVBKey(vbKey) == false)
 	{
@@ -21,35 +21,34 @@ Mesh& VBSortedMeshPool::Add(Mesh& mesh)
 
 //	else
 	auto rawPool = _pool.Find(vbKey);
-	assert(rawPool->Has(mesh.GetObjectID()) == false);
+	assert(rawPool->Has(mesh.GetObjectID().Literal()) == false);
 	return rawPool->Add(mesh);
 }
 
-void VBSortedMeshPool::Delete(Core::ObjectID id)
+void VBSortedMeshPool::Delete(Core::ObjectID::LiteralType id)
 {
-	uint literalID = id.Literal();
-	uint vbKey = _marker.Find(literalID);
-	assert(vbKey != decltype(_marker)::Fail());
+	uint vbKey = _bookmark.Find(id);
+	assert(vbKey != decltype(_bookmark)::Fail());
 
 	auto rawPool = _pool.Find(vbKey);
 	rawPool->Delete(id);
-	_marker.Delete(literalID);
+	_bookmark.Delete(id);
 
 	if (rawPool->Empty())
 		_pool.Delete(vbKey);
 }
 
-bool VBSortedMeshPool::Has(Core::ObjectID id) const
+bool VBSortedMeshPool::Has(Core::ObjectID::LiteralType id) const
 {
-	uint vbKey = _marker.Find(id.Literal());
-	return (vbKey != decltype(_marker)::Fail()) ? 
+	uint vbKey = _bookmark.Find(id);
+	return (vbKey != decltype(_bookmark)::Fail()) ? 
 		_pool.Find(vbKey)->Has(id) : false;
 }
 
-Mesh* VBSortedMeshPool::Find(Core::ObjectID id)
+Mesh* VBSortedMeshPool::Find(Core::ObjectID::LiteralType id)
 {
-	uint vbKey = _marker.Find(id.Literal());
-	return (vbKey != decltype(_marker)::Fail()) ?
+	uint vbKey = _bookmark.Find(id);
+	return (vbKey != decltype(_bookmark)::Fail()) ?
 		_pool.Find(vbKey)->Find(id) : nullptr;
 }
 
