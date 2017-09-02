@@ -84,6 +84,13 @@ namespace Core
 		GET_CONST_ACCESSOR(Indexer,		const auto&,	_indexer);
 		GET_CONST_ACCESSOR(Size,		unsigned int,	_vector.size());
 
+		template <class Iterator>
+		void Iterate(Iterator iterator)
+		{
+			for (auto& iter : _vector)
+				iterator(iter);
+		}
+
 	private:
 		std::vector<Object>     _vector;
 		IndexerType				_indexer;
