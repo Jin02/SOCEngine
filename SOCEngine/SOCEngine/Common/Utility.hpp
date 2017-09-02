@@ -84,7 +84,7 @@ namespace Utility
 	template <unsigned int CheckValue, unsigned int searchPos = sizeof(int) * 8 - 1>
 	class Compute_2_Exp
 	{
-	public:
+	private:
 		template <int n, int pn = searchPos + 1>
 		struct CheckBit
 		{
@@ -98,6 +98,7 @@ namespace Utility
 			constexpr static unsigned int value = pn;
 		};
 
+	public:
 		constexpr static unsigned int value = CheckBit<searchPos>::value;
 	};
 }
