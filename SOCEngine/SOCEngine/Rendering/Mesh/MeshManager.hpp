@@ -5,34 +5,12 @@
 #include "ObjectID.hpp"
 #include <tuple>
 #include <assert.h>
+#include "MeshPool.h"
 
 namespace Rendering
 {
 	namespace Manager
 	{
-		namespace RenderMethod
-		{
-			enum class Method
-			{
-				Opaque,
-				AlphaBlend,
-				Transparency
-			};
-			struct Opaque		{	constexpr static Method method = Method::Opaque;		};
-			struct AlphaBlend	{	constexpr static Method method = Method::AlphaBlend;	};
-			struct Transparency	{	constexpr static Method method = Method::Transparency;	};
-		}
-
-		using MeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Geometry::Mesh>;
-
-		template <typename Trait>
-		class MeshPoolTrait : public MeshPool
-		{
-		public:
-			MeshPoolTrait() = default;
-			DISALLOW_ASSIGN(MeshPoolTrait);
-		};
-
 		class MeshManager final
 		{
 		public:
@@ -40,22 +18,22 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
-			template<typename MeshTraits> Geometry::Mesh& Acquire(Core::ObjectID objID)
+			template<class Pool> Geometry::Mesh& Acquire(Core::ObjectID objID, Pool& meshPool)
 			{
 				auto mesh = Geometry::Mesh(objID);
-				return GetPool<MeshTraits>().Add(objID.Literal(), mesh);
+				return meshPool.Add(objID.Literal(), mesh);
 			}
-			template<typename MeshTraits> void Delete(Core::ObjectID objID)
+			template<class Pool> void Delete(Core::ObjectID objID, Pool& meshPool)
 			{
-				GetPool<MeshTraits>().Delete(objID.Literal());
+				meshPool.Delete(objID.Literal());
 			}
-			template<typename MeshTraits> bool Has(Core::ObjectID objID) const
+			template<class Pool> bool Has(Core::ObjectID objID, Pool& meshPool) const
 			{
-				return	GetPool<MeshTraits>().Has(objID.Literal());
+				return	meshPool.Has(objID.Literal());
 			}
-			template<typename MeshTraits> Geometry::Mesh* Find(Core::ObjectID id)
+			template<class Pool> Geometry::Mesh* Find(Core::ObjectID id, Pool& meshPool)
 			{
-				return GetPool<MeshTraits>().Find(id.Literal());
+				return meshPool.Find(id.Literal());
 			}
 
 			Geometry::Mesh& Acquire(Core::ObjectID objID);
@@ -69,35 +47,31 @@ namespace Rendering
 
 			void ClearDirty() { _dirtyMeshes.clear(); }
 
-			template <typename FromTrait, typename ToTrait>
-			bool ChangeTrait(Core::ObjectID id)
+			template <class FromPool, class ToPool>
+			bool ChangeTrait(Core::ObjectID id, FromPool& fromPool, ToPool& toPool)
 			{
-				auto& fromIndexer = GetPool<FromTrait>().GetIndexer();
-				auto& toIndexer = GetPool<ToTrait>().GetIndexer();
+				uint literlID = id.Literal();
+				assert(fromPool.Has(literlID));
+				assert(toPool.Has(literlID) == false);
 
-				assert(fromIndexer.Has(id) == false);
-				assert(toIndexer.Has(id) == false);
-
-				uint idx = fromIndexer.Find(id);
-				//GetPool<ToTrait>().Add(id, GetPool<FromTrait>().Get(idx));
-				//GetPool<FromTrait>().Delete(id);
+				toPool.Add(literlID, *fromPool.Find(literlID));
+				fromPool.Delete(literlID);
 			}
 
-			template <typename Trait> MeshPool& GetPool()
-			{
-				return std::get<MeshPoolTrait<Trait>>(_tuple);
-			}
-			template <typename Trait> const MeshPool& GetPool() const
-			{
-				return std::get<MeshPoolTrait<Trait>>(_tuple);
-			}
+			GET_ACCESSOR(TransparentMeshPool,	Geometry::MeshPool&,					_transparentMeshPool);
+			GET_ACCESSOR(OpaqueMeshPool,		Geometry::VBSortedMeshPool&,			_opaqueMeshPool);
+			GET_ACCESSOR(AlphaBlendMeshPool,	Geometry::VBSortedMeshPool&,			_alphaBlendMeshPool);
+
+			GET_CONST_ACCESSOR(TransparentMeshPool,	const Geometry::MeshPool&,			_transparentMeshPool);
+			GET_CONST_ACCESSOR(OpaqueMeshPool,		const Geometry::VBSortedMeshPool&,	_opaqueMeshPool);
+			GET_CONST_ACCESSOR(AlphaBlendMeshPool,	const Geometry::VBSortedMeshPool&,	_alphaBlendMeshPool);
 
 			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
 
 		private:
-			std::tuple<	MeshPoolTrait<RenderMethod::Opaque>,
-						MeshPoolTrait<RenderMethod::AlphaBlend>,
-						MeshPoolTrait<RenderMethod::Transparency>> _tuple;
+			Geometry::MeshPool				_transparentMeshPool;
+			Geometry::VBSortedMeshPool		_opaqueMeshPool;
+			Geometry::VBSortedMeshPool		_alphaBlendMeshPool;
 
 			std::vector<Geometry::Mesh*> _dirtyMeshes;
 		};
