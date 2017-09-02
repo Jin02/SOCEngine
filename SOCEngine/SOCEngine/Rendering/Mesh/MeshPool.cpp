@@ -6,10 +6,11 @@ using namespace Rendering::Buffer;
 
 Mesh& VBSortedMeshPool::Add(Mesh& mesh)
 {
+	uint literalID = mesh.GetObjectID().Literal();
 	const auto& vbKey = mesh.GetVBKey();
-	assert(_bookmark.Has(mesh.GetObjectID().Literal()) == false);
+	assert(_bookmark.Has(literalID) == false);
 
-	_bookmark.Add(mesh.GetObjectID().Literal(), vbKey);
+	_bookmark.Add(literalID, vbKey);
 
 	if (HasVBKey(vbKey) == false)
 	{
@@ -21,7 +22,7 @@ Mesh& VBSortedMeshPool::Add(Mesh& mesh)
 
 //	else
 	auto rawPool = _pool.Find(vbKey);
-	assert(rawPool->Has(mesh.GetObjectID().Literal()) == false);
+	assert(rawPool->Has(literalID) == false);
 	return rawPool->Add(mesh);
 }
 
