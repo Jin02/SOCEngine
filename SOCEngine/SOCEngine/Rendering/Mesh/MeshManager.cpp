@@ -10,32 +10,32 @@ using namespace Math;
 Mesh& MeshManager::Acquire(Core::ObjectID objID)
 {
 	auto mesh = Mesh(objID);
-	return GetPool<RenderMethod::Opaque>().Add(objID.Literal(), mesh);
+	return GetOpaqueMeshPool().Add(mesh);
 }
 
 void MeshManager::Delete(Core::ObjectID objID)
 {
-	GetPool<RenderMethod::Opaque>().Delete(objID.Literal());
-	GetPool<RenderMethod::AlphaBlend>().Delete(objID.Literal());
-	GetPool<RenderMethod::Transparency>().Delete(objID.Literal());
+	GetOpaqueMeshPool().Delete(objID.Literal());
+	GetAlphaBlendMeshPool().Delete(objID.Literal());
+	GetTransparentMeshPool().Delete(objID.Literal());
 }
 
 bool MeshManager::Has(Core::ObjectID objID) const
 {
-	return	GetPool<RenderMethod::Opaque>().Has(objID.Literal())		|
-			GetPool<RenderMethod::AlphaBlend>().Has(objID.Literal())	|
-			GetPool<RenderMethod::Transparency>().Has(objID.Literal());
+	return	GetOpaqueMeshPool().Has(objID.Literal())		|
+			GetAlphaBlendMeshPool().Has(objID.Literal())	|
+			GetTransparentMeshPool().Has(objID.Literal());
 }
 
 Mesh* MeshManager::Find(Core::ObjectID id)
 {
-	auto opaque = GetPool<RenderMethod::Opaque>().Find(id.Literal());
+	auto opaque = GetOpaqueMeshPool().Find(id.Literal());
 	if (opaque) return opaque;
 
-	auto alpha = GetPool<RenderMethod::AlphaBlend>().Find(id.Literal());
+	auto alpha = GetAlphaBlendMeshPool().Find(id.Literal());
 	if (alpha) return alpha;
 
-	auto transparency = GetPool<RenderMethod::Transparency>().Find(id.Literal());
+	auto transparency = GetTransparentMeshPool().Find(id.Literal());
 	return transparency;
 }
 
@@ -44,20 +44,20 @@ void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
 	auto& dirty = _dirtyMeshes;
 	auto Check = [&dirty, &tfPool](auto& pool)
 	{
-		uint size = pool.GetSize();
-		for (uint i=0; i<size; ++i)
-		{
-			auto& mesh = pool.Get(i);
-			auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
+		pool.Iterate(
+			[&dirty, &tfPool](Mesh& mesh)
+			{
+					auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 
-			if (tf->GetDirty())
-				dirty.push_back(&mesh);
-		}
+					if (tf->GetDirty())
+						dirty.push_back(&mesh);
+			}
+		);
 	};
 
-	Check(GetPool<RenderMethod::Opaque>());
-	Check(GetPool<RenderMethod::AlphaBlend>());
-	Check(GetPool<RenderMethod::Transparency>());
+	Check(GetOpaqueMeshPool());
+	Check(GetAlphaBlendMeshPool());
+	Check(GetTransparentMeshPool());
 }
 
 void MeshManager::ComputeWorldSize(
