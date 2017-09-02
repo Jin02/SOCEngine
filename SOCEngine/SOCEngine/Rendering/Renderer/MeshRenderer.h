@@ -19,17 +19,18 @@ namespace Rendering
 			{
 				Device::DirectX&			dx;
 				Manager::MaterialManager&	materialMgr;
+				Manager::BufferManager&		bufferMgr;
 
 				DefaultRenderType			renderType;
 				Buffer::ConstBuffer&		camCB;
 
 				RenderParam(
-					Device::DirectX& _dx, Manager::MaterialManager&	_materialMgr,
+					Device::DirectX& _dx, Manager::MaterialManager&	_materialMgr, Manager::BufferManager& _bufferMgr,
 					DefaultRenderType _renderType, Buffer::ConstBuffer& _camCB
-				) : dx(_dx), materialMgr(_materialMgr), renderType(_renderType), camCB(_camCB) {}
+				) : dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), renderType(_renderType), camCB(_camCB) {}
 			};
 
-			//void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);
+			void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);
 			//void RenderUsingSortedMeshVectorByVB(RenderParam param, Manager::MeshPool& meshes);
 
 		private:

@@ -26,78 +26,81 @@ void BindBasicCB(DirectX& dx, Mesh& mesh, ConstBuffer& camCB)
 	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera, camCB);
 }
 
-/*
+
 void MeshRenderer::RenderWithoutIASetVB(RenderParam param, Mesh& mesh)
 {	
-	//auto& indexBuffer = mesh.GetIndexBuffer();
-	//indexBuffer.IASetBuffer(param.dx);
+	auto indexBuffer = param.bufferMgr.GetPool<IndexBuffer>().Find(mesh.GetIBKey());
+	assert(indexBuffer);
 
-	//uint key = _loader.MakeKey(mesh.GetBufferFlag(), param.renderType);
+	indexBuffer->IASetBuffer(param.dx);
 
-	//DefaultShaderLoader::Shaders& defaultShaders = _loader.Find(key);
-	//auto& vs = defaultShaders.vs; auto& gs = defaultShaders.gs; auto& ps = defaultShaders.ps;
-	//auto BindSRV = [&dx = param.dx, &gs, &ps](auto& srObjects)
-	//{
-	//	uint size = srObjects.GetSize();
-	//	for (uint i = 0; i < size; ++i)
-	//	{
-	//		auto& bind = srObjects.Get(i);
-	//		if (bind.useVS)
-	//			VertexShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
-	//		if (bind.useGS & gs.GetIsCanUse())
-	//			GeometryShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
-	//		if (bind.usePS & ps.GetIsCanUse())
-	//			PixelShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
-	//	}
-	//};
+	uint key = _loader.MakeKey(mesh.GetBufferFlag(), param.renderType);
 
-	//// Binding
-	//{
-	//	// Bind Shader To Context
-	//	{
-	//		vs.BindShaderToContext(param.dx);
-	//		vs.BindInputLayoutToContext(param.dx);
+	DefaultShaderLoader::Shaders& defaultShaders = _loader.Find(key);
+	auto& vs = defaultShaders.vs; auto& gs = defaultShaders.gs; auto& ps = defaultShaders.ps;
+	auto BindSRV = [&dx = param.dx, &gs, &ps](auto& srObjects)
+	{
+		uint size = srObjects.GetSize();
+		for (uint i = 0; i < size; ++i)
+		{
+			auto& bind = srObjects.Get(i);
+			if (bind.useVS)
+				VertexShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
+			if (bind.useGS & gs.GetIsCanUse())
+				GeometryShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
+			if (bind.usePS & ps.GetIsCanUse())
+				PixelShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
+		}
+	};
 
-	//		gs.BindShaderToContext(param.dx);
-	//		ps.BindShaderToContext(param.dx);
-	//	}
+	// Binding
+	{
+		// Bind Shader To Context
+		{
+			vs.BindShaderToContext(param.dx);
+			vs.BindInputLayoutToContext(param.dx);
 
-	//	BindBasicCB<VertexShader>(param.dx, mesh, param.camCB);
-	//	if (ps.GetIsCanUse()) BindBasicCB<PixelShader>(param.dx, mesh, param.camCB);
-	//	if (gs.GetIsCanUse()) BindBasicCB<GeometryShader>(param.dx, mesh, param.camCB);
-	//}
+			gs.BindShaderToContext(param.dx);
+			ps.BindShaderToContext(param.dx);
+		}
 
-	//for (MaterialID materialID : mesh.GetMaterialIDs())
-	//{
-	//	auto material = param.materialMgr.Find<PhysicallyBasedMaterial>(materialID); assert(material);
+		BindBasicCB<VertexShader>(param.dx, mesh, param.camCB);
+		if (ps.GetIsCanUse()) BindBasicCB<PixelShader>(param.dx, mesh, param.camCB);
+		if (gs.GetIsCanUse()) BindBasicCB<GeometryShader>(param.dx, mesh, param.camCB);
+	}
 
-	//	// ConstBuffers
-	//	{
-	//		auto& cbs = material->GetConstBuffers();
-	//		uint size = cbs.GetSize();
-	//		for (uint i = 0; i < size; ++i)
-	//		{
-	//			auto& bindCB = cbs.Get(i);
-	//			if (bindCB.useVS)
-	//				VertexShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
-	//			if (bindCB.useGS & gs.GetIsCanUse())
-	//				GeometryShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
-	//			if (bindCB.usePS & ps.GetIsCanUse())
-	//				PixelShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
-	//		}
-	//	}
+	for (MaterialID materialID : mesh.GetMaterialIDs())
+	{
+		auto material = param.materialMgr.Find<PhysicallyBasedMaterial>(materialID); assert(material);
 
-	//	BindSRV(material->GetShaderResourceBuffers());
-	//	BindSRV(material->GetTextures());
+		// ConstBuffers
+		{
+			auto& cbs = material->GetConstBuffers();
+			uint size = cbs.GetSize();
+			for (uint i = 0; i < size; ++i)
+			{
+				auto& bindCB = cbs.Get(i);
+				if (bindCB.useVS)
+					VertexShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+				if (bindCB.useGS & gs.GetIsCanUse())
+					GeometryShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+				if (bindCB.usePS & ps.GetIsCanUse())
+					PixelShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+			}
+		}
 
-	//	param.dx.GetContext()->DrawIndexed(mesh.GetIndexBuffer().GetIndexCount(), 0, 0);
-	//}
+		BindSRV(material->GetShaderResourceBuffers());
+		BindSRV(material->GetTextures());
 
-	//param.dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
-	//param.dx.GetContext()->GSSetShader(nullptr, nullptr, 0);
-	//param.dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
+		param.dx.GetContext()->DrawIndexed(indexBuffer->GetIndexCount(), 0, 0);
+	}
+
+	param.dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
+	param.dx.GetContext()->GSSetShader(nullptr, nullptr, 0);
+	param.dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }
 
+/*
 void MeshRenderer::RenderUsingSortedMeshVectorByVB(RenderParam param, MeshPool& meshes)
 {
 	uint meshesCount = meshes.GetSize();
@@ -107,5 +110,4 @@ void MeshRenderer::RenderUsingSortedMeshVectorByVB(RenderParam param, MeshPool& 
 
 	}
 }
-
 */
