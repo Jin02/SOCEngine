@@ -522,7 +522,7 @@ void BasicGeometryGenerator::CreateBox(Object& targetObj, Core::Engine& engine, 
 {
 	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(),args);
+		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(), args);
 	};
 
 	CreateBox(CreateObject, size, defautVertexInputTypeFlag);

@@ -10,6 +10,9 @@ namespace Rendering
 		class BaseBuffer
 		{
 		public:
+			using Key = uint;
+
+		public:
 			BaseBuffer() = default;
 			BaseBuffer(const DXSharedResource<ID3D11Buffer>& buffer) : _buffer(buffer) {}
 

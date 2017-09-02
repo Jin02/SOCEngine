@@ -9,6 +9,7 @@ namespace Rendering
 	namespace Buffer
 	{
 		class VertexBuffer;
+		class IndexBuffer;
 	};
 
 	namespace Manager
@@ -18,105 +19,28 @@ namespace Rendering
 		{
 		public:
 			BufferPool() = default;
-			DISALLOW_ASSIGN_COPY(BufferPool<BufferType>);
-
-			void Add(const std::string& file, const std::string& key, const BufferType& bufferData)
-			{
-				_buffers.Add(file + ":" + key, bufferData);
-			}
-
-			auto Find(const std::string& file, const std::string& key)
-			{
-				std::string findKey = file + ":" + key;
-				return _buffers.Find(findKey);
-			}
-
-			bool Has(const std::string& file, const std::string& key) const
-			{
-				return _buffers.Has(file + ":" + key);
-			}
-
-			void DeleteBuffer(const std::string& file, const std::string& key)
-			{
-				uint findIndex = _buffers.GetIndexer().Find(file + ":" + key);
-
-				if (findIndex != -1)
-					_buffers.Delete(findIndex);
-			}
-
-			void Destroy()
-			{
-				_buffers.DeleteAll();
-			}
-
-		private:
-			Core::VectorMap<std::string, BufferType>		_buffers;
-		};
-
-		template <>
-		class BufferPool<Buffer::VertexBuffer> final
-		{
-		public:
-			BufferPool() = default;
 			DISALLOW_ASSIGN_COPY(BufferPool);
 
-			static uint MakeKey(const std::string& fileName, Buffer::VertexBuffer::Key vbChunkKey)
+			void Add(uint hashKey, const BufferType& bufferData)
 			{
-				return std::hash<std::string>()(fileName + std::to_string(vbChunkKey));
+				_buffers.Add(hashKey, bufferData);
 			}
-			static std::string MakeStrKey(const std::string& fileName, Buffer::VertexBuffer::Key vbChunkKey)
+			auto Find(uint hashKey)
 			{
-				return fileName + ":" + std::to_string(vbChunkKey);
-			}
-
-			void Add(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey, const Buffer::VertexBuffer& bufferData)
-			{
-				std::string strKey = MakeStrKey(file, vbChunkKey);
-
-				_idMarker.Add(strKey, bufferData.GetKey());
-				_buffers.Add(bufferData.GetKey(), bufferData);
-			}
-
-			auto Find(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey)
-			{
-				std::string strKey = MakeStrKey(file, vbChunkKey);
-
-				uint hashKey = _idMarker.Find(strKey);
 				return _buffers.Find(hashKey);
 			}
-			bool Has(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey) const
+			bool Has(uint hashKey) const
 			{
-				return _idMarker.Has(MakeStrKey(file, vbChunkKey));
+				return _buffers.Has(hashKey);
 			}
-			void DeleteBuffer(const std::string& file, Buffer::VertexBuffer::Key vbChunkKey)
+			void Delete(uint hashKey)
 			{
-				std::string strKey = MakeStrKey(file, vbChunkKey);
-				uint findKey = _idMarker.Find(strKey);
-
-				if (findKey != -1)
-				{
-					_buffers.Delete(findKey);
-					_idMarker.Delete(strKey);
-				}
-			}
-
-			auto Find(Buffer::VertexBuffer::Key vbKey)
-			{
-				return _buffers.Find(vbKey);
-			}
-			bool Has(Buffer::VertexBuffer::Key vbKey) const
-			{
-				return _buffers.Has(vbKey);
-			}
-			void DeleteBuffer(Buffer::VertexBuffer::Key vbKey)
-			{
-				auto vb = _buffers.Find(vbKey);
+				auto vb = _buffers.Find(hashKey);
 				if (vb == nullptr) return;
 
-				_buffers.Delete(vbKey);
+				_buffers.Delete(hashKey);
 				_idMarker.Delete(vb->GetStrKey());
 			}
-
 
 			void Destroy()
 			{
@@ -125,10 +49,11 @@ namespace Rendering
 			}
 
 		private:
-			Core::BookHashMapmark<std::string>			_idMarker;
-			Core::VectorMap<uint, Buffer::VertexBuffer> _buffers;
+			Core::BookHashMapmark<std::string>	_marker;
+			Core::VectorMap<uint, BufferType>	_buffers;
 		};
 
 		using VBPool = BufferPool<Buffer::VertexBuffer>;
+		using IBPool = BufferPool<Buffer::IndexBuffer>;
 	}
 }

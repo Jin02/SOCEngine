@@ -1,26 +1,28 @@
 #pragma once
 
 #include "BaseBuffer.h"
+#include "Utility.hpp"
 
 namespace Rendering
 {
 	namespace Buffer
 	{
+		class VertexBuffer;
 		class IndexBuffer final
 		{		
 		public:
 			IndexBuffer() = default;
 
-			void Initialize(Device::DirectX& dx, const std::vector<uint>& indices, uint vbChunkKey, bool isDynamic = false);
+			void Initialize(Device::DirectX& dx, const std::vector<uint>& indices, BaseBuffer::Key vbKey, bool isDynamic = false);
 			void IASetBuffer(Device::DirectX& dx);
 
 			GET_CONST_ACCESSOR(IndexCount, uint, _indexCount);
-			GET_CONST_ACCESSOR(VBChunkKey, uint, _vbChunkKey);
+			GET_CONST_ACCESSOR(VBKey, BaseBuffer::Key, _vbKey);
 
 		private:
-			uint		_indexCount		= 0;
-			uint		_vbChunkKey		= -1;
-			BaseBuffer	_baseBuffer;
+			uint					_indexCount		= 0;
+			BaseBuffer::Key			_vbKey;
+			BaseBuffer				_baseBuffer;
 		};
 	}
 }

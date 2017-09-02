@@ -1,6 +1,7 @@
 #include "SkyGeometry.h"
 #include "BindIndexInfo.h"
 #include "BasicGeometryGenerator.h"
+#include "Utility.hpp"
 
 using namespace Rendering::Sky;
 using namespace Rendering::Manager;
@@ -9,12 +10,13 @@ using namespace Rendering::Shader;
 using namespace Rendering::Texture;
 using namespace Rendering::Geometry;
 using namespace Math;
+using namespace Utility;
 
 void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 {
 	auto CreateMeshContent = [this, &dx](const Mesh::CreateFuncArguments& args)
 	{
-		uint vbKey = VBPool::MakeKey(args.fileName, args.vbChunkKey);
+		uint vbKey = std::hash<std::string>()("@SkySphere");
 
 		VertexBuffer::Desc desc;
 		{
@@ -24,7 +26,7 @@ void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
 		}
 
 		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);
-		_indexBuffer.Initialize(dx, args.indices, args.vbChunkKey, false);
+		_indexBuffer.Initialize(dx, args.indices, vbKey, false);
 	};
 
 	BasicGeometryGenerator gen;
