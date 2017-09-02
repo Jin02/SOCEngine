@@ -41,10 +41,6 @@ void LightManager::DeleteAll()
 	GetPool<DirectionalLight>().DeleteAll();
 	GetDirtyParamLights<DirectionalLight>().clear();
 	GetDirtyTransformLights<DirectionalLight>().clear();
-
-	GetLightDatas<SpotLight>().reupdateMinIndex			= 0;
-	GetLightDatas<PointLight>().reupdateMinIndex		= 0;
-	GetLightDatas<DirectionalLight>().reupdateMinIndex	= 0;
 }
 
 uint LightManager::GetPackedLightCount() const
@@ -109,24 +105,14 @@ void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 		{
 			auto& light = pool.Get(i);
 
-			if (i < lightDatas.reupdateMinIndex)
-			{
-				if (light.GetBase().GetDirty())
-					dirtyParamLights.push_back(&light);
-
-				uint objID = light.GetObjectID().Literal();
-				auto transform = transformPool.Find(objID);
-				if (transform->GetDirty())
-					dirtyTFLights.push_back(&light);
-			}
-			else
-			{
+			if (light.GetBase().GetDirty())
 				dirtyParamLights.push_back(&light);
-				dirtyTFLights.push_back(&light);
-			}
-		}
 
-		lightDatas.reupdateMinIndex = size;
+			uint objID = light.GetObjectID().Literal();
+			auto transform = transformPool.Find(objID);
+			if (transform->GetDirty())
+				dirtyTFLights.push_back(&light);
+		}
 	};
 
 	UpdateDirtyLight(GetLightDatas<DirectionalLight>());
