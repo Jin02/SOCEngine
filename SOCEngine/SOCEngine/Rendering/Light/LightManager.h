@@ -32,9 +32,6 @@ namespace Rendering
 
 				GetBuffer<LightType>().Delete(index);
 				pool.Delete(objID.Literal());
-
-				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 
 			template <class LightType>
@@ -65,9 +62,6 @@ namespace Rendering
 			{
 				Core::ObjectID id = light.GetObjectID();
 				Delete<LightType>(id);
-
-				uint prevDeleteIdx = GetLightDatas<LightType>().reupdateMinIndex;
-				GetLightDatas<LightType>().reupdateMinIndex = min(index, prevDeleteIdx);
 			}
 
 			void DeleteAll();
@@ -136,7 +130,6 @@ namespace Rendering
 				typename LightType::LightBufferType	lightBuffer;
 				std::vector<LightType*>				dirtyParamLights;
 				std::vector<LightType*>				dirtyTransformLights;
-				uint								reupdateMinIndex = 0;
 			};
 
 			std::tuple<	LightDatas<Light::PointLight>,
