@@ -39,7 +39,7 @@ namespace Rendering
 				if (vb == nullptr) return;
 
 				_buffers.Delete(hashKey);
-				_idMarker.Delete(vb->GetStrKey());
+				_idBookmark.Delete(vb->GetStrKey());
 			}
 			void Destroy()
 			{

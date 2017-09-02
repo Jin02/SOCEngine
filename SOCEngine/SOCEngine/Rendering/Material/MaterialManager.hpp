@@ -28,7 +28,7 @@ namespace Rendering
 			std::pair<MaterialID, MaterialType&> Add(const std::string& strKey, MaterialType& material)
 			{
 				MaterialID key = GetIDManager<MaterialType>().Acquire();
-				GetIDIndexer<MaterialType>().Add(strKey, key.Literal());
+				GetIDBookmark<MaterialType>().Add(strKey, key.Literal());
 
 				return std::pair<MaterialID, MaterialType&>(
 					key,
@@ -37,26 +37,26 @@ namespace Rendering
 
 			template <typename MaterialType> void Delete(const std::string& key)
 			{
-				uint literalID = GetIDIndexer<MaterialType>().Find(key);
+				uint literalID = GetIDBookmark<MaterialType>().Find(key);
 
 				GetPool<MaterialType>().Delete(MaterialID(literalID));
-				GetIDIndexer<MaterialType>().Delete(key);
+				GetIDBookmark<MaterialType>().Delete(key);
 				GetIDManager<MaterialType>().Delete(MaterialID(literalID));
 			}
 			template <typename MaterialType> auto Find(const std::string& key)
 			{
-				return GetPool<MaterialType>().Find(GetIDIndexer<MaterialType>().Find(key));
+				return GetPool<MaterialType>().Find(GetIDBookmark<MaterialType>().Find(key));
 			}
 			template <typename MaterialType> bool Has(const std::string& key) const
 			{
-				return GetIDIndexer<MaterialType>().Has(key);
+				return GetIDBookmark<MaterialType>().Has(key);
 			}
 			template <typename MaterialType> void Delete(MaterialID id)
 			{
 				auto findMaterial = GetPool<MaterialType>().Find(id);
 				if(findMaterial == nullptr) return;
 
-				GetIDIndexer<MaterialType>().Delete(findMaterial->GetName());
+				GetIDBookmark<MaterialType>().Delete(findMaterial->GetName());
 				GetPool<MaterialType>().Delete(literalID);
 				GetIDManager<MaterialType>().Delete(id);
 			}
@@ -66,11 +66,11 @@ namespace Rendering
 			}
 			template <typename MaterialType> bool Has(MaterialID id) const
 			{
-				return GetIDIndexer<MaterialType>().Has(id);
+				return GetIDBookmark<MaterialType>().Has(id);
 			}
 			template <typename MaterialType> MaterialID FindID(const std::string& key)
 			{
-				return MaterialID(GetIDIndexer<MaterialType>().Find(key));
+				return MaterialID(GetIDBookmark<MaterialType>().Find(key));
 			}
 		public:
 			template <typename MaterialType> auto& GetPool()
@@ -91,13 +91,13 @@ namespace Rendering
 			{
 				return GetMaterialDatas<MaterialType>().dirty;
 			}
-			template <typename MaterialType> auto& GetIDIndexer()
+			template <typename MaterialType> auto& GetIDBookmark()
 			{
-				return GetMaterialDatas<MaterialType>().idMarker;
+				return GetMaterialDatas<MaterialType>().idBookmark;
 			}
-			template <typename MaterialType> const auto& GetIDIndexer() const
+			template <typename MaterialType> const auto& GetIDBookmark() const
 			{
-				return GetMaterialDatas<MaterialType>().idMarker;
+				return GetMaterialDatas<MaterialType>().idBookmark;
 			}
 			template <typename MaterialType> auto& GetIDManager()
 			{
@@ -127,7 +127,7 @@ namespace Rendering
 				MaterialPool<MaterialType>			pool;
 				std::vector<MaterialType*>			dirty;
 
-				Core::BookHashMapmark<std::string>	idMarker;
+				Core::BookHashMapmark<std::string>	idBookmark;
 				MaterialIDManager					idMgr;
 			};
 

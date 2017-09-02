@@ -48,7 +48,7 @@ namespace Core
 		VectorHashMap<	ObjectID::LiteralType,
 						ObjectID::LiteralType>				_rootObjectIDs;
 
-		BookHashMapmark<std::string>						_idMarker;
+		BookHashMapmark<std::string>						_idBookmark;
 
 		ObjectIDManager										_objIDMgr;
 	};

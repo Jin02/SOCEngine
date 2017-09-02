@@ -9,7 +9,7 @@ using namespace Core;
 Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool)
 {
 	ObjectID key = _objIDMgr.Acquire();
-	_idMarker.Add(name, key.Literal());
+	_idBookmark.Add(name, key.Literal());
 
 	_newObjectIDs.push_back(key);
 	return _objects.Add(key, Object(key, compoSystem, tfPool, this));
@@ -17,7 +17,7 @@ Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem
 
 void ObjectManager::Delete(const std::string& name)
 {
-	uint objLiteralID = _idMarker.Find(name);
+	uint objLiteralID = _idBookmark.Find(name);
 
 	uint size = _rootObjectIDs.GetSize();
 	for(uint i=0; i<size;)
@@ -31,18 +31,18 @@ void ObjectManager::Delete(const std::string& name)
 	}
 
 	_objects.Delete(ObjectID(objLiteralID));
-	_idMarker.Delete(name);
+	_idBookmark.Delete(name);
 	_objIDMgr.Delete(ObjectID(objLiteralID));
 }
 
 bool ObjectManager::Has(const std::string& name) const
 {
-	return _idMarker.Has(name);
+	return _idBookmark.Has(name);
 }
 
 Object* ObjectManager::Find(const std::string& name)
 {
-	return _objects.Find( ObjectID(_idMarker.Find(name)) );
+	return _objects.Find( ObjectID(_idBookmark.Find(name)) );
 }
 
 void Core::ObjectManager::Delete(ObjectID id)
@@ -50,7 +50,7 @@ void Core::ObjectManager::Delete(ObjectID id)
 	Object* findObj = _objects.Find(id);
 	if(findObj == nullptr) return;
 
-	_idMarker.Delete(findObj->GetName());
+	_idBookmark.Delete(findObj->GetName());
 	_objects.Delete(id);
 	_objIDMgr.Delete(id);
 }
@@ -68,7 +68,7 @@ Object * Core::ObjectManager::Find(ObjectID id)
 void ObjectManager::DeleteAll()
 {
 	_objects.DeleteAll();
-	_idMarker.DeleteAll();
+	_idBookmark.DeleteAll();
 		
 	_objIDMgr.DeleteAll();
 }
