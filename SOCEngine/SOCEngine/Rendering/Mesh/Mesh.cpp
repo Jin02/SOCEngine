@@ -20,7 +20,6 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices.size();
 
-	String::MakeKey({ args.fileName, args.ibPartID });
 	uint vbKey = Utility::String::MakeKey({ args.fileName, std::to_string(args.vbUserHashKey) });
 
 	if (bufferMgr.GetPool<VertexBuffer>().Has(vbKey) == false)
