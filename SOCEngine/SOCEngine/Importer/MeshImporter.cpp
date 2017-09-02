@@ -5,6 +5,7 @@
 #include "Utility.hpp"
 #include <unordered_set>
 #include "ObjectManager.h"
+#include "Utility.hpp"
 
 using namespace Importer;
 using namespace Core;
@@ -617,7 +618,7 @@ Core::Object& MeshImporter::BuildMesh(
 		uint meshIndex = 0;
 		for(auto meshIter = meshes.begin(); meshIter != meshes.end(); ++meshIter, ++meshIndex)
 		{
-			VertexBuffer::Key vbKey = VBPool::MakeKey(meshFileName, meshIndex);
+			uint vbKey = Utility::String::MakeKey({ meshFileName , std::to_string(meshIndex) });
 
 			std::vector<std::string> meshPartIDKeys;
 
@@ -631,10 +632,12 @@ Core::Object& MeshImporter::BuildMesh(
 					const auto& indices = partsIter->indices;
 
 					IndexBuffer indexBuffer;
-					indexBuffer.Initialize(managerParam.dx, indices, meshIndex, useDynamicIB);
+					indexBuffer.Initialize(managerParam.dx, indices, vbKey, useDynamicIB);
 
 					auto& ibPool = managerParam.bufferManager.GetPool<IndexBuffer>();
-					ibPool.Add(meshFileName, partsIter->meshPartID, indexBuffer);
+
+					uint ibKey = Utility::String::MakeKey({ meshFileName, partsIter->meshPartID });
+					ibPool.Add(ibKey, indexBuffer);
 
 					meshPartIDKeys.push_back(partsIter->meshPartID);
 				}
@@ -775,13 +778,13 @@ Core::Object& MeshImporter::BuildMesh(
 				// Make Vertex Buffer
 				{
 					auto& vertices = meshIter->vertexDatas;
-					VertexBuffer::Desc desc(VBPool::MakeStrKey(meshFileName, meshIndex), vbKey, stride, vertices.size() / (stride / 4));
+					VertexBuffer::Desc desc(vbKey, stride, vertices.size() / (stride / 4));
 
 					VertexBuffer vertexBuffer;
 					vertexBuffer.Initialize(managerParam.dx, desc, vertices.data(), useDynamicVB, semantics);
 
 					auto& vbPool = managerParam.bufferManager.GetPool<VertexBuffer>();
-					vbPool.Add(meshFileName, meshIndex, vertexBuffer);
+					vbPool.Add(vbKey, vertexBuffer);
 				}
 			}
 		}
@@ -926,13 +929,14 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		auto& buferMgr = managerParam.bufferManager;
 		auto& materialMgr = managerParam.materialManager;
 
-		IndexBuffer* indexBuffer = buferMgr.GetPool<IndexBuffer>().Find(meshFileName, part.meshPartID);
+		uint ibKey = Utility::String::MakeKey({ meshFileName, part.meshPartID });
+		IndexBuffer* indexBuffer = buferMgr.GetPool<IndexBuffer>().Find(ibKey);
 		assert(indexBuffer); // "Error, Invalid mesh part id"
 
-		VertexBuffer::Key vbChunkKey = indexBuffer->GetVBChunkKey();
-		assert(vbChunkKey != -1); // "Error, Invalid vb Chunk Key"
+		uint vbKey = indexBuffer->GetVBKey();
+		assert(vbKey != -1); // "Error, Invalid vb Chunk Key"
 
-		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(meshFileName, vbChunkKey);
+		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(vbKey);
 		assert(vertexBuffer); // "Error, Invalid vb Chunk Key"
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
