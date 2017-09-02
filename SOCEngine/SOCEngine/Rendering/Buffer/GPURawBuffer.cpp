@@ -1,4 +1,4 @@
-#include "RawBuffer.h"
+#include "GPURawBuffer.h"
 #include <assert.h>
 
 using namespace Rendering::View;
@@ -6,7 +6,7 @@ using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Device;
 
-void RawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag)
+void GPURawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag)
 {
 	bool useAll = flag == Flag::ALL_VIEW;
 	bool useSRV = (flag == Flag::ONLY_SRV) | useAll;

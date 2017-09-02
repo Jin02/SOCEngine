@@ -418,7 +418,7 @@
     <Filter Include="Rendering\Renderer\Sky">
       <UniqueIdentifier>{f0bf790e-100d-45e1-b03c-b5f3f3b82c3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Buffer\Index\Raw">
+    <Filter Include="Rendering\Buffer\Raw">
       <UniqueIdentifier>{ca66c953-2ea5-4d7f-91ea-b54b8fe04caa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -606,9 +606,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h">
       <Filter>Rendering\Buffer\Index</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Buffer\RawBuffer.h">
-      <Filter>Rendering\Buffer\Index\Raw</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
@@ -919,6 +916,9 @@
     <ClInclude Include="Core\Bookmark.hpp">
       <Filter>Core\Structure</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Buffer\GPURawBuffer.h">
+      <Filter>Rendering\Buffer\Raw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -983,9 +983,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp">
       <Filter>Rendering\Buffer\Index</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp">
-      <Filter>Rendering\Buffer\Index\Raw</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp">
       <Filter>Rendering\Buffer\ShaderResource</Filter>
@@ -1196,6 +1193,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp">
       <Filter>Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Buffer\GPURawBuffer.cpp">
+      <Filter>Rendering\Buffer\Raw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

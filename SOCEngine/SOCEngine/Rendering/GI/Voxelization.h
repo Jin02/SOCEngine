@@ -11,7 +11,7 @@
 #include "ConstBuffer.h"
 #include "ComputeShader.h"
 #include "VXGICommon.h"
-#include "RawBuffer.h"
+#include "GPURawBuffer.h"
 
 #include "ShaderManager.h"
 #include "LightManager.h"
@@ -60,9 +60,9 @@ namespace Rendering
 			void ClearVoxelMap(Device::DirectX& dx, Buffer::ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB);
 
 		private:
-			Buffer::RawBuffer						_voxelAlbedoRawBuffer;
-			Buffer::RawBuffer						_voxelNormalRawBuffer;
-			Buffer::RawBuffer						_voxelEmissionRawBuffer;
+			Buffer::GPURawBuffer						_voxelAlbedoRawBuffer;
+			Buffer::GPURawBuffer						_voxelNormalRawBuffer;
+			Buffer::GPURawBuffer						_voxelEmissionRawBuffer;
 
 			Buffer::ExplicitConstBuffer<InfoCBData>	_infoCB;
 			Shader::ComputeShader					_clearVoxelRawMapCS;

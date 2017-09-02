@@ -7,7 +7,7 @@ namespace Rendering
 {
 	namespace Buffer
 	{
-		class RawBuffer final
+		class GPURawBuffer final
 		{
 		public:
 			enum class Flag

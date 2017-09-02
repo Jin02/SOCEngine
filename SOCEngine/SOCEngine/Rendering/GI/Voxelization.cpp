@@ -26,9 +26,9 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 
 	uint count = dimension * dimension * dimension;
 	
-	_voxelAlbedoRawBuffer.Initialize(dx, 4, count, RawBuffer::Flag::ALL_VIEW);
-	_voxelEmissionRawBuffer.Initialize(dx, 4, count, RawBuffer::Flag::ALL_VIEW);
-	_voxelNormalRawBuffer.Initialize(dx, 4, count, RawBuffer::Flag::ALL_VIEW);
+	_voxelAlbedoRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
+	_voxelEmissionRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
+	_voxelNormalRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
 
 	_infoCB.Initialize(dx);
 

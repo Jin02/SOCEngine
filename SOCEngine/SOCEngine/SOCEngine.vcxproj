@@ -66,7 +66,7 @@
     <ClInclude Include="Rendering\Buffer\CPUReadBuffer.h" />
     <ClInclude Include="Rendering\Buffer\GPUUploadBuffer.hpp" />
     <ClInclude Include="Rendering\Buffer\IndexBuffer.h" />
-    <ClInclude Include="Rendering\Buffer\RawBuffer.h" />
+    <ClInclude Include="Rendering\Buffer\GPURawBuffer.h" />
     <ClInclude Include="Rendering\Buffer\ShaderResourceBuffer.h" />
     <ClInclude Include="Rendering\Buffer\VertexBuffer.h" />
     <ClInclude Include="Rendering\Camera\MainCamera.h" />
@@ -310,7 +310,7 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\CPUReadBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\IndexBuffer.cpp" />
-    <ClCompile Include="Rendering\Buffer\RawBuffer.cpp" />
+    <ClCompile Include="Rendering\Buffer\GPURawBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\ShaderResourceBuffer.cpp" />
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
