@@ -20,19 +20,6 @@ namespace Rendering
 
 	namespace Geometry
 	{
-		enum class Trait
-		{
-			Opaque,
-			AlphaBlend,
-			Transparency
-		};
-		struct OpaqueTrait		
-		{ constexpr static Trait Trait = Trait::Opaque;			};
-		struct AlphaBlendTrait	
-		{ constexpr static Trait Trait = Trait::AlphaBlend;		};
-		struct TransparencyTrait
-		{ constexpr static Trait Trait = Trait::Transparency;	};
-
 		class Mesh final
 		{
 		public:
@@ -71,20 +58,6 @@ namespace Rendering
 			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
 
-			template <typename ToTrait>
-			void ChangeTrait()
-			{
-				if (_trait == ToTrait::Trait)
-					return;
-
-				_prevTrait = _trait;
-				_trait = ToTrait::Trait;
-			}
-			void ClearDirty()
-			{
-				_prevTrait = _trait;
-			}
-
 		public:
 			void AddMaterialID(MaterialID id);
 			bool HasMaterialID(MaterialID id) const;
@@ -98,15 +71,12 @@ namespace Rendering
 			GET_SET_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
 			GET_ACCESSOR(PrevWorldMat,		const Math::Matrix&,			_prevWorldMat);
 
-			GET_CONST_ACCESSOR(ChangedTrait, bool, _prevTrait != _trait);
-			GET_CONST_ACCESSOR(Trait, Trait, _trait);
-			GET_CONST_ACCESSOR(PrevTrait, Trait, _prevTrait);
-
 			GET_ACCESSOR(VertexBuffer, auto&, _vertexBuffer);
 			GET_ACCESSOR(IndexBuffer, auto&, _indexBuffer);
 			GET_ACCESSOR(TransformCB, auto&, _transformCB);
 
 			GET_CONST_ACCESSOR(BufferFlag, uint, _bufferFlag);
+			GET_CONST_ACCESSOR(Culled, bool, _culled);
 
 		private:
 			uint ComputeBufferFlag(
@@ -129,9 +99,6 @@ namespace Rendering
 			TransformCB::ChangeState					_tfChangeState;
 
 			bool										_culled = false;
-
-			Trait										_trait = Trait::Opaque;
-			Trait										_prevTrait = Trait::AlphaBlend;
 
 			friend class MeshUtility;
 		};

@@ -10,6 +10,19 @@ namespace Rendering
 {
 	namespace Manager
 	{
+		namespace RenderMethod
+		{
+			enum class Method
+			{
+				Opaque,
+				AlphaBlend,
+				Transparency
+			};
+			struct Opaque		{	constexpr static Method method = Method::Opaque;		};
+			struct AlphaBlend	{	constexpr static Method method = Method::AlphaBlend;	};
+			struct Transparency	{	constexpr static Method method = Method::Transparency;	};
+		}
+
 		using MeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Geometry::Mesh>;
 
 		template <typename Trait>
@@ -54,8 +67,21 @@ namespace Rendering
 			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::TransformPool& tfPool);
 
-			void UpdateTraits();
 			void ClearDirty() { _dirtyMeshes.clear(); }
+
+			template <typename FromTrait, typename ToTrait>
+			bool ChangeTrait(Core::ObjectID id)
+			{
+				auto& fromIndexer = GetPool<FromTrait>().GetIndexer();
+				auto& toIndexer = GetPool<ToTrait>().GetIndexer();
+
+				assert(fromIndexer.Has(id) == false);
+				assert(toIndexer.Has(id) == false);
+
+				uint idx = fromIndexer.Find(id);
+				//GetPool<ToTrait>().Add(id, GetPool<FromTrait>().Get(idx));
+				//GetPool<FromTrait>().Delete(id);
+			}
 
 			template <typename Trait> MeshPool& GetPool()
 			{
@@ -69,9 +95,9 @@ namespace Rendering
 			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
 
 		private:
-			std::tuple<	MeshPoolTrait<Geometry::OpaqueTrait>,
-						MeshPoolTrait<Geometry::AlphaBlendTrait>,
-						MeshPoolTrait<Geometry::TransparencyTrait>> _tuple;
+			std::tuple<	MeshPoolTrait<RenderMethod::Opaque>,
+						MeshPoolTrait<RenderMethod::AlphaBlend>,
+						MeshPoolTrait<RenderMethod::Transparency>> _tuple;
 
 			std::vector<Geometry::Mesh*> _dirtyMeshes;
 		};

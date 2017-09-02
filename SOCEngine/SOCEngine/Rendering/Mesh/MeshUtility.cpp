@@ -24,7 +24,7 @@ void MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, const Tr
 		}
 	};
 
-	Cull( meshMgr.GetPool<OpaqueTrait>() );
-	Cull( meshMgr.GetPool<TransparencyTrait>() );
-	Cull( meshMgr.GetPool<AlphaBlendTrait>() );
+	Cull( meshMgr.GetPool<RenderMethod::Opaque>() );
+	Cull( meshMgr.GetPool<RenderMethod::Transparency>() );
+	Cull( meshMgr.GetPool<RenderMethod::AlphaBlend>() );
 }

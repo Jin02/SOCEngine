@@ -105,7 +105,7 @@ void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform
 	assert(transform.GetObjectID() == _objID);
 
 	_transparentMeshes.clear();
-	const auto& meshes = meshMgr.GetPool<TransparencyTrait>().GetVector();
+	const auto& meshes = meshMgr.GetPool<RenderMethod::Transparency>().GetVector();
 	for (const auto& mesh : meshes)
 		_transparentMeshes.push_back(&mesh);
 
