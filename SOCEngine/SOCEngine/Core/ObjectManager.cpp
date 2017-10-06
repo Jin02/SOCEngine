@@ -33,6 +33,11 @@ Object* ObjectManager::Find(const std::string& name)
 	return _objects.Find( ObjectID(_idBookmark.Find(name)) );
 }
 
+const Object* ObjectManager::Find(const std::string& name) const
+{
+	return _objects.Find(ObjectID(_idBookmark.Find(name)));
+}
+
 void Core::ObjectManager::Delete(ObjectID id)
 {
 	Object* findObj = _objects.Find(id);
@@ -48,7 +53,12 @@ bool Core::ObjectManager::Has(ObjectID id) const
 	return _objects.Has(id);
 }
 
-Object * Core::ObjectManager::Find(ObjectID id)
+Object* Core::ObjectManager::Find(ObjectID id)
+{
+	return _objects.Find(id);
+}
+
+const Object* Core::ObjectManager::Find(ObjectID id) const
 {
 	return _objects.Find(id);
 }

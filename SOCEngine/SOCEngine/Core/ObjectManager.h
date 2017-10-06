@@ -20,14 +20,16 @@ namespace Core
 		friend class Object;
 
 	public:
-		Object&		Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
-		void		Delete(const std::string& name);
-		bool		Has(const std::string& name) const;
-		Object*		Find(const std::string& name);
+		Object&			Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool);
+		void			Delete(const std::string& name);
+		bool			Has(const std::string& name) const;
+		Object*			Find(const std::string& name);
+		const Object*	Find(const std::string& name) const;
 
-		void		Delete(ObjectID id);
-		bool		Has(ObjectID id) const;
-		Object*		Find(ObjectID id);
+		void			Delete(ObjectID id);
+		bool			Has(ObjectID id) const;
+		Object*			Find(ObjectID id);
+		const Object*	Find(ObjectID id) const;
 
 		void		DeleteAll();
 
