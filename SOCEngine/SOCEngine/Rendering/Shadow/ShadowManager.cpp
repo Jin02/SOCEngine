@@ -100,8 +100,8 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 	UpdateDirtyShadow(GetShadowDatas<SpotLightShadow>());
 	UpdateDirtyShadow(GetShadowDatas<DirectionalLightShadow>());
 
-	_dirtyGlobalParam |=	GetBuffer<DirectionalLightShadow>().GetDirty() |
-							GetBuffer<PointLightShadow>().GetDirty()		 |
+	_dirtyGlobalParam |=	GetBuffer<DirectionalLightShadow>().GetDirty()	|
+							GetBuffer<PointLightShadow>().GetDirty()		|
 							GetBuffer<SpotLightShadow>().GetDirty();
 }
 
