@@ -1,4 +1,4 @@
-#include "MeshPool.h"
+#include "VBSortedMeshPool.h"
 
 using namespace Rendering;
 using namespace Rendering::Geometry;

@@ -9,8 +9,6 @@ namespace Rendering
 {
 	namespace Geometry
 	{
-		using MeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
-
 		class VBSortedMeshPool final
 		{
 		public:
@@ -44,5 +42,7 @@ namespace Rendering
 			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
 			Core::VectorHashMap<Buffer::VertexBuffer::Key, MeshRawPool> _pool;
 		};
+
+		using OpaqueMeshPool = VBSortedMeshPool;
 	}
 }
