@@ -147,7 +147,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp" />
-    <ClInclude Include="Rendering\Mesh\MeshPool.h" />
+    <ClInclude Include="Rendering\Mesh\VBSortedMeshPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshRawPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshUtility.h" />
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
@@ -370,7 +370,7 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp" />
-    <ClCompile Include="Rendering\Mesh\MeshPool.cpp" />
+    <ClCompile Include="Rendering\Mesh\VBSortedMeshPool.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRawPool.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshUtility.cpp" />
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">

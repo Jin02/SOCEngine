@@ -922,14 +922,14 @@
     <ClInclude Include="Rendering\Buffer\GPURawBuffer.h">
       <Filter>Rendering\Buffer\Raw</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshPool.h">
-      <Filter>Rendering\Mesh\Pool</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshRawPool.h">
       <Filter>Rendering\Mesh\Pool\Raw</Filter>
     </ClInclude>
     <ClInclude Include="Core\RootObjectIDs.hpp">
       <Filter>Core\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\VBSortedMeshPool.h">
+      <Filter>Rendering\Mesh\Pool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1209,7 +1209,7 @@
     <ClCompile Include="Rendering\Mesh\MeshRawPool.cpp">
       <Filter>Rendering\Mesh\Pool\Raw</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Mesh\MeshPool.cpp">
+    <ClCompile Include="Rendering\Mesh\VBSortedMeshPool.cpp">
       <Filter>Rendering\Mesh\Pool</Filter>
     </ClCompile>
   </ItemGroup>
