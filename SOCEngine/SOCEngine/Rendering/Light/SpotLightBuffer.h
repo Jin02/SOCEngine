@@ -21,7 +21,7 @@ namespace Rendering
 				void UpdateTransformBuffer(	const std::vector<SpotLight*>& dirtyTFLights,
 											const Core::TransformPool& transformPool,
 											const Core::ObjectID::IndexHashMap& indexer );
-				void UpdateSRBuffer(Device::DirectX& dx);
+				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate);
 
 				void Delete(uint index);
 				void DeleteAll();

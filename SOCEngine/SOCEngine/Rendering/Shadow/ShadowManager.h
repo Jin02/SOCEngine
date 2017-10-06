@@ -53,7 +53,6 @@ namespace Rendering
 				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
 				GetShadowMapCB<ShadowType>().PushConstBufferToQueue();
 
-				shadow.SetDirty(true);
 				_dirtyGlobalParam = true;
 
 				uint objLiteralID = shadow.GetObjectID().Literal();
@@ -68,6 +67,7 @@ namespace Rendering
 				GetShadowMapCB<ShadowType>().Delete(index);
 
 				_dirtyGlobalParam = true;
+				GetShadowDatas<ShadowType>().mustUpdateToGPU = true;
 			}
 			template <class ShadowType>	bool Has(Core::ObjectID objID) const
 			{
@@ -143,6 +143,8 @@ namespace Rendering
 				std::vector<ShadowType*>						dirtyShadows;
 				Shadow::Buffer::ShadowBufferObject<ShadowType>	buffers;
 				Shadow::Buffer::ShadowMapCB<ShadowType>			constBuffers;
+
+				bool											mustUpdateToGPU = true;
 			};
 
 			std::tuple<	ShadowDatas<Shadow::SpotLightShadow>,

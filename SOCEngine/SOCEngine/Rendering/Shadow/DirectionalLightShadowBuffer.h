@@ -24,7 +24,7 @@ namespace Rendering
 									const Core::TransformPool& tfPool,
 									const ShadowDatasIndexer& indexer,
 									const Intersection::BoundBox& sceneBoundBox);
-				void UpdateSRBuffer(Device::DirectX& dx);
+				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate);
 
 				void Delete(uint index);
 				void DeleteAll();

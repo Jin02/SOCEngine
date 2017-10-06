@@ -34,12 +34,12 @@ void SpotLightBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirt
 	_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
 }
 
-void SpotLightBuffer::UpdateSRBuffer(Device::DirectX & dx)
+void SpotLightBuffer::UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate)
 {
-	if (_mustUpdateTransformSRBuffer)
+	if (_mustUpdateTransformSRBuffer | forcedUpdate)
 		_paramSRBuffer.UpdateSRBuffer(dx);
 
-	Parent::UpdateSRBuffer(dx);
+	Parent::UpdateSRBuffer(dx, forcedUpdate);
 }
 
 void SpotLightBuffer::Delete(uint index)

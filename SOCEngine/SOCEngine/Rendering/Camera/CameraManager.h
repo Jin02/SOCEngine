@@ -44,6 +44,7 @@ namespace Rendering
 				uint index = pool.GetIndexer().Find(objID.Literal());
 
 				pool.Delete(objID.Literal());
+				GetCameraDatas<CameraType>().mustUpdateToGPU = true;
 			}
 			template <class CameraType> bool Has(Core::ObjectID objID) const
 			{
@@ -70,6 +71,8 @@ namespace Rendering
 			{
 				CameraPool<CameraType>		pool;
 				std::vector<CameraType*>	dirty;
+
+				bool						mustUpdateToGPU = true;
 			};
 
 			template <class CameraType> auto&		GetCameraDatas()

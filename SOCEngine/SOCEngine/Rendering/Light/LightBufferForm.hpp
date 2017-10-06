@@ -98,10 +98,10 @@ namespace Rendering
 					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() != false);
 				}
 
-				void UpdateSRBuffer(Device::DirectX& dx)
+				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate)
 				{
-					if(_mustUpdateTransformSRBuffer)		_transformBuffer.UpdateSRBuffer(dx);
-					if(_mustUpdateCommonSRBuffer)			_commonBuffer.UpdateSRBuffer(dx);
+					if(_mustUpdateTransformSRBuffer | forcedUpdate)		_transformBuffer.UpdateSRBuffer(dx);
+					if(_mustUpdateCommonSRBuffer	| forcedUpdate)		_commonBuffer.UpdateSRBuffer(dx);
 
 					_mustUpdateCommonSRBuffer =
 					_mustUpdateTransformSRBuffer = false;

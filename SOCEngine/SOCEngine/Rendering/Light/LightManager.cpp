@@ -27,20 +27,19 @@ void LightManager::Initialize(Device::DirectX& dx)
 
 void LightManager::DeleteAll()
 {
-	GetBuffer<SpotLight>().DeleteAll();
-	GetPool<SpotLight>().DeleteAll();
-	GetDirtyParamLights<SpotLight>().clear();
-	GetDirtyTransformLights<SpotLight>().clear();
+	auto DeleteAll = [](auto& lightData)
+	{
+		lightData.lightBuffer.DeleteAll();
+		lightData.pool.DeleteAll();
+		lightData.dirtyParamLights.clear();
+		lightData.dirtyTransformLights.clear();
 
-	GetBuffer<PointLight>().DeleteAll();
-	GetPool<PointLight>().DeleteAll();
-	GetDirtyParamLights<PointLight>().clear();
-	GetDirtyTransformLights<PointLight>().clear();
+		lightData.mustUpdateToGPU = true;
+	};
 
-	GetBuffer<DirectionalLight>().DeleteAll();
-	GetPool<DirectionalLight>().DeleteAll();
-	GetDirtyParamLights<DirectionalLight>().clear();
-	GetDirtyTransformLights<DirectionalLight>().clear();
+	DeleteAll(GetLightDatas<SpotLight>());
+	DeleteAll(GetLightDatas<PointLight>());
+	DeleteAll(GetLightDatas<DirectionalLight>());
 }
 
 uint LightManager::GetPackedLightCount() const
@@ -87,9 +86,15 @@ void LightManager::UpdateParamBuffer(
 
 void LightManager::UpdateSRBuffer(Device::DirectX& dx)
 {
-	GetBuffer<DirectionalLight>().UpdateSRBuffer(dx);
-	GetBuffer<PointLight>().UpdateSRBuffer(dx);
-	GetBuffer<SpotLight>().UpdateSRBuffer(dx);
+	auto UpdateSRBuffer = [&dx](auto& ligtDatas)
+	{
+		ligtDatas.lightBuffer.UpdateSRBuffer(dx, ligtDatas.mustUpdateToGPU);
+		ligtDatas.mustUpdateToGPU = false;
+	};
+
+	UpdateSRBuffer(GetLightDatas<DirectionalLight>());
+	UpdateSRBuffer(GetLightDatas<PointLight>());
+	UpdateSRBuffer(GetLightDatas<SpotLight>());
 }
 
 void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)

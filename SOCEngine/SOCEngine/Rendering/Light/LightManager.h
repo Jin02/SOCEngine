@@ -32,6 +32,8 @@ namespace Rendering
 
 				GetBuffer<LightType>().Delete(index);
 				pool.Delete(objID.Literal());
+
+				GetLightDatas<LightType>().mustUpdateToGPU = true;
 			}
 
 			template <class LightType>
@@ -130,6 +132,8 @@ namespace Rendering
 				typename LightType::LightBufferType	lightBuffer;
 				std::vector<LightType*>				dirtyParamLights;
 				std::vector<LightType*>				dirtyTransformLights;
+
+				bool								mustUpdateToGPU = true;
 			};
 
 			std::tuple<	LightDatas<Light::PointLight>,

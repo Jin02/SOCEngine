@@ -47,12 +47,12 @@ void DirectionalLightShadowBuffer::UpdateBuffer(
 	_mustUpdateDLParamSRBuffer |= _mustUpdateParamSRBuffer;
 }
 
-void DirectionalLightShadowBuffer::UpdateSRBuffer(Device::DirectX & dx)
+void DirectionalLightShadowBuffer::UpdateSRBuffer(Device::DirectX & dx, bool forcedUpdate)
 {
-	if (_mustUpdateDLParamSRBuffer)
+	if (_mustUpdateDLParamSRBuffer | forcedUpdate)
 		_dlParamBuffer.UpdateSRBuffer(dx);
 
-	Parent::UpdateSRBuffer(dx);
+	Parent::UpdateSRBuffer(dx, forcedUpdate);
 
 	_mustUpdateDLParamSRBuffer = false;
 }

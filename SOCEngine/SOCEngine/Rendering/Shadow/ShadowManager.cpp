@@ -145,9 +145,15 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 
 void ShadowManager::UpdateSRBuffer(Device::DirectX & dx)
 {	
-	GetBuffer<DirectionalLightShadow>().GetBuffer().UpdateSRBuffer(dx);
-	GetBuffer<PointLightShadow>().GetBuffer().UpdateSRBuffer(dx);
-	GetBuffer<SpotLightShadow>().GetBuffer().UpdateSRBuffer(dx);
+	auto UpdateSRBuffer = [&dx](auto& shadowDatas)
+	{
+		shadowDatas.buffers.GetBuffer().UpdateSRBuffer(dx, shadowDatas.mustUpdateToGPU);
+		shadowDatas.mustUpdateToGPU = false;
+	};
+
+	UpdateSRBuffer(GetShadowDatas<DirectionalLightShadow>());
+	UpdateSRBuffer(GetShadowDatas<PointLightShadow>());
+	UpdateSRBuffer(GetShadowDatas<SpotLightShadow>());
 }
 
 void ShadowManager::UpdateConstBuffer(Device::DirectX& dx)
@@ -163,17 +169,19 @@ void ShadowManager::UpdateConstBuffer(Device::DirectX& dx)
 
 void ShadowManager::DeleteAll()
 {
-	GetBuffer<PointLightShadow>().GetBuffer().DeleteAll();
-	GetBuffer<SpotLightShadow>().GetBuffer().DeleteAll();
-	GetBuffer<DirectionalLightShadow>().GetBuffer().DeleteAll();
+	auto DeleteAll = [](auto& shadowDatas)
+	{
+		shadowDatas.pool.DeleteAll();
+		shadowDatas.dirtyShadows.clear();
+		shadowDatas.buffers.GetBuffer().DeleteAll();
+//		shadowDatas.constBuffers.?
 
-	GetPool<PointLightShadow>().DeleteAll();
-	GetPool<SpotLightShadow>().DeleteAll();
-	GetPool<DirectionalLightShadow>().DeleteAll();
+		shadowDatas.mustUpdateToGPU = true;
+	};
 
-	GetDirtyShadows<PointLightShadow>().clear();
-	GetDirtyShadows<SpotLightShadow>().clear();
-	GetDirtyShadows<DirectionalLightShadow>().clear();
+	DeleteAll(GetShadowDatas<DirectionalLightShadow>());
+	DeleteAll(GetShadowDatas<PointLightShadow>());
+	DeleteAll(GetShadowDatas<SpotLightShadow>());
 }
 
 void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS, bool bindPS)
