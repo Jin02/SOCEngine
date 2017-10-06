@@ -15,6 +15,7 @@ namespace Core
 
 		friend class IDManagerForm<ObjectID>;
 		friend class ObjectManager;
+		friend class RootObjectIDs;
 	};
 
 	using ObjectIDManager = IDManagerForm<ObjectID>;
