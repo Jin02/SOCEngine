@@ -105,8 +105,14 @@ void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
 										 const ObjectManager& objMgr,
 										 const TransformPool& transformPool)
 {
+	//camCBData was transposed.
+	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
+								_camCBData.viewMat._32,
+								_camCBData.viewMat._33	);	
+	
 	MainCamera* thisCam = this;
-	ClassifyTransparentMesh(_transparentMeshes, pool, objMgr, transformPool,
+	ClassifyTransparentMesh(_transparentMeshes, viewDir,
+							pool, objMgr, transformPool,
 			[thisCam](const Mesh& mesh, const Transform& tarnsform)
 			{
 				Vector3 worldPos = transform.GetWorldPosition();
