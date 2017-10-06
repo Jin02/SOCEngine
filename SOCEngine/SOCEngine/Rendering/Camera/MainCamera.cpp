@@ -111,8 +111,7 @@ void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
 								_camCBData.viewMat._33	);	
 	
 	MainCamera* thisCam = this;
-	ClassifyTransparentMesh(_transparentMeshes, viewDir,
-							pool, objMgr, transformPool,
+	MeshUtility::ClassifyTransparentMesh(_transparentMeshes, viewDir, pool, objMgr, transformPool,
 			[thisCam](const Mesh& mesh, const Transform& tarnsform)
 			{
 				Vector3 worldPos = transform.GetWorldPosition();
