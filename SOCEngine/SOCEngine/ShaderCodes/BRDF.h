@@ -128,11 +128,10 @@ float GeometrySmithJointApproximately(float NdotV, float NdotL, float roughness)
 	return 0.5 * rcp( smithV + smithL );
 }
 
-float3 FresnelSchlick(float3 f0, float VdotH)
+float3 FresnelSchlick(float3 specularColor, float VdotH)
 {
-	float exponential = pow(1.0f - VdotH, 5.0f);
-	return f0 + (1.0f - f0) * exponential;
-	return (f0 * (1 - exponential)) + exponential;
+	float fc = pow(1.0f - VdotH, 5.0f);
+	return fc + (1 - fc) * specularColor;
 }
 
 
@@ -157,21 +156,20 @@ float3 DiffuseBurley(float3 diffuseColor, float roughness, float NdotV, float Nd
 	float FdV		= 1.0f + (fd90 - 1.0f) * NdotVPow5;
 	float FdL		= 1.0f + (fd90 - 1.0f) * NdotLPow5;
 
-	return diffuseColor * (1.0 / PI * FdV * FdL) * ( 1 - 0.3333f * roughness );
+	return diffuseColor * ((1.0f / PI) * FdV * FdL);
 }
 
 // Gotanda 2012, Beyond a Simple Physically Based Blinn-Phong Model in Real-Time
-float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotL)
+float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotH)
 {
-	float m = roughness * roughness;
-	float m2 = m * m;
-
-	float A = 1.0f - 0.5f * (m2 / (m2 + 0.57f));
-	float B = 0.45f * (m2 / (m2 + 0.09f));
-	float cosTerm = VdotL - NdotV * NdotL; //cos(r - i)
-	B = B * cosTerm * (cosTerm >= 0 ? min(1.0f, NdotL / NdotV) : NdotL);
-	
-	return diffuseColor / PI * (NdotL * A + B);
+	float a = roughness * roughness;
+	float s = a;// / ( 1.29 + 0.5 * a );
+	float s2 = s * s;
+	float VoL = 2 * VdotH * VdotH - 1;		// double angle identity
+	float Cosri = VoL - NdotV * NdotL;
+	float C1 = 1 - 0.5 * s2 / (s2 + 0.33);
+	float C2 = 0.45 * s2 / (s2 + 0.09) * Cosri * (Cosri >= 0 ? rcp(max(NdotL, NdotV)) : 1);
+	return diffuseColor / PI * (C1 + C2) * (1 + roughness * 0.5);
 }
 
 
@@ -183,7 +181,7 @@ float3 Diffuse(float3 diffuseColor, float roughness, float NdotV, float NdotL, f
 #elif defined(DIFFUSE_BURLEY)
 	return DiffuseBurley(diffuseColor, roughness, NdotV, NdotL, VdotH);
 #elif defined(DIFFUSE_OREN_NAYAR)
-	return DiffuseOrenNayar(diffuseColor, roughness, NdotV, NdotL, VdotL);
+	return DiffuseOrenNayar(diffuseColor, roughness, NdotV, NdotL, VdotH);
 #endif
 }
 
