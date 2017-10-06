@@ -934,10 +934,10 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 		assert(indexBuffer); // "Error, Invalid mesh part id"
 
 		uint vbKey = indexBuffer->GetVBKey();
-		assert(vbKey != -1); // "Error, Invalid vb Chunk Key"
+		assert(vbKey != -1); // "Error, Can't find VB. Invalid VBKey"
 
 		VertexBuffer* vertexBuffer = buferMgr.GetPool<VertexBuffer>().Find(vbKey);
-		assert(vertexBuffer); // "Error, Invalid vb Chunk Key"
+		assert(vertexBuffer); // "Error, Can't find VB. Invalid VBKey"
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
 		mesh.Initialize(vertexBuffer->GetSemantics(), vbKey, ibKey);
