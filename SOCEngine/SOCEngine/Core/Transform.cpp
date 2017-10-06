@@ -110,20 +110,6 @@ void Transform::AddChild(Transform& child)
 	_childIDs.push_back(child.GetObjectID());
 }
 
-void Transform::RegistParent(Transform* newParent)
-{
-	bool hasParent = _parentID.Literal() != Core::ObjectID::Undefined();
-	assert(hasParent);
-
-	if (newParent == nullptr)
-		_parentID = Core::ObjectID();
-	else
-	{
-		_parentID = newParent->GetObjectID();
-		newParent->AddChild(*this);
-	}
-}
-
 const Vector3 Transform::GetWorldPosition() const
 {
 	return Vector3(_worldMat._41, _worldMat._42, _worldMat._43);
