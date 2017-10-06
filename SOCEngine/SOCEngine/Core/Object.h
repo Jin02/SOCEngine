@@ -51,6 +51,7 @@ namespace Core
 	public:
 		GET_CONST_ACCESSOR(Name, auto&, _name);
 		GET_CONST_ACCESSOR(ObjectID, auto, _id);
+		GET_SET_ACCESSOR(Use, bool, _use);
 
 	private:
 		std::string			_name;
@@ -59,5 +60,7 @@ namespace Core
 		TransformPool*		_tfPool;
 		ComponentSystem*	_compoSystem;
 		ObjectManager*		_objectMgr;
+
+		bool				_use = true;
 	};
 }
