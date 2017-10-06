@@ -102,5 +102,7 @@ namespace Rendering
 
 			friend class MeshUtility;
 		};
+
+		using TransparentMeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;;
 	}
 }
