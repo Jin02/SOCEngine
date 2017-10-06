@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 #include <vector>
+#include <initializer_list>
 
 namespace Rendering
 {
@@ -11,6 +12,7 @@ namespace Rendering
 		{
 		public:
 			MeshRawPool() = default;
+			MeshRawPool(const std::initializer_list<Mesh>& meshes);
 
 			Mesh& Add(Mesh& mesh)	{ _meshes.push_back(mesh);	return _meshes.back();	}
 			void Delete(Mesh& mesh) { Delete(mesh.GetObjectID().Literal());				}

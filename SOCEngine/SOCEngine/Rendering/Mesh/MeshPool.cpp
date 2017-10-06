@@ -13,16 +13,11 @@ Mesh& VBSortedMeshPool::Add(Mesh& mesh)
 	_bookmark.Add(literalID, vbKey);
 
 	if (HasVBKey(vbKey) == false)
-	{
-		MeshRawPool first;
-		first.Add(mesh);
+		return _pool.Add(vbKey, { mesh }).Get(0);
 
-		return _pool.Add(vbKey, first).Get(0);
-	}
-
-//	else
 	auto rawPool = _pool.Find(vbKey);
 	assert(rawPool->Has(literalID) == false);
+
 	return rawPool->Add(mesh);
 }
 
