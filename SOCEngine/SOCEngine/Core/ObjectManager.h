@@ -31,23 +31,11 @@ namespace Core
 
 		void		DeleteAll();
 
-	public:
-		void CheckRootObjectIDs(const TransformPool& tfPool);
-		void AddNewRootObject(ObjectID id);
-		void DeleteRootObject(ObjectID id);
-
-		GET_CONST_ACCESSOR(RootObjectIDs, const auto&, _rootObjectIDs.GetVector());
-
 	private:
 		GET_ACCESSOR(ObjectIDManager, ObjectIDManager&, _objIDMgr);
 
 	private:
 		VectorHashMap<ObjectID::LiteralType, Object>		_objects;
-		std::vector<ObjectID::LiteralType>					_newObjectIDs;
-
-		VectorHashMap<	ObjectID::LiteralType,
-						ObjectID::LiteralType>				_rootObjectIDs;
-
 		BookHashMapmark<std::string>						_idBookmark;
 
 		ObjectIDManager										_objIDMgr;
