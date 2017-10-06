@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Common.h"
-#include <vector>
 #include <unordered_map>
 #include <map>
-#include <type_traits>
 #include <limits>
+
+#undef max
 
 namespace Core
 {
@@ -13,17 +13,17 @@ namespace Core
 	class Bookmark
 	{
 	public:
-		void Add(const Key& key, Map::mapped_type markValue)
+		void Add(const Key& key, typename Map::mapped_type markValue)
 		{
 			_map.insert(std::make_pair(key, markValue));
 		}
 
-		uint Find(const Key& key) const
+		typename Map::mapped_type Find(const Key& key) const
 		{
 			const auto& iter = _map.find(key);
 
 			bool found = iter != _map.end();
-			return found ? iter->second : std::numeric_limits<Map::mapped_type>::max();
+			return found ? iter->second : Fail();
 		}
 
 		bool Has(const Key& key) const
@@ -43,7 +43,7 @@ namespace Core
 			_map.clear();
 		}
 
-		static constexpr uint Fail() { return std::numeric_limits<Map::mapped_type>::max(); }
+		static constexpr typename Map::mapped_type Fail() { return std::numeric_limits<typename Map::mapped_type>::max(); }
 
 	private:
 		Map	_map;
