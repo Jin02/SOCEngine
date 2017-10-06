@@ -42,7 +42,7 @@ void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 		_gbuffer.blendedDepthBuffer.Initialize(dx, backBufferSize, true);
 	}
 
-	float maxLength = static_cast<float>( max(backBufferSize.w, backBufferSize.h) );
+	float maxLength = static_cast<float>( std::max(backBufferSize.w, backBufferSize.h) );
 	uint mipLevel = static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
 	_resultMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
 

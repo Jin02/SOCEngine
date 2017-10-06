@@ -2,6 +2,8 @@
 #include "BindIndexInfo.h"
 #include "EngineShaderFactory.hpp"
 
+#undef max
+
 using namespace Device;
 using namespace Core;
 using namespace Rendering;
@@ -56,7 +58,7 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension, flo
 	};
 
 	const uint mipmapGenOffset		= 2;
-	const uint mipmapLevels			= max((uint)Log2((float)dimension) - mipmapGenOffset + 1, 1);
+	const uint mipmapLevels			= std::max((uint)Log2((float)dimension) - mipmapGenOffset + 1, 1u);
 
 	// Setting Infos
 	{
