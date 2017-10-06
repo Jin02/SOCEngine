@@ -138,6 +138,13 @@ namespace Rendering
 				const std::string& uniqueKey)
 			{
 				assert(_shaderMgr);
+
+				std::string key = (uniqueKey.empty() == false) ? uniqueKey : Shader::ShaderCompiler::MakeKey(shaderName, mainFuncName, "cs", macros);
+
+				std::shared_ptr<Shader::ComputeShader> shaderPtr(nullptr);
+				if (_shaderMgr->GetPool<Shader::ComputeShader>().Find(shaderPtr, key))
+					return shaderPtr;
+
 				auto& compiler = _shaderMgr->GetCompiler();
 
 				std::string fullPath = FetchShaderFullPath(shaderName);
@@ -147,13 +154,12 @@ namespace Rendering
 
 				auto blob = compiler.CreateBlob(folderPath, shaderName, "cs", mainFuncName, true, macros);
 
-				std::string key = (uniqueKey.empty() == false) ? uniqueKey : Shader::ShaderCompiler::MakeKey(shaderName, mainFuncName, "cs", macros);
-				auto shader = std::make_shared<Shader::ComputeShader>(blob, key);
-				shader->Initialize(dx);
+				shaderPtr = std::make_shared<Shader::ComputeShader>(blob, key);
+				shaderPtr->Initialize(dx);
 
-				_shaderMgr->GetPool<Shader::ComputeShader>().Add(key, shader);
+				_shaderMgr->GetPool<Shader::ComputeShader>().Add(key, shaderPtr);
 
-				return shader;
+				return shaderPtr;
 			}
 		};
 	}
