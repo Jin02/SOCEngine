@@ -700,9 +700,6 @@
     <ClInclude Include="Rendering\Sky\SkyBox.h">
       <Filter>Rendering\Sky\Box</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyRenderer.h">
-      <Filter>Rendering\Renderer\Sky</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
     </ClInclude>
@@ -1061,9 +1058,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBox.cpp">
       <Filter>Rendering\Sky\Box</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyRenderer.cpp">
-      <Filter>Rendering\Renderer\Sky</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
       <Filter>Rendering\Sky\Material</Filter>
