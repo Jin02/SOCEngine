@@ -15,6 +15,7 @@ using namespace Intersection;
 
 void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const TransformPool& transformPool,
+	const ObjectManager& objectManager,
 	const ObjectID::IndexHashMap& lightShaftIndexer)
 {
 	ShadowManager& shadowMgr = GetManager_Direct<ShadowManager>();
@@ -50,8 +51,14 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		assert(transform);
 
 		mainCamera.UpdateCB(dx, *transform);
-		mainCamera.SortTransparentMeshRenderQueue(*transform, meshMgr, transformPool);
 		MeshUtility::Culling(mainCamera.GetFrustum(), meshMgr, transformPool);
+
+		mainCamera.ClassifyTransparentMesh(meshMgr.GetTransparentMeshPool(), objectManager, transformPool,
+			[](const Mesh& mesh, const Transform& tarnsform)
+			{
+				return true;
+			}
+		);
 	}
 
 

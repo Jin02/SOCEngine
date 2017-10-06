@@ -54,7 +54,32 @@ namespace Rendering
 			Math::Matrix		ComputePerspectiveMatrix(bool isInverted) const;
 			Math::Matrix		ComputeOrthogonalMatrix(bool isInverted) const;
 
-			void SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager& meshMgr, const Core::TransformPool& transformPool);
+			template <class IntersectFunc>
+			void ClassifyTransparentMesh(
+				const Geometry::TransparentMeshPool& pool,
+				const Core::ObjectManager& objMgr,
+				const Core::TransformPool& transformPool,
+				IntersectFunc intersectFunc)
+			{
+				_transparentMeshes.clear();
+
+				const auto& meshes = pool.GetVector();
+				for (const auto& mesh : meshes)
+				{
+					ObjectID id = mesh.GetObjectID();
+					const Object* object = objMgr.Find(id); assert(object);
+					const auto& transform = MainCamera::_FindTransform(mesh, transformPool);
+
+					bool use =	object->GetUse()				|
+								intersectFunc(mesh, transform)	|
+								(mesh.GetCulled() == false);
+
+					if (use)
+						_transparentMeshes.push_back(&mesh);
+				}
+
+				_SortTransparentMesh(transformPool);
+			}
 
 			GET_ACCESSOR(FieldOfViewDegree,			float,			_desc.fieldOfViewDegree);
 			GET_ACCESSOR(Near,						float,			_desc.near);
@@ -71,6 +96,10 @@ namespace Rendering
 			GET_ACCESSOR(CameraCB,					auto&,			_camCB);
 			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
 			GET_CONST_ACCESSOR(Frustum,				const auto&,	_frustum);
+
+		private:
+			static const Core::Transform&	_FindTransform(const Geometry::Mesh& mesh, const Core::TransformPool& transformPool);
+			void							_SortTransparentMesh(const Core::TransformPool& transformPool);
 
 		private:
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;

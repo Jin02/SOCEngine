@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include "LightCullingUtility.h"
 #include "CameraManager.h"
+#include "ObjectManager.h"
 
 using namespace Utility;
 using namespace Device;
@@ -100,49 +101,34 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 	return Matrix::OrthoLH(size.w, size.h, near, far);
 }
 
-void MainCamera::SortTransparentMeshRenderQueue(const Core::Transform& transform, const Manager::MeshManager & meshMgr, const Core::TransformPool & transformPool)
+const Transform& MainCamera::_FindTransform(
+	const Geometry::Mesh& mesh,
+	const Core::TransformPool& transformPool)
 {
-	assert(transform.GetObjectID() == _objID);
+	auto id = mesh.GetObjectID();
+	uint findIdx = transformPool.GetIndexer().Find(id.Literal());
+	assert(findIdx != TransformPool::IndexerType::FailIndex());
 
-	_transparentMeshes.clear();
-	const auto& meshes = meshMgr.GetTransparentMeshPool().GetVector();
-	for (const auto& mesh : meshes)
-		_transparentMeshes.push_back(&mesh);
+	return transformPool.Get(findIdx);
+}
 
+void MainCamera::_SortTransparentMesh(const Core::TransformPool& transformPool)
+{
 	//camCBData was transposed.
 	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
 								_camCBData.viewMat._32,
 								_camCBData.viewMat._33	);
 
-	//	Vector3 camPos = transform.GetWorldPosition();
 	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
 	{
-		auto SortKey = [&viewDir](Vector3 pos) -> float
+		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
 		{
+			auto& pos = MainCamera::_FindTransform(*mesh, transformPool).GetWorldPosition();
+
 			return Vector3::Dot(pos, viewDir);
 		};
 
-		float leftKey = D3D11_FLOAT32_MAX;
-		{
-			auto id = left->GetObjectID();
-			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIdx != TransformPool::IndexerType::FailIndex());
-
-			Vector3 leftPos = transformPool.Get(findIdx).GetWorldPosition();
-			leftKey = SortKey(leftPos);
-		}
-
-		float rightKey = D3D11_FLOAT32_MAX;
-		{
-			auto id = right->GetObjectID();
-			uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-			assert(findIdx != TransformPool::IndexerType::FailIndex());
-
-			Vector3 rightPos = transformPool.Get(findIdx).GetWorldPosition();
-			rightKey = SortKey(rightPos);
-		}
-
-		return leftKey < rightKey;
+		return SortKey(left) < SortKey(right);
 	};
 
 	std::sort(_transparentMeshes.begin(), _transparentMeshes.end(), SortingByDistance);

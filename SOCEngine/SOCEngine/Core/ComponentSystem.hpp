@@ -31,6 +31,7 @@ namespace Core
 	public:
 		void UpdateBuffer(Device::DirectX& dx,
 			const Core::TransformPool& transformPool,
+			const Core::ObjectManager& objectManager,
 			const Core::ObjectID::IndexHashMap& lightShaftIndexer);
 
 	public:
