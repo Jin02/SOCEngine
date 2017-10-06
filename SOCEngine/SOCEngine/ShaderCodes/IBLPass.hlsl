@@ -37,10 +37,11 @@ float4 PS( PS_INPUT input ) : SV_Target
 	float3 diffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 specular	= float3(0.0f, 0.0f, 0.0f);
 
+	uint2 random = uint2(0, 0);
 	// Diffuse
 	{
 #ifdef USE_IMPORTANCE_DIFFUSE_IBL
-		diffuse = DiffuseIBL(surface.albedo, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES);
+		diffuse = DiffuseIBL(surface.albedo, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES, random);
 #else
 		float absDiffuseMip = skyMapInfoParam_maxMipCount;
 		float3 diffsueLookUp = skyCubeMap.SampleLevel(skyCubeMapSampler, normal, absDiffuseMip).rgb;
@@ -54,9 +55,9 @@ float4 PS( PS_INPUT input ) : SV_Target
 #ifdef USE_APPROXIMATE_SPECULAR_IBL
 		specular = ApproximateSpecularIBL(preIntegrateEnvBRDFMap, surface.specular,
 											surface.roughness, surface.normal, viewDir,
-											true);
+											true, random);
 #else
-		specular = SpecularIBL(surface.specular, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES);
+		specular = SpecularIBL(surface.specular, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES, random);
 #endif
 	}
 

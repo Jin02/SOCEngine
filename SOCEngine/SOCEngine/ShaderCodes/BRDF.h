@@ -268,7 +268,7 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 	return max(mip, 0.0f);
 }
 
-float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
+float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount, uint2 random)
 {
 	float3 V = float3(	sqrt(1.0f - NoV * NoV), // sin
 						0.0f,
@@ -280,7 +280,7 @@ float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
 
 	for (uint i = 0; i < sampleCount; i++)
 	{
-		float2 Xi = Hammersley(i, sampleCount);
+		float2 Xi = Hammersley(i, sampleCount, random);
 		float3 H = TangentToWorld(ImportanceSampleGGX(Xi, Roughness).xyz, float3(0.0f, 0.0f, 1.0f));
 		float3 L = 2 * dot(V, H) * H - V;
 

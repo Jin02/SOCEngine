@@ -36,14 +36,14 @@ float3 GetSkyLightReflection(float3 reflectDir, float roughness, bool isDynamicS
 	return reflection;
 }
 
-float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSample)
+float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSample, uint2 random)
 {
 	float3	filteredColor	= float3(0.0f, 0.0f, 0.0f);
 	float	weight			= 0.0f;
 		
 	for( uint i = 0; i < numSample; i++ )
 	{
-		float2 e		= Hammersley( i, numSample );
+		float2 e		= Hammersley(i, numSample, random);
 		float3 halfVec	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, reflectDir );
 		float3 lightDir	= 2 * dot( reflectDir, halfVec ) * halfVec - reflectDir;
 
@@ -58,7 +58,9 @@ float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSampl
 	return filteredColor / max( weight, 0.001 );
 }
 
-float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specularColor, float roughness, float3 normal, float3 viewDir, uniform bool usePreIntegrateEnvMap)
+float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specularColor,
+							float roughness, float3 normal, float3 viewDir, uniform bool usePreIntegrateEnvMap,
+							uint2 random)
 {
 	float NdotV			= abs(dot(normal, viewDir));
 	float3 reflectDir	= 2.0f * dot(normal, viewDir) * normal - viewDir;
@@ -77,20 +79,20 @@ float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specu
 	}
 	else
 	{
-		prefilteredColor	= PreFilterEnvMap(roughness, reflectDir, BRDF_SAMPLES).rgb;
-		envBRDF				= saturate(IntegrateBRDF(roughness, NdotV, BRDF_SAMPLES));
+		prefilteredColor	= PreFilterEnvMap(roughness, reflectDir, BRDF_SAMPLES, random).rgb;
+		envBRDF				= saturate(IntegrateBRDF(roughness, NdotV, BRDF_SAMPLES, random));
 	}
 
 	return prefilteredColor * (specularColor * envBRDF.x + envBRDF.y);
 }
 
-float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 viewDir, uniform uint numSamples)
+float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 viewDir, uniform uint numSamples, uint2 random)
 {
 	float3 specularLighting = 0;
 
 	for( uint i = 0; i < numSamples; i++ )
 	{
-		float2 e		= Hammersley( i, numSamples );
+		float2 e		= Hammersley(i, numSamples, random);
 		float3 halfVec	= TangentToWorld( ImportanceSampleGGX( e, roughness ).xyz, normal );
 		float3 lightDir	= 2 * dot( viewDir, halfVec ) * halfVec - viewDir;
 
@@ -117,7 +119,7 @@ float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 
 	return specularLighting / float(numSamples);
 }
 
-float3 DiffuseIBL(float3 diffuseColor, float roughness, float3 normal, float3 viewDir, uniform uint numSamples)
+float3 DiffuseIBL(float3 diffuseColor, float roughness, float3 normal, float3 viewDir, uniform uint numSamples, uint2 random)
 {
 	normal	= normalize( normal );
 	viewDir	= normalize( viewDir );
@@ -128,7 +130,7 @@ float3 DiffuseIBL(float3 diffuseColor, float roughness, float3 normal, float3 vi
 
 	for( uint i = 0; i < numSamples; i++ )
 	{
-		float2 e		= Hammersley( i, numSamples );
+		float2 e		= Hammersley(i, numSamples, random);
 		float3 lightDir	= TangentToWorld( CosineSampleHemisphere( e ).xyz, normal );
 		float3 halfVec	= normalize(viewDir + lightDir);
 
@@ -174,7 +176,7 @@ float3 ApproximateIBL(Texture2D<float2> preIntegrateEnvMap, ApproximateIBLParam 
 		diffuse = param.diffuseColor * diffsueLookUp;
 	}
 
-	float3 specular = ApproximateSpecularIBL(preIntegrateEnvMap, param.specularColor, param.roughness, param.normal, param.viewDir, true);
+	float3 specular = ApproximateSpecularIBL(preIntegrateEnvMap, param.specularColor, param.roughness, param.normal, param.viewDir, true, uint2(0, 0));
 	return diffuse + specular;
 }
 
