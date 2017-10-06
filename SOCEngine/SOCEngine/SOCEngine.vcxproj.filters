@@ -931,6 +931,9 @@
     <ClInclude Include="Rendering\Mesh\MeshRawPool.h">
       <Filter>Rendering\Mesh\Pool\Raw</Filter>
     </ClInclude>
+    <ClInclude Include="Core\RootObjectIDs.hpp">
+      <Filter>Core\Transform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">

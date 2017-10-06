@@ -25,6 +25,7 @@
     <ClInclude Include="Core\Launcher.h" />
     <ClInclude Include="Core\Object.h" />
     <ClInclude Include="Core\ObjectID.hpp" />
+    <ClInclude Include="Core\RootObjectIDs.hpp" />
     <ClInclude Include="Core\UniqueId.hpp" />
     <ClInclude Include="Core\UniqueIdManager.hpp" />
     <ClInclude Include="Core\ObjectManager.h" />
