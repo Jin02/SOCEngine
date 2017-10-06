@@ -102,10 +102,26 @@ void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
 
 void Transform::AddChild(Transform& child)
 {
-	child.SetParent(this);
-
+	bool hasParentOfChild = child._parentID.Literal() != Core::ObjectID::Undefined();
+	assert(hasParentOfChild == false);
 	assert(HasChild(child.GetObjectID()) == false);
+
+	child._parentID = GetObjectID();
 	_childIDs.push_back(child.GetObjectID());
+}
+
+void Transform::RegistParent(Transform* newParent)
+{
+	bool hasParent = _parentID.Literal() != Core::ObjectID::Undefined();
+	assert(hasParent);
+
+	if (newParent == nullptr)
+		_parentID = Core::ObjectID();
+	else
+	{
+		_parentID = newParent->GetObjectID();
+		newParent->AddChild(*this);
+	}
 }
 
 const Vector3 Transform::GetWorldPosition() const
@@ -189,27 +205,12 @@ void Transform::Update(TransformPool& pool)
 void Transform::ClearDirty()
 {
 	_dirty = false;
-	_parentChangeState = ParentState::NotChanged;
 }
 
 void Transform::UpdateDirty(TransformPool& pool)
 {
 	for (uint id = _objectID.Literal(); id != ObjectID::Undefined(); id = _parentID.Literal())
 		pool.Find(id)->_dirty |= _dirty;
-}
-
-void Transform::SetParent(Transform* newParent)
-{
-	if (newParent == nullptr)	// root
-	{
-		_parentID = ObjectID();
-		_parentChangeState = ParentState::NowRoot;
-	}
-	else if (_parentID.Literal() == ObjectID::Undefined())
-	{
-		_parentID = newParent->GetObjectID();
-		_parentChangeState = ParentState::NowChild;
-	}
 }
 
 void Transform::_ComputeWorldMatrix(TransformPool& pool)

@@ -43,11 +43,6 @@ void Engine::RunScene()
 
 			if (tf.GetDirty())
 				_dirtyTransforms.push_back(&tf);
-
-			if (tf.GetParentState() == Transform::ParentState::NowRoot)
-				_objectManager.AddNewRootObject(tf.GetObjectID());
-			else if (tf.GetParentState() == Transform::ParentState::NowChild)
-				_objectManager.DeleteRootObject(tf.GetObjectID());
 		}
 	}
 

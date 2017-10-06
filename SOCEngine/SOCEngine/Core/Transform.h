@@ -13,13 +13,6 @@ namespace Core
 	class Transform
 	{
 	public:
-		enum class ParentState
-		{
-			NotChanged,
-			NowRoot,
-			NowChild
-		};
-
 		explicit Transform(ObjectID id) : _objectID(id) {}
 
 		const Math::Vector3			GetWorldPosition()		const;
@@ -53,7 +46,6 @@ namespace Core
 		GET_CONST_ACCESSOR(ObjectID, ObjectID, _objectID);
 
 		GET_CONST_ACCESSOR(ParentID, ObjectID, _parentID);
-		GET_CONST_ACCESSOR(ParentState, ParentState, _parentChangeState);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
@@ -61,6 +53,8 @@ namespace Core
 		using Childs = std::vector<ObjectID>;
 
 		void		AddChild(Transform& child);
+		void		RegistParent(Transform* newParent);
+
 		ObjectID	GetChild(uint index)		{ return _childIDs[index];	}
 		ObjectID	GetChild(uint index) const	{ return _childIDs[index]; }
 		void		DeleteAllChilds()			{ _childIDs.clear();		}
@@ -84,8 +78,6 @@ namespace Core
 		void ComputeWorldMatrix(TransformPool& pool);
 		void UpdateDirty(TransformPool& pool);
 
-		void SetParent(Transform* newParent);
-
 		inline void SetDirty()		{ _dirty = true; }
 
 	private:
@@ -107,7 +99,6 @@ namespace Core
 		Childs				_childIDs;
 
 		ObjectID			_parentID;
-		ParentState			_parentChangeState = ParentState::NotChanged;
 	};
 
 	class TransformPool final : public Core::VectorHashMap<ObjectID::LiteralType, Transform>
