@@ -76,7 +76,6 @@ namespace Rendering
 			GET_ACCESSOR(TransformCB, auto&, _transformCB);
 
 			GET_CONST_ACCESSOR(BufferFlag, uint, _bufferFlag);
-			GET_CONST_ACCESSOR(Culled, bool, _culled);
 
 		private:
 			uint ComputeBufferFlag(
@@ -97,10 +96,6 @@ namespace Rendering
 
 			Math::Matrix								_prevWorldMat;
 			TransformCB::ChangeState					_tfChangeState;
-
-			bool										_culled = false;
-
-			friend class MeshUtility;
 		};
 
 		using TransparentMeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;;
