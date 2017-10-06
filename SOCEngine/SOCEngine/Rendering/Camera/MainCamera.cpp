@@ -100,36 +100,3 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 	auto size = _desc.renderRect.size.Cast<float>();
 	return Matrix::OrthoLH(size.w, size.h, near, far);
 }
-
-const Transform& MainCamera::_FindTransform(
-	const Geometry::Mesh& mesh,
-	const Core::TransformPool& transformPool)
-{
-	auto id = mesh.GetObjectID();
-	uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-	assert(findIdx != TransformPool::IndexerType::FailIndex());
-
-	return transformPool.Get(findIdx);
-}
-
-void MainCamera::_SortTransparentMesh(const Core::TransformPool& transformPool)
-{
-	//camCBData was transposed.
-	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
-								_camCBData.viewMat._32,
-								_camCBData.viewMat._33	);
-
-	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
-	{
-		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
-		{
-			auto& pos = MainCamera::_FindTransform(*mesh, transformPool).GetWorldPosition();
-
-			return Vector3::Dot(pos, viewDir);
-		};
-
-		return SortKey(left) < SortKey(right);
-	};
-
-	std::sort(_transparentMeshes.begin(), _transparentMeshes.end(), SortingByDistance);
-}
