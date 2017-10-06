@@ -53,7 +53,6 @@ namespace Core
 		using Childs = std::vector<ObjectID>;
 
 		void		AddChild(Transform& child);
-		void		RegistParent(Transform* newParent);
 
 		ObjectID	GetChild(uint index)		{ return _childIDs[index];	}
 		ObjectID	GetChild(uint index) const	{ return _childIDs[index]; }
