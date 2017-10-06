@@ -57,7 +57,7 @@ void Engine::RunScene()
 
 	// TODO : LightShaftMgr 구현하면 바꿔야함
 	ObjectID::IndexHashMap nullIndexer;
-	_componentSystem.UpdateBuffer(_dx, _transformPool, nullIndexer);
+	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, nullIndexer);
 
 	_scene->OnRenderPreview();
 	Render();
