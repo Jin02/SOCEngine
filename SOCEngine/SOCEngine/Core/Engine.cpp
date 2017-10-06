@@ -48,12 +48,10 @@ void Engine::RunScene()
 
 	// Update Root Transform
 	{
-		_objectManager.CheckRootObjectIDs(_transformPool);
-		auto& rootIDs = _objectManager.GetRootObjectIDs();
-		for (uint rootID : rootIDs)
+		for (ObjectID rootID : _rootObjectIDs.GetVector())
 		{
-			auto transform = _transformPool.Find(rootID); assert(transform);
-			transform->Update(_transformPool);
+			Transform* find = _transformPool.Find(rootID.Literal());	assert(find);	
+			find->Update(_transformPool);
 		}
 	}
 

@@ -11,6 +11,7 @@
 #include "ShaderManager.h"
 #include "Texture2DManager.h"
 #include "PostProcessPipeline.h"
+#include "RootObjectIDs.hpp"
 
 namespace Device
 {
@@ -41,6 +42,7 @@ namespace Core
 		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
 		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
 		GET_ACCESSOR(TransformPool, auto&, _transformPool);
+		GET_ACCESSOR(RootObjectIDs, auto&, _rootObjectIDs);
 
 	private:
 		static NullScene							_nullScene;
@@ -48,6 +50,8 @@ namespace Core
 
 		clock_t										_prevTime	= 0;
 		clock_t										_lag		= 0;
+
+		Core::RootObjectIDs							_rootObjectIDs;
 
 		Rendering::Manager::MaterialManager			_materialManager;
 		Rendering::Manager::BufferManager			_bufferManager;
