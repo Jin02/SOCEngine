@@ -7,23 +7,28 @@ using namespace Rendering::Manager;
 using namespace Core;
 using namespace Math;
 
-void MeshUtility::Culling(const Frustum& frustum, MeshManager& meshMgr, const TransformPool& transformPool)
+const Transform& MeshUtility::_FindTransform(const Mesh& mesh, const TransformPool& transformPool)
 {
-	auto Cull = [&frustum, &meshMgr, &transformPool](auto& pool) -> void
-	{
-		pool.Iterate(
-			[&frustum, &meshMgr, &transformPool](Mesh& mesh)
-			{
-				ObjectID id = mesh.GetObjectID();
-				const Transform* transform = transformPool.Find(id.Literal());
-				Vector3 worldPos = transform->GetWorldPosition();
-	
-				mesh._culled = frustum.In(worldPos, mesh.GetRadius());
-			}
-		);
-	};
+	auto id = mesh.GetObjectID();
+	uint findIdx = transformPool.GetIndexer().Find(id.Literal());
+	assert(findIdx != TransformPool::IndexerType::FailIndex());
 
-	Cull( meshMgr.GetOpaqueMeshPool() );
-	Cull( meshMgr.GetAlphaBlendMeshPool() );
-	Cull( meshMgr.GetTransparentMeshPool() );
+	return transformPool.Get(findIdx);				
+}
+
+void MeshUtility::_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
+						 				const Vector3& viewDir, const TransformPool& transformPool)
+{
+	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
+	{
+		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
+		{
+			auto& pos = _FindTransform(*mesh, transformPool).GetWorldPosition();				
+			return Vector3::Dot(pos, viewDir);
+		};
+	
+		return SortKey(left) < SortKey(right);
+	};
+	
+	std::sort(refMeshes.begin(), refMeshes.end(), SortingByDistance);				
 }
