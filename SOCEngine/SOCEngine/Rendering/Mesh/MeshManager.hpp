@@ -5,7 +5,7 @@
 #include "ObjectID.hpp"
 #include <tuple>
 #include <assert.h>
-#include "MeshPool.h"
+#include "VBSortedMeshPool.h"
 
 namespace Rendering
 {
@@ -58,20 +58,20 @@ namespace Rendering
 				fromPool.Delete(literlID);
 			}
 
-			GET_ACCESSOR(TransparentMeshPool,	Geometry::MeshPool&,					_transparentMeshPool);
-			GET_ACCESSOR(OpaqueMeshPool,		Geometry::VBSortedMeshPool&,			_opaqueMeshPool);
-			GET_ACCESSOR(AlphaBlendMeshPool,	Geometry::VBSortedMeshPool&,			_alphaBlendMeshPool);
+			GET_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,				_transparentMeshPool);
+			GET_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,					_opaqueMeshPool);
+			GET_ACCESSOR(AlphaBlendMeshPool,	Geometry::OpaqueMeshPool&,					_alphaBlendMeshPool);
 
-			GET_CONST_ACCESSOR(TransparentMeshPool,	const Geometry::MeshPool&,			_transparentMeshPool);
-			GET_CONST_ACCESSOR(OpaqueMeshPool,		const Geometry::VBSortedMeshPool&,	_opaqueMeshPool);
-			GET_CONST_ACCESSOR(AlphaBlendMeshPool,	const Geometry::VBSortedMeshPool&,	_alphaBlendMeshPool);
+			GET_CONST_ACCESSOR(TransparentMeshPool,	const Geometry::TransparentMeshPool&,	_transparentMeshPool);
+			GET_CONST_ACCESSOR(OpaqueMeshPool,		const Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
+			GET_CONST_ACCESSOR(AlphaBlendMeshPool,	const Geometry::OpaqueMeshPool&,		_alphaBlendMeshPool);
 
 			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
 
 		private:
-			Geometry::MeshPool				_transparentMeshPool;
-			Geometry::VBSortedMeshPool		_opaqueMeshPool;
-			Geometry::VBSortedMeshPool		_alphaBlendMeshPool;
+			Geometry::TransparentMeshPool	_transparentMeshPool;
+			Geometry::OpaqueMeshPool		_opaqueMeshPool;
+			Geometry::OpaqueMeshPool		_alphaBlendMeshPool;
 
 			std::vector<Geometry::Mesh*> _dirtyMeshes;
 		};
