@@ -13,7 +13,40 @@ namespace Rendering
 		class MeshUtility final
 		{
 		public:
-			static void Culling(const Intersection::Frustum& frustum, Manager::MeshManager& meshMgr, const Core::TransformPool& transformPool);
+			template <class CullFunc>
+			static void ClassifyTransparentMesh(
+				std::vector<const Mesh*>& refMeshes,
+				const TransparentMeshPool& pool,
+				const Core::ObjectManager& objMgr,
+				const Core::TransformPool& transformPool,
+				CullFunc cullFunc)
+			{
+				refMeshes.clear();
+
+				const auto& meshes = pool.GetVector();
+				for (const auto& mesh : meshes)
+				{
+					ObjectID id = mesh.GetObjectID();
+					const Object* object = objMgr.Find(id); assert(object);
+					const auto& transform = _FindTransform(mesh, transformPool);
+
+					bool use =	object->GetUse() | cullFunc(mesh, transform);
+
+					if (use)
+						refMeshes.push_back(&mesh);
+				}
+
+				_SortTransparentMesh(refMeshes, transformPool);
+			}
+
+		private:
+			static const Core::Transform&
+				_FindTransform(const Geometry::Mesh& mesh, 
+							   const Core::TransformPool& transformPool);
+			static void
+				_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
+									 const Vector3& viewDir,
+									 const Core::TransformPool& transformPool);
 		};
 	}
 }
