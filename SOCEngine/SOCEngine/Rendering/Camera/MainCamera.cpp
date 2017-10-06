@@ -89,7 +89,7 @@ Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
 	return Matrix::PerspectiveFovLH(_desc.aspect, fovRadian, near, far);
 }
 
-Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
+Math::Matrix MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
 {
 	float near = _desc.near;
 	float far = _desc.far;
@@ -99,4 +99,18 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 
 	auto size = _desc.renderRect.size.Cast<float>();
 	return Matrix::OrthoLH(size.w, size.h, near, far);
+}
+
+void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
+										 const ObjectManager& objMgr,
+										 const TransformPool& transformPool)
+{
+	MainCamera* thisCam = this;
+	ClassifyTransparentMesh(_transparentMeshes, pool, objMgr, transformPool,
+			[thisCam](const Mesh& mesh, const Transform& tarnsform)
+			{
+				Vector3 worldPos = transform.GetWorldPosition();
+				return thisCam->_frustum.In(worldPos, mesh.GetRadius());
+			}
+		);
 }
