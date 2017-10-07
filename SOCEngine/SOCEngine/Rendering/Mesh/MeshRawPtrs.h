@@ -11,7 +11,8 @@ namespace Rendering
 		class MeshRawPtrs final
 		{
 		public:
-			using PtrType = const Mesh*;
+			using PtrType		= const Mesh*;
+			using MappedType	= PtrType;
 			
 			MeshRawPtrs() = default;
 			MeshRawPtrs(const std::initializer_list<PtrType>& meshes);
