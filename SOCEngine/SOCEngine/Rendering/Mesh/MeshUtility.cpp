@@ -16,7 +16,7 @@ const Transform& MeshUtility::_FindTransform(const Mesh& mesh, const TransformPo
 	return transformPool.Get(findIdx);				
 }
 
-void MeshUtility::_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
+void MeshUtility::_SortTransparentMesh(TransparentMeshPtrs& refMeshes,
 						 				const Vector3& viewDir, const TransformPool& transformPool)
 {
 	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
