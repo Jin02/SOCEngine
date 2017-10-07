@@ -7,10 +7,10 @@ using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Math;
 
-Mesh& MeshManager::Acquire(Core::ObjectID objID)
+Mesh& MeshManager::Add(Mesh& mesh)
 {
-	auto mesh = Mesh(objID);
-	return GetOpaqueMeshPool().Add(mesh);
+	assert(mesh.GetVBKey() != 0); //Error, mesh does not init yet.
+	return GetOpaqueMeshPool().Add(mesh.GetObjectID(), mesh.GetVBKey(), mesh);
 }
 
 void MeshManager::Delete(Core::ObjectID objID)
