@@ -92,7 +92,7 @@ namespace Rendering
 
 		private:
 			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
-			Core::VectorHashMap<Buffer::VertexBuffer::Key, RawPoolType> _pool;
+			Core::VectorHashMap<Buffer::VertexBuffer::Key, RawPoolType>	_pool;
 		};
 
 		using OpaqueMeshPool		= VBSortedMeshes<MeshRawPool>;
