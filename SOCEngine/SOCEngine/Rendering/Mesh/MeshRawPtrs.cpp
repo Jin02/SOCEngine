@@ -8,7 +8,7 @@ MeshRawPtrs::MeshRawPtrs(const std::initializer_list<MeshRawPtrs::PtrType>& mesh
 	_meshes.insert(_meshes.end(), meshes.begin(), meshes.end());
 }
 
-MeshRawPtrs::PtrType MeshRawPtrs::Find(Core::ObjectID::LiteralType id) const
+const MeshRawPtrs::PtrType MeshRawPtrs::Find(Core::ObjectID::LiteralType id) const
 {
 	for (auto& iter : _meshes)
 	{
