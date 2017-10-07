@@ -11,6 +11,8 @@ namespace Rendering
 		class MeshRawPool final
 		{
 		public:
+			using MappedType = Mesh;
+			
 			MeshRawPool() = default;
 			MeshRawPool(const std::initializer_list<Mesh>& meshes);
 
