@@ -94,11 +94,5 @@ namespace Rendering
 			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
 			Core::VectorHashMap<Buffer::VertexBuffer::Key, RawPoolType>	_pool;
 		};
-
-		using OpaqueMeshPool		= VBSortedMeshes<MeshRawPool>;
-		using OpaqueMeshPtrs		= VBSortedMeshes<MeshRawPtrs>;
-
-		using AlphaBlendMeshPool	= OpaqueMeshPool;
-		using AlphaBlendMeshPtrs	= OpaqueMeshPtrs;
 	}
 }
