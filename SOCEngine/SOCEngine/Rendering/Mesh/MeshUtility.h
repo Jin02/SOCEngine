@@ -15,7 +15,7 @@ namespace Rendering
 		public:
 			template <class CullFunc>
 			static void ClassifyTransparentMesh(
-				std::vector<const Mesh*>& refMeshes, const Vector3& viewDir,
+				TransparentMeshPtrs& refMeshes, const Vector3& viewDir,
 				const TransparentMeshPool& pool,
 				const Core::ObjectManager& objMgr,
 				const Core::TransformPool& transformPool,
@@ -38,13 +38,13 @@ namespace Rendering
 
 				_SortTransparentMesh(refMeshes, viewDir, transformPool);
 			}
-
+			
 		private:
 			static const Core::Transform&
 				_FindTransform(const Geometry::Mesh& mesh, 
 							   const Core::TransformPool& transformPool);
 			static void
-				_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
+				_SortTransparentMesh(TransparentMeshPtrs& refMeshes,
 									 const Vector3& viewDir,
 									 const Core::TransformPool& transformPool);
 		};
