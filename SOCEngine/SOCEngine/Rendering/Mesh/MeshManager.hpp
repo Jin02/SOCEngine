@@ -47,7 +47,11 @@ namespace Rendering
 				return meshPool.Find(id.Literal());
 			}			
 
-			Geometry::Mesh& Add(Geometry::Mesh& mesh);
+			Geometry::Mesh& Add(Geometry::Mesh& mesh)
+			{
+				return Add(mesh, GetOpaqueMeshPool());
+			}
+			
 			void Delete(Core::ObjectID objID);
 			bool Has(Core::ObjectID objID) const;
 			Geometry::Mesh* Find(Core::ObjectID id);
