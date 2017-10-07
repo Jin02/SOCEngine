@@ -8,7 +8,7 @@ MeshRawPool::MeshRawPool(const std::initializer_list<Mesh>& meshes)
 	_meshes.insert(_meshes.end(), meshes.begin(), meshes.end());
 }
 
-Mesh* MeshRawPool::Find(Core::ObjectID::LiteralType id)
+const Mesh* MeshRawPool::Find(Core::ObjectID::LiteralType id) const
 {
 	for (auto& iter : _meshes)
 	{
