@@ -97,7 +97,5 @@ namespace Rendering
 			Math::Matrix								_prevWorldMat;
 			TransformCB::ChangeState					_tfChangeState;
 		};
-
-		using TransparentMeshPool = Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;;
 	}
 }
