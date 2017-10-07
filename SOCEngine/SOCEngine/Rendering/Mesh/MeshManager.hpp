@@ -9,6 +9,18 @@
 
 namespace Rendering
 {
+	namespace Geomtry
+	{
+		using TransparentMeshPool	= Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
+		using TransparentMeshPtrs	= std::vector<const Mesh*>;
+
+		using OpaqueMeshPool		= VBSortedMeshes<MeshRawPool>;
+		using OpaqueMeshPtrs		= VBSortedMeshes<MeshRawPtrs>;
+
+		using AlphaBlendMeshPool	= OpaqueMeshPool;
+		using AlphaBlendMeshPtrs	= OpaqueMeshPtrs;		
+	};
+	
 	namespace Manager
 	{
 		class MeshManager final
