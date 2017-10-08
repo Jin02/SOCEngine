@@ -41,8 +41,3 @@ bool MeshRawPtrs::Has(Core::ObjectID::LiteralType id) const
 
 	return false;
 }
-
-void MeshRawPtrs::DeleteAll()
-{
-	_meshes.clear();
-}
