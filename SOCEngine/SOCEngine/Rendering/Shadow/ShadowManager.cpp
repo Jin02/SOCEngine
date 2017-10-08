@@ -174,7 +174,7 @@ void ShadowManager::DeleteAll()
 		shadowDatas.pool.DeleteAll();
 		shadowDatas.dirtyShadows.clear();
 		shadowDatas.buffers.GetBuffer().DeleteAll();
-//		shadowDatas.constBuffers.?
+		shadowDatas.constBuffers.DeleteAll();
 
 		shadowDatas.mustUpdateToGPU = true;
 	};
