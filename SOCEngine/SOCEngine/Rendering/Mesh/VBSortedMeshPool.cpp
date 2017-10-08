@@ -12,13 +12,12 @@ Mesh& VBSortedMeshPool::Add(ObjectID id, BaseBuffer::Key vbKey, Mesh& mesh)
 
 	_bookmark.Add(literalID, vbKey);
 
-	if (HasVBKey(vbKey) == false)
+	auto rawPool = _pool.Find(vbKey);
+	if (rawPool == nullptr)
 		return _pool.Add(vbKey, { mesh }).Get(0);
 
-	auto rawPool = _pool.Find(vbKey);
 	assert(rawPool->Has(literalID) == false);
-
-	return rawPool->Add(mesh);				
+	return rawPool->Add(mesh);
 }
 			
 void VBSortedMeshPool::Delete(ObjectID::LiteralType literalID)
