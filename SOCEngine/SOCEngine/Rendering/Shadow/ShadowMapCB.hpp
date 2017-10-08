@@ -44,6 +44,13 @@ namespace Rendering
 					auto iter = _constBuffers.begin() + index;
 					_constBuffers.erase(iter);
 				}
+				
+				void DeleteAll()
+				{
+					_constBuffers.clear();
+					_preparedConstBuffers.clear();
+				}
+				
 				void UpdateSubResource(Device::DirectX& dx,
 					const std::vector<ShadowType*>& dirtyShadows,
 					const ShadowDatasIndexer& indexer)
