@@ -46,8 +46,9 @@ namespace Rendering
 			}
 
 		private:
-			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
-			Core::VectorHashMap<Buffer::VertexBuffer::Key, MeshRawPool>	_pool;
+			using VBKey = Buffer::VertexBuffer::Key;
+			Core::BookHashMapmark<Core::ObjectID::LiteralType, VBKey>	_bookmark;
+			Core::VectorHashMap<VBKey, MeshRawPool>						_pool;
 		};
 	}
 }
