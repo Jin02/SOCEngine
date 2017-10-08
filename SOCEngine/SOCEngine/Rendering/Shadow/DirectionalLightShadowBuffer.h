@@ -14,6 +14,7 @@ namespace Rendering
 			{
 			public:
 				DirectionalLightShadowBuffer() = default;
+				~DirectionalLightShadowBuffer() { DeleteAll(); }
 
 				void Initialize(Device::DirectX& dx);
 
