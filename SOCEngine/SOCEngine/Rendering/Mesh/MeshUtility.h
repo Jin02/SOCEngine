@@ -6,6 +6,8 @@
 #include "MeshManager.hpp"
 #include "ObjectManager.h"
 
+#include "MeshRenderQueue.h"
+
 namespace Rendering
 {
 	namespace Geometry
@@ -13,40 +15,64 @@ namespace Rendering
 		class MeshUtility final
 		{			
 		public:
-			template <class CullFunc>
+			template <class CullFunc>					// CullFunc Form = "[](const Mesh&, const Transform&) -> bool { ... }"
 			static void ClassifyTransparentMesh(
-				TransparentMeshPtrs& refMeshes, const Vector3& viewDir,
+				RenderQueue::TransparentMeshRenderQueue& renderQueue,
+				const Vector3& viewDir,
 				const TransparentMeshPool& pool,
 				const Core::ObjectManager& objMgr,
 				const Core::TransformPool& transformPool,
 				CullFunc cullFunc)
 			{
-				refMeshes.clear();
+				renderQueue.clear();
 
 				const auto& meshes = pool.GetVector();
 				for (const auto& mesh : meshes)
 				{
-					ObjectID id = mesh.GetObjectID();
-					const Object* object = objMgr.Find(id); assert(object);
-					const auto& transform = _FindTransform(mesh, transformPool);
+					ObjectID id							= mesh.GetObjectID();
+					const Object* object				= objMgr.Find(id); assert(object);
+					const Core::Transform& transform	= _FindTransform(mesh.GetObjectID(), transformPool);
 
 					bool use =	object->GetUse() | cullFunc(mesh, transform);
 
 					if (use)
-						refMeshes.push_back(&mesh);
+						renderQueue.push_back(&mesh);
 				}
 
-				_SortTransparentMesh(refMeshes, viewDir, transformPool);
+				_SortTransparentMesh(renderQueue, viewDir, transformPool);
 			}
+
+			template <class CullFunc>					// CullFunc Form = "[](const Mesh&, const Transform&) -> bool { ... }"
+			static void ClassifyOpaqueMesh(
+				RenderQueue::OpaqueMeshRenderQueue& renderQueue,
+				const OpaqueMeshPool& pool,
+				const Core::ObjectManager& objMgr,
+				const Core::TransformPool& transformPool,
+				CullFunc cullFunc)
+			{
+				renderQueue.DeleteAllContent();
+				
+				pool.Iterate(
+						[&objMgr, &transformPool, &renderQueue, &cullFunc](const Mesh& mesh)
+						{
+							Core::ObjectID id					= mesh.GetObjectID();
+							const Core::Object* object			= objMgr.Find(id); assert(object);
+							const Core::Transform& transform	= _FindTransform(id, transformPool);
+							
+							bool use = object->GetUse() | cullFunc(mesh, transform);
+							if(use)
+								renderQueue.Add(mesh);
+						}
+					);				
+			}
+			
 			
 		private:
 			static const Core::Transform&
-				_FindTransform(const Geometry::Mesh& mesh, 
-							   const Core::TransformPool& transformPool);
+				_FindTransform(Core::ObjectID id, const Core::TransformPool& transformPool);
 			static void
-				_SortTransparentMesh(TransparentMeshPtrs& refMeshes,
-									 const Vector3& viewDir,
-									 const Core::TransformPool& transformPool);
+				_SortTransparentMesh(RenderQueue::TransparentMeshRenderQueue& renderQueue,
+									 const Vector3& viewDir, const Core::TransformPool& transformPool);
 		};
 	}
 }
