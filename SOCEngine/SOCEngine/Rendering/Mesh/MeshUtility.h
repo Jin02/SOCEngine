@@ -18,7 +18,7 @@ namespace Rendering
 			template <class CullFunc>					// CullFunc Form = "[](const Mesh&, const Transform&) -> bool { ... }"
 			static void ClassifyTransparentMesh(
 				RenderQueue::TransparentMeshRenderQueue& renderQueue,
-				const Vector3& viewDir,
+				const Math::Vector3& viewDir,
 				const TransparentMeshPool& pool,
 				const Core::ObjectManager& objMgr,
 				const Core::TransformPool& transformPool,
@@ -72,7 +72,7 @@ namespace Rendering
 				_FindTransform(Core::ObjectID id, const Core::TransformPool& transformPool);
 			static void
 				_SortTransparentMesh(RenderQueue::TransparentMeshRenderQueue& renderQueue,
-									 const Vector3& viewDir, const Core::TransformPool& transformPool);
+									 const Math::Vector3& viewDir, const Core::TransformPool& transformPool);
 		};
 	}
 }
