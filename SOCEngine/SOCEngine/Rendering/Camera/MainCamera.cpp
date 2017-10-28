@@ -4,6 +4,7 @@
 #include "LightCullingUtility.h"
 #include "CameraManager.h"
 #include "ObjectManager.h"
+#include "MeshUtility.h"
 
 using namespace Utility;
 using namespace Device;
@@ -112,7 +113,7 @@ void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
 	
 	MainCamera* thisCam = this;
 	MeshUtility::ClassifyTransparentMesh(_transparentMeshes, viewDir, pool, objMgr, transformPool,
-			[thisCam](const Mesh& mesh, const Transform& tarnsform)
+			[thisCam](const Mesh& mesh, const Transform& transform)
 			{
 				Vector3 worldPos = transform.GetWorldPosition();
 				return thisCam->_frustum.In(worldPos, mesh.GetRadius());

@@ -15,7 +15,7 @@ namespace Rendering
 		public:
 			template <class CullFunc>
 			static void ClassifyTransparentMesh(
-				std::vector<const Mesh*>& refMeshes, const Vector3& viewDir,
+				std::vector<const Mesh*>& refMeshes, const Math::Vector3& viewDir,
 				const TransparentMeshPool& pool,
 				const Core::ObjectManager& objMgr,
 				const Core::TransformPool& transformPool,

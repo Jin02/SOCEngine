@@ -70,7 +70,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
 			GET_CONST_ACCESSOR(Frustum,				const auto&,	_frustum);
 			
-			void ClassifyTransparentMesh(const TransparentMeshPool& pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
+			void ClassifyTransparentMesh(const Geometry::TransparentMeshPool& pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
 
 		private:
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;
