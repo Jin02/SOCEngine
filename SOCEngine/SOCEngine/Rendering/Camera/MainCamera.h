@@ -70,9 +70,7 @@ namespace Rendering
 					const Object* object = objMgr.Find(id); assert(object);
 					const auto& transform = MainCamera::_FindTransform(mesh, transformPool);
 
-					bool use =	object->GetUse()				|
-								intersectFunc(mesh, transform)	|
-								(mesh.GetCulled() == false);
+					bool use =	object->GetUse() | intersectFunc(mesh, transform);
 
 					if (use)
 						_transparentMeshes.push_back(&mesh);

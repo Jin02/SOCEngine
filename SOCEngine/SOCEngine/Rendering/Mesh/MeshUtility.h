@@ -45,7 +45,7 @@ namespace Rendering
 							   const Core::TransformPool& transformPool);
 			static void
 				_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
-									 const Vector3& viewDir,
+									 const Math::Vector3& viewDir,
 									 const Core::TransformPool& transformPool);
 		};
 	}

@@ -51,7 +51,6 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		assert(transform);
 
 		mainCamera.UpdateCB(dx, *transform);
-		MeshUtility::Culling(mainCamera.GetFrustum(), meshMgr, transformPool);
 
 		mainCamera.ClassifyTransparentMesh(meshMgr.GetTransparentMeshPool(), objectManager, transformPool,
 			[](const Mesh& mesh, const Transform& tarnsform)
