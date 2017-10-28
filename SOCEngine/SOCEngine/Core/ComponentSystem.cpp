@@ -50,14 +50,8 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		auto transform = transformPool.Find(mainCamera.GetObjectID().Literal());
 		assert(transform);
 
-		mainCamera.UpdateCB(dx, *transform);
-
-		mainCamera.ClassifyTransparentMesh(meshMgr.GetTransparentMeshPool(), objectManager, transformPool,
-			[](const Mesh& mesh, const Transform& tarnsform)
-			{
-				return true;
-			}
-		);
+		mainCamera.UpdateCB(dx, *transform);		
+		mainCamera.ClassifyTransparentMesh(meshMgr.GetTransparentMeshPool(), objectManager, transformPool);
 	}
 
 

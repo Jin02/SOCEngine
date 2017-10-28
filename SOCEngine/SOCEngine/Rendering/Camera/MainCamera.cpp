@@ -89,7 +89,7 @@ Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
 	return Matrix::PerspectiveFovLH(_desc.aspect, fovRadian, near, far);
 }
 
-Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
+Math::Matrix MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
 {
 	float near = _desc.near;
 	float far = _desc.far;
@@ -101,35 +101,21 @@ Math::Matrix Rendering::Camera::MainCamera::ComputeOrthogonalMatrix(bool isInver
 	return Matrix::OrthoLH(size.w, size.h, near, far);
 }
 
-const Transform& MainCamera::_FindTransform(
-	const Geometry::Mesh& mesh,
-	const Core::TransformPool& transformPool)
-{
-	auto id = mesh.GetObjectID();
-	uint findIdx = transformPool.GetIndexer().Find(id.Literal());
-	assert(findIdx != TransformPool::IndexerType::FailIndex());
-
-	return transformPool.Get(findIdx);
-}
-
-void MainCamera::_SortTransparentMesh(const Core::TransformPool& transformPool)
+void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
+										 const ObjectManager& objMgr,
+										 const TransformPool& transformPool)
 {
 	//camCBData was transposed.
 	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
 								_camCBData.viewMat._32,
-								_camCBData.viewMat._33	);
-
-	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
-	{
-		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
-		{
-			auto& pos = MainCamera::_FindTransform(*mesh, transformPool).GetWorldPosition();
-
-			return Vector3::Dot(pos, viewDir);
-		};
-
-		return SortKey(left) < SortKey(right);
-	};
-
-	std::sort(_transparentMeshes.begin(), _transparentMeshes.end(), SortingByDistance);
+								_camCBData.viewMat._33	);	
+	
+	MainCamera* thisCam = this;
+	MeshUtility::ClassifyTransparentMesh(_transparentMeshes, viewDir, pool, objMgr, transformPool,
+			[thisCam](const Mesh& mesh, const Transform& tarnsform)
+			{
+				Vector3 worldPos = transform.GetWorldPosition();
+				return thisCam->_frustum.In(worldPos, mesh.GetRadius());
+			}
+		);
 }

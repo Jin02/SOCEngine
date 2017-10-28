@@ -11,11 +11,11 @@ namespace Rendering
 	namespace Geometry
 	{
 		class MeshUtility final
-		{
+		{			
 		public:
 			template <class CullFunc>
 			static void ClassifyTransparentMesh(
-				std::vector<const Mesh*>& refMeshes,
+				std::vector<const Mesh*>& refMeshes, const Vector3& viewDir,
 				const TransparentMeshPool& pool,
 				const Core::ObjectManager& objMgr,
 				const Core::TransformPool& transformPool,
@@ -36,7 +36,7 @@ namespace Rendering
 						refMeshes.push_back(&mesh);
 				}
 
-				_SortTransparentMesh(refMeshes, transformPool);
+				_SortTransparentMesh(refMeshes, viewDir, transformPool);
 			}
 
 		private:
