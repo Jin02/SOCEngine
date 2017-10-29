@@ -50,10 +50,9 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		auto transform = transformPool.Find(mainCamera.GetObjectID().Literal());
 		assert(transform);
 
-		mainCamera.UpdateCB(dx, *transform);		
-		mainCamera.ClassifyTransparentMesh(meshMgr.GetTransparentMeshPool(), objectManager, transformPool);
+		mainCamera.UpdateCB(dx, *transform);
+		mainCamera.ClassifyMesh(meshMgr.GetMeshPoolRefs(), objectManager, transformPool);
 	}
-
 
 	lightMgr.UpdateTransformBuffer(transformPool);
 	lightMgr.UpdateParamBuffer(shadowMgr, lightShaftIndexer);
