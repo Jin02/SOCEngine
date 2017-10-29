@@ -15,7 +15,6 @@
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\Half.h" />
     <ClInclude Include="Common\Rect.h" />
-    <ClInclude Include="Common\TemporaryPtr.hpp" />
     <ClInclude Include="Common\Utility.hpp" />
     <ClInclude Include="Core\ArrayVector.hpp" />
     <ClInclude Include="Core\Bookmark.hpp" />

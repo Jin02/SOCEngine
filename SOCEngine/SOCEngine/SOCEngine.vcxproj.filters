@@ -943,9 +943,6 @@
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
       <Filter>Rendering\Mesh\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Common\TemporaryPtr.hpp">
-      <Filter>Common</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">

@@ -7,7 +7,6 @@
 #include <assert.h>
 #include "VBSortedMeshpool.h"
 #include "OpaqueMeshRenderQueue.h"
-#include "TemporaryPtr.hpp"
 
 namespace Rendering
 {
@@ -126,7 +125,7 @@ namespace Rendering
 			Geometry::OpaqueMeshPool					_opaqueMeshPool;
 			Geometry::AlphaBlendMeshPool				_alphaBlendMeshPool;
 
-			std::vector<TemporaryPtr<Geometry::Mesh>>	_dirtyMeshes;
+			std::vector<Geometry::Mesh*>				_dirtyMeshes;
 		};
 	}
 }
