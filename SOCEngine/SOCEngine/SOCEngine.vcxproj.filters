@@ -430,6 +430,9 @@
     <Filter Include="Rendering\Mesh\RenderQueue">
       <UniqueIdentifier>{7086a4ed-c991-467f-9916-ce6106ad4052}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Mesh\Manager">
+      <UniqueIdentifier>{b7b3513a-362b-43c8-8f5b-94727cd784ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -685,9 +688,6 @@
     <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
-      <Filter>Rendering\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp">
       <Filter>Rendering\Shader</Filter>
     </ClInclude>
@@ -939,6 +939,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\OpaqueMeshRenderQueue.h">
       <Filter>Rendering\Mesh\RenderQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
+      <Filter>Rendering\Mesh\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\TemporaryPtr.hpp">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1200,9 +1206,6 @@
     <ClCompile Include="Core\ComponentSystem.cpp">
       <Filter>Core\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
-      <Filter>Rendering\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Material\MaterialManager.cpp">
       <Filter>Rendering\Material</Filter>
     </ClCompile>
@@ -1226,6 +1229,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\OpaqueMeshRenderQueue.cpp">
       <Filter>Rendering\Mesh\RenderQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
+      <Filter>Rendering\Mesh\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
