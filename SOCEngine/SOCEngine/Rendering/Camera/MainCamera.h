@@ -9,6 +9,7 @@
 #include "RenderTexture.h"
 #include "DepthMap.h"
 #include "ObjectID.hpp"
+#include "MeshRenderQueue.h"
 
 #undef near
 #undef far
@@ -70,7 +71,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
 			GET_CONST_ACCESSOR(Frustum,				const auto&,	_frustum);
 			
-			void ClassifyTransparentMesh(const Geometry::TransparentMeshPool& pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
+			void ClassifyMesh(Geometry::MeshPoolRefs pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
 
 		private:
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;
@@ -84,7 +85,9 @@ namespace Rendering
 			TransformCB::ChangeState					_camCBChangeState = TransformCB::ChangeState::HasChanged;
 			Desc										_desc;
 
-			std::vector<const Geometry::Mesh*>			_transparentMeshes;
+			RenderQueue::TransparentMeshRenderQueue		_transparentMeshes;
+			RenderQueue::OpaqueMeshRenderQueue			_opaqueMeshes;
+			RenderQueue::AlphaBlendMeshRenderQueue		_alphaBlendMeshes;
 
 			Core::ObjectID								_objID;
 			bool										_dirty = true;

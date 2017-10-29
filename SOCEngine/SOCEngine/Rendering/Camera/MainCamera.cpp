@@ -102,21 +102,49 @@ Math::Matrix MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
 	return Matrix::OrthoLH(size.w, size.h, near, far);
 }
 
-void MainCamera::ClassifyTransparentMesh(const TransparentMeshPool& pool,
-										 const ObjectManager& objMgr,
-										 const TransformPool& transformPool)
+void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
+								const ObjectManager& objMgr,
+								const TransformPool& transformPool)
 {
-	//camCBData was transposed.
-	Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
-								_camCBData.viewMat._32,
-								_camCBData.viewMat._33	);	
-	
-	MainCamera* thisCam = this;
-	MeshUtility::ClassifyTransparentMesh(_transparentMeshes, viewDir, pool, objMgr, transformPool,
-			[thisCam](const Mesh& mesh, const Transform& transform)
+	// TODO:
+	// 일단 Frustum Culling만 수행한다.
+	// 나중에 Hierarchical Z Buffer Occlusion Culling(#73)도
+	// 이곳에서 추가해야한다
+
+	// Tarnsparent Meshes
+	{
+		//camCBData was transposed.
+		Vector3 viewDir = Vector3(
+			_camCBData.viewMat._31,
+			_camCBData.viewMat._32,
+			_camCBData.viewMat._33	);
+
+		MeshUtility::ClassifyTransparentMesh(
+			_transparentMeshes, viewDir, pool.transparentMeshes, objMgr, transformPool,
+			[&thisCam = (*this)](const Mesh& mesh, const Transform& transform)
 			{
 				Vector3 worldPos = transform.GetWorldPosition();
-				return thisCam->_frustum.In(worldPos, mesh.GetRadius());
+				return thisCam._frustum.In(worldPos, mesh.GetRadius());
 			}
 		);
+	}
+
+	// Opaque/AlphaBlend Meshes
+	{
+		MeshUtility::ClassifyOpaqueMesh(
+			_opaqueMeshes, pool.opaqueMeshes, objMgr, transformPool,
+			[&frustum = _frustum](const Mesh& mesh, const Transform& tf)
+			{
+				return frustum.In(tf.GetWorldPosition(), mesh.GetRadius());
+			}
+		);
+
+		MeshUtility::ClassifyOpaqueMesh(
+			_alphaBlendMeshes, pool.alphaBlendMeshes, objMgr, transformPool,
+			[&frustum = _frustum](const Mesh& mesh, const Transform& tf)
+			{
+				return frustum.In(tf.GetWorldPosition(), mesh.GetRadius());
+			}
+		);
+	}
 }
