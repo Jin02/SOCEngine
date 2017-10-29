@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "VBSortedMeshpool.h"
 #include "OpaqueMeshRenderQueue.h"
+#include "TemporaryPtr.hpp"
 
 namespace Rendering
 {
@@ -15,6 +16,16 @@ namespace Rendering
 		using TransparentMeshPool	= Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
 		using OpaqueMeshPool		= VBSortedMeshPool;
 		using AlphaBlendMeshPool	= OpaqueMeshPool;
+
+		struct MeshPoolRefs
+		{
+			AlphaBlendMeshPool&		alphaBlendMeshes;
+			OpaqueMeshPool&			opaqueMeshes;
+			TransparentMeshPool&	transparentMeshes;
+
+			explicit MeshPoolRefs(AlphaBlendMeshPool& _alphaBlendMeshes, OpaqueMeshPool& _opaqueMeshes, TransparentMeshPool& _transparentMeshes)
+					: alphaBlendMeshes(_alphaBlendMeshes), opaqueMeshes(_opaqueMeshes), transparentMeshes(_transparentMeshes) { }
+		};
 	};
 		
 	namespace Manager
@@ -101,6 +112,8 @@ namespace Rendering
 			GET_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,				_transparentMeshPool);
 			GET_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,					_opaqueMeshPool);
 			GET_ACCESSOR(AlphaBlendMeshPool,	Geometry::AlphaBlendMeshPool&,				_alphaBlendMeshPool);
+			GET_ACCESSOR(MeshPoolRefs,			auto,										Geometry::MeshPoolRefs(	_alphaBlendMeshPool,
+																													_opaqueMeshPool, _transparentMeshPool));
 
 			GET_CONST_ACCESSOR(TransparentMeshPool,	const Geometry::TransparentMeshPool&,	_transparentMeshPool);
 			GET_CONST_ACCESSOR(OpaqueMeshPool,		const Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
@@ -109,11 +122,11 @@ namespace Rendering
 			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
 
 		private:
-			Geometry::TransparentMeshPool	_transparentMeshPool;
-			Geometry::OpaqueMeshPool		_opaqueMeshPool;
-			Geometry::AlphaBlendMeshPool	_alphaBlendMeshPool;
+			Geometry::TransparentMeshPool				_transparentMeshPool;
+			Geometry::OpaqueMeshPool					_opaqueMeshPool;
+			Geometry::AlphaBlendMeshPool				_alphaBlendMeshPool;
 
-			std::vector<Geometry::Mesh*> _dirtyMeshes;
+			std::vector<TemporaryPtr<Geometry::Mesh>>	_dirtyMeshes;
 		};
 	}
 }

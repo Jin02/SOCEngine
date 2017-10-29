@@ -44,7 +44,7 @@ void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
 					auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 
 					if (tf->GetDirty())
-						dirty.push_back(&mesh);
+						dirty.emplace_back(&mesh);
 			}
 		);
 	};
