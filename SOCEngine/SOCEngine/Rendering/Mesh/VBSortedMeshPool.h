@@ -32,6 +32,20 @@ namespace Rendering
 			}
 			
 			template <class Iterator>
+			void Iterate(Iterator iterator) const
+			{
+				uint vbKeyCount = _pool.GetSize();
+				for (uint i = 0; i < vbKeyCount; ++i)
+				{
+					auto& rawPool = _pool.Get(i);
+
+					uint meshCount = rawPool.GetSize();
+					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
+						iterator(rawPool.Get(meshIdx));
+				}
+			}
+
+			template <class Iterator>
 			void Iterate(Iterator iterator)
 			{
 				uint vbKeyCount = _pool.GetSize();
@@ -41,9 +55,10 @@ namespace Rendering
 
 					uint meshCount = rawPool.GetSize();
 					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
-						iterator( rawPool.Get(meshIdx) );
+						iterator(rawPool.Get(meshIdx));
 				}
 			}
+
 
 		private:
 			using VBKey = Buffer::VertexBuffer::Key;
