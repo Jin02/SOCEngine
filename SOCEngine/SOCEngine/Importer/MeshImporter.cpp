@@ -380,8 +380,8 @@ void MeshImporter::ParseMesh(Importer::Mesh& outMesh, const rapidjson::Value& me
 			if(bbMax.y < pos.y) bbMax.y = pos.y;
 			if(bbMax.z < pos.z) bbMax.z = pos.z;
 
-			if(hasNormal)	// normalÀÇ À§Ä¡´Â posÀÇ ´ÙÀ½ À§Ä¡·Î °íÁ¤µÇ¾î ÀÖ´Ù. 
-							// ¹¹ ¾îÂ¥ÇÇ À§Ä¡°¡ º¯µ¿ÀûÀÌÁö ¾Ê±â ¶§¹®¿¡, ±×³É °íÁ¤À¸·Î ÇØµµ »ó°ü¾ø´Ù.
+			if(hasNormal)	// normalì˜ ìœ„ì¹˜ëŠ” posì˜ ë‹¤ìŒ ìœ„ì¹˜ë¡œ ê³ ì •ë˜ì–´ ìžˆë‹¤. 
+							// ë­ ì–´ì§œí”¼ ìœ„ì¹˜ê°€ ë³€ë™ì ì´ì§€ ì•Šê¸° ë•Œë¬¸ì—, ê·¸ëƒ¥ ê³ ì •ìœ¼ë¡œ í•´ë„ ìƒê´€ì—†ë‹¤.
 			{
 				outMesh.vertexDatas.push_back(  verticesNode[i + 3].GetDouble() ); //x
 				outMesh.vertexDatas.push_back(  verticesNode[i + 5].GetDouble() ); //y
@@ -737,7 +737,7 @@ Core::Object& MeshImporter::BuildMesh(
 
 				if(hasNormalMap)
 				{
-					//tangent¸¦ ¹öÆÛ¿¡ ³¢¿ö³Ö´Â ÀÛ¾÷.
+					//tangentë¥¼ ë²„í¼ì— ë¼ì›Œë„£ëŠ” ìž‘ì—….
 
 					uint originStride = stride;
 					stride += sizeof(Vector3);
@@ -746,8 +746,8 @@ Core::Object& MeshImporter::BuildMesh(
 					std::vector<Vector3> tangents =
 						CalculateTangents(meshIter->parts, meshIter->vertexDatas, originStride, uv0Pos);
 
-					// Tangent¸¦ ¾´´Ù´Â°Ç, ÀÌ¹Ì ¾Õ¿¡ NormalÀ» »ç¿ëÇÑ´Ù´Â °Í°ú °°´Ù.
-					// ±×·¡¼­ ±×³É °íÁ¤°ªÀÓ. »ç½ÇÀº ±ÍÂú±âµµÇÏ°í, ±×·¡ ±ÍÂú´Ù.
+					// Tangentë¥¼ ì“´ë‹¤ëŠ”ê±´, ì´ë¯¸ ì•žì— Normalì„ ì‚¬ìš©í•œë‹¤ëŠ” ê²ƒê³¼ ê°™ë‹¤.
+					// ê·¸ëž˜ì„œ ê·¸ëƒ¥ ê³ ì •ê°’ìž„. ì‚¬ì‹¤ì€ ê·€ì°®ê¸°ë„í•˜ê³ , ê·¸ëž˜ ê·€ì°®ë‹¤.
 					const uint tangentOrder = (uint)Attribute::Tangent;
 
 					//const uint originElemCount = originStride / sizeof(float);
@@ -791,7 +791,7 @@ Core::Object& MeshImporter::BuildMesh(
 	}
 
 	// Make Hierachy
-	auto& root = managerParam.objManager.Add(meshFileName, &managerParam.compoSystem, &managerParam.transformPool);
+	auto& root = managerParam.objManager.Add(meshFileName);
 		
 	for(auto iter = nodes.begin(); iter != nodes.end(); ++iter)
 		MakeHierarchy(root, (*iter), meshFileName, managerParam, intersectionHashMap);
@@ -898,7 +898,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 									const IntersectionHashMap& intersectionHashMap	)
 {
 	auto& objManager = managerParam.objManager;
-	Object object = objManager.Add(node.id, &managerParam.compoSystem, &managerParam.transformPool);
+	Object object = objManager.Add(node.id);
 
 	uint objID = object.GetObjectID().Literal();
 	parent.AddChild(object);
@@ -959,7 +959,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 			{
 				const std::string& subMeshName = iter->meshPartID;
-				Object subMeshObj = objManager.Add(subMeshName, &managerParam.compoSystem, &managerParam.transformPool);
+				Object subMeshObj = objManager.Add(subMeshName);
 				object.AddChild(subMeshObj);
 
 				AttachMeshComponent(subMeshObj, *iter);
