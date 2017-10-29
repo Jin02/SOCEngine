@@ -6,7 +6,7 @@
 
 using namespace Core;
 
-Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem, TransformPool* tfPool)
+Object& ObjectManager::Add(const std::string& name)
 {
 	ObjectID key = _objIDMgr.Acquire();
 	_idBookmark.Add(name, key.Literal());
