@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 #include "VectorIndexer.hpp"
+
 #include "MeshRawPool.h"
 #include "Bookmark.hpp"
 
@@ -14,16 +15,22 @@ namespace Rendering
 		public:
 			VBSortedMeshPool() = default;
 
-			Mesh& Add(Mesh& mesh);
-			void Delete(Mesh& mesh)		{ Delete(mesh.GetObjectID().Literal());		}
-			bool Has(Mesh& mesh) const	{ return Has(mesh.GetObjectID().Literal());	}
+			Mesh&	Add(Core::ObjectID id, Buffer::BaseBuffer::Key vbKey, Mesh& mesh);
+			void	Delete(Core::ObjectID::LiteralType literalID);
+			void	DeleteAll();
+			bool	Has(Core::ObjectID::LiteralType literalID) const;			
+			bool	HasVBKey(Buffer::VertexBuffer::Key key) const;
 
-			void Delete(Core::ObjectID::LiteralType id);
-			bool Has(Core::ObjectID::LiteralType id) const;
-			Mesh* Find(Core::ObjectID::LiteralType id);
-
-			bool HasVBKey(Buffer::VertexBuffer::Key key) const;
-
+			const Mesh*	Find(Core::ObjectID::LiteralType literalID) const;			
+			Mesh*		Find(Core::ObjectID::LiteralType literalID)
+			{
+				return 
+					const_cast<Mesh*>
+					(
+						static_cast<const MeshRawPool*>(this)->Find(literalID)
+					);
+			}
+			
 			template <class Iterator>
 			void Iterate(Iterator iterator)
 			{
@@ -39,10 +46,9 @@ namespace Rendering
 			}
 
 		private:
-			Core::BookHashMapmark<Core::ObjectID::LiteralType>			_bookmark;
-			Core::VectorHashMap<Buffer::VertexBuffer::Key, MeshRawPool> _pool;
+			using VBKey = Buffer::VertexBuffer::Key;
+			Core::BookHashMapmark<Core::ObjectID::LiteralType, VBKey>	_bookmark;
+			Core::VectorHashMap<VBKey, MeshRawPool>						_pool;
 		};
-
-		using OpaqueMeshPool = VBSortedMeshPool;
 	}
 }

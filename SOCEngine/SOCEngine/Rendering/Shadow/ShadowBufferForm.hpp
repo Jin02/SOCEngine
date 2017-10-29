@@ -24,6 +24,7 @@ namespace Rendering
 
 			public:
 				ShadowBufferForm() = default;
+				~ShadowBufferForm() { DeleteAll(); }
 
 				void Initialize(Device::DirectX& dx, uint maxShadowCount)
 				{

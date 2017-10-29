@@ -19,6 +19,7 @@ namespace Rendering
 
 			PtrType		Add(PtrType mesh)			{ _meshes.push_back(mesh);	return _meshes.back();	}
 			void		Delete(PtrType mesh)		{ Delete(mesh->GetObjectID().Literal());			}
+			void		DeleteAll()					{ _meshes.clear();									}
 			bool		Has(PtrType mesh)	const	{ Has(mesh->GetObjectID().Literal());				}
 
 			const PtrType Get(uint index) const		{ return _meshes[index]; }
@@ -27,7 +28,6 @@ namespace Rendering
 			void Delete(Core::ObjectID::LiteralType id);
 			bool Has(Core::ObjectID::LiteralType id) const;
 
-			void DeleteAll();
 
 			bool Empty() const { return _meshes.empty(); }
 			GET_CONST_ACCESSOR(Size, uint, _meshes.size());

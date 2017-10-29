@@ -4,19 +4,19 @@ using namespace Rendering;
 using namespace Rendering::Geometry;
 using namespace Intersection;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderQueue;
 using namespace Core;
 using namespace Math;
 
-const Transform& MeshUtility::_FindTransform(const Mesh& mesh, const TransformPool& transformPool)
+const Transform& MeshUtility::_FindTransform(ObjectID id, const TransformPool& transformPool)
 {
-	auto id = mesh.GetObjectID();
 	uint findIdx = transformPool.GetIndexer().Find(id.Literal());
 	assert(findIdx != TransformPool::IndexerType::FailIndex());
 
-	return transformPool.Get(findIdx);				
+	return transformPool.Get(findIdx);
 }
 
-void MeshUtility::_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
+void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 						 				const Vector3& viewDir, const TransformPool& transformPool)
 {
 	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
@@ -30,5 +30,5 @@ void MeshUtility::_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
 		return SortKey(left) < SortKey(right);
 	};
 	
-	std::sort(refMeshes.begin(), refMeshes.end(), SortingByDistance);				
+	std::sort(renderQueue.begin(), renderQueue.end(), SortingByDistance);				
 }

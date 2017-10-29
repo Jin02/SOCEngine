@@ -3,52 +3,56 @@
 using namespace Rendering;
 using namespace Rendering::Geometry;
 using namespace Rendering::Buffer;
+using namespace Core;
 
-Mesh& VBSortedMeshPool::Add(Mesh& mesh)
+Mesh& VBSortedMeshPool::Add(ObjectID id, BaseBuffer::Key vbKey, Mesh& mesh)
 {
-	uint literalID = mesh.GetObjectID().Literal();
-	const auto& vbKey = mesh.GetVBKey();
+	auto literalID = id.Literal();
 	assert(_bookmark.Has(literalID) == false);
 
 	_bookmark.Add(literalID, vbKey);
 
-	if (HasVBKey(vbKey) == false)
+	auto rawPool = _pool.Find(vbKey);
+	if (rawPool == nullptr)
 		return _pool.Add(vbKey, { mesh }).Get(0);
 
-	auto rawPool = _pool.Find(vbKey);
 	assert(rawPool->Has(literalID) == false);
-
 	return rawPool->Add(mesh);
 }
-
-void VBSortedMeshPool::Delete(Core::ObjectID::LiteralType id)
+			
+void VBSortedMeshPool::Delete(ObjectID::LiteralType literalID)
 {
-	uint vbKey = _bookmark.Find(id);
+	uint vbKey = _bookmark.Find(literalID);
 	assert(vbKey != decltype(_bookmark)::Fail());
 
 	auto rawPool = _pool.Find(vbKey);
-	rawPool->Delete(id);
-	_bookmark.Delete(id);
+	rawPool->Delete(literalID);
 
 	if (rawPool->Empty())
-		_pool.Delete(vbKey);
+		_pool.Delete(vbKey);				
+	
+	_bookmark.Delete(literalID);			
 }
 
-bool VBSortedMeshPool::Has(Core::ObjectID::LiteralType id) const
+void VBSortedMeshPool::DeleteAll()
 {
-	uint vbKey = _bookmark.Find(id);
-	return (vbKey != decltype(_bookmark)::Fail()) ? 
-		_pool.Find(vbKey)->Has(id) : false;
+	_bookmark.DeleteAll();
+	_pool.DeleteAll();
 }
 
-Mesh* VBSortedMeshPool::Find(Core::ObjectID::LiteralType id)
+bool VBSortedMeshPool::Has(ObjectID::LiteralType literalID) const
+{				
+	uint vbKey = _bookmark.Find(literalID);
+	return (vbKey != decltype(_bookmark)::Fail()) ? _pool.Find(vbKey)->Has(literalID) : false;							
+}
+
+const Mesh* VBSortedMeshPool::Find(ObjectID::LiteralType literalID) const
 {
-	uint vbKey = _bookmark.Find(id);
-	return (vbKey != decltype(_bookmark)::Fail()) ?
-		_pool.Find(vbKey)->Find(id) : nullptr;
+	uint vbKey = _bookmark.Find(literalID);
+	return (vbKey != decltype(_bookmark)::Fail()) ? _pool.Find(vbKey)->Find(literalID) : nullptr;				
 }
 
 bool VBSortedMeshPool::HasVBKey(VertexBuffer::Key key) const
 {
-	return _pool.Has(key);
+	return _pool.Has(key);				
 }

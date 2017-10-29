@@ -7,12 +7,6 @@ using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Math;
 
-Mesh& MeshManager::Acquire(Core::ObjectID objID)
-{
-	auto mesh = Mesh(objID);
-	return GetOpaqueMeshPool().Add(mesh);
-}
-
 void MeshManager::Delete(Core::ObjectID objID)
 {
 	GetOpaqueMeshPool().Delete(objID.Literal());
