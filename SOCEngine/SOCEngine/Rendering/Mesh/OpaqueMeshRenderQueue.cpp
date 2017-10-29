@@ -2,7 +2,7 @@
 
 using namespace Rendering;
 using namespace Rendering::Geometry;
-using namespace Rendeirng::RenderQueue;
+using namespace Rendering::RenderQueue;
 
 void OpaqueMeshRenderQueue::Add(Mesh& mesh)
 {

@@ -27,7 +27,7 @@ namespace Rendering
 				return 
 					const_cast<Mesh*>
 					(
-						static_cast<const MeshRawPool*>(this)->Find(literalID)
+						static_cast<const VBSortedMeshPool*>(this)->Find(literalID)
 					);
 			}
 			

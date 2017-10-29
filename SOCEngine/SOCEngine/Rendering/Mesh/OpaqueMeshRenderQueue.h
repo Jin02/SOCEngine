@@ -10,7 +10,7 @@ namespace Rendering
 		class OpaqueMeshRenderQueue final
 		{
 		public:
-			void Add(Mesh& mesh);			
+			void Add(Geometry::Mesh& mesh);			
 			void DeleteAllContent();
 
 			template <class Iterator>		// Iterator Form = "[](const Mesh*) -> void { }"
@@ -31,6 +31,6 @@ namespace Rendering
 		private:
 			Core::VectorHashMap<Buffer::VertexBuffer::Key,
 								Rendering::Geometry::MeshRawPtrs>	_vbPerMeshes;
-		}
+		};
 	}
 }

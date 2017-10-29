@@ -10,7 +10,7 @@
 
 namespace Rendering
 {
-	namespace Geomtry
+	namespace Geometry
 	{
 		using TransparentMeshPool	= Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
 		using OpaqueMeshPool		= VBSortedMeshPool;
@@ -59,7 +59,13 @@ namespace Rendering
 			{
 				return Add(mesh, GetOpaqueMeshPool());
 			}
-			
+
+			Geometry::Mesh& Acquire(Core::ObjectID id)
+			{
+				Geometry::Mesh mesh(id);
+				return Add(mesh, GetOpaqueMeshPool());
+			}
+
 			void Delete(Core::ObjectID objID);
 			bool Has(Core::ObjectID objID) const;
 			Geometry::Mesh* Find(Core::ObjectID id);
@@ -87,8 +93,8 @@ namespace Rendering
 				assert(fromPool.Has(literlID));
 				assert(toPool.Has(literlID) == false);
 
-				Mesh* mesh = fromPool.Find(literlID);
-				toPool.Add(literlID, mesh->GetVBKey(), *mesh);
+				Geometry::Mesh* mesh = fromPool.Find(literlID);
+				toPool.Add(id, mesh->GetVBKey(), *mesh);
 				fromPool.Delete(literlID);
 			}
 

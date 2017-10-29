@@ -1,4 +1,4 @@
-#include "MeshRawPtr.h"
+#include "MeshRawPtrs.h"
 
 using namespace Rendering;
 using namespace Rendering::Geometry;
@@ -13,7 +13,7 @@ const MeshRawPtrs::PtrType MeshRawPtrs::Find(Core::ObjectID::LiteralType id) con
 	for (auto& iter : _meshes)
 	{
 		if( iter->GetObjectID().Literal() == id )
-			return &iter;
+			return iter;
 	}
 
 	return nullptr;
@@ -21,9 +21,9 @@ const MeshRawPtrs::PtrType MeshRawPtrs::Find(Core::ObjectID::LiteralType id) con
 
 void MeshRawPtrs::Delete(Core::ObjectID::LiteralType id)
 {
-	for (auto& iter : _meshes)
+	for (auto iter = _meshes.begin(); iter != _meshes.end(); ++iter)
 	{
-		if (iter->GetObjectID().Literal() == id)
+		if ((*iter)->GetObjectID().Literal() == id)
 		{
 			_meshes.erase(iter);
 			return;

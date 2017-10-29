@@ -427,6 +427,9 @@
     <Filter Include="Rendering\Mesh\Pool\Raw">
       <UniqueIdentifier>{b596d396-16f0-41b5-8c4c-620880fe6186}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Mesh\RenderQueue">
+      <UniqueIdentifier>{7086a4ed-c991-467f-9916-ce6106ad4052}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -931,6 +934,12 @@
     <ClInclude Include="Rendering\Mesh\VBSortedMeshPool.h">
       <Filter>Rendering\Mesh\Pool</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshRawPtrs.h">
+      <Filter>Rendering\Mesh\Pool\Raw</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\OpaqueMeshRenderQueue.h">
+      <Filter>Rendering\Mesh\RenderQueue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1211,6 +1220,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\VBSortedMeshPool.cpp">
       <Filter>Rendering\Mesh\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\MeshRawPtrs.cpp">
+      <Filter>Rendering\Mesh\Pool\Raw</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\OpaqueMeshRenderQueue.cpp">
+      <Filter>Rendering\Mesh\RenderQueue</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

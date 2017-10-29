@@ -71,14 +71,8 @@ namespace Rendering
 			static const Core::Transform&
 				_FindTransform(Core::ObjectID id, const Core::TransformPool& transformPool);
 			static void
-<<<<<<< HEAD
-				_SortTransparentMesh(std::vector<const Mesh*>& refMeshes,
-									 const Math::Vector3& viewDir,
-									 const Core::TransformPool& transformPool);
-=======
 				_SortTransparentMesh(RenderQueue::TransparentMeshRenderQueue& renderQueue,
 									 const Math::Vector3& viewDir, const Core::TransformPool& transformPool);
->>>>>>> origin/#Re
 		};
 	}
 }

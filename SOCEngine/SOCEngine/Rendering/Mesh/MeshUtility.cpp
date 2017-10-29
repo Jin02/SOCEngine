@@ -23,7 +23,7 @@ void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 	{
 		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
 		{
-			auto& pos = _FindTransform(*mesh, transformPool).GetWorldPosition();				
+			auto& pos = _FindTransform(mesh->GetObjectID(), transformPool).GetWorldPosition();				
 			return Vector3::Dot(pos, viewDir);
 		};
 	
