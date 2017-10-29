@@ -36,7 +36,7 @@ namespace Rendering
 					bool use =	object->GetUse() | cullFunc(mesh, transform);
 
 					if (use)
-						renderQueue.push_back(&mesh);
+						renderQueue.emplace_back(&mesh);
 				}
 
 				_SortTransparentMesh(renderQueue, viewDir, transformPool);
@@ -53,14 +53,15 @@ namespace Rendering
 				renderQueue.DeleteAllContent();
 				
 				pool.Iterate(
-						[&objMgr, &transformPool, &renderQueue, &cullFunc](const Mesh& mesh)
+						[&objMgr, &transformPool,
+						 &renderQueue, &cullFunc](const Mesh& mesh)
 						{
 							Core::ObjectID id					= mesh.GetObjectID();
 							const Core::Object* object			= objMgr.Find(id); assert(object);
 							const Core::Transform& transform	= _FindTransform(id, transformPool);
 							
 							bool use = object->GetUse() | cullFunc(mesh, transform);
-							if(use)
+							if (use)
 								renderQueue.Add(mesh);
 						}
 					);				

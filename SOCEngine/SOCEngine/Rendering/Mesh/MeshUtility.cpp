@@ -19,9 +19,10 @@ const Transform& MeshUtility::_FindTransform(ObjectID id, const TransformPool& t
 void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 						 				const Vector3& viewDir, const TransformPool& transformPool)
 {
-	auto SortingByDistance = [&transformPool, &viewDir](const Mesh* left, const Mesh* right) -> bool
+	using MeshType = TransparentMeshRenderQueue::value_type;
+	auto SortingByDistance = [&transformPool, &viewDir](MeshType left, MeshType right) -> bool
 	{
-		auto SortKey = [&viewDir, &transformPool](const Mesh* mesh) -> float
+		auto SortKey = [&viewDir, &transformPool](MeshType mesh) -> float
 		{
 			auto& pos = _FindTransform(mesh->GetObjectID(), transformPool).GetWorldPosition();				
 			return Vector3::Dot(pos, viewDir);
@@ -29,6 +30,6 @@ void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 	
 		return SortKey(left) < SortKey(right);
 	};
-	
+		
 	std::sort(renderQueue.begin(), renderQueue.end(), SortingByDistance);				
 }
