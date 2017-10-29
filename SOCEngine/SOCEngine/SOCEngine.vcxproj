@@ -19,6 +19,7 @@
     <ClInclude Include="Core\ArrayVector.hpp" />
     <ClInclude Include="Core\Bookmark.hpp" />
     <ClInclude Include="Core\ComponentSystem.hpp" />
+    <ClInclude Include="Core\CoreConnector.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Indexer.hpp" />
     <ClInclude Include="Core\IScene.h" />

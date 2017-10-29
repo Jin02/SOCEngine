@@ -8,8 +8,7 @@ namespace Core
 	class Singleton
 	{
 	public:
-		//DISALLOW_ASSIGN(Singleton);
-		//DISALLOW_COPY_CONSTRUCTOR(Singleton);
+		DISALLOW_ASSIGN(Singleton);
 
 		static T* SharedInstance()
 		{

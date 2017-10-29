@@ -2,6 +2,8 @@
 #include "DirectX.h"
 #include "ObjectManager.h"
 
+#include "CoreConnector.h"
+
 using namespace Core;
 using namespace Rendering::Manager;
 using namespace Rendering;
@@ -82,6 +84,7 @@ void Engine::ChangeScene(IScene* scene)
 
 void Engine::Initialize()
 {
+	CoreConnector::SharedInstance()->Connect(&_transformPool, &_objectManager, &_componentSystem);
 }
 
 void Engine::Destroy()

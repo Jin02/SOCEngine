@@ -11,7 +11,7 @@ Object& ObjectManager::Add(const std::string& name, ComponentSystem* compoSystem
 	ObjectID key = _objIDMgr.Acquire();
 	_idBookmark.Add(name, key.Literal());
 
-	return _objects.Add(key, Object(key, compoSystem, tfPool, this));
+	return _objects.Add(key, Object(key));
 }
 
 void ObjectManager::Delete(const std::string& name)

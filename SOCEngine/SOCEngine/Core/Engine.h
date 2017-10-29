@@ -13,6 +13,8 @@
 #include "PostProcessPipeline.h"
 #include "RootObjectIDs.hpp"
 
+#include "Singleton.h"
+
 namespace Device
 {
 	class DirectX;

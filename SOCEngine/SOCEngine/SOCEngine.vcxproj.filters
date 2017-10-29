@@ -433,6 +433,9 @@
     <Filter Include="Rendering\Mesh\Manager">
       <UniqueIdentifier>{b7b3513a-362b-43c8-8f5b-94727cd784ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Connector">
+      <UniqueIdentifier>{c90a53b0-a29c-47c6-ad1b-e8b5058f8ea8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -942,6 +945,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
       <Filter>Rendering\Mesh\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreConnector.h">
+      <Filter>Core\Connector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
