@@ -949,6 +949,9 @@
     <ClInclude Include="Core\CoreConnector.h">
       <Filter>Core\Connector</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshRenderQueue.h">
+      <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">

@@ -149,6 +149,7 @@
     <ClInclude Include="Rendering\Mesh\Mesh.h" />
     <ClInclude Include="Rendering\Mesh\MeshManager.hpp" />
     <ClInclude Include="Rendering\Mesh\MeshRawPtrs.h" />
+    <ClInclude Include="Rendering\Mesh\MeshRenderQueue.h" />
     <ClInclude Include="Rendering\Mesh\OpaqueMeshRenderQueue.h" />
     <ClInclude Include="Rendering\Mesh\VBSortedMeshPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshRawPool.h" />
