@@ -8,7 +8,8 @@ namespace Math
 	{
 	public:
 		enum class Direction { FRONT, BACK, SAME };
-		Plane(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 0.0f);
+		Plane() = default;
+		Plane(float a, float b, float c, float d);
 
 		const Plane		Normalized() const { return Plane::Normalize((*this)); }
 		float			DistancePoint(const Vector3& p) const;
@@ -18,15 +19,19 @@ namespace Math
 
 		static Plane		FromPoints(const Vector3& v1, const Vector3& v2, const Vector3& v3);
 		static Plane		FromPointNormal(const Vector3& point, const Vector3& normal);
+		static Plane		Normalize(const Plane& p);
 		static float		DotCoord(const Plane& p, const Vector3& v);
 		static float		DotNoraml(const Plane& p, const Vector3& v);
-		static Plane		Normalize(const Plane& p);
+
 		static float		ComputeDistanceWithPoint(const Plane& p, const Vector3& v);
 		static bool			SameSide(const Plane& p, const Vector3& v);
 		static Direction	GetSide(const Plane& p, const Vector3& v);
 
 	public:
-		float a, b, c, d;
+		float	a = 0.0f,
+				b = 0.0f,
+				c = 0.0f,
+				d = 0.0f;
 	};
 
 }

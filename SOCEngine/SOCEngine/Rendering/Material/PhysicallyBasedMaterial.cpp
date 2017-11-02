@@ -20,11 +20,11 @@ void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 		ConstBuffer& paramCB = bind.resource;
 		paramCB.Initialize(dx, sizeof(ParamCB));
 
-		bind.bindIndex = static_cast<uint>(ConstBufferBindIndex::PhysicallyBasedMaterial);
-		bind.useCS = false;
-		bind.useGS = false;
-		bind.useVS = false;
-		bind.usePS = true;
+		bind.bindIndex	= static_cast<uint>(ConstBufferBindIndex::PhysicallyBasedMaterial);
+		bind.useCS		= false;
+		bind.useGS		= false;
+		bind.useVS		= false;
+		bind.usePS		= true;
 	}
 
 	GetConstBufferBook().Add(ParamCB::GetKey(), bind);
@@ -48,8 +48,8 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 									(static_cast<uint>(_emissiveColor.b * 255.0f) & 0xff) << 8 |
 									(static_cast<uint>(_metallic * 255.0f) & 0xff));
 
-	uint scaledSpecularity = static_cast<uint>(_specularity * 255.0f) & 0xff;
-	uint scaledRoughness = static_cast<uint>(_roughness * 255.0f) & 0xff;
+	uint scaledSpecularity	= static_cast<uint>(_specularity * 255.0f) & 0xff;
+	uint scaledRoughness	= static_cast<uint>(_roughness * 255.0f) & 0xff;
 
 	uint existTextureFlag = 0;
 	{
@@ -68,11 +68,11 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 	uint resultFlag = (scaledRoughness << 24) | (scaledSpecularity << 16) | (existTextureFlag & 0xffff);
 	param.roughness_specularity_existTextureFlag = resultFlag;
 		
-	float ior = min(max(0.0f, _ior), 1.0f) * 255.0f;				
-	param.flag_ior = (static_cast<uint>(_flag) << 8) | static_cast<uint>(ior);
+	float ior		= min(max(0.0f, _ior), 1.0f) * 255.0f;				
+	param.flag_ior	= (static_cast<uint>(_flag) << 8) | static_cast<uint>(ior);
 
-	auto indexer = GetConstBufferBook().GetIndexer();
-	uint findIndex = indexer.Find(ParamCB::GetKey());
+	auto indexer	= GetConstBufferBook().GetIndexer();
+	uint findIndex	= indexer.Find(ParamCB::GetKey());
 	assert(findIndex != decltype(indexer)::FailIndex());
 
 	GetConstBufferBook().Get(findIndex).resource.UpdateSubResource(dx, &param);
@@ -86,10 +86,10 @@ void PhysicallyBasedMaterial::RegistTexture(const std::string& key, TextureBindI
 	{
 		BindTextured2D bindTex2D;
 		{
-			bindTex2D.resource = tex;
-			bindTex2D.bindIndex = static_cast<uint>(bind);
-			bindTex2D.useVS = bindTex2D.useGS = bindTex2D.useCS = false;
-			bindTex2D.usePS = true;
+			bindTex2D.resource	= tex;
+			bindTex2D.bindIndex	= static_cast<uint>(bind);
+			bindTex2D.useVS		= bindTex2D.useGS = bindTex2D.useCS = false;
+			bindTex2D.usePS		= true;
 		}
 		textureBook.Add(key, bindTex2D);
 	}

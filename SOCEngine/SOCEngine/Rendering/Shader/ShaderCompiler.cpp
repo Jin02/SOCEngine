@@ -57,16 +57,16 @@ DXSharedResource<ID3DBlob> ShaderCompiler::Compile(
 			for (const auto& iter : (*macros))
 			{
 				D3D_SHADER_MACRO macro;
-				macro.Name = iter.GetName().c_str();
-				macro.Definition = iter.GetDefinition().c_str();
+				macro.Name			= iter.GetName().c_str();
+				macro.Definition	= iter.GetDefinition().c_str();
 
 				d3dMacros.push_back(macro);
 			}
 		}
 
 		D3D_SHADER_MACRO nullMacro;
-		nullMacro.Name = nullptr;
-		nullMacro.Definition = nullptr;
+		nullMacro.Name			= nullptr;
+		nullMacro.Definition	= nullptr;
 
 		d3dMacros.push_back(nullMacro);
 	}

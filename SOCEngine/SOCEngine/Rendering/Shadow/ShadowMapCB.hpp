@@ -57,8 +57,8 @@ namespace Rendering
 				{
 					for (auto shadow : dirtyShadows)
 					{
-						Core::ObjectID objID = shadow->GetObjectID();
-						uint index = indexer.Find(objID.Literal());
+						Core::ObjectID objID	= shadow->GetObjectID();
+						uint index				= indexer.Find(objID.Literal());
 
 						_constBuffers[index].UpdateSubResource(dx, shadow->GetViewProjectionMatrix());
 					}
@@ -67,15 +67,15 @@ namespace Rendering
 				{
 					auto& cb = _constBuffers[index];
 
-					if (bindVS) Shader::VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
+					if (bindVS) Shader::VertexShader::BindConstBuffer(dx,	ConstBufferBindIndex::OnlyPass, *cb);
 					if (bindGS) Shader::GeometryShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
-					if (bindPS) Shader::PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPass, *cb);
+					if (bindPS) Shader::PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::OnlyPass, *cb);
 				}
 				void UnbindConstBuffer(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
 				{
-					if (bindVS) Shader::VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
-					if (bindGS) Shader::GeometryShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
-					if (bindPS) Shader::PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPass);
+					if (bindVS) Shader::VertexShader::UnBindConstBuffer(dx,		ConstBufferBindIndex::OnlyPass);
+					if (bindGS) Shader::GeometryShader::UnBindConstBuffer(dx,	ConstBufferBindIndex::OnlyPass);
+					if (bindPS) Shader::PixelShader::UnBindConstBuffer(dx,		ConstBufferBindIndex::OnlyPass);
 				}
 
 			private:

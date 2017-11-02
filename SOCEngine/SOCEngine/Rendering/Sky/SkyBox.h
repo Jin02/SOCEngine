@@ -14,13 +14,13 @@ namespace Rendering
 	{
 		class SkyBox
 		{
-		private:
-			SkyGeometry			_base;
-			std::string			_skyBoxMaterialKey = "";
-
 		public:
 			SkyBox() = default;
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const std::string& skyBoxMaterialKey);
+
+		private:
+			SkyGeometry			_base;
+			std::string			_skyBoxMaterialKey = "";
 		};
 	}
 }

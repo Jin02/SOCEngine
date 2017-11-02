@@ -36,9 +36,9 @@ void WinApp::Initialize()
 	RegisterClassEx(&_windowInfo);
 
 	_handle = CreateWindow(_windowInfo.lpszClassName, _windowInfo.lpszClassName, _options,
-		_rect.x, _rect.y,
-		_rect.size.w, _rect.size.h,
-		_parentHandle, NULL, _windowInfo.hInstance, NULL);
+							_rect.x, _rect.y,
+							_rect.size.w, _rect.size.h,
+							_parentHandle, NULL, _windowInfo.hInstance, NULL);
 
 	if (_options != (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN))
 		ShowWindow(_handle, SW_SHOWDEFAULT);

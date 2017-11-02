@@ -14,15 +14,18 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT format, bool useRTV, bool useMipmap);
 			void Clear(Device::DirectX& dx);
 
-			GET_CONST_ACCESSOR(UseMipmap,			bool,										_useMipmap);
+			GET_CONST_ACCESSOR(UseMipmap,			bool,												_useMipmap);
 			GET_CONST_ACCESSOR(RenderTargetView,	const DXSharedResource<ID3D11RenderTargetView>&,	_rtv);
-			GET_ACCESSOR(RawRenderTargetView,		auto,										_rtv.GetRaw());
+			GET_ACCESSOR(RawRenderTargetView,		ID3D11RenderTargetView* const,						_rtv.GetRaw());
+			GET_ACCESSOR(RawTexture,				ID3D11Texture2D* const,								_texture.GetRaw());
+			GET_ALL_ACCESSOR(ShaderResourceView,	auto&,												_srv);
 
 		private:
 			DXSharedResource<ID3D11RenderTargetView>	_rtv;
-			DXSharedResource<ID3D11Texture2D>		_texture;
-			bool					_useMipmap = false;
-			View::ShaderResourceView		_srv;
+			DXSharedResource<ID3D11Texture2D>			_texture;
+			View::ShaderResourceView					_srv;
+
+			bool										_useMipmap = false;
 		};
 	}
 }

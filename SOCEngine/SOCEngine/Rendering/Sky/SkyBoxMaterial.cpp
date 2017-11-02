@@ -16,9 +16,9 @@ void SkyBoxMaterial::UpdateCubeMap(const Texture2D& tex)
 {
 	MaterialForm::BindTextured2D bindData;
 	{
-		bindData.resource = tex;
-		bindData.bindIndex = static_cast<uint>(TextureBindIndex::SkyBoxCubeMap);
-		bindData.usePS = true;
+		bindData.resource	= tex;
+		bindData.bindIndex	= static_cast<uint>(TextureBindIndex::SkyBoxCubeMap);
+		bindData.usePS		= true;
 	}
 
 	_cubeMap = GetTextureBook().Add("CubeMap", bindData).resource;

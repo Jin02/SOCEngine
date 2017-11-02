@@ -10,12 +10,12 @@ void VertexBuffer::Initialize(Device::DirectX& dx, const Desc& desc, const void*
 	_desc		= desc;
 
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
-	bufferDesc.ByteWidth = desc.stride * desc.vertexCount;
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
+	bufferDesc.Usage				= isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
+	bufferDesc.ByteWidth			= desc.stride * desc.vertexCount;
+	bufferDesc.BindFlags			= D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags		= isDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+	bufferDesc.MiscFlags			= 0;
+	bufferDesc.StructureByteStride	= 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	memset(&data, 0, sizeof(D3D11_SUBRESOURCE_DATA));

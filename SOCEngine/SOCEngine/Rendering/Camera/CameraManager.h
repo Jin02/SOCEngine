@@ -24,7 +24,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
 
 			void SetMainCamera(Core::ObjectID objectID);
-			GET_ACCESSOR(MainCamera, auto&, _mainCamera);
+			GET_ALL_ACCESSOR(MainCamera, auto&, _mainCamera);
 
 		public:
 			template <class CameraType> CameraType& Acquire(Core::ObjectID objID)

@@ -7,11 +7,6 @@
 using namespace Intersection;
 using namespace Math;
 
-BoundBox::BoundBox() :
-	_extents(_size / 2.0f), _min(-_extents), _max(_extents)
-{
-}
-
 BoundBox::BoundBox(const Vector3& worldCenter, const Vector3& size) :
 	_center(worldCenter), _size(size),
 	_extents(_size / 2.0f), _min(-_extents), _max(_extents)
@@ -20,47 +15,47 @@ BoundBox::BoundBox(const Vector3& worldCenter, const Vector3& size) :
 
 void BoundBox::SetMinMax(const Vector3& min, const Vector3& max)
 {
-	_min = min;
-	_max = max;
+	_min		= min;
+	_max		= max;
 
-	_size = max - min;
-	_size.x = fabsf(_size.x);
-	_size.y = fabsf(_size.y);
-	_size.z = fabsf(_size.z);
+	_size		= max - min;
+	_size.x		= fabsf(_size.x);
+	_size.y		= fabsf(_size.y);
+	_size.z		= fabsf(_size.z);
 
-	_extents = _size / 2.0f;
-	_center = (max + min) / 2.0f;
+	_extents	= _size / 2.0f;
+	_center		= (max + min) / 2.0f;
 }
 
 void BoundBox::Expand(float amount)
 {
-	_size.x += amount;
-	_size.y += amount;
-	_size.z += amount;
+	_size.x		+= amount;
+	_size.y		+= amount;
+	_size.z		+= amount;
 
-	_extents = _size / 2.0f;
-	_min = _center - _extents;
-	_max = _center + _extents;
+	_extents	= _size / 2.0f;
+	_min		= _center - _extents;
+	_max		= _center + _extents;
 }
 
 void BoundBox::Expand(const Vector3& amount)
 {
-	_size += amount;
-	_extents = _size / 2.0f;
-	_min = _center - _extents;
-	_max = _center + _extents;
+	_size		+= amount;
+	_extents	= _size / 2.0f;
+	_min		= _center - _extents;
+	_max		= _center + _extents;
 }
 
 bool BoundBox::Intersects(const BoundBox& bounds)
 {
-	Vector3 realMin = _center + _min;
-	Vector3 realMax = _center + _max;
-	Vector3 otherMin = bounds._center + _min;
-	Vector3 otherMax = bounds._center + _max;
+	Vector3 realMin		= _center + _min;
+	Vector3 realMax		= _center + _max;
+	Vector3 otherMin	= bounds._center + _min;
+	Vector3 otherMax	= bounds._center + _max;
 
-	bool isOutX = realMax.x < otherMin.x || realMin.x > otherMax.x;
-	bool isOutY = realMax.y < otherMin.y || realMin.y > otherMax.y;
-	bool isOutZ = realMax.z < otherMin.z || realMin.z > otherMax.z;
+	bool isOutX = (realMax.x < otherMin.x) | (realMin.x > otherMax.x);
+	bool isOutY = (realMax.y < otherMin.y) | (realMin.y > otherMax.y);
+	bool isOutZ = (realMax.z < otherMin.z) | (realMin.z > otherMax.z);
 
 	return (isOutX & isOutY & isOutZ) == false;
 }
@@ -76,9 +71,9 @@ bool BoundBox::Contains(const Vector3& point)
 	Vector3 realMin = _center + _min;
 	Vector3 realMax = _center + _max;
 
-	bool isOutX = point.x < realMin.x || point.x > realMax.x;
-	bool isOutY = point.y < realMin.y || point.y > realMax.y;
-	bool isOutZ = point.z < realMin.z || point.z > realMax.z;
+	bool isOutX = (point.x < realMin.x) | (point.x > realMax.x);
+	bool isOutY = (point.y < realMin.y) | (point.y > realMax.y);
+	bool isOutZ = (point.z < realMin.z) | (point.z > realMax.z);
 
 	return (isOutX & isOutY & isOutZ) == false;
 }
@@ -95,7 +90,8 @@ bool BoundBox::Intersects(const Ray& ray, Vector3 *outPickPoint, float gap)
 	{
 		if (fabsf(ray.direction[i]) < gap)
 		{
-			if (realMin[i] > ray.origin[i] || ray.origin[i] > realMax[i])
+			if (	(realMin[i] > ray.origin[i]) | 
+					(realMax[i] < ray.origin[i])	)
 				return false;
 		}
 		else

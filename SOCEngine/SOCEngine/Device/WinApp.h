@@ -29,9 +29,9 @@ namespace Device
 	public:
 		WinApp(const Desc& desc);
 
-		GET_CONST_ACCESSOR(IsChild, bool, _options == (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN));
-		GET_CONST_ACCESSOR(IsWindowMode, bool, _windowsMode);
-		GET_CONST_ACCESSOR(Handle, HWND, _handle);
+		GET_CONST_ACCESSOR(IsChild,			bool,		_options == (WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN));
+		GET_CONST_ACCESSOR(IsWindowMode,	bool,		_windowsMode);
+		GET_CONST_ACCESSOR(Handle,			HWND,		_handle);
 
 	private:
 		friend class Core::Launcher;

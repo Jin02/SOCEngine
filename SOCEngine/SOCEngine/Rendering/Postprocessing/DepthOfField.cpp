@@ -13,9 +13,9 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 {
 	FullScreen::InitParam param;
 	{
-		param.psMacros = nullptr;
-		param.psName = "DoF_InFullScreen_PS";
-		param.shaderFileName = "DepthOfField";
+		param.psMacros			= nullptr;
+		param.psName			= "DoF_InFullScreen_PS";
+		param.shaderFileName	= "DepthOfField";
 	}
 
 	_screen.Initialize(dx, param, shaderMgr);
@@ -29,7 +29,8 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 
 void DepthOfField::UpdateParamCB(Device::DirectX& dx)
 {
-	if(_dirty == false) return;
+	if(_dirty == false)
+		return;
 
 	_paramCB.UpdateSubResource(dx, _paramData);
 	_dirty = false;
@@ -51,13 +52,13 @@ void DepthOfField::Render(	DirectX& dx, RenderTexture& outRT,
 		copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0]);
 	}
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _blurredColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth, mains.renderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),				inColorMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1),				_blurredColorMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth,	mains.renderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mains.renderer.GetTBRParamCB());
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(1), _paramCB);
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mains.camera.GetCameraCB());
+	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,			mains.renderer.GetTBRParamCB());
+	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(1),					_paramCB);
+	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
 
 	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
 

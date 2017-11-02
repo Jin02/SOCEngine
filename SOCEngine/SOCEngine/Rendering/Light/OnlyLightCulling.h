@@ -20,8 +20,8 @@ namespace Rendering
 			void Dispatch(	Device::DirectX& dx, Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr,
 							Rendering::Buffer::ExplicitConstBuffer<Renderer::TBRCBData>& tbrCB, Renderer::GBuffers& gbuffer	);
 
-			GET_ACCESSOR(LightIndexSRBuffer,	auto&,	_srb);
-			GET_ACCESSOR(LightIndexUAV,			auto&,	_uav);
+			GET_ALL_ACCESSOR(LightIndexSRBuffer,	auto&,	_srb);
+			GET_ALL_ACCESSOR(LightIndexUAV,			auto&,	_uav);
 
 		private:
 			Rendering::Buffer::ShaderResourceBuffer	_srb;

@@ -16,8 +16,8 @@ namespace Rendering
 			ShaderResourceView() = default;
 			ShaderResourceView(const DXSharedResource<ID3D11ShaderResourceView>& srv) : _srv(srv) {}
 
-			GET_CONST_ACCESSOR(View, DXSharedResource<ID3D11ShaderResourceView>, _srv);
-			GET_ACCESSOR(Raw, ID3D11ShaderResourceView*, _srv.GetRaw());
+			GET_CONST_ACCESSOR(View,	DXSharedResource<ID3D11ShaderResourceView>,	_srv);
+			GET_ACCESSOR(Raw,			ID3D11ShaderResourceView* const,			_srv.GetRaw());
 
 			template <class DXResourceType>
 			void InitializeUsingTexture(Device::DirectX& dx, DXResourceType& resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension)

@@ -31,18 +31,15 @@ const Quaternion Quaternion::operator - (const Quaternion& a) const
 }
 const Quaternion Quaternion::operator * (const Quaternion& a) const
 {
-	Quaternion q;
-	q.x = (w * a.x) + (x * a.w) + (y * a.z) - (z * a.y);
-	q.y = (w * a.y) + (y * a.w) + (z * a.x) - (x * a.z);
-	q.z = (w * a.z) + (z * a.w) + (x * a.y) - (y * a.x);
-	q.w = (w * a.w) - (x * a.x) - (y * a.y) - (z * a.z);
-
-	return q;
+	return Quaternion(	(w * a.x) + (x * a.w) + (y * a.z) - (z * a.y),
+						(w * a.y) + (y * a.w) + (z * a.x) - (x * a.z),
+						(w * a.z) + (z * a.w) + (x * a.y) - (y * a.x),
+						(w * a.w) - (x * a.x) - (y * a.y) - (z * a.z)	);
 }
 
 const Quaternion Quaternion::operator * (float f) const
 {
-	return Quaternion(x*f, y*f, z*f, w*f);
+	return Quaternion(x * f, y * f, z * f, w * f);
 }
 
 const Quaternion Quaternion::operator / (float f) const
@@ -137,11 +134,10 @@ Quaternion Quaternion::Slerp(const Quaternion& from, const Quaternion& to, float
 		toWeight = t;
 	}
 
-	return Quaternion(
-	(from.x * fromWeight) + (to.x  * toWeight),
-	(from.y * fromWeight) + (to.y  * toWeight),
-	(from.z * fromWeight) + (to.z  * toWeight),
-	(from.w * fromWeight) + (to.w  * toWeight) ).Normalized();
+	return Quaternion(	(from.x * fromWeight) + (to.x  * toWeight),
+						(from.y * fromWeight) + (to.y  * toWeight),
+						(from.z * fromWeight) + (to.z  * toWeight),
+						(from.w * fromWeight) + (to.w  * toWeight) ).Normalized();
 }
 
 Quaternion Quaternion::Lerp(const Quaternion& from, const Quaternion& to, float t)
@@ -151,11 +147,10 @@ Quaternion Quaternion::Lerp(const Quaternion& from, const Quaternion& to, float 
 	float fromWeight = 1.0f - t;
 	float toWeight = t;
 
-	return Quaternion(
-	(from.x * fromWeight) + (to.x * toWeight),
-	(from.y * fromWeight) + (to.y * toWeight),
-	(from.z * fromWeight) + (to.z * toWeight),
-	(from.w * fromWeight) + (to.w * toWeight));
+	return Quaternion(	(from.x * fromWeight) + (to.x * toWeight),
+						(from.y * fromWeight) + (to.y * toWeight),
+						(from.z * fromWeight) + (to.z * toWeight),
+						(from.w * fromWeight) + (to.w * toWeight)	);
 }
 
 Quaternion Quaternion::FromEuler(const Vector3& v)
@@ -229,30 +224,27 @@ Quaternion Quaternion::FromRotationMatrix(const Matrix& m)
 
 Quaternion Quaternion::FromYawPitchRoll(float yaw, float pitch, float roll)
 {
-	float syaw, cyaw, spitch, cpitch, sroll, croll;
-	syaw = sinf(yaw / 2.0f);
-	cyaw = cosf(yaw / 2.0f);
-	spitch = sinf(pitch / 2.0f);
-	cpitch = cosf(pitch / 2.0f);
-	sroll = sinf(roll / 2.0f);
-	croll = cosf(roll / 2.0f);
+	float syaw		= sinf(yaw / 2.0f);
+	float cyaw		= cosf(yaw / 2.0f);
+	float spitch	= sinf(pitch / 2.0f);
+	float cpitch	= cosf(pitch / 2.0f);
+	float sroll		= sinf(roll / 2.0f);
+	float croll		= cosf(roll / 2.0f);
 
-	return Quaternion(
-	syaw * cpitch * sroll + cyaw * spitch * croll,
-	syaw * cpitch * croll - cyaw * spitch * sroll,
-	cyaw * cpitch * sroll - syaw * spitch * croll,
-	cyaw * cpitch * croll + syaw * spitch * sroll);
+	return Quaternion(	syaw * cpitch * sroll + cyaw * spitch * croll,
+						syaw * cpitch * croll - cyaw * spitch * sroll,
+						cyaw * cpitch * sroll - syaw * spitch * croll,
+						cyaw * cpitch * croll + syaw * spitch * sroll	);
 }
 
 Quaternion Quaternion::FromAxis(const Vector3& axis, float angle)
 {
 	Vector3 temp = Vector3::Normalize(axis);
 
-	return Quaternion(
-	sinf(angle / 2.0f) * temp.x,
-	sinf(angle / 2.0f) * temp.y,
-	sinf(angle / 2.0f) * temp.z,
-	cosf(angle / 2.0f));
+	return Quaternion(	sinf(angle / 2.0f) * temp.x,
+						sinf(angle / 2.0f) * temp.y,
+						sinf(angle / 2.0f) * temp.z,
+						cosf(angle / 2.0f)	);
 }
 
 const Quaternion Quaternion::Normalized()
@@ -269,19 +261,19 @@ const Vector3 Math::Quaternion::GetForward() const
 {
 	return Vector3(	2.0f * (x * z - y * w),
 					2.0f * (y *z + x * w),
-					1.0f - 2.0f * (x * x + y * y));
+					1.0f - 2.0f * (x * x + y * y)	);
 }
 
 const Vector3 Math::Quaternion::GetRight() const
 {
 	return Vector3(	1.0f - 2.0f * (y * y + z * z),
 					2.0f * (x * y - z * w),
-					2.0f * (x * z + y * w));
+					2.0f * (x * z + y * w)	);
 }
 
 const Vector3 Math::Quaternion::GetUp() const
 {
 	return Vector3(	2.0f * (x *y + z * w),
 					1.0f - 2.0f * (x * x + z * z),
-					2.0f * (y *z - x * w));
+					2.0f * (y *z - x * w)	);
 }

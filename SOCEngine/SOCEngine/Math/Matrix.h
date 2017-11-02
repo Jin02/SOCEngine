@@ -13,7 +13,11 @@ namespace Math
 	class Matrix
 	{
 	public:
-		Matrix();
+		Matrix() = default;
+		Matrix(	float _11, float _12, float _13, float _14,
+				float _21, float _22, float _23, float _24,
+				float _31, float _32, float _33, float _34,
+				float _41, float _42, float _43, float _44	);
 
 	public:
 		bool operator != (const Matrix& mat) const;
@@ -48,10 +52,10 @@ namespace Math
 		static Matrix LookAtDir(const Vector3 & targetDir, const Vector3* upVec = nullptr);
 
 	public:
-		void Set( float _11, float _12, float _13, float _14,
-			float _21, float _22, float _23, float _24,
-			float _31, float _32, float _33, float _34,
-			float _41, float _42, float _43, float _44 );
+		void Set(	float _11, float _12, float _13, float _14,
+					float _21, float _22, float _23, float _24,
+					float _31, float _32, float _33, float _34,
+					float _41, float _42, float _43, float _44 );
 
 		static Matrix Multiply(const Matrix& lhs, const Matrix& rhs);
 		static Matrix Transpose(const Matrix& mat);
@@ -69,7 +73,7 @@ namespace Math
 				float        _41, _42, _43, _44;
 			};
 
-			float _m[4][4];
+			float _m[4][4] = { 0.0f, };
 		};
 	};
 

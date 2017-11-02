@@ -27,8 +27,8 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, 
-				Texture::RenderTexture& inColorMap,
-				MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures);
+						Texture::RenderTexture& inColorMap,
+						MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures);
 
 			void UpdateParamCB(Device::DirectX& dx);
 

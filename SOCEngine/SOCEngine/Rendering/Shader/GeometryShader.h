@@ -26,8 +26,8 @@ namespace Rendering
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
 
 			static constexpr const char* GetCompileCode() { return "gs"; }
-			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
-			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
+			GET_CONST_ACCESSOR(Key,			const std::string&,		_baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse,	bool,					_baseShader.GetIsCanUse());
 
 		private:
 			DXSharedResource<ID3D11GeometryShader>	_shader;

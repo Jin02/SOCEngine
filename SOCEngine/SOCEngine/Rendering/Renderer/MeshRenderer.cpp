@@ -22,8 +22,8 @@ void MeshRenderer::Destroy()
 template <class ShaderType>
 void BindBasicCB(DirectX& dx, Mesh& mesh, ConstBuffer& camCB)
 {
-	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Transform, mesh.GetTransformCB());
-	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera, camCB);
+	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Transform,	mesh.GetTransformCB());
+	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera,		camCB);
 }
 
 
@@ -37,7 +37,11 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, Mesh& mesh)
 	uint key = _loader.MakeKey(mesh.GetBufferFlag(), param.renderType);
 
 	DefaultShaderLoader::Shaders& defaultShaders = _loader.Find(key);
-	auto& vs = defaultShaders.vs; auto& gs = defaultShaders.gs; auto& ps = defaultShaders.ps;
+	
+	auto& vs = defaultShaders.vs;
+	auto& gs = defaultShaders.gs;
+	auto& ps = defaultShaders.ps;
+	
 	auto BindSRV = [&dx = param.dx, &gs, &ps](auto& srObjects)
 	{
 		uint size = srObjects.GetSize();

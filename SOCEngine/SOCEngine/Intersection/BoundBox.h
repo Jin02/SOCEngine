@@ -10,14 +10,14 @@ namespace Intersection
 	class BoundBox
 	{
 	public:
-		BoundBox();
+		BoundBox() = default;
 		BoundBox(const Math::Vector3& worldCenter, const Math::Vector3& size);
 
-		GET_CONST_ACCESSOR(Center, const Math::Vector3&, _center);
-		GET_CONST_ACCESSOR(Size, const Math::Vector3&, _size);
-		GET_CONST_ACCESSOR(Extents, const Math::Vector3&, _extents);
-		GET_CONST_ACCESSOR(Min, const Math::Vector3&, _min);
-		GET_CONST_ACCESSOR(Max, const Math::Vector3&, _max);
+		GET_CONST_ACCESSOR(Center,	const Math::Vector3&,	_center);
+		GET_CONST_ACCESSOR(Size,	const Math::Vector3&,	_size);
+		GET_CONST_ACCESSOR(Extents,	const Math::Vector3&,	_extents);
+		GET_CONST_ACCESSOR(Min,		const Math::Vector3&,	_min);
+		GET_CONST_ACCESSOR(Max,		const Math::Vector3&,	_max);
 
 		void SetMinMax(const Math::Vector3& min, const Math::Vector3& max);
 		void Expand(float amount);
@@ -32,13 +32,12 @@ namespace Intersection
 		bool operator!=(const BoundBox &box);
 		bool operator==(const BoundBox &box);
 
-
 	private:
 		Math::Vector3 _center	= Math::Vector3(0.0f, 0.0f, 0.0f);
-		Math::Vector3 _size	= Math::Vector3(1.0f, 1.0f, 1.0f);
-		Math::Vector3 _extents;
-		Math::Vector3 _min;
-		Math::Vector3 _max;
+		Math::Vector3 _size		= Math::Vector3(1.0f, 1.0f, 1.0f);
+		Math::Vector3 _extents	= _size / 2.0f;
+		Math::Vector3 _min		= -_extents;
+		Math::Vector3 _max		= _extents;
 	};
 
 }

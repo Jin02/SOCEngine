@@ -10,8 +10,8 @@ class DXUniqueResource
 public:
 	static void Release(IUnknown* resource) { resource->Release(); };
 
-	DXUniqueResource() : _resource(nullptr, nullptr) { }
-	DXUniqueResource(Resource* resource) : _resource(resource, Release) { }
+	DXUniqueResource()								: _resource(nullptr, nullptr)	{ }
+	explicit DXUniqueResource(Resource* resource)	: _resource(resource, Release)	{ }
 
 	inline const Resource* GetRaw() const		{ return _resource.get();		}
 	inline Resource* GetRaw()					{ return _resource.get();		}
@@ -30,8 +30,8 @@ class DXSharedResource final
 public:
 	static void Release(IUnknown* resource)	{	resource->Release();	};
 
-	DXSharedResource() : _resource(nullptr) { }
-	explicit DXSharedResource(Resource* resource) : _resource(resource, Release) { }
+	DXSharedResource()								: _resource(nullptr)			{ }
+	explicit DXSharedResource(Resource* resource)	: _resource(resource, Release)	{ }
 
 	inline const Resource* GetRaw() const				{ return _resource.get();		}
 	inline Resource* GetRaw() 							{ return _resource.get();		}

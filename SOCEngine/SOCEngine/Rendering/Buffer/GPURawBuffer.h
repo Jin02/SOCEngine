@@ -20,9 +20,9 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag);
 			
-			GET_ACCESSOR(UnorderedAccessView,	auto&, _uav);
-			GET_ACCESSOR(ShaderResourceView,	auto&, _srv);
-			GET_ACCESSOR(BaseBuffer,			auto&, _buffer);
+			GET_ALL_ACCESSOR(UnorderedAccessView,	auto&, _uav);
+			GET_ALL_ACCESSOR(ShaderResourceView,	auto&, _srv);
+			GET_ALL_ACCESSOR(BaseBuffer,			auto&, _buffer);
 
 		private:
 			View::UnorderedAccessView		_uav;

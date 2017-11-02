@@ -17,7 +17,9 @@ namespace Rendering
 				ThreadGroup(uint _x, uint _y, uint _z) : x(_x), y(_y), z(_z){}
 				bool IsValid() const { return (x != 0) & (y != 0) & (z != 0); }
 
-				uint x, y, z;
+				uint	x = 0,
+						y = 0,
+						z = 0;
 			};
 
 		public:
@@ -38,8 +40,10 @@ namespace Rendering
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
 			static void UnBindUnorderedAccessView(Device::DirectX& dx, UAVBindIndex bind);
 
-			GET_SET_ACCESSOR(ThreadGroupInfo, const ThreadGroup&, _threadGroup);
-			GET_CONST_ACCESSOR(Key, const std::string&, _base.GetKey());
+			GET_CONST_ACCESSOR(ThreadGroupInfo,	const ThreadGroup&,		_threadGroup);
+			SET_ACCESSOR(ThreadGroupInfo,		const ThreadGroup&,		_threadGroup);
+
+			GET_CONST_ACCESSOR(Key,				const std::string&,		_base.GetKey());
 
 		private:
 			BaseShader								_base;

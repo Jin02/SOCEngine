@@ -11,6 +11,7 @@ namespace Core
 {
 	class ComponentSystem;
 	class TransformPool;
+
 	class ObjectManager final
 	{
 	public:
@@ -31,7 +32,7 @@ namespace Core
 		Object*			Find(ObjectID id);
 		const Object*	Find(ObjectID id) const;
 
-		void		DeleteAll();
+		void			DeleteAll();
 
 	private:
 		GET_ACCESSOR(ObjectIDManager, ObjectIDManager&, _objIDMgr);

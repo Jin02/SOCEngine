@@ -28,10 +28,10 @@ const Vector4 Vector4::operator - (const Vector4& a) const
 
 const Vector4 Vector4::operator + (const Vector4& a) const
 {
-	return Vector4(a.x + x,
-		a.y + y,
-		a.z + z,
-		a.w + w);
+	return Vector4(	a.x + x,
+					a.y + y,
+					a.z + z,
+					a.w + w);
 }
 
 bool Vector4::operator == (const Vector4& b) const
@@ -74,12 +74,7 @@ const Vector4 Vector4::operator / (float d) const
 
 float Vector4::operator[](unsigned int idx) const
 {
-	if (idx == 0)		return x;
-	else if (idx == 1) return y;
-	else if (idx == 2) return z;
-	else if (idx == 3) return w;
-
-	return 0.0f;
+	return value[idx];
 }
 
 Vector4 Vector4::One()

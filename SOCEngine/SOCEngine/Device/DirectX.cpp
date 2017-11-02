@@ -35,18 +35,18 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	DXGI_SWAP_CHAIN_DESC	sd;
 	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	sd.BufferDesc.Width					= viewportSize.w;
+	sd.BufferDesc.Width						= viewportSize.w;
 	sd.BufferDesc.Height					= viewportSize.h;
-	sd.BufferCount						= 1;
-	sd.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow						= win.GetHandle();
-	sd.Windowed						= win.GetIsWindowMode();
-	sd.SwapEffect						= DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags						= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.BufferCount							= 1;
+	sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow							= win.GetHandle();
+	sd.Windowed								= win.GetIsWindowMode();
+	sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
+	sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator			= 0;
-	sd.BufferDesc.RefreshRate.Denominator			= 1;
-	sd.SampleDesc.Count					= useMSAA ? 4 : 1;
+	sd.BufferDesc.RefreshRate.Numerator		= 0;
+	sd.BufferDesc.RefreshRate.Denominator	= 1;
+	sd.SampleDesc.Count						= useMSAA ? 4 : 1;
 	sd.SampleDesc.Quality					= 0;
 
 	D3D_DRIVER_TYPE driverTypes[] =
@@ -72,8 +72,8 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	ID3D11Device*		device			= nullptr;
-	IDXGISwapChain*		swapChain		= nullptr;
+	ID3D11Device*			device				= nullptr;
+	IDXGISwapChain*			swapChain			= nullptr;
 	ID3D11DeviceContext*	immediateContext	= nullptr;
 
 	uint driverTypeIndex = 0;
@@ -90,9 +90,9 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 
 	assert(driverTypeIndex < numDriverTypes);
 
-	_device				= device;
-	_swapChain			= swapChain;
-	_immediateContext	= immediateContext;	
+	_device				= DXUniqueResource<ID3D11Device>(device);
+	_swapChain			= DXUniqueResource<IDXGISwapChain>(swapChain);
+	_immediateContext	= DXUniqueResource<ID3D11DeviceContext>(immediateContext);	
 	_msaaDesc			= sd.SampleDesc;
 }
 
@@ -180,7 +180,7 @@ void DirectX::CreateBlendStates()
 	_blendAlpha = DXUniqueResource<ID3D11BlendState>(blendState);
 }
 
-DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource * rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC & desc)
+DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource* const rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateShaderResourceView(rawResource, &desc, &srv));
@@ -188,7 +188,7 @@ DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResource
 	return DXSharedResource<ID3D11ShaderResourceView>(srv);
 }
 
-DXSharedResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAccessView(ID3D11Resource * rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC & desc)
+DXSharedResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAccessView(ID3D11Resource* const rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc)
 {
 	ID3D11UnorderedAccessView* uav = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateUnorderedAccessView(rawResource, &desc, &uav));
@@ -196,7 +196,7 @@ DXSharedResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAcce
 	return DXSharedResource<ID3D11UnorderedAccessView>(uav);
 }
 
-DXSharedResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView(ID3D11Resource * rawResource, const D3D11_RENDER_TARGET_VIEW_DESC & desc)
+DXSharedResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView(ID3D11Resource* const rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc)
 {
 	ID3D11RenderTargetView* rtv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateRenderTargetView(rawResource, &desc, &rtv));
@@ -204,7 +204,7 @@ DXSharedResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView
 	return DXSharedResource<ID3D11RenderTargetView>(rtv);
 }
 
-DXSharedResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView(ID3D11Resource * rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC & desc)
+DXSharedResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView(ID3D11Resource* const rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc)
 {
 	ID3D11DepthStencilView* dsv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateDepthStencilView(rawResource, &desc, &dsv));
@@ -212,7 +212,7 @@ DXSharedResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView
 	return DXSharedResource<ID3D11DepthStencilView>(dsv);
 }
 
-DXSharedResource<ID3D11Buffer> Device::DirectX::CreateBuffer(const D3D11_BUFFER_DESC & desc, const void * data)
+DXSharedResource<ID3D11Buffer> Device::DirectX::CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data)
 {
 	ID3D11Buffer* buffer = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateBuffer(&desc, nullptr, &buffer));
@@ -278,7 +278,7 @@ DXSharedResource<ID3D11InputLayout> Device::DirectX::CreateInputLayout(BaseShade
 	return DXSharedResource<ID3D11InputLayout>(layout);
 }
 
-DXSharedResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_TEXTURE2D_DESC & desc)
+DXSharedResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc)
 {
 	ID3D11Texture2D* texture = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateTexture2D(&desc, nullptr, &texture));
@@ -286,7 +286,7 @@ DXSharedResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_T
 	return DXSharedResource<ID3D11Texture2D>(texture);
 }
 
-DXSharedResource<ID3D11Texture3D> Device::DirectX::CreateTexture3D(const D3D11_TEXTURE3D_DESC & desc)
+DXSharedResource<ID3D11Texture3D> Device::DirectX::CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc)
 {
 	ID3D11Texture3D* texture = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateTexture3D(&desc, nullptr, &texture));
@@ -351,57 +351,57 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
-		desc.DepthEnable = true;
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_GREATER; //inverted depth
-		desc.StencilEnable = false;
-		desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-		desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+		desc.DepthEnable					= true;
+		desc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc						= D3D11_COMPARISON_GREATER; //inverted depth
+		desc.StencilEnable					= false;
+		desc.StencilReadMask				= D3D11_DEFAULT_STENCIL_READ_MASK;
+		desc.StencilWriteMask				= D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
-		desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-		desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-		desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		desc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+		desc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+		desc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
 
-		desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-		desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-		desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-		desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		desc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+		desc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+		desc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
 
 		ID3D11DepthStencilState* dss = nullptr;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthGreater = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		//disable depth write
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		desc.DepthWriteMask	= D3D11_DEPTH_WRITE_MASK_ZERO;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		//disable depth test
-		desc.DepthEnable = false;
+		desc.DepthEnable	= false;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthDisableDepthTest = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
-		desc.DepthEnable = true;
+		desc.DepthEnable	= true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		desc.DepthFunc = D3D11_COMPARISON_GREATER;
+		desc.DepthFunc		= D3D11_COMPARISON_GREATER;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthGreaterAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
-		desc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+		desc.DepthFunc		= D3D11_COMPARISON_GREATER_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthGreaterEqualAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
-		desc.DepthFunc = D3D11_COMPARISON_EQUAL;
+		desc.DepthFunc		= D3D11_COMPARISON_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthEqualAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		desc.DepthFunc		= D3D11_COMPARISON_LESS;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthLess = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
-		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		desc.DepthFunc		= D3D11_COMPARISON_LESS_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
 		_depthLessEqual = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
@@ -429,7 +429,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
 	_samplerLinear = DXUniqueResource<ID3D11SamplerState>(ss);
 
-	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_POINT;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
 	_samplerPoint = DXUniqueResource<ID3D11SamplerState>(ss);
 

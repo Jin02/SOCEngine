@@ -27,12 +27,12 @@ namespace Rendering
 			GET_CONST_ACCESSOR(gamma, float, _tbrCBData.gamma);
 			SET_ACCESSOR_DIRTY(Gamma, float, _tbrCBData.gamma);
 
-			GET_ACCESSOR(GBuffers, auto&, _gbuffer);
-			GET_ACCESSOR(TBRParamCB, auto&, _tbrCB);
+			GET_ALL_ACCESSOR(GBuffers,				auto&,	_gbuffer);
+			GET_ALL_ACCESSOR(TBRParamCB,			auto&,	_tbrCB);
 
-			GET_ACCESSOR(ResultMap, auto&, _resultMap);
-			GET_ACCESSOR(DiffuseLightBuffer, auto&, _diffuseLightBuffer);
-			GET_ACCESSOR(SpecularLightBuffer, auto&, _specularLightBuffer);
+			GET_ALL_ACCESSOR(ResultMap,				auto&,	_resultMap);
+			GET_ALL_ACCESSOR(DiffuseLightBuffer,	auto&,	_diffuseLightBuffer);
+			GET_ALL_ACCESSOR(SpecularLightBuffer,	auto&,	_specularLightBuffer);
 
 		private:
 			LightBufferMerger			_merger;

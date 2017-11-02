@@ -24,7 +24,6 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
 	assert(transform);
 
-
 	Matrix view = transform->GetWorldMatrix();
 
 	if (_useAutoProjectLocation)
@@ -40,8 +39,8 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 
 	view = Matrix::ComputeViewMatrix(view);
 
-	float orthogonalWH = (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
-	Matrix proj = Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
+	float orthogonalWH	= (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
+	Matrix proj			= Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
 
 	// Done!
 	_transposedViewProjMat = Matrix::Transpose(view * proj);

@@ -9,9 +9,7 @@ VertexShader::VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::st
 {
 }
 
-void VertexShader::Initialize(
-	Device::DirectX& dx,
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+void VertexShader::Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	_shader	= dx.CreateVertexShader(_baseShader);
 	_layout	= dx.CreateInputLayout(_baseShader, vertexDeclations);
@@ -57,23 +55,29 @@ void VertexShader::UnBindInputLayoutToContext(Device::DirectX& dx)
 }
 
 void VertexShader::BindShaderResourceView(Device::DirectX& dx,
-	TextureBindIndex bind, IN View::ShaderResourceView& view)
+	TextureBindIndex bind, View::ShaderResourceView& view)
 {
 	ID3D11ShaderResourceView* srv = view.GetRaw();
 	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void VertexShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+void VertexShader::BindSamplerState(Device::DirectX& dx,
+									SamplerStateBindIndex bind, ID3D11SamplerState* const samplerState)
 {
 	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &samplerState);
 }
 
-void VertexShader::BindConstBuffer(Device::DirectX& dx,
-	ConstBufferBindIndex bind, IN Buffer::ConstBuffer& cb)
+void VertexShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb.GetRaw();
+	ID3D11Buffer* buf = cb.GetBaseBuffer().GetRaw();
 	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
+
+//void VertexShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, OnlyAccess<Buffer::ConstBuffer>&& cb)
+//{
+//	ID3D11Buffer* buf = cb.GetData().GetBaseBuffer().GetRaw();
+//	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
+//}
 
 void VertexShader::UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind)
 {

@@ -20,8 +20,11 @@ namespace Rendering
 
 			void UpdateCB(Device::DirectX& dx);
 
-			GET_SET_ACCESSOR(UseSSAO, bool, _useSSAO);
-			GET_SET_ACCESSOR(UseDoF, bool, _useDoF);
+			SET_ACCESSOR(UseSSAO,		bool,	_useSSAO);
+			SET_ACCESSOR(UseDoF,		bool,	_useDoF);
+			GET_CONST_ACCESSOR(UseSSAO, bool,	_useSSAO);
+			GET_CONST_ACCESSOR(UseDoF,	bool,	_useDoF);
+
 			inline void SetElapsedTime(float time)
 			{
 				GetPostproessing<PostProcessing::Bloom>().SetElapsedTime(time);

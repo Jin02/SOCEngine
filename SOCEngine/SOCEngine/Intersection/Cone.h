@@ -10,7 +10,7 @@ namespace Intersection
 	{
 	public:
 		Cone(void) = default;
-		Cone(float degree, float range, const Math::Vector3 &axis, const Math::Vector3 &vertex);
+		Cone(float degree, float range, const Math::Vector3& axis, const Math::Vector3& vertex);
 
 		static bool Intersects(const Sphere &sphere, const Cone &cone);
 		bool Intersects(const Sphere &sphere);

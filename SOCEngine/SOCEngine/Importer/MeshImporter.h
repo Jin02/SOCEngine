@@ -48,24 +48,21 @@ namespace Importer
 			Core::ObjectID	objectID;
 		};
 
-		void ParseNode(Node& outNodes, const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
-			bool isSettedParentTranslation = false, bool isSettedParentRotation = false, bool isSettedParentScale = false);
-		void ParseMaterial(Material& outMaterial, const rapidjson::Value& matNode, bool isObjFormat);
-		void ParseMesh(Mesh& outMesh, const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
+		Node ParseNode(const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
+						bool isSettedParentTranslation = false, bool isSettedParentRotation = false, bool isSettedParentScale = false);
+		Material ParseMaterial(const rapidjson::Value& matNode, bool isObjFormat);
+		Mesh ParseMesh(const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 
-		std::string GetVertexBufferKey(const std::string& meshFileName, uint meshIdx, std::string* outChunkKey) const;
-
-		void MakeMaterials(std::set<std::string>& outNormalMapMaterialKeys, ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
+		std::set<std::string> MakeMaterials(ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
 		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
 		Core::Object& BuildMesh(ManagerParam managerParam,
-			std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes, const std::string& folderDir, const std::string& meshFileName, bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
-		void FetchNormalMapMeshKeyLists(std::vector<std::pair<std::string, std::string>>& outNormalMapMeshes, const Node& node, const std::string& meshFileName);
+								std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes,
+								const std::string& folderDir, const std::string& meshFileName,
+								bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
 		void FetchNodeHashMap(NodeHashMap& recurRefParts, const std::vector<Node>& nodes);
 
 		// key is meshPartID, second value is materialID
-		void FetchAllPartsInHashMap_Recursive(
-			std::unordered_map<std::string, std::vector<std::string>>& outParts,
-			const Node& node);
+		void FetchAllPartsInHashMap_Recursive(std::unordered_map<std::string, std::vector<std::string>>& outParts, const Node& node);
 
 	private:
 		Core::VectorMap<std::string, StoredOriginObject>	_originObjects;

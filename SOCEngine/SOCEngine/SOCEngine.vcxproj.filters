@@ -700,9 +700,6 @@
     <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h">
       <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\AtmosphericScattering.h">
-      <Filter>Rendering\Sky\Atmospheric</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBox.h">
       <Filter>Rendering\Sky\Box</Filter>
     </ClInclude>
@@ -1073,9 +1070,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp">
       <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sky\AtmosphericScattering.cpp">
-      <Filter>Rendering\Sky\Atmospheric</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBox.cpp">
       <Filter>Rendering\Sky\Box</Filter>

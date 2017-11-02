@@ -32,20 +32,19 @@ namespace Core
 		void UpdateEulerAngle(const Math::Vector3& e);
 		void UpdateQuaternion(const Math::Quaternion& q);
 
-		GET_CONST_ACCESSOR(Position, const Math::Vector3&, _position);
-		GET_CONST_ACCESSOR(Scale, const Math::Vector3&, _scale);
-		GET_CONST_ACCESSOR(Right, const Math::Vector3&, _right);
-		GET_CONST_ACCESSOR(Up, const Math::Vector3&, _up);
-		GET_CONST_ACCESSOR(Forward, const Math::Vector3&, _forward);
-		GET_CONST_ACCESSOR(EularAngle, const Math::Vector3&, _eulerAngle);
-		GET_CONST_ACCESSOR(Quaternion, const Math::Quaternion&, _quaternion);
-		GET_CONST_ACCESSOR(LocalMatrix, const Math::Matrix&, _localMat);
-		GET_CONST_ACCESSOR(WorldMatrix, const Math::Matrix&, _worldMat);
+		GET_CONST_ACCESSOR(Position,	const Math::Vector3&,		_position);
+		GET_CONST_ACCESSOR(Scale,		const Math::Vector3&,		_scale);
+		GET_CONST_ACCESSOR(Right,		const Math::Vector3&,		_right);
+		GET_CONST_ACCESSOR(Up,			const Math::Vector3&,		_up);
+		GET_CONST_ACCESSOR(Forward,		const Math::Vector3&,		_forward);
+		GET_CONST_ACCESSOR(EularAngle,	const Math::Vector3&,		_eulerAngle);
+		GET_CONST_ACCESSOR(Quaternion,	const Math::Quaternion&,	_quaternion);
+		GET_CONST_ACCESSOR(LocalMatrix,	const Math::Matrix&,		_localMat);
+		GET_CONST_ACCESSOR(WorldMatrix,	const Math::Matrix&,		_worldMat);
 
-		GET_CONST_ACCESSOR(Dirty, bool, _dirty);
-		GET_CONST_ACCESSOR(ObjectID, ObjectID, _objectID);
-
-		GET_CONST_ACCESSOR(ParentID, ObjectID, _parentID);
+		GET_CONST_ACCESSOR(Dirty,		bool,						_dirty);
+		GET_CONST_ACCESSOR(ObjectID,	ObjectID,					_objectID);
+		GET_CONST_ACCESSOR(ParentID,	ObjectID,					_parentID);
 
 		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
 		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
@@ -55,7 +54,7 @@ namespace Core
 		void		AddChild(Transform& child);
 
 		ObjectID	GetChild(uint index)		{ return _childIDs[index];	}
-		ObjectID	GetChild(uint index) const	{ return _childIDs[index]; }
+		ObjectID	GetChild(uint index) const	{ return _childIDs[index];	}
 		void		DeleteAllChilds()			{ _childIDs.clear();		}
 		uint		GetChildCount()	const		{ return _childIDs.size();	}
 

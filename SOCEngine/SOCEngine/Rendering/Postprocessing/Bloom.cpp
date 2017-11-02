@@ -34,17 +34,17 @@ void Bloom::UpdateParamCB(Device::DirectX& dx)
 	_paramCB.UpdateSubResource(dx, _paramData);
 }
 
-void Bloom::RenderThresholdMap(DirectX& dx, 
-	RenderTexture& inColorMap, Copy& copy,
-	TempTextures& temp, MainRenderer& renderer)
+void Bloom::RenderThresholdMap(	DirectX& dx, 
+								RenderTexture& inColorMap, Copy& copy,
+								TempTextures& temp, MainRenderer& renderer)
 {
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::HDRGlobalParamCB, _paramCB);
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, renderer.GetTBRParamCB());
+	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
+	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::TBRParam,				renderer.GetTBRParamCB());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx,	SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
 
 	_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 

@@ -27,8 +27,8 @@ namespace Rendering
 
 			static constexpr const char* GetCompileCode() { return "ps"; }
 
-			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
-			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
+			GET_CONST_ACCESSOR(Key,			const std::string&,	_baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse,	bool,				_baseShader.GetIsCanUse());
 
 		private:
 			BaseShader _baseShader;

@@ -79,14 +79,16 @@ void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderM
 	{
 		DefaultRenderType type = static_cast<DefaultRenderType>(i);
 
-		LoadDefaultSahder(dx, shaderMgr, type,
-			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
-			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL), &macros);
+		LoadDefaultSahder(	dx, shaderMgr, type,
+							static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
+							static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL),
+							&macros	);
 
-		LoadDefaultSahder(dx, shaderMgr, type,
-			static_cast<uint>(DefaultVertexInputTypeFlag::UV0) | 
-			static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL) | 
-			static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT), &macros);
+		LoadDefaultSahder(	dx, shaderMgr, type,
+							static_cast<uint>(DefaultVertexInputTypeFlag::UV0)		| 
+							static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL)	| 
+							static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT),
+							&macros	);
 	}
 }
 
@@ -98,9 +100,7 @@ void DefaultShaderLoader::Destroy()
 DefaultShaderLoader::Shaders&
 	DefaultShaderLoader::Add(uint key, const ShaderGroup& shaders)
 {
-	Shaders shader(shaders);
-	_shaders.insert(std::make_pair(key, shader));
-
+	_shaders.insert(std::make_pair(key, Shaders(shaders)));
 	return _shaders[key];
 }
 
@@ -169,8 +169,7 @@ uint DefaultShaderLoader::MakeKey(	uint bufferFlag,
 	constexpr uint bitOffset = 
 		Compute_2_Exp<static_cast<uint>(BufferFlag::MAX)>::value;
 
-	uint key = (static_cast<uint>(renderType) << bitOffset) | bufferFlag;
-	return key;
+	return (static_cast<uint>(renderType) << bitOffset) | bufferFlag;
 }
 
 std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const

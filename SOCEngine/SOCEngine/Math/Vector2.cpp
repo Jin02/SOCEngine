@@ -51,10 +51,7 @@ const Vector2 Vector2::operator * (const Vector2 &a) const
 
 float Vector2::operator[](unsigned int idx) const
 {
-	if (idx == 0)		return x;
-	else if (idx == 1) return y;
-
-	return 0.0f;
+	return value[idx];
 }
 
 const Vector2 Vector2::operator / (float d) const

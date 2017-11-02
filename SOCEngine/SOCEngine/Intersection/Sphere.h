@@ -15,7 +15,7 @@ namespace Intersection
 		bool Intersects(const Math::Vector3& center, float radius);
 
 		Math::Vector3	center = Math::Vector3(0.0f, 0.0f, 0.0f);
-		float		radius = 0.0f;
+		float			radius = 0.0f;
 	};
 
 }

@@ -6,7 +6,8 @@ namespace Math
 	class Vector2
 	{
 	public:
-		Vector2(float x = 0.0f, float y = 0.0f);
+		Vector2() = default;
+		Vector2(float x, float y);
 
 	public:
 		const Vector2 operator + () const;
@@ -47,8 +48,15 @@ namespace Math
 		void Set(float newX, float newY);
 
 	public:
-		float x;
-		float y;
+		union
+		{
+			struct
+			{
+				float x, y;
+			};
+
+			float value[2] = {0.0f };
+		};
 	};
 
 }

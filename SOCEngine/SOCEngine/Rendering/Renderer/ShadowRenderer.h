@@ -36,14 +36,13 @@ namespace Rendering
 
 					auto& atlasMap = GetShadowAtlasMap<ShadowType>();
 
-					bool changedShadowMap =
-						(atlasMap.GetResolution() != param.mapResolution) |
-						(atlasMap.GetCapacity() < param.capacity);
+					bool changedShadowMap = (atlasMap.GetResolution() != param.mapResolution) | (atlasMap.GetCapacity() < param.capacity);
 
-					if (changedShadowMap == false) return;
+					if (changedShadowMap == false)
+						return;
 
-					param.capacity = Next2Squre(param.capacity);
-					param.mapResolution = Next2Squre(param.mapResolution);
+					param.capacity		= Next2Squre(param.capacity);
+					param.mapResolution	= Next2Squre(param.mapResolution);
 				}
 
 				// Resize Map

@@ -24,7 +24,7 @@ namespace Rendering
 		public:
 			ShaderManager() = default;
 
-			void					Destroy();
+			void Destroy();
 
 			template<class ShaderType>
 			inline ShaderPool<ShaderType>& GetPool()
@@ -32,7 +32,7 @@ namespace Rendering
 				return std::get<ShaderPool<ShaderType>>(_pools);
 			}
 
-			GET_ACCESSOR(Compiler,				Shader::ShaderCompiler&,	_compiler);
+			GET_ALL_ACCESSOR(Compiler, Shader::ShaderCompiler&,	_compiler);
 
 		private:
 			std::tuple<

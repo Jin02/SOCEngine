@@ -20,6 +20,7 @@ void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 						 				const Vector3& viewDir, const TransformPool& transformPool)
 {
 	using MeshType = TransparentMeshRenderQueue::value_type;
+
 	auto SortingByDistance = [&transformPool, &viewDir](MeshType left, MeshType right) -> bool
 	{
 		auto SortKey = [&viewDir, &transformPool](MeshType mesh) -> float

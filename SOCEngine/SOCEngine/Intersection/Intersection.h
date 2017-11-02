@@ -2,5 +2,5 @@
 
 #include "BoundBox.h"
 #include "Cone.h"
-#include "Ray.h"
+#include "Ray.hpp"
 #include "Sphere.h"

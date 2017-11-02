@@ -19,9 +19,9 @@ void IBLPass::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
 	FullScreen::InitParam param;
 	{
-		param.psMacros = nullptr;
-		param.psName = "PS";
-		param.shaderFileName = "IBLPass";
+		param.psMacros			= nullptr;
+		param.psName			= "PS";
+		param.shaderFileName	= "IBLPass";
 	}
 
 	_screen.Initialize(dx, param, shaderMgr);
@@ -40,12 +40,12 @@ void IBLPass::Render(	DirectX& dx, RenderTexture& outResultRT,
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_IlluminationMap, mains.renderer.GetResultMap().GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap, _envBRDFMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::AmbientCubeMap, skyBox.GetCubeMap().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_IlluminationMap,					mains.renderer.GetResultMap().GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap,			_envBRDFMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::AmbientCubeMap,							skyBox.GetCubeMap().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mains.renderer.GetTBRParamCB());
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mains.camera.GetCameraCB());
+	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,	mains.renderer.GetTBRParamCB());
+	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera,		mains.camera.GetCameraCB());
 
 	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx.GetSamplerStateLinear());
 

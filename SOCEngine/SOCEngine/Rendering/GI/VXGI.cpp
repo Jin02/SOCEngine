@@ -2,7 +2,6 @@
 #include "BindIndexInfo.h"
 #include "EngineShaderFactory.hpp"
 
-#undef max
 
 using namespace Device;
 using namespace Core;
@@ -50,46 +49,29 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 }
 
 
-void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension, float minWorldSize)
+void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const VXGIStaticInfo& info)
 {
-	auto Log2 = [](float v) -> float
-	{
-		return log(v) / log(2.0f);
-	};
-
-	const uint mipmapGenOffset		= 2;
-	const uint mipmapLevels			= std::max((uint)Log2((float)dimension) - mipmapGenOffset + 1, 1u);
 
 	// Setting Infos
 	{
+		_staticInfo = info;
 		_infoCB.staticInfoCB.Initialize(dx);
-		{
-			VXGIStaticInfo& info = _staticInfo;
-			{
-				info.dimension = dimension;
-				info.maxMipLevel = static_cast<float>(mipmapLevels);
-				info.voxelSize = minWorldSize / static_cast<float>(dimension);
-				info.diffuseSamplingCount = 128;
-				info.specularSamplingCount = 256;
-			}
-
-			_infoCB.staticInfoCB.UpdateSubResource(dx, info);
-		}
+		_infoCB.staticInfoCB.UpdateSubResource(dx, info);
 
 		_infoCB.dynamicInfoCB.Initialize(dx);
 		_infoCB.dynamicInfoCB.UpdateSubResource(dx, VXGIDynamicInfo());
 	}
 
 	// Init Voxelization
-	_voxelization.Initialize(dx, shaderMgr, dimension, _staticInfo.voxelSize);
+	_voxelization.Initialize(dx, shaderMgr, _staticInfo.dimension, _staticInfo.voxelSize);
 
 	// Injection
 	{
-		_injectionSourceMap.Initialize(dx, dimension, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
-		_mipmappedInjectionMap.Initialize(dx, dimension / 2, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, mipmapLevels - 1, true);
+		_injectionSourceMap.Initialize(dx, _staticInfo.dimension, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, 1, false);
+		_mipmappedInjectionMap.Initialize(dx, _staticInfo.dimension / 2, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, uint(_staticInfo.maxMipLevel) - 1, true);
 
-		_injectPointLight.Initialize(dx, shaderMgr, dimension);
-		_injectSpotLight.Initialize(dx, shaderMgr, dimension);
+		_injectPointLight.Initialize(dx, shaderMgr, _staticInfo.dimension);
+		_injectSpotLight.Initialize(dx, shaderMgr, _staticInfo.dimension);
 	}
 
 	// Mipmap
@@ -98,7 +80,7 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension, flo
 	// Voxel Cone Tracing
 	_voxelConeTracing.Initialize(dx, shaderMgr);
 
-	InitializeClearVoxelMap(dx, shaderMgr, dimension);
+	InitializeClearVoxelMap(dx, shaderMgr, _staticInfo.dimension);
 }
 
 void VXGI::Run(DirectX& dx, MainRenderingSystemParam& main, LightManager& lightMgr, ShadowSystemParam& shadowSystem)

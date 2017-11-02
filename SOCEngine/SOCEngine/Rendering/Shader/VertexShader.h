@@ -13,16 +13,13 @@ namespace Rendering
 		public:
 			struct SemanticInfo
 			{
-				std::string	name = "";
-				uint		semanticIndex = -1;
-				uint		size = 0;
+				std::string	name			= "";
+				uint		semanticIndex	= -1;
+				uint		size			= 0;
 			};
 
 			VertexShader() = default;
 			VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
-			GET_CONST_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
-			GET_CONST_ACCESSOR(Key, const std::string&, _baseShader.GetKey());
-			GET_CONST_ACCESSOR(IsCanUse, bool, _baseShader.GetIsCanUse());
 
 			void Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
 
@@ -32,7 +29,7 @@ namespace Rendering
 			void UnBindInputLayoutToContext(Device::DirectX& dx);
 
 			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& view);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* const samplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb);
 
 			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
@@ -40,6 +37,10 @@ namespace Rendering
 			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
 
 			static constexpr const char* GetCompileCode() { return "vs"; }
+
+			GET_CONST_ACCESSOR(SemanticInfos,	const std::vector<SemanticInfo>&,	_semanticInfo);
+			GET_CONST_ACCESSOR(Key,				const std::string&,					_baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse,		bool,								_baseShader.GetIsCanUse());
 
 		private:
 			BaseShader								_baseShader;

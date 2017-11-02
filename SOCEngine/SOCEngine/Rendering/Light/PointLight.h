@@ -35,10 +35,8 @@ namespace Rendering
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
 			TransformType MakeTransform(const Core::Transform& transform) const;
 
-			GET_ACCESSOR(Base, BaseLight&, _base);
-			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
-
-			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _base.GetObjectID());
+			GET_ALL_ACCESSOR(Base,			BaseLight&,		_base);
+			GET_CONST_ACCESSOR(ObjectID,	Core::ObjectID,	_base.GetObjectID());
 
 		private:
 			BaseLight					_base;

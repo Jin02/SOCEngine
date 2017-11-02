@@ -108,17 +108,12 @@ namespace Rendering
 				fromPool.Delete(literlID);
 			}
 
-			GET_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,				_transparentMeshPool);
-			GET_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,					_opaqueMeshPool);
-			GET_ACCESSOR(AlphaBlendMeshPool,	Geometry::AlphaBlendMeshPool&,				_alphaBlendMeshPool);
-			GET_ACCESSOR(MeshPoolRefs,			auto,										Geometry::MeshPoolRefs(	_alphaBlendMeshPool,
-																													_opaqueMeshPool, _transparentMeshPool));
+			GET_ALL_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,	_transparentMeshPool);
+			GET_ALL_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
+			GET_ALL_ACCESSOR(AlphaBlendMeshPool,	Geometry::AlphaBlendMeshPool&,	_alphaBlendMeshPool);
+			GET_ACCESSOR(MeshPoolRefs,				auto,							Geometry::MeshPoolRefs(_alphaBlendMeshPool, _opaqueMeshPool, _transparentMeshPool));
 
-			GET_CONST_ACCESSOR(TransparentMeshPool,	const Geometry::TransparentMeshPool&,	_transparentMeshPool);
-			GET_CONST_ACCESSOR(OpaqueMeshPool,		const Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
-			GET_CONST_ACCESSOR(AlphaBlendMeshPool,	const Geometry::AlphaBlendMeshPool&,	_alphaBlendMeshPool);
-
-			GET_CONST_ACCESSOR(HasDirtyMeshes, bool, _dirtyMeshes.empty() == false);
+			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,							_dirtyMeshes.empty() == false);
 
 		private:
 			Geometry::TransparentMeshPool				_transparentMeshPool;

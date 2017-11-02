@@ -50,17 +50,17 @@ void ShadowManager::UpdateGlobalCB(Device::DirectX & dx)
 			return static_cast<uint>(log(static_cast<float>(i)) / log(2.0f));
 		};
 
-		param.packedNumOfShadowAtlasCapacity = Pack(dlsBufferObj.GetLightCapacityInAtlas(),
-													slsBufferObj.GetLightCapacityInAtlas(),
-													plsBufferObj.GetLightCapacityInAtlas());
+		param.packedNumOfShadowAtlasCapacity	= Pack(	dlsBufferObj.GetLightCapacityInAtlas(),
+														slsBufferObj.GetLightCapacityInAtlas(),
+														plsBufferObj.GetLightCapacityInAtlas());
 
-		param.packedPowerOfTwoShadowResolution = Pack(	Log2Uint(dlsBufferObj.GetMapResolution()),
+		param.packedPowerOfTwoShadowResolution	= Pack(	Log2Uint(dlsBufferObj.GetMapResolution()),
 														Log2Uint(slsBufferObj.GetMapResolution()),
 														Log2Uint(plsBufferObj.GetMapResolution())	);
 
-		param.packedNumOfShadows = Pack(GetPool<DirectionalLightShadow>().GetSize(),
-										GetPool<SpotLightShadow>().GetSize(),
-										GetPool<PointLightShadow>().GetSize()	);
+		param.packedNumOfShadows				= Pack(	GetPool<DirectionalLightShadow>().GetSize(),
+														GetPool<SpotLightShadow>().GetSize(),
+														GetPool<PointLightShadow>().GetSize()		);
 		param.dummy = 0;
 
 		dlsBufferObj.SetDirty(false);
@@ -196,15 +196,15 @@ void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS
 
 	auto& plBuffer = GetBuffer<PointLightShadow>().GetBuffer();
 	{
-		Bind(TextureBindIndex::PointLightShadowParam, plBuffer.GetParamSRBuffer());
-		Bind(TextureBindIndex::PointLightShadowViewProjMatrix,plBuffer.GetViewProjMatSRBuffer());
+		Bind(TextureBindIndex::PointLightShadowParam,			plBuffer.GetParamSRBuffer());
+		Bind(TextureBindIndex::PointLightShadowViewProjMatrix,	plBuffer.GetViewProjMatSRBuffer());
 	}
 
 	auto& dlBuffer = GetBuffer<DirectionalLightShadow>().GetBuffer();
 	{
-		Bind(TextureBindIndex::DirectionalLightShadowParam, dlBuffer.GetParamSRBuffer());
-		Bind(TextureBindIndex::DirectionalLightShadowViewProjMatrix, dlBuffer.GetViewProjMatSRBuffer());
-		Bind(TextureBindIndex::DirectionalLightShadowInvProjParam, dlBuffer.GetInvProjParamSRBuffer());
+		Bind(TextureBindIndex::DirectionalLightShadowParam,				dlBuffer.GetParamSRBuffer());
+		Bind(TextureBindIndex::DirectionalLightShadowViewProjMatrix,	dlBuffer.GetViewProjMatSRBuffer());
+		Bind(TextureBindIndex::DirectionalLightShadowInvProjParam,		dlBuffer.GetInvProjParamSRBuffer());
 	}
 
 	auto& slBuffer = GetBuffer<SpotLightShadow>().GetBuffer();
@@ -213,10 +213,10 @@ void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS
 		Bind(TextureBindIndex::SpotLightShadowViewProjMatrix, slBuffer.GetViewProjMatSRBuffer());
 	}
 
-	if (bindVS) VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
-	if (bindGS) GeometryShader::BindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
-	if (bindPS) PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
-	}
+	if (bindVS) VertexShader::BindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
+	if (bindGS) GeometryShader::BindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
+	if (bindPS) PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
+}
 
 void ShadowManager::UnbindResources(Device::DirectX & dx, bool bindVS, bool bindGS, bool bindPS) const
 {	
@@ -237,7 +237,7 @@ void ShadowManager::UnbindResources(Device::DirectX & dx, bool bindVS, bool bind
 		Unbind(TextureBindIndex::SpotLightShadowViewProjMatrix);
 	}
 
-	if (bindVS) VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam);
-	if (bindGS) GeometryShader::UnBindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam);
-	if (bindPS) PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam);
+	if (bindVS) VertexShader::UnBindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam);
+	if (bindGS) GeometryShader::UnBindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam);
+	if (bindPS) PixelShader::UnBindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam);
 }

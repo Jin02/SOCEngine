@@ -18,10 +18,10 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const ObjectManager& objectManager,
 	const ObjectID::IndexHashMap& lightShaftIndexer)
 {
-	ShadowManager& shadowMgr = GetManager_Direct<ShadowManager>();
-	LightManager& lightMgr = GetManager_Direct<LightManager>();
-	MeshManager& meshMgr = GetManager_Direct<MeshManager>();
-	CameraManager& camMgr = GetManager_Direct<CameraManager>();
+	ShadowManager& shadowMgr	= GetManager_Direct<ShadowManager>();
+	LightManager& lightMgr		= GetManager_Direct<LightManager>();
+	MeshManager& meshMgr		= GetManager_Direct<MeshManager>();
+	CameraManager& camMgr		= GetManager_Direct<CameraManager>();
 
 	// Check Dirty
 	{
@@ -33,8 +33,11 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	bool isDirtyMesh = meshMgr.GetHasDirtyMeshes();
 	if (meshMgr.GetHasDirtyMeshes())
 	{
-		uint	value = 0xff7fffff; float fltMin = (*(float*)&value);
-		value = 0x7f7fffff;	float fltMax = (*(float*)&value);
+		uint value = 0xff7fffff;
+		float fltMin = (*(float*)&value);
+		
+		value = 0x7f7fffff;
+		float fltMax = (*(float*)&value);
 
 		Vector3 worldMin = Vector3(fltMax, fltMax, fltMax);
 		Vector3 worldMax = Vector3(fltMin, fltMin, fltMin);
@@ -46,12 +49,11 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 
 	// Update MainCamera
 	{
-		auto& mainCamera = camMgr.GetMainCamera();
-		auto transform = transformPool.Find(mainCamera.GetObjectID().Literal());
+		auto transform = transformPool.Find(camMgr.GetMainCamera().GetObjectID().Literal());
 		assert(transform);
 
-		mainCamera.UpdateCB(dx, *transform);
-		mainCamera.ClassifyMesh(meshMgr.GetMeshPoolRefs(), objectManager, transformPool);
+		camMgr.GetMainCamera().UpdateCB(dx, *transform);
+		camMgr.GetMainCamera().ClassifyMesh(meshMgr.GetMeshPoolRefs(), objectManager, transformPool);
 	}
 
 	lightMgr.UpdateTransformBuffer(transformPool);

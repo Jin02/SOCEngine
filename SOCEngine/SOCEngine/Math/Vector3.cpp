@@ -60,11 +60,7 @@ const Vector3 Vector3::operator / (float d) const
 
 float Vector3::operator[](unsigned int idx) const
 {
-	if (idx == 0)			return x;
-	else if (idx == 1)		return y;
-	else if (idx == 2)		return z;
-
-	return 0.0f;
+	return value[idx];
 }
 
 Vector3& Vector3::operator += (const Vector3& a)
@@ -249,8 +245,6 @@ void Vector3::Set(float newX, float newY, float newZ)
 
 Vector3 Vector3::TransformCoord(const Vector3& v, const Matrix& mat)
 {
-	Vector3 out;
-
 	Vector3 src = v;
 	float w = mat._m[0][3] * src.x + mat._m[1][3] * src.y + mat._m[2][3] * src.z + mat._m[3][3];
 

@@ -24,10 +24,10 @@ bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) cons
 SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectID() == _base.GetObjectID());
-	Vector3 forward = transform.GetWorldForward();
-	float radius = (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
+	Vector3 forward	= transform.GetWorldForward();
+	float radius	= (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
 
-	Vector3 wp = transform.GetWorldPosition();
+	Vector3 wp		= transform.GetWorldPosition();
 	return Vector4(wp.x, wp.y, wp.z, radius);
 }
 
@@ -38,10 +38,10 @@ SpotLight::Param SpotLight::MakeParam(const Core::Transform& transform) const
 
 	Param param;
 	{
-		param.dirX = Half(forward.x);
-		param.dirY = Half(forward.y);
-		param.outerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree)));
-		param.innerConeCosAngle = Half(cos(DEG_2_RAD(_spotAngleDegree * 0.3333f)));
+		param.dirX				= Half(forward.x);
+		param.dirY				= Half(forward.y);
+		param.outerConeCosAngle	= Half(cos(DEG_2_RAD(_spotAngleDegree)));
+		param.innerConeCosAngle	= Half(cos(DEG_2_RAD(_spotAngleDegree * 0.3333f)));
 	}
 	
 	return param;

@@ -37,7 +37,7 @@ void GeometryShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex
 
 void GeometryShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb.GetRaw();
+	ID3D11Buffer* buf = cb.GetBaseBuffer().GetRaw();
 	dx.GetContext()->GSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

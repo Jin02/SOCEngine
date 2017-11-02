@@ -37,7 +37,7 @@ void PixelShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bi
 
 void PixelShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb.GetRaw();
+	ID3D11Buffer* buf = cb.GetBaseBuffer().GetRaw();
 	dx.GetContext()->PSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

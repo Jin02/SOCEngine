@@ -50,9 +50,9 @@ void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 
 	// Load Shader
 	{
-		std::vector<Shader::ShaderMacro> macros{ dx.GetMSAAShaderMacro(),
-			ShaderMacro("USE_COMPUTE_SHADER"),
-			ShaderMacro("ENABLE_BLEND") };
+		std::vector<Shader::ShaderMacro> macros{	dx.GetMSAAShaderMacro(),
+													ShaderMacro("USE_COMPUTE_SHADER"),
+													ShaderMacro("ENABLE_BLEND")		};
 
 		Factory::EngineShaderFactory factory(&shaderMgr);
 		_tbdrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
@@ -67,23 +67,23 @@ void MainRenderer::UpdateCB(Device::DirectX & dx, const MainCamera& mainCamera, 
 {
 	const auto& renderRect = mainCamera.GetRenderRect();
 
-	_tbrCBData.invProjMat = Matrix::Inverse(mainCamera.GetProjMatrix());
-	_tbrCBData.invViewProjMat = Matrix::Inverse(mainCamera.GetViewProjMatrix());
+	_tbrCBData.invProjMat			= Matrix::Inverse(mainCamera.GetProjMatrix());
+	_tbrCBData.invViewProjMat		= Matrix::Inverse(mainCamera.GetViewProjMatrix());
 
-	Matrix invViewportMat = Matrix::ComputeInvViewportMatrix(mainCamera.GetRenderRect());
-	_tbrCBData.invViewProjViewport = invViewportMat * _tbrCBData.invViewProjMat;
+	Matrix invViewportMat			= Matrix::ComputeInvViewportMatrix(mainCamera.GetRenderRect());
+	_tbrCBData.invViewProjViewport	= invViewportMat * _tbrCBData.invViewProjMat;
 
-	_tbrCBData.invProjMat = Matrix::Transpose(_tbrCBData.invProjMat);
-	_tbrCBData.invViewProjMat = Matrix::Transpose(_tbrCBData.invViewProjMat);
-	_tbrCBData.invViewProjViewport = Matrix::Transpose(_tbrCBData.invViewProjViewport);
+	_tbrCBData.invProjMat			= Matrix::Transpose(_tbrCBData.invProjMat);
+	_tbrCBData.invViewProjMat		= Matrix::Transpose(_tbrCBData.invViewProjMat);
+	_tbrCBData.invViewProjViewport	= Matrix::Transpose(_tbrCBData.invViewProjViewport);
 
 	// packed tbr cb data
 	{
-		auto& packed = _tbrCBData.packedParam;
-		packed.maxNumOfperLightInTile = Light::CullingUtility::CalcMaxNumLightsInTile(mainCamera.GetRenderRect().size);
-		packed.packedNumOfLights = lightMgr.GetPackedLightCount();
+		auto& packed					= _tbrCBData.packedParam;
+		packed.maxNumOfperLightInTile	= Light::CullingUtility::CalcMaxNumLightsInTile(mainCamera.GetRenderRect().size);
+		packed.packedNumOfLights		= lightMgr.GetPackedLightCount();
 
-		packed.packedViewportSize = (renderRect.x << 16) | renderRect.y;
+		packed.packedViewportSize		= (renderRect.x << 16) | renderRect.y;
 	}
 
 	_tbrCB.UpdateSubResource(dx, _tbrCBData);

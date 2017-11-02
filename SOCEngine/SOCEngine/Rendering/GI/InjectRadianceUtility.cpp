@@ -11,20 +11,20 @@ using namespace Rendering::Shader;
 
 void InjectRadianceFormUtility::Bind(DirectX& dx, BindParam& param)
 {
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState, dx.GetSamplerStateShadowGreaterEqual());
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState, dx.GetSamplerStatePoint());
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	dx.GetSamplerStateShadowGreaterEqual());
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		dx.GetSamplerStatePoint());
 
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB, param.infoCB.staticInfoCB);
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB,	param.infoCB.dynamicInfoCB);
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam,	param.shadowGlobalParamCB);
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VoxelizationInfoCB, param.voxelization.GetInfoCB());
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, param.tbrParamCB);
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB,				param.infoCB.staticInfoCB);
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB,				param.infoCB.dynamicInfoCB);
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam,				param.shadowGlobalParamCB);
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VoxelizationInfoCB,			param.voxelization.GetInfoCB());
+	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,						param.tbrParamCB);
 
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::OutVoxelColorMap, param.outVoxelMap.GetSourceMapUAV());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::OutVoxelColorMap,	param.outVoxelMap.GetSourceMapUAV());
 
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(1), param.voxelization.GetVoxelAlbedoRawBuffer().GetUnorderedAccessView());
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(2), param.voxelization.GetVoxelNormalRawBuffer().GetUnorderedAccessView());
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(3), param.voxelization.GetVoxelEmissionRawBuffer().GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(1),					param.voxelization.GetVoxelAlbedoRawBuffer().GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(2),					param.voxelization.GetVoxelNormalRawBuffer().GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(3),					param.voxelization.GetVoxelEmissionRawBuffer().GetUnorderedAccessView());
 }
 
 void InjectRadianceFormUtility::UnBind(Device::DirectX & dx)

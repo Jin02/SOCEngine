@@ -31,8 +31,8 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 
 	// Ouput Buffer Setting
 	{
-		Size<uint> size = CullingUtility::CalcThreadGroupSize(renderRectSize);
-		uint num = CullingUtility::CalcMaxNumLightsInTile(renderRectSize) * size.w * size.h;
+		Size<uint> size	= CullingUtility::CalcThreadGroupSize(renderRectSize);
+		uint num		= CullingUtility::CalcMaxNumLightsInTile(renderRectSize) * size.w * size.h;
 
 		_srb.Initialize(dx, 4, num, DXGI_FORMAT_R32_UINT, nullptr, false,  D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
 		_uav.Initialize(dx, DXGI_FORMAT_R32_UINT, num, _srb.GetBaseBuffer().GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
@@ -44,37 +44,37 @@ void OnlyLightCulling::Dispatch(
 	Device::DirectX& dx, Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr,
 	ExplicitConstBuffer<TBRCBData>& tbrCB, GBuffers& gbuffer)
 {
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, tbrCB);
-	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::TBRParam,					tbrCB);
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Camera,					mainCamera.GetCameraCB());
 
 	auto& plBuffer = lightMgr.GetBuffer<PointLight>();
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter, plBuffer.GetTransformSRBuffer().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex, plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::PointLightRadiusWithCenter,	plBuffer.GetTransformSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::PointLightOptionalParamIndex,	plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
 	auto& slBuffer = lightMgr.GetBuffer<SpotLight>();
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter, slBuffer.GetTransformSRBuffer().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex, slBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightParam, slBuffer.GetParamSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::SpotLightRadiusWithCenter,	slBuffer.GetTransformSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::SpotLightOptionalParamIndex,	slBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::SpotLightParam,				slBuffer.GetParamSRBuffer().GetShaderResourceView());
 
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth, gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth, gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Depth,				gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_BlendedDepth,			gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
 
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer, _uav);
+	ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::Lightculling_LightIndexBuffer,	_uav);
 
 	_cs.Dispatch(dx);
 
-	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer);
+	ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::Lightculling_LightIndexBuffer);
 
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Camera);
+	ComputeShader::UnBindConstBuffer(dx,			ConstBufferBindIndex::TBRParam);
+	ComputeShader::UnBindConstBuffer(dx,			ConstBufferBindIndex::Camera);
 
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::PointLightRadiusWithCenter);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::PointLightRadiusWithCenter);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::PointLightOptionalParamIndex);
 
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightOptionalParamIndex);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::SpotLightParam);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::SpotLightRadiusWithCenter);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::SpotLightOptionalParamIndex);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::SpotLightParam);
 
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_BlendedDepth);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::GBuffer_Depth);
+	ComputeShader::UnBindShaderResourceView(dx,		TextureBindIndex::GBuffer_BlendedDepth);
 }

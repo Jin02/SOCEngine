@@ -18,14 +18,16 @@ namespace Rendering
 {
 	namespace GI
 	{
-		class VXGI
+		class VXGI final
 		{
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension = 256, float minWorldSize = 4.0f);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const VXGIStaticInfo& info);
 			void Run(Device::DirectX& dx, MainRenderingSystemParam& main, Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem);
 
 			void UpdateGIDynamicInfoCB(Device::DirectX& dx, uint packedNumfOfLights);
-			GET_SET_ACCESSOR(StartCenterWorldPos, const Math::Vector3&, _startCenterWorldPos);
+			
+			GET_CONST_ACCESSOR(StartCenterWorldPos, const Math::Vector3&, _startCenterWorldPos);
+			SET_ACCESSOR(StartCenterWorldPos,		const Math::Vector3&, _startCenterWorldPos);
 
 		private:
 			void InitializeClearVoxelMap(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension);

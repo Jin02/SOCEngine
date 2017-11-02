@@ -16,7 +16,7 @@ namespace Core
 	class Object final
 	{
 	public:
-		Object(ObjectID id);
+		explicit Object(ObjectID id);
 		~Object();
 
 		void AddChild(Object& child);
@@ -53,10 +53,12 @@ namespace Core
 	public:
 		GET_CONST_ACCESSOR(Name,		auto&,	_name);
 		GET_CONST_ACCESSOR(ObjectID,	auto,	_id);
-		GET_SET_ACCESSOR(Use,			bool,	_use);
+
+		GET_CONST_ACCESSOR(Use,			bool,	_use);
+		SET_ACCESSOR(Use,				bool,	_use);
 
 	private:
-		std::string			_name;
+		std::string			_name = "Object";
 		ObjectID			_id;
 
 		bool				_use = true;

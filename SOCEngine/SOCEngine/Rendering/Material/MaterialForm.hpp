@@ -12,24 +12,24 @@ namespace Rendering
 	class MaterialForm
 	{
 	public:
-		using BindConstBuffer = Shader::BindShaderData<Buffer::ConstBuffer>;
-		using BindTextured2D = Shader::BindShaderData<Texture::Texture2D>;
-		using BindSRBuffer = Shader::BindShaderData<Buffer::ShaderResourceBuffer>;
+		using BindConstBuffer	= Shader::BindShaderData<Buffer::ConstBuffer>;
+		using BindTextured2D	= Shader::BindShaderData<Texture::Texture2D>;
+		using BindSRBuffer		= Shader::BindShaderData<Buffer::ShaderResourceBuffer>;
 
 		MaterialForm(const std::string& name) : _name(name) {}
 
-		GET_CONST_ACCESSOR(Name, const std::string&, _name);
-		GET_ACCESSOR(Textures, auto&, _textures);
-		GET_ACCESSOR(ConstBuffers, auto&, _constBuffers);
-		GET_ACCESSOR(ShaderResourceBuffers, auto&, _srBuffers);
+		GET_CONST_ACCESSOR(Name,				const std::string&,	_name);
+		GET_ALL_ACCESSOR(Textures,				auto&,				_textures);
+		GET_ALL_ACCESSOR(ConstBuffers,			auto&,				_constBuffers);
+		GET_ALL_ACCESSOR(ShaderResourceBuffers, auto&,				_srBuffers);
 
 	protected:
-		using Texture2Ds = Core::VectorHashMap<std::string, BindTextured2D>;
-		using ConstBuffers = Core::VectorHashMap<std::string, BindConstBuffer>;
-		using SRBuffers = Core::VectorHashMap<std::string, BindSRBuffer>;
-		GET_ACCESSOR(TextureBook, Texture2Ds&, _textures);
-		GET_ACCESSOR(ConstBufferBook, ConstBuffers&, _constBuffers);
-		GET_ACCESSOR(SRBufferBook, SRBuffers&, _srBuffers);
+		using Texture2Ds	= Core::VectorHashMap<std::string, BindTextured2D>;
+		using ConstBuffers	= Core::VectorHashMap<std::string, BindConstBuffer>;
+		using SRBuffers		= Core::VectorHashMap<std::string, BindSRBuffer>;
+		GET_ALL_ACCESSOR(TextureBook,		Texture2Ds&,		_textures);
+		GET_ALL_ACCESSOR(ConstBufferBook,	ConstBuffers&,		_constBuffers);
+		GET_ALL_ACCESSOR(SRBufferBook,		SRBuffers&,			_srBuffers);
 
 	private:
 		ConstBuffers	_constBuffers;

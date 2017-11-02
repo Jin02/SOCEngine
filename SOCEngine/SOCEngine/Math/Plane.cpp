@@ -16,23 +16,16 @@ float Plane::DistancePoint(const Vector3& p) const
 
 Plane Plane::FromPoints(const Vector3& v1, const Vector3& v2, const Vector3& v3)
 {
-	Vector3 edge1 = v2 - v1;
-	Vector3 edge2 = v3 - v1;
-	Vector3 normal = Vector3::Normalize( Vector3::Cross(edge1, edge2) );
+	Vector3 edge1	= v2 - v1;
+	Vector3 edge2	= v3 - v1;
+	Vector3 normal	= Vector3::Normalize( Vector3::Cross(edge1, edge2) );
 
 	return FromPointNormal(v1, normal);
 }
 
 Plane Plane::FromPointNormal(const Vector3& point, const Vector3& normal)
 {
-	Plane out;
-
-	out.a = normal.x;
-	out.b = normal.y;
-	out.c = normal.z;
-	out.d = -Vector3::Dot(point, normal);
-
-	return out;
+	return Plane(normal.x, normal.y, normal.z, -Vector3::Dot(point, normal));
 }
 
 float Plane::DotCoord(const Plane& p, const Vector3& v)

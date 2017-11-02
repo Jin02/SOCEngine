@@ -6,7 +6,7 @@ struct TransformCB
 {
 	enum class ChangeState : unsigned int
 	{
-		No = 0,
+		No			= 0,
 		HasChanged,
 		HadChanged,
 		MAX

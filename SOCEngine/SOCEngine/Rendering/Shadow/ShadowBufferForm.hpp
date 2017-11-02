@@ -18,9 +18,9 @@ namespace Rendering
 			class ShadowBufferForm
 			{
 			public:
-				using ViewProjMatType = typename ShadowType::ViewProjMatType;
-				using ViewProjMatBuffer = Rendering::Buffer::GPUUploadBuffer<ViewProjMatType>;
-				using ParamBuffer = Rendering::Buffer::GPUUploadBuffer<BaseShadow::Param>;
+				using ViewProjMatType	= typename ShadowType::ViewProjMatType;
+				using ViewProjMatBuffer	= Rendering::Buffer::GPUUploadBuffer<ViewProjMatType>;
+				using ParamBuffer		= Rendering::Buffer::GPUUploadBuffer<BaseShadow::Param>;
 
 			public:
 				ShadowBufferForm() = default;
@@ -39,7 +39,7 @@ namespace Rendering
 					const auto& base = shadow.GetBase();
 
 					_transformBuffer.PushData(ShadowType::ViewProjMatType());
-					_paramBuffer.PushData(base.GetParam());
+					_paramBuffer.PushData(base.GetParamCBData());
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = true;
@@ -51,16 +51,16 @@ namespace Rendering
 				{
 					for (auto& shadow : dirtyShadows)
 					{
-						const auto& base = shadow->GetBase();
-						Core::ObjectID objID = base.GetObjectID();
+						const auto& base		= shadow->GetBase();
+						Core::ObjectID objID	= base.GetObjectID();
 
-						uint index = indexer.Find(objID.Literal());
-						_paramBuffer[index] = base.GetParam();
-						_transformBuffer[index] = shadow->MakeVPMatParam(lightPool, tfPool);
+						uint index				= indexer.Find(objID.Literal());
+						_paramBuffer[index]		= base.GetParam();
+						_transformBuffer[index]	= shadow->MakeVPMatParam(lightPool, tfPool);
 					}
 
-					_mustUpdateParamSRBuffer |= (dirtyShadows.empty() != false);
-					_mustUpdateTransformSRBuffer |= _mustUpdateParamSRBuffer;
+					_mustUpdateParamSRBuffer		|= (dirtyShadows.empty() != false);
+					_mustUpdateTransformSRBuffer	|= _mustUpdateParamSRBuffer;
 				}
 				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate)
 				{
@@ -87,14 +87,14 @@ namespace Rendering
 						_mustUpdateParamSRBuffer = true;
 				}
 
-				GET_ACCESSOR(ViewProjMatSRBuffer, auto&, _transformBuffer.GetShaderResourceBuffer());
-				GET_ACCESSOR(ParamSRBuffer, auto&, _paramBuffer.GetShaderResourceBuffer());
+				GET_ALL_ACCESSOR(ViewProjMatSRBuffer,	auto&,	_transformBuffer.GetShaderResourceBuffer());
+				GET_ALL_ACCESSOR(ParamSRBuffer,			auto&,	_paramBuffer.GetShaderResourceBuffer());
 
 			protected:
 				ViewProjMatBuffer	_transformBuffer;
 				ParamBuffer			_paramBuffer;
-				bool				_mustUpdateTransformSRBuffer = true;
-				bool				_mustUpdateParamSRBuffer = true;
+				bool				_mustUpdateTransformSRBuffer	= true;
+				bool				_mustUpdateParamSRBuffer		= true;
 			};
 		}
 	}

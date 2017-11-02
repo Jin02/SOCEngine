@@ -18,12 +18,12 @@ namespace Rendering
 			{
 				Parent::Initialize(dx, size, true, 1);
 
-				_resolution = resolution;
-				_capacity = capacity;
+				_resolution	= resolution;
+				_capacity	= capacity;
 			}
 
-			GET_CONST_ACCESSOR(Resolution, uint, _resolution);
-			GET_CONST_ACCESSOR(Capacity, uint, _capacity);
+			GET_CONST_ACCESSOR(Resolution,	uint,	_resolution);
+			GET_CONST_ACCESSOR(Capacity,	uint,	_capacity);
 
 		private:
 			using Parent::Initialize;

@@ -19,7 +19,7 @@ void DirectionalLightShadowBuffer::Initialize(Device::DirectX & dx)
 void DirectionalLightShadowBuffer::PushShadow(DirectionalLightShadow & shadow)
 {
 	Parent::PushShadow(shadow);
-	_dlParamBuffer.PushData(shadow.GetParam());
+	_dlParamBuffer.PushData(shadow.GetParamCBData());
 
 	_mustUpdateDLParamSRBuffer = true;
 }
@@ -42,9 +42,9 @@ void DirectionalLightShadowBuffer::UpdateBuffer(
 		_dlParamBuffer[index]	= shadow->GetParam();
 	}
 
-	_mustUpdateParamSRBuffer |= (dirtyShadows.empty() != false);
-	_mustUpdateTransformSRBuffer |= _mustUpdateParamSRBuffer;
-	_mustUpdateDLParamSRBuffer |= _mustUpdateParamSRBuffer;
+	_mustUpdateParamSRBuffer		|= (dirtyShadows.empty() != false);
+	_mustUpdateTransformSRBuffer	|= _mustUpdateParamSRBuffer;
+	_mustUpdateDLParamSRBuffer		|= _mustUpdateParamSRBuffer;
 }
 
 void DirectionalLightShadowBuffer::UpdateSRBuffer(Device::DirectX & dx, bool forcedUpdate)

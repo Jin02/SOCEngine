@@ -18,8 +18,8 @@ void MaterialManager::UpdateConstBuffer(DirectX & dx)
 {
 	auto CheckDirty = [](auto& materialDatas)
 	{
-		auto& pool = materialDatas.pool;
-		auto& dirty = materialDatas.dirty;
+		auto& pool	= materialDatas.pool;
+		auto& dirty	= materialDatas.dirty;
 
 		uint size = pool.GetSize();
 		for (uint i = 0; i<size; ++i)

@@ -22,9 +22,9 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 {
 	// setting desc
 	{
-		auto size = rect.size.Cast<float>();
-		_desc.aspect = size.w / size.h;
-		_desc.renderRect = rect;
+		auto size			= rect.size.Cast<float>();
+		_desc.aspect		= size.w / size.h;
+		_desc.renderRect	= rect;
 	}
 
 	_camCB.Initialize(dx);
@@ -44,17 +44,17 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 	const Matrix& worldMat = dirtyTransform.GetWorldMatrix();
 
 	{
-		_camCBData.viewMat = Matrix::ComputeViewMatrix(worldMat);
-		Matrix& viewMat = _camCBData.viewMat;
+		_camCBData.viewMat			= Matrix::ComputeViewMatrix(worldMat);
+		Matrix& viewMat				= _camCBData.viewMat;
 		
-		_projMat = ComputePerspectiveMatrix(true);
-		_viewProjMat = viewMat * _projMat;
+		_projMat					= ComputePerspectiveMatrix(true);
+		_viewProjMat				= viewMat * _projMat;
 
-		_camCBData.viewProjMat = _viewProjMat;
+		_camCBData.viewProjMat		= _viewProjMat;
 
-		_camCBData.worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43);
-		_camCBData.prevViewProjMat = _prevViewProjMat;
-		_camCBData.packedCamNearFar = (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
+		_camCBData.worldPos			= Vector3(worldMat._41, worldMat._42, worldMat._43);
+		_camCBData.prevViewProjMat	= _prevViewProjMat;
+		_camCBData.packedCamNearFar	= (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
 	}
 
 	// Make Frustum
@@ -81,8 +81,8 @@ Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
 {
 	float fovRadian = DEG_2_RAD(_desc.fieldOfViewDegree);
 
-	float near = _desc.near;
-	float far = _desc.far;
+	float near	= _desc.near;
+	float far	= _desc.far;
 
 	if (isInverted)
 		std::swap(near, far);
@@ -92,8 +92,8 @@ Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const
 
 Math::Matrix MainCamera::ComputeOrthogonalMatrix(bool isInverted) const
 {
-	float near = _desc.near;
-	float far = _desc.far;
+	float near	= _desc.near;
+	float far	= _desc.far;
 
 	if (isInverted)
 		std::swap(near, far);
@@ -114,10 +114,9 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 	// Tarnsparent Meshes
 	{
 		//camCBData was transposed.
-		Vector3 viewDir = Vector3(
-			_camCBData.viewMat._31,
-			_camCBData.viewMat._32,
-			_camCBData.viewMat._33	);
+		Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
+									_camCBData.viewMat._32,
+									_camCBData.viewMat._33	);
 
 		MeshUtility::ClassifyTransparentMesh(
 			_transparentMeshes, viewDir, pool.transparentMeshes, objMgr, transformPool,

@@ -5,6 +5,13 @@
 using namespace Math;
 using namespace Intersection;
 
+Cone::Cone(	float _degree, float _range,
+			const Vector3& _axis,
+			const Vector3& _vertex)
+	: degree(_degree), range(_range), axis(_axis), vertex(_vertex)
+{
+}
+
 bool Cone::Intersects(const Sphere &sphere)
 {
 	return Intersects(sphere, (*this));

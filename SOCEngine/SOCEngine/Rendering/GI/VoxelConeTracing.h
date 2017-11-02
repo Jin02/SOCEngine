@@ -24,7 +24,7 @@ namespace Rendering
 			void Run(Device::DirectX& dx, VoxelMap& injectionSourceMap, VoxelMap& mipmappedInjectionMap,
 				VXGIInfoCB& infoCB, MainRenderingSystemParam& mainSystem);
 
-			GET_ACCESSOR(IndirectColorMap, Texture::RenderTexture&, _indirectColorMap);
+			GET_ALL_ACCESSOR(IndirectColorMap, Texture::RenderTexture&, _indirectColorMap);
 
 		private:
 			Shader::ComputeShader		_shader;

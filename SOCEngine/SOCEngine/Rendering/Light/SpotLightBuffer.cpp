@@ -27,8 +27,8 @@ void SpotLightBuffer::UpdateTransformBuffer(	const std::vector<SpotLight*>& dirt
 		const auto& tf = tfPool.Find(objID.Literal());
 
 		uint index = indexer.Find(objID.Literal());
-		_transformBuffer[index] = light->MakeTransform(*tf);
-		_paramSRBuffer[index] = light->MakeParam(*tf);
+		_transformBuffer[index]	= light->MakeTransform(*tf);
+		_paramSRBuffer[index]	= light->MakeParam(*tf);
 	}
 
 	_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);

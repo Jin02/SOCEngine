@@ -36,11 +36,11 @@ namespace Rendering
 		public:
 			Resource resource;
 
-			uint bindIndex = 0;
-			bool useVS = false;
-			bool useGS = false;
-			bool usePS = false;
-			bool useCS = false;
+			uint bindIndex	= 0;
+			bool useVS		= false;
+			bool useGS		= false;
+			bool usePS		= false;
+			bool useCS		= false;
 		};
 	}
 }

@@ -9,17 +9,14 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			class DirectionalLightShadowBuffer final :
-				public ShadowBufferForm<DirectionalLightShadow>
+			class DirectionalLightShadowBuffer final : public ShadowBufferForm<DirectionalLightShadow>
 			{
 			public:
 				DirectionalLightShadowBuffer() = default;
 				~DirectionalLightShadowBuffer() { DeleteAll(); }
 
 				void Initialize(Device::DirectX& dx);
-
 				void PushShadow(DirectionalLightShadow& shadow);
-
 				void UpdateBuffer(	const std::vector<DirectionalLightShadow*>& dirtyShadows,
 									const Light::LightPool<Light::DirectionalLight>& lightPool,
 									const Core::TransformPool& tfPool,
@@ -30,7 +27,7 @@ namespace Rendering
 				void Delete(uint index);
 				void DeleteAll();
 
-				GET_ACCESSOR(InvProjParamSRBuffer, auto&, _dlParamBuffer.GetShaderResourceBuffer());
+				GET_ALL_ACCESSOR(InvProjParamSRBuffer, auto&, _dlParamBuffer.GetShaderResourceBuffer());
 
 			private:
 				using Parent = Buffer::ShadowBufferForm<Shadow::DirectionalLightShadow>;

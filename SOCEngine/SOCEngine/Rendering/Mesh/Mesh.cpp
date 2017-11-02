@@ -134,11 +134,11 @@ void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const
 {
 	assert(transform.GetDirty());
 
-	Vector3 extents = _boundBox.GetExtents();
-	Vector3 boxCenter = _boundBox.GetCenter();
+	Vector3 extents		= _boundBox.GetExtents();
+	Vector3 boxCenter	= _boundBox.GetCenter();
 
-	const Matrix& worldMat = transform.GetWorldMatrix();
-	Vector3 worldPos = Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
+	const Matrix& worldMat	= transform.GetWorldMatrix();
+	Vector3 worldPos		= Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
 
 	Vector3 worldScale = transform.GetWorldScale();
 

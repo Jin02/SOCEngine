@@ -15,7 +15,7 @@ namespace Rendering
 			using MaterialForm::MaterialForm;
 
 			void UpdateCubeMap(const Texture::Texture2D& tex);
-			GET_ACCESSOR(CubeMap, auto&, _cubeMap);
+			GET_ALL_ACCESSOR(CubeMap, auto&, _cubeMap);
 
 		private:
 			Texture::Texture2D _cubeMap;

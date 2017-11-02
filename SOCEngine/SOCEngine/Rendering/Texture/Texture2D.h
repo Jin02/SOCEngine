@@ -30,17 +30,17 @@ namespace Rendering
 
 			const Size<uint>& FetchSize();
 
-			GET_CONST_ACCESSOR(Texture, DXSharedResource<ID3D11Texture2D>, _texture);
-			GET_ACCESSOR(RawTexture, auto, _texture.GetRaw());
+			GET_CONST_ACCESSOR(Texture,				DXSharedResource<ID3D11Texture2D>,			_texture);
+			GET_ACCESSOR(RawTexture,				ID3D11Texture2D* const,						_texture.GetRaw());
 
-			GET_CONST_ACCESSOR(Size, const Size<uint>&, _size);
-			GET_CONST_ACCESSOR(CanUse, bool, _texture.IsCanUse());
+			GET_CONST_ACCESSOR(Size,				const Size<uint>&,							_size);
+			GET_CONST_ACCESSOR(CanUse,				bool,										_texture.IsCanUse());
 
-			SET_ACCESSOR(Size, const Size<uint>&, _size);
-			SET_ACCESSOR(Texture, const DXSharedResource<ID3D11Texture2D>&, _texture);
+			SET_ACCESSOR(Size,						const Size<uint>&,							_size);
+			SET_ACCESSOR(Texture,					const DXSharedResource<ID3D11Texture2D>&,	_texture);
 
-			GET_ACCESSOR(ShaderResourceView, auto&, _srv);
-			GET_ACCESSOR(UnorderedAccessView, auto&, _uav);
+			GET_ALL_ACCESSOR(ShaderResourceView,	auto&,										_srv);
+			GET_ALL_ACCESSOR(UnorderedAccessView,	auto&,										_uav);
 
 		private:
 			DXSharedResource<ID3D11Texture2D>		_texture;

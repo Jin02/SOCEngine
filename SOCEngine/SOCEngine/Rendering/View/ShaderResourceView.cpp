@@ -40,11 +40,11 @@ void ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, DXSharedReso
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	memset(&srvDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	srvDesc.Format = format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	srvDesc.Buffer.ElementOffset = 0;
-	srvDesc.Buffer.ElementWidth = num;
-	srvDesc.BufferEx.Flags = isRawBuffer ? D3D11_BUFFEREX_SRV_FLAG_RAW : 0;
+	srvDesc.Format					= format;
+	srvDesc.ViewDimension			= D3D11_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.ElementOffset	= 0;
+	srvDesc.Buffer.ElementWidth		= num;
+	srvDesc.BufferEx.Flags			= isRawBuffer ? D3D11_BUFFEREX_SRV_FLAG_RAW : 0;
 
 	_srv = dx.CreateShaderResourceView(buffer.GetRaw(), srvDesc);
 }

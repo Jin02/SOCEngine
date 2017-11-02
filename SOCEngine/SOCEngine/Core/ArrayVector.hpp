@@ -39,8 +39,8 @@ namespace Core
 			static_assert(fromLevel < size, "Error, Out of Range!");
 			static_assert(toLevel < size, "Error, Out of Range!");
 
-			auto& fromVector = _vectorArray[fromLevel];
-			auto& toVector = _vectorArray[toLevel];
+			auto& fromVector	= _vectorArray[fromLevel];
+			auto& toVector		= _vectorArray[toLevel];
 
 			toVector.push_back(fromVector[fromIndex]);
 		}
@@ -51,8 +51,8 @@ namespace Core
 			static_assert(fromLevel < size, "Error, Out of Range!");
 			static_assert(toLevel < size, "Error, Out of Range!");
 
-			auto& fromVector = _vectorArray[fromLevel];
-			auto& toVector = _vectorArray[toLevel];
+			auto& fromVector	= _vectorArray[fromLevel];
+			auto& toVector		= _vectorArray[toLevel];
 
 			toVector.insert(toVector.begin() + toIndex, fromVector[fromIndex]);
 		}

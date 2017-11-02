@@ -27,9 +27,9 @@ namespace Rendering
 			};
 			using GlobalParamCB = Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParam>;
 
-			constexpr static const uint DirectionalLightInitCount = 1;
-			constexpr static const uint SpotLightInitCount = 1;
-			constexpr static const uint PointLightInitCount = 1;
+			constexpr static const uint DirectionalLightInitCount	= 1;
+			constexpr static const uint SpotLightInitCount			= 1;
+			constexpr static const uint PointLightInitCount			= 1;
 
 		public:
 			void Initialize(Device::DirectX& dx);
@@ -114,7 +114,7 @@ namespace Rendering
 				return GetShadowDatas<ShadowType>().buffers;
 			}
 
-			GET_ACCESSOR(GlobalParamCB, auto&, _globalCB);
+			GET_ALL_ACCESSOR(GlobalParamCB, auto&, _globalCB);
 
 		private:
 			template <class ShadowType> auto&		GetShadowDatas()

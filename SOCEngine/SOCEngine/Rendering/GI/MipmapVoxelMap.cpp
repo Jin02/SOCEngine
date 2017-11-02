@@ -17,8 +17,8 @@ void MipmapVoxelMap::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	std::vector<ShaderMacro> baseMipmapMacro{ ShaderMacro("BASE_MIP_MAP") };
 
 	EngineShaderFactory factory(&shaderMgr);
-	_baseMipmap = *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", &baseMipmapMacro, "@MipmapVoxelBase");
-	_anisotropicMipmap = *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", nullptr, "@MipmapVoxelAnisotropic");
+	_baseMipmap			= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", &baseMipmapMacro, "@MipmapVoxelBase");
+	_anisotropicMipmap	= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", nullptr, "@MipmapVoxelAnisotropic");
 
 	_infoCB.Initialize(dx);
 }
@@ -42,15 +42,15 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, VoxelMap& sourceColorMap, VoxelMap&
 		info.sourceDimension = curDimension;
 		infoCB.UpdateSubResource(dx, info);
 
-		ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMipmap_InputVoxelMap,		sourceUAV);
-		ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMipmap_OutputVoxelMap,	targetUAV);
-		ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::Mipmap_InfoCB, infoCB);
+		ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_InputVoxelMap,	sourceUAV);
+		ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap,	targetUAV);
+		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB,		infoCB);
 
 		shader.Dispatch(dx);
 
-		ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::VoxelMipmap_InputVoxelMap);
-		ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::VoxelMipmap_OutputVoxelMap);
-		ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Mipmap_InfoCB);
+		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_InputVoxelMap);
+		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap);
+		ComputeShader::UnBindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB);
 	};
 
 	Mipmap(_baseMipmap, sourceColorMap.GetSourceMapUAV(), anisotropicMap.GetSourceMapUAV(), 0);

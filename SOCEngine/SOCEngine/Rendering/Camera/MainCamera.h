@@ -34,17 +34,17 @@ namespace Rendering
 				Math::Matrix	viewProjMat;
 				Math::Matrix	prevViewProjMat;
 
-				Math::Vector3	worldPos = Math::Vector3(0.0f, 0.0f, 0.0f);
-				uint			packedCamNearFar = 0;
+				Math::Vector3	worldPos			= Math::Vector3(0.0f, 0.0f, 0.0f);
+				uint			packedCamNearFar	= 0;
 			};
 			struct Desc
 			{				
-				float									fieldOfViewDegree = 45.0f;
-				float									near = 0.1f;
-				float									far = 1000.0f;
-				float									aspect = 1.0f;
-				Color									clearColor = Color::Black();
-				Rect<uint>								renderRect = Rect<uint>(0, 0, 0, 0);
+				float			fieldOfViewDegree	= 45.0f;
+				float			near				= 0.1f;
+				float			far					= 1000.0f;
+				float			aspect				= 1.0f;
+				Color			clearColor			= Color::Black();
+				Rect<uint>		renderRect			= Rect<uint>(0, 0, 0, 0);
 			};
 
 		public:
@@ -52,8 +52,8 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
 			bool UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
 
-			Math::Matrix		ComputePerspectiveMatrix(bool isInverted) const;
-			Math::Matrix		ComputeOrthogonalMatrix(bool isInverted) const;
+			Math::Matrix ComputePerspectiveMatrix(bool isInverted) const;
+			Math::Matrix ComputeOrthogonalMatrix(bool isInverted) const;
 
 			GET_ACCESSOR(FieldOfViewDegree,			float,			_desc.fieldOfViewDegree);
 			GET_ACCESSOR(Near,						float,			_desc.near);
@@ -63,7 +63,8 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Near,				float,			_desc.near);
 			SET_ACCESSOR_DIRTY(Far,					float,			_desc.far);
 			SET_ACCESSOR_DIRTY(ClearColor,			const Color&,	_desc.clearColor);
-			GET_SET_ACCESSOR(ObjectID,				Core::ObjectID,	_objID);
+			GET_CONST_ACCESSOR(ObjectID,			Core::ObjectID,	_objID);
+			SET_ACCESSOR(ObjectID,					Core::ObjectID,	_objID);
 			GET_CONST_ACCESSOR(RenderRect,			const auto&,	_desc.renderRect);
 			GET_CONST_ACCESSOR(ViewProjMatrix,		const auto&,	_viewProjMat);
 			GET_CONST_ACCESSOR(ProjMatrix,			const auto&,	_projMat);

@@ -33,7 +33,7 @@ void RenderTexture::Initialize(Device::DirectX& dx,
 {
 	ASSERT_SUCCEEDED(rtv.IsCanUse());
 
-	_renderTargetView	= rtv;
+	_renderTargetView = rtv;
 	_tex2D.SetSize(size);
 }
 

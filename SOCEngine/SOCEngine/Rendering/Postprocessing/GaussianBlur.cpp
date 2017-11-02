@@ -16,9 +16,9 @@ void GaussianBlur::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 
 		FullScreen::InitParam param;
 		{
-			param.psMacros = &macros;
-			param.psName = "GuassianBlur_InFullScreen_PS";
-			param.shaderFileName = "GaussianBlur";
+			param.psMacros			= &macros;
+			param.psName			= "GuassianBlur_InFullScreen_PS";
+			param.shaderFileName	= "GaussianBlur";
 		}
 
 		_vertical.Initialize(dx, param, shaderMgr);	
@@ -39,17 +39,16 @@ inline void GaussianBlur::UpdateParamCB(Device::DirectX & dx, const ParamCBData 
 void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 	RenderTexture& inputColorMap, RenderTexture& tempMap)
 {
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(0), _paramCB);
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
 	
 	_vertical.Render(dx, tempMap, true);
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), tempMap.GetTexture2D().GetShaderResourceView());
-
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0), tempMap.GetTexture2D().GetShaderResourceView());
 	_horizontal.Render(dx, outResultRT, true);
 
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex(0));
+	PixelShader::UnBindShaderResourceView(dx,	TextureBindIndex(0));
+	PixelShader::UnBindSamplerState(dx,			SamplerStateBindIndex::DefaultSamplerState);
+	PixelShader::UnBindConstBuffer(dx,			ConstBufferBindIndex(0));
 }

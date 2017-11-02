@@ -36,17 +36,17 @@ void BilateralFiltering::UpdateParamCB(Device::DirectX& dx, const ParamCBData& d
 void BilateralFiltering::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 								DepthMap& depthMap, RenderTexture& inputColorMap, RenderTexture& tempMap)
 {
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), depthMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(1),						depthMap.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex(1), dx.GetSamplerStateShadowLinear());
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex(1),					dx.GetSamplerStateShadowLinear());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(0), _paramCB);
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
 
 	_vertical.Render(dx, tempMap, true);
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), tempMap.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),						tempMap.GetTexture2D().GetShaderResourceView());
 	_horizontal.Render(dx, outResultRT, true);
 
 	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex(0));

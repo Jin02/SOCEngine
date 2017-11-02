@@ -98,9 +98,9 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 
 	std::vector<float> vertexDatas;
 
-	float halfWidth = 0.5f * size.x;
-	float halfHeight = 0.5f * size.y;
-	float halfDepth = 0.5f * size.z;
+	float halfWidth		= 0.5f * size.x;
+	float halfHeight	= 0.5f * size.y;
+	float halfDepth		= 0.5f * size.z;
 
 	// Fill in the front face vertex data.
 	AppendVertexData(vertexDatas, Vector3(-halfWidth, -halfHeight, -halfDepth), Vector3(0.0f, 0.0f, -1.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 1.0f), defautVertexInputTypeFlag);
@@ -208,29 +208,16 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 		{
 			float theta = j*thetaStep;
 
-			Vector3 position;
-			{
-				position.x = radius * sinf(phi) * cosf(theta);
-				position.y = radius * cosf(phi);
-				position.z = radius * sinf(phi) * sinf(theta);
-			}
+			Vector3 position(	radius * sinf(phi) * cosf(theta),
+								radius * cosf(phi),
+								radius * sinf(phi) * sinf(theta)	);
+			Vector2 uv(theta / MATH_PI * 2.0f, phi / MATH_PI);
 
-			Vector3 tangent;
-			{
-				tangent.x = -radius*sinf(phi)*sinf(theta);
-				tangent.y = 0.0f;
-				tangent.z = +radius*sinf(phi)*cosf(theta);
-
-				tangent = tangent.Normalized();
-			}
+			Vector3 tangent = Vector3(	-radius*sinf(phi)*sinf(theta),
+										0.0f,
+										radius*sinf(phi)*cosf(theta)	).Normalized();
 
 			Vector3 normal = position.Normalized();
-
-			Vector2 uv;
-			{
-				uv.x = theta / MATH_PI * 2.0f;
-				uv.y = phi / MATH_PI;
-			}
 
 			AppendVertexData(vertexDatas, position, normal, tangent, uv, defautVertexInputTypeFlag);
 		}
@@ -285,9 +272,9 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 	Mesh::CreateFuncArguments args("@DefaultSphere", std::hash<std::string>()(key), "[Sphere]", indices, info.semantics);
 	{
-		args.vertices.byteWidth = info.stride;
-		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
-		args.vertices.data = vertexDatas.data();
+		args.vertices.byteWidth	= info.stride;
+		args.vertices.count		= static_cast<uint>(vertexDatas.size() / (info.stride / 4));
+		args.vertices.data		= vertexDatas.data();
 	}
 
 	createMeshCallback(args);
@@ -295,10 +282,10 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	float stackHeight = height / stackCount;
-	float radiusStep = (topRadius - botRadius) / stackCount;
+	float stackHeight	= height / stackCount;
+	float radiusStep	= (topRadius - botRadius) / stackCount;
 
-	uint ringCount = stackCount + 1;
+	uint ringCount		= stackCount + 1;
 
 	std::vector<float> vertices;
 	// Compute vertices for each stack ring starting at the bottom and moving up.
@@ -316,16 +303,11 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 			Vector3 position = Vector3(r * c, y, r * s);
 
-			Vector2 uv;
-			{
-				uv.x = (float)j / sliceCount;
-				uv.y = 1.0f - (float)i / stackCount;
-			}
-
+			Vector2 uv((float)j / sliceCount, 1.0f - (float)i / stackCount);
 			Vector3 tangent = Vector3(-s, 0.0f, c);
 
 			float dr = botRadius - topRadius;
-			Vector3 bitangent(dr*c, -height, dr*s);
+			Vector3 bitangent(dr * c, -height, dr * s);
 
 			Vector3 normal = Vector3::Cross(tangent, bitangent).Normalized();
 
@@ -450,8 +432,8 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	// Create the vertices.
 	//
 
-	float halfWidth = 0.5f * width;
-	float halfHeight = 0.5f * height;
+	float halfWidth		= 0.5f * width;
+	float halfHeight	= 0.5f * height;
 
 	float dx = width / float(widthVertexCount - 1);
 	float dz = height / float(heightVertexCount - 1);

@@ -39,8 +39,8 @@ namespace Rendering
 
 			bool Find(ShaderPtr& out, const std::string& key)
 			{
-				auto findIter = _shaders.find(key);
-				bool success = findIter != _shaders.end();
+				auto findIter	= _shaders.find(key);
+				bool success	= findIter != _shaders.end();
 				if (success)
 					out = findIter->second;
 

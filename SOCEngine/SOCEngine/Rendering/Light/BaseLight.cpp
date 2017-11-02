@@ -19,10 +19,10 @@ float BaseLight::GetIntensity() const
 
 uint BaseLight::Get32BitMainColor() const
 {
-	uint uintColor = _color.Get32BitUintColor();
+	uint uintColor		= _color.Get32BitUintColor();
 
-	uint packedLumen = static_cast<uint>(static_cast<double>(_lumen) / MAXIMUM_LUMEN * 255.0 + 0.5);
-	uintColor = (uintColor & 0x00ffffff) | (packedLumen << 24);
+	uint packedLumen	= static_cast<uint>(static_cast<double>(_lumen) / MAXIMUM_LUMEN * 255.0 + 0.5);
+	uintColor			= (uintColor & 0x00ffffff) | (packedLumen << 24);
 
 	return uintColor;
 }

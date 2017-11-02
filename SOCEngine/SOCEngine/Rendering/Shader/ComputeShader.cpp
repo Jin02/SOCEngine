@@ -4,8 +4,7 @@ using namespace Device;
 using namespace Rendering::Shader;
 using namespace Rendering;
 
-ComputeShader::ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
-	: _base(blob, key), _shader(nullptr), _threadGroup(0, 0, 0)
+ComputeShader::ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key) : _base(blob, key)
 {
 
 }
@@ -35,7 +34,7 @@ void ComputeShader::BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex 
 
 void ComputeShader::BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, Buffer::ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb.GetRaw();
+	ID3D11Buffer* buf = cb.GetBaseBuffer().GetRaw();
 	dx.GetContext()->CSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

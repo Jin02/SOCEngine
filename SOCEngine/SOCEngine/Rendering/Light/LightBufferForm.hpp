@@ -15,6 +15,7 @@ namespace Rendering
 			{
 				const Core::ObjectID::IndexHashMap& shadowIndexer;
 				const Core::ObjectID::IndexHashMap& lightShaftIndexer;
+
 				RequiredIndexer(
 					const Core::ObjectID::IndexHashMap& _shadowIndexer,
 					const Core::ObjectID::IndexHashMap& _lightShaftIndexer)
@@ -42,8 +43,8 @@ namespace Rendering
 
 					_commonBuffer.Initialize(dx, maxLightCount, dummy);
 
-					_mustUpdateTransformSRBuffer = true;
-					_mustUpdateCommonSRBuffer = true;
+					_mustUpdateTransformSRBuffer	= true;
+					_mustUpdateCommonSRBuffer		= true;
 				}
 
 				void PushLight(const LightType& light)
@@ -51,8 +52,8 @@ namespace Rendering
 					_transformBuffer.PushData(LightType::TransformType());
 					_commonBuffer.PushData(light.GetBase(), -1, -1);
 
-					_mustUpdateTransformSRBuffer = true;
-					_mustUpdateCommonSRBuffer = true;
+					_mustUpdateTransformSRBuffer	= true;
+					_mustUpdateCommonSRBuffer		= true;
 				}
 
 				void DeleteAll()
@@ -60,8 +61,8 @@ namespace Rendering
 					_transformBuffer.DeleteAll();
 					_commonBuffer.DeleteAll();
 
-					_mustUpdateTransformSRBuffer = true;
-					_mustUpdateCommonSRBuffer = true;
+					_mustUpdateTransformSRBuffer	= true;
+					_mustUpdateCommonSRBuffer		= true;
 				}
 
 			public:
@@ -88,8 +89,8 @@ namespace Rendering
 						Core::ObjectID objID = light->GetObjectID();
 						uint literalID = objID.Literal();
 
-						ushort shadowIdx = indexers.shadowIndexer.Find(literalID);
-						uint lightShaftIdx = indexers.lightShaftIndexer.Find(literalID);
+						ushort shadowIdx	= indexers.shadowIndexer.Find(literalID);
+						uint lightShaftIdx	= indexers.lightShaftIndexer.Find(literalID);
 
 						uint index = indexer.Find(literalID);
 						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
@@ -103,16 +104,16 @@ namespace Rendering
 					if(_mustUpdateTransformSRBuffer | forcedUpdate)		_transformBuffer.UpdateSRBuffer(dx);
 					if(_mustUpdateCommonSRBuffer	| forcedUpdate)		_commonBuffer.UpdateSRBuffer(dx);
 
-					_mustUpdateCommonSRBuffer =
-					_mustUpdateTransformSRBuffer = false;
+					_mustUpdateCommonSRBuffer		=
+					_mustUpdateTransformSRBuffer	= false;
 				}
 				void Delete(uint index)
 				{
 					_transformBuffer.Delete(index);
 					_commonBuffer.Delete(index);
 
-					_mustUpdateTransformSRBuffer = true;
-					_mustUpdateCommonSRBuffer = true;
+					_mustUpdateTransformSRBuffer	= 
+					_mustUpdateCommonSRBuffer		= true;
 				}
 				
 				

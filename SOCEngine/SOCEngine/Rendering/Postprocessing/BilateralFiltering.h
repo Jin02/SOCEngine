@@ -20,11 +20,10 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
-				const Size<uint>& size, DXGI_FORMAT format);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& size, DXGI_FORMAT format);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT,
-				Texture::DepthMap& depthMap, Texture::RenderTexture& inputColorMap,
-				Texture::RenderTexture& tempMap);
+						Texture::DepthMap& depthMap, Texture::RenderTexture& inputColorMap,
+						Texture::RenderTexture& tempMap);
 			void UpdateParamCB(Device::DirectX& dx, const ParamCBData& data);
 
 		private:

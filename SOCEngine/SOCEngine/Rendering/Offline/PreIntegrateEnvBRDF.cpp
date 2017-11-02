@@ -22,8 +22,8 @@ Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, S
 	const Size<uint> size(256, 256);
 
 	_texture.Initialize(dx, size.w, size.h,
-		DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT,
-		D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
+						DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT,
+						D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 1);
 	{

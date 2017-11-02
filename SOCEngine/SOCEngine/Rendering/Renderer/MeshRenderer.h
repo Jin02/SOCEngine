@@ -24,10 +24,9 @@ namespace Rendering
 				DefaultRenderType			renderType;
 				Buffer::ConstBuffer&		camCB;
 
-				RenderParam(
-					Device::DirectX& _dx, Manager::MaterialManager&	_materialMgr, Manager::BufferManager& _bufferMgr,
-					DefaultRenderType _renderType, Buffer::ConstBuffer& _camCB
-				) : dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), renderType(_renderType), camCB(_camCB) {}
+				RenderParam(Device::DirectX& _dx, Manager::MaterialManager&	_materialMgr, Manager::BufferManager& _bufferMgr,
+							DefaultRenderType _renderType, Buffer::ConstBuffer& _camCB) 
+					: dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), renderType(_renderType), camCB(_camCB) {}
 			};
 
 			void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);

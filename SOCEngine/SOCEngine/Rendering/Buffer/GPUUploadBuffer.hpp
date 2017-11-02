@@ -45,7 +45,7 @@ namespace Rendering
 				_pool.erase(iter);
 			}
 
-			GET_ACCESSOR(ShaderResourceBuffer, auto&, _srBuffer);
+			GET_ALL_ACCESSOR(ShaderResourceBuffer, auto&, _srBuffer);
 
 		private:
 			std::vector<T>				_pool;

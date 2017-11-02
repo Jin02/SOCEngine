@@ -26,9 +26,9 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 
 	uint count = dimension * dimension * dimension;
 	
-	_voxelAlbedoRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
-	_voxelEmissionRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
-	_voxelNormalRawBuffer.Initialize(dx, 4, count, GPURawBuffer::Flag::ALL_VIEW);
+	_voxelAlbedoRawBuffer.Initialize(dx,	4, count, GPURawBuffer::Flag::ALL_VIEW);
+	_voxelEmissionRawBuffer.Initialize(dx,	4, count, GPURawBuffer::Flag::ALL_VIEW);
+	_voxelNormalRawBuffer.Initialize(dx,	4, count, GPURawBuffer::Flag::ALL_VIEW);
 
 	_infoCB.Initialize(dx);
 
@@ -161,12 +161,7 @@ void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startMinPos)
 
 		auto LookAt = [](const Vector3& worldPos, const Vector3& targetPos, const Vector3& up)
 		{
-			Matrix worldMat;
-
-			worldMat._41 = worldPos.x;	worldMat._42 = worldPos.y;	worldMat._43 = worldPos.z;
-			worldMat._44 = 1.0f;
-			worldMat = Matrix::LookAtDir((targetPos - worldPos).Normalized(), &up);
-
+			Matrix worldMat = Matrix::LookAtDir((targetPos - worldPos).Normalized(), &up);
 			return Matrix::ComputeViewMatrix(worldMat);
 		};
 

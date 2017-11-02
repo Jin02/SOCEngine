@@ -7,7 +7,8 @@ namespace Math
 	class Vector4
 	{
 	public:
-		Vector4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
+		Vector4() = default;
+		Vector4(float x, float y, float z, float w);
 
 	public:
 		const Vector4 operator + () const;
@@ -33,13 +34,15 @@ namespace Math
 		static Vector4 Zero();
 
 	public:
-		static float Distance(const Vector4& a, const Vector4& b);
-		static float Dot(const Vector4& a, const Vector4& b);
 		static const Vector4 Lerp(const Vector4& from, const Vector4& to, float t);
 		static const Vector4 Min(const Vector4& a, const Vector4& b);
 		static const Vector4 Max(const Vector4& a, const Vector4& b);
-		static float Legnth(const Vector4& a);
 		static const Vector4 Normalize(const Vector4& value);
+
+		static float Distance(const Vector4& a, const Vector4& b);
+		static float Dot(const Vector4& a, const Vector4& b);
+
+		static float Legnth(const Vector4& a);
 		static float SqrLegnth(const Vector4& a);
 
 	public:
@@ -47,7 +50,15 @@ namespace Math
 		void Set(float newX, float newY, float newZ, float newW);
 
 	public:
-		float x, y, z, w;
+		union
+		{
+			struct
+			{
+				float x, y, z, w;
+			};
+
+			float value[4] = {0.0f, };
+		};
 	};
 
 }

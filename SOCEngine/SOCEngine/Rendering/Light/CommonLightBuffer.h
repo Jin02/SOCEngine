@@ -27,8 +27,8 @@ namespace Rendering
 				void Delete(uint index);
 				void DeleteAll();
 
-				GET_ACCESSOR(ColorSRBuffer,					auto&,		_colorBuffer.GetShaderResourceBuffer());
-				GET_ACCESSOR(OptionalParamIndexSRBuffer,	auto&,		_optionalParamIndexBuffer.GetShaderResourceBuffer());
+				GET_ALL_ACCESSOR(ColorSRBuffer,				 auto&,	_colorBuffer.GetShaderResourceBuffer());
+				GET_ALL_ACCESSOR(OptionalParamIndexSRBuffer, auto&,	_optionalParamIndexBuffer.GetShaderResourceBuffer());
 
 			private:
 				inline uint ComputeOptionalParamIndex(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)

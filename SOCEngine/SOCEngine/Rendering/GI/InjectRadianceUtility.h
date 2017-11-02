@@ -19,15 +19,14 @@ namespace Rendering
 				Manager::ShadowManager::GlobalParamCB&	shadowGlobalParamCB;
 				VoxelMap&								outVoxelMap;
 
-				BindParam(
-					VXGIInfoCB& _infoCB,
-					Voxelization& _voxelization,
-					Renderer::TBRParamCB& _tbrParamCB,
-					Manager::ShadowManager::GlobalParamCB& _shadowGlobalParamCB,
-					VoxelMap& _outVoxelMap) :
-					infoCB(_infoCB), voxelization(_voxelization), 
-					tbrParamCB(_tbrParamCB), shadowGlobalParamCB(_shadowGlobalParamCB),
-					outVoxelMap(_outVoxelMap)
+				BindParam(	VXGIInfoCB& _infoCB,
+							Voxelization& _voxelization,
+							Renderer::TBRParamCB& _tbrParamCB,
+							Manager::ShadowManager::GlobalParamCB& _shadowGlobalParamCB,
+							VoxelMap& _outVoxelMap	)
+					:	infoCB(_infoCB), voxelization(_voxelization), 
+						tbrParamCB(_tbrParamCB), shadowGlobalParamCB(_shadowGlobalParamCB),
+						outVoxelMap(_outVoxelMap)
 				{
 
 				}

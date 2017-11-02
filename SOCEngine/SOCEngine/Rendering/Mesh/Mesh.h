@@ -64,18 +64,21 @@ namespace Rendering
 			void DeleteMaterialID(MaterialID id);
 
 		public:
-			GET_CONST_ACCESSOR(MaterialIDs, const std::vector<MaterialID>&,	_materialIDs);
-			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _objectID);
-			GET_CONST_ACCESSOR(PrevWorldMat,const Math::Matrix&,			_prevWorldMat);
+			GET_CONST_ACCESSOR(MaterialIDs,		const std::vector<MaterialID>&,	_materialIDs);
+			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID,					_objectID);
+			GET_CONST_ACCESSOR(PrevWorldMat,	const Math::Matrix&,			_prevWorldMat);
 
-			GET_CONST_ACCESSOR(VBKey, Buffer::BaseBuffer::Key, _vbKey);
-			GET_CONST_ACCESSOR(IBKey, Buffer::BaseBuffer::Key, _ibKey);
-			GET_CONST_ACCESSOR(BufferFlag, uint, _bufferFlag);
+			GET_CONST_ACCESSOR(VBKey,			Buffer::BaseBuffer::Key,		_vbKey);
+			GET_CONST_ACCESSOR(IBKey,			Buffer::BaseBuffer::Key,		_ibKey);
+			GET_CONST_ACCESSOR(BufferFlag,		uint,							_bufferFlag);
 
-			GET_ACCESSOR(TransformCB, auto&, _transformCB);
+			GET_ALL_ACCESSOR(TransformCB,		auto&,							_transformCB);
 
-			GET_SET_ACCESSOR(Radius, float, _radius);
-			GET_SET_ACCESSOR(BoundBox, const Intersection::BoundBox&, _boundBox);
+			GET_CONST_ACCESSOR(Radius,			float,							_radius);
+			SET_ACCESSOR(Radius,				float,							_radius);
+
+			GET_CONST_ACCESSOR(BoundBox,		const Intersection::BoundBox&,	_boundBox);
+			SET_ACCESSOR(BoundBox,				const Intersection::BoundBox&,	_boundBox);
 
 		private:
 			uint ComputeBufferFlag(

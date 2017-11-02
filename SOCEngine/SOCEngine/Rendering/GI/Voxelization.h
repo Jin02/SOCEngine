@@ -37,6 +37,8 @@ namespace Rendering
 				Math::Matrix	viewProjZ_inv;				
 #endif				
 				Math::Vector4	voxelizeMinPos;
+
+				InfoCBData() = default;
 			};
 
 		public:

@@ -20,9 +20,9 @@ namespace Rendering
 
 			struct Packed
 			{
-				uint		packedViewportSize = 0;
-				uint 		packedNumOfLights = 0;
-				uint 		maxNumOfperLightInTile = 0;
+				uint		packedViewportSize		= 0;
+				uint 		packedNumOfLights		= 0;
+				uint 		maxNumOfperLightInTile	= 0;
 			};
 
 			Packed			packedParam;
@@ -37,8 +37,8 @@ namespace Rendering
 			Texture::RenderTexture		normal_roughness;
 			Texture::RenderTexture		velocity_metallic_specularity;
 			Texture::RenderTexture		emission_materialFlag;
-			Texture::DepthMap		opaqueDepthBuffer;
-			Texture::DepthMap		blendedDepthBuffer;
+			Texture::DepthMap			opaqueDepthBuffer;
+			Texture::DepthMap			blendedDepthBuffer;
 		};
 	}
 }

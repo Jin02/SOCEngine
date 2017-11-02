@@ -28,9 +28,8 @@ namespace Rendering
 			void IASetBuffer(Device::DirectX& dx);
 			void UpdateVertexData(Device::DirectX& dx, const void* data, uint size);
 
-			GET_CONST_ACCESSOR(VertexCount, uint, _desc.vertexCount);
-
-			GET_CONST_ACCESSOR(Semantics, const Semantics&, _semantics);
+			GET_CONST_ACCESSOR(VertexCount,	uint,			_desc.vertexCount);
+			GET_CONST_ACCESSOR(Semantics,	const auto&,	_semantics);
 
 		private:
 			BaseBuffer	_baseBuffer;

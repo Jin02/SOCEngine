@@ -32,9 +32,11 @@ namespace Rendering
 
 			struct TransformType
 			{
-				Half x = Half(0.0f), y = Half(0.0f);
 				TransformType() = default;
 				TransformType(Half _x, Half _y) : x(_x), y(_y) {}
+
+				Half	x = Half(0.0f),
+						y = Half(0.0f);
 			};
 			explicit DirectionalLight(Core::ObjectID objID) : _base(objID) {};
 
@@ -44,13 +46,11 @@ namespace Rendering
 			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const { return true; }
 
 		public:
-			GET_CONST_ACCESSOR(LightShaftSize, float,_base.GetRadius());
+			GET_CONST_ACCESSOR(LightShaftSize,	float,			_base.GetRadius());
+			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID, _base.GetObjectID());
+			GET_ALL_ACCESSOR(Base,				BaseLight&,		_base);
+
 			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
-
-			GET_ACCESSOR(Base, BaseLight&, _base);
-			GET_CONST_ACCESSOR(Base, const BaseLight&, _base);
-
-			GET_CONST_ACCESSOR(ObjectID, Core::ObjectID, _base.GetObjectID());
 
 		private:
 			BaseLight					_base;

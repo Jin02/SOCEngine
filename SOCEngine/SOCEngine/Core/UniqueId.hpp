@@ -24,8 +24,8 @@ namespace Core
 		UniqueID() : _id(Undefined()) {}
 
 	public:
-		using IndexMap = Core::IndexMap<LiteralType>;
-		using IndexHashMap = Core::IndexHashMap<LiteralType>;
+		using IndexMap		= Core::IndexMap<LiteralType>;
+		using IndexHashMap	= Core::IndexHashMap<LiteralType>;
 		friend class Core::Indexer<T, std::unordered_map<LiteralType, uint>>;
 		friend class Core::Indexer<T, std::map<LiteralType, uint>>;
 

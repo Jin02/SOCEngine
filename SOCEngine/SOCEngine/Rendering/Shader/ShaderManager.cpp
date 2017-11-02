@@ -6,4 +6,5 @@ using namespace Rendering::Shader;
 
 void ShaderManager::Destroy()
 {
+
 }

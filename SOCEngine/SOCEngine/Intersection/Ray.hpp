@@ -9,6 +9,7 @@ namespace Intersection
 	public:
 		Ray() = default;
 		Ray(const Math::Vector3& _origin, const Math::Vector3& _direction) : origin(_origin), direction(_direction) { }
+
 		const Math::Vector3 GetPoint(float distance)
 		{
 			return direction.Normalized() * distance;

@@ -22,8 +22,8 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 #pragma region MacroKey
 	std::vector<ShaderMacro> vsMacro;
 
-	std::string vsKey = "FullScreenVS";
-	_psUniqueKey = param.shaderFileName + ":" + param.psName;
+	std::string vsKey	= "FullScreenVS";
+	_psUniqueKey		= param.shaderFileName + ":" + param.psName;
 
 	// VS
 	{

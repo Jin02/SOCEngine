@@ -40,11 +40,11 @@ namespace Core
 		void Render();
 		void Destroy();
 
-		GET_ACCESSOR(BufferManager, Rendering::Manager::BufferManager&, _bufferManager);
-		GET_ACCESSOR(DirectX, Device::DirectX&, _dx);
-		GET_ACCESSOR(ComponentSystem, auto&, _componentSystem);
-		GET_ACCESSOR(TransformPool, auto&, _transformPool);
-		GET_ACCESSOR(RootObjectIDs, auto&, _rootObjectIDs);
+		GET_ACCESSOR(BufferManager,		Rendering::Manager::BufferManager&, _bufferManager);
+		GET_ACCESSOR(DirectX,			Device::DirectX&,					_dx);
+		GET_ACCESSOR(ComponentSystem,	Core::ComponentSystem&,				_componentSystem);
+		GET_ACCESSOR(TransformPool,		Core::TransformPool&,				_transformPool);
+		GET_ACCESSOR(RootObjectIDs,		Core::RootObjectIDs&,				_rootObjectIDs);
 
 	private:
 		static NullScene							_nullScene;

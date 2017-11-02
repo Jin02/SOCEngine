@@ -36,8 +36,10 @@ namespace Rendering
 				TempTextures& tempTextures, Renderer::MainRenderer& renderer);
 
 			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, Texture::RenderTexture& inputColorMap, Renderer::MainRenderer& mainRenderer);
-			GET_SET_ACCESSOR(Param, const ParamCBData&, _paramData);
 			SET_ACCESSOR(ElapsedTime, float, _paramData.dt);
+
+			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);
+			SET_ACCESSOR(Param, const ParamCBData&, _paramData);
 
 		private:
 			FullScreen									_eyeAdaptation;
