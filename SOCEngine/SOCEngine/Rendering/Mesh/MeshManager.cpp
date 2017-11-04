@@ -1,11 +1,15 @@
 #include "MeshManager.hpp"
 
+#include "CameraManager.h"
+#include "Object.h"
+
 using namespace Rendering;
 using namespace Device;
 using namespace Core;
 using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Math;
+using namespace Intersection;
 
 void MeshManager::Delete(Core::ObjectID objID)
 {
@@ -33,18 +37,27 @@ Mesh* MeshManager::Find(Core::ObjectID id)
 	return transparency;
 }
 
-void MeshManager::CheckDirty(const Core::TransformPool& tfPool)
+void MeshManager::CheckDirty(	const TransformPool& tfPool,
+								const ObjectManager& objMgr,
+								const CameraManager& camMgr	)
 {
-	auto& dirty = _dirtyMeshes;
-	auto Check = [&dirty, &tfPool](auto& pool)
+	auto Check = [&tfPool, &camMgr, &objMgr,
+				  &dirty				= _dirtyMeshes,
+				  &mustUpdateCBMeshes	= _mustUpdateCBMeshes](auto& pool)
 	{
 		pool.Iterate(
-			[&dirty, &tfPool](Mesh& mesh)
+			[&dirty, &tfPool, &camMgr, &objMgr, &mustUpdateCBMeshes](Mesh& mesh)
 			{
-					auto tf = tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
+					const Transform*	tf	= tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
+					const Object*		obj	= objMgr.Find(mesh.GetObjectID()); assert(obj);
 
-					if (tf->GetDirty())
-						dirty.emplace_back(&mesh);
+					if (tf->GetDirty() & obj->GetUse())
+					{
+						dirty.push_back(&mesh);
+
+						if (camMgr.InFrustumAllCamera(tf->GetWorldPosition(), mesh.GetRadius()))
+							mustUpdateCBMeshes.push_back(&mesh);
+					}
 			}
 		);
 	};
@@ -74,7 +87,7 @@ void MeshManager::ComputeWorldSize(
 
 void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPool)
 {
-	auto Update = [&dx, &tfPool](auto& vector)
+	auto Update = [& dx, &tfPool](auto& vector)
 	{		
 		for (auto& mesh : vector)
 		{
@@ -85,5 +98,5 @@ void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPo
 		}
 	};
 
-	Update(_dirtyMeshes);
+	Update(_mustUpdateCBMeshes);
 }

@@ -8,6 +8,11 @@
 #include "VBSortedMeshpool.h"
 #include "OpaqueMeshRenderQueue.h"
 
+namespace Core
+{
+	class Object;
+}
+
 namespace Rendering
 {
 	namespace Geometry
@@ -29,6 +34,8 @@ namespace Rendering
 		
 	namespace Manager
 	{
+		class CameraManager;
+
 		class MeshManager final
 		{
 		public:
@@ -80,11 +87,11 @@ namespace Rendering
 			bool Has(Core::ObjectID objID) const;
 			Geometry::Mesh* Find(Core::ObjectID id);
 
-			void CheckDirty(const Core::TransformPool& tfPool);
+			void CheckDirty(const Core::TransformPool& tfPool, const Core::ObjectManager& objMgr, const Manager::CameraManager& camMgr);
 			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::TransformPool& tfPool);
 
-			void ClearDirty() { _dirtyMeshes.clear(); }
+			void ClearDirty() { _dirtyMeshes.clear(); _mustUpdateCBMeshes.clear(); }
 
 			bool ChangeTrait(Core::ObjectID id,
 							 Geometry::OpaqueMeshPool& fromPool, Geometry::TransparentMeshPool& toPool)
@@ -120,7 +127,8 @@ namespace Rendering
 			Geometry::OpaqueMeshPool					_opaqueMeshPool;
 			Geometry::AlphaBlendMeshPool				_alphaBlendMeshPool;
 
-			std::vector<Geometry::Mesh*>				_dirtyMeshes;
+			std::vector<Geometry::Mesh*>				_mustUpdateCBMeshes;
+			std::vector<const Geometry::Mesh*>			_dirtyMeshes;
 		};
 	}
 }
