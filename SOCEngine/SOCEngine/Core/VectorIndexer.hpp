@@ -14,6 +14,7 @@ namespace Core
 	public:
 		using IndexerType	= IndexerClass;
 		using VectorType	= std::vector<Object>;
+		using ObjectType	= Object;
 
 		VectorIndexer() : _vector(), _indexer() {}
 
@@ -90,7 +91,12 @@ namespace Core
 			for (auto& iter : _vector)
 				iterator(iter);
 		}
-
+		template <class Iterator>
+		void Iterate(Iterator iterator) const
+		{
+			for (const auto& iter : _vector)
+				iterator(iter);
+		}
 	private:
 		std::vector<Object>     _vector;
 		IndexerType				_indexer;

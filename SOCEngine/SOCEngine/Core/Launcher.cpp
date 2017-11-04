@@ -23,7 +23,7 @@ void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool us
 		MSG msg;
 		ZeroMemory(&msg, sizeof(msg));
 
-		while ((msg.message != WM_QUIT) && (_exit == false))
+		while ((msg.message != WM_QUIT) & (_exit == false))
 		{
 			if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) == false)
 			{

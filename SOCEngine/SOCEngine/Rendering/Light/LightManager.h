@@ -49,6 +49,13 @@ namespace Rendering
 			}
 
 			template <class LightType>
+			const auto Find(Core::ObjectID id) const
+			{
+				return GetPool<LightType>().Find(id.Literal());
+			}
+
+
+			template <class LightType>
 			LightType& Add(LightType& light)
 			{
 				light.GetBase().SetDirty(true);

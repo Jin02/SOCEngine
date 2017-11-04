@@ -34,8 +34,8 @@ public:
 	explicit DXSharedResource(Resource* resource)	: _resource(resource, Release)	{ }
 
 	inline const Resource* GetRaw() const				{ return _resource.get();		}
-	inline Resource* GetRaw() 							{ return _resource.get();		}
-	inline Resource* operator->()						{ return _resource.get(); }
+	inline Resource* const GetRaw()						{ return _resource.get();		}
+	inline Resource* const operator->()					{ return _resource.get(); }
 	inline const Resource* operator->() const			{ return _resource.get(); }
 
 	inline const std::shared_ptr<Resource>& Get() const	{ return _resource;				}

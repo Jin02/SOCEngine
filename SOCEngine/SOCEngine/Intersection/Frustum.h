@@ -12,8 +12,8 @@ namespace Intersection
 		Frustum() = default;
 		GET_CONST_ACCESSOR(Position, const Math::Vector3&, _position);
 
-		void Make(const Math::Matrix &viewProjection);
-		bool In(const Math::Vector3 &v, float radius = 0.0f) const;
+		void Make(const Math::Matrix& viewProjection);
+		bool In(const Math::Vector3& v, float radius = 0.0f) const;
 
 	private:
 		std::array<Math::Plane, 6>		_plane;

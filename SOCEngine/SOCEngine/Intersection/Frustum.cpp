@@ -29,7 +29,7 @@ void Frustum::Make(const Matrix &viewProjection)
 	_plane[5] = Plane::FromPoints(_planeVertex[1], _planeVertex[5], _planeVertex[6]);	// ¿ì Æò¸é(right)
 }
 
-bool Frustum::In(const Vector3 &v, float radius) const
+bool Frustum::In(const Vector3& v, float radius) const
 {
 	for(uint i=0; i<6; ++i)
 	{
