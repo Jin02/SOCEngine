@@ -4,7 +4,7 @@ using namespace Rendering;
 using namespace Rendering::Geometry;
 using namespace Rendering::RenderQueue;
 
-void OpaqueMeshRenderQueue::Add(const Mesh& mesh)
+void OpaqueMeshRenderQueue::Add(OpaqueMeshRenderQueue::MeshRenderQType& mesh)
 {
 	auto vbKey = mesh.GetVBKey();
 	auto find = _vbPerMeshes.Find(vbKey);

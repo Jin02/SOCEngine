@@ -10,7 +10,9 @@ namespace Rendering
 		class OpaqueMeshRenderQueue final
 		{
 		public:
-			void Add(const Geometry::Mesh& mesh);			
+			using MeshRenderQType = std::remove_pointer_t<Rendering::Geometry::MeshRawPtrs::PtrType>;
+
+			void Add(MeshRenderQType& mesh);			
 			void DeleteAllContent();
 
 			template <class Iterator>		// Iterator Form = "[](const Mesh*) -> void { }"
