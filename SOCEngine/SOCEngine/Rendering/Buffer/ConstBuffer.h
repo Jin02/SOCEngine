@@ -35,7 +35,8 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx)							{ _cb.Initialize(dx, sizeof(Type)); }
 			void UpdateSubResource(Device::DirectX& dx, const Type& data)	{ _cb.UpdateSubResource(dx, &data); }
 
-			operator ConstBuffer&() { return _cb; }
+			operator ConstBuffer&()				{ return _cb; }
+			operator const ConstBuffer&() const { return _cb; }
 
 		private:
 			ConstBuffer _cb;
