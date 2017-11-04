@@ -18,6 +18,7 @@
 #include "ShadowRenderer.h"
 
 #include "TileBasedShadingHeader.h"
+#include "MeshRenderer.h"
 
 namespace Rendering
 {
@@ -46,7 +47,7 @@ namespace Rendering
 
 			void Voxelize(Device::DirectX& dx, VoxelMap& outDLInjectVoxelMap,
 				const Math::Vector3& startMinWorldPos, VXGIInfoCB& infoCB,
-				Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, Renderer::TBRParamCB& tbrParamCB);
+				Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, Renderer::TBRParamCB& tbrParamCB, Renderer::MeshRenderer& meshRenderer);
 
 			void UpdateConstBuffer(Device::DirectX& dx, const Math::Vector3& startMinPos);
 

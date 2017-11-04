@@ -14,6 +14,7 @@ using namespace Rendering::View;
 using namespace Rendering::GI;
 using namespace Rendering::Shader;
 using namespace Rendering::Factory;
+using namespace Rendering::Renderer;
 
 void VXGI::InitializeClearVoxelMap(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
@@ -83,14 +84,18 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const VXGIStaticInf
 	InitializeClearVoxelMap(dx, shaderMgr, _staticInfo.dimension);
 }
 
-void VXGI::Run(DirectX& dx, MainRenderingSystemParam& main, LightManager& lightMgr, ShadowSystemParam& shadowSystem)
+void VXGI::Run(DirectX& dx,
+			MainRenderingSystemParam& main, LightManager& lightMgr, ShadowSystemParam& shadowSystem,
+			MeshRenderer& meshRenderer)
 {	
 	ClearInjectColorVoxelMap(dx);
 	
 	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
-		_voxelization.Voxelize(dx, _injectionSourceMap, _startCenterWorldPos, _infoCB, lightMgr, shadowSystem, main.renderer.GetTBRParamCB());
+		_voxelization.Voxelize(dx, _injectionSourceMap, _startCenterWorldPos, _infoCB,
+								lightMgr, shadowSystem, main.renderer.GetTBRParamCB(),
+								meshRenderer);
 	}
 
 	// 2. Injection Pass

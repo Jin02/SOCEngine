@@ -67,7 +67,8 @@ void Voxelization::ClearVoxelMap(DirectX& dx, ExplicitConstBuffer<VXGIStaticInfo
 void Voxelization::Voxelize(
 	DirectX& dx, VoxelMap& outDLInjectVoxelMap, 
 	const Vector3& startMinWorldPos, VXGIInfoCB& infoCB, 
-	LightManager& lightMgr, ShadowSystemParam& shadowSystem, TBRParamCB& tbrParamCB)
+	LightManager& lightMgr, ShadowSystemParam& shadowSystem, TBRParamCB& tbrParamCB, 
+	MeshRenderer& meshRenderer)
 {
 	ClearVoxelMap(dx, infoCB.staticInfoCB);
 
