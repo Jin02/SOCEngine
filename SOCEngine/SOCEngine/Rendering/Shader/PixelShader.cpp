@@ -13,12 +13,12 @@ void PixelShader::Initialize(Device::DirectX& dx)
 	_shader = dx.CreatePixelShader(_baseShader);
 }
 
-void PixelShader::BindShaderToContext(Device::DirectX& dx)
+void PixelShader::BindShaderToContext(Device::DirectX& dx) const
 {
-	dx.GetContext()->PSSetShader(_shader.GetRaw(), nullptr, 0);
+	dx.GetContext()->PSSetShader(const_cast<ID3D11PixelShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void PixelShader::UnBindShaderToContext(Device::DirectX& dx)
+void PixelShader::UnBindShaderToContext(Device::DirectX& dx) const
 {
 	dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }

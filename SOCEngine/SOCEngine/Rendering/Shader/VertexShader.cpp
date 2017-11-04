@@ -34,22 +34,22 @@ void VertexShader::Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT
 	_semanticInfo.back().size = dx.CalcFormatSize(vertexDeclations[count-1].Format);
 }
 
-void VertexShader::BindShaderToContext(Device::DirectX& dx)
+void VertexShader::BindShaderToContext(Device::DirectX& dx) const
 {
-	dx.GetContext()->VSSetShader(_shader.GetRaw(), nullptr, 0);
+	dx.GetContext()->VSSetShader(const_cast<ID3D11VertexShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void VertexShader::BindInputLayoutToContext(Device::DirectX& dx)
+void VertexShader::BindInputLayoutToContext(Device::DirectX& dx) const
 {
-	dx.GetContext()->IASetInputLayout(_layout.GetRaw());
+	dx.GetContext()->IASetInputLayout(const_cast<ID3D11InputLayout*>(_layout.GetRaw()));
 }
 
-void VertexShader::UnBindShaderToContext(Device::DirectX& dx)
+void VertexShader::UnBindShaderToContext(Device::DirectX& dx) const
 {
 	dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
 }
 
-void VertexShader::UnBindInputLayoutToContext(Device::DirectX& dx)
+void VertexShader::UnBindInputLayoutToContext(Device::DirectX& dx) const
 {
 	dx.GetContext()->IASetInputLayout(nullptr);
 }

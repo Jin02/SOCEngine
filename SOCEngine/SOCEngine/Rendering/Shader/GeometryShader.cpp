@@ -14,12 +14,12 @@ void GeometryShader::Initialize(Device::DirectX& dx)
 	_shader = dx.CreateGeometryShader(_baseShader);
 }
 
-void GeometryShader::BindShaderToContext(Device::DirectX& dx)
+void GeometryShader::BindShaderToContext(Device::DirectX& dx) const
 {
-	dx.GetContext()->GSSetShader(_shader.GetRaw(), nullptr, 0);
+	dx.GetContext()->GSSetShader(const_cast<ID3D11GeometryShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void GeometryShader::UnBindShaderToContext(Device::DirectX& dx)
+void GeometryShader::UnBindShaderToContext(Device::DirectX& dx) const
 {
 	dx.GetContext()->GSSetShader(nullptr, nullptr, 0);
 }

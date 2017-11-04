@@ -23,10 +23,10 @@ namespace Rendering
 
 			void Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
 
-			void BindShaderToContext(Device::DirectX& dx);
-			void BindInputLayoutToContext(Device::DirectX& dx);
-			void UnBindShaderToContext(Device::DirectX& dx);
-			void UnBindInputLayoutToContext(Device::DirectX& dx);
+			void BindShaderToContext(Device::DirectX& dx) const;
+			void BindInputLayoutToContext(Device::DirectX& dx) const;
+			void UnBindShaderToContext(Device::DirectX& dx) const;
+			void UnBindInputLayoutToContext(Device::DirectX& dx) const;
 
 			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, View::ShaderResourceView& view);
 			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* const samplerState);
