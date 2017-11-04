@@ -33,10 +33,10 @@ namespace Rendering
 					const Object* object				= objMgr.Find(id); assert(object);
 					const Core::Transform& transform	= _FindTransform(mesh.GetObjectID(), transformPool);
 
-					bool use =	object->GetUse() | cullFunc(mesh, transform);
+					bool use =	object->GetUse() & cullFunc(mesh, transform);
 
 					if (use)
-						renderQueue.emplace_back(&mesh);
+						renderQueue.emplace_back(const_cast<Mesh*>(&mesh));
 				}
 
 				_SortTransparentMesh(renderQueue, viewDir, transformPool);
@@ -60,9 +60,9 @@ namespace Rendering
 							const Core::Object* object			= objMgr.Find(id); assert(object);
 							const Core::Transform& transform	= _FindTransform(id, transformPool);
 							
-							bool use = object->GetUse() | cullFunc(mesh, transform);
+							bool use = object->GetUse() & cullFunc(mesh, transform);
 							if (use)
-								renderQueue.Add(mesh);
+								renderQueue.Add(const_cast<Mesh&>(mesh));
 						}
 					);				
 			}
