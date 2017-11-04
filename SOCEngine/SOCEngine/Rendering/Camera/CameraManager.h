@@ -26,6 +26,16 @@ namespace Rendering
 			void SetMainCamera(Core::ObjectID objectID);
 			GET_ALL_ACCESSOR(MainCamera, auto&, _mainCamera);
 
+			bool InFrustumAllCamera(const Math::Vector3& worldPos, float radius = 0.0f) const;
+
+			template <typename CallFunc>
+			void CallFrustumAllCamera(CallFunc callFunc) const
+			{
+				callFunc(_mainCamera.GetFrustum());
+
+				// TODO : 이제 여기에 다양한 카메라들을 집어넣으면 된다.
+			}
+
 		public:
 			template <class CameraType> CameraType& Acquire(Core::ObjectID objID)
 			{
