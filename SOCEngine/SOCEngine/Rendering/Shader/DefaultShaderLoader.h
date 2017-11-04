@@ -30,7 +30,8 @@ namespace Rendering
 
 			Shaders& Add(uint key, const Shader::ShaderGroup& shaders);
 			bool Has(uint key) const;
-			Shaders& Find(uint key);
+			Shaders& Find(uint key) 	{ return _shaders[key]; }
+			const Shaders& Find(uint key) const;
 
 			static uint MakeKey(uint bufferFlag, DefaultRenderType renderType);
 			std::string MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const;

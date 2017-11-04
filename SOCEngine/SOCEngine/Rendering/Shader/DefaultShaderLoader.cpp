@@ -110,9 +110,12 @@ bool DefaultShaderLoader::Has(uint key) const
 	return iter != _shaders.end();
 }
 
-DefaultShaderLoader::Shaders& DefaultShaderLoader::Find(uint key)
+const DefaultShaderLoader::Shaders& DefaultShaderLoader::Find(uint key) const
 {
-	return _shaders[key];
+	const auto iter = _shaders.find(key);
+	assert(iter != _shaders.end());
+
+	return iter->second;
 }
 
 void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
