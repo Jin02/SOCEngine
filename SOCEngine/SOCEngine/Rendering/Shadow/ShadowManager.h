@@ -8,7 +8,7 @@
 #include "PointLightShadowBuffer.h"
 
 #include "LightManager.h"
-#include "ShadowMapCB.hpp"
+#include "ShadowMapCBs.hpp"
 #include "ShadowBufferObject.hpp"
 
 #include "CameraManager.h"
@@ -53,7 +53,7 @@ namespace Rendering
 			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
 			{
 				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
-				GetShadowMapCB<ShadowType>().PushConstBufferToQueue();
+				GetShadowMapCBs<ShadowType>().PushConstBufferToQueue();
 
 				_dirtyGlobalParam = true;
 
@@ -66,7 +66,7 @@ namespace Rendering
 
 				GetPool<ShadowType>().Delete(objID.Literal());
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
-				GetShadowMapCB<ShadowType>().Delete(index);
+				GetShadowMapCBs<ShadowType>().Delete(index);
 
 				_dirtyGlobalParam = true;
 				GetShadowDatas<ShadowType>().mustUpdateToGPU = true;
@@ -99,11 +99,11 @@ namespace Rendering
 				return GetPool<ShadowType>().GetIndexer();
 			}
 
-			template <class ShadowType>	auto& GetShadowMapCB()
+			template <class ShadowType>	auto& GetShadowMapCBs()
 			{
 				return GetShadowDatas<ShadowType>().constBuffers;
 			}
-			template <class ShadowType> const auto& GetShadowMapCB() const
+			template <class ShadowType> const auto& GetShadowMapCBs() const
 			{
 				return GetShadowDatas<ShadowType>().constBuffers;
 			}
@@ -152,7 +152,7 @@ namespace Rendering
 			{
 				Shadow::ShadowPool<ShadowType>							pool;
 				Shadow::Buffer::ShadowBufferObject<ShadowType>			buffers;
-				Shadow::Buffer::ShadowMapCB<ShadowType>					constBuffers;
+				Shadow::Buffer::ShadowMapCBs<ShadowType>				constBuffers;
 
 				std::vector<ShadowType*>								dirtyShadows;
 				std::vector<const typename ShadowType::LightType*>		influentialLights;
