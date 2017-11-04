@@ -11,6 +11,8 @@
 #include "ShadowMapCB.hpp"
 #include "ShadowBufferObject.hpp"
 
+#include "CameraManager.h"
+
 namespace Rendering
 {
 	namespace Manager
@@ -35,7 +37,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx);
 			void UpdateGlobalCB(Device::DirectX& dx);
 
-			void CheckDirtyShadows(const LightManager& lightMgr, const Core::TransformPool& tfPool);			
+			void CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const Core::ObjectManager& objMgr, const LightManager& lightMgr, const Core::TransformPool& tfPool);			
 			void ClearDirty();
 
 			void UpdateBuffer(const LightManager& lightMgr, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
@@ -114,6 +116,15 @@ namespace Rendering
 				return GetShadowDatas<ShadowType>().buffers;
 			}
 
+			template <class ShadowType>	auto& GetInfluentialLights()
+			{
+				return GetShadowDatas<ShadowType>().influentialLights;
+			}
+			template <class ShadowType>	const auto& GetInfluentialLights() const
+			{
+				return GetShadowDatas<ShadowType>().influentialLights;
+			}
+
 			GET_ALL_ACCESSOR(GlobalParamCB, auto&, _globalCB);
 
 		private:
@@ -139,12 +150,14 @@ namespace Rendering
 			template <typename ShadowType>
 			struct ShadowDatas
 			{
-				Shadow::ShadowPool<ShadowType>					pool;
-				std::vector<ShadowType*>						dirtyShadows;
-				Shadow::Buffer::ShadowBufferObject<ShadowType>	buffers;
-				Shadow::Buffer::ShadowMapCB<ShadowType>			constBuffers;
+				Shadow::ShadowPool<ShadowType>							pool;
+				Shadow::Buffer::ShadowBufferObject<ShadowType>			buffers;
+				Shadow::Buffer::ShadowMapCB<ShadowType>					constBuffers;
 
-				bool											mustUpdateToGPU = true;
+				std::vector<ShadowType*>								dirtyShadows;
+				std::vector<const typename ShadowType::LightType*>		influentialLights;
+
+				bool													mustUpdateToGPU = true;
 			};
 
 			std::tuple<	ShadowDatas<Shadow::SpotLightShadow>,

@@ -10,6 +10,8 @@
 #include "PixelShader.h"
 #include "GeometryShader.h"
 
+#include "Object.h"
+
 #include <type_traits>
 
 using namespace Core;
@@ -20,8 +22,10 @@ using namespace Rendering::Shadow::Buffer;
 using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
+using namespace Rendering::Camera;
+using namespace Intersection;
 
-void ShadowManager::Initialize(Device::DirectX & dx)
+void ShadowManager::Initialize(Device::DirectX& dx)
 {
 	_globalCB.Initialize(dx);
 
@@ -30,7 +34,7 @@ void ShadowManager::Initialize(Device::DirectX & dx)
 	GetBuffer<PointLightShadow>().GetBuffer().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
 
-void ShadowManager::UpdateGlobalCB(Device::DirectX & dx)
+void ShadowManager::UpdateGlobalCB(Device::DirectX& dx)
 {
 	if(_dirtyGlobalParam == false)
 		return;
@@ -72,12 +76,14 @@ void ShadowManager::UpdateGlobalCB(Device::DirectX & dx)
 	_dirtyGlobalParam = false;
 }
 
-void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const TransformPool& tfPool)
+void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const ObjectManager& objMgr,
+											  const LightManager& lightMgr, const TransformPool& tfPool)
 {
-	auto UpdateDirtyShadow = [&lightMgr, &tfPool, this](auto& shadowDatas)
+	auto Work = [&lightMgr, &tfPool, &objMgr, &camMgr](auto& shadowDatas)
 	{
-		auto& pool		= shadowDatas.pool;
-		auto& dirtys	= shadowDatas.dirtyShadows;
+		auto& pool				= shadowDatas.pool;
+		auto& dirtys			= shadowDatas.dirtyShadows;
+		auto& influentialLights	= shadowDatas.influentialLights;
 
 		uint size = pool.GetSize();
 		for (uint i = 0; i < size; ++i)
@@ -87,18 +93,49 @@ void ShadowManager::CheckDirtyShadows(const LightManager& lightMgr, const Transf
 			Core::ObjectID objID = shadow.GetObjectID();
 			using ShadowPoolType = std::decay_t<decltype(pool)>;
 
-			auto light = lightMgr.GetPool<ShadowPoolType::LightType>().Find(objID.Literal()); assert(light);
-			auto transform = tfPool.Find(objID.Literal()); assert(transform);
+			const auto* light		= lightMgr.GetPool<ShadowPoolType::LightType>().Find(objID.Literal());
+			const auto& lightTF		= *tfPool.Find(objID.Literal());
 
-			bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | transform->GetDirty();
+			const Object* object	= objMgr.Find(objID);
+
+			// TODO :	VXGI에서 TraceShadowCone 테스트 해보고 성능이 안좋으면 복구해야함
+			//			안좋으면 그땐 또 그때나름 -_-.. 이걸 어찌저찌 잡아다가 최적화 해야된다.
+#if 0
+			bool dirty	= light->GetBase().GetDirty() | shadow.GetDirty() | lightTF.GetDirty();
 			if (dirty)
 				dirtys.push_back(&shadow);
+
+			bool culled	= (light->Intersect(frustum, tfPool) & object->GetUse()) == false;
+			if (culled == false)
+				culleds.push_back(&shadow);
+#else
+
+			bool visibleLight = false;
+			if (object->GetUse())
+			{
+				camMgr.CallFrustumAllCamera(
+					[&visibleLight, light, &tfPool](const Frustum& frustum)
+					{
+						visibleLight |= light->Intersect(frustum, tfPool);
+					}
+				);
+			}
+
+			if (visibleLight)
+			{
+				bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | lightTF.GetDirty();
+				if (dirty)
+					dirtys.push_back(&shadow);
+
+				influentialLights.push_back(light);
+			}
+#endif
 		}
 	};
 
-	UpdateDirtyShadow(GetShadowDatas<PointLightShadow>());
-	UpdateDirtyShadow(GetShadowDatas<SpotLightShadow>());
-	UpdateDirtyShadow(GetShadowDatas<DirectionalLightShadow>());
+	Work(GetShadowDatas<PointLightShadow>());
+	Work(GetShadowDatas<SpotLightShadow>());
+	Work(GetShadowDatas<DirectionalLightShadow>());
 
 	_dirtyGlobalParam |=	GetBuffer<DirectionalLightShadow>().GetDirty()	|
 							GetBuffer<PointLightShadow>().GetDirty()		|
@@ -113,6 +150,9 @@ void ShadowManager::ClearDirty()
 
 		for(auto shadow : dirtys)
 			shadow->SetDirty(false);
+
+		dirtys.clear();
+		datas.influentialLights.clear();
 	};
 
 	Clear(GetShadowDatas<DirectionalLightShadow>());
@@ -143,9 +183,9 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 	Update(GetShadowDatas<SpotLightShadow>());
 }
 
-void ShadowManager::UpdateSRBuffer(Device::DirectX & dx)
+void ShadowManager::UpdateSRBuffer(Device::DirectX& dx)
 {	
-	auto UpdateSRBuffer = [&dx](auto& shadowDatas)
+	auto UpdateSRBuffer = [& dx](auto& shadowDatas)
 	{
 		shadowDatas.buffers.GetBuffer().UpdateSRBuffer(dx, shadowDatas.mustUpdateToGPU);
 		shadowDatas.mustUpdateToGPU = false;
@@ -184,9 +224,9 @@ void ShadowManager::DeleteAll()
 	DeleteAll(GetShadowDatas<SpotLightShadow>());
 }
 
-void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS, bool bindPS)
+void ShadowManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
 {	
-	auto Bind = [&dx, bindVS, bindGS, bindPS](
+	auto Bind = [& dx, bindVS, bindGS, bindPS](
 		TextureBindIndex bind, ShaderResourceBuffer& srb)
 	{
 		if (bindVS)	VertexShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());
@@ -218,9 +258,9 @@ void ShadowManager::BindResources(Device::DirectX & dx, bool bindVS, bool bindGS
 	if (bindPS) PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
 }
 
-void ShadowManager::UnbindResources(Device::DirectX & dx, bool bindVS, bool bindGS, bool bindPS) const
+void ShadowManager::UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const
 {	
-	auto Unbind = [&dx, bindVS, bindGS, bindPS](TextureBindIndex bind)
+	auto Unbind = [& dx, bindVS, bindGS, bindPS](TextureBindIndex bind)
 	{
 		if (bindVS)	VertexShader::UnBindShaderResourceView(dx, bind);
 		if (bindGS)	GeometryShader::UnBindShaderResourceView(dx, bind);
