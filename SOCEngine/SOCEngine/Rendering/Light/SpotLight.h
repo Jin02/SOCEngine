@@ -4,6 +4,8 @@
 #include "Half.h"
 #include "Transform.h"
 
+#include "Frustum.h"
+
 namespace Rendering
 {
 	namespace Shadow
@@ -42,7 +44,9 @@ namespace Rendering
 		public:
 			explicit SpotLight(Core::ObjectID objID) : _base(objID) {};
 
-			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
+			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const;
+			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const;
+
 			TransformType MakeTransform(const Core::Transform& transform) const;
 			Param MakeParam(const Core::Transform& transform) const;
 			inline void SetSpotAngleDegree(float d) { _spotAngleDegree = d; _dirty = true; }

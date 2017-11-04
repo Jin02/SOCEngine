@@ -10,20 +10,29 @@ using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-bool SpotLight::Intersect(const Sphere &sphere, const Transform& transform) const
+bool SpotLight::Intersect(const Sphere& sphere, const TransformPool& tfPool) const
 {
+	const auto* lightTF = tfPool.Find(GetObjectID().Literal()); assert(lightTF);
 #if 0
-	Cone cone(_spotAngleDegree, _base.GetRadius(), transform.GetWorldForward(), transform.GetWorldPosition());
+	Cone cone(_spotAngleDegree, _base.GetRadius(), lightTF->GetWorldForward(), lightTF->GetWorldPosition());
 	return cone.Intersects(sphere);
 #else
-	Math::Vector3 wp = transform.GetWorldPosition();
+	const Vector3& wp = lightTF->GetWorldPosition();
 	return Sphere::Intersects(sphere, Sphere(wp, _base.GetRadius()));
 #endif
 }
 
+bool SpotLight::Intersect(const Frustum& frustum, const TransformPool& tfPool) const
+{											
+	const auto* lightTF = tfPool.Find(GetObjectID().Literal()); assert(lightTF);
+	return frustum.In(lightTF->GetWorldPosition(), _base.GetRadius());
+}
+
+
 SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) const
 {
 	assert(transform.GetObjectID() == _base.GetObjectID());
+
 	Vector3 forward	= transform.GetWorldForward();
 	float radius	= (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
 

@@ -4,6 +4,8 @@
 #include "Transform.h"
 #include "Half.h"
 
+#include "Frustum.h"
+
 namespace Rendering
 {
 	namespace Shadow
@@ -43,7 +45,8 @@ namespace Rendering
 			void UpdateFlag(const Core::Transform& transform);
 
 			TransformType MakeTransform(const Core::Transform& transform) const;
-			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const { return true; }
+			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const { return true; }
+			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const { return true; }
 
 		public:
 			GET_CONST_ACCESSOR(LightShaftSize,	float,			_base.GetRadius());

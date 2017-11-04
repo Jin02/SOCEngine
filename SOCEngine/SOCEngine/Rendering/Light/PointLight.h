@@ -3,6 +3,8 @@
 #include "BaseLight.h"
 #include "Transform.h"
 
+#include "Frustum.h"
+
 namespace Rendering
 {
 	namespace Shadow
@@ -32,7 +34,9 @@ namespace Rendering
 
 			explicit PointLight(Core::ObjectID objID) : _base(objID) {};
 
-			bool Intersect(const Intersection::Sphere &sphere, const Core::Transform& transform) const;
+			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const;
+			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const;
+
 			TransformType MakeTransform(const Core::Transform& transform) const;
 
 			GET_ALL_ACCESSOR(Base,			BaseLight&,		_base);
