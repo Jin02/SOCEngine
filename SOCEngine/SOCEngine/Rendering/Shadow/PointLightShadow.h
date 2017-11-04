@@ -11,6 +11,13 @@ namespace Rendering
 	{
 		class ShadowManager;
 	}
+	namespace Renderer
+	{
+		namespace ShadowMap
+		{
+			class PLShadowMapRenderer;
+		}
+	}
 
 	namespace Shadow
 	{
@@ -26,6 +33,7 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::PointLightShadowBuffer;
 			using LightType			= Light::PointLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
+			using ShadowMapRenderer	= Renderer::ShadowMap::PLShadowMapRenderer;
 
 		public:
 			PointLightShadow(BaseShadow base) : _base(base) {}

@@ -11,6 +11,13 @@ namespace Rendering
 	{
 		class ShadowManager;
 	}
+	namespace Renderer
+	{
+		namespace ShadowMap
+		{
+			class DLShadowMapRenderer;
+		}
+	}
 
 	namespace Shadow
 	{
@@ -26,6 +33,7 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::DirectionalLightShadowBuffer;
 			using LightType			= Light::DirectionalLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
+			using ShadowMapRenderer	= Renderer::ShadowMap::DLShadowMapRenderer;
 
 			struct Param
 			{

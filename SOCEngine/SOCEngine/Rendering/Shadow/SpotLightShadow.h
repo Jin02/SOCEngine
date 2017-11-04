@@ -11,6 +11,13 @@ namespace Rendering
 	{
 		class ShadowManager;
 	}
+	namespace Renderer
+	{
+		namespace ShadowMap
+		{
+			class SLShadowMapRenderer;
+		}
+	}
 
 	namespace Shadow
 	{
@@ -26,6 +33,7 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::SpotLightShadowBuffer;
 			using LightType			= Light::SpotLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
+			using ShadowMapRenderer	= Renderer::ShadowMap::SLShadowMapRenderer;
 
 		public:
 			SpotLightShadow(BaseShadow base) : _base(base) {}
