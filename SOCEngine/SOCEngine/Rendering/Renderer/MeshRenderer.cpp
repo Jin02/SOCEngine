@@ -8,6 +8,7 @@ using namespace Rendering::Manager;
 using namespace Rendering::Geometry;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
+using namespace Rendering::RenderQueue;
 
 void MeshRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
@@ -26,23 +27,22 @@ void BindBasicCB(DirectX& dx, Mesh& mesh, ConstBuffer& camCB)
 	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera,		camCB);
 }
 
-
-void MeshRenderer::RenderWithoutIASetVB(RenderParam param, Mesh& mesh)
+void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType renderType, Mesh& mesh) const
 {	
 	auto indexBuffer = param.bufferMgr.GetPool<IndexBuffer>().Find(mesh.GetIBKey());
 	assert(indexBuffer);
 
 	indexBuffer->IASetBuffer(param.dx);
 
-	uint key = _loader.MakeKey(mesh.GetBufferFlag(), param.renderType);
+	uint key = _loader.MakeKey(mesh.GetBufferFlag(), renderType);
 
-	DefaultShaderLoader::Shaders& defaultShaders = _loader.Find(key);
+	const DefaultShaderLoader::Shaders& defaultShaders = _loader.Find(key);
 	
-	auto& vs = defaultShaders.vs;
-	auto& gs = defaultShaders.gs;
-	auto& ps = defaultShaders.ps;
+	const auto& vs = defaultShaders.vs;
+	const auto& gs = defaultShaders.gs;
+	const auto& ps = defaultShaders.ps;
 	
-	auto BindSRV = [&dx = param.dx, &gs, &ps](auto& srObjects)
+	auto BindSRV = [& dx = param.dx, &gs, &ps](auto& srObjects)
 	{
 		uint size = srObjects.GetSize();
 		for (uint i = 0; i < size; ++i)
@@ -104,14 +104,28 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, Mesh& mesh)
 	param.dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }
 
-/*
-void MeshRenderer::RenderUsingSortedMeshVectorByVB(RenderParam param, MeshPool& meshes)
+void MeshRenderer::RenderTransparentMeshes(RenderParam param, DefaultRenderType renderType, TransparentMeshRenderQueue& meshes) const
 {
-	uint meshesCount = meshes.GetSize();
-	for (uint i = 0; i < meshesCount; ++i)
+	for (auto meshPtr : meshes)
 	{
-		Mesh& mesh = meshes.Get(i);
+		auto& vbPool				= param.bufferMgr.GetPool<VertexBuffer>();
+		VertexBuffer* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey());
 
+		vertexBuffer->IASetBuffer(param.dx);
+		RenderWithoutIASetVB(param, renderType, *meshPtr);
 	}
 }
-*/
+
+void MeshRenderer::RenderOpaqueMeshes(RenderParam param, DefaultRenderType renderType, OpaqueMeshRenderQueue& meshes) const
+{
+	meshes.Iterate(
+		[&param, renderType, this](Mesh* mesh)
+		{
+			auto& vbPool		= param.bufferMgr.GetPool<VertexBuffer>();
+			VertexBuffer* vb	= vbPool.Find(mesh->GetVBKey());
+			vb->IASetBuffer(param.dx);
+
+			RenderWithoutIASetVB(param, renderType, *mesh);
+		}
+	);
+}

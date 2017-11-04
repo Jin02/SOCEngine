@@ -4,6 +4,8 @@
 #include "MeshManager.hpp"
 #include "MaterialManager.hpp"
 
+#include "MeshRenderQueue.h"
+
 namespace Rendering
 {
 	namespace Renderer
@@ -20,17 +22,16 @@ namespace Rendering
 				Device::DirectX&			dx;
 				Manager::MaterialManager&	materialMgr;
 				Manager::BufferManager&		bufferMgr;
-
-				DefaultRenderType			renderType;
 				Buffer::ConstBuffer&		camCB;
 
-				RenderParam(Device::DirectX& _dx, Manager::MaterialManager&	_materialMgr, Manager::BufferManager& _bufferMgr,
-							DefaultRenderType _renderType, Buffer::ConstBuffer& _camCB) 
-					: dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), renderType(_renderType), camCB(_camCB) {}
+				RenderParam(Device::DirectX& _dx, Manager::MaterialManager& _materialMgr, Manager::BufferManager& _bufferMgr, Buffer::ConstBuffer& _camCB) 
+					: dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), camCB(_camCB) {}
 			};
 
-			void RenderWithoutIASetVB(RenderParam param, Geometry::Mesh& mesh);
-			//void RenderUsingSortedMeshVectorByVB(RenderParam param, Manager::MeshPool& meshes);
+			void RenderWithoutIASetVB(RenderParam param,	DefaultRenderType renderType, Geometry::Mesh& mesh) const;
+			void RenderTransparentMeshes(RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::TransparentMeshRenderQueue& meshes) const;
+			void RenderOpaqueMeshes(RenderParam param,		DefaultRenderType renderType, Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes) const;
+			void RenderAlphaBlendMeshes(RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::AlphaBlendMeshRenderQueue& meshes) const { RenderOpaqueMeshes(param, renderType, meshes); }
 
 		private:
 			Manager::DefaultShaderLoader _loader;
