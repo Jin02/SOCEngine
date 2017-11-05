@@ -16,6 +16,7 @@ using namespace Rendering::GI;
 using namespace Rendering::View;
 using namespace Rendering::Shader;
 using namespace Rendering::Factory;
+using namespace Rendering::RenderState;
 
 void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
@@ -37,10 +38,7 @@ void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 
 void VoxelConeTracing::Run(DirectX& dx, VoxelMap& injectionSourceMap, VoxelMap& mipmappedInjectionMap, VXGIInfoCB& infoCB, MainRenderingSystemParam& mainSystem)
 {
-	ID3D11DeviceContext* context = dx.GetContext();
-
-	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	context->ClearRenderTargetView(_indirectColorMap.GetRaw(), clearColor);
+	_indirectColorMap.Clear(dx, Color::Clear());
 
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTInjectionSourceColorMap,				injectionSourceMap.GetTexture3D().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
@@ -58,7 +56,7 @@ void VoxelConeTracing::Run(DirectX& dx, VoxelMap& injectionSourceMap, VoxelMap& 
 	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIStaticInfoCB,						infoCB.staticInfoCB);
 	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIDynamicInfoCB,					infoCB.dynamicInfoCB);
 
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateConeTracing());
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::ConeTracing);
 
 	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VCTOutIndirectMap, _indirectColorMap.GetTexture2D().GetUnorderedAccessView());
 

@@ -8,6 +8,7 @@ using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Renderer;
 using namespace Rendering::Camera;
+using namespace Rendering::RenderState;
 
 void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 {
@@ -44,7 +45,7 @@ void Bloom::RenderThresholdMap(	DirectX& dx,
 	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
 	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::TBRParam,				renderer.GetTBRParamCB());
 
-	PixelShader::BindSamplerState(dx,	SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
 	_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 
@@ -90,7 +91,7 @@ void Bloom::RenderBloom(Device::DirectX & dx, Texture::RenderTexture & outRT, Te
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(2), _bloomThresholdMap.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::HDRGlobalParamCB, _paramCB);
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mainRenderer.GetTBRParamCB());

@@ -1,4 +1,5 @@
 #include "Texture3D.h"
+#include "DirectX.h"
 
 using namespace Rendering::Texture;
 using namespace Rendering::View;

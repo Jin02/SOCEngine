@@ -6,6 +6,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Renderer;
 using namespace Rendering::Texture;
+using namespace Rendering::RenderState;
 
 void SSAO::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 {
@@ -39,7 +40,7 @@ void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, RenderTexture& inCo
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,	mainRenderer.GetTBRParamCB());
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(1),			_paramCB);
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 
 	_screen.Render(dx, outRT, true);
 

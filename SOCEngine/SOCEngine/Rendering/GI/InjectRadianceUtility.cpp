@@ -8,11 +8,12 @@ using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::GI;
 using namespace Rendering::Shader;
+using namespace Rendering::RenderState;
 
 void InjectRadianceFormUtility::Bind(DirectX& dx, BindParam& param)
 {
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	dx.GetSamplerStateShadowGreaterEqual());
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		dx.GetSamplerStatePoint());
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB,				param.infoCB.staticInfoCB);
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB,				param.infoCB.dynamicInfoCB);

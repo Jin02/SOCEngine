@@ -4,7 +4,6 @@ using namespace Device;
 using namespace Math;
 using namespace Rendering::GI;
 using namespace Rendering::Texture;
-using namespace Rendering::Shader;
 using namespace Rendering::View;
 
 void VoxelMap::Initialize(

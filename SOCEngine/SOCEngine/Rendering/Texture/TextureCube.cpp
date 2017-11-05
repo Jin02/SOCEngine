@@ -1,4 +1,5 @@
 #include "TextureCube.h"
+#include "DirectX.h"
 
 using namespace Device;
 using namespace Rendering;

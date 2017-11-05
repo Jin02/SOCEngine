@@ -1,10 +1,11 @@
 #include "DepthBufferCube.h"
+#include "DirectX.h"
 
 using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Texture;
 
-void DepthBufferCube::Initialize(Device::DirectX& dx, const Size<uint>& size, bool useShaderResource)
+void DepthBufferCube::Initialize(DirectX& dx, const Size<uint>& size, bool useShaderResource)
 {
 	uint bindFlag =	D3D11_BIND_DEPTH_STENCIL | 
 					(useShaderResource ? D3D11_BIND_SHADER_RESOURCE : 0);

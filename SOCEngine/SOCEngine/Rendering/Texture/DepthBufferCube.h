@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ShaderResourceView.h"
-#include "DirectX.h"
+#include "Rect.h"
 
 namespace Rendering
 {

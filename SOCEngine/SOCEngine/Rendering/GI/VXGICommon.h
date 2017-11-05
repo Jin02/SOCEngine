@@ -2,6 +2,7 @@
 
 #include "Vector3.h"
 #include "ConstBuffer.h"
+#include <algorithm>
 
 #undef max
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Texture3D.h"
+#include <vector>
 
 namespace Rendering
 {

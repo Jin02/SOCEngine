@@ -99,9 +99,9 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType ren
 		param.dx.GetContext()->DrawIndexed(indexBuffer->GetIndexCount(), 0, 0);
 	}
 
-	param.dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
-	param.dx.GetContext()->GSSetShader(nullptr, nullptr, 0);
-	param.dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
+	VertexShader::UnBindShaderToContext(param.dx);
+	PixelShader::UnBindShaderToContext(param.dx);
+	GeometryShader::UnBindShaderToContext(param.dx);
 }
 
 void MeshRenderer::RenderTransparentMeshes(RenderParam param, DefaultRenderType renderType, TransparentMeshRenderQueue& meshes) const

@@ -1,7 +1,11 @@
 #pragma once
 
-#include "DirectX.h"
-#include "Common.h"
+#include <d3d11_1.h>
+#include "DXResource.h"
+namespace Device
+{
+	class DirectX;
+}
 
 namespace Rendering
 {

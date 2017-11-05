@@ -12,6 +12,7 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Sky;
 using namespace Rendering::Manager;
 using namespace Rendering::Material;
+using namespace Rendering::RenderState;
 using namespace Rendering;
 using namespace Device;
 
@@ -47,7 +48,7 @@ void IBLPass::Render(	DirectX& dx, RenderTexture& outResultRT,
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,	mains.renderer.GetTBRParamCB());
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera,		mains.camera.GetCameraCB());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::AmbientCubeMapSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::AmbientCubeMapSamplerState, SamplerState::Linear);
 
 	_screen.Render(dx, outResultRT, true);
 

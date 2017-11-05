@@ -6,6 +6,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderState;
 using namespace Device;
 
 void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
@@ -15,7 +16,7 @@ void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 
 void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, RenderTexture& inputColorMap)
 {
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
 	
 	_screen.Render(dx, outResultRT, true);

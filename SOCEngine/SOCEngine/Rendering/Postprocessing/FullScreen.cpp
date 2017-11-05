@@ -6,6 +6,7 @@ using namespace Rendering::PostProcessing;
 using namespace Rendering::Shader;
 using namespace Rendering::Texture;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderState;
 
 void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderManager& shaderManager)
 {
@@ -88,24 +89,19 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 		dx.SetViewport(Rect<float>(0.0f, 0.0f, size.w, size.h));
 	}
 
-	ID3D11RenderTargetView* rtv	= outResultRT.GetRaw();	
-
-	ID3D11DepthStencilView* nullDSV = nullptr;
-	context->OMSetRenderTargets(1, &rtv, nullDSV);
-	context->OMSetDepthStencilState(dx.GetDepthStateDisableDepthTest(), 0x00);
+	dx.SetRenderTargets(outResultRT);
+	dx.SetDepthStencilState(DepthState::DisableDepthTest, 0);
 
 	_vs->BindShaderToContext(dx);
 	_vs->BindInputLayoutToContext(dx);
 	
 	_ps->BindShaderToContext(dx);
 
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	context->RSSetState( nullptr );
+	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+	dx.SetRasterizerState(RasterizerState::CWDefault);
 
 	context->Draw(3, 0);
 
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	rtv = nullptr;
-	context->OMSetRenderTargets(1, &rtv, nullDSV);
+	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	dx.ReSetRenderTargets(1);
 }

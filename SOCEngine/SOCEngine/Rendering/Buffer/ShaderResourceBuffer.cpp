@@ -1,5 +1,5 @@
 #include "ShaderResourceBuffer.h"
-#include <assert.h>
+#include "DirectX.h"
 
 using namespace Device;
 using namespace Rendering::Buffer;

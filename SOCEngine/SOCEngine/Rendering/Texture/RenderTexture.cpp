@@ -1,8 +1,15 @@
 #include "RenderTexture.h"
-#include <assert.h>
+#include "DirectX.h"
 
 using namespace Rendering::Texture;
 using namespace Device;
+
+RenderTexture::RenderTexture(	const DXSharedResource<ID3D11RenderTargetView>& rawRtv,
+								const DXSharedResource<ID3D11Texture2D>& rawTex2D, const Size<uint>& size)
+	: _renderTargetView(rawRtv), _tex2D(rawTex2D, size)
+{
+
+}
 
 void RenderTexture::Initialize(
 	Device::DirectX& dx,

@@ -6,6 +6,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::Renderer;
+using namespace Rendering::RenderState;
 using namespace Rendering;
 using namespace Device;
 
@@ -26,7 +27,7 @@ void LightBufferMerger::Render(DirectX& dx, RenderTexture& outResultRT, RenderTe
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), diffuse.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), specular.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 
 	_screen.Render(dx, outResultRT, true);
 

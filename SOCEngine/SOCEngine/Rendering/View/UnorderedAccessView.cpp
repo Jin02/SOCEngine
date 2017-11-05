@@ -1,5 +1,5 @@
 #include "UnorderedAccessView.h"
-#include <assert.h>
+#include "DirectX.h"
 
 using namespace Rendering::View;
 

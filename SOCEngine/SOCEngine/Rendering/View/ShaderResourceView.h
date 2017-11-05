@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Vector3.h"
-#include "Common.h"
-#include "DirectX.h"
 #include "BaseBuffer.h"
-#include <memory>
 
 namespace Rendering
 {

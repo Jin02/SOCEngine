@@ -7,6 +7,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Renderer;
+using namespace Rendering::RenderState;
 using namespace Rendering::Camera;
 
 void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
@@ -60,7 +61,7 @@ void DepthOfField::Render(	DirectX& dx, RenderTexture& outRT,
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(1),					_paramCB);
 	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 
 	_screen.Render(dx, outRT, true);
 

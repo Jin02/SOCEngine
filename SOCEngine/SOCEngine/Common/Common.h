@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #define SET_ACCESSOR(name, type, variable)			inline void Set##name(type t)	{ variable = t; }
 #define SET_ACCESSOR_DIRTY(name, type, variable)	inline void Set##name(type t)	{ variable = t; _dirty = true; }
 

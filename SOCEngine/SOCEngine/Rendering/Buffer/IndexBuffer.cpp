@@ -1,5 +1,5 @@
 #include "IndexBuffer.h"
-#include <assert.h>
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
 using namespace Device;

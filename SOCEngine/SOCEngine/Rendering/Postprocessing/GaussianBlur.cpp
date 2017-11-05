@@ -6,6 +6,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderState;
 using namespace Device;
 
 void GaussianBlur::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
@@ -41,7 +42,7 @@ void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 {
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 	
 	_vertical.Render(dx, tempMap, true);
 

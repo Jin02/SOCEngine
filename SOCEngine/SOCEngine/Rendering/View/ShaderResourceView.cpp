@@ -1,5 +1,5 @@
 #include "ShaderResourceView.h"
-#include <assert.h>
+#include "DirectX.h"
 
 using namespace Rendering::View;
 using namespace Math;

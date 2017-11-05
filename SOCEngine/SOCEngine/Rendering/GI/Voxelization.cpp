@@ -16,6 +16,7 @@ using namespace Rendering::View;
 using namespace Rendering::Factory;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
+using namespace Rendering::RenderState;
 using namespace Device;
 using namespace Rendering;
 
@@ -72,24 +73,23 @@ void Voxelization::Voxelize(
 {
 	ClearVoxelMap(dx, infoCB.staticInfoCB);
 
-	ID3D11DeviceContext* context = dx.GetContext();
-	context->RSSetState(dx.GetRasterizerStateCWDisableCullingWithClip());
-	context->OMSetDepthStencilState(dx.GetDepthStateLessEqual(), 0x00);
+	dx.SetRasterizerState(RasterizerState::CWDisableCullingWithClip);
+	dx.SetDepthStencilState(DepthState::LessEqual, 0);
 
 	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	context->OMSetBlendState(dx.GetBlendStateOpaque(), blendFactor, 0xffffffff);
+	dx.SetBlendState(BlendState::Opaque, blendFactor, 0xffffffff);
 
 	dx.SetViewport(Rect<float>(0.0f, 0.0f, _dimension, _dimension));
 
-	ID3D11UnorderedAccessView* uavs [] =
+	UnorderedAccessView* uavs[] =
 	{
-		_voxelAlbedoRawBuffer.GetUnorderedAccessView().GetRaw(),
-		_voxelNormalRawBuffer.GetUnorderedAccessView().GetRaw(),
-		_voxelEmissionRawBuffer.GetUnorderedAccessView().GetRaw(),
-		outDLInjectVoxelMap.GetSourceMapUAV().GetRaw()
+		&_voxelAlbedoRawBuffer.GetUnorderedAccessView(),
+		&_voxelNormalRawBuffer.GetUnorderedAccessView(),
+		&_voxelEmissionRawBuffer.GetUnorderedAccessView(),
+		&outDLInjectVoxelMap.GetSourceMapUAV()
 	};
 	
-	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(uavs), uavs, nullptr);
+	dx.SetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs), uavs);
 
 	auto& dlBuffer = lightMgr.GetBuffer<DirectionalLight>();
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightDirXY,					dlBuffer.GetTransformSRBuffer().GetShaderResourceView());
@@ -107,9 +107,9 @@ void Voxelization::Voxelize(
 
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					shadowSystem.manager.GetGlobalParamCB());
 
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowComprisonSamplerState,			dx.GetSamplerStateShadowGreaterEqual());	
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				dx.GetSamplerStatePoint());	
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,					dx.GetSamplerStateAnisotropic());	
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowComprisonSamplerState,			SamplerState::ShadowGreaterEqualComp);	
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);	
 
 	UpdateConstBuffer(dx, startMinWorldPos);
 
@@ -142,10 +142,8 @@ void Voxelization::Voxelize(
 	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState);
 	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 
-	ID3D11UnorderedAccessView* nullUAVs[] = {nullptr, nullptr, nullptr, nullptr};
-	context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, ARRAYSIZE(nullUAVs), nullUAVs, nullptr);
-
-	context->RSSetState(nullptr);
+	dx.ReSetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs));
+	dx.SetRasterizerState(RasterizerState::CWDefault);
 }
 
 void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startMinPos)

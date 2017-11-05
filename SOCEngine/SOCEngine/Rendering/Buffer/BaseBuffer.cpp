@@ -1,6 +1,5 @@
 #include "BaseBuffer.h"
-#include <assert.h>
-#include <memory>
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
 using namespace Device;

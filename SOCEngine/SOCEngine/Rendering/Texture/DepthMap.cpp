@@ -1,4 +1,5 @@
 #include "DepthMap.h"
+#include "DirectX.h"
 
 using namespace Rendering;
 using namespace Rendering::Texture;

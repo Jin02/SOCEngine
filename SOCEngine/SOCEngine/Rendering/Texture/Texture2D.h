@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DirectX.h"
 #include "Color.h"
 #include "Rect.h"
 
@@ -21,6 +20,7 @@ namespace Rendering
 		public:
 			Texture2D() = default;
 			explicit Texture2D(const View::ShaderResourceView& srv, const DXSharedResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size = Size<uint>(0, 0));
+			explicit Texture2D(const DXSharedResource<ID3D11Texture2D>& tex, const Size<uint>& size);
 
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);

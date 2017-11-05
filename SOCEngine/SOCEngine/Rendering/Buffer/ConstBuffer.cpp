@@ -1,4 +1,5 @@
 #include "ConstBuffer.h"
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
 

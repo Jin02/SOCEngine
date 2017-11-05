@@ -6,6 +6,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderState;
 using namespace Device;
 
 void BilateralFiltering::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
@@ -39,8 +40,8 @@ void BilateralFiltering::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(1),						depthMap.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	dx.GetSamplerStateLinear());
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex(1),					dx.GetSamplerStateShadowLinear());
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
+	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex(1),					SamplerState::ShadowLinear);
 
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
 
