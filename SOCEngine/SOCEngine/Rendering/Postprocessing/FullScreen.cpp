@@ -89,7 +89,7 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 		dx.SetViewport(Rect<float>(0.0f, 0.0f, size.w, size.h));
 	}
 
-	dx.SetRenderTargets(outResultRT);
+	dx.SetRenderTarget(outResultRT);
 	dx.SetDepthStencilState(DepthState::DisableDepthTest, 0);
 
 	_vs->BindShaderToContext(dx);

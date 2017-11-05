@@ -130,15 +130,15 @@ void DirectX::ReSetUAVsWithoutRenderTarget(const uint uavStartSlot, const uint n
 	_immediateContext->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, uavStartSlot, numUAVs, rawUAVs, nullptr);
 }
 
-void DirectX::SetRenderTargets(RenderTexture& rt, ID3D11DepthStencilView* dsv)
+void DirectX::SetRenderTarget(RenderTexture& rt, ID3D11DepthStencilView* dsv)
 {
 	ID3D11RenderTargetView* rtv = rt.GetRaw();
 	_immediateContext->OMSetRenderTargets(1, &rtv, dsv);
 }
 
-void DirectX::SetRenderTargets(RenderTexture& rt, DepthMap& depthMap)
+void DirectX::SetRenderTarget(RenderTexture& rt, DepthMap& depthMap)
 {
-	SetRenderTargets(rt, depthMap.GetRawDepthStencilView());
+	SetRenderTarget(rt, depthMap.GetRawDepthStencilView());
 }
 
 void DirectX::SetRenderTargets(const uint size, RenderTexture* const * renderTextures, ID3D11DepthStencilView* dsv)

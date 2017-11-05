@@ -52,8 +52,8 @@ namespace Device
 		void				SetViewport(const Rect<float>& rect);
 		void				SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, ID3D11DepthStencilView* dsv = nullptr);
 		void				SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, Rendering::Texture::DepthMap&);
-		void				SetRenderTargets(Rendering::Texture::RenderTexture&, ID3D11DepthStencilView* dsv = nullptr);
-		void				SetRenderTargets(Rendering::Texture::RenderTexture&, Rendering::Texture::DepthMap&);
+		void				SetRenderTarget(Rendering::Texture::RenderTexture&, ID3D11DepthStencilView* dsv = nullptr);
+		void				SetRenderTarget(Rendering::Texture::RenderTexture&, Rendering::Texture::DepthMap&);
 		void				ReSetRenderTargets(const uint numRTs);
 		void				SetUAVsWithoutRenderTarget(uint uavStartSlot, const uint numUAVs, Rendering::View::UnorderedAccessView* const*);
 		void				ReSetUAVsWithoutRenderTarget(const uint uavStartSlot, const uint numUAVs);
