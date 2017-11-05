@@ -20,6 +20,9 @@ public:
 
 	inline bool IsCanUse() const				{ return _resource != nullptr;	}
 
+	inline operator Resource*()					{ return _resource.get();		}
+	inline operator const Resource* const()		{ return _resource.get();		}
+
 private:
 	std::unique_ptr<Resource, std::function<void(IUnknown*)>> _resource;
 };
