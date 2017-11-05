@@ -25,11 +25,11 @@ namespace Rendering
 
 			void BindShaderToContext(Device::DirectX& dx) const;
 			void BindInputLayoutToContext(Device::DirectX& dx) const;
-			void UnBindShaderToContext(Device::DirectX& dx) const;
-			void UnBindInputLayoutToContext(Device::DirectX& dx) const;
+			static void UnBindShaderToContext(Device::DirectX& dx);
+			static void UnBindInputLayoutToContext(Device::DirectX& dx);
 
 			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& view);
-			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, const ID3D11SamplerState* samplerState);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, RenderState::SamplerState);
 			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
 
 			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);

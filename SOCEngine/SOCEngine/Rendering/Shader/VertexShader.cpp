@@ -5,6 +5,7 @@ using namespace Rendering::Shader;
 using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
+using namespace Rendering::RenderState;
 
 VertexShader::VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _baseShader(blob, key), _shader(nullptr), _layout(nullptr)
@@ -46,12 +47,12 @@ void VertexShader::BindInputLayoutToContext(DirectX& dx) const
 	dx.GetContext()->IASetInputLayout(const_cast<ID3D11InputLayout*>(_layout.GetRaw()));
 }
 
-void VertexShader::UnBindShaderToContext(DirectX& dx) const
+void VertexShader::UnBindShaderToContext(DirectX& dx)
 {
 	dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
 }
 
-void VertexShader::UnBindInputLayoutToContext(DirectX& dx) const
+void VertexShader::UnBindInputLayoutToContext(DirectX& dx)
 {
 	dx.GetContext()->IASetInputLayout(nullptr);
 }
@@ -62,8 +63,9 @@ void VertexShader::BindShaderResourceView(DirectX& dx, TextureBindIndex bind, co
 	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void VertexShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, const ID3D11SamplerState* samplerState)
+void VertexShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, SamplerState state)
 {
+	auto samplerState = const_cast<ID3D11SamplerState*>( dx.GetSamplerState(state).GetRaw() );
 	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, const_cast<ID3D11SamplerState* const*>(&samplerState));
 }
 

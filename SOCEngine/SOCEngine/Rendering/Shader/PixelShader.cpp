@@ -4,6 +4,7 @@ using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
+using namespace Rendering::RenderState;
 using namespace Device;
 
 PixelShader::PixelShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
@@ -21,7 +22,7 @@ void PixelShader::BindShaderToContext(DirectX& dx) const
 	dx.GetContext()->PSSetShader(const_cast<ID3D11PixelShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void PixelShader::UnBindShaderToContext(DirectX& dx) const
+void PixelShader::UnBindShaderToContext(DirectX& dx)
 {
 	dx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }
@@ -33,8 +34,9 @@ void PixelShader::BindShaderResourceView(DirectX& dx, TextureBindIndex bind, con
 	dx.GetContext()->PSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void PixelShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, const ID3D11SamplerState* samplerState)
+void PixelShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, SamplerState state)
 {
+	auto samplerState = const_cast<ID3D11SamplerState*>( dx.GetSamplerState(state).GetRaw() );
 	dx.GetContext()->PSSetSamplers(static_cast<uint>(bind), 1, const_cast<ID3D11SamplerState* const*>(&samplerState));
 }
 

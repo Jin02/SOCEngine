@@ -5,6 +5,7 @@ using namespace Rendering::Shader;
 using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
+using namespace Rendering::RenderState;
 
 ComputeShader::ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key) : _base(blob, key)
 {
@@ -29,8 +30,9 @@ void ComputeShader::BindShaderResourceView(DirectX& dx, TextureBindIndex bind, c
 	dx.GetContext()->CSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void ComputeShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
-{
+void ComputeShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, SamplerState state)
+{	
+	auto samplerState = const_cast<ID3D11SamplerState*>( dx.GetSamplerState(state).GetRaw() );
 	dx.GetContext()->CSSetSamplers(static_cast<uint>(bind), 1, &samplerState);
 }
 

@@ -5,6 +5,7 @@ using namespace Rendering::Shader;
 using namespace Rendering::Buffer;
 using namespace Rendering::View;
 using namespace Rendering;
+using namespace Rendering::RenderState;
 
 GeometryShader::GeometryShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
 	: _shader(nullptr), _baseShader(blob, key)
@@ -21,7 +22,7 @@ void GeometryShader::BindShaderToContext(DirectX& dx) const
 	dx.GetContext()->GSSetShader(const_cast<ID3D11GeometryShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void GeometryShader::UnBindShaderToContext(DirectX& dx) const
+void GeometryShader::UnBindShaderToContext(DirectX& dx)
 {
 	dx.GetContext()->GSSetShader(nullptr, nullptr, 0);
 }
@@ -32,8 +33,9 @@ void GeometryShader::BindShaderResourceView(DirectX& dx, TextureBindIndex bind, 
 	dx.GetContext()->GSSetShaderResources(static_cast<uint>(bind), 1, &raw);
 }
 
-void GeometryShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, const ID3D11SamplerState* samplerState)
+void GeometryShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, SamplerState state)
 {	
+	auto samplerState = const_cast<ID3D11SamplerState*>( dx.GetSamplerState(state).GetRaw() );
 	dx.GetContext()->GSSetSamplers(static_cast<uint>(bind), 1, const_cast<ID3D11SamplerState* const*>(&samplerState));
 }
 
