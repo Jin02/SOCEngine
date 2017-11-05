@@ -3,6 +3,8 @@
 #include "Launcher.h"
 #include "BaseShader.hpp"
 #include "BaseBuffer.h"
+#include "RenderTexture.h"
+#include "DepthMap.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -10,6 +12,9 @@
 
 using namespace Device;
 using namespace Rendering::Shader;
+using namespace Rendering::Texture;
+using namespace Rendering::View;
+using namespace Rendering::RenderState;
 
 DirectX::DirectX() : _backBufferSize(0, 0)
 {
@@ -24,9 +29,9 @@ void DirectX::CreateRenderTargetView()
 
 	ID3D11RenderTargetView* rtv = nullptr;
 	assert(SUCCEEDED(_device->CreateRenderTargetView(backBuffer, nullptr, &rtv)));
-	_renderTargetView = DXUniqueResource<ID3D11RenderTargetView>(rtv);
+//	backBuffer->Release();
 
-	backBuffer->Release();
+	_backBufferRenderTexture = RenderTexture(DXSharedResource<ID3D11RenderTargetView>(rtv), DXSharedResource<ID3D11Texture2D>(backBuffer), _backBufferSize.Cast<uint>());
 }
 
 void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA)
@@ -98,16 +103,58 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 
 void DirectX::SetViewport(const Rect<float>& rect)
 {
-	D3D11_VIEWPORT vp;
+	D3D11_VIEWPORT vp{rect.x, rect.y, rect.size.w, rect.size.h, 0.0f, 1.0f};
+	_immediateContext->RSSetViewports(1, &vp);
+}
 
-	vp.TopLeftX		= rect.x;
-	vp.TopLeftY		= rect.y;
-	vp.Width		= rect.size.w;
-	vp.Height		= rect.size.h;
-	vp.MinDepth		= 0.0f;
-	vp.MaxDepth		= 1.0f;
+void DirectX::ReSetRenderTargets(const uint size)
+{
+	ID3D11RenderTargetView* rtvs[8]	= { nullptr, };
+	_immediateContext->OMSetRenderTargets(size, rtvs, nullptr);
+}
 
-	_immediateContext->RSSetViewports( 1, &vp );
+void DirectX::SetUAVsWithoutRenderTarget(uint uavStartSlot, const uint numUAVs, UnorderedAccessView* const* uavs)
+{
+	ID3D11UnorderedAccessView* rawUAVs[8]	= { nullptr, };
+	{
+		for(uint i=0; i<numUAVs; ++i)
+			rawUAVs[i] = uavs[i]->GetRaw();
+	}
+
+	_immediateContext->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, uavStartSlot, numUAVs, rawUAVs, nullptr);
+}
+
+void DirectX::ReSetUAVsWithoutRenderTarget(const uint uavStartSlot, const uint numUAVs)
+{
+	ID3D11UnorderedAccessView* rawUAVs[8]	= { nullptr, };
+	_immediateContext->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, uavStartSlot, numUAVs, rawUAVs, nullptr);
+}
+
+void DirectX::SetRenderTargets(RenderTexture& rt, ID3D11DepthStencilView* dsv)
+{
+	ID3D11RenderTargetView* rtv = rt.GetRaw();
+	_immediateContext->OMSetRenderTargets(1, &rtv, dsv);
+}
+
+void DirectX::SetRenderTargets(RenderTexture& rt, DepthMap& depthMap)
+{
+	SetRenderTargets(rt, depthMap.GetRawDepthStencilView());
+}
+
+void DirectX::SetRenderTargets(const uint size, RenderTexture* const * renderTextures, ID3D11DepthStencilView* dsv)
+{
+	ID3D11RenderTargetView* rtvs[8] = { nullptr, };
+	{
+		for(uint i=0; i<size; ++i)
+			rtvs[i] = renderTextures[i]->GetRaw();
+	}
+
+	_immediateContext->OMSetRenderTargets(size, rtvs, dsv);
+}
+
+void DirectX::SetRenderTargets(const uint size, RenderTexture* const* renderTextures, DepthMap& depthMap)
+{
+	SetRenderTargets(size, renderTextures, depthMap.GetRawDepthStencilView());
 }
 
 void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format)
@@ -157,11 +204,11 @@ void DirectX::CreateBlendStates()
 
 	ID3D11BlendState* blendState = nullptr;
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
-	_blendOpaque = DXUniqueResource<ID3D11BlendState>(blendState);
+	_blendStates[static_cast<uint>(BlendState::Opaque)] = DXUniqueResource<ID3D11BlendState>(blendState);
 
 	blendDesc.AlphaToCoverageEnable = true;
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
-	_blendAlphaToCoverage = DXUniqueResource<ID3D11BlendState>(blendState);
+	_blendStates[static_cast<uint>(BlendState::AlphaToCoverage)] = DXUniqueResource<ID3D11BlendState>(blendState);
 
 	blendDesc.AlphaToCoverageEnable				= false;
 	renderTargetBlendDesc.BlendEnable			= true;
@@ -177,7 +224,7 @@ void DirectX::CreateBlendStates()
 	blendDesc.RenderTarget[2] = renderTargetBlendDesc;
 
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
-	_blendAlpha = DXUniqueResource<ID3D11BlendState>(blendState);
+	_blendStates[static_cast<uint>(BlendState::Alpha)] = DXUniqueResource<ID3D11BlendState>(blendState);
 }
 
 DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource* const rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
@@ -299,7 +346,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	CreateDeviceAndSwapChain(win, viewport.size, useMSAA);
 	CreateRenderTargetView();
 
-	_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
 	SetViewport(viewport.Cast<float>());
 
@@ -319,20 +366,20 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 
 		ID3D11RasterizerState* rss = nullptr;
 		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
-		_rasterizerCounterClockwiseDisableCulling = DXUniqueResource<ID3D11RasterizerState>(rss);
+		_rasterizerStates[static_cast<uint>(RasterizerState::CCWDisableCulling)] = DXUniqueResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= false;
 		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
-		_rasterizerClockwiseDisableCulling = DXUniqueResource<ID3D11RasterizerState>(rss);
+		_rasterizerStates[static_cast<uint>(RasterizerState::CWDisableCulling)] = DXUniqueResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= true;
 		desc.CullMode = D3D11_CULL_BACK;
 		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
-		_rasterizerCounterClockwiseDefault = DXUniqueResource<ID3D11RasterizerState>(rss);
+		_rasterizerStates[static_cast<uint>(RasterizerState::CCWDefault)] = DXUniqueResource<ID3D11RasterizerState>(rss);
 
 		desc.FrontCounterClockwise	= false;
 		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
-		_rasterizerClockwiseDefault = DXUniqueResource<ID3D11RasterizerState>(rss);
+		_rasterizerStates[static_cast<uint>(RasterizerState::CWDefault)] = DXUniqueResource<ID3D11RasterizerState>(rss);
 
 		desc.FillMode				= D3D11_FILL_SOLID;
 		desc.CullMode				= D3D11_CULL_NONE;
@@ -340,7 +387,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 		desc.FrontCounterClockwise	= false;
 
 		assert(SUCCEEDED(_device->CreateRasterizerState(&desc, &rss)));
-		_rasterizerClockwiseDisableCullingWithClip = DXUniqueResource<ID3D11RasterizerState>(rss);
+		_rasterizerStates[static_cast<uint>(RasterizerState::CWDisableCullingWithClip)] = DXUniqueResource<ID3D11RasterizerState>(rss);
 	}
 	
 	//Initialize Blend State
@@ -370,41 +417,40 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 
 		ID3D11DepthStencilState* dss = nullptr;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthGreater = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::Greater)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		//disable depth write
 		desc.DepthWriteMask	= D3D11_DEPTH_WRITE_MASK_ZERO;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::DisableDepthWrite)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		//disable depth test
 		desc.DepthEnable	= false;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthDisableDepthTest = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::DisableDepthTest)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthEnable	= true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		desc.DepthFunc		= D3D11_COMPARISON_GREATER;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthGreaterAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::GreaterAndDisableDepthWrite)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthFunc		= D3D11_COMPARISON_GREATER_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthGreaterEqualAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::GreaterEqualAndDisableDepthWrite)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthFunc		= D3D11_COMPARISON_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthEqualAndDisableDepthWrite = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::EqualAndDisableDepthWrite)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc		= D3D11_COMPARISON_LESS;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthLess = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::Less)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthFunc		= D3D11_COMPARISON_LESS_EQUAL;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthLessEqual = DXUniqueResource<ID3D11DepthStencilState>(dss);
-
+		_depthStencilStates[static_cast<uint>(DepthState::LessEqual)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 	}
 
 	//sampler
@@ -423,15 +469,15 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 
 	ID3D11SamplerState* ss = nullptr;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerAnisotropic = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::Anisotropic)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerLinear = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::Linear)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_POINT;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerPoint = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::Point)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	// Shadow Sampler State
 	desc.Filter			= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
@@ -441,11 +487,11 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.MaxAnisotropy	= 1;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerShadowLessEqualComp = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::ShadowLessEqualComp)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerShadowGreaterEqualComp = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::ShadowGreaterEqualComp)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -458,7 +504,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.MinLOD			= 0;
 	desc.MaxLOD			= 0;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerShadowLinear = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::ShadowLinear)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
 	ZeroMemory(&desc, sizeof(desc));
 	desc.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -475,8 +521,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.MaxLOD			= D3D11_FLOAT32_MAX;
 
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerConeTracing = DXUniqueResource<ID3D11SamplerState>(ss);
-
+	_samplerStates[static_cast<uint>(SamplerState::ConeTracing)] = DXUniqueResource<ID3D11SamplerState>(ss);
 }
 
 unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
@@ -509,10 +554,8 @@ unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
 void DirectX::ClearDeviceContext()
 {
     ID3D11ShaderResourceView* pSRVs[16]		= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-    ID3D11RenderTargetView* pRTVs[16]		= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
     ID3D11Buffer* pBuffers[16]				= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
     ID3D11SamplerState* pSamplers[16]		= { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-	ID3D11DepthStencilView* pDSV			= NULL;
 
     // Constant buffers
     _immediateContext->VSSetConstantBuffers( 0, 14, pBuffers );
@@ -533,13 +576,33 @@ void DirectX::ClearDeviceContext()
     _immediateContext->GSSetSamplers( 0, 16, pSamplers );
 
     // Render targets
-    _immediateContext->OMSetRenderTargets( 8, pRTVs, pDSV );
+	ReSetRenderTargets(8);
 
     // States
     float BlendFactor[4] = { 0,0,0,0 };
-    _immediateContext->OMSetBlendState( NULL, BlendFactor, 0xFFFFFFFF );
-	_immediateContext->OMSetDepthStencilState( _depthGreater.GetRaw(), 0x00 );  // we are using inverted 32-bit float depth for better precision
-	_immediateContext->RSSetState(_rasterizerClockwiseDefault.GetRaw());
+	SetBlendState(BlendState::Opaque, BlendFactor, 0xFFFFFFFF);
+	SetDepthStencilState(DepthState::Greater, 0x00);  // we are using inverted 32-bit float depth for better precision
+	SetRasterizerState(RasterizerState::CWDefault);
+}
+
+void DirectX::SetRasterizerState(RasterizerState state)
+{
+	_immediateContext->RSSetState(_rasterizerStates[static_cast<uint>(state)]);
+}
+
+void DirectX::SetDepthStencilState(DepthState state, uint stencilRef)
+{
+	_immediateContext->OMSetDepthStencilState(_depthStencilStates[static_cast<uint>(state)], stencilRef);
+}
+
+void DirectX::SetBlendState(BlendState state, const float blendFactor[4], uint sampleMask)
+{
+	_immediateContext->OMSetBlendState(_blendStates[static_cast<uint>(state)], blendFactor, sampleMask);
+}
+
+void DirectX::SetPrimitiveTopology(PrimitiveTopology topology)
+{
+	_immediateContext->IASetPrimitiveTopology(static_cast<D3D_PRIMITIVE_TOPOLOGY>(topology));
 }
 
 const ShaderMacro DirectX::GetMSAAShaderMacro() const
