@@ -57,6 +57,7 @@ namespace Device
 		void				ReSetRenderTargets(const uint numRTs);
 		void				SetUAVsWithoutRenderTarget(uint uavStartSlot, const uint numUAVs, Rendering::View::UnorderedAccessView* const*);
 		void				ReSetUAVsWithoutRenderTarget(const uint uavStartSlot, const uint numUAVs);
+		void				SetDepthMapWithoutRenderTarget(Rendering::Texture::DepthMap&);
 
 		void SetBlendState(Rendering::RenderState::BlendState state, const float blendFactor[4], uint sampleMask);
 		void SetDepthStencilState(Rendering::RenderState::DepthState state, uint stencilRef);
