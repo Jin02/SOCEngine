@@ -4,7 +4,7 @@
 #include <string>
 
 #include "ObjectID.hpp"
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 
 #include "CoreConnector.h"
 

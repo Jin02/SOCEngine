@@ -2,6 +2,7 @@
 #include "PointLight.h"
 #include "Object.h"
 #include "ShadowManager.h"
+#include "PointLightShadowMapCBPool.h"
 #include <assert.h>
 
 using namespace Rendering::Shadow;

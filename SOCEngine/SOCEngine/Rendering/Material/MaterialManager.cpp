@@ -1,4 +1,4 @@
-#include "MaterialManager.hpp"
+#include "MaterialManager.h"
 
 using namespace Device;
 using namespace Rendering;

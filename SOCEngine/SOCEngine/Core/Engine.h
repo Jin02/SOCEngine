@@ -4,9 +4,9 @@
 #include "IScene.h"
 #include <memory>
 #include <chrono>
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 #include "ObjectManager.h"
-#include "MaterialManager.hpp"
+#include "MaterialManager.h"
 #include "BufferManager.hpp"
 #include "ShaderManager.h"
 #include "Texture2DManager.h"

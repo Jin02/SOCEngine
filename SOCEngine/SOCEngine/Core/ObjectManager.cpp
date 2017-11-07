@@ -1,7 +1,7 @@
 #include "ObjectManager.h"
 #include "Object.h"
 #include "Engine.h"
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 #include "Transform.h"
 
 using namespace Core;

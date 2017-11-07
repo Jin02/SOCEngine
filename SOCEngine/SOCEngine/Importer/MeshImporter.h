@@ -9,12 +9,12 @@
 #include <rapidjson/document.h>
 #include <set>
 #include <memory>
-#include "MaterialManager.hpp"
+#include "MaterialManager.h"
 #include "ObjectManager.h"
 #include "BoundBox.h"
 #include "Texture2DManager.h"
 #include "BufferManager.hpp"
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 
 namespace Importer
 {

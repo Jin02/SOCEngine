@@ -5,7 +5,6 @@
 #include "Utility.hpp"
 #include <unordered_set>
 #include "ObjectManager.h"
-#include "Utility.hpp"
 
 using namespace Importer;
 using namespace Core;

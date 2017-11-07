@@ -6,7 +6,7 @@
 #include "DirectX.h"
 #include "ShaderManager.h"
 #include "BufferManager.hpp"
-#include "MaterialManager.hpp"
+#include "MaterialManager.h"
 
 namespace Rendering
 {
