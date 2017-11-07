@@ -1,7 +1,7 @@
 #pragma once
 
 #include "VXGICommon.h"
-#include "ShadowRenderer.h"
+#include "ShadowAtlasMapRenderer.h"
 #include "Voxelization.h"
 
 namespace Rendering

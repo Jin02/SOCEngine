@@ -15,7 +15,7 @@
 
 #include "ShaderManager.h"
 #include "LightManager.h"
-#include "ShadowRenderer.h"
+#include "ShadowAtlasMapRenderer.h"
 
 #include "TileBasedShadingHeader.h"
 #include "MeshRenderer.h"

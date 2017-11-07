@@ -12,7 +12,7 @@
 #include "MipmapVoxelMap.h"
 
 #include "VoxelConeTracing.h"
-#include "ShadowRenderer.h"
+#include "ShadowAtlasMapRenderer.h"
 
 namespace Rendering
 {

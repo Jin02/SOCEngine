@@ -14,7 +14,7 @@ namespace Rendering
 {
 	namespace Renderer
 	{
-		class ShadowRenderer final
+		class ShadowAtlasMapRenderer final
 		{
 		public:
 			void Initialize(Device::DirectX& dx, uint dlMapResolution, uint slMapResolution, uint plMapResolution);
@@ -139,9 +139,9 @@ namespace Rendering
 	struct ShadowSystemParam
 	{
 		Manager::ShadowManager&		manager;
-		Renderer::ShadowRenderer&	renderer;
+		Renderer::ShadowAtlasMapRenderer&	renderer;
 
-		ShadowSystemParam(Manager::ShadowManager& _manager, Renderer::ShadowRenderer& _renderer)
+		ShadowSystemParam(Manager::ShadowManager& _manager, Renderer::ShadowAtlasMapRenderer& _renderer)
 			: manager(_manager), renderer(_renderer) { }
 	};
 }

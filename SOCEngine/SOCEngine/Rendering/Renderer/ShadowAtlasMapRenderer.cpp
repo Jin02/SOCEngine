@@ -1,4 +1,4 @@
-#include "ShadowRenderer.h"
+#include "ShadowAtlasMapRenderer.h"
 #include "LightCullingUtility.h"
 
 using namespace Rendering;
@@ -9,7 +9,7 @@ using namespace Rendering::Shadow;
 using namespace Math;
 using namespace Device;
 
-void ShadowRenderer::Initialize(DirectX & dx,
+void ShadowAtlasMapRenderer::Initialize(DirectX & dx,
 	uint dlMapResolution, uint slMapResolution, uint plMapResolution)
 {	
 	ReSizeShadowMap<SpotLightShadow>(dx, ReSizeParam(dlMapResolution, 1), false);
@@ -17,7 +17,7 @@ void ShadowRenderer::Initialize(DirectX & dx,
 	ReSizeShadowMap<DirectionalLightShadow>(dx, ReSizeParam(slMapResolution, 1), false);
 }
 
-void ShadowRenderer::Destroy()
+void ShadowAtlasMapRenderer::Destroy()
 {
 	GetShadowAtlasMap<DirectionalLightShadow>().Destroy();
 	GetShadowAtlasMap<SpotLightShadow>().Destroy();
