@@ -15,7 +15,7 @@ namespace Rendering
 	{
 		namespace ShadowMap
 		{
-			class PLShadowMapRenderer;
+			class PointLightShadowMapRenderer;
 		}
 	}
 
@@ -24,6 +24,7 @@ namespace Rendering
 		namespace Buffer
 		{
 			class PointLightShadowBuffer;
+			class PointLightShadowMapCBPool;
 		}
 
 		class PointLightShadow final
@@ -33,7 +34,8 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::PointLightShadowBuffer;
 			using LightType			= Light::PointLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
-			using ShadowMapRenderer	= Renderer::ShadowMap::PLShadowMapRenderer;
+			using ShadowMapRenderer	= Renderer::ShadowMap::PointLightShadowMapRenderer;
+			using CBPoolType		= Buffer::PointLightShadowMapCBPool;
 
 		public:
 			PointLightShadow(BaseShadow base) : _base(base) {}

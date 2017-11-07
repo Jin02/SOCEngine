@@ -4,6 +4,7 @@
 #include "BaseLight.h"
 #include "Transform.h"
 #include "DirectionalLight.h"
+#include "ShadowMapCBPool.h"
 
 namespace Rendering
 {
@@ -15,7 +16,7 @@ namespace Rendering
 	{
 		namespace ShadowMap
 		{
-			class DLShadowMapRenderer;
+			class ShadowMapRenderer;
 		}
 	}
 
@@ -33,7 +34,8 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::DirectionalLightShadowBuffer;
 			using LightType			= Light::DirectionalLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
-			using ShadowMapRenderer	= Renderer::ShadowMap::DLShadowMapRenderer;
+			using ShadowMapRenderer	= Renderer::ShadowMap::ShadowMapRenderer;
+			using CBPoolType		= Buffer::ShadowMapCBPool;
 
 			struct Param
 			{

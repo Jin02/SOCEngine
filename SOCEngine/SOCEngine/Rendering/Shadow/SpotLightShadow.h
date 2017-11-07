@@ -4,6 +4,7 @@
 #include "BaseLight.h"
 #include "Transform.h"
 #include "SpotLight.h"
+#include "ShadowMapCBPool.h"
 
 namespace Rendering
 {
@@ -15,7 +16,7 @@ namespace Rendering
 	{
 		namespace ShadowMap
 		{
-			class SLShadowMapRenderer;
+			class ShadowMapRenderer;
 		}
 	}
 
@@ -33,7 +34,8 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::SpotLightShadowBuffer;
 			using LightType			= Light::SpotLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
-			using ShadowMapRenderer	= Renderer::ShadowMap::SLShadowMapRenderer;
+			using ShadowMapRenderer	= Renderer::ShadowMap::ShadowMapRenderer;
+			using CBPoolType		= Buffer::ShadowMapCBPool;
 
 		public:
 			SpotLightShadow(BaseShadow base) : _base(base) {}
