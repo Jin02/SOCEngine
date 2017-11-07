@@ -4,6 +4,11 @@
 #include "Rect.h"
 #include "DepthMap.h"
 #include "ShadowAtlasMap.h"
+#include "MeshUtility.h"
+#include "MeshRenderer.h"
+
+#include "PointLightShadowMapRenderer.h"
+#include "ShadowMapRenderer.h"
 
 namespace Rendering
 {
@@ -59,9 +64,51 @@ namespace Rendering
 					MakeMap(GetShadowAtlasMap<ShadowType>(), mapSize);
 				}
 			}
-			template <class ShadowType> auto& GetShadowAtlasMap()
+
+			template <class ShadowType>
+			void RenderShadowMap(Device::DirectX& dx, const Manager::ShadowManager& shadowMgr, const ShadowMap::RenderManagerParam& mgrParam)
 			{
-				return std::get<ShadowAtlasMap<ShadowType>>(_shadowAtlasMaps);
+				auto ClassifyMeshes = [&param = mgrParam](auto& tempRenderQ, const auto& meshPool, const ShadowType::LightType* light)
+				{
+					Geometry::MeshUtility::ClassifyOpaqueMesh(tempRenderQ, meshPool, param.objMgr, param.transformPool,
+						[&tfPool = param.transformPool, light]
+						(const Geometry::Mesh& mesh, const Core::Transform& transform)
+						{
+							auto sphere = Intersection::Sphere(transform.GetWorldPosition(), mesh.GetRadius());
+							return light->Intersect(sphere, tfPool);
+						}
+					);
+				};
+
+				// 1 단계
+				// 현재 카메라 범위안에 속한 그림자를 그리는 빛만 추려냄
+				const auto& influentialLights = shadowMgr.GetInfluentialLights<ShadowType>();
+				for (auto light : influentialLights)
+				{
+					// 2 단계
+					// 이 빛들은 하나의 카메라가 된다.
+					// 렌더링 전에 컬링을 했던 것 처럼 여기서도 컬링한다. 
+					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, mgrParam.meshManager.GetOpaqueMeshPool(), light);
+					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, mgrParam.meshManager.GetAlphaTestMeshPool(), light);
+
+					// 3 단계 - 그린다					
+					uint shadowIndex		= shadowMgr.GetIndexer<ShadowType>().Find(light->GetObjectID().Literal());
+					auto& shadowMap			= GetShadowAtlasMap<ShadowType>();
+					uint resolution			= shadowMap.GetResolution();
+					const auto& shadowMapCB	= shadowMgr.GetShadowMapCBPool<ShadowType>().Get(shadowIndex);
+
+					using Renderer = ShadowType::ShadowMapRenderer;
+					ShadowType::ShadowMapRenderer::Render(dx, Renderer::Param(shadowMapCB, shadowMap, shadowIndex, resolution), _tempRenderQ, mgrParam);
+				}
+			}
+
+			template <class ShadowType> auto&		GetShadowAtlasMap()
+			{
+				return std::get<Shadow::ShadowAtlasMap<ShadowType>>(_shadowAtlasMaps);
+			}
+			template <class ShadowType> const auto&	GetShadowAtlasMap() const
+			{
+				return std::get<Shadow::ShadowAtlasMap<ShadowType>>(_shadowAtlasMaps);
 			}
 
 		private:
@@ -78,13 +125,14 @@ namespace Rendering
 									param.mapResolution * 6	);
 			}
 
-
 		private:
 			std::tuple<
 				Shadow::ShadowAtlasMap<Shadow::DirectionalLightShadow>,
 				Shadow::ShadowAtlasMap<Shadow::PointLightShadow>,
 				Shadow::ShadowAtlasMap<Shadow::SpotLightShadow>
 			> _shadowAtlasMaps;
+
+			ShadowMap::TempRenderQueue _tempRenderQ;
 		};
 	}
 
