@@ -319,9 +319,6 @@
     <Filter Include="Rendering\Shadow\Buffer">
       <UniqueIdentifier>{665c5db5-a765-4c2f-bb9a-a18c97c671e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Shadow\MapCB">
-      <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Mesh\Generator">
       <UniqueIdentifier>{a32dd566-161f-49c5-b164-4871b6ab2ea2}</UniqueIdentifier>
     </Filter>
@@ -436,6 +433,21 @@
     <Filter Include="Core\Connector">
       <UniqueIdentifier>{c90a53b0-a29c-47c6-ad1b-e8b5058f8ea8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Renderer\Mesh">
+      <UniqueIdentifier>{91f37d29-6830-4702-aab5-ff20dc32ebb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Camera\Manager">
+      <UniqueIdentifier>{31f76783-c4db-440b-8c20-32525b3095f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Map">
+      <UniqueIdentifier>{dcbf417c-c46c-4509-954b-0ed044fa2b73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Map\Point">
+      <UniqueIdentifier>{a9aecc69-90d8-48f8-b3a3-b811273f89c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\MapCB">
+      <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -498,9 +510,6 @@
     </ClInclude>
     <ClInclude Include="Math\Quaternion.h">
       <Filter>Math\Quaternion</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\ComponentSystem.hpp">
-      <Filter>Core\Component</Filter>
     </ClInclude>
     <ClInclude Include="Intersection\Intersection.h">
       <Filter>Intersection</Filter>
@@ -727,9 +736,6 @@
     <ClInclude Include="Rendering\Light\PointLight.h">
       <Filter>Rendering\Light\Point</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Camera\CameraManager.h">
-      <Filter>Rendering\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Core\TransformCB.h">
       <Filter>Core\Transform</Filter>
     </ClInclude>
@@ -753,9 +759,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\BufferManager.hpp">
       <Filter>Rendering\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Material\MaterialManager.hpp">
-      <Filter>Rendering\Material</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyGeometry.h">
       <Filter>Rendering\Sky\Geometry</Filter>
@@ -786,9 +789,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowMapCB.hpp">
-      <Filter>Rendering\Shadow\MapCB</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
@@ -880,9 +880,6 @@
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
       <Filter>Rendering\GI\ConTracing</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\ShadowRenderer.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h">
       <Filter>Rendering\Shadow\AtlasMap</Filter>
     </ClInclude>
@@ -913,9 +910,6 @@
     <ClInclude Include="Rendering\Texture\DepthMap.h">
       <Filter>Rendering\Texture\DepthMap</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\MeshRenderer.h">
-      <Filter>Rendering\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialID.hpp">
       <Filter>Rendering\Material</Filter>
     </ClInclude>
@@ -940,14 +934,47 @@
     <ClInclude Include="Rendering\Mesh\OpaqueMeshRenderQueue.h">
       <Filter>Rendering\Mesh\RenderQueue</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Mesh\MeshManager.hpp">
-      <Filter>Rendering\Mesh\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Core\CoreConnector.h">
       <Filter>Core\Connector</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshRenderQueue.h">
       <Filter>Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\MeshRenderer.h">
+      <Filter>Rendering\Renderer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Camera\CameraManager.h">
+      <Filter>Rendering\Camera\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Device\RenderState.h">
+      <Filter>Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\Shadow\ShadowRendererCommon.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Map\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Mesh\MeshManager.h">
+      <Filter>Rendering\Mesh\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Material\MaterialManager.h">
+      <Filter>Rendering\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadowMapCBPool.h">
+      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowMapCBPool.h">
+      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ComponentSystem.h">
+      <Filter>Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1119,9 +1146,6 @@
     <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp">
       <Filter>Rendering\Shader\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
-      <Filter>Rendering\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
       <Filter>Rendering\Shadow</Filter>
     </ClCompile>
@@ -1188,9 +1212,6 @@
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
       <Filter>Rendering\GI\ConTracing</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\ShadowRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
       <Filter>Rendering\GI\Injection\Utility</Filter>
     </ClCompile>
@@ -1212,9 +1233,6 @@
     <ClCompile Include="Rendering\Texture\DepthMap.cpp">
       <Filter>Rendering\Texture\DepthMap</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp">
-      <Filter>Rendering\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Buffer\GPURawBuffer.cpp">
       <Filter>Rendering\Buffer\Raw</Filter>
     </ClCompile>
@@ -1232,6 +1250,27 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp">
       <Filter>Rendering\Mesh\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp">
+      <Filter>Rendering\Renderer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Camera\CameraManager.cpp">
+      <Filter>Rendering\Camera\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\Shadow\ShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Map\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\PointLightShadowMapCBPool.cpp">
+      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowMapCBPool.cpp">
+      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
