@@ -19,16 +19,16 @@ namespace Rendering
 	{
 		using TransparentMeshPool	= Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
 		using OpaqueMeshPool		= VBSortedMeshPool;
-		using AlphaBlendMeshPool	= OpaqueMeshPool;
+		using AlphaTestMeshPool		= OpaqueMeshPool;
 
 		struct MeshPoolRefs
 		{
-			AlphaBlendMeshPool&		alphaBlendMeshes;
+			AlphaTestMeshPool&		alphaTestMeshes;
 			OpaqueMeshPool&			opaqueMeshes;
 			TransparentMeshPool&	transparentMeshes;
 
-			explicit MeshPoolRefs(AlphaBlendMeshPool& _alphaBlendMeshes, OpaqueMeshPool& _opaqueMeshes, TransparentMeshPool& _transparentMeshes)
-					: alphaBlendMeshes(_alphaBlendMeshes), opaqueMeshes(_opaqueMeshes), transparentMeshes(_transparentMeshes) { }
+			explicit MeshPoolRefs(AlphaTestMeshPool& _alphaTestMeshes, OpaqueMeshPool& _opaqueMeshes, TransparentMeshPool& _transparentMeshes)
+					: alphaTestMeshes(_alphaTestMeshes), opaqueMeshes(_opaqueMeshes), transparentMeshes(_transparentMeshes) { }
 		};
 	};
 		
@@ -49,7 +49,7 @@ namespace Rendering
 				return meshPool.Add(mesh.GetObjectID().Literal(), mesh);
 			}
 
-			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::OpaqueMeshPool& meshPool) // or AlphaBlendMeshPool
+			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::OpaqueMeshPool& meshPool) // or AlphaTestMeshPool
 			{
 				assert(mesh.GetVBKey() != 0); //Error, mesh does not init yet.				
 				return meshPool.Add(mesh.GetObjectID(), mesh.GetVBKey(), mesh);
@@ -104,7 +104,7 @@ namespace Rendering
 				fromPool.Delete(literlID);
 			}
 			bool ChangeTrait(Core::ObjectID id,
-							 Geometry::TransparentMeshPool& fromPool, Geometry::OpaqueMeshPool& toPool) // or AlphaBlend
+							 Geometry::TransparentMeshPool& fromPool, Geometry::OpaqueMeshPool& toPool) // or AlphaTest
 			{
 				uint literlID = id.Literal();
 				assert(fromPool.Has(literlID));
@@ -117,15 +117,15 @@ namespace Rendering
 
 			GET_ALL_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,	_transparentMeshPool);
 			GET_ALL_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
-			GET_ALL_ACCESSOR(AlphaBlendMeshPool,	Geometry::AlphaBlendMeshPool&,	_alphaBlendMeshPool);
-			GET_ACCESSOR(MeshPoolRefs,				auto,							Geometry::MeshPoolRefs(_alphaBlendMeshPool, _opaqueMeshPool, _transparentMeshPool));
+			GET_ALL_ACCESSOR(AlphaTestMeshPool,		Geometry::AlphaTestMeshPool&,	_alphaTestMeshPool);
+			GET_ACCESSOR(AllMeshPoolRefs,			auto,							Geometry::MeshPoolRefs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
 
 			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,							_dirtyMeshes.empty() == false);
 
 		private:
 			Geometry::TransparentMeshPool				_transparentMeshPool;
 			Geometry::OpaqueMeshPool					_opaqueMeshPool;
-			Geometry::AlphaBlendMeshPool				_alphaBlendMeshPool;
+			Geometry::AlphaTestMeshPool					_alphaTestMeshPool;
 
 			std::vector<Geometry::Mesh*>				_mustUpdateCBMeshes;
 			std::vector<const Geometry::Mesh*>			_dirtyMeshes;

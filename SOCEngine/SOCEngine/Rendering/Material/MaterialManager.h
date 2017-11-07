@@ -43,14 +43,6 @@ namespace Rendering
 				GetIDBookmark<MaterialType>().Delete(key);
 				GetIDManager<MaterialType>().Delete(MaterialID(literalID));
 			}
-			template <typename MaterialType> auto Find(const std::string& key)
-			{
-				return GetPool<MaterialType>().Find(GetIDBookmark<MaterialType>().Find(key));
-			}
-			template <typename MaterialType> bool Has(const std::string& key) const
-			{
-				return GetIDBookmark<MaterialType>().Has(key);
-			}
 			template <typename MaterialType> void Delete(MaterialID id)
 			{
 				auto findMaterial = GetPool<MaterialType>().Find(id);
@@ -60,14 +52,34 @@ namespace Rendering
 				GetPool<MaterialType>().Delete(literalID);
 				GetIDManager<MaterialType>().Delete(id);
 			}
+
+			template <typename MaterialType> auto Find(const std::string& key)
+			{
+				return GetPool<MaterialType>().Find(GetIDBookmark<MaterialType>().Find(key));
+			}
 			template <typename MaterialType> auto Find(MaterialID id)
 			{
 				return GetPool<MaterialType>().Find(id);
+			}
+
+			template <typename MaterialType> const auto Find(const std::string& key) const
+			{
+				return GetPool<MaterialType>().Find(GetIDBookmark<MaterialType>().Find(key));
+			}
+			template <typename MaterialType> const auto Find(MaterialID id) const
+			{
+				return GetPool<MaterialType>().Find(id);
+			}
+
+			template <typename MaterialType> bool Has(const std::string& key) const
+			{
+				return GetIDBookmark<MaterialType>().Has(key);
 			}
 			template <typename MaterialType> bool Has(MaterialID id) const
 			{
 				return GetIDBookmark<MaterialType>().Has(id);
 			}
+
 			template <typename MaterialType> MaterialID FindID(const std::string& key)
 			{
 				return MaterialID(GetIDBookmark<MaterialType>().Find(key));

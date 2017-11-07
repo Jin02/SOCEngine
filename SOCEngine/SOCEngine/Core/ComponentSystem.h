@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ObjectID.hpp"
-#include "MeshManager.hpp"
+#include "MeshManager.h"
 #include "LightManager.h"
 #include "CameraManager.h"
 #include "ShadowManager.h"
@@ -12,15 +12,15 @@ namespace Core
 	class ComponentSystem final
 	{
 	private:
-		using Mesh = Rendering::Geometry::Mesh;
-		using MainCamera = Rendering::Camera::MainCamera;
+		using Mesh			= Rendering::Geometry::Mesh;
+		using MainCamera	= Rendering::Camera::MainCamera;
 
-		using DL		= Rendering::Light::DirectionalLight;
-		using DLShadow	= Rendering::Shadow::DirectionalLightShadow;
-		using PL		= Rendering::Light::PointLight;
-		using PLShadow	= Rendering::Shadow::PointLightShadow;
-		using SL		= Rendering::Light::SpotLight;
-		using SLShadow	= Rendering::Shadow::SpotLightShadow;
+		using DL			= Rendering::Light::DirectionalLight;
+		using DLShadow		= Rendering::Shadow::DirectionalLightShadow;
+		using PL			= Rendering::Light::PointLight;
+		using PLShadow		= Rendering::Shadow::PointLightShadow;
+		using SL			= Rendering::Light::SpotLight;
+		using SLShadow		= Rendering::Shadow::SpotLightShadow;
 
 	public:
 		ComponentSystem() = default;
