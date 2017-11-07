@@ -21,18 +21,18 @@ void MeshRenderer::Destroy()
 }
 
 template <class ShaderType>
-void BindBasicCB(DirectX& dx, Mesh& mesh, ConstBuffer& camCB)
+void BindBasicCB(DirectX& dx, const Mesh& mesh, const ConstBuffer& camCB)
 {
 	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Transform,	mesh.GetTransformCB());
 	ShaderType::BindConstBuffer(dx, ConstBufferBindIndex::Camera,		camCB);
 }
 
-void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType renderType, Mesh& mesh) const
+void MeshRenderer::RenderWithoutIASetVB(DirectX& dx, RenderParam param, DefaultRenderType renderType, Mesh& mesh) const
 {	
-	auto indexBuffer = param.bufferMgr.GetPool<IndexBuffer>().Find(mesh.GetIBKey());
+	const IndexBuffer* indexBuffer = param.bufferMgr.GetPool<IndexBuffer>().Find(mesh.GetIBKey());
 	assert(indexBuffer);
 
-	indexBuffer->IASetBuffer(param.dx);
+	indexBuffer->IASetBuffer(dx);
 
 	uint key = _loader.MakeKey(mesh.GetBufferFlag(), renderType);
 
@@ -42,12 +42,10 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType ren
 	const auto& gs = defaultShaders.gs;
 	const auto& ps = defaultShaders.ps;
 	
-	auto BindSRV = [& dx = param.dx, &gs, &ps](auto& srObjects)
+	auto BindSRV = [&dx, &gs, &ps](const auto& srObjects)
 	{
-		uint size = srObjects.GetSize();
-		for (uint i = 0; i < size; ++i)
+		for(const auto& bind : srObjects.GetVector())
 		{
-			auto& bind = srObjects.Get(i);
 			if (bind.useVS)
 				VertexShader::BindShaderResourceView(dx, static_cast<TextureBindIndex>(bind.bindIndex), bind.resource.GetShaderResourceView());
 			if (bind.useGS & gs.GetIsCanUse())
@@ -61,16 +59,16 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType ren
 	{
 		// Bind Shader To Context
 		{
-			vs.BindShaderToContext(param.dx);
-			vs.BindInputLayoutToContext(param.dx);
+			vs.BindShaderToContext(dx);
+			vs.BindInputLayoutToContext(dx);
 
-			gs.BindShaderToContext(param.dx);
-			ps.BindShaderToContext(param.dx);
+			gs.BindShaderToContext(dx);
+			ps.BindShaderToContext(dx);
 		}
 
-		BindBasicCB<VertexShader>(param.dx, mesh, param.camCB);
-		if (ps.GetIsCanUse()) BindBasicCB<PixelShader>(param.dx, mesh, param.camCB);
-		if (gs.GetIsCanUse()) BindBasicCB<GeometryShader>(param.dx, mesh, param.camCB);
+		BindBasicCB<VertexShader>(dx, mesh, param.camCB);
+		if (ps.GetIsCanUse()) BindBasicCB<PixelShader>(dx, mesh, param.camCB);
+		if (gs.GetIsCanUse()) BindBasicCB<GeometryShader>(dx, mesh, param.camCB);
 	}
 
 	for (MaterialID materialID : mesh.GetMaterialIDs())
@@ -79,53 +77,51 @@ void MeshRenderer::RenderWithoutIASetVB(RenderParam param, DefaultRenderType ren
 
 		// ConstBuffers
 		{
-			auto& cbs = material->GetConstBuffers();
-			uint size = cbs.GetSize();
-			for (uint i = 0; i < size; ++i)
+			const auto& cbs = material->GetConstBuffers();
+			for(const auto& bindCB : cbs.GetVector())
 			{
-				auto& bindCB = cbs.Get(i);
 				if (bindCB.useVS)
-					VertexShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+					VertexShader::BindConstBuffer(dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
 				if (bindCB.useGS & gs.GetIsCanUse())
-					GeometryShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+					GeometryShader::BindConstBuffer(dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
 				if (bindCB.usePS & ps.GetIsCanUse())
-					PixelShader::BindConstBuffer(param.dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
+					PixelShader::BindConstBuffer(dx, static_cast<ConstBufferBindIndex>(bindCB.bindIndex), bindCB.resource);
 			}
 		}
 
 		BindSRV(material->GetShaderResourceBuffers());
 		BindSRV(material->GetTextures());
 
-		param.dx.GetContext()->DrawIndexed(indexBuffer->GetIndexCount(), 0, 0);
+		dx.GetContext()->DrawIndexed(indexBuffer->GetIndexCount(), 0, 0);
 	}
 
-	VertexShader::UnBindShaderToContext(param.dx);
-	PixelShader::UnBindShaderToContext(param.dx);
-	GeometryShader::UnBindShaderToContext(param.dx);
+	VertexShader::UnBindShaderToContext(dx);
+	PixelShader::UnBindShaderToContext(dx);
+	GeometryShader::UnBindShaderToContext(dx);
 }
 
-void MeshRenderer::RenderTransparentMeshes(RenderParam param, DefaultRenderType renderType, TransparentMeshRenderQueue& meshes) const
+void MeshRenderer::RenderTransparentMeshes(DirectX& dx, RenderParam param, DefaultRenderType renderType, TransparentMeshRenderQueue& meshes) const
 {
 	for (auto meshPtr : meshes)
 	{
-		auto& vbPool				= param.bufferMgr.GetPool<VertexBuffer>();
-		VertexBuffer* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey());
+		const auto& vbPool					= param.bufferMgr.GetPool<VertexBuffer>();
+		const VertexBuffer* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey());
 
-		vertexBuffer->IASetBuffer(param.dx);
-		RenderWithoutIASetVB(param, renderType, *meshPtr);
+		vertexBuffer->IASetBuffer(dx);
+		RenderWithoutIASetVB(dx, param, renderType, *meshPtr);
 	}
 }
 
-void MeshRenderer::RenderOpaqueMeshes(RenderParam param, DefaultRenderType renderType, OpaqueMeshRenderQueue& meshes) const
+void MeshRenderer::RenderOpaqueMeshes(DirectX& dx, RenderParam param, DefaultRenderType renderType, OpaqueMeshRenderQueue& meshes) const
 {
 	meshes.Iterate(
-		[&param, renderType, this](Mesh* mesh)
+		[&dx, &param, renderType, this](Mesh* mesh)
 		{
-			auto& vbPool		= param.bufferMgr.GetPool<VertexBuffer>();
-			VertexBuffer* vb	= vbPool.Find(mesh->GetVBKey());
-			vb->IASetBuffer(param.dx);
+			const auto& vbPool		= param.bufferMgr.GetPool<VertexBuffer>();
+			const VertexBuffer* vb	= vbPool.Find(mesh->GetVBKey());
+			vb->IASetBuffer(dx);
 
-			RenderWithoutIASetVB(param, renderType, *mesh);
+			RenderWithoutIASetVB(dx, param, renderType, *mesh);
 		}
 	);
 }

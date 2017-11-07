@@ -4,7 +4,7 @@
 #include "ComputeShader.h"
 #include "Transform.h"
 #include "ShaderManager.h"
-#include "MeshManager.hpp"
+#include "MeshManager.h"
 #include "Frustum.h"
 #include "RenderTexture.h"
 #include "DepthMap.h"
@@ -88,7 +88,7 @@ namespace Rendering
 
 			RenderQueue::TransparentMeshRenderQueue		_transparentMeshes;
 			RenderQueue::OpaqueMeshRenderQueue			_opaqueMeshes;
-			RenderQueue::AlphaBlendMeshRenderQueue		_alphaBlendMeshes;
+			RenderQueue::AlphaTestMeshRenderQueue		_alphaTestMeshes;
 
 			Core::ObjectID								_objID;
 			bool										_dirty = true;

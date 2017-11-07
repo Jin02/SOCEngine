@@ -26,7 +26,7 @@ DefaultShaderLoader::LoadDefaultSahder(
 		if (macros)
 			targetShaderMacros = (*macros);
 
-		if (renderType == DefaultRenderType::GBuffer_AlphaBlend ||
+		if (renderType == DefaultRenderType::GBuffer_AlphaTest ||
 			renderType == DefaultRenderType::ReflectionProbe_AlphaTestWithDiffuse)
 		{
 			ShaderMacro alphaTestMacro;
@@ -199,7 +199,7 @@ std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType ren
 	case DefaultRenderType::Forward_Transparency:
 		frontFileName = "PhysicallyBased_Forward_";
 		break;
-	case DefaultRenderType::GBuffer_AlphaBlend:
+	case DefaultRenderType::GBuffer_AlphaTest:
 	case DefaultRenderType::GBuffer_Opaque:
 		frontFileName = "PhysicallyBased_GBuffer_";
 		break;

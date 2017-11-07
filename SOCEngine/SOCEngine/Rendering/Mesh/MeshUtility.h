@@ -3,7 +3,7 @@
 #include "Sphere.h"
 #include "Frustum.h"
 
-#include "MeshManager.hpp"
+#include "MeshManager.h"
 #include "ObjectManager.h"
 
 #include "MeshRenderQueue.h"

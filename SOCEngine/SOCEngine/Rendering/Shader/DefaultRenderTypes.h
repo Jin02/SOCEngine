@@ -5,7 +5,7 @@ namespace Rendering
 	enum class DefaultRenderType : unsigned int
 	{
 		GBuffer_Opaque							,
-		GBuffer_AlphaBlend						,
+		GBuffer_AlphaTest						,
 		Forward_Transparency					,
 		Forward_OnlyDepth						,
 		Forward_AlphaTestWithDiffuse			,

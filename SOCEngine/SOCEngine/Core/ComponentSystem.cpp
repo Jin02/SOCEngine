@@ -1,4 +1,4 @@
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 #include "MeshUtility.h"
 
 using namespace Device;
@@ -53,7 +53,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		assert(transform);
 
 		camMgr.GetMainCamera().UpdateCB(dx, *transform);
-		camMgr.GetMainCamera().ClassifyMesh(meshMgr.GetMeshPoolRefs(), objectManager, transformPool);
+		camMgr.GetMainCamera().ClassifyMesh(meshMgr.GetAllMeshPoolRefs(), objectManager, transformPool);
 	}
 
 	lightMgr.UpdateTransformBuffer(transformPool);

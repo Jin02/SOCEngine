@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "Singleton.h"
 
-#include "ComponentSystem.hpp"
+#include "ComponentSystem.h"
 #include "ObjectManager.h"
 #include "Transform.h"
 

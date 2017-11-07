@@ -1,4 +1,4 @@
-#include "MeshManager.hpp"
+#include "MeshManager.h"
 
 #include "CameraManager.h"
 #include "Object.h"
@@ -14,14 +14,14 @@ using namespace Intersection;
 void MeshManager::Delete(Core::ObjectID objID)
 {
 	GetOpaqueMeshPool().Delete(objID.Literal());
-	GetAlphaBlendMeshPool().Delete(objID.Literal());
+	GetAlphaTestMeshPool().Delete(objID.Literal());
 	GetTransparentMeshPool().Delete(objID.Literal());
 }
 
 bool MeshManager::Has(Core::ObjectID objID) const
 {
 	return	GetOpaqueMeshPool().Has(objID.Literal())		|
-			GetAlphaBlendMeshPool().Has(objID.Literal())	|
+			GetAlphaTestMeshPool().Has(objID.Literal())	|
 			GetTransparentMeshPool().Has(objID.Literal());
 }
 
@@ -30,7 +30,7 @@ Mesh* MeshManager::Find(Core::ObjectID id)
 	auto opaque = GetOpaqueMeshPool().Find(id.Literal());
 	if (opaque) return opaque;
 
-	auto alpha = GetAlphaBlendMeshPool().Find(id.Literal());
+	auto alpha = GetAlphaTestMeshPool().Find(id.Literal());
 	if (alpha) return alpha;
 
 	auto transparency = GetTransparentMeshPool().Find(id.Literal());
@@ -63,7 +63,7 @@ void MeshManager::CheckDirty(	const TransformPool& tfPool,
 	};
 
 	Check(GetOpaqueMeshPool());
-	Check(GetAlphaBlendMeshPool());
+	Check(GetAlphaTestMeshPool());
 	Check(GetTransparentMeshPool());
 }
 

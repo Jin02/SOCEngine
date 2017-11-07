@@ -128,7 +128,7 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 		);
 	}
 
-	// Opaque/AlphaBlend Meshes
+	// Opaque / AlphaTest Meshes
 	{
 		MeshUtility::ClassifyOpaqueMesh(
 			_opaqueMeshes, pool.opaqueMeshes, objMgr, transformPool,
@@ -139,7 +139,7 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 		);
 
 		MeshUtility::ClassifyOpaqueMesh(
-			_alphaBlendMeshes, pool.alphaBlendMeshes, objMgr, transformPool,
+			_alphaTestMeshes, pool.alphaTestMeshes, objMgr, transformPool,
 			[&frustum = _frustum](const Mesh& mesh, const Transform& tf)
 			{
 				return frustum.In(tf.GetWorldPosition(), mesh.GetRadius());

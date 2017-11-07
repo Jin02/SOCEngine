@@ -1,8 +1,8 @@
 #pragma once
 
 #include "DefaultShaderLoader.h"
-#include "MeshManager.hpp"
-#include "MaterialManager.hpp"
+#include "MeshManager.h"
+#include "MaterialManager.h"
 
 #include "MeshRenderQueue.h"
 
@@ -19,19 +19,18 @@ namespace Rendering
 		public:
 			struct RenderParam
 			{
-				Device::DirectX&			dx;
-				Manager::MaterialManager&	materialMgr;
-				Manager::BufferManager&		bufferMgr;
-				Buffer::ConstBuffer&		camCB;
+				const Manager::MaterialManager&	materialMgr;
+				const Manager::BufferManager&	bufferMgr;
+				const Buffer::ConstBuffer&		camCB;
 
-				RenderParam(Device::DirectX& _dx, Manager::MaterialManager& _materialMgr, Manager::BufferManager& _bufferMgr, Buffer::ConstBuffer& _camCB) 
-					: dx(_dx), materialMgr(_materialMgr), bufferMgr(_bufferMgr), camCB(_camCB) {}
+				RenderParam(const Manager::MaterialManager& _materialMgr, const Manager::BufferManager& _bufferMgr, const Buffer::ConstBuffer& _camCB) 
+					: materialMgr(_materialMgr), bufferMgr(_bufferMgr), camCB(_camCB) {}
 			};
 
-			void RenderWithoutIASetVB(RenderParam param,	DefaultRenderType renderType, Geometry::Mesh& mesh) const;
-			void RenderTransparentMeshes(RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::TransparentMeshRenderQueue& meshes) const;
-			void RenderOpaqueMeshes(RenderParam param,		DefaultRenderType renderType, Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes) const;
-			void RenderAlphaBlendMeshes(RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::AlphaBlendMeshRenderQueue& meshes) const { RenderOpaqueMeshes(param, renderType, meshes); }
+			void RenderWithoutIASetVB(Device::DirectX& dx,		RenderParam param,	DefaultRenderType renderType, Geometry::Mesh& mesh) const;
+			void RenderTransparentMeshes(Device::DirectX& dx,	RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::TransparentMeshRenderQueue& meshes) const;
+			void RenderOpaqueMeshes(Device::DirectX& dx,		RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes) const;
+			void RenderAlphaTestMeshes(Device::DirectX& dx,	RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::AlphaTestMeshRenderQueue& meshes) const { RenderOpaqueMeshes(dx, param, renderType, meshes); }
 
 		private:
 			Manager::DefaultShaderLoader _loader;

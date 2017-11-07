@@ -16,8 +16,11 @@ namespace Rendering
 			BufferManager() = default;
 			DISALLOW_ASSIGN_COPY(BufferManager);
 			
-			template <typename BufferType>
-			BufferPool<BufferType>& GetPool()
+			template <typename BufferType> BufferPool<BufferType>&			GetPool()
+			{
+				return std::get<BufferPool<BufferType>>(_bufferPools);
+			}
+			template <typename BufferType> const BufferPool<BufferType>&	GetPool() const
 			{
 				return std::get<BufferPool<BufferType>>(_bufferPools);
 			}

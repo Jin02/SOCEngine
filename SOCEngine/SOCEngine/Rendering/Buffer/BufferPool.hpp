@@ -25,10 +25,16 @@ namespace Rendering
 			{
 				_buffers.Add(hashKey, bufferData);
 			}
-			auto Find(uint hashKey)
+
+			BufferType* Find(uint hashKey)
 			{
 				return _buffers.Find(hashKey);
 			}
+			const BufferType* Find(uint hashKey) const
+			{
+				return _buffers.Find(hashKey);
+			}
+
 			bool Has(uint hashKey) const
 			{
 				return _buffers.Has(hashKey);
