@@ -24,7 +24,8 @@ void IndexBuffer::Initialize(Device::DirectX& dx, const std::vector<uint>& indic
 	_baseBuffer.SetBuffer(dx.CreateBuffer(bufferDesc, &data));
 }
 
-void IndexBuffer::IASetBuffer(Device::DirectX& dx)
+void IndexBuffer::IASetBuffer(Device::DirectX& dx) const
 {
-	dx.GetContext()->IASetIndexBuffer(_baseBuffer.GetRaw(), DXGI_FORMAT_R32_UINT, 0);
+	ID3D11Buffer* buffer = const_cast<BaseBuffer*>(&_baseBuffer)->GetRaw();
+	dx.GetContext()->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
 }

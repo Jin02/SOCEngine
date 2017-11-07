@@ -25,7 +25,7 @@ namespace Rendering
 			VertexBuffer() = default;
 
 			void Initialize(Device::DirectX& dx, const Desc& desc, const void* sysMem, bool isDynamic, const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos);
-			void IASetBuffer(Device::DirectX& dx);
+			void IASetBuffer(Device::DirectX& dx, uint offset = 0) const;
 			void UpdateVertexData(Device::DirectX& dx, const void* data, uint size);
 
 			GET_CONST_ACCESSOR(VertexCount,	uint,			_desc.vertexCount);
