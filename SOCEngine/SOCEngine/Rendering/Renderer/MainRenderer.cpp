@@ -1,6 +1,6 @@
 #include "MainRenderer.h"
 #include "LightCullingUtility.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 using namespace Rendering;
 using namespace Rendering::Camera;
@@ -54,7 +54,7 @@ void MainRenderer::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 													ShaderMacro("USE_COMPUTE_SHADER"),
 													ShaderMacro("ENABLE_BLEND")		};
 
-		Factory::EngineShaderFactory factory(&shaderMgr);
+		Factory::ShaderFactory factory(&shaderMgr);
 		_tbdrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
 
 		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(backBufferSize);

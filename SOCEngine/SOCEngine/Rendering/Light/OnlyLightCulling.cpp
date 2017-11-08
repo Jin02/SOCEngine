@@ -1,5 +1,5 @@
 #include "OnlyLightCulling.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 #include "LightCullingUtility.h"
 
 using namespace Rendering::Light;
@@ -19,7 +19,7 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 										ShaderMacro("ENABLE_BLEND", ""),
 										dx.GetMSAAShaderMacro() };
 
-	EngineShaderFactory factory(&shaderMgr);
+	ShaderFactory factory(&shaderMgr);
 	_cs = *factory.LoadComputeShader(dx, "OnlyLightCullingCS", "OnlyLightCullingCS", &macros, "@OnlyLightCulling");
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 0);

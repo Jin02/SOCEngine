@@ -1,6 +1,6 @@
 #include "SkyBoxMaterial.h"
 #include "BindIndexInfo.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
@@ -16,7 +16,7 @@ void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager* shaderMgr)
 {
 	if(shaderMgr)
 	{
-		Factory::EngineShaderFactory loader(shaderMgr);
+		Factory::ShaderFactory loader(shaderMgr);
 	
 		std::shared_ptr<VertexShader>	vs(nullptr);
 		std::shared_ptr<PixelShader>	ps(nullptr);

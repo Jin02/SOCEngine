@@ -1,6 +1,6 @@
 #include "BindIndexInfo.h"
 #include "Voxelization.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 #include "DirectionalLight.h"
 
@@ -35,7 +35,7 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 
 	// Init Clear VoxelMap
 	{
-		EngineShaderFactory factory(&shaderMgr);
+		ShaderFactory factory(&shaderMgr);
 		_clearVoxelRawMapCS = *factory.LoadComputeShader(dx, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
 
 		auto ComputeThreadGroupSideLength = [](uint sideLength)

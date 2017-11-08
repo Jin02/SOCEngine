@@ -190,11 +190,9 @@
     <ClInclude Include="Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h" />
     <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h" />
-    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\ShaderCompiler.h" />
+    <ClInclude Include="Rendering\Shader\ShaderFactory.hpp" />
     <ClInclude Include="Rendering\Shader\ShaderPool.hpp" />
     <ClInclude Include="Rendering\Shader\PixelShader.h" />
     <ClInclude Include="Rendering\Shader\ShaderManager.h">
@@ -559,7 +557,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\EngineShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName EngineShaderFactory &amp; python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir $(ProjectDir)ShaderCodes -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(ProjectDir)Rendering\Shader\ShaderFactory.hpp -ScriptRunStartDir $(ProjectDir)ShaderCodes -ClassName ShaderFactory &amp; python $(ProjectDir)..\..\Script\HeaderOrganizer.py -OutputPath $(ProjectDir)..\Output\Header -SearchStartDir $(ProjectDir) -IsIncludeFolder False -ExcludePaths $(ProjectDir)\ShaderCodes,$(ProjectDir)\Tool,$(ProjectDir)\Debug,$(ProjectDir)\Template</Command>
       <Message>ShaderParser</Message>
     </PreBuildEvent>
     <PostBuildEvent>

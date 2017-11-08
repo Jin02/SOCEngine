@@ -1,5 +1,5 @@
 #include "VoxelConeTracing.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 #include "ShaderManager.h"
 
 using namespace Device;
@@ -20,7 +20,7 @@ using namespace Rendering::RenderState;
 
 void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
-	EngineShaderFactory factory(&shaderMgr);
+	ShaderFactory factory(&shaderMgr);
 	_shader = *factory.LoadComputeShader(dx, "VoxelConeTracing", "VoxelConeTracingCS", nullptr, "@VCT");
 
 	ComputeShader::ThreadGroup threadGroup(0, 0, 0);

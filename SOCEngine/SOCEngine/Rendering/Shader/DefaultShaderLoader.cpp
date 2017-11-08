@@ -1,5 +1,5 @@
 #include "DefaultShaderLoader.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 #include "Utility.hpp"
 
 using namespace Utility;
@@ -48,7 +48,7 @@ DefaultShaderLoader::LoadDefaultSahder(
 		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
 		const std::vector<ShaderMacro>* macros) -> ShaderGroup
 	{
-		Factory::EngineShaderFactory shaderLoader(&shaderMgr);
+		Factory::ShaderFactory shaderLoader(&shaderMgr);
 
 		ShaderGroup shaders;
 		shaderLoader.LoadShader(dx, fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);

@@ -1,5 +1,5 @@
 #include "MipmapVoxelMap.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 using namespace Device;
 using namespace Core;
@@ -16,7 +16,7 @@ void MipmapVoxelMap::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
 	std::vector<ShaderMacro> baseMipmapMacro{ ShaderMacro("BASE_MIP_MAP") };
 
-	EngineShaderFactory factory(&shaderMgr);
+	ShaderFactory factory(&shaderMgr);
 	_baseMipmap			= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", &baseMipmapMacro, "@MipmapVoxelBase");
 	_anisotropicMipmap	= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", nullptr, "@MipmapVoxelAnisotropic");
 

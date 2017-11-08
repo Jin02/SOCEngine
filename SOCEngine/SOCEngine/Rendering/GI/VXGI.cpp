@@ -1,6 +1,6 @@
 #include "VXGI.h"
 #include "BindIndexInfo.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 
 using namespace Device;
@@ -18,7 +18,7 @@ using namespace Rendering::Renderer;
 
 void VXGI::InitializeClearVoxelMap(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
-	EngineShaderFactory factory(&shaderMgr);
+	ShaderFactory factory(&shaderMgr);
 	_clearVoxelMap = *factory.LoadComputeShader(dx, "ClearVoxelMap", "CS", nullptr, "@ClearVoxelMap");
 }
 

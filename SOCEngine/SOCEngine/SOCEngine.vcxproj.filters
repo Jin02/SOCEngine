@@ -694,9 +694,6 @@
     <ClInclude Include="Rendering\Material\PhysicallyBasedMaterial.h">
       <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\EngineShaderFactory.hpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h">
       <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
     </ClInclude>
@@ -969,6 +966,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h">
       <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderFactory.hpp">
+      <Filter>Rendering\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

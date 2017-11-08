@@ -1,6 +1,6 @@
 #include "InjectRadianceFromPointLight.h"
 #include "BindIndexInfo.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 using namespace Device;
 using namespace Math;
@@ -16,7 +16,7 @@ using namespace Rendering::Factory;
 
 void InjectRadianceFromPointLight::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
-	EngineShaderFactory factory(&shaderMgr);
+	ShaderFactory factory(&shaderMgr);
 	_shader = *factory.LoadComputeShader(dx, "InjectRadianceFromPointLight", "CS", nullptr, "@InjectRadianceFromPointLight");
 
 	uint xzLength = InjectRadianceFormUtility::CalcThreadSideLength(dimension);

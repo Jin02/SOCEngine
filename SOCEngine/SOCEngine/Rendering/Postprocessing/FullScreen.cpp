@@ -1,5 +1,5 @@
 #include "FullScreen.h"
-#include "EngineShaderFactory.hpp"
+#include "ShaderFactory.hpp"
 
 using namespace Device;
 using namespace Rendering::PostProcessing;
@@ -12,7 +12,7 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 {
 	std::string folderPath = "";
 	{
-		Factory::EngineShaderFactory pathFinder(nullptr);
+		Factory::ShaderFactory pathFinder(nullptr);
 
 		std::string path = pathFinder.FetchShaderFullPath(param.shaderFileName);
 
