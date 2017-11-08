@@ -606,6 +606,12 @@ void DirectX::SetBlendState(BlendState state, const float blendFactor[4], uint s
 	_immediateContext->OMSetBlendState(_blendStates[static_cast<uint>(state)], blendFactor, sampleMask);
 }
 
+void DirectX::SetBlendState(BlendState state)
+{
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	_immediateContext->OMSetBlendState(_blendStates[static_cast<uint>(state)], blendFactor, 0xffffffff);
+}
+
 void DirectX::SetPrimitiveTopology(PrimitiveTopology topology)
 {
 	_immediateContext->IASetPrimitiveTopology(static_cast<D3D_PRIMITIVE_TOPOLOGY>(topology));

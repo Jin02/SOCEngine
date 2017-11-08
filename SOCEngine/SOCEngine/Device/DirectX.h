@@ -50,16 +50,19 @@ namespace Device
 		void				ClearDeviceContext();
 		const Rect<float>	FetchViewportRect();
 		void				SetViewport(const Rect<float>& rect);
+
 		void				SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, ID3D11DepthStencilView* dsv = nullptr);
 		void				SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, Rendering::Texture::DepthMap&);
-		void				SetRenderTarget(Rendering::Texture::RenderTexture&, ID3D11DepthStencilView* dsv = nullptr);
-		void				SetRenderTarget(Rendering::Texture::RenderTexture&, Rendering::Texture::DepthMap&);
+		void				SetRenderTarget(Rendering::Texture::RenderTexture& target, ID3D11DepthStencilView* dsv = nullptr);
+		void				SetRenderTarget(Rendering::Texture::RenderTexture& target, Rendering::Texture::DepthMap& targetDepthMap);
 		void				ReSetRenderTargets(const uint numRTs);
 		void				SetUAVsWithoutRenderTarget(uint uavStartSlot, const uint numUAVs, Rendering::View::UnorderedAccessView* const*);
 		void				ReSetUAVsWithoutRenderTarget(const uint uavStartSlot, const uint numUAVs);
 		void				SetDepthMapWithoutRenderTarget(Rendering::Texture::DepthMap&);
 
 		void SetBlendState(Rendering::RenderState::BlendState state, const float blendFactor[4], uint sampleMask);
+		void SetBlendState(Rendering::RenderState::BlendState state);
+
 		void SetDepthStencilState(Rendering::RenderState::DepthState state, uint stencilRef);
 		void SetRasterizerState(Rendering::RenderState::RasterizerState state);
 		void SetPrimitiveTopology(Rendering::RenderState::PrimitiveTopology);
