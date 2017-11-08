@@ -21,7 +21,6 @@ namespace Rendering
 
 		private:
 			Manager::ShaderManager*	_shaderMgr;
-			Shader::ShaderCompiler*	_compiler;
 
 		public:
 			[ClassName](Manager::ShaderManager* shaderMgr) : _shaderMgr(shaderMgr)

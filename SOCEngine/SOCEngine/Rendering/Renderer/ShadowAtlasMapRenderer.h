@@ -138,7 +138,7 @@ namespace Rendering
 
 	struct ShadowSystemParam
 	{
-		Manager::ShadowManager&		manager;
+		Manager::ShadowManager&				manager;
 		Renderer::ShadowAtlasMapRenderer&	renderer;
 
 		ShadowSystemParam(Manager::ShadowManager& _manager, Renderer::ShadowAtlasMapRenderer& _renderer)
