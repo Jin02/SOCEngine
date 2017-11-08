@@ -12,20 +12,18 @@ using namespace Rendering::Geometry;
 using namespace Math;
 using namespace Utility;
 
-void SkyGeometry::Initialize(Device::DirectX& dx, BufferManager& bufferMgr)
+void SkyGeometry::Initialize(Device::DirectX& dx)
 {
 	auto CreateMeshContent = [this, &dx](const Mesh::CreateFuncArguments& args)
 	{
-		uint vbKey = std::hash<std::string>()("@SkySphere");
-
 		VertexBuffer::Desc desc;
 		{
 			desc.stride			= args.vertices.byteWidth;
 			desc.vertexCount	= args.vertices.count;
 		}
 
-		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);
-		_indexBuffer.Initialize(dx, args.indices, vbKey, false);
+		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);		
+		_indexBuffer.Initialize(dx, args.indices, -1, false);
 	};
 
 	BasicGeometryGenerator gen;

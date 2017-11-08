@@ -2,11 +2,9 @@
 
 #include "SkyGeometry.h"
 #include "SkyBoxMaterial.h"
-#include "Texture2DManager.h"
-#include "DirectX.h"
 #include "ShaderManager.h"
-#include "BufferManager.hpp"
-#include "MaterialManager.h"
+
+#undef far
 
 namespace Rendering
 {
@@ -15,12 +13,13 @@ namespace Rendering
 		class SkyBox
 		{
 		public:
-			SkyBox() = default;
-			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const std::string& skyBoxMaterialKey);
+			void Initialize(Device::DirectX& dx);
+			void UpdateCB(Device::DirectX& dx, const Math::Vector3& worldPos, const Math::Matrix& viewProjMat, float far);
+			void Render(Device::DirectX& dx, Texture::RenderTexture& target, const Texture::DepthMap& targetDepthMap, const Material::SkyBoxMaterial& material);
 
 		private:
-			SkyGeometry			_base;
-			std::string			_skyBoxMaterialKey = "";
+			SkyGeometry									_geometry;
+			Buffer::ExplicitConstBuffer<Math::Matrix>	_transformCB;
 		};
 	}
 }

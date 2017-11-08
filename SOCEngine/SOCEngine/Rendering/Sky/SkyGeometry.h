@@ -12,12 +12,14 @@ namespace Rendering
 		class SkyGeometry final
 		{
 		public:
-			SkyGeometry() = default;
-			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr);
+			void Initialize(Device::DirectX& dx);
+
+			GET_CONST_ACCESSOR(VertexBuffer,	const auto&, _vertexBuffer);
+			GET_CONST_ACCESSOR(IndexBuffer,		const auto&, _indexBuffer);
 
 		private:
-			Buffer::VertexBuffer		_vertexBuffer;
-			Buffer::IndexBuffer			_indexBuffer;
+			Buffer::VertexBuffer	_vertexBuffer;
+			Buffer::IndexBuffer		_indexBuffer;
 		};
 	}
 }
