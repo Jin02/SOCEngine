@@ -927,7 +927,7 @@ void MeshImporter::MakeHierarchy(	Core::Object& parent, const Node& node,
 
 		auto material		= materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialID);
 		MaterialID matID	= managerParam.materialManager.FindID<PhysicallyBasedMaterial>(material ? material->GetName() : "@Default");
-		mesh.AddMaterialID(matID);
+		mesh.SetPBRMaterialID(matID);
 	};
 
 	// attach submesh and mesh component.
