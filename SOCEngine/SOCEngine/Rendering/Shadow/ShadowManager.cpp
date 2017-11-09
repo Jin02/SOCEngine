@@ -198,13 +198,13 @@ void ShadowManager::UpdateSRBuffer(Device::DirectX& dx)
 
 void ShadowManager::UpdateConstBuffer(Device::DirectX& dx)
 {
-	GetShadowMapCBPool<DirectionalLightShadow>().InitializePreparedCB(dx);
-	GetShadowMapCBPool<PointLightShadow>().InitializePreparedCB(dx);
-	GetShadowMapCBPool<SpotLightShadow>().InitializePreparedCB(dx);
+	GetShadowMapVPMatCBPool<DirectionalLightShadow>().InitializePreparedCB(dx);
+	GetShadowMapVPMatCBPool<PointLightShadow>().InitializePreparedCB(dx);
+	GetShadowMapVPMatCBPool<SpotLightShadow>().InitializePreparedCB(dx);
 
-	GetShadowMapCBPool<DirectionalLightShadow>().UpdateSubResource(dx, GetDirtyShadows<DirectionalLightShadow>(), GetPool<DirectionalLightShadow>().GetIndexer());
-	GetShadowMapCBPool<PointLightShadow>().UpdateSubResource(dx, GetDirtyShadows<PointLightShadow>(), GetPool<PointLightShadow>().GetIndexer());
-	GetShadowMapCBPool<SpotLightShadow>().UpdateSubResource(dx, GetDirtyShadows<SpotLightShadow>(), GetPool<SpotLightShadow>().GetIndexer());
+	GetShadowMapVPMatCBPool<DirectionalLightShadow>().UpdateSubResource(dx, GetDirtyShadows<DirectionalLightShadow>(), GetPool<DirectionalLightShadow>().GetIndexer());
+	GetShadowMapVPMatCBPool<PointLightShadow>().UpdateSubResource(dx, GetDirtyShadows<PointLightShadow>(), GetPool<PointLightShadow>().GetIndexer());
+	GetShadowMapVPMatCBPool<SpotLightShadow>().UpdateSubResource(dx, GetDirtyShadows<SpotLightShadow>(), GetPool<SpotLightShadow>().GetIndexer());
 }
 
 void ShadowManager::DeleteAll()

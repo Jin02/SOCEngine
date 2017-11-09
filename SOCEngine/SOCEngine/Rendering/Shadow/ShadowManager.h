@@ -54,7 +54,7 @@ namespace Rendering
 			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
 			{
 				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
-				GetShadowMapCBPool<ShadowType>().PushConstBufferToQueue();
+				GetShadowMapVPMatCBPool<ShadowType>().PushConstBufferToQueue();
 
 				_dirtyGlobalParam = true;
 
@@ -67,7 +67,7 @@ namespace Rendering
 
 				GetPool<ShadowType>().Delete(objID.Literal());
 				GetBuffer<ShadowType>().GetBuffer().Delete(index);
-				GetShadowMapCBPool<ShadowType>().Delete(index);
+				GetShadowMapVPMatCBPool<ShadowType>().Delete(index);
 
 				_dirtyGlobalParam = true;
 				GetShadowDatas<ShadowType>().mustUpdateToGPU = true;
@@ -100,11 +100,11 @@ namespace Rendering
 				return GetPool<ShadowType>().GetIndexer();
 			}
 
-			template <class ShadowType>	auto& GetShadowMapCBPool()
+			template <class ShadowType>	auto& GetShadowMapVPMatCBPool()
 			{
 				return GetShadowDatas<ShadowType>().cbPool;
 			}
-			template <class ShadowType> const auto& GetShadowMapCBPool() const
+			template <class ShadowType> const auto& GetShadowMapVPMatCBPool() const
 			{
 				return GetShadowDatas<ShadowType>().cbPool;
 			}
