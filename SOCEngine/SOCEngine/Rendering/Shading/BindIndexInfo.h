@@ -81,7 +81,7 @@ namespace Rendering
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
-		OnlyPass						= 4,
+		OnlyPassViewProjMat				= 4,
 
 		ReflectionProbe_Info			= 5,	
 
