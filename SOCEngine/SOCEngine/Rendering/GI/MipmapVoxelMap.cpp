@@ -23,11 +23,11 @@ void MipmapVoxelMap::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	_infoCB.Initialize(dx);
 }
 
-void MipmapVoxelMap::Mipmapping(DirectX& dx, VoxelMap& sourceColorMap, VoxelMap& anisotropicMap)
+void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, VoxelMap& outAnisotropicMap)
 {
 	uint sourceDimension = sourceColorMap.GetSideLength();
 
-	auto Mipmap = [&dx, sourceDimension, &infoCB = _infoCB](ComputeShader& shader, UnorderedAccessView& sourceUAV, UnorderedAccessView& targetUAV, uint mipLevel)
+	auto Mipmap = [&dx, sourceDimension, &infoCB = _infoCB](ComputeShader& shader, const UnorderedAccessView& sourceUAV, UnorderedAccessView& targetUAV, uint mipLevel)
 	{
 		uint mipCoff		= 1 << mipLevel;
 		uint curDimension	= sourceDimension / mipCoff;
@@ -53,10 +53,10 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, VoxelMap& sourceColorMap, VoxelMap&
 		ComputeShader::UnBindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB);
 	};
 
-	Mipmap(_baseMipmap, sourceColorMap.GetSourceMapUAV(), anisotropicMap.GetSourceMapUAV(), 0);
-	Mipmap(_anisotropicMipmap, anisotropicMap.GetSourceMapUAV(), anisotropicMap.GetMipmapUAV(0), 1);
+	Mipmap(_baseMipmap, sourceColorMap.GetSourceMapUAV(), outAnisotropicMap.GetSourceMapUAV(), 0);
+	Mipmap(_anisotropicMipmap, outAnisotropicMap.GetSourceMapUAV(), outAnisotropicMap.GetMipmapUAV(0), 1);
 
-	uint maxMipLevel = anisotropicMap.GetMaxMipmapLevel();
+	uint maxMipLevel = outAnisotropicMap.GetMaxMipmapLevel();
 	for(uint i=1; i<maxMipLevel; ++i)
-		Mipmap(_anisotropicMipmap, anisotropicMap.GetMipmapUAV(i-1), anisotropicMap.GetMipmapUAV(i), i+1);
+		Mipmap(_anisotropicMipmap, outAnisotropicMap.GetMipmapUAV(i-1), outAnisotropicMap.GetMipmapUAV(i), i+1);
 }

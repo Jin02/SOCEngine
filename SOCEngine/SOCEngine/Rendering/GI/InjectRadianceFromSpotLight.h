@@ -11,7 +11,7 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension);
-			void Inject(Device::DirectX& dx, Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, InjectRadianceFormUtility::BindParam& bindParam);
+			void Inject(Device::DirectX& dx, VoxelMap& outVoxelMap, const Manager::LightManager& lightMgr, const ShadowSystemParam& shadowSystem, const InjectRadianceFormUtility::BindParam& bindParam);
 
 		private:
 			Shader::ComputeShader	_shader;

@@ -118,9 +118,9 @@ namespace Rendering
 				
 				
 			public:
-				GET_ACCESSOR(TransformSRBuffer,				auto&, _transformBuffer.GetShaderResourceBuffer());
-				GET_ACCESSOR(ColorSRBuffer,					auto&, _commonBuffer.GetColorSRBuffer());
-				GET_ACCESSOR(OptionalParamIndexSRBuffer, 	auto&, _commonBuffer.GetOptionalParamIndexSRBuffer());
+				GET_CONST_ACCESSOR(TransformSRBuffer,			auto&, _transformBuffer.GetShaderResourceBuffer());
+				GET_CONST_ACCESSOR(ColorSRBuffer,				auto&, _commonBuffer.GetColorSRBuffer());
+				GET_CONST_ACCESSOR(OptionalParamIndexSRBuffer, 	auto&, _commonBuffer.GetOptionalParamIndexSRBuffer());
 
 				GET_CONST_ACCESSOR(Size, uint, _transformBuffer.GetSize());
 

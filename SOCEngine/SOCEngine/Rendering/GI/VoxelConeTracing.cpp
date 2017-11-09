@@ -36,7 +36,8 @@ void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 								  DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
 }
 
-void VoxelConeTracing::Run(DirectX& dx, VoxelMap& injectionSourceMap, VoxelMap& mipmappedInjectionMap, VXGIInfoCB& infoCB, MainRenderingSystemParam& mainSystem)
+void VoxelConeTracing::Run(DirectX& dx, const VoxelMap& injectionSourceMap, const VoxelMap& mipmappedInjectionMap,
+							const VXGIInfoCB& infoCB, const MainRenderingSystemParam& mainSystem)
 {
 	_indirectColorMap.Clear(dx, Color::Clear());
 

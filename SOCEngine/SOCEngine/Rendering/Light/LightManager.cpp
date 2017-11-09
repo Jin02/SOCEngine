@@ -145,7 +145,7 @@ void LightManager::ClearDirty()
 void LightManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
 {
 	auto Bind = [&dx, bindVS, bindGS, bindPS](
-		TextureBindIndex bind, ShaderResourceBuffer& srb)
+		TextureBindIndex bind, const ShaderResourceBuffer& srb)
 	{
 		if (bindVS)	VertexShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());
 		if (bindGS)	GeometryShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());

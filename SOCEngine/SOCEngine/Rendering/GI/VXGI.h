@@ -22,7 +22,17 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const VXGIStaticInfo& info);
-			void Run(Device::DirectX& dx, MainRenderingSystemParam& main, Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, Renderer::MeshRenderer& meshRenderer);
+
+			struct Param
+			{
+				const MainRenderingSystemParam&			main;
+				const Manager::LightManager&			lightMgr;
+				const ShadowSystemParam&				shadowSystem;
+				const Renderer::CullingParam&			cullParam;
+				const Renderer::MeshRenderer::Param&	meshRenderParam;
+				const Manager::MaterialManager&			materialMgr;
+			};
+			void Run(Device::DirectX& dx, Param&& param);
 
 			void UpdateGIDynamicInfoCB(Device::DirectX& dx, uint packedNumfOfLights);
 			

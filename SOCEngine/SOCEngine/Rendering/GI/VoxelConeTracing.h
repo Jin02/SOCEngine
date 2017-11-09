@@ -21,10 +21,11 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void Run(Device::DirectX& dx, VoxelMap& injectionSourceMap, VoxelMap& mipmappedInjectionMap,
-				VXGIInfoCB& infoCB, MainRenderingSystemParam& mainSystem);
+			void Run(	Device::DirectX& dx,
+						const VoxelMap& injectionSourceMap, const VoxelMap& mipmappedInjectionMap,
+						const VXGIInfoCB& infoCB, const MainRenderingSystemParam& mainSystem	);
 
-			GET_ALL_ACCESSOR(IndirectColorMap, Texture::RenderTexture&, _indirectColorMap);
+			GET_CONST_ACCESSOR(IndirectColorMap, const auto&, _indirectColorMap.GetTexture2D());
 
 		private:
 			Shader::ComputeShader		_shader;

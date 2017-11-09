@@ -22,6 +22,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Shadow;
 using namespace Rendering::RenderState;
 using namespace Rendering::Geometry;
+using namespace Rendering::Material;
 
 void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension, float voxelSize)
 {
@@ -51,7 +52,7 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 	}
 }
 
-void Voxelization::ClearVoxelMap(DirectX& dx, ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)
+void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)
 {
 	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Albedo,	_voxelAlbedoRawBuffer.GetUnorderedAccessView());
 	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Emission,	_voxelEmissionRawBuffer.GetUnorderedAccessView());
@@ -68,18 +69,9 @@ void Voxelization::ClearVoxelMap(DirectX& dx, ExplicitConstBuffer<VXGIStaticInfo
 	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Normal);
 }
 
-void Voxelization::Voxelize(
-	DirectX& dx, VoxelMap& outDLInjectVoxelMap, 
-	const Vector3& startCenterWorldPos, VXGIInfoCB& infoCB, 
-	LightManager& lightMgr, ShadowSystemParam& shadowSystem, TBRParamCB& tbrParamCB, 
-	MeshRenderer& meshRenderer)
+void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, Voxelization::Param&& param)
 {
-	ClearVoxelMap(dx, infoCB.staticInfoCB);
-
-	dx.SetRasterizerState(RasterizerState::CWDisableCullingWithClip);
-	dx.SetDepthStencilState(DepthState::LessEqual, 0);
-	dx.SetBlendState(BlendState::Opaque);
-	dx.SetViewport(Rect<float>(0.0f, 0.0f, _dimension, _dimension));
+	ClearVoxelMap(dx, param.infoCB.staticInfoCB);
 
 	UnorderedAccessView* uavs[] =
 	{
@@ -88,57 +80,80 @@ void Voxelization::Voxelize(
 		&_voxelEmissionRawBuffer.GetUnorderedAccessView(),
 		&outDLInjectVoxelMap.GetSourceMapUAV()
 	};
-	
-	dx.SetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs), uavs);
 
-	auto& dlBuffer = lightMgr.GetBuffer<DirectionalLight>();
+	dx.SetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs), uavs);
+	dx.SetRasterizerState(RasterizerState::CWDisableCullingWithClip);
+	dx.SetDepthStencilState(DepthState::LessEqual, 0);
+	dx.SetBlendState(BlendState::Opaque);
+	dx.SetViewport(Rect<float>(0.0f, 0.0f, _dimension, _dimension));
+	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+
+	const auto& dlBuffer = param.lightMgr.GetBuffer<DirectionalLight>();
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightDirXY,					dlBuffer.GetTransformSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightColor,					dlBuffer.GetColorSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,		dlBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
-	auto& dlsBuffer = shadowSystem.manager.GetBuffer<DirectionalLightShadow>().GetBuffer();
+	const auto& dlsBuffer = param.shadowSystem.manager.GetBuffer<DirectionalLightShadow>().GetBuffer();
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowParam,				dlsBuffer.GetParamSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		dlsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowSystem.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			param.shadowSystem.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,						infoCB.staticInfoCB);
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,					infoCB.dynamicInfoCB);
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::TBRParam,								tbrParamCB);
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::TBRParam,								param.tbrParamCB);
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					shadowSystem.manager.GetGlobalParamCB());
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					param.shadowSystem.manager.GetGlobalParamCB());
 
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowComprisonSamplerState,			SamplerState::ShadowGreaterEqualComp);	
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);	
 
-	UpdateConstBuffer(dx, startCenterWorldPos);
+	UpdateConstBuffer(dx, param.startCenterWorldPos);
 
 	GeometryShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
 
-	//MeshUtility::ClassifyOpaqueMesh(tempOpaque, meshPool, objMgr, transformPool,
-	//	[]()
-	//	{
-	//
-	//	}
-	//);
+	// Voxel World BoundBox에 들어오는 Mesh들만 복셀화를 한다.
+	const auto& cullParam = param.cullParam;
+	MeshUtility::ClassifyOpaqueMesh(_renderQ.opaqueRenderQ, cullParam.meshManager.GetOpaqueMeshPool(), cullParam.objMgr, cullParam.transformPool,
+		[&worldBB = _voxeWorldBoundBox](const Mesh& mesh, const Transform&)
+		{
+			return worldBB.Intersects(mesh.GetBoundBox());
+		}
+	);
 
-	//MeshUtility::ClassifyOpaqueMesh(tempAlphaTest, meshPool, objMgr, transformPool,
-	//	[]()
-	//	{
-	//
-	//	}
-	//);
+	MeshUtility::ClassifyOpaqueMesh(_renderQ.alphaTestRenderQ, cullParam.meshManager.GetAlphaTestMeshPool(), cullParam.objMgr, cullParam.transformPool,
+		[&worldBB = _voxeWorldBoundBox](const Mesh& mesh, const Transform&)
+		{
+			return worldBB.Intersects(mesh.GetBoundBox());
+		}
+	);
+	
+	auto VoxelizeMesh = [&dx, &param](auto& renderQ)
+	{
+		MeshRenderer::RenderOpaqueMeshes(dx, param.meshRenderParam, DefaultRenderType::Voxelization, renderQ,
+			[&dx, &materialMgr = param.materialMgr](const Mesh* mesh)
+			{
+				auto material	= materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID()); assert(material);
 
-	//// Render Voxel
-	//{
-	//	const auto& opaqueMeshes = renderManager->GetOpaqueMeshes();
-	//	MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, opaqueMeshes, RenderType::Voxelization, nullptr, nullptr);
+				auto diffuseMap	= material->GetTextures().Find(PhysicallyBasedMaterial::GetDiffuseMapKey()); assert(diffuseMap);
+				PixelShader::BindShaderResourceView(dx, TextureBindIndex::DiffuseMap, diffuseMap->resource.GetShaderResourceView());
 
-	//	const auto& alphaTestMeshes = renderManager->GetAlphaTestMeshes();
-	//	MeshCamera::RenderMeshesUsingSortedMeshVectorByVB(dx, renderManager, alphaTestMeshes, RenderType::Voxelization, nullptr, nullptr);
-	//}
-	//
+				auto opacityMap = material->GetTextures().Find(PhysicallyBasedMaterial::GetOpacityMapKey());
+				if (opacityMap)
+					PixelShader::BindShaderResourceView(dx, TextureBindIndex::OpacityMap, opacityMap->resource.GetShaderResourceView());
+			},
+			[&dx]()
+			{
+				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::OpacityMap);
+				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DiffuseMap);
+			}
+		);
+
+	};
+
+	VoxelizeMesh(_renderQ.opaqueRenderQ);
+	VoxelizeMesh(_renderQ.alphaTestRenderQ);
 
 	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightDirXY);
 	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightColor);
@@ -163,10 +178,13 @@ void Voxelization::Voxelize(
 void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 {
 	// Compute Voxelize Bound
-	auto bound = ComputeBound(startCenterPos, _worldSize);
+	_voxeWorldBoundBox = ComputeBound(startCenterPos, _worldSize);
 
 	InfoCBData currentVoxelizeInfo;
-	currentVoxelizeInfo.voxelizeMinPos	= Vector4(bound.bbMin.x, bound.bbMin.y, bound.bbMin.z, 1.0f);
+	currentVoxelizeInfo.voxelizeMinPos	= Vector4(	_voxeWorldBoundBox.GetMin().x,
+													_voxeWorldBoundBox.GetMin().y,
+													_voxeWorldBoundBox.GetMin().z,
+													1.0f);
 
 	// Update View Proj ConstBuffer
 	{
@@ -178,7 +196,7 @@ void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 			return Matrix::ComputeViewMatrix(worldMat);
 		};
 
-		const Vector3& center = bound.bbMid;
+		const Vector3& center = _voxeWorldBoundBox.GetCenter();
 		float halfWorldSize = _worldSize / 2.0f;
 
 		Matrix viewAxisX = LookAt(center + Vector3(halfWorldSize, 0.0f, 0.0f), center, Vector3(0.0f, 1.0f, 0.0f)); //x
@@ -206,14 +224,11 @@ void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 	_infoCB.UpdateSubResource(dx, currentVoxelizeInfo);
 }
 
-Voxelization::ComputeBoundResult Voxelization::ComputeBound(const Vector3& startCenterPos, float voxelizationSize)
+BoundBox Voxelization::ComputeBound(const Vector3& startCenterPos, float voxelizationSize)
 {
-	Voxelization::ComputeBoundResult result;
 	float halfWorldSize	= voxelizationSize / 2.0f;
+	Vector3 bbMin = startCenterPos - Vector3(halfWorldSize, halfWorldSize, halfWorldSize);
+	Vector3 bbMax = bbMin + Vector3(voxelizationSize, voxelizationSize, voxelizationSize);
 
-	result.bbMin = startCenterPos - Vector3(halfWorldSize, halfWorldSize, halfWorldSize);
-	result.bbMax = result.bbMin + Vector3(voxelizationSize, voxelizationSize, voxelizationSize);
-	result.bbMid = (result.bbMin + result.bbMax) / 2.0f;
-
-	return result;
+	return BoundBox::Make(bbMin, bbMax);
 }

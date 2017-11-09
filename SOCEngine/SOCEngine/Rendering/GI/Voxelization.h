@@ -3,7 +3,6 @@
 #include "GlobalDefine.h"
 
 #include "VoxelMap.h"
-#include <functional>
 
 #include "Vector3.h"
 #include "Vector4.h"
@@ -19,6 +18,7 @@
 
 #include "TileBasedShadingHeader.h"
 #include "MeshRenderer.h"
+#include "RendererCommon.h"
 
 namespace Rendering
 {
@@ -44,23 +44,29 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension, float voxelSize);
-
-			void Voxelize(Device::DirectX& dx, VoxelMap& outDLInjectVoxelMap,
-				const Math::Vector3& startMinWorldPos, VXGIInfoCB& infoCB,
-				Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, Renderer::TBRParamCB& tbrParamCB, Renderer::MeshRenderer& meshRenderer);
-
 			void UpdateConstBuffer(Device::DirectX& dx, const Math::Vector3& startCenterPos);
 
-			struct ComputeBoundResult { Math::Vector3 bbMin, bbMid, bbMax; };
-			static ComputeBoundResult ComputeBound(const Math::Vector3& startCenterPos, float voxelizationSize);
+			GET_CONST_ACCESSOR(InfoCB,					const auto&,	_infoCB);
+			GET_CONST_ACCESSOR(VoxelAlbedoRawBuffer,	const auto&,	_voxelAlbedoRawBuffer);
+			GET_CONST_ACCESSOR(VoxelNormalRawBuffer,	const auto&,	_voxelNormalRawBuffer);
+			GET_CONST_ACCESSOR(VoxelEmissionRawBuffer,	const auto&,	_voxelEmissionRawBuffer);
 
-			GET_ACCESSOR(InfoCB, auto&, _infoCB);
-			GET_ACCESSOR(VoxelAlbedoRawBuffer, auto&, _voxelAlbedoRawBuffer);
-			GET_ACCESSOR(VoxelNormalRawBuffer, auto&, _voxelNormalRawBuffer);
-			GET_ACCESSOR(VoxelEmissionRawBuffer, auto&, _voxelEmissionRawBuffer);
+			struct Param
+			{
+				const Math::Vector3&					startCenterWorldPos;
+				const VXGIInfoCB&						infoCB;
+				const Manager::LightManager&			lightMgr;
+				const ShadowSystemParam&				shadowSystem;
+				const Renderer::TBRParamCB&				tbrParamCB;
+				const Renderer::CullingParam&			cullParam;
+				const Renderer::MeshRenderer::Param&	meshRenderParam;
+				const Manager::MaterialManager&			materialMgr;
+			};
+			void Voxelize(Device::DirectX& dx, VoxelMap& outDLInjectVoxelMap, Param&& param);
 
 		private:
-			void ClearVoxelMap(Device::DirectX& dx, Buffer::ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB);
+			void ClearVoxelMap(Device::DirectX& dx, const Buffer::ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB);
+			static Intersection::BoundBox ComputeBound(const Math::Vector3& startCenterPos, float voxelizationSize);
 
 		private:
 			Buffer::GPURawBuffer						_voxelAlbedoRawBuffer;
@@ -69,6 +75,9 @@ namespace Rendering
 
 			Buffer::ExplicitConstBuffer<InfoCBData>		_infoCB;
 			Shader::ComputeShader						_clearVoxelRawMapCS;
+
+			Renderer::TempRenderQueue					_renderQ;
+			Intersection::BoundBox						_voxeWorldBoundBox;
 
 			float										_dimension = 0.0f;
 			float										_worldSize = 0.0f;

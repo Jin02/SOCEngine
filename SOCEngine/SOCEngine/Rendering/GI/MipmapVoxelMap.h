@@ -21,7 +21,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void Mipmapping(Device::DirectX& dx, VoxelMap& sourceColorMap, VoxelMap& anisotropicMap);
+			void Mipmapping(Device::DirectX& dx, const VoxelMap& sourceColorMap, VoxelMap& outAnisotropicMap);
 
 		private:
 			Shader::ComputeShader						_baseMipmap;

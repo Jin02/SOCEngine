@@ -84,38 +84,44 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const VXGIStaticInf
 	InitializeClearVoxelMap(dx, shaderMgr, _staticInfo.dimension);
 }
 
-void VXGI::Run(DirectX& dx,
-			MainRenderingSystemParam& main, LightManager& lightMgr, ShadowSystemParam& shadowSystem,
-			MeshRenderer& meshRenderer)
+void VXGI::Run(DirectX& dx, VXGI::Param&& param)
 {	
 	ClearInjectColorVoxelMap(dx);
 	
+	const auto& lightMgr		= param.lightMgr;
+	const auto& shadowSystem	= param.shadowSystem;
+	const auto& tbrCB			= param.main.renderer.GetTBRParamCB();
+
 	// 1. Voxelization Pass
 	{
+		Voxelization::Param param{_startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
+									tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr};
 		// Clear Voxel Map and voxelize
-		_voxelization.Voxelize(dx, _injectionSourceMap, _startCenterWorldPos, _infoCB,
-								lightMgr, shadowSystem, main.renderer.GetTBRParamCB(),
-								meshRenderer);
+		_voxelization.Voxelize(dx, _injectionSourceMap,
+			Voxelization::Param{_startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
+								tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr}
+		);
 	}
 
 	// 2. Injection Pass
 	{
-		InjectRadianceFormUtility::BindParam param(
-			_infoCB, _voxelization, main.renderer.GetTBRParamCB(),
-			shadowSystem.manager.GetGlobalParamCB(), _injectionSourceMap);
+		InjectRadianceFormUtility::BindParam param{
+			_infoCB, _voxelization,  tbrCB,
+			shadowSystem.manager.GetGlobalParamCB()
+		};
 
 		if(lightMgr.GetLightCount<PointLight>() > 0)
-			_injectPointLight.Inject(dx, lightMgr, shadowSystem, param);
+			_injectPointLight.Inject(dx, _injectionSourceMap, lightMgr, shadowSystem, param);
 
 		if(lightMgr.GetLightCount<SpotLight>() > 0)
-			_injectSpotLight.Inject(dx, lightMgr, shadowSystem, param);
+			_injectSpotLight.Inject(dx, _injectionSourceMap, lightMgr, shadowSystem, param);
 	}
 
 	// 3. Mipmap Pass
 	_mipmap.Mipmapping(dx, _injectionSourceMap, _mipmappedInjectionMap);
 
 	// 4. Voxel Cone Tracing Pass
-	_voxelConeTracing.Run(dx, _injectionSourceMap, _mipmappedInjectionMap, _infoCB, main);
+	_voxelConeTracing.Run(dx, _injectionSourceMap, _mipmappedInjectionMap, _infoCB, param.main);
 }
 
 void VXGI::UpdateGIDynamicInfoCB(DirectX& dx, uint packedNumfOfLights)

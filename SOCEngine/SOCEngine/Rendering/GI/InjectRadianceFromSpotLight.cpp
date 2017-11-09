@@ -23,7 +23,10 @@ void InjectRadianceFromSpotLight::Initialize(DirectX& dx, ShaderManager& shaderM
 	_shader.SetThreadGroupInfo(ComputeShader::ThreadGroup(xzLength, xzLength, xzLength));
 }
 
-void InjectRadianceFromSpotLight::Inject(DirectX& dx, LightManager& lightMgr, ShadowSystemParam& shadowSystem, InjectRadianceFormUtility::BindParam& bindParam)
+void InjectRadianceFromSpotLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,
+											const LightManager& lightMgr,
+											const ShadowSystemParam& shadowSystem,
+											const InjectRadianceFormUtility::BindParam& bindParam	)
 {
 	auto& slBuffer = lightMgr.GetBuffer<SpotLight>();
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightRadiusWithCenter,		slBuffer.GetTransformSRBuffer().GetShaderResourceView());
@@ -35,7 +38,7 @@ void InjectRadianceFromSpotLight::Inject(DirectX& dx, LightManager& lightMgr, Sh
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightShadowViewProjMatrix,	slsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::SpotLightShadowMapAtlas,		shadowSystem.renderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
 
-	InjectRadianceFormUtility::Bind(dx, bindParam);
+	InjectRadianceFormUtility::Bind(dx, outVoxelMap, bindParam);
 
 	_shader.Dispatch(dx);
 
