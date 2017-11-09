@@ -49,7 +49,7 @@ namespace Rendering
 				const Math::Vector3& startMinWorldPos, VXGIInfoCB& infoCB,
 				Manager::LightManager& lightMgr, ShadowSystemParam& shadowSystem, Renderer::TBRParamCB& tbrParamCB, Renderer::MeshRenderer& meshRenderer);
 
-			void UpdateConstBuffer(Device::DirectX& dx, const Math::Vector3& startMinPos);
+			void UpdateConstBuffer(Device::DirectX& dx, const Math::Vector3& startCenterPos);
 
 			struct ComputeBoundResult { Math::Vector3 bbMin, bbMid, bbMax; };
 			static ComputeBoundResult ComputeBound(const Math::Vector3& startCenterPos, float voxelizationSize);
@@ -67,11 +67,11 @@ namespace Rendering
 			Buffer::GPURawBuffer						_voxelNormalRawBuffer;
 			Buffer::GPURawBuffer						_voxelEmissionRawBuffer;
 
-			Buffer::ExplicitConstBuffer<InfoCBData>	_infoCB;
-			Shader::ComputeShader					_clearVoxelRawMapCS;
+			Buffer::ExplicitConstBuffer<InfoCBData>		_infoCB;
+			Shader::ComputeShader						_clearVoxelRawMapCS;
 
-			float									_dimension = 0.0f;
-			float									_worldSize = 0.0f;
+			float										_dimension = 0.0f;
+			float										_worldSize = 0.0f;
 		};
 	}
 }

@@ -1,11 +1,15 @@
 #include "BindIndexInfo.h"
 #include "Voxelization.h"
 #include "ShaderFactory.hpp"
+#include "MeshUtility.h"
 
 #include "DirectionalLight.h"
 
 using namespace Core;
 using namespace Math;
+using namespace Device;
+using namespace Rendering;
+using namespace Intersection;
 using namespace Rendering::Buffer;
 using namespace Rendering::GI;
 using namespace Rendering::Texture;
@@ -17,8 +21,7 @@ using namespace Rendering::Factory;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
 using namespace Rendering::RenderState;
-using namespace Device;
-using namespace Rendering;
+using namespace Rendering::Geometry;
 
 void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension, float voxelSize)
 {
@@ -67,7 +70,7 @@ void Voxelization::ClearVoxelMap(DirectX& dx, ExplicitConstBuffer<VXGIStaticInfo
 
 void Voxelization::Voxelize(
 	DirectX& dx, VoxelMap& outDLInjectVoxelMap, 
-	const Vector3& startMinWorldPos, VXGIInfoCB& infoCB, 
+	const Vector3& startCenterWorldPos, VXGIInfoCB& infoCB, 
 	LightManager& lightMgr, ShadowSystemParam& shadowSystem, TBRParamCB& tbrParamCB, 
 	MeshRenderer& meshRenderer)
 {
@@ -75,10 +78,7 @@ void Voxelization::Voxelize(
 
 	dx.SetRasterizerState(RasterizerState::CWDisableCullingWithClip);
 	dx.SetDepthStencilState(DepthState::LessEqual, 0);
-
-	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	dx.SetBlendState(BlendState::Opaque, blendFactor, 0xffffffff);
-
+	dx.SetBlendState(BlendState::Opaque);
 	dx.SetViewport(Rect<float>(0.0f, 0.0f, _dimension, _dimension));
 
 	UnorderedAccessView* uavs[] =
@@ -111,10 +111,24 @@ void Voxelization::Voxelize(
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);	
 
-	UpdateConstBuffer(dx, startMinWorldPos);
+	UpdateConstBuffer(dx, startCenterWorldPos);
 
 	GeometryShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
+
+	//MeshUtility::ClassifyOpaqueMesh(tempOpaque, meshPool, objMgr, transformPool,
+	//	[]()
+	//	{
+	//
+	//	}
+	//);
+
+	//MeshUtility::ClassifyOpaqueMesh(tempAlphaTest, meshPool, objMgr, transformPool,
+	//	[]()
+	//	{
+	//
+	//	}
+	//);
 
 	//// Render Voxel
 	//{
@@ -146,10 +160,10 @@ void Voxelization::Voxelize(
 	dx.SetRasterizerState(RasterizerState::CWDefault);
 }
 
-void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startMinPos)
+void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 {
 	// Compute Voxelize Bound
-	auto bound = ComputeBound(startMinPos, _worldSize);
+	auto bound = ComputeBound(startCenterPos, _worldSize);
 
 	InfoCBData currentVoxelizeInfo;
 	currentVoxelizeInfo.voxelizeMinPos	= Vector4(bound.bbMin.x, bound.bbMin.y, bound.bbMin.z, 1.0f);
