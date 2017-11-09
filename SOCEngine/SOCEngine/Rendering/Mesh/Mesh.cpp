@@ -99,7 +99,7 @@ uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& sema
 
 	return flag;
 }
-
+/*
 void Mesh::AddMaterialID(MaterialID id)
 {
 	assert(id.Literal() != MaterialID::Undefined());
@@ -129,7 +129,7 @@ void Mesh::DeleteMaterialID(MaterialID id)
 		}
 	}
 }
-
+*/
 void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const
 {
 	assert(transform.GetDirty());
