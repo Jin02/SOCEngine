@@ -65,10 +65,13 @@ namespace Rendering
 				}
 			}
 
+
 			template <class ShadowType>
-			void RenderShadowMap(Device::DirectX& dx, const Manager::ShadowManager& shadowMgr, const ShadowMap::RenderManagerParam& mgrParam)
+			void RenderShadowMap(	Device::DirectX& dx,
+									const Manager::ShadowManager& shadowMgr, const Manager::MaterialManager& materialMgr,
+									const CullingParam& cullParam, const MeshRenderer::Param& meshParam	)
 			{
-				auto ClassifyMeshes = [&param = mgrParam](auto& tempRenderQ, const auto& meshPool, const ShadowType::LightType* light)
+				auto ClassifyMeshes = [&param = cullParam](auto& tempRenderQ, const auto& meshPool, const ShadowType::LightType* light)
 				{
 					Geometry::MeshUtility::ClassifyOpaqueMesh(tempRenderQ, meshPool, param.objMgr, param.transformPool,
 						[&tfPool = param.transformPool, light]
@@ -88,17 +91,17 @@ namespace Rendering
 					// 2 단계
 					// 이 빛들은 하나의 카메라가 된다.
 					// 렌더링 전에 컬링을 했던 것 처럼 여기서도 컬링한다. 
-					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, mgrParam.meshManager.GetOpaqueMeshPool(), light);
-					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, mgrParam.meshManager.GetAlphaTestMeshPool(), light);
+					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, cullParam.meshManager.GetOpaqueMeshPool(), light);
+					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, cullParam.meshManager.GetAlphaTestMeshPool(), light);
 
 					// 3 단계 - 그린다					
-					uint shadowIndex		= shadowMgr.GetIndexer<ShadowType>().Find(light->GetObjectID().Literal());
-					auto& shadowMap			= GetShadowAtlasMap<ShadowType>();
-					uint resolution			= shadowMap.GetResolution();
-					const auto& shadowMapCB	= shadowMgr.GetShadowMapCBPool<ShadowType>().Get(shadowIndex);
+					uint shadowIndex				= shadowMgr.GetIndexer<ShadowType>().Find(light->GetObjectID().Literal());
+					auto& shadowMap					= GetShadowAtlasMap<ShadowType>();
+					uint resolution					= shadowMap.GetResolution();
+					const auto& shadowMapVPMatCB	= shadowMgr.GetShadowMapVPMatCBPool<ShadowType>().Get(shadowIndex);
 
 					using Renderer = ShadowType::ShadowMapRenderer;
-					ShadowType::ShadowMapRenderer::Render(dx, Renderer::Param(shadowMapCB, shadowMap, shadowIndex, resolution), _tempRenderQ, mgrParam);
+					ShadowType::ShadowMapRenderer::Render(dx, Renderer::Param(materialMgr, shadowMap, shadowIndex, resolution), _tempRenderQ, meshParam, shadowMapVPMatCB);
 				}
 			}
 
@@ -132,7 +135,7 @@ namespace Rendering
 				Shadow::ShadowAtlasMap<Shadow::SpotLightShadow>
 			> _shadowAtlasMaps;
 
-			ShadowMap::TempRenderQueue _tempRenderQ;
+			TempRenderQueue _tempRenderQ;
 		};
 	}
 
