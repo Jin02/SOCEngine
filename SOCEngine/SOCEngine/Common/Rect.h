@@ -22,6 +22,7 @@ struct Rect
 public:
 	Rect() : x(0), y(0), size(0, 0) { }
 	Rect(Type _x, Type _y, Type _w, Type _h) : x(_x), y(_y), size(_w, _h) { }
+	Rect(Type _x, Type _y, const Size<Type>& _size) : x(_x), y(_y), size(_size) { }
 
 	template <typename NewType>
 	Rect<NewType> Cast() const

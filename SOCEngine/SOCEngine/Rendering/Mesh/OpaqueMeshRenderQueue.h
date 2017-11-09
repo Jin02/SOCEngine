@@ -29,6 +29,20 @@ namespace Rendering
 				}
 			}
 
+			template <class Iterator>		// Iterator Form = "[](const Mesh*) -> void { }"
+			void Iterate(Iterator iterator) const
+			{
+				uint vbKeyCount = _vbPerMeshes.GetSize();
+				for (uint i = 0; i < vbKeyCount; ++i)
+				{
+					const auto& rawPtrs = _vbPerMeshes.Get(i);
+
+					uint meshCount = rawPtrs.GetSize();
+					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
+						iterator( rawPtrs.Get(meshIdx) );
+				}
+			}
+
 			
 		private:
 			Core::VectorHashMap<Buffer::VertexBuffer::Key,

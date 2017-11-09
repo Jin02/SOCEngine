@@ -11,7 +11,7 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class DefaultShaderLoader
+		class DefaultShaders
 		{
 		public:
 			struct Shaders
@@ -25,20 +25,21 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr);
-			void Destroy();
-
-			Shaders& Add(uint key, const Shader::ShaderGroup& shaders);
-			bool Has(uint key) const;
-			Shaders& Find(uint key) 	{ return _shaders[key]; }
-			const Shaders& Find(uint key) const;
+			bool			Has(uint key) const;
+			const Shaders&	Find(uint key) const;
+			const Shaders&	Find(uint bufferFlag, DefaultRenderType renderType) const;
 
 			static uint MakeKey(uint bufferFlag, DefaultRenderType renderType);
 			std::string MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const;
 
 		private:
-			Shaders& LoadDefaultSahder(Device::DirectX& dx, ShaderManager& shaderMgr,
-				DefaultRenderType renderType, uint bufferFlag, const std::vector<Shader::ShaderMacro>* macros);
+			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr);
+			const Shaders&	Add(uint key, const Shader::ShaderGroup& shaders);
+			void Destroy();
+
+			const Shaders& LoadDefaultSahder(	Device::DirectX& dx, ShaderManager& shaderMgr,
+												DefaultRenderType renderType, uint bufferFlag, 
+												const std::vector<Shader::ShaderMacro>* macros);
 			void MakeDefaultShaderMainFuncNames(std::string& outVSMain, std::string& outGSMain, std::string& outPSMain, DefaultRenderType renderType);
 
 		private:

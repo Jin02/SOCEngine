@@ -45,6 +45,8 @@ void SkyBox::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDe
 		dx.SetBlendState(BlendState::Opaque);	
 		dx.SetDepthStencilState(DepthState::GreaterEqualAndDisableDepthWrite, 0);
 		dx.SetRenderTarget(target, const_cast<DepthMap&>(targetDepthMap));	// depth state Âü°í.
+		dx.SetViewport(Rect<float>(0.0f, 0.0f, target.GetSize().Cast<float>()));
+		dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	}
 
 	_geometry.GetVertexBuffer().IASetBuffer(dx);

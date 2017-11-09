@@ -1,6 +1,6 @@
 #include "Mesh.h"
 #include "DefaultRenderTypes.h"
-#include "DefaultShaderLoader.h"
+#include "DefaultShaders.h"
 #include "MeshManager.h"
 #include "Utility.hpp"
 

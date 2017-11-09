@@ -1,4 +1,4 @@
-#include "DefaultShaderLoader.h"
+#include "DefaultShaders.h"
 #include "ShaderFactory.hpp"
 #include "Utility.hpp"
 
@@ -7,8 +7,8 @@ using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
 
-DefaultShaderLoader::Shaders& 
-DefaultShaderLoader::LoadDefaultSahder(
+const DefaultShaders::Shaders& 
+DefaultShaders::LoadDefaultSahder(
 	Device::DirectX& dx, ShaderManager& shaderMgr,
 	DefaultRenderType renderType, uint bufferFlag,
 	const std::vector<ShaderMacro>* macros)
@@ -67,7 +67,7 @@ DefaultShaderLoader::LoadDefaultSahder(
 	return Add(key, shader);
 }
 
-void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
+void DefaultShaders::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
 	std::vector<ShaderMacro> macros;
 	{
@@ -92,25 +92,24 @@ void DefaultShaderLoader::Initialize(Device::DirectX& dx, ShaderManager& shaderM
 	}
 }
 
-void DefaultShaderLoader::Destroy()
+void DefaultShaders::Destroy()
 {
 	_shaders.clear();
 }
 
-DefaultShaderLoader::Shaders&
-	DefaultShaderLoader::Add(uint key, const ShaderGroup& shaders)
+const DefaultShaders::Shaders& DefaultShaders::Add(uint key, const ShaderGroup& shaders)
 {
 	_shaders.insert(std::make_pair(key, Shaders(shaders)));
 	return _shaders[key];
 }
 
-bool DefaultShaderLoader::Has(uint key) const
+bool DefaultShaders::Has(uint key) const
 {
 	auto iter = _shaders.find(key);
 	return iter != _shaders.end();
 }
 
-const DefaultShaderLoader::Shaders& DefaultShaderLoader::Find(uint key) const
+const DefaultShaders::Shaders& DefaultShaders::Find(uint key) const
 {
 	const auto iter = _shaders.find(key);
 	assert(iter != _shaders.end());
@@ -118,7 +117,12 @@ const DefaultShaderLoader::Shaders& DefaultShaderLoader::Find(uint key) const
 	return iter->second;
 }
 
-void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
+const DefaultShaders::Shaders& DefaultShaders::Find(uint bufferFlag, DefaultRenderType renderType) const
+{
+	return Find(MakeKey(bufferFlag, renderType));
+}
+
+void DefaultShaders::MakeDefaultShaderMainFuncNames(
 	std::string& outVSMain, std::string& outGSMain, std::string& outPSMain,
 	DefaultRenderType renderType)
 {
@@ -166,7 +170,7 @@ void DefaultShaderLoader::MakeDefaultShaderMainFuncNames(
 	outPSMain	= psMain;
 }
 
-uint DefaultShaderLoader::MakeKey(	uint bufferFlag,
+uint DefaultShaders::MakeKey(	uint bufferFlag,
 									DefaultRenderType renderType	)
 {
 	constexpr uint bitOffset = 
@@ -175,7 +179,7 @@ uint DefaultShaderLoader::MakeKey(	uint bufferFlag,
 	return (static_cast<uint>(renderType) << bitOffset) | bufferFlag;
 }
 
-std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const
+std::string DefaultShaders::MakeDefaultSahderFileName(DefaultRenderType renderType, uint bufferFlag) const
 {
 	std::string defaultVertexInputTypeStr = "";
 
@@ -220,7 +224,7 @@ std::string DefaultShaderLoader::MakeDefaultSahderFileName(DefaultRenderType ren
 	return frontFileName + defaultVertexInputTypeStr;
 }
 
-DefaultShaderLoader::Shaders::Shaders(const ShaderGroup& shaderGroup)
+DefaultShaders::Shaders::Shaders(const ShaderGroup& shaderGroup)
 	: vs(*shaderGroup.vs), ps(*shaderGroup.ps), gs(*shaderGroup.gs)
 {
 }
