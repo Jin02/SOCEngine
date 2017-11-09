@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DefaultShaderLoader.h"
+#include "DefaultShaders.h"
 #include "MeshManager.h"
 #include "MaterialManager.h"
 
@@ -13,27 +13,58 @@ namespace Rendering
 		class MeshRenderer final
 		{
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void Destroy();
-
-		public:
-			struct RenderParam
+			struct Param
 			{
-				const Manager::MaterialManager&	materialMgr;
 				const Manager::BufferManager&	bufferMgr;
-				const Buffer::ConstBuffer&		camCB;
+				const Manager::DefaultShaders&	defaultShaders;
 
-				RenderParam(const Manager::MaterialManager& _materialMgr, const Manager::BufferManager& _bufferMgr, const Buffer::ConstBuffer& _camCB) 
-					: materialMgr(_materialMgr), bufferMgr(_bufferMgr), camCB(_camCB) {}
+				Param(const Manager::BufferManager& _bufferMgr, const Manager::DefaultShaders& _defaultShaders) 
+					: bufferMgr(_bufferMgr), defaultShaders(_defaultShaders) {}
 			};
 
-			void RenderWithoutIASetVB(Device::DirectX& dx,		RenderParam param,	DefaultRenderType renderType, Geometry::Mesh& mesh) const;
-			void RenderTransparentMeshes(Device::DirectX& dx,	RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::TransparentMeshRenderQueue& meshes) const;
-			void RenderOpaqueMeshes(Device::DirectX& dx,		RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes) const;
-			void RenderAlphaTestMeshes(Device::DirectX& dx,	RenderParam param,	DefaultRenderType renderType, Rendering::RenderQueue::AlphaTestMeshRenderQueue& meshes) const { RenderOpaqueMeshes(dx, param, renderType, meshes); }
+			static void RenderWithoutIASetVB(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Geometry::Mesh& mesh);
 
-		private:
-			Manager::DefaultShaderLoader _loader;
+			template <class CallPerMeshFunc, class CallPostRender>
+			static void RenderTransparentMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::TransparentMeshRenderQueue& meshes, CallPerMeshFunc func, CallPostRender postFunc)
+			{
+				for (const auto mesh : meshes)
+				{
+					const auto& vbPool			= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
+					const auto* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey()); assert(vertexBuffer);
+
+					vertexBuffer->IASetBuffer(dx);
+					func(meshPtr);
+
+					RenderWithoutIASetVB(dx, param, renderType, *meshPtr);
+				}
+
+				postFunc();
+			}
+
+			template <class CallPerMeshFunc, class CallPostRender>
+			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPerMeshFunc func, CallPostRender postCall)
+			{
+				meshes.Iterate(
+					[&dx, &param, renderType, &func](const Mesh* mesh)
+					{
+						const auto& vbPool	= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
+						const auto* vb		= vbPool.Find(mesh->GetVBKey()); assert(vb);
+
+						vb->IASetBuffer(dx);
+						func(mesh);
+
+						RenderWithoutIASetVB(dx, param, renderType, *mesh);
+					}
+				);
+
+				postCall();
+			}
+
+			template <class CallPerMeshFunc, class CallPostRender>
+			static void RenderAlphaTestMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::AlphaTestMeshRenderQueue& meshes, CallPerMeshFunc&& cullFunc, CallPostRender&& postCall)
+			{
+				RenderOpaqueMeshes(dx, param, renderType, meshes, cullFunc, postCall);
+			}
 		};
 	}
 }
