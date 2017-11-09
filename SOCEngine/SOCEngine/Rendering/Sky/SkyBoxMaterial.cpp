@@ -38,6 +38,6 @@ void SkyBoxMaterial::UpdateCubeMap(const Texture2D& tex)
 		bindData.usePS		= true;
 	}
 
-	_cubeMap		= GetTextureBook().Add("CubeMap", bindData).resource;
+	_cubeMap		= GetTextures().Add("CubeMap", bindData).resource;
 	_maxMipLevel	= log(float(_cubeMap.GetSize().w)) / log(2.0f);
 }

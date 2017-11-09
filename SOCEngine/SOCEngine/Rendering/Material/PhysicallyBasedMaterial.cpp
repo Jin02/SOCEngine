@@ -9,7 +9,7 @@ using namespace Rendering::Material;
 
 void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 {
-	auto indexer = GetConstBufferBook().GetIndexer();
+	auto indexer = GetConstBuffers().GetIndexer();
 	uint findIdx = indexer.Find(ParamCB::GetKey());
 
 	// Error, param const buffer was already allocated
@@ -27,7 +27,7 @@ void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 		bind.usePS		= true;
 	}
 
-	GetConstBufferBook().Add(ParamCB::GetKey(), bind);
+	GetConstBuffers().Add(ParamCB::GetKey(), bind);
 }
 
 void PhysicallyBasedMaterial::Destroy()
@@ -53,7 +53,7 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 
 	uint existTextureFlag = 0;
 	{
-		const auto& indexer = GetTextureBook().GetIndexer();
+		const auto& indexer = GetTextures().GetIndexer();
 
 		existTextureFlag |= static_cast<uint>(indexer.Has(GetDiffuseMapKey()))		<< 0;
 		existTextureFlag |= static_cast<uint>(indexer.Has(GetNormalMapKey()))		<< 1;
@@ -71,17 +71,17 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 	float ior		= min(max(0.0f, _ior), 1.0f) * 255.0f;				
 	param.flag_ior	= (static_cast<uint>(_flag) << 8) | static_cast<uint>(ior);
 
-	auto indexer	= GetConstBufferBook().GetIndexer();
+	auto indexer	= GetConstBuffers().GetIndexer();
 	uint findIndex	= indexer.Find(ParamCB::GetKey());
 	assert(findIndex != decltype(indexer)::FailIndex());
 
-	GetConstBufferBook().Get(findIndex).resource.UpdateSubResource(dx, &param);
+	GetConstBuffers().Get(findIndex).resource.UpdateSubResource(dx, &param);
 	_dirty = false;	
 }
 
 void PhysicallyBasedMaterial::RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex)
 {
-	auto& textureBook = GetTextureBook();
+	auto& textureBook = GetTextures();
 	if (textureBook.Has(key) == false)
 	{
 		BindTextured2D bindTex2D;
