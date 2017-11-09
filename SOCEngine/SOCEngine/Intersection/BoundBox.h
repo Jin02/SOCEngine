@@ -19,15 +19,17 @@ namespace Intersection
 		GET_CONST_ACCESSOR(Min,		const Math::Vector3&,	_min);
 		GET_CONST_ACCESSOR(Max,		const Math::Vector3&,	_max);
 
+		static BoundBox Make(const Math::Vector3& bbMin, const Math::Vector3& bbMax);
+
 		void SetMinMax(const Math::Vector3& min, const Math::Vector3& max);
 		void Expand(float amount);
 		void Expand(const Math::Vector3& amount);
 
-		bool Intersects(const BoundBox& bounds);
-		bool Intersects(const Ray& ray, Math::Vector3* outPickPoint = nullptr, float gap = 0.0);
-		bool Contains(const Math::Vector3& point);
+		bool Intersects(const BoundBox& bounds) const;
+		bool Intersects(const Ray& ray, Math::Vector3* outPickPoint = nullptr, float gap = 0.0) const;
+		bool Contains(const Math::Vector3& point) const;
 
-		float SqrDistance(const Math::Vector3& point);
+		float SqrDistance(const Math::Vector3& point) const;
 
 		bool operator!=(const BoundBox &box);
 		bool operator==(const BoundBox &box);

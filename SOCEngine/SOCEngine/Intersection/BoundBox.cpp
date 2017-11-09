@@ -13,6 +13,14 @@ BoundBox::BoundBox(const Vector3& worldCenter, const Vector3& size) :
 {
 }
 
+BoundBox BoundBox::Make(const Vector3& bbMin, const Vector3& bbMax)
+{
+	BoundBox result;
+	result.SetMinMax(bbMin, bbMax);
+
+	return result;
+}
+
 void BoundBox::SetMinMax(const Vector3& min, const Vector3& max)
 {
 	_min		= min;
@@ -46,7 +54,7 @@ void BoundBox::Expand(const Vector3& amount)
 	_max		= _center + _extents;
 }
 
-bool BoundBox::Intersects(const BoundBox& bounds)
+bool BoundBox::Intersects(const BoundBox& bounds) const
 {
 	Vector3 realMin		= _center + _min;
 	Vector3 realMax		= _center + _max;
@@ -60,13 +68,13 @@ bool BoundBox::Intersects(const BoundBox& bounds)
 	return (isOutX & isOutY & isOutZ) == false;
 }
 
-float BoundBox::SqrDistance(const Vector3& point)
+float BoundBox::SqrDistance(const Vector3& point) const
 {
 	Vector3 v = point - _extents - _center;
 	return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
 }
 
-bool BoundBox::Contains(const Vector3& point)
+bool BoundBox::Contains(const Vector3& point) const
 {
 	Vector3 realMin = _center + _min;
 	Vector3 realMax = _center + _max;
@@ -78,7 +86,7 @@ bool BoundBox::Contains(const Vector3& point)
 	return (isOutX & isOutY & isOutZ) == false;
 }
 
-bool BoundBox::Intersects(const Ray& ray, Vector3 *outPickPoint, float gap)
+bool BoundBox::Intersects(const Ray& ray, Vector3 *outPickPoint, float gap) const
 {
 	Vector3 realMin = _center + _min;
 	Vector3 realMax = _center + _max;
