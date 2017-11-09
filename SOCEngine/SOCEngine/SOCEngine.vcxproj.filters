@@ -232,9 +232,6 @@
     <Filter Include="Rendering\Mesh">
       <UniqueIdentifier>{e3547351-623a-4e40-be74-217130dc99ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Shader\DefaultShaderLoader">
-      <UniqueIdentifier>{d5ef8c48-b036-4a3f-bdd8-229586fdc96f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Sky">
       <UniqueIdentifier>{1af3d5a1-1903-401a-80df-71e53c5c40b2}</UniqueIdentifier>
     </Filter>
@@ -441,6 +438,9 @@
     </Filter>
     <Filter Include="Rendering\Shadow\Buffer\MapCB">
       <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\DefaultShaders">
+      <UniqueIdentifier>{d5ef8c48-b036-4a3f-bdd8-229586fdc96f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -695,10 +695,7 @@
       <Filter>Rendering\Material\PhysicallyBased</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h">
-      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h">
-      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
+      <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBox.h">
       <Filter>Rendering\Sky\Box</Filter>
@@ -940,9 +937,6 @@
     <ClInclude Include="Device\RenderState.h">
       <Filter>Device</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\Shadow\ShadowRendererCommon.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h">
       <Filter>Rendering\Renderer\Shadow\Map</Filter>
     </ClInclude>
@@ -969,6 +963,12 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderFactory.hpp">
       <Filter>Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\DefaultShaders.h">
+      <Filter>Rendering\Shader\DefaultShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\RendererCommon.h">
+      <Filter>Rendering\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1088,9 +1088,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp">
-      <Filter>Rendering\Shader\DefaultShaderLoader</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBox.cpp">
       <Filter>Rendering\Sky\Box</Filter>
@@ -1265,6 +1262,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp">
       <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shader\DefaultShaders.cpp">
+      <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

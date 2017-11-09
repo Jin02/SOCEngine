@@ -181,15 +181,15 @@
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MeshRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\RendererCommon.h" />
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.h" />
-    <ClInclude Include="Rendering\Renderer\Shadow\ShadowRendererCommon.h" />
     <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
     <ClInclude Include="Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h" />
-    <ClInclude Include="Rendering\Shader\DefaultShaderLoader.h" />
+    <ClInclude Include="Rendering\Shader\DefaultShaders.h" />
     <ClInclude Include="Rendering\Shader\GeometryShader.h" />
     <ClInclude Include="Rendering\Shader\ShaderCompiler.h" />
     <ClInclude Include="Rendering\Shader\ShaderFactory.hpp" />
@@ -408,7 +408,7 @@
     <ClCompile Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\Shadow\ShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
-    <ClCompile Include="Rendering\Shader\DefaultShaderLoader.cpp" />
+    <ClCompile Include="Rendering\Shader\DefaultShaders.cpp" />
     <ClCompile Include="Rendering\Shader\GeometryShader.cpp" />
     <ClCompile Include="Rendering\Shader\PixelShader.cpp" />
     <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp" />
