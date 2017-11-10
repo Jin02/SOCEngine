@@ -94,8 +94,6 @@ void VXGI::Run(DirectX& dx, VXGI::Param&& param)
 
 	// 1. Voxelization Pass
 	{
-		Voxelization::Param param{_startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
-									tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr};
 		// Clear Voxel Map and voxelize
 		_voxelization.Voxelize(dx, _injectionSourceMap,
 			Voxelization::Param{_startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
