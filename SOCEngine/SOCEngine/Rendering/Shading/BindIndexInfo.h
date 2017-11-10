@@ -111,8 +111,7 @@ namespace Rendering
 	enum class UAVBindIndex : unsigned int
 	{
 		TBDR_OutDiffuseLightBuffer		= 0,
-		TBDR_OutSpecularLightBuffer		= 1,
-		TBDR_OutPerLightIndicesInTile	= 2,
+		TBDR_OutPerLightIndicesInTile	= 1,
 		
 		Lightculling_LightIndexBuffer	= 0,
 
