@@ -14,11 +14,10 @@ groupshared uint s_edgePackedPixelIdx[LIGHT_CULLING_TILE_RES * LIGHT_CULLING_TIL
 #endif
 
 // Output
-RWTexture2D<float4> OutDiffuseLightBuffer		: register( u0 );
-RWTexture2D<float4> OutSpecularLightBuffer		: register( u1 );
+RWTexture2D<float4> OutDynamicLightBuffer		: register( u0 );
 
 #if defined(STORE_PER_LIGHT_INDICES_IN_TILE)
-RWBuffer<uint>		OutPerLightIndicesInTile	: register( u2 );
+RWBuffer<uint>		OutPerLightIndicesInTile	: register( u1 );
 #endif
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
@@ -77,7 +76,7 @@ void MSAALighting(
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	outAccumulativeDiffuse	= saturate(accumulativeDiffuse + surface.emission.rgb);
+	outAccumulativeDiffuse	= saturate(accumulativeDiffuse);
 	outAccumulativeSpecular	= saturate(accumulativeSpecular);
 }
 #endif
@@ -172,14 +171,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		}
 	}
 	
-	accumulativeDiffuse		= saturate(accumulativeDiffuse + surface.emission.rgb);
+	accumulativeDiffuse		= saturate(accumulativeDiffuse);
 	accumulativeSpecular	= saturate(accumulativeSpecular);
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 
 	uint2 scale_2_idx = globalIdx.xy * 2;
-	OutDiffuseLightBuffer[scale_2_idx]	= float4(accumulativeDiffuse, 1.0f);
-	OutSpecularLightBuffer[scale_2_idx]	= float4(accumulativeSpecular, 1.0f);
+	float3 resultColor = accumulativeDiffuse + accumulativeSpecular + surface.emission.rgb;
+	OutDynamicLightBuffer[scale_2_idx]	= float4(resultColor, 1.0f);
 
 	float3 sampleNormal = float3(0.0f, 0.0f, 0.0f);
 	for(uint sampleIdx = 1; sampleIdx < MSAA_SAMPLES_COUNT; ++sampleIdx)
@@ -199,13 +198,9 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	}
 	else
 	{
-		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 0)] = float4(accumulativeDiffuse, 1.0f);
-		OutDiffuseLightBuffer[scale_2_idx + uint2(0, 1)] = float4(accumulativeDiffuse, 1.0f);
-		OutDiffuseLightBuffer[scale_2_idx + uint2(1, 1)] = float4(accumulativeDiffuse, 1.0f);
-
-		OutSpecularLightBuffer[scale_2_idx + uint2(1, 0)] = float4(accumulativeSpecular, 1.0f);
-		OutSpecularLightBuffer[scale_2_idx + uint2(0, 1)] = float4(accumulativeSpecular, 1.0f);
-		OutSpecularLightBuffer[scale_2_idx + uint2(1, 1)] = float4(accumulativeSpecular, 1.0f);
+		OutDynamicLightBuffer[scale_2_idx + uint2(1, 0)] = float4(resultColor, 1.0f);
+		OutDynamicLightBuffer[scale_2_idx + uint2(0, 1)] = float4(resultColor, 1.0f);
+		OutDynamicLightBuffer[scale_2_idx + uint2(1, 1)] = float4(resultColor, 1.0f);
 	}
 
 	GroupMemoryBarrierWithGroupSync();
@@ -213,11 +208,11 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint edgePixelIdx			= 0;
 		 sampleIdx				= 0;
 	uint2 scale_sample_coord	= uint2(0, 0);
-	uint sample_mul_LightCount = (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
+	uint sample_mul_LightCount	= (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
 	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
-	{
-		edgePixelIdx = i / (MSAA_SAMPLES_COUNT - 1);
-		sampleIdx = (i % (MSAA_SAMPLES_COUNT - 1)) + 1; //1ºÎÅÍ ½ÃÀÛ
+	{	// 이해 안가면 차근차근 읽어보자. 구현한지 하도 오래되서 기억이 가물가물 하다.
+		edgePixelIdx	= i / (MSAA_SAMPLES_COUNT - 1);			// 0 ~ s_edgePixelCounter
+		sampleIdx		= (i % (MSAA_SAMPLES_COUNT - 1)) + 1;	// 1 ~ 3
 
 		uint packedIdxValue = s_edgePackedPixelIdx[edgePixelIdx];
 
@@ -226,15 +221,14 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		edge_globalIdx_inThisTile.y = packedIdxValue >> 16;
 
 		scale_sample_coord = edge_globalIdx_inThisTile * 2;
-		scale_sample_coord.x += sampleIdx % 2;
-		scale_sample_coord.y += sampleIdx > 1;
+		scale_sample_coord.x += sampleIdx % 2; // 1,0 / 0,1 / 1,1
+		scale_sample_coord.y += sampleIdx > 1; // 1,0 / 0,1 / 1,1
 		
 		float4 diffuse	= float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 specular	= float4(0.0f, 0.0f, 0.0f, 0.0f);
-		MSAALighting(edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
+		MSAALighting(diffuse, specular, edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
 
-		OutDiffuseLightBuffer[scale_sample_coord]	= diffuse;
-		OutSpecularLightBuffer[scale_sample_coord]	= specular;
+		OutDynamicLightBuffer[scale_sample_coord] = diffuse + specular + surface.emission.rgb;
 	}
 
 #else // off MSAA
@@ -256,14 +250,10 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	if(debugLightCount > 5)
 		debugTiles = float3(1, 1, 1);	
 
-	OutDiffuseLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
+	OutDynamicLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-
-	OutDiffuseLightBuffer[globalIdx.xy]		= float4( accumulativeDiffuse,	1.0f);
-	OutSpecularLightBuffer[globalIdx.xy]	= float4( accumulativeSpecular,	1.0f);
-
-//	OutDiffuseLightBuffer[globalIdx.xy]		= float4(surface.albedo,	1.0f);
-//	OutSpecularLightBuffer[globalIdx.xy]	= float4(0,0,0,	1.0f);
+	OutDynamicLightBuffer[globalIdx.xy]	= float4(accumulativeDiffuse + accumulativeSpecular + surface.emission.rgb,	1.0f);
+//	OutDynamicLightBuffer[globalIdx.xy]	= float4(surface.albedo,	1.0f);
 
 #endif
 
