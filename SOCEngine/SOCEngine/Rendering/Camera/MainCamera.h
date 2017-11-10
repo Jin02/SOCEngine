@@ -55,23 +55,27 @@ namespace Rendering
 			Math::Matrix ComputePerspectiveMatrix(bool isInverted) const;
 			Math::Matrix ComputeOrthogonalMatrix(bool isInverted) const;
 
-			GET_ACCESSOR(FieldOfViewDegree,			float,			_desc.fieldOfViewDegree);
-			GET_ACCESSOR(Near,						float,			_desc.near);
-			GET_ACCESSOR(Far,						float,			_desc.far);
-			GET_ACCESSOR(ClearColor,				const Color&,	_desc.clearColor);
-			SET_ACCESSOR_DIRTY(FieldOfViewDegree,	float,			_desc.fieldOfViewDegree);
-			SET_ACCESSOR_DIRTY(Near,				float,			_desc.near);
-			SET_ACCESSOR_DIRTY(Far,					float,			_desc.far);
-			SET_ACCESSOR_DIRTY(ClearColor,			const Color&,	_desc.clearColor);
-			GET_CONST_ACCESSOR(ObjectID,			Core::ObjectID,	_objID);
-			SET_ACCESSOR(ObjectID,					Core::ObjectID,	_objID);
-			GET_CONST_ACCESSOR(RenderRect,			const auto&,	_desc.renderRect);
-			GET_CONST_ACCESSOR(ViewProjMatrix,		const auto&,	_viewProjMat);
-			GET_CONST_ACCESSOR(ProjMatrix,			const auto&,	_projMat);
-			GET_ACCESSOR(CameraCB,					auto&,			_camCB);
-			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
-			GET_CONST_ACCESSOR(Frustum,				const auto&,	_frustum);
-			
+			GET_ACCESSOR(FieldOfViewDegree,				float,			_desc.fieldOfViewDegree);
+			GET_ACCESSOR(Near,							float,			_desc.near);
+			GET_ACCESSOR(Far,							float,			_desc.far);
+			GET_ACCESSOR(ClearColor,					const Color&,	_desc.clearColor);
+			SET_ACCESSOR_DIRTY(FieldOfViewDegree,		float,			_desc.fieldOfViewDegree);
+			SET_ACCESSOR_DIRTY(Near,					float,			_desc.near);
+			SET_ACCESSOR_DIRTY(Far,						float,			_desc.far);
+			SET_ACCESSOR_DIRTY(ClearColor,				const Color&,	_desc.clearColor);
+			GET_CONST_ACCESSOR(ObjectID,				Core::ObjectID,	_objID);
+			SET_ACCESSOR(ObjectID,						Core::ObjectID,	_objID);
+			GET_CONST_ACCESSOR(RenderRect,				const auto&,	_desc.renderRect);
+			GET_CONST_ACCESSOR(ViewProjMatrix,			const auto&,	_viewProjMat);
+			GET_CONST_ACCESSOR(ProjMatrix,				const auto&,	_projMat);
+			GET_ACCESSOR(CameraCB,						auto&,			_camCB);
+			GET_CONST_ACCESSOR(Dirty,					bool,			_dirty);
+			GET_CONST_ACCESSOR(Frustum,					const auto&,	_frustum);
+
+			GET_CONST_ACCESSOR(TransparentMeshRenderQ,	const auto&,	_transparentMeshRenderQ);
+			GET_CONST_ACCESSOR(OpaqueMeshRenderQ,		const auto&,	_opaqueMeshRenderQ);
+			GET_CONST_ACCESSOR(AlphaTestMeshRenderQ,	const auto&,	_alphaTestMeshRenderQ);
+
 			void ClassifyMesh(Geometry::MeshPoolRefs pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
 
 		private:
@@ -86,9 +90,9 @@ namespace Rendering
 			TransformCB::ChangeState					_camCBChangeState = TransformCB::ChangeState::HasChanged;
 			Desc										_desc;
 
-			RenderQueue::TransparentMeshRenderQueue		_transparentMeshes;
-			RenderQueue::OpaqueMeshRenderQueue			_opaqueMeshes;
-			RenderQueue::AlphaTestMeshRenderQueue		_alphaTestMeshes;
+			RenderQueue::TransparentMeshRenderQueue		_transparentMeshRenderQ;
+			RenderQueue::OpaqueMeshRenderQueue			_opaqueMeshRenderQ;
+			RenderQueue::AlphaTestMeshRenderQueue		_alphaTestMeshRenderQ;
 
 			Core::ObjectID								_objID;
 			bool										_dirty = true;

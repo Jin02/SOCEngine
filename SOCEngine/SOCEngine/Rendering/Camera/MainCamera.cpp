@@ -119,7 +119,7 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 									_camCBData.viewMat._33	);
 
 		MeshUtility::ClassifyTransparentMesh(
-			_transparentMeshes, viewDir, pool.transparentMeshes, objMgr, transformPool,
+			_transparentMeshRenderQ, viewDir, pool.transparentMeshes, objMgr, transformPool,
 			[&thisCam = (*this)](const Mesh& mesh, const Transform& transform)
 			{
 				Vector3 worldPos = transform.GetWorldPosition();
@@ -131,7 +131,7 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 	// Opaque / AlphaTest Meshes
 	{
 		MeshUtility::ClassifyOpaqueMesh(
-			_opaqueMeshes, pool.opaqueMeshes, objMgr, transformPool,
+			_opaqueMeshRenderQ, pool.opaqueMeshes, objMgr, transformPool,
 			[&frustum = _frustum](const Mesh& mesh, const Transform& tf)
 			{
 				return frustum.In(tf.GetWorldPosition(), mesh.GetRadius());
@@ -139,7 +139,7 @@ void MainCamera::ClassifyMesh(	MeshPoolRefs pool,
 		);
 
 		MeshUtility::ClassifyOpaqueMesh(
-			_alphaTestMeshes, pool.alphaTestMeshes, objMgr, transformPool,
+			_alphaTestMeshRenderQ, pool.alphaTestMeshes, objMgr, transformPool,
 			[&frustum = _frustum](const Mesh& mesh, const Transform& tf)
 			{
 				return frustum.In(tf.GetWorldPosition(), mesh.GetRadius());
