@@ -171,7 +171,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\IBLPass.h" />
-    <ClInclude Include="Rendering\Postprocessing\LightBufferMerger.h" />
     <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -395,7 +394,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp" />
-    <ClCompile Include="Rendering\Postprocessing\LightBufferMerger.cpp" />
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

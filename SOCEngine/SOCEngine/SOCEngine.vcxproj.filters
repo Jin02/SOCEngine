@@ -355,9 +355,6 @@
     <Filter Include="Rendering\Postprocessing\Renderer">
       <UniqueIdentifier>{f00b15b4-7573-4e54-a083-50939c61ade8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Renderer\Main\Merger">
-      <UniqueIdentifier>{4533ce0c-2b2b-4a2c-af17-786de31640e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Postprocessing\Bloom">
       <UniqueIdentifier>{179e467e-4149-417b-9a78-be44ade9d44f}</UniqueIdentifier>
     </Filter>
@@ -838,9 +835,6 @@
     <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
       <Filter>Rendering\Postprocessing\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Postprocessing\LightBufferMerger.h">
-      <Filter>Rendering\Renderer\Main\Merger</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Renderer\MainRenderer.h">
       <Filter>Rendering\Renderer\Main</Filter>
     </ClInclude>
@@ -1175,9 +1169,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <Filter>Rendering\Postprocessing\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Postprocessing\LightBufferMerger.cpp">
-      <Filter>Rendering\Renderer\Main\Merger</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp">
       <Filter>Rendering\Renderer\Main</Filter>
