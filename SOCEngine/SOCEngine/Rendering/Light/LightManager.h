@@ -34,6 +34,7 @@ namespace Rendering
 				pool.Delete(objID.Literal());
 
 				GetLightDatas<LightType>().mustUpdateToGPU = true;
+				_changedLightCounts	= true;
 			}
 
 			template <class LightType>
@@ -59,6 +60,7 @@ namespace Rendering
 			LightType& Add(LightType& light)
 			{
 				light.GetBase().SetDirty(true);
+				_changedLightCounts = true;
 
 				GetBuffer<LightType>().PushLight(light);
 
@@ -71,6 +73,7 @@ namespace Rendering
 			{
 				Core::ObjectID id = light.GetObjectID();
 				Delete<LightType>(id);
+				_changedLightCounts = true;
 			}
 
 			void DeleteAll();
@@ -112,6 +115,8 @@ namespace Rendering
 				return GetPool<LightType>().GetSize();
 			}
 
+			GET_CONST_ACCESSOR(ChangedLightCount, bool, _changedLightCounts);
+
 		private:
 			template <class LightType> auto&		GetLightDatas()
 			{
@@ -146,6 +151,8 @@ namespace Rendering
 			std::tuple<	LightDatas<Light::PointLight>,
 						LightDatas<Light::SpotLight>,
 						LightDatas<Light::DirectionalLight>>		_lightDatas;
+
+			bool													_changedLightCounts = true;
 		};	
 	}
 }

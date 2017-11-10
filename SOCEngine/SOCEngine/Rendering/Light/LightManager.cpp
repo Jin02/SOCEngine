@@ -40,6 +40,8 @@ void LightManager::DeleteAll()
 	DeleteAll(GetLightDatas<SpotLight>());
 	DeleteAll(GetLightDatas<PointLight>());
 	DeleteAll(GetLightDatas<DirectionalLight>());
+
+	_changedLightCounts = true;
 }
 
 uint LightManager::GetPackedLightCount() const
@@ -140,6 +142,8 @@ void LightManager::ClearDirty()
 	UpdateDirtyLight(GetDirtyTransformLights<DirectionalLight>());
 	UpdateDirtyLight(GetDirtyTransformLights<PointLight>());
 	UpdateDirtyLight(GetDirtyTransformLights<SpotLight>());
+
+	_changedLightCounts = false;
 }
 
 void LightManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
