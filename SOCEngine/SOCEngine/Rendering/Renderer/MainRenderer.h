@@ -11,8 +11,8 @@
 #include "ShadowManager.h"
 
 #include "TileBasedShadingHeader.h"
-#include "LightBufferMerger.h"
 #include "ComputeShader.h"
+#include "RendererCommon.h"
 
 namespace Rendering
 {
@@ -22,33 +22,30 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
-			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr);
+			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
+			void Render(Device::DirectX& dx, const Camera::MainCamera& mainCamera);
 
-			GET_CONST_ACCESSOR(gamma, float, _tbrCBData.gamma);
-			SET_ACCESSOR_DIRTY(Gamma, float, _tbrCBData.gamma);
-
-			GET_ALL_ACCESSOR(GBuffers,				auto&,	_gbuffer);
-			GET_ALL_ACCESSOR(TBRParamCB,			auto&,	_tbrCB);
-
-			GET_ALL_ACCESSOR(ResultMap,				auto&,	_resultMap);
-			GET_ALL_ACCESSOR(DiffuseLightBuffer,	auto&,	_diffuseLightBuffer);
-			GET_ALL_ACCESSOR(SpecularLightBuffer,	auto&,	_specularLightBuffer);
+			SET_ACCESSOR_DIRTY(Gamma,		float,			_gamma);
+			GET_CONST_ACCESSOR(Gamma,		float,			_gamma);
+			GET_CONST_ACCESSOR(GBuffers,	const auto&,	_gbuffer);
+			GET_CONST_ACCESSOR(TBRParamCB,	const auto&,	_tbrCB);
+			GET_ACCESSOR(ResultMap,			auto&,			_resultMap);
 
 		private:
-			LightBufferMerger			_merger;
-
 			Texture::RenderTexture		_resultMap;
-
-			Texture::RenderTexture		_diffuseLightBuffer;
-			Texture::RenderTexture		_specularLightBuffer;
-			Shader::ComputeShader		_tbdrShader;
-
-			Light::OnlyLightCulling		_blendedDepthLC;
+			GBuffers					_gbuffer;
 
 			TBRParamCB					_tbrCB;
-			TBRCBData					_tbrCBData;
 
-			GBuffers					_gbuffer;
+			Shader::ComputeShader		_tbdrShader;
+			Light::OnlyLightCulling		_blendedDepthLightCulling;
+
+		private:
+			TempRenderQueue								_renderQ;
+			RenderQueue::TransparentMeshRenderQueue		_transparentMeshRenderQ;
+
+		private:
+			float						_gamma = 2.2f;
 			bool						_dirty = true;
 		};
 	}
