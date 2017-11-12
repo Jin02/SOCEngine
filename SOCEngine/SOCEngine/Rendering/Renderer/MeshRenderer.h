@@ -24,10 +24,10 @@ namespace Rendering
 
 			static void RenderWithoutIASetVB(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Geometry::Mesh& mesh);
 
-			template <class CallPerMeshFunc, class CallPostRender>
-			static void RenderTransparentMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::TransparentMeshRenderQueue& meshes, CallPerMeshFunc func, CallPostRender postFunc)
+			template <class CallPreRender, class CallPostRender>
+			static void RenderTransparentMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::TransparentMeshRenderQueue& meshes, CallPreRender func, CallPostRender postFunc)
 			{
-				for (const auto mesh : meshes)
+				for (const auto meshPtr : meshes)
 				{
 					const auto& vbPool			= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
 					const auto* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey()); assert(vertexBuffer);
@@ -41,8 +41,8 @@ namespace Rendering
 				postFunc();
 			}
 
-			template <class CallPerMeshFunc, class CallPostRender>
-			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPerMeshFunc func, CallPostRender postCall)
+			template <class CallPreRender, class CallPostRender>
+			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPreRender func, CallPostRender postCall)
 			{
 				meshes.Iterate(
 					[&dx, &param, renderType, &func](const Mesh* mesh)
@@ -60,8 +60,8 @@ namespace Rendering
 				postCall();
 			}
 
-			template <class CallPerMeshFunc, class CallPostRender>
-			static void RenderAlphaTestMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::AlphaTestMeshRenderQueue& meshes, CallPerMeshFunc&& cullFunc, CallPostRender&& postCall)
+			template <class CallPreRender, class CallPostRender>
+			static void RenderAlphaTestMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::AlphaTestMeshRenderQueue& meshes, CallPreRender&& cullFunc, CallPostRender&& postCall)
 			{
 				RenderOpaqueMeshes(dx, param, renderType, meshes, cullFunc, postCall);
 			}
