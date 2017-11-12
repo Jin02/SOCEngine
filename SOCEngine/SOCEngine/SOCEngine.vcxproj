@@ -185,6 +185,7 @@
     <ClInclude Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
+    <ClInclude Include="Rendering\Shader\AutoBinder.hpp" />
     <ClInclude Include="Rendering\Shader\BaseShader.hpp" />
     <ClInclude Include="Rendering\Shader\ComputeShader.h" />
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h" />

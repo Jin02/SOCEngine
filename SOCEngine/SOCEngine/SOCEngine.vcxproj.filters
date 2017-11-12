@@ -439,6 +439,12 @@
     <Filter Include="Rendering\Shader\DefaultShaders">
       <UniqueIdentifier>{d5ef8c48-b036-4a3f-bdd8-229586fdc96f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shader\Common">
+      <UniqueIdentifier>{87c37710-586c-4825-8626-8d8fabddc6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shader\Factory">
+      <UniqueIdentifier>{1dae622a-037e-435f-bcd3-6c6ae1c7d3c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -757,9 +763,6 @@
     <ClInclude Include="Rendering\Shader\ShaderCompiler.h">
       <Filter>Rendering\Shader\Compiler</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\BaseShader.hpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="Core\UniqueIdManager.hpp">
       <Filter>Core\Id</Filter>
     </ClInclude>
@@ -955,14 +958,20 @@
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h">
       <Filter>Rendering\Renderer\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shader\ShaderFactory.hpp">
-      <Filter>Rendering\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\DefaultShaders.h">
       <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Renderer\RendererCommon.h">
       <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\AutoBinder.hpp">
+      <Filter>Rendering\Shader\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\BaseShader.hpp">
+      <Filter>Rendering\Shader\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shader\ShaderFactory.hpp">
+      <Filter>Rendering\Shader\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
