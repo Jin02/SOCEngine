@@ -68,7 +68,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(RenderRect,				const auto&,	_desc.renderRect);
 			GET_CONST_ACCESSOR(ViewProjMatrix,			const auto&,	_viewProjMat);
 			GET_CONST_ACCESSOR(ProjMatrix,				const auto&,	_projMat);
-			GET_ACCESSOR(CameraCB,						auto&,			_camCB);
+			GET_CONST_ACCESSOR(CameraCB,				const auto&,	_camCB);
 			GET_CONST_ACCESSOR(Dirty,					bool,			_dirty);
 			GET_CONST_ACCESSOR(Frustum,					const auto&,	_frustum);
 
