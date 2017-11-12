@@ -5,6 +5,12 @@
 #define UPDATE_TEXTURE(name, bind)\
  inline void Regist##name(const Texture::Texture2D& tex) {RegistTexture(Get##name##Key(), bind, tex);}
 
+#define GET_CONST_TEXTURE(name)\
+ inline const BindTextured2D* Get##name() const { return GetTextures().Find(Get##name##Key()); }
+
+#define HAS_TEXTURE(name)\
+ inline bool Has##name() const { return GetTextures().Has(Get##name##Key()); }
+
 namespace Rendering
 {
 	namespace Material
@@ -33,14 +39,15 @@ namespace Rendering
 
 			void RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex);
 
-			static constexpr const char* GetDiffuseMapKey()		{ return "DiffuseMap";	}
-			static constexpr const char* GetNormalMapKey()		{ return "NormalMap";	}
-			static constexpr const char* GetOpacityMapKey()		{ return "OpacityMap";	}
-			static constexpr const char* GetHeightMapKey()		{ return "HeightMap";	}
-			static constexpr const char* GetMetallicMapKey()	{ return "MetallicMap";	}
-			static constexpr const char* GetOcclusionMapKey()	{ return "OcclusionMap";}
-			static constexpr const char* GetRoughnessMapKey()	{ return "RoughnessMap";}
-			static constexpr const char* GetEmissionMapKey()	{ return "EmissionMap";	}
+			static constexpr const char* GetDiffuseMapKey()		{ return "DiffuseMap";		}
+			static constexpr const char* GetNormalMapKey()		{ return "NormalMap";		}
+			static constexpr const char* GetOpacityMapKey()		{ return "OpacityMap";		}
+			static constexpr const char* GetHeightMapKey()		{ return "HeightMap";		}
+			static constexpr const char* GetMetallicMapKey()	{ return "MetallicMap";		}
+			static constexpr const char* GetOcclusionMapKey()	{ return "OcclusionMap";	}
+			static constexpr const char* GetRoughnessMapKey()	{ return "RoughnessMap";	}
+			static constexpr const char* GetEmissionMapKey()	{ return "EmissionMap";		}
+			static constexpr const char* GetParamCBKey()		{ return ParamCB::GetKey();	}
 
 			UPDATE_TEXTURE(DiffuseMap,		TextureBindIndex::DiffuseMap);
 			UPDATE_TEXTURE(NormalMap,		TextureBindIndex::NormalMap);
@@ -50,6 +57,29 @@ namespace Rendering
 			UPDATE_TEXTURE(OcclusionMap,	TextureBindIndex::OcclusionMap);
 			UPDATE_TEXTURE(RoughnessMap,	TextureBindIndex::RoughnessMap);
 			UPDATE_TEXTURE(EmissionMap,		TextureBindIndex::EmissionMap);
+
+			GET_CONST_TEXTURE(DiffuseMap);
+			GET_CONST_TEXTURE(NormalMap);
+			GET_CONST_TEXTURE(OpacityMap);
+			GET_CONST_TEXTURE(HeightMap);
+			GET_CONST_TEXTURE(MetallicMap);
+			GET_CONST_TEXTURE(OcclusionMap);
+			GET_CONST_TEXTURE(RoughnessMap);
+			GET_CONST_TEXTURE(EmissionMap);
+
+			HAS_TEXTURE(DiffuseMap);
+			HAS_TEXTURE(NormalMap);
+			HAS_TEXTURE(OpacityMap);
+			HAS_TEXTURE(HeightMap);
+			HAS_TEXTURE(MetallicMap);
+			HAS_TEXTURE(OcclusionMap);
+			HAS_TEXTURE(RoughnessMap);
+			HAS_TEXTURE(EmissionMap);
+
+			inline const Buffer::ConstBuffer& GetParamCB() const
+			{
+				return GetConstBuffers().Find(GetParamCBKey())->resource;
+			}
 
 			GET_CONST_ACCESSOR(MainColor,			const Color&,	_mainColor);
 			GET_CONST_ACCESSOR(EmissiveColor,		const Color&,	_emissiveColor);
