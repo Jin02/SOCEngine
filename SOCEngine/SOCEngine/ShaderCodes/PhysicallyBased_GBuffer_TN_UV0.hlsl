@@ -32,11 +32,11 @@ VS_OUTPUT VS( VS_INPUT input )
 	float4 position		= mul(worldPos, camera_viewProjMat);
 	
 	ps.sv_position 		= position;
-	ps.worldPos		= worldPos.xyz / worldPos.w;
+	ps.worldPos			= worldPos.xyz / worldPos.w;
 
-	ps.uv			= input.uv;
-	ps.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
-	ps.tangent 		= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
+	ps.uv				= input.uv;
+	ps.normal 			= mul(input.normal, (float3x3)transform_worldInvTranspose);
+	ps.tangent 			= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
  
 //#ifdef USE_MOTION_BLUR
 	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
@@ -59,13 +59,13 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
-	float2 curScreenPos	= input.position.xy / input.position.w;
+	float2 curScreenPos		= input.position.xy / input.position.w;
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
-	float2 velocity		= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
+	float2 velocity			= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 
-	float4 normalTex	= normalMap.Sample(GBufferDefaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
-	float3 normal		= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
+	float4 normalTex		= normalMap.Sample(GBufferDefaultSampler, input.uv);
+	float3 bumpedNormal		= NormalMapping(normalTex.rgb, input.normal, input.tangent);
+	float3 normal			= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
 
 	MakeGBuffer(normal, velocity, input.uv, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 

@@ -56,9 +56,9 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 		discard;
 #endif
 
-	float2 curScreenPos	= input.position.xy / input.position.w;
+	float2 curScreenPos		= input.position.xy / input.position.w;
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
-	float2 velocity		= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
+	float2 velocity			= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 	
 	float3 normal = normalize(input.normal);
 	MakeGBuffer(normal, input.uv, velocity, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
