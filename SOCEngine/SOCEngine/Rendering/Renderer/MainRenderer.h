@@ -12,7 +12,7 @@
 
 #include "TileBasedShadingHeader.h"
 #include "ComputeShader.h"
-#include "RendererCommon.h"
+#include "ShadowAtlasMapRenderer.h"
 
 namespace Rendering
 {
@@ -23,7 +23,17 @@ namespace Rendering
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
 			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
-			void Render(Device::DirectX& dx, const Camera::MainCamera& mainCamera);
+
+			struct Param
+			{
+				const Camera::MainCamera&				mainCamera;
+				const MeshRenderer::Param&				renderParam;
+				const Manager::MaterialManager&			materialMgr;
+				const Manager::LightManager&			lightMgr;
+				const Manager::ShadowManager&			shadowMgr;
+				const Renderer::ShadowAtlasMapRenderer&	shadowRenderer;
+			};
+			void Render(Device::DirectX& dx, Param&& param);
 
 			SET_ACCESSOR_DIRTY(Gamma,		float,			_gamma);
 			GET_CONST_ACCESSOR(Gamma,		float,			_gamma);
