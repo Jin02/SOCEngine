@@ -16,9 +16,8 @@ namespace Rendering
 		class OnlyLightCulling final
 		{
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderRectSize);
-			void Dispatch(	Device::DirectX& dx, Camera::MainCamera& mainCamera, Manager::LightManager& lightMgr,
-							Rendering::Buffer::ExplicitConstBuffer<Renderer::TBRCBData>& tbrCB, Renderer::GBuffers& gbuffer	);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& maxRenderRectSize);
+			void Dispatch(Device::DirectX& dx, Shader::ComputeShader::ThreadGroup&& threadGroup);
 
 			GET_ALL_ACCESSOR(LightIndexSRBuffer,	auto&,	_srb);
 			GET_ALL_ACCESSOR(LightIndexUAV,			auto&,	_uav);
