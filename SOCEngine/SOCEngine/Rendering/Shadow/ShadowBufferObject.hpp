@@ -23,7 +23,8 @@ namespace Rendering
 				GET_CONST_ACCESSOR(Dirty,	bool,	_dirty);
 				SET_ACCESSOR(Dirty,			bool,	_dirty);
 
-				ShadowBuffer& GetBuffer() { return _buffer; }
+				ShadowBuffer& GetBuffer()				{ return _buffer; }
+				const ShadowBuffer& GetBuffer() const	{ return _buffer; }
 
 			private:
 				ShadowBuffer	_buffer;
