@@ -1,6 +1,7 @@
 #include "VoxelConeTracing.h"
 #include "ShaderFactory.hpp"
 #include "ShaderManager.h"
+#include "MainRenderer.h"
 
 using namespace Device;
 using namespace Core;
@@ -23,45 +24,34 @@ void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	ShaderFactory factory(&shaderMgr);
 	_shader = *factory.LoadComputeShader(dx, "VoxelConeTracing", "VoxelConeTracingCS", nullptr, "@VCT");
 
-	ComputeShader::ThreadGroup threadGroup(0, 0, 0);
 	Size<uint> mapSize = dx.GetBackBufferSize().Cast<uint>();
-	{
-		threadGroup.x = (mapSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES;
-		threadGroup.y = (mapSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES;
-		threadGroup.z = 1;
-	}
-	_shader.SetThreadGroupInfo(threadGroup);
-
-	_indirectColorMap.Initialize(dx, mapSize,
-								  DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
+	_group = ComputeShader::ThreadGroup{(mapSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES,
+										(mapSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES, 1};
 }
 
-void VoxelConeTracing::Run(DirectX& dx, const VoxelMap& injectionSourceMap, const VoxelMap& mipmappedInjectionMap,
-							const VXGIInfoCB& infoCB, const MainRenderingSystemParam& mainSystem)
+void VoxelConeTracing::Run(DirectX& dx, RenderTexture& outIndirectColorMap, const Param&& param)
 {
-	_indirectColorMap.Clear(dx, Color::Clear());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTInjectionSourceColorMap,				param.injectionSourceMap.GetTexture3D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			param.mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
 
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTInjectionSourceColorMap,				injectionSourceMap.GetTexture3D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
-
-	auto& gbuffer = mainSystem.renderer.GetGBuffers();
+	auto& gbuffer = param.mainSystem.renderer.GetGBuffers();
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
 
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::TBRParam,								mainSystem.renderer.GetTBRParamCB());
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Camera,								mainSystem.camera.GetCameraCB());
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::TBRParam,								param.mainSystem.renderer.GetTBRParamCB());
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Camera,								param.mainSystem.camera.GetCameraCB());
 
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIStaticInfoCB,						infoCB.staticInfoCB);
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIDynamicInfoCB,					infoCB.dynamicInfoCB);
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
+	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
 
 	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::ConeTracing);
 
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VCTOutIndirectMap, _indirectColorMap.GetTexture2D().GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VCTOutIndirectMap, outIndirectColorMap.GetTexture2D().GetUnorderedAccessView());
 
-	_shader.Dispatch(dx);
+	_shader.Dispatch(dx, _group);
 
 	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::VCTInjectionSourceColorMap);
 	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::VCTMipmappedInjectionColorMap);

@@ -1,7 +1,7 @@
 #include "VXGI.h"
 #include "BindIndexInfo.h"
 #include "ShaderFactory.hpp"
-
+#include "MainRenderer.h"
 
 using namespace Device;
 using namespace Core;
@@ -30,18 +30,11 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 		{
 			return static_cast<uint>( static_cast<float>(sideLength + 8 - 1) / 8.0f );
 		};
-
-		ComputeShader::ThreadGroup threadGroup(0, 0, 0);
-		{
-			threadGroup.x = ComputeThreadGroupSideLength(sideLength * (isAnisotropic ? (uint)VoxelMap::Direction::Num : 1));
-			threadGroup.y = ComputeThreadGroupSideLength(sideLength);
-			threadGroup.z = ComputeThreadGroupSideLength(sideLength);
-		}
 		
-		shader.SetThreadGroupInfo(threadGroup);
-
 		ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(0), uav);
-		shader.Dispatch(dx);
+
+		uint yz = ComputeThreadGroupSideLength(sideLength);
+		shader.Dispatch(dx, ComputeShader::ThreadGroup(ComputeThreadGroupSideLength(sideLength * (isAnisotropic ? (uint)VoxelMap::Direction::Num : 1)), yz, yz));
 		ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex(0));
 	};
 
@@ -49,10 +42,8 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 	Clear(_mipmappedInjectionMap.GetSourceMapUAV(), _staticInfo.dimension / 2, true);
 }
 
-
-void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const VXGIStaticInfo& info)
+void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo&& info)
 {
-
 	// Setting Infos
 	{
 		_staticInfo = info;
@@ -82,9 +73,11 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const VXGIStaticInf
 	_voxelConeTracing.Initialize(dx, shaderMgr);
 
 	InitializeClearVoxelMap(dx, shaderMgr, _staticInfo.dimension);
+
+	_indirectColorMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
 }
 
-void VXGI::Run(DirectX& dx, VXGI::Param&& param)
+void VXGI::Run(DirectX& dx, const VXGI::Param&& param)
 {	
 	ClearInjectColorVoxelMap(dx);
 	
@@ -96,7 +89,7 @@ void VXGI::Run(DirectX& dx, VXGI::Param&& param)
 	{
 		// Clear Voxel Map and voxelize
 		_voxelization.Voxelize(dx, _injectionSourceMap,
-			Voxelization::Param{_startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
+			Voxelization::Param{_dynamicInfo.startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
 								tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr}
 		);
 	}
@@ -119,14 +112,12 @@ void VXGI::Run(DirectX& dx, VXGI::Param&& param)
 	_mipmap.Mipmapping(dx, _injectionSourceMap, _mipmappedInjectionMap);
 
 	// 4. Voxel Cone Tracing Pass
-	_voxelConeTracing.Run(dx, _injectionSourceMap, _mipmappedInjectionMap, _infoCB, param.main);
+	_indirectColorMap.Clear(dx, Color::Clear());
+	_voxelConeTracing.Run(dx, _indirectColorMap, {_injectionSourceMap, _mipmappedInjectionMap, _infoCB, param.main});
 }
 
-void VXGI::UpdateGIDynamicInfoCB(DirectX& dx, uint packedNumfOfLights)
+void VXGI::UpdateGIDynamicInfoCB(DirectX& dx)
 {
-	VXGIDynamicInfo info;
-	info.startCenterWorldPos	= _startCenterWorldPos;
-	info.packedNumfOfLights		= packedNumfOfLights;
-
-	_infoCB.dynamicInfoCB.UpdateSubResource(dx, info);
+	_infoCB.dynamicInfoCB.UpdateSubResource(dx, _dynamicInfo);
+	_dirty = false;
 }

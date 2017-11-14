@@ -76,6 +76,7 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -319,6 +320,7 @@
     <ClCompile Include="Rendering\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Rendering\Camera\CameraManager.cpp" />
     <ClCompile Include="Rendering\Camera\MainCamera.cpp" />
+    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp" />
     <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

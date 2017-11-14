@@ -8,6 +8,8 @@
 
 namespace Rendering
 {
+	struct MainRenderingSystemParam;
+
 	namespace GI
 	{
 		struct VXGIStaticInfo
@@ -26,9 +28,8 @@ namespace Rendering
 				};
 			};
 			
-			VXGIStaticInfo(uint _dimension, float _maxMipLevel, float minWorldSize)
-				:	dimension(_dimension), maxMipLevel(_maxMipLevel), 
-					voxelSize(minWorldSize / float(dimension))
+			VXGIStaticInfo(uint _dimension, float voxelizeSize)
+				:	dimension(_dimension), voxelSize(voxelizeSize / float(dimension))
 			{
 				auto Log2 = [](float v) -> float
 				{
@@ -38,7 +39,7 @@ namespace Rendering
 				const uint mipmapGenOffset	= 2;
 				const uint mipmapLevels		= std::max((uint)Log2((float)dimension) - mipmapGenOffset + 1, 1u);
 
-				maxMipLevel = static_cast<float>(maxMipLevel);
+				maxMipLevel = static_cast<float>(mipmapLevels);
 			}
 		};
 		struct VXGIDynamicInfo

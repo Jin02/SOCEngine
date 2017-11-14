@@ -4,12 +4,9 @@
 #include "ConstBuffer.h"
 #include "VXGICommon.h"
 #include "VoxelMap.h"
-
 #include "GaussianBlur.h"
 #include "BilateralFiltering.h"
-
 #include "ShaderManager.h"
-#include "MainRenderer.h"
 
 //#define USE_GAUSSIAN_BLUR
 
@@ -21,15 +18,19 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void Run(	Device::DirectX& dx,
-						const VoxelMap& injectionSourceMap, const VoxelMap& mipmappedInjectionMap,
-						const VXGIInfoCB& infoCB, const MainRenderingSystemParam& mainSystem	);
 
-			GET_CONST_ACCESSOR(IndirectColorMap, const auto&, _indirectColorMap.GetTexture2D());
+			struct Param
+			{
+				const VoxelMap&						injectionSourceMap;
+				const VoxelMap&						mipmappedInjectionMap;
+				const VXGIInfoCB&					infoCB;
+				const MainRenderingSystemParam&		mainSystem;
+			};
+			void Run(Device::DirectX& dx, Texture::RenderTexture& outIndirectColorMap, const Param&& param);
 
 		private:
-			Shader::ComputeShader		_shader;
-			Texture::RenderTexture		_indirectColorMap;
+			Shader::ComputeShader					_shader;
+			Shader::ComputeShader::ThreadGroup		_group;
 		};
 	}
 }

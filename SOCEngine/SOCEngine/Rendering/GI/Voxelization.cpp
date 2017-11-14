@@ -2,7 +2,6 @@
 #include "Voxelization.h"
 #include "ShaderFactory.hpp"
 #include "MeshUtility.h"
-
 #include "DirectionalLight.h"
 
 using namespace Core;
@@ -38,18 +37,8 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 	_infoCB.Initialize(dx);
 
 	// Init Clear VoxelMap
-	{
-		ShaderFactory factory(&shaderMgr);
-		_clearVoxelRawMapCS = *factory.LoadComputeShader(dx, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
-
-		auto ComputeThreadGroupSideLength = [](uint sideLength)
-		{
-			return static_cast<uint>(static_cast<float>(sideLength + 8 - 1) / 8.0f);
-		};
-
-		uint length = ComputeThreadGroupSideLength(dimension);
-		_clearVoxelRawMapCS.SetThreadGroupInfo(ComputeShader::ThreadGroup(length, length, length));
-	}
+	ShaderFactory factory(&shaderMgr);
+	_clearVoxelRawMapCS = *factory.LoadComputeShader(dx, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
 }
 
 void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)
@@ -60,7 +49,14 @@ void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStat
 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB, vxgiStaticInfoCB);
 
-	_clearVoxelRawMapCS.Dispatch(dx);
+
+	auto ComputeThreadGroupSideLength = [](uint sideLength)
+	{
+		return static_cast<uint>(static_cast<float>(sideLength + 8 - 1) / 8.0f);
+	};
+
+	uint length = ComputeThreadGroupSideLength(static_cast<uint>(_dimension));
+	_clearVoxelRawMapCS.Dispatch(dx, ComputeShader::ThreadGroup(length, length, length));
 
 	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB);
 
@@ -69,7 +65,7 @@ void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStat
 	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Normal);
 }
 
-void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, Voxelization::Param&& param)
+void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Voxelization::Param&& param)
 {
 	ClearVoxelMap(dx, param.infoCB.staticInfoCB);
 

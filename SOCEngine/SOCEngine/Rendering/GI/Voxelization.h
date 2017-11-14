@@ -62,7 +62,7 @@ namespace Rendering
 				const Renderer::MeshRenderer::Param&	meshRenderParam;
 				const Manager::MaterialManager&			materialMgr;
 			};
-			void Voxelize(Device::DirectX& dx, VoxelMap& outDLInjectVoxelMap, Param&& param);
+			void Voxelize(Device::DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Param&& param);
 
 		private:
 			void ClearVoxelMap(Device::DirectX& dx, const Buffer::ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB);

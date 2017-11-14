@@ -364,35 +364,11 @@
     <Filter Include="Rendering\GI">
       <UniqueIdentifier>{57ebef0e-b743-4e59-b8c2-6693ff620e2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\GI\Injection">
-      <UniqueIdentifier>{cc30caea-f109-403a-a661-58a517e05795}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Mipmap">
-      <UniqueIdentifier>{825d389c-c186-4198-848a-57a4bcb7e2ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Voxelization">
-      <UniqueIdentifier>{c164c026-d821-425f-bf84-80bcea24cc8f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Voxelization\Map">
-      <UniqueIdentifier>{ba1e511e-2208-4f86-b957-6335f11254d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\ConTracing">
-      <UniqueIdentifier>{554ed2d9-f878-484e-bcf2-84554f95b206}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Renderer\Shadow">
       <UniqueIdentifier>{79fbc019-c6d7-4ed4-aa50-6fdccd3bd076}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Shadow\AtlasMap">
       <UniqueIdentifier>{caff92fc-03fc-4195-973f-ab9021372043}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Injection\Utility">
-      <UniqueIdentifier>{9dcf102f-bc3e-40b5-a80d-f2b1ad53aa8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Injection\Spot">
-      <UniqueIdentifier>{a3e6e0d8-473c-498f-ac9a-4dfe8e85f6a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\GI\Injection\Point">
-      <UniqueIdentifier>{08054428-0545-48a9-8794-aca937a3450b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Postprocessing\Common">
       <UniqueIdentifier>{f8d029e7-482f-476c-b4f3-8855769c6998}</UniqueIdentifier>
@@ -444,6 +420,33 @@
     </Filter>
     <Filter Include="Rendering\Shader\Factory">
       <UniqueIdentifier>{1dae622a-037e-435f-bcd3-6c6ae1c7d3c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI">
+      <UniqueIdentifier>{3d113da2-707d-40e7-b40e-ab24f350c96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Mipmap">
+      <UniqueIdentifier>{825d389c-c186-4198-848a-57a4bcb7e2ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Injection">
+      <UniqueIdentifier>{cc30caea-f109-403a-a661-58a517e05795}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Injection\Utility">
+      <UniqueIdentifier>{9dcf102f-bc3e-40b5-a80d-f2b1ad53aa8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Injection\Spot">
+      <UniqueIdentifier>{a3e6e0d8-473c-498f-ac9a-4dfe8e85f6a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Injection\Point">
+      <UniqueIdentifier>{08054428-0545-48a9-8794-aca937a3450b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\ConTracing">
+      <UniqueIdentifier>{554ed2d9-f878-484e-bcf2-84554f95b206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Voxelization">
+      <UniqueIdentifier>{c164c026-d821-425f-bf84-80bcea24cc8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GI\VXGI\Voxelization\Map">
+      <UniqueIdentifier>{ba1e511e-2208-4f86-b957-6335f11254d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -847,35 +850,29 @@
     <ClInclude Include="Rendering\Postprocessing\Copy.h">
       <Filter>Rendering\Postprocessing\Copy</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\GI\VXGI.h">
-      <Filter>Rendering\GI</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GI\VXGICommon.h">
-      <Filter>Rendering\GI</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\MipmapVoxelMap.h">
-      <Filter>Rendering\GI\Mipmap</Filter>
+      <Filter>Rendering\GI\VXGI\Mipmap</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\Voxelization.h">
-      <Filter>Rendering\GI\Voxelization</Filter>
+      <Filter>Rendering\GI\VXGI\Voxelization</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelMap.h">
-      <Filter>Rendering\GI\Voxelization\Map</Filter>
+      <Filter>Rendering\GI\VXGI\Voxelization\Map</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
-      <Filter>Rendering\GI\ConTracing</Filter>
+      <Filter>Rendering\GI\VXGI\ConTracing</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h">
       <Filter>Rendering\Shadow\AtlasMap</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceUtility.h">
-      <Filter>Rendering\GI\Injection\Utility</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
-      <Filter>Rendering\GI\Injection\Point</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Point</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceFromSpotLight.h">
-      <Filter>Rendering\GI\Injection\Spot</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Spot</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialForm.hpp">
       <Filter>Rendering\Material</Filter>
@@ -972,6 +969,15 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shader\ShaderFactory.hpp">
       <Filter>Rendering\Shader\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\GlobalIllumination.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGI.h">
+      <Filter>Rendering\GI\VXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\GI\VXGICommon.h">
+      <Filter>Rendering\GI\VXGI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1188,29 +1194,26 @@
     <ClCompile Include="Rendering\Postprocessing\Copy.cpp">
       <Filter>Rendering\Postprocessing\Copy</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\GI\VXGI.cpp">
-      <Filter>Rendering\GI</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GI\MipmapVoxelMap.cpp">
-      <Filter>Rendering\GI\Mipmap</Filter>
+      <Filter>Rendering\GI\VXGI\Mipmap</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\Voxelization.cpp">
-      <Filter>Rendering\GI\Voxelization</Filter>
+      <Filter>Rendering\GI\VXGI\Voxelization</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelMap.cpp">
-      <Filter>Rendering\GI\Voxelization\Map</Filter>
+      <Filter>Rendering\GI\VXGI\Voxelization\Map</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\VoxelConeTracing.cpp">
-      <Filter>Rendering\GI\ConTracing</Filter>
+      <Filter>Rendering\GI\VXGI\ConTracing</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceUtility.cpp">
-      <Filter>Rendering\GI\Injection\Utility</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceFromPointLight.cpp">
-      <Filter>Rendering\GI\Injection\Point</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Point</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GI\InjectRadianceFromSpotLight.cpp">
-      <Filter>Rendering\GI\Injection\Spot</Filter>
+      <Filter>Rendering\GI\VXGI\Injection\Spot</Filter>
     </ClCompile>
     <ClCompile Include="Core\Object.cpp">
       <Filter>Core\Object</Filter>
@@ -1265,6 +1268,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shader\DefaultShaders.cpp">
       <Filter>Rendering\Shader\DefaultShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\GlobalIllumination.cpp">
+      <Filter>Rendering\GI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\GI\VXGI.cpp">
+      <Filter>Rendering\GI\VXGI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
