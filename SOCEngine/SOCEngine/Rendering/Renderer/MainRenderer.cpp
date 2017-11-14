@@ -303,7 +303,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 3 - Pass GI
 	{
-		_gi.Run(dx, VXGI::Param{{*this, mainCamera}, lightMgr, {shadowMgr, shadowRenderer}, std::move(param.cullingParam), param.renderParam, param.materialMgr});
+		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, ShadowSystemParam{shadowMgr, shadowRenderer}, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
 	// 4 Pass Sky
