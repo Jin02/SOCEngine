@@ -55,10 +55,10 @@ namespace Rendering
 			Math::Matrix ComputePerspectiveMatrix(bool isInverted) const;
 			Math::Matrix ComputeOrthogonalMatrix(bool isInverted) const;
 
-			GET_ACCESSOR(FieldOfViewDegree,				float,			_desc.fieldOfViewDegree);
-			GET_ACCESSOR(Near,							float,			_desc.near);
-			GET_ACCESSOR(Far,							float,			_desc.far);
-			GET_ACCESSOR(ClearColor,					const Color&,	_desc.clearColor);
+			GET_CONST_ACCESSOR(FieldOfViewDegree,		float,			_desc.fieldOfViewDegree);
+			GET_CONST_ACCESSOR(Near,					float,			_desc.near);
+			GET_CONST_ACCESSOR(Far,						float,			_desc.far);
+			GET_CONST_ACCESSOR(ClearColor,				const Color&,	_desc.clearColor);
 			SET_ACCESSOR_DIRTY(FieldOfViewDegree,		float,			_desc.fieldOfViewDegree);
 			SET_ACCESSOR_DIRTY(Near,					float,			_desc.near);
 			SET_ACCESSOR_DIRTY(Far,						float,			_desc.far);
@@ -68,6 +68,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(RenderRect,				const auto&,	_desc.renderRect);
 			GET_CONST_ACCESSOR(ViewProjMatrix,			const auto&,	_viewProjMat);
 			GET_CONST_ACCESSOR(ProjMatrix,				const auto&,	_projMat);
+			GET_CONST_ACCESSOR(WorldMatrix,				const auto&,	_worldMat);
 			GET_CONST_ACCESSOR(CameraCB,				const auto&,	_camCB);
 			GET_CONST_ACCESSOR(Dirty,					bool,			_dirty);
 			GET_CONST_ACCESSOR(Frustum,					const auto&,	_frustum);
@@ -82,6 +83,7 @@ namespace Rendering
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;
 			CameraCBData								_camCBData;
 
+			Math::Matrix								_worldMat;
 			Math::Matrix								_projMat;
 			Math::Matrix								_viewProjMat;
 

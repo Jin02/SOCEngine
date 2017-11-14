@@ -41,10 +41,9 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 	if ((_camCBChangeState != TransformCB::ChangeState::No) == false)
 		return false;
 
-	const Matrix& worldMat = dirtyTransform.GetWorldMatrix();
-
+	_worldMat = dirtyTransform.GetWorldMatrix();
 	{
-		_camCBData.viewMat			= Matrix::ComputeViewMatrix(worldMat);
+		_camCBData.viewMat			= Matrix::ComputeViewMatrix(_worldMat);
 		Matrix& viewMat				= _camCBData.viewMat;
 		
 		_projMat					= ComputePerspectiveMatrix(true);
@@ -52,7 +51,7 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 		_camCBData.viewProjMat		= _viewProjMat;
 
-		_camCBData.worldPos			= Vector3(worldMat._41, worldMat._42, worldMat._43);
+		_camCBData.worldPos			= Vector3(_worldMat._41, _worldMat._42, _worldMat._43);
 		_camCBData.prevViewProjMat	= _prevViewProjMat;
 		_camCBData.packedCamNearFar	= (Half(_desc.near).GetValue() << 16) | Half(_desc.far).GetValue();
 	}
