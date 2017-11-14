@@ -11,37 +11,35 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Manager;
 using namespace Device;
 
-void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr)
+void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
 	// Texture
 	{
-		auto backBufferSize = dx.GetBackBufferSize().Cast<uint>();
-
-		_bluredCurScene.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
-		_tempResultMap.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_bluredCurScene.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_tempResultMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 
 		for (uint i = 0; i < _tempTextures.downScaledTextures.size(); ++i)
 		{
-			auto size = Size<uint>(backBufferSize.w / (1 << (i + 1)), backBufferSize.h / (1 << (i + 1)));
+			auto size = Size<uint>(renderSize.w / (1 << (i + 1)), renderSize.h / (1 << (i + 1)));
 			_tempTextures.downScaledTextures[i].Initialize(dx, size, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 		}
 
-		_tempTextures.originSizeMap.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
-		_tempTextures.halfSizeMap.Initialize(dx, Size<uint>(backBufferSize.w / 2, backBufferSize.h / 2), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_tempTextures.originSizeMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_tempTextures.halfSizeMap.Initialize(dx, Size<uint>(renderSize.w / 2, renderSize.h / 2), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 		_tempTextures.minSizeMap.Initialize(dx, _tempTextures.downScaledTextures.back().GetSize(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 	}
 
-	GetPostproessing<DepthOfField>().Initialize(dx, shaderMgr);
-	GetPostproessing<Bloom>().Initialize(dx, shaderMgr);
+	GetPostproessing<DepthOfField>().Initialize(dx, shaderMgr, renderSize);
+	GetPostproessing<Bloom>().Initialize(dx, shaderMgr, renderSize);
 	GetPostproessing<SSAO>().Initialize(dx, shaderMgr);
 	_copy.Initialize(dx, shaderMgr);
 }
 
 void PostProcessPipeline::Render(	DirectX& dx,
 									MainRenderer& mainRenderer,
-									MainCamera& mainMeshCamera	)
+									const MainCamera& mainMeshCamera	)
 {
-	MainRenderingSystemParam mains(mainRenderer, mainMeshCamera);
+	MainRenderingSystemParam mains{mainRenderer, mainMeshCamera};
 
 	RenderTexture& mainScene = mainRenderer.GetResultMap();
 	mainScene.GetTexture2D().GenerateMips(dx);
@@ -61,7 +59,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	if(_useDoF)
 	{
-		GetPostproessing<DepthOfField>().Render(dx, back, front, mains, _copy, _tempTextures);
+		GetPostproessing<DepthOfField>().Render(dx, back, front, std::move(mains), _copy, _tempTextures);
 		std::swap(front, back);
 	}
 

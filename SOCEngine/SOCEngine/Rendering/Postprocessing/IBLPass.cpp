@@ -31,7 +31,7 @@ void IBLPass::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 }
 
 void IBLPass::Render(	DirectX& dx, RenderTexture& outResultRT,
-						MainRenderingSystemParam& mains, SkyBoxMaterial& skyBox)
+						const MainRenderingSystemParam&& mains, const SkyBoxMaterial& skyBox) const
 {
 
 	auto& gbuffer = mains.renderer.GetGBuffers();

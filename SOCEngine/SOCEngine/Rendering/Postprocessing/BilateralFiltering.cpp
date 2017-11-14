@@ -35,7 +35,7 @@ void BilateralFiltering::UpdateParamCB(Device::DirectX& dx, const ParamCBData& d
 }
 
 void BilateralFiltering::Render(Device::DirectX& dx, RenderTexture& outResultRT,
-								DepthMap& depthMap, RenderTexture& inputColorMap, RenderTexture& tempMap)
+								const DepthMap& depthMap, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(1),						depthMap.GetTexture2D().GetShaderResourceView());

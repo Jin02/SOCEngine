@@ -25,7 +25,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 			void UpdateParamCB(Device::DirectX& dx);
 
-			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, Texture::RenderTexture& inColorMap, Renderer::MainRenderer& mainRenderer);
+			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inColorMap, const Renderer::MainRenderer& mainRenderer) const;
 
 			SET_ACCESSOR_DIRTY(Param, const ParamCBData&, _paramData);
 			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);

@@ -15,8 +15,8 @@ namespace Rendering
 			PostProcessPipeline() = default;
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, Camera::MainCamera& mainMeshCamera);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
+			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainMeshCamera);
 
 			void UpdateCB(Device::DirectX& dx);
 

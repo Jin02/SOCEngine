@@ -32,7 +32,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, const InitParam& param, Manager::ShaderManager& shaderManager);
-			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT, bool useOutRTViewportSize = false);
+			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT, bool useOutRTViewportSize = false) const;
 
 		private:
 			std::string								_psUniqueKey = "";

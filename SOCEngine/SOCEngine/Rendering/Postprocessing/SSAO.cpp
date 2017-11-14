@@ -31,7 +31,7 @@ void SSAO::UpdateParamCB(Device::DirectX& dx)
 	_dirty = false;
 }
 
-void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, RenderTexture& inColorMap, MainRenderer& mainRenderer)
+void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, const RenderTexture& inColorMap, const MainRenderer& mainRenderer) const
 {
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth,			mainRenderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());

@@ -14,7 +14,7 @@ void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 	_screen.Initialize(dx, FullScreen::InitParam("Copy", "Copy_InFullScreen_PS", nullptr), shaderMgr);
 }
 
-void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, RenderTexture& inputColorMap)
+void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap) const
 {
 	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());

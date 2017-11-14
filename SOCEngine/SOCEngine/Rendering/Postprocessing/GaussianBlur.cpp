@@ -37,8 +37,7 @@ inline void GaussianBlur::UpdateParamCB(Device::DirectX & dx, const ParamCBData 
 	_paramCB.UpdateSubResource(dx, param);
 }
 
-void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT,
-	RenderTexture& inputColorMap, RenderTexture& tempMap)
+void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);

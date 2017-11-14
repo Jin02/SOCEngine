@@ -79,10 +79,8 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 #pragma endregion PixelShader
 }
 
-void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool useOutRTViewportSize)
+void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool useOutRTViewportSize) const
 {
-	ID3D11DeviceContext* context = dx.GetContext();
-
 	if(useOutRTViewportSize)
 	{
 		const auto& size = outResultRT.GetSize().Cast<float>();
@@ -91,6 +89,7 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 
 	dx.SetRenderTarget(outResultRT);
 	dx.SetDepthStencilState(DepthState::DisableDepthTest, 0);
+	dx.SetBlendState(BlendState::Opaque);
 
 	_vs->BindShaderToContext(dx);
 	_vs->BindInputLayoutToContext(dx);
@@ -100,7 +99,7 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 	dx.SetRasterizerState(RasterizerState::CWDefault);
 
-	context->Draw(3, 0);
+	dx.GetContext()->Draw(3, 0);
 
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	dx.ReSetRenderTargets(1);

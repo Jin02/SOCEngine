@@ -25,10 +25,10 @@ namespace Rendering
 				float blurFar	= 16.0f;
 			};
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, 
-						Texture::RenderTexture& inColorMap,
-						MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures);
+						const Texture::RenderTexture& inColorMap,
+						const MainRenderingSystemParam&& mains, const Copy& copy, TempTextures& tempTextures);
 
 			void UpdateParamCB(Device::DirectX& dx);
 

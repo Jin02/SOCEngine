@@ -28,18 +28,15 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
 			void UpdateParamCB(Device::DirectX& dx);
 
-			void RenderThresholdMap(
-				Device::DirectX& dx, Texture::RenderTexture& inColorMap, Copy& copy,
-				TempTextures& tempTextures, Renderer::MainRenderer& renderer);
+			void RenderThresholdMap(Device::DirectX& dx, const Texture::RenderTexture& inColorMap, const Copy& copy, TempTextures& tempTextures, const Renderer::MainRenderer& renderer);
+			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inputColorMap, const Renderer::MainRenderer& mainRenderer);
 
-			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, Texture::RenderTexture& inputColorMap, Renderer::MainRenderer& mainRenderer);
-			SET_ACCESSOR(ElapsedTime, float, _paramData.dt);
-
-			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);
-			SET_ACCESSOR(Param, const ParamCBData&, _paramData);
+			SET_ACCESSOR(ElapsedTime,	float,				_paramData.dt);
+			SET_ACCESSOR(Param,			const ParamCBData&,	_paramData);
+			GET_CONST_ACCESSOR(Param,	const ParamCBData&,	_paramData);
 
 		private:
 			FullScreen									_eyeAdaptation;

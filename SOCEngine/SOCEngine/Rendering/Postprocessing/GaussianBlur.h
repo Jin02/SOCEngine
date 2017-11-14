@@ -22,7 +22,7 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 
 			void UpdateParamCB(Device::DirectX& dx, const ParamCBData& param);
-			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT, Texture::RenderTexture& inputColorMap, Texture::RenderTexture& tempMap);
+			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT,  const Texture::RenderTexture& inputColorMap, Texture::RenderTexture& tempMap) const;
 
 		private:
 			FullScreen									_vertical;

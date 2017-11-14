@@ -10,7 +10,7 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Camera;
 using namespace Rendering::RenderState;
 
-void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
+void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
 	using Param = FullScreen::InitParam;
 
@@ -26,7 +26,7 @@ void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 	_adaptedLuminanceMaps[0].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 	_adaptedLuminanceMaps[1].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 
-	_bloomThresholdMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+	_bloomThresholdMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
 void Bloom::UpdateParamCB(Device::DirectX& dx)
@@ -35,9 +35,7 @@ void Bloom::UpdateParamCB(Device::DirectX& dx)
 	_paramCB.UpdateSubResource(dx, _paramData);
 }
 
-void Bloom::RenderThresholdMap(	DirectX& dx, 
-								RenderTexture& inColorMap, Copy& copy,
-								TempTextures& temp, MainRenderer& renderer)
+void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, const Copy& copy, TempTextures& temp, const MainRenderer& renderer)
 {
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
@@ -85,7 +83,7 @@ void Bloom::RenderThresholdMap(	DirectX& dx,
 	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 }
 
-void Bloom::RenderBloom(Device::DirectX & dx, Texture::RenderTexture & outRT, Texture::RenderTexture & inputColorMap, Renderer::MainRenderer & mainRenderer)
+void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& inputColorMap, const MainRenderer& mainRenderer)
 {
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());

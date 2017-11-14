@@ -10,7 +10,7 @@ using namespace Rendering::Renderer;
 using namespace Rendering::RenderState;
 using namespace Rendering::Camera;
 
-void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
+void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
 	FullScreen::InitParam param;
 	{
@@ -25,7 +25,7 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 
 	_blur.Initialize(dx, shaderMgr);
-	_blurredColorMap.Initialize(dx, dx.GetBackBufferSize().Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+	_blurredColorMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
 void DepthOfField::UpdateParamCB(Device::DirectX& dx)
@@ -37,9 +37,7 @@ void DepthOfField::UpdateParamCB(Device::DirectX& dx)
 	_dirty = false;
 }
 
-void DepthOfField::Render(	DirectX& dx, RenderTexture& outRT,
-							RenderTexture& inColorMap,
-							MainRenderingSystemParam& mains, Copy& copy, TempTextures& tempTextures	)
+void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture& inColorMap, const MainRenderingSystemParam&& mains, const Copy& copy, TempTextures& tempTextures)
 {
 	// Blur color map
 	{
