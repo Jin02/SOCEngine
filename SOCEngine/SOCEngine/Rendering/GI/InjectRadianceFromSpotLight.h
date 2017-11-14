@@ -15,6 +15,7 @@ namespace Rendering
 
 		private:
 			Shader::ComputeShader	_shader;
+			uint					_threadLength = 0;
 		};
 	}
 }

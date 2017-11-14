@@ -19,8 +19,7 @@ void InjectRadianceFromPointLight::Initialize(DirectX& dx, ShaderManager& shader
 	ShaderFactory factory(&shaderMgr);
 	_shader = *factory.LoadComputeShader(dx, "InjectRadianceFromPointLight", "CS", nullptr, "@InjectRadianceFromPointLight");
 
-	uint xzLength = InjectRadianceFormUtility::CalcThreadSideLength(dimension);
-	_shader.SetThreadGroupInfo(ComputeShader::ThreadGroup(xzLength, xzLength, xzLength));
+	_threadLength = InjectRadianceFormUtility::CalcThreadSideLength(dimension);
 }
 
 void InjectRadianceFromPointLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,
@@ -40,7 +39,7 @@ void InjectRadianceFromPointLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,
 
 	InjectRadianceFormUtility::Bind(dx, outVoxelMap, bindParam);
 
-	_shader.Dispatch(dx);
+	_shader.Dispatch(dx, {_threadLength, _threadLength, _threadLength});
 
 	InjectRadianceFormUtility::UnBind(dx);
 

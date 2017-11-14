@@ -25,17 +25,9 @@ Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, S
 						DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT,
 						D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
 
-	ComputeShader::ThreadGroup threadGroup(0, 0, 1);
-	{
-		threadGroup.x = (size.w + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES;
-		threadGroup.y = (size.h + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES;
-	}
-	
-	shader->SetThreadGroupInfo(threadGroup);
-	shader->Dispatch(dx);
-
-	std::string key = shader->GetKey();
-	shaderMgr.GetPool<ComputeShader>().Delete(key);
+	shader->Dispatch(dx, ComputeShader::ThreadGroup((size.w + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES,
+													(size.h + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES, 1));
+	shaderMgr.GetPool<ComputeShader>().Delete(shader->GetKey());
 
 	return _texture;
 }

@@ -17,10 +17,10 @@ void ComputeShader::Initialize(DirectX& dx)
 	_shader = dx.CreateComputeShader(_base);
 }
 
-void ComputeShader::Dispatch(DirectX& dx)
+void ComputeShader::Dispatch(Device::DirectX& dx, const ComputeShader::ThreadGroup& group)
 {
 	dx.GetContext()->CSSetShader(_shader.GetRaw(), nullptr, 0);
-	dx.GetContext()->Dispatch(_threadGroup.x, _threadGroup.y, _threadGroup.z);
+	dx.GetContext()->Dispatch(group.x, group.y, group.z);
 	dx.GetContext()->CSSetShader(nullptr, nullptr, 0);
 }
 

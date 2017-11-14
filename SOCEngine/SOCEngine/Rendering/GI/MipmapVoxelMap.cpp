@@ -32,12 +32,6 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, Vox
 		uint mipCoff		= 1 << mipLevel;
 		uint curDimension	= sourceDimension / mipCoff;
 
-		// Setting Thread Group
-		{
-			uint threadCount = ((curDimension/2) + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
-			shader.SetThreadGroupInfo(ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
-		}
-
 		InfoCBData info;
 		info.sourceDimension = curDimension;
 		infoCB.UpdateSubResource(dx, info);
@@ -46,7 +40,8 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, Vox
 		ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap,	targetUAV);
 		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB,		infoCB);
 
-		shader.Dispatch(dx);
+		uint threadCount = ((curDimension/2) + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
+		shader.Dispatch(dx, ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
 
 		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_InputVoxelMap);
 		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap);
