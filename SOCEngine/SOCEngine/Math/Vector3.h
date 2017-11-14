@@ -30,6 +30,12 @@ namespace Math
 
 		float operator[](unsigned int idx) const;
 
+		friend Vector3 operator+(float lhs, const Vector3& rhs) { return Vector3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
+		friend Vector3 operator-(float lhs, const Vector3& rhs) { return Vector3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
+		friend Vector3 operator*(float lhs, const Vector3& rhs) { return Vector3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z); }
+		friend Vector3 operator/(float lhs, const Vector3& rhs) { return Vector3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
+
+
 	public:
 		static const Vector3 Forward();
 		static const Vector3 Right();

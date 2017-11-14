@@ -2,12 +2,12 @@
 
 #include "Common.h"
 #include "Rect.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
 namespace Math
 {
-	class Vector2;
-	class Vector3;
-	class Vector4;
 	class Quaternion;
 
 	class Matrix
@@ -39,6 +39,12 @@ namespace Math
 		const Vector2 operator* (const Vector2& v) const;
 		const Vector3 operator* (const Vector3& v) const;
 		const Vector4 operator* (const Vector4& v) const;
+
+		friend Matrix	operator*(float lhs, const Matrix& rhs)				{ return rhs * lhs; }
+		friend Vector4	operator*(const Vector4 &lhs, const Matrix& rhs)	{ return rhs * lhs; }
+		friend Vector3	operator*(const Vector3 &lhs, const Matrix& rhs)	{ return rhs * lhs; }
+		friend Vector4&	operator*=(Vector4 &lhs, const Matrix& rhs)			{ lhs = rhs * lhs; return lhs; }
+		friend Vector3&	operator*=(Vector3 &lhs, const Matrix& rhs)			{ lhs = rhs * lhs; return lhs; }
 
 	public:
 		static Matrix RotateUsingQuaternion(const Quaternion& q);

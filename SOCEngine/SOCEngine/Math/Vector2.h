@@ -29,6 +29,11 @@ namespace Math
 
 		float operator[](unsigned int idx) const;
 
+		friend Vector2 operator+(float lhs, const Vector2& rhs) { return Vector2(lhs + rhs.x, lhs + rhs.y); }
+		friend Vector2 operator-(float lhs, const Vector2& rhs) { return Vector2(lhs - rhs.x, lhs - rhs.y); }
+		friend Vector2 operator*(float lhs, const Vector2& rhs) { return Vector2(lhs * rhs.x, lhs * rhs.y); }
+		friend Vector2 operator/(float lhs, const Vector2& rhs) { return Vector2(lhs / rhs.x, lhs / rhs.y); }
+
 	public:
 		static const Vector2 Zero();
 		static const Vector2 One();
