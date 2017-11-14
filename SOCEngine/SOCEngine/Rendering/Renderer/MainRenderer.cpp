@@ -4,7 +4,6 @@
 #include "MeshUtility.h"
 #include "PhysicallyBasedMaterial.h"
 #include "PixelShader.h"
-
 #include "AutoBinder.hpp"
 
 using namespace Core;
@@ -21,16 +20,17 @@ using namespace Rendering::RenderState;
 using namespace Rendering::Material;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
+using namespace Rendering::GI;
 
-void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera)
+void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, const GlobalIllumination::InitParam&& giParam)
 {
 	_blendedDepthLightCulling.Initialize(dx, shaderMgr, mainCamera.GetRenderRect().size);
 
-	auto backBufferSize = dx.GetBackBufferSize().Cast<uint>();
+	const auto& renderSize = mainCamera.GetRenderRect().size;
 
 	// Result Map
 	{
-		auto size = backBufferSize;
+		auto size = renderSize;
 		{
 			if (dx.GetMSAADesc().Count > 1)
 			{
@@ -39,21 +39,23 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 			}
 		}
 
-		float maxLength	= static_cast<float>( std::max(size.w, size.h) );
+		_scaledMap.Initialize(dx, size.Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0);
+
+		float maxLength	= static_cast<float>( std::max(renderSize.w, renderSize.h) );
 		uint mipLevel	= static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
-		_resultMap.Initialize(dx, size.Cast<uint>(), DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, mipLevel);
+		_resultMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1, mipLevel);
 	}
 
 	// Gbuffer
 	{
-		_gbuffer.albedo_occlusion.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.normal_roughness.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
-		_gbuffer.velocity_metallic_specularity.Initialize(dx, backBufferSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.albedo_occlusion.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.normal_roughness.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.velocity_metallic_specularity.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 
-		_gbuffer.emission_materialFlag.Initialize(dx, backBufferSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.emission_materialFlag.Initialize(dx, renderSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
 
-		_gbuffer.opaqueDepthBuffer.Initialize(dx, backBufferSize, true);
-		_gbuffer.blendedDepthBuffer.Initialize(dx, backBufferSize, true);
+		_gbuffer.opaqueDepthBuffer.Initialize(dx, renderSize, true);
+		_gbuffer.blendedDepthBuffer.Initialize(dx, renderSize, true);
 	}
 
 	_tbrCB.Initialize(dx);
@@ -67,10 +69,12 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		Factory::ShaderFactory factory(&shaderMgr);
 		_tbdrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
 
-		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(backBufferSize);
-		ComputeShader::ThreadGroup threadGroup(size.w, size.h, 1);
-		_tbdrShader.SetThreadGroupInfo(threadGroup);
+		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(renderSize);
+		_tbdrThreadGroup = ComputeShader::ThreadGroup(size.w, size.h, 1);
 	}
+
+	_skyBox.Initialize(dx);
+	_gi.Initialize(dx, shaderMgr, renderSize, std::move(giParam));
 }
 
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
@@ -103,6 +107,9 @@ void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const Lig
 
 	_tbrCB.UpdateSubResource(dx, tbrCBData);
 	_dirty = false;
+
+	const Matrix& worldMat = mainCamera.GetWorldMatrix();
+	_skyBox.UpdateCB(dx, Vector3(worldMat._41, worldMat._42, worldMat._43), mainCamera.GetViewProjMatrix(), mainCamera.GetFar());
 }
 
 template <class ShaderType>
@@ -143,9 +150,12 @@ inline void UnBindGBufferResourceTextures(DirectX& dx)
 }
 
 
-void MainRenderer::Render(DirectX& dx, Param&& param)
+void MainRenderer::Render(DirectX& dx, const Param&& param)
 {
 	const auto& mainCamera = param.mainCamera;
+	const auto& materialMgr = param.materialMgr;
+	const auto& renderParam	= param.renderParam;
+
 	// Basic Setting
 	{
 		dx.SetViewport(mainCamera.GetRenderRect().Cast<float>());
@@ -162,7 +172,8 @@ void MainRenderer::Render(DirectX& dx, Param&& param)
 		_gbuffer.opaqueDepthBuffer.Clear(dx, 0.0f, 0);
 		_gbuffer.blendedDepthBuffer.Clear(dx, 0.0f, 0);
 
-		_resultMap.Clear(dx, Color::Cyan());
+		_resultMap.Clear(dx, mainCamera.GetClearColor());
+		_scaledMap.Clear(dx, mainCamera.GetClearColor());
 	}
 
 	// 1 Pass - Render GBuffer
@@ -181,8 +192,6 @@ void MainRenderer::Render(DirectX& dx, Param&& param)
 		AutoBinderSampler<PixelShader> defaultSampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Anisotropic);
 		AutoBinderCB<VertexShader> cameraCB(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
 
-		const auto& materialMgr = param.materialMgr;
-		const auto& renderParam	= param.renderParam;
 		// Opaque
 		{
 			dx.SetRasterizerState(RasterizerState::CWDefault);
@@ -269,7 +278,6 @@ void MainRenderer::Render(DirectX& dx, Param&& param)
 		AutoBinderSRV<ComputeShader> slShadowVPMat(dx,		TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> gbufferDepth(dx,		TextureBindIndex::GBuffer_Depth,						_gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> gbufferBlendDepth(dx,	TextureBindIndex::GBuffer_BlendedDepth,					_gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> gbufferAlbedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,				_gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> gbufferVelocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,_gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> gbufferNormal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,				_gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
@@ -279,28 +287,85 @@ void MainRenderer::Render(DirectX& dx, Param&& param)
 		AutoBinderSRV<ComputeShader> slShadowMap(dx,		TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowMap(dx,		TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
-		AutoBinderUAV outLightBuffer(dx, UAVBindIndex::TBDR_OutLightBuffer, _resultMap.GetTexture2D().GetUnorderedAccessView());
+		AutoBinderUAV outLightBuffer(dx, UAVBindIndex::TBDR_OutLightBuffer, _scaledMap.GetTexture2D().GetUnorderedAccessView());
 //		AutoBinderUAV outLightIndices(dx, UAVBindIndex::TBDR_OutPerLightIndicesInTile, ?)
 
-		Size<uint> groupSize = CullingUtility::CalcThreadGroupSize(mainCamera.GetRenderRect().size);
-		_tbdrShader.SetThreadGroupInfo({groupSize.w, groupSize.h, 1});
-		_tbdrShader.Dispatch(dx);
+		_tbdrShader.Dispatch(dx, _tbdrThreadGroup);
 
-		_blendedDepthLightCulling.Dispatch(dx, {groupSize.w, groupSize.h, 1});
+		AutoBinderSRV<ComputeShader> gbufferBlendDepth(dx,	TextureBindIndex::GBuffer_BlendedDepth,					_gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
+		_blendedDepthLightCulling.Dispatch(dx, _tbdrThreadGroup);
+	}
+
+	// 2.5 - Build Main RT
+	{
+		_mainRTBuilder.Render(dx, _resultMap, _scaledMap);
 	}
 
 	// 3 - Pass GI
 	{
-
+		_gi.Run(dx, VXGI::Param{{*this, mainCamera}, lightMgr, {shadowMgr, shadowRenderer}, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
 	// 4 Pass Sky
 	{
-
+		_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, param.skyBoxMaterial);
 	}
 
 	// 5 Pass Render Transparent Mesh
 	{
+		dx.SetRenderTarget(_resultMap, _gbuffer.opaqueDepthBuffer);
+		dx.SetDepthStencilState(DepthState::GreaterAndDisableDepthWrite, 0);
+		dx.SetViewport(mainCamera.GetRenderRect().Cast<float>());
+		dx.SetRasterizerState(RasterizerState::CWDisableCulling);
+		dx.SetBlendState(BlendState::Alpha);
+		dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
+		ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState,			SamplerState::Anisotropic);
+		ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
+		ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
+
+		ComputeShader::BindConstBuffer(dx, 			ConstBufferBindIndex::TBRParam,							_tbrCB);
+		ComputeShader::BindConstBuffer(dx, 			ConstBufferBindIndex::Camera,							mainCamera.GetCameraCB());
+		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::ShadowGlobalParam,				shadowMgr.GetGlobalParamCB());
+
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightColor,				lightMgr.GetBuffer<DirectionalLight>().GetColorSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr.GetBuffer<DirectionalLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightRadiusWithCenter,			lightMgr.GetBuffer<PointLight>().GetTransformSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightColor,						lightMgr.GetBuffer<PointLight>().GetColorSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::PointLightOptionalParamIndex,			lightMgr.GetBuffer<PointLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowParam,				shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowViewProjMatrix,		shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightRadiusWithCenter,			lightMgr.GetBuffer<SpotLight>().GetTransformSRBuffer().GetShaderResourceView());
+
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightParam,						lightMgr.GetBuffer<SpotLight>().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightColor,						lightMgr.GetBuffer<SpotLight>().GetColorSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::SpotLightOptionalParamIndex,			lightMgr.GetBuffer<SpotLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowParam,					shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
+
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::LightIndexBuffer,						_blendedDepthLightCulling.GetLightIndexSRBuffer().GetShaderResourceView());
+
+		MeshRenderer::RenderTransparentMeshes(dx, param.renderParam, DefaultRenderType::Forward_Transparency,
+			mainCamera.GetTransparentMeshRenderQ(),
+			[&dx, &materialMgr](const Mesh* mesh)
+			{
+				const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
+				BindGBufferResourceTextures(dx, material);
+			},
+			[&dx]()
+			{
+				UnBindGBufferResourceTextures(dx);
+			}
+		);
 	}
+
+	dx.ClearDeviceContext();
 }

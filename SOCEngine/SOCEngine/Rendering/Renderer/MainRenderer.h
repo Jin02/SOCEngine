@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "RenderTexture.h"
 #include "DepthMap.h"
 #include "OnlyLightCulling.h"
@@ -14,6 +16,11 @@
 #include "ComputeShader.h"
 #include "ShadowAtlasMapRenderer.h"
 
+#include "SkyBox.h"
+#include "GlobalIllumination.h"
+
+#include "Copy.h"
+
 namespace Rendering
 {
 	namespace Renderer
@@ -21,7 +28,7 @@ namespace Rendering
 		class MainRenderer final
 		{
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, const GlobalIllumination::InitParam&& giParam);
 			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
 			struct Param
@@ -32,42 +39,47 @@ namespace Rendering
 				const Manager::LightManager&			lightMgr;
 				const Manager::ShadowManager&			shadowMgr;
 				const Renderer::ShadowAtlasMapRenderer&	shadowRenderer;
+				const CullingParam&&					cullingParam;
+
+				const Material::SkyBoxMaterial&			skyBoxMaterial;
 			};
-			void Render(Device::DirectX& dx, Param&& param);
+			void Render(Device::DirectX& dx, const Param&& param);
 
 			SET_ACCESSOR_DIRTY(Gamma,		float,			_gamma);
 			GET_CONST_ACCESSOR(Gamma,		float,			_gamma);
 			GET_CONST_ACCESSOR(GBuffers,	const auto&,	_gbuffer);
 			GET_CONST_ACCESSOR(TBRParamCB,	const auto&,	_tbrCB);
-			GET_ACCESSOR(ResultMap,			auto&,			_resultMap);
+			GET_ALL_ACCESSOR(ResultMap,		auto&,			_resultMap);
 
 		private:
-			Texture::RenderTexture		_resultMap;
-			GBuffers					_gbuffer;
+			Texture::RenderTexture						_resultMap;
+			Texture::RenderTexture						_scaledMap;
 
-			TBRParamCB					_tbrCB;
+			GBuffers									_gbuffer;
 
-			Shader::ComputeShader		_tbdrShader;
-			Light::OnlyLightCulling		_blendedDepthLightCulling;
+			TBRParamCB									_tbrCB;
+
+			Shader::ComputeShader						_tbdrShader;
+			Light::OnlyLightCulling						_blendedDepthLightCulling;
+
+			Sky::SkyBox									_skyBox;
+			GlobalIllumination							_gi;
+			PostProcessing::Copy						_mainRTBuilder;
 
 		private:
 			TempRenderQueue								_renderQ;
 			RenderQueue::TransparentMeshRenderQueue		_transparentMeshRenderQ;
 
 		private:
-			float						_gamma = 2.2f;
-			bool						_dirty = true;
+			Shader::ComputeShader::ThreadGroup			_tbdrThreadGroup;
+			float										_gamma = 2.2f;
+			bool										_dirty = true;
 		};
 	}
 
 	struct MainRenderingSystemParam
 	{
-		Renderer::MainRenderer& renderer;
-		Camera::MainCamera&		camera;
-
-		MainRenderingSystemParam(Renderer::MainRenderer& _renderer, Camera::MainCamera& _camera)
-			: camera(_camera), renderer(_renderer)
-		{
-		}
+		const Renderer::MainRenderer&	renderer;
+		const Camera::MainCamera&		camera;
 	};
 }
