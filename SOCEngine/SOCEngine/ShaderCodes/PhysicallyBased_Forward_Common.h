@@ -9,7 +9,7 @@
 #include "LightCullingCommonCS.h"
 #include "DynamicLighting.h"
 
-Buffer<uint> g_perLightIndicesInTile	: register( t13 );
+Buffer<uint> g_perLightIndicesInTile	: register( t27 );
 SamplerState defaultSampler				: register( s0 );
 
 float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)

@@ -36,7 +36,7 @@ namespace Rendering
 		EmissionMap								= 34,
 
 		GBuffer_BlendedDepth					= 12,
-		LightIndexBuffer						= 13,
+		LightIndexBuffer						= 27,
 
 		PointLightShadowParam					= 14,
 		SpotLightShadowParam					= 15,
@@ -63,7 +63,6 @@ namespace Rendering
 		VCTInjectionSourceColorMap				= 29,
 		VCTMipmappedInjectionColorMap			= 30,
 
-//		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
 		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
