@@ -32,12 +32,11 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 	}
 }
 
-void OnlyLightCulling::Dispatch(Device::DirectX& dx, ComputeShader::ThreadGroup&& threadGroup)
+void OnlyLightCulling::Dispatch(Device::DirectX& dx, const ComputeShader::ThreadGroup& group)
 {
 	ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::Lightculling_LightIndexBuffer, _uav);
 
-	_cs.SetThreadGroupInfo(threadGroup);
-	_cs.Dispatch(dx);
+	_cs.Dispatch(dx, std::move(group));
 
 	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::Lightculling_LightIndexBuffer);
 }

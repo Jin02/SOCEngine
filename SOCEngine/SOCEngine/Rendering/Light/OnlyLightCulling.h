@@ -17,7 +17,8 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& maxRenderRectSize);
-			void Dispatch(Device::DirectX& dx, Shader::ComputeShader::ThreadGroup&& threadGroup);
+			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup& group);
+			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup&& group) { Dispatch(dx, group); }
 
 			GET_ALL_ACCESSOR(LightIndexSRBuffer,	auto&,	_srb);
 			GET_ALL_ACCESSOR(LightIndexUAV,			auto&,	_uav);
