@@ -1,32 +1,17 @@
 #pragma once
 
-#include <Scene.h>
-#include "ShaderFactory.hpp"
-#include <SimpleSoundPlayer.h>
-#include <SimpleText2D.h>
+#include <IScene.h>
+#include <Engine.h>
 
-class TestScene : public Core::Scene
+class TestScene : public Core::IScene
 {
-private:
-	Core::Object* _testObject;
-	Core::Object* _testObject2;
-
-	Core::Object* _camera;
-
-	Core::Object* _light;
-
-	Math::Vector3 _pos;
-
 public:
-	TestScene(void);
-	virtual ~TestScene(void);
-
-public:
-	virtual void OnInitialize();
-	virtual void OnRenderPreview();
-	virtual void OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard);
-	virtual void OnUpdate(float dt);
-	virtual void OnRenderPost();
-	virtual void OnDestroy();
+	virtual RenderSetting RegistRenderSetting(Core::Engine& engine) override;
+	virtual void OnInitialize(Core::Engine&) override;
+	virtual void OnDestroy(Core::Engine&) override;
+	virtual void OnRenderPreview() override;
+	virtual void OnUpdate() override;
+	virtual void OnRenderPost() override;
+	virtual void OnInput() override;
 };
 
