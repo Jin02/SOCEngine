@@ -34,8 +34,7 @@ namespace Core
 
 		void			DeleteAll();
 
-	private:
-		GET_ACCESSOR(ObjectIDManager, ObjectIDManager&, _objIDMgr);
+		GET_CONST_ACCESSOR(ObjectIDManager, const ObjectIDManager&, _objIDMgr);
 
 	private:
 		VectorHashMap<ObjectID::LiteralType, Object>		_objects;

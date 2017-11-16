@@ -11,16 +11,19 @@ Object& ObjectManager::Add(const std::string& name)
 	ObjectID key = _objIDMgr.Acquire();
 	_idBookmark.Add(name, key.Literal());
 
-	return _objects.Add(key, Object(key));
+	return _objects.Add(key, Object::Create(key, name));
 }
 
 void ObjectManager::Delete(const std::string& name)
 {
-	uint objLiteralID = _idBookmark.Find(name);
+	uint objLiteralID	= _idBookmark.Find(name);
+	ObjectID id			= ObjectID(objLiteralID);
 
-	_objects.Delete(ObjectID(objLiteralID));
+	_objects.Find(id)->Destroy();
+	_objects.Delete(id);
+
 	_idBookmark.Delete(name);
-	_objIDMgr.Delete(ObjectID(objLiteralID));
+	_objIDMgr.Delete(id);
 }
 
 bool ObjectManager::Has(const std::string& name) const
@@ -65,6 +68,7 @@ const Object* Core::ObjectManager::Find(ObjectID id) const
 
 void ObjectManager::DeleteAll()
 {
+	_objects.Iterate([](Object& obj){ obj.Destroy(); });
 	_objects.DeleteAll();
 	_idBookmark.DeleteAll();
 		
