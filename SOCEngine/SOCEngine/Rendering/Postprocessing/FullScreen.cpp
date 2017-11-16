@@ -70,7 +70,7 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 #pragma region PixelShader
 	if (shaderManager.GetPool<PixelShader>().Has(_psUniqueKey) == false)
 	{
-		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "vs", "FullScreenVS", false, param.psMacros);
+		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "ps", param.psName, false, param.psMacros);
 		_ps = std::make_shared<PixelShader>(blob, _psUniqueKey);
 		_ps->Initialize(dx);
 
