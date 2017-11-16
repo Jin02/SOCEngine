@@ -70,7 +70,7 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& r
 	_mipmap.Initialize(dx, shaderMgr);
 
 	// Voxel Cone Tracing
-	_voxelConeTracing.Initialize(dx, shaderMgr);
+	_voxelConeTracing.Initialize(dx, shaderMgr, renderSize);
 
 	InitializeClearVoxelMap(dx, shaderMgr, _staticInfo.dimension);
 
