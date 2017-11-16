@@ -5,17 +5,17 @@
 using namespace Core;
 using namespace Device;
 
-void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool useMSAA)
+void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool useMSAA, IScene* scene)
 {
 	WinApp win(desc);
-	DirectX dx;
+	DirectX dx(viewport.Cast<float>());
 	Engine engine(dx);
 
 	// Init System
 	{
 		win.Initialize();
 		dx.Initialize(win, viewport, useMSAA);
-		engine.Initialize();
+		engine.Initialize(scene);
 	}
 
 	// Loop
@@ -23,7 +23,7 @@ void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool us
 		MSG msg;
 		ZeroMemory(&msg, sizeof(msg));
 
-		while ((msg.message != WM_QUIT) & (_exit == false))
+		while ((msg.message != WM_QUIT) & (engine.GetExit() == false))
 		{
 			if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) == false)
 			{
