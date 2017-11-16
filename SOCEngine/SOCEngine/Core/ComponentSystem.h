@@ -29,6 +29,8 @@ namespace Core
 		DISALLOW_COPY_CONSTRUCTOR(ComponentSystem);
 
 	public:
+		void Initialize(Device::DirectX& dx);
+
 		void UpdateBuffer(Device::DirectX& dx,
 			const Core::TransformPool& transformPool,
 			const Core::ObjectManager& objectManager,
@@ -154,7 +156,8 @@ namespace Core
 		}
 		template <> bool Has<MainCamera>(ObjectID id) const
 		{
-			return true;
+			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			return mgr.GetMainCamera().GetObjectID() == id;
 		}
 		template <> auto Find<MainCamera>(ObjectID id)
 		{
@@ -173,6 +176,12 @@ namespace Core
 			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
 			return mgr.GetMainCamera();
 		}
+		const MainCamera& GetMainCamera() const
+		{
+			const auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			return mgr.GetMainCamera();
+		}
+
 #pragma endregion MainCamera
 
 	private:

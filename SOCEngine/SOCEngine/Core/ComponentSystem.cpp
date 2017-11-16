@@ -13,6 +13,12 @@ using namespace Rendering::Manager;
 using namespace Math;
 using namespace Intersection;
 
+void ComponentSystem::Initialize(DirectX& dx)
+{
+	GetManager_Direct<LightManager>().Initialize(dx);
+	GetManager_Direct<ShadowManager>().Initialize(dx);
+}
+
 void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const TransformPool& transformPool,
 	const ObjectManager& objectManager,
