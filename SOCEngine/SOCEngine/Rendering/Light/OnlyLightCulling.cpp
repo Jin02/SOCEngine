@@ -27,7 +27,7 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 		Size<uint> size	= CullingUtility::CalcThreadGroupSize(maxRenderRectSize);
 		uint num		= CullingUtility::CalcMaxNumLightsInTile(maxRenderRectSize) * size.w * size.h;
 
-		_srb.Initialize(dx, 4, num, DXGI_FORMAT_R32_UINT, nullptr, false,  D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
+		_srb.Initialize(dx, 4, num, DXGI_FORMAT_R32_UINT, nullptr,  D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT);
 		_uav.Initialize(dx, DXGI_FORMAT_R32_UINT, num, _srb.GetBaseBuffer().GetBuffer(), D3D11_UAV_DIMENSION_BUFFER);
 	}
 }
