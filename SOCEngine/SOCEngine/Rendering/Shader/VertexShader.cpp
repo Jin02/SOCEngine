@@ -15,6 +15,8 @@ VertexShader::VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::st
 void VertexShader::Initialize(DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	_shader	= dx.CreateVertexShader(_baseShader);
+
+	if(vertexDeclations.empty()) return;
 	_layout	= dx.CreateInputLayout(_baseShader, vertexDeclations);
 
 	uint count = vertexDeclations.size();
