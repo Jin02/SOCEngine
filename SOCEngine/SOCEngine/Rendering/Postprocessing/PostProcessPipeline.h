@@ -4,6 +4,7 @@
 #include "DepthOfField.h"
 #include "SSAO.h"
 #include "Bloom.h"
+#include "MainCamera.h"
 
 namespace Rendering
 {
@@ -15,8 +16,8 @@ namespace Rendering
 			PostProcessPipeline() = default;
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
-			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainMeshCamera);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
+			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera);
 
 			void UpdateCB(Device::DirectX& dx);
 

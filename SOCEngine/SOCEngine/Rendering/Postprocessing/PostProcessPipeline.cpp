@@ -11,8 +11,9 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Manager;
 using namespace Device;
 
-void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize)
+void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera)
 {
+	const auto& renderSize = mainCamera.GetRenderRect().size;
 	// Texture
 	{
 		_bluredCurScene.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
