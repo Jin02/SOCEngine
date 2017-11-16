@@ -82,9 +82,6 @@
     <Filter Include="ShaderCodes\Common">
       <UniqueIdentifier>{4557472b-2ac3-4fdc-b330-b89e338147e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\VXGI">
-      <UniqueIdentifier>{7838247d-7b6f-44b2-ae5f-e354b93e7b8c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Postprocessing">
       <UniqueIdentifier>{4d0a2a8a-f14b-4a9b-8a17-30773e874283}</UniqueIdentifier>
     </Filter>
@@ -123,21 +120,6 @@
     </Filter>
     <Filter Include="ShaderCodes\TiledRendering\Deferred\GBuffer">
       <UniqueIdentifier>{558d9e64-acf3-4169-a631-7405530596fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\VXGI\Clear">
-      <UniqueIdentifier>{51f94da3-6135-482c-bb83-09713d74e6fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\VXGI\Injection">
-      <UniqueIdentifier>{3c735467-9397-43ea-a159-d66715b2c1fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\VXGI\Mipmap">
-      <UniqueIdentifier>{a97ca3ac-16cd-4b36-85d2-8526e312ee86}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\VXGI\Voxelization">
-      <UniqueIdentifier>{4805d0ba-98f9-454c-acf5-5ca19e1cedc7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\VXGI\Debug">
-      <UniqueIdentifier>{047ff906-6dc8-4398-88c7-c69737967de4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ShaderCodes\Postprocessing\RayTracing">
       <UniqueIdentifier>{0a0166a0-e803-4774-bfd3-69d3a040d346}</UniqueIdentifier>
@@ -447,6 +429,24 @@
     </Filter>
     <Filter Include="Rendering\GI\VXGI\Voxelization\Map">
       <UniqueIdentifier>{ba1e511e-2208-4f86-b957-6335f11254d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI">
+      <UniqueIdentifier>{7838247d-7b6f-44b2-ae5f-e354b93e7b8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Clear">
+      <UniqueIdentifier>{51f94da3-6135-482c-bb83-09713d74e6fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Injection">
+      <UniqueIdentifier>{3c735467-9397-43ea-a159-d66715b2c1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Mipmap">
+      <UniqueIdentifier>{a97ca3ac-16cd-4b36-85d2-8526e312ee86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Voxelization">
+      <UniqueIdentifier>{4805d0ba-98f9-454c-acf5-5ca19e1cedc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\VXGI\Debug">
+      <UniqueIdentifier>{047ff906-6dc8-4398-88c7-c69737967de4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -979,6 +979,12 @@
     <ClInclude Include="Rendering\GI\VXGICommon.h">
       <Filter>Rendering\GI\VXGI</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\RenderingSystem.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\RenderSetting.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1274,6 +1280,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\GI\VXGI.cpp">
       <Filter>Rendering\GI\VXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\RenderingSystem.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
