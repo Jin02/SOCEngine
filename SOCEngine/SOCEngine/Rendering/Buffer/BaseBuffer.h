@@ -18,7 +18,7 @@ namespace Rendering
 
 		public:
 			BaseBuffer() = default;
-			BaseBuffer(const DXSharedResource<ID3D11Buffer>& buffer) : _buffer(buffer) {}
+			explicit BaseBuffer(const DXSharedResource<ID3D11Buffer>& buffer) : _buffer(buffer) {}
 
 			SET_ACCESSOR(Buffer,		const DXSharedResource<ID3D11Buffer>&,		_buffer);
 			GET_CONST_ACCESSOR(Buffer,	DXSharedResource<ID3D11Buffer>,				_buffer);
