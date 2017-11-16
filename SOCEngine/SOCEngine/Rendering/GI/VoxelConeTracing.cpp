@@ -17,16 +17,16 @@ using namespace Rendering::GI;
 using namespace Rendering::View;
 using namespace Rendering::Shader;
 using namespace Rendering::Factory;
+using namespace Rendering::Camera;
 using namespace Rendering::RenderState;
 
-void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr)
+void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
 	ShaderFactory factory(&shaderMgr);
 	_shader = *factory.LoadComputeShader(dx, "VoxelConeTracing", "VoxelConeTracingCS", nullptr, "@VCT");
 
-	Size<uint> mapSize = dx.GetBackBufferSize().Cast<uint>();
-	_group = ComputeShader::ThreadGroup{(mapSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES,
-										(mapSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES, 1};
+	_group = ComputeShader::ThreadGroup{(renderSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES,
+										(renderSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES, 1};
 }
 
 void VoxelConeTracing::Run(DirectX& dx, RenderTexture& outIndirectColorMap, const Param&& param)

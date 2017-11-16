@@ -17,7 +17,7 @@ namespace Rendering
 		class VoxelConeTracing
 		{
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
 
 			struct Param
 			{
