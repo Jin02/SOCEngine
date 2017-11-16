@@ -38,8 +38,7 @@ namespace Importer
 
 		static constexpr int GetMaximumRecognizeBoneCount() { return 4; }
 
-		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
-		Core::Object* Load(ManagerParam managerParam, const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
+		Core::ObjectID Load(const ManagerParam&& managerParam, const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
 
 	private:
 		struct StoredOriginObject
@@ -48,14 +47,15 @@ namespace Importer
 			Core::ObjectID	objectID;
 		};
 
+		void ParseJson(std::vector<Mesh>& outMeshes, std::vector<Material>& outMaterials, std::vector<Node>& outNodes, const char* buffer, bool isObjFormat);
 		Node ParseNode(const rapidjson::Value& node, const Math::Matrix& parentWorldMatrix,
 						bool isSettedParentTranslation = false, bool isSettedParentRotation = false, bool isSettedParentScale = false);
 		Material ParseMaterial(const rapidjson::Value& matNode, bool isObjFormat);
 		Mesh ParseMesh(const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 
 		std::set<std::string> MakeMaterials(ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
-		void MakeHierarchy(Core::Object& parent, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
-		Core::Object& BuildMesh(ManagerParam managerParam,
+		void MakeHierarchy(Core::ObjectID parentID, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
+		Core::ObjectID BuildMesh(ManagerParam managerParam,
 								std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes,
 								const std::string& folderDir, const std::string& meshFileName,
 								bool useDynamicVB, bool useDynamicIB, const std::string& registKey);
