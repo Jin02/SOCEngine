@@ -52,8 +52,6 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Param,						const auto&,	_param);
 			GET_CONST_ACCESSOR(ParamCBData,					auto,			_param);
 
-			GET_CONST_ACCESSOR(Base,						const auto&,	_base);
-
 			GET_CONST_ACCESSOR(ProjectionSize,				float,			_projectionSize);
 			GET_CONST_ACCESSOR(UseAutoProjectionLocation,	bool,			_useAutoProjectLocation);
 
@@ -62,6 +60,8 @@ namespace Rendering
 
 			SET_ACCESSOR(ProjectionSize,					float,			_projectionSize);
 			SET_ACCESSOR(UseAutoProjectionLocation,			bool,			_useAutoProjectLocation);
+
+			GET_ACCESSOR_REF(Base,											_base);
 
 			inline void SetDirty(bool b) { _base.SetDirty(b); }
 

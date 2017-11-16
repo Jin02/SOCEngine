@@ -26,7 +26,7 @@ namespace Rendering
 				void Delete(uint index);
 				void DeleteAll();
 
-				GET_ALL_ACCESSOR(ParamSRBuffer, auto&, _paramSRBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR_REF(ParamSRBuffer, _paramSRBuffer.GetShaderResourceBuffer());
 
 			private:
 				using Parent = LightBufferForm<SpotLight>;

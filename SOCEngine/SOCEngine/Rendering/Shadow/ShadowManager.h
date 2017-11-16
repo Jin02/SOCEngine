@@ -126,7 +126,7 @@ namespace Rendering
 				return GetShadowDatas<ShadowType>().influentialLights;
 			}
 
-			GET_ALL_ACCESSOR(GlobalParamCB, auto&, _globalCB);
+			GET_ACCESSOR_REF(GlobalParamCB, _globalCB);
 
 		private:
 			template <class ShadowType> auto&		GetShadowDatas()

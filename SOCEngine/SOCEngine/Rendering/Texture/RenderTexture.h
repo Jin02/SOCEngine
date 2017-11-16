@@ -21,7 +21,7 @@ namespace Rendering
 			//GET_CONST_ACCESSOR(RenderTargetView, const DXSharedResource<ID3D11RenderTargetView>&, _renderTargetView);
 			GET_ACCESSOR(Raw,			ID3D11RenderTargetView* const,	_renderTargetView.GetRaw());
 			GET_CONST_ACCESSOR(Size,	const auto&,					_tex2D.GetSize());
-			GET_ALL_ACCESSOR(Texture2D,	auto&,							_tex2D);
+			GET_ACCESSOR_REF(Texture2D,									_tex2D);
 
 		private:
 			DXSharedResource<ID3D11RenderTargetView>	_renderTargetView;

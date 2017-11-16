@@ -32,7 +32,7 @@ namespace Rendering
 				return std::get<ShaderPool<ShaderType>>(_pools);
 			}
 
-			GET_ALL_ACCESSOR(Compiler, Shader::ShaderCompiler&,	_compiler);
+			GET_ACCESSOR_REF(Compiler, _compiler);
 
 		private:
 			std::tuple<

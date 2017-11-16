@@ -17,8 +17,8 @@ namespace Rendering
 
 			void Clear(Device::DirectX& dx, float depth, unsigned char stencil);
 
-			GET_ALL_ACCESSOR(DepthStencilView,		auto&,							_depthStencilView);
-			GET_ALL_ACCESSOR(Texture2D,				Texture2D&,						_tex2D);
+			GET_ACCESSOR_REF(DepthStencilView,										_depthStencilView);
+			GET_ACCESSOR_REF(Texture2D,												_tex2D);
 
 			GET_ACCESSOR(RawDepthStencilView,		ID3D11DepthStencilView* const,	_depthStencilView.GetRaw());
 			GET_CONST_ACCESSOR(Size,				const auto&,					_tex2D.GetSize());

@@ -42,7 +42,7 @@ namespace Rendering
 			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
 
 			GET_CONST_ACCESSOR(ViewProjectionMatrix,	const auto&,	_transposedViewProjMat);
-			GET_CONST_ACCESSOR(Base,					const auto&,	_base);
+			GET_ACCESSOR_REF(Base,										_base);
 
 			GET_CONST_ACCESSOR(ObjectID,				Core::ObjectID,	_base.GetObjectID());
 

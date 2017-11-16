@@ -51,7 +51,7 @@ namespace Rendering
 			Param MakeParam(const Core::Transform& transform) const;
 			inline void SetSpotAngleDegree(float d) { _spotAngleDegree = d; _dirty = true; }
 
-			GET_ALL_ACCESSOR(Base,				BaseLight&,		_base);
+			GET_ACCESSOR_REF(Base,								_base);
 			GET_CONST_ACCESSOR(SpotAngleDegree, float,			_spotAngleDegree);
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID,	_base.GetObjectID());
 

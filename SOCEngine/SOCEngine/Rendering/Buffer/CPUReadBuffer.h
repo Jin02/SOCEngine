@@ -18,8 +18,8 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format);
 			void Read(Device::DirectX& dx, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
 
-			GET_ALL_ACCESSOR(Buffer,	BaseBuffer&,				_baseBuffer);
-			GET_ALL_ACCESSOR(UAV,		View::UnorderedAccessView&,	_uav);
+			GET_ACCESSOR_REF(Buffer,	_baseBuffer);
+			GET_ACCESSOR_REF(UAV,		_uav);
 
 		private:
 			DXSharedResource<ID3D11Buffer>	_readBuffer;

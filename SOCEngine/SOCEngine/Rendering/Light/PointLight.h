@@ -39,7 +39,7 @@ namespace Rendering
 
 			TransformType MakeTransform(const Core::Transform& transform) const;
 
-			GET_ALL_ACCESSOR(Base,			BaseLight&,		_base);
+			GET_ACCESSOR_REF(Base,							_base);
 			GET_CONST_ACCESSOR(ObjectID,	Core::ObjectID,	_base.GetObjectID());
 
 		private:

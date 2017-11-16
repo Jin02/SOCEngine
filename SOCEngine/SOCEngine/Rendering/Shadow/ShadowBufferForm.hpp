@@ -87,8 +87,8 @@ namespace Rendering
 						_mustUpdateParamSRBuffer = true;
 				}
 
-				GET_ALL_ACCESSOR(ViewProjMatSRBuffer,	auto&,	_transformBuffer.GetShaderResourceBuffer());
-				GET_ALL_ACCESSOR(ParamSRBuffer,			auto&,	_paramBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR_REF(ViewProjMatSRBuffer,	_transformBuffer.GetShaderResourceBuffer());
+				GET_ACCESSOR_REF(ParamSRBuffer,			_paramBuffer.GetShaderResourceBuffer());
 
 			protected:
 				ViewProjMatBuffer	_transformBuffer;

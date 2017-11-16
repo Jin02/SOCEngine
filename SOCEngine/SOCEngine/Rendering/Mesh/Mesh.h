@@ -72,7 +72,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(IBKey,			Buffer::BaseBuffer::Key,		_ibKey);
 			GET_CONST_ACCESSOR(BufferFlag,		uint,							_bufferFlag);
 
-			GET_ALL_ACCESSOR(TransformCB,		auto&,							_transformCB);
+			GET_ACCESSOR_REF(TransformCB,										_transformCB);
 
 			GET_CONST_ACCESSOR(Radius,			float,							_radius);
 			SET_ACCESSOR(Radius,				float,							_radius);

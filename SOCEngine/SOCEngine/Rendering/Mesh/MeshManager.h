@@ -43,6 +43,15 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
+			GET_ACCESSOR_REF(TransparentMeshPool,			_transparentMeshPool);
+			GET_ACCESSOR_REF(OpaqueMeshPool,				_opaqueMeshPool);
+			GET_ACCESSOR_REF(AlphaTestMeshPool,				_alphaTestMeshPool);
+			GET_ACCESSOR(AllMeshPoolRefs,			auto,	Geometry::MeshPoolRefs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
+
+			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,	_dirtyMeshes.empty() == false);
+
+
+		public:
 			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::TransparentMeshPool& meshPool)
 			{
 				assert(mesh.GetVBKey() != 0); //Error, mesh does not init yet.
@@ -114,13 +123,6 @@ namespace Rendering
 				toPool.Add(id, mesh->GetVBKey(), *mesh);
 				fromPool.Delete(literlID);
 			}
-
-			GET_ALL_ACCESSOR(TransparentMeshPool,	Geometry::TransparentMeshPool&,	_transparentMeshPool);
-			GET_ALL_ACCESSOR(OpaqueMeshPool,		Geometry::OpaqueMeshPool&,		_opaqueMeshPool);
-			GET_ALL_ACCESSOR(AlphaTestMeshPool,		Geometry::AlphaTestMeshPool&,	_alphaTestMeshPool);
-			GET_ACCESSOR(AllMeshPoolRefs,			auto,							Geometry::MeshPoolRefs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
-
-			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,							_dirtyMeshes.empty() == false);
 
 		private:
 			Geometry::TransparentMeshPool				_transparentMeshPool;

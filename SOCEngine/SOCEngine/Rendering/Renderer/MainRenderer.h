@@ -28,6 +28,7 @@ namespace Rendering
 		class MainRenderer final
 		{
 		public:
+			MainRenderer() = default;
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, const GlobalIllumination::InitParam&& giParam);
 			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
@@ -49,7 +50,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Gamma,		float,			_gamma);
 			GET_CONST_ACCESSOR(GBuffers,	const auto&,	_gbuffer);
 			GET_CONST_ACCESSOR(TBRParamCB,	const auto&,	_tbrCB);
-			GET_ALL_ACCESSOR(ResultMap,		auto&,			_resultMap);
+			GET_ACCESSOR_REF(ResultMap,						_resultMap);
 
 		private:
 			Texture::RenderTexture						_resultMap;
