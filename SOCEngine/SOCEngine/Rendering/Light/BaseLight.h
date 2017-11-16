@@ -25,12 +25,12 @@ namespace Rendering
 
 			SET_ACCESSOR_DIRTY(Color,		const Color&,		_color);
 			SET_ACCESSOR_DIRTY(Radius,		float,				_radius);
-			SET_ACCESSOR_DIRTY(uint,		uint,				_lumen);
+			SET_ACCESSOR_DIRTY(Lumen,		uint,				_lumen);
 			SET_ACCESSOR_DIRTY(Flag,		uchar,				_flag);
 
 			GET_CONST_ACCESSOR(Color,		const Color&,		_color);
 			GET_CONST_ACCESSOR(Radius,		float,				_radius)
-			GET_CONST_ACCESSOR(uint,		uint,				_lumen);
+			GET_CONST_ACCESSOR(Lumen,		uint,				_lumen);
 			GET_CONST_ACCESSOR(Flag,		uchar,				_flag);
 
 			GET_CONST_ACCESSOR(ObjectID,	Core::ObjectID,		_objectID);
