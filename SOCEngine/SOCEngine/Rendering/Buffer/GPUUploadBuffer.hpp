@@ -18,7 +18,7 @@ namespace Rendering
 
 			void Initialize(Device::DirectX& dx, uint count, DXGI_FORMAT format, const void* dummy = nullptr)
 			{
-				_srBuffer.Initialize(dx, sizeof(T), count, format, dummy, false, 0, D3D11_USAGE_DYNAMIC);
+				_srBuffer.Initialize(dx, sizeof(T), count, format, dummy, 0, D3D11_USAGE_DYNAMIC);
 			}
 
 			// _srBuffer
@@ -45,7 +45,7 @@ namespace Rendering
 				_pool.erase(iter);
 			}
 
-			GET_ALL_ACCESSOR(ShaderResourceBuffer, auto&, _srBuffer);
+			GET_ACCESSOR_REF(ShaderResourceBuffer, _srBuffer);
 
 		private:
 			std::vector<T>				_pool;
