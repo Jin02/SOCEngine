@@ -13,7 +13,7 @@ WinApp::WinApp(const Desc& desc)
 {
 	_windowInfo.cbSize			= sizeof(WNDCLASSEX);
 	_windowInfo.style			= CS_CLASSDC;
-	_windowInfo.hInstance		= desc.Instance;//GetModuleHandle(NULL);
+	_windowInfo.hInstance		= desc.instance;//GetModuleHandle(NULL);
 	_windowInfo.cbClsExtra		= 0L;
 	_windowInfo.cbWndExtra		= 0L;
 	_windowInfo.hIcon			= NULL;

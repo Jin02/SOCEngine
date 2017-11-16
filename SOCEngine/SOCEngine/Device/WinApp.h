@@ -18,12 +18,14 @@ namespace Device
 	public:
 		struct Desc
 		{
-			const Rect<uint> &rect;
-			HINSTANCE Instance;
-			const std::string name;
-			bool windowMode;
-			bool isChild;
-			HWND parentHandle = NULL;
+			Rect<uint>		rect			= Rect<uint>(0, 0, 800, 600);
+			HINSTANCE		instance		= NULL;
+			std::string		name			= "SOCEngine";
+			bool			windowMode		= false;
+			bool			isChild			= false;
+			HWND			parentHandle	= NULL;
+
+			Desc() = default;
 		};
 
 	public:
