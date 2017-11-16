@@ -8,7 +8,7 @@ template<typename Resource>
 class DXUniqueResource
 {
 public:
-	static void Release(IUnknown* resource) { resource->Release(); };
+	static void Release(IUnknown* resource) { SAFE_RELEASE(resource); };
 
 	DXUniqueResource()								: _resource(nullptr, nullptr)	{ }
 	explicit DXUniqueResource(Resource* resource)	: _resource(resource, Release)	{ }
@@ -31,7 +31,7 @@ template <typename Resource>
 class DXSharedResource final
 {
 public:
-	static void Release(IUnknown* resource)	{	resource->Release();	};
+	static void Release(IUnknown* resource)	{	SAFE_RELEASE(resource);	};
 
 	DXSharedResource()								: _resource(nullptr)			{ }
 	explicit DXSharedResource(Resource* resource)	: _resource(resource, Release)	{ }
