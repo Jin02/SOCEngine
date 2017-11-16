@@ -3,7 +3,7 @@
 
 using namespace Rendering::View;
 
-inline void UnorderedAccessView::Destroy()
+void UnorderedAccessView::Destroy()
 {
 	_uav.Destroy();
 }

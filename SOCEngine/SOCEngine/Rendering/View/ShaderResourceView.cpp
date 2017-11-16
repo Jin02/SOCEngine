@@ -1,11 +1,13 @@
 #include "ShaderResourceView.h"
 #include "DirectX.h"
 
-using namespace Rendering::View;
 using namespace Math;
+using namespace Device;
+using namespace Rendering::View;
+using namespace Rendering::Buffer;
 
 void ShaderResourceView::InitializeUsingTexture(
-	Device::DirectX& dx,
+	DirectX& dx,
 	ID3D11Resource* resource,
 	DXGI_FORMAT format, uint mipLevel,
 	D3D11_SRV_DIMENSION viewDimension)
@@ -36,7 +38,7 @@ void ShaderResourceView::InitializeUsingTexture(
 	_srv = dx.CreateShaderResourceView(resource, srdesc);
 }
 
-void ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, DXSharedResource<ID3D11Buffer>& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
+void ShaderResourceView::InitializeUsingBuffer(DirectX& dx, DXSharedResource<ID3D11Buffer>& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	memset(&srvDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -49,12 +51,12 @@ void ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, DXSharedReso
 	_srv = dx.CreateShaderResourceView(buffer.GetRaw(), srvDesc);
 }
 
-void Rendering::View::ShaderResourceView::InitializeUsingBuffer(Device::DirectX& dx, const Buffer::BaseBuffer & buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
+void ShaderResourceView::InitializeUsingBuffer(DirectX& dx, const BaseBuffer& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer)
 {
-	InitializeUsingBuffer(dx, buffer, num, format, isRawBuffer);
+	InitializeUsingBuffer(dx, buffer.GetBuffer(), num, format, isRawBuffer);
 }
 
-inline void ShaderResourceView::Destroy()
+void ShaderResourceView::Destroy()
 {
 	_srv.Destroy();
 }

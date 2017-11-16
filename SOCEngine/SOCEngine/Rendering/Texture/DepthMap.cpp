@@ -25,7 +25,7 @@ void DepthMap::Initialize(Device::DirectX& dx,
 	_depthStencilView = dx.CreateDepthStencilView(_tex2D.GetTexture().GetRaw(), desc);
 }
 
-inline void DepthMap::Destroy()
+void DepthMap::Destroy()
 {
 	_depthStencilView.Destroy();
 	_tex2D.Destroy();
