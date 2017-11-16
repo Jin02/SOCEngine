@@ -39,7 +39,7 @@ namespace Device
 	class DirectX final
 	{
 	public:
-		DirectX();
+		DirectX(const Rect<float>& backBufferRect);
 		~DirectX() = default;
 
 		DISALLOW_ASSIGN(DirectX);
@@ -51,7 +51,8 @@ namespace Device
 		const Rect<float>	FetchViewportRect();
 
 		void SetViewport(const Rect<float>& rect);
-			 
+		void RestoreViewportToBackBuffer();
+
 		void SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, ID3D11DepthStencilView* dsv = nullptr);
 		void SetRenderTargets(const uint numRTs, Rendering::Texture::RenderTexture* const*, Rendering::Texture::DepthMap&);
 		void SetRenderTarget(Rendering::Texture::RenderTexture& target, ID3D11DepthStencilView* dsv = nullptr);
@@ -75,10 +76,12 @@ namespace Device
 		GET_ACCESSOR(BackBufferRT,			auto&,							_backBufferRenderTexture);
 			
 		GET_CONST_ACCESSOR(MSAADesc,		const DXGI_SAMPLE_DESC&,		_msaaDesc);
-		GET_CONST_ACCESSOR(BackBufferSize,	const Size<float>&,				_backBufferSize);
 
 		GET_CONST_ACCESSOR(FeatureLevel,	D3D_FEATURE_LEVEL,				_featureLevel);
 		GET_CONST_ACCESSOR(DriverType,		D3D_DRIVER_TYPE,				_driverType);
+
+		SET_ACCESSOR(BackBufferRect,		const Rect<float>&,				_backBufferRect);
+		GET_CONST_ACCESSOR(BackBufferRect,	const auto&,					_backBufferRect);
 
 		const Rendering::Shader::ShaderMacro GetMSAAShaderMacro() const;
 		const auto& GetSamplerState(Rendering::RenderState::SamplerState state) const { return _samplerStates[static_cast<uint>(state)]; }
@@ -89,7 +92,7 @@ namespace Device
 		DXSharedResource<ID3D11RenderTargetView>	CreateRenderTargetView(ID3D11Resource* const rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
 		DXSharedResource<ID3D11DepthStencilView>	CreateDepthStencilView(ID3D11Resource* const rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
 
-		DXSharedResource<ID3D11Buffer>				CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data);
+		DXSharedResource<ID3D11Buffer>				CreateBuffer(const D3D11_BUFFER_DESC& desc, const D3D11_SUBRESOURCE_DATA* data);
 
 		DXSharedResource<ID3D11GeometryShader>		CreateGeometryShader(Rendering::Shader::BaseShader& baseShader);
 		DXSharedResource<ID3D11PixelShader>			CreatePixelShader(Rendering::Shader::BaseShader& baseShader);
@@ -124,6 +127,6 @@ namespace Device
 		D3D_FEATURE_LEVEL							_featureLevel;
 		D3D_DRIVER_TYPE								_driverType;
 
-		Size<float>									_backBufferSize;
+		Rect<float>									_backBufferRect;
 	};
 }

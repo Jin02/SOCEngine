@@ -16,7 +16,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::View;
 using namespace Rendering::RenderState;
 
-DirectX::DirectX() : _backBufferSize(0, 0)
+DirectX::DirectX(const Rect<float>& backBufferRect) : _backBufferRect(backBufferRect)
 {
 	memset(&_msaaDesc, 0, sizeof(DXGI_SAMPLE_DESC));
 }
@@ -31,7 +31,7 @@ void DirectX::CreateRenderTargetView()
 	assert(SUCCEEDED(_device->CreateRenderTargetView(backBuffer, nullptr, &rtv)));
 //	backBuffer->Release();
 
-	_backBufferRenderTexture = RenderTexture(DXSharedResource<ID3D11RenderTargetView>(rtv), DXSharedResource<ID3D11Texture2D>(backBuffer), _backBufferSize.Cast<uint>());
+	_backBufferRenderTexture = RenderTexture(DXSharedResource<ID3D11RenderTargetView>(rtv), DXSharedResource<ID3D11Texture2D>(backBuffer), _backBufferRect.size.Cast<uint>());
 }
 
 void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA)
@@ -105,6 +105,11 @@ void DirectX::SetViewport(const Rect<float>& rect)
 {
 	D3D11_VIEWPORT vp{rect.x, rect.y, rect.size.w, rect.size.h, 0.0f, 1.0f};
 	_immediateContext->RSSetViewports(1, &vp);
+}
+
+void DirectX::RestoreViewportToBackBuffer()
+{
+	SetViewport(_backBufferRect);
 }
 
 void DirectX::ReSetRenderTargets(const uint size)
@@ -233,7 +238,7 @@ void DirectX::CreateBlendStates()
 	_blendStates[static_cast<uint>(BlendState::Alpha)] = DXUniqueResource<ID3D11BlendState>(blendState);
 }
 
-DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResourceView(ID3D11Resource* const rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
+DXSharedResource<ID3D11ShaderResourceView> DirectX::CreateShaderResourceView(ID3D11Resource* const rawResource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateShaderResourceView(rawResource, &desc, &srv));
@@ -241,7 +246,7 @@ DXSharedResource<ID3D11ShaderResourceView> Device::DirectX::CreateShaderResource
 	return DXSharedResource<ID3D11ShaderResourceView>(srv);
 }
 
-DXSharedResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAccessView(ID3D11Resource* const rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc)
+DXSharedResource<ID3D11UnorderedAccessView> DirectX::CreateUnorderedAccessView(ID3D11Resource* const rawResource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc)
 {
 	ID3D11UnorderedAccessView* uav = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateUnorderedAccessView(rawResource, &desc, &uav));
@@ -249,7 +254,7 @@ DXSharedResource<ID3D11UnorderedAccessView> Device::DirectX::CreateUnorderedAcce
 	return DXSharedResource<ID3D11UnorderedAccessView>(uav);
 }
 
-DXSharedResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView(ID3D11Resource* const rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc)
+DXSharedResource<ID3D11RenderTargetView> DirectX::CreateRenderTargetView(ID3D11Resource* const rawResource, const D3D11_RENDER_TARGET_VIEW_DESC& desc)
 {
 	ID3D11RenderTargetView* rtv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateRenderTargetView(rawResource, &desc, &rtv));
@@ -257,7 +262,7 @@ DXSharedResource<ID3D11RenderTargetView> Device::DirectX::CreateRenderTargetView
 	return DXSharedResource<ID3D11RenderTargetView>(rtv);
 }
 
-DXSharedResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView(ID3D11Resource* const rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc)
+DXSharedResource<ID3D11DepthStencilView> DirectX::CreateDepthStencilView(ID3D11Resource* const rawResource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc)
 {
 	ID3D11DepthStencilView* dsv = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateDepthStencilView(rawResource, &desc, &dsv));
@@ -265,15 +270,15 @@ DXSharedResource<ID3D11DepthStencilView> Device::DirectX::CreateDepthStencilView
 	return DXSharedResource<ID3D11DepthStencilView>(dsv);
 }
 
-DXSharedResource<ID3D11Buffer> Device::DirectX::CreateBuffer(const D3D11_BUFFER_DESC& desc, const void* data)
+DXSharedResource<ID3D11Buffer> DirectX::CreateBuffer(const D3D11_BUFFER_DESC& desc, const D3D11_SUBRESOURCE_DATA* data)
 {
 	ID3D11Buffer* buffer = nullptr;
-	ASSERT_SUCCEEDED(_device->CreateBuffer(&desc, nullptr, &buffer));
+	ASSERT_SUCCEEDED(_device->CreateBuffer(&desc, data, &buffer));
 
 	return DXSharedResource<ID3D11Buffer>(buffer);
 }
 
-DXSharedResource<ID3D11GeometryShader> Device::DirectX::CreateGeometryShader(BaseShader& baseShader)
+DXSharedResource<ID3D11GeometryShader> DirectX::CreateGeometryShader(BaseShader& baseShader)
 {
 	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
 	assert(blob != nullptr);
@@ -284,7 +289,7 @@ DXSharedResource<ID3D11GeometryShader> Device::DirectX::CreateGeometryShader(Bas
 	return DXSharedResource<ID3D11GeometryShader>(shader);
 }
 
-DXSharedResource<ID3D11PixelShader> Device::DirectX::CreatePixelShader(BaseShader& baseShader)
+DXSharedResource<ID3D11PixelShader> DirectX::CreatePixelShader(BaseShader& baseShader)
 {
 	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
 	assert(blob != nullptr);
@@ -295,7 +300,7 @@ DXSharedResource<ID3D11PixelShader> Device::DirectX::CreatePixelShader(BaseShade
 	return DXSharedResource<ID3D11PixelShader>(shader);
 }
 
-DXSharedResource<ID3D11VertexShader> Device::DirectX::CreateVertexShader(BaseShader& baseShader)
+DXSharedResource<ID3D11VertexShader> DirectX::CreateVertexShader(BaseShader& baseShader)
 {
 	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
 	assert(blob != nullptr);
@@ -306,7 +311,7 @@ DXSharedResource<ID3D11VertexShader> Device::DirectX::CreateVertexShader(BaseSha
 	return DXSharedResource<ID3D11VertexShader>(shader);
 }
 
-DXSharedResource<ID3D11ComputeShader> Device::DirectX::CreateComputeShader(BaseShader& baseShader)
+DXSharedResource<ID3D11ComputeShader> DirectX::CreateComputeShader(BaseShader& baseShader)
 {
 	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
 	assert(blob != nullptr);
@@ -317,10 +322,10 @@ DXSharedResource<ID3D11ComputeShader> Device::DirectX::CreateComputeShader(BaseS
 	return DXSharedResource<ID3D11ComputeShader>(shader);
 }
 
-DXSharedResource<ID3D11InputLayout> Device::DirectX::CreateInputLayout(BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
+DXSharedResource<ID3D11InputLayout> DirectX::CreateInputLayout(BaseShader& baseShader, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
 	ID3DBlob* blob = baseShader.GetBlob().GetRaw();
-	assert( (blob != nullptr) && (vertexDeclations.empty() == false) );
+	assert(blob != nullptr);
 
 	ID3D11InputLayout* layout = nullptr;
 	ASSERT_SUCCEEDED(
@@ -331,7 +336,7 @@ DXSharedResource<ID3D11InputLayout> Device::DirectX::CreateInputLayout(BaseShade
 	return DXSharedResource<ID3D11InputLayout>(layout);
 }
 
-DXSharedResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc)
+DXSharedResource<ID3D11Texture2D> DirectX::CreateTexture2D(const D3D11_TEXTURE2D_DESC& desc)
 {
 	ID3D11Texture2D* texture = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateTexture2D(&desc, nullptr, &texture));
@@ -339,7 +344,7 @@ DXSharedResource<ID3D11Texture2D> Device::DirectX::CreateTexture2D(const D3D11_T
 	return DXSharedResource<ID3D11Texture2D>(texture);
 }
 
-DXSharedResource<ID3D11Texture3D> Device::DirectX::CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc)
+DXSharedResource<ID3D11Texture3D> DirectX::CreateTexture3D(const D3D11_TEXTURE3D_DESC& desc)
 {
 	ID3D11Texture3D* texture = nullptr;
 	ASSERT_SUCCEEDED(_device->CreateTexture3D(&desc, nullptr, &texture));
