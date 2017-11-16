@@ -5,12 +5,13 @@
 
 using namespace Core;
 
-Object::Object(ObjectID id) : _id(id)
-{	
+void Object::Initialize(ObjectID id)
+{
+	_id = id;
 	CoreConnector::SharedInstance()->GetTransformPool()->Add(id);
 }
 
-Object::~Object()
+void Object::Destroy()
 {
 	CoreConnector::SharedInstance()->GetTransformPool()->Delete(_id.Literal());
 }
@@ -48,9 +49,10 @@ uint Object::GetChildCount() const
 	return CoreConnector::SharedInstance()->GetTransformPool()->Find(_id.Literal())->GetChildCount();
 }
 
-//Object Object::Clone() const
-//{
-//	Object cloneObj = _objectMgr->Add(_name + "_Clone", _compoSystem, CoreConnector::SharedInstance()->GetTransformPool());
-//
-//	
-//}
+Transform& Object::FetchTransform()
+{
+	Transform* transform = CoreConnector::SharedInstance()->GetTransformPool()->Find(_id.Literal());
+	assert(transform);
+
+	return *transform;
+}

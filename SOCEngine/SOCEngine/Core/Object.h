@@ -16,8 +16,10 @@ namespace Core
 	class Object final
 	{
 	public:
-		explicit Object(ObjectID id);
-		~Object();
+		Object(const std::string& name) : _name(name) {}
+		static Object Create(ObjectID id, const std::string& name) { Object obj(name); obj.Initialize(id); return obj; }
+		void Initialize(ObjectID id);
+		void Destroy();
 
 		void AddChild(Object& child);
 		bool HasChild(const Object& child) const;
@@ -25,6 +27,8 @@ namespace Core
 		auto FindChildUsingIndex(uint index);
 
 		uint GetChildCount() const;
+
+		Transform& FetchTransform();
 
 		/* Component */
 		template <class Component>
@@ -40,7 +44,7 @@ namespace Core
 		template <class Component>
 		bool HasComponent() const
 		{
-			CoreConnector::SharedInstance()->GetComponentSystem()->Has<Component>(_id);
+			return CoreConnector::SharedInstance()->GetComponentSystem()->Has<Component>(_id);
 		}
 		template <class Component>
 		Component& GetComponent()
@@ -58,7 +62,7 @@ namespace Core
 		SET_ACCESSOR(Use,				bool,	_use);
 
 	private:
-		std::string			_name = "Object";
+		std::string			_name = "";
 		ObjectID			_id;
 
 		bool				_use = true;
