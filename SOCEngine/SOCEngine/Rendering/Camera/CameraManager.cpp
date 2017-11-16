@@ -1,9 +1,10 @@
 #include "CameraManager.h"
 #include "Object.h"
 
+using namespace Math;
+using namespace Core;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
-using namespace Math;
 
 CameraManager::CameraManager()
 	: _mainCamera(Core::ObjectID())
@@ -11,12 +12,12 @@ CameraManager::CameraManager()
 
 }
 
-void CameraManager::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect)
+bool CameraManager::CheckCanUseMainCam(const ObjectIDManager& objIDMgr) const
 {
-	_mainCamera.Initialize(dx, shaderMgr, mainCamRenderRect);
+	return objIDMgr.Has(_mainCamera.GetObjectID());
 }
 
-void Rendering::Manager::CameraManager::SetMainCamera(Core::ObjectID objectID)
+void CameraManager::SetMainCamera(Core::ObjectID objectID)
 {
 	_mainCamera.SetObjectID(objectID);
 }

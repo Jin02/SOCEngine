@@ -21,10 +21,9 @@ namespace Rendering
 			CameraManager();
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& mainCamRenderRect);
-
+			bool CheckCanUseMainCam(const Core::ObjectIDManager& objIDMgr) const;
 			void SetMainCamera(Core::ObjectID objectID);
-			GET_ALL_ACCESSOR(MainCamera, auto&, _mainCamera);
+			GET_ACCESSOR_REF(MainCamera, _mainCamera);
 
 			bool InFrustumAllCamera(const Math::Vector3& worldPos, float radius = 0.0f) const;
 
