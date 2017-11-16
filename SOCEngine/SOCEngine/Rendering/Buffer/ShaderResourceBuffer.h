@@ -13,7 +13,7 @@ namespace Rendering
 			ShaderResourceBuffer() = default;
 			ShaderResourceBuffer(const BaseBuffer&, const View::ShaderResourceView&);
 
-			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format, const void* sysMem, bool useMapWriteNoOverWrite, uint optionalBindFlag, D3D11_USAGE usage);
+			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format, const void* sysMem, uint optionalBindFlag, D3D11_USAGE usage);
 
 			inline void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint size)
 			{
@@ -24,7 +24,7 @@ namespace Rendering
 				_baseBuffer.UpdateResourceUsingMapUnMap(dx, data, startOffset, size, mapType);
 			}
 
-			GET_ALL_ACCESSOR(ShaderResourceView,	auto&,			_srv);
+			GET_ACCESSOR_REF(ShaderResourceView,					_srv);
 			GET_CONST_ACCESSOR(BaseBuffer,			const auto&,	_baseBuffer);
 
 		private:
