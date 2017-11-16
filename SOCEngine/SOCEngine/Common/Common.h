@@ -7,7 +7,7 @@
 
 #define GET_CONST_ACCESSOR(name, type, variable)	inline type Get##name() const		{ return variable; }
 #define GET_ACCESSOR(name, type, variable)			inline type Get##name() 			{ return variable; }
-#define GET_ALL_ACCESSOR(name, type, variable)		inline const type Get##name() const { return variable; } GET_ACCESSOR(name, type, variable);
+#define GET_ACCESSOR_REF(name, variable)			GET_CONST_ACCESSOR(name, const auto&, variable) GET_ACCESSOR(name, auto&, variable);
 
 #define SAFE_DELETE(x)				{ if(x){ delete x; x = nullptr; } }
 #define SAFE_DELETE_ARRAY(x)		{ if(x){ delete[] x; x = nullptr; } }
