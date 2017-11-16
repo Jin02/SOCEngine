@@ -6,14 +6,13 @@
 #include <chrono>
 #include "ComponentSystem.h"
 #include "ObjectManager.h"
-#include "MaterialManager.h"
-#include "BufferManager.hpp"
-#include "ShaderManager.h"
-#include "Texture2DManager.h"
-#include "PostProcessPipeline.h"
 #include "RootObjectIDs.hpp"
 
 #include "Singleton.h"
+#include "Rect.h"
+
+#include "RenderingSystem.h"
+#include "MeshImporter.h"
 
 namespace Device
 {
@@ -26,7 +25,6 @@ namespace Core
 	{
 	public:
 		Engine(Device::DirectX& dx);
-		Engine(Device::DirectX& dx, IScene* scene);
 
 		DISALLOW_ASSIGN(Engine);
 		DISALLOW_COPY_CONSTRUCTOR(Engine);
@@ -36,18 +34,28 @@ namespace Core
 		void ChangeScene(IScene* scene);
 
 		// System
-		void Initialize();
+		void Initialize(IScene* scene);
 		void Render();
 		void Destroy();
 
-		GET_ACCESSOR(BufferManager,		Rendering::Manager::BufferManager&, _bufferManager);
-		GET_ACCESSOR(DirectX,			Device::DirectX&,					_dx);
-		GET_ACCESSOR(ComponentSystem,	Core::ComponentSystem&,				_componentSystem);
-		GET_ACCESSOR(TransformPool,		Core::TransformPool&,				_transformPool);
-		GET_ACCESSOR(RootObjectIDs,		Core::RootObjectIDs&,				_rootObjectIDs);
+		// Importer
+		Object* LoadMesh(const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
+
+		// Root
+		void AddRootObject(const Core::Object& object);
+
+		GET_ACCESSOR_REF(DirectX,			_dx);
+		GET_ACCESSOR_REF(ComponentSystem,	_componentSystem);
+		GET_ACCESSOR_REF(TransformPool,		_transformPool);
+		GET_ACCESSOR_REF(RootObjectIDs,		_rootObjectIDs);
+		GET_ACCESSOR_REF(RenderingSystem,	_rendering);
+		GET_ACCESSOR_REF(ObjectManager,		_objectManager);
+		GET_ACCESSOR_REF(Importer,			_importer);
+
+		GET_CONST_ACCESSOR(Exit,	bool,	_exit);
 
 	private:
-		static NullScene							_nullScene;
+		NullScene									_nullScene;
 		IScene*										_scene;
 
 		clock_t										_prevTime	= 0;
@@ -55,17 +63,15 @@ namespace Core
 
 		Core::RootObjectIDs							_rootObjectIDs;
 
-		Rendering::Manager::MaterialManager			_materialManager;
-		Rendering::Manager::BufferManager			_bufferManager;
-		Rendering::Manager::ShaderManager			_shaderManager;
-		Rendering::Manager::Texture2DManager		_tex2dManager;
 		Core::ObjectManager							_objectManager;
 		Device::DirectX&							_dx;
 		Core::ComponentSystem						_componentSystem;
 		Core::TransformPool							_transformPool;
-		Rendering::Manager::PostProcessPipeline		_postProcessing;
+		Rendering::RenderingSystem					_rendering;
+		Importer::MeshImporter						_importer;
 
 	private:
 		std::vector<Core::Transform*>				_dirtyTransforms;
+		bool										_exit = false;
 	};
 }

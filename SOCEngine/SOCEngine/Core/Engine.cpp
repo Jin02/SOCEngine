@@ -5,18 +5,16 @@
 #include "CoreConnector.h"
 
 using namespace Core;
-using namespace Rendering::Manager;
+using namespace Importer;
 using namespace Rendering;
+using namespace Rendering::Camera;
+using namespace Rendering::Manager;
 
 Engine::Engine(Device::DirectX& dx)
 	: _dx(dx), _scene(&_nullScene)
 {
+	_prevTime = std::numeric_limits<clock_t>::max();
 }
-
-Engine::Engine(Device::DirectX& dx, IScene* scene)
-	: _dx(dx), _scene(scene)
-{
-} 
 
 void Engine::RunScene()
 {
@@ -70,11 +68,7 @@ void Engine::RunScene()
 
 	_dirtyTransforms.clear();
 
-	_materialManager.UpdateConstBuffer(_dx);
-
 	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
-	_postProcessing.SetElapsedTime(dt);
-	_postProcessing.UpdateCB(_dx);
 }
 
 void Engine::ChangeScene(IScene* scene)
@@ -82,15 +76,49 @@ void Engine::ChangeScene(IScene* scene)
 	_scene = scene ? scene : &_nullScene;
 }
 
-void Engine::Initialize()
+void Engine::Initialize(IScene* scene)
 {
 	CoreConnector::SharedInstance()->Connect(&_transformPool, &_objectManager, &_componentSystem);
+
+	const auto& renderSetting = scene->RegistRenderSetting(*this);
+	_rendering.InitializeRenderer(*this, scene->RegistRenderSetting(*this));
+
+	_componentSystem.Initialize(_dx);
+	_rendering.Initialize(*this);
+
+	scene->OnInitialize(*this);
+
+	ChangeScene(scene);
 }
 
 void Engine::Destroy()
 {
+	_scene->OnDestroy(*this);
+	_exit = true;
 }
 
 void Engine::Render()
 {
+}
+
+Object* Engine::LoadMesh(const std::string& fileDir, bool useDynamicVB, bool useDynamicIB)
+{
+	ObjectID id = _importer.Load(
+		MeshImporter::ManagerParam{
+		_rendering.GetBufferManager(),
+		_rendering.GetMaterialManager(),
+		_objectManager,
+		_transformPool,
+		_rendering.GetTexture2DManager(),
+		_componentSystem,
+		_dx
+	},
+	fileDir, useDynamicVB, useDynamicIB);
+
+	return (id.Literal() != ObjectID::Undefined()) ? _objectManager.Find(id) : nullptr;
+}
+
+void Engine::AddRootObject(const Object& object)
+{
+	_rootObjectIDs.Add(object.GetObjectID());
 }
