@@ -15,6 +15,7 @@ namespace Core
 	public:
 		void Add(const Key& key, typename Map::mapped_type markValue)
 		{
+			assert(Has(key) == false);
 			_map.insert(std::make_pair(key, markValue));
 		}
 
