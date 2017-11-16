@@ -9,12 +9,12 @@ namespace Core
 	class UniqueIDManager 
 	{
 	public:
-		constexpr static const uint BitSize = sizeof(uint);
+		constexpr static const uint BitSize = sizeof(uint) * 8;
 
 		UniqueIDManager() = default;
 
 	public:
-		const uint Acquire()
+		uint Acquire()
 		{
 			uint bitFieldIdx = 0;
 			uint allSet = -1;
@@ -38,7 +38,7 @@ namespace Core
 			return bitFieldIdx * BitSize;
 		}
 
-		bool Has(uint id)
+		bool Has(uint id) const
 		{
 			uint pos = id / BitSize;
 			return (pos >= _bitFields.size()) ? false : (_bitFields[pos] & (1 << (id % BitSize))) != 0;
@@ -75,7 +75,7 @@ namespace Core
 			return IDType(literalID);
 		}
 
-		bool Has(IDType id)
+		bool Has(IDType id) const
 		{
 			return UniqueIDManager::Has(id.Literal());
 		}
