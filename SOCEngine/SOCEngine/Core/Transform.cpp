@@ -102,8 +102,8 @@ void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
 
 void Transform::AddChild(Transform& child)
 {
-	bool hasParentOfChild = child._parentID.Literal() != Core::ObjectID::Undefined();
-	assert(hasParentOfChild == false);
+	bool hasParent = child._parentID.Literal() != Core::ObjectID::Undefined();
+	assert(hasParent == false);
 	assert(HasChild(child.GetObjectID()) == false);
 
 	child._parentID = GetObjectID();
