@@ -3,7 +3,7 @@
 using namespace Rendering::Light;
 using namespace Rendering::Light::Buffer;
 
-inline void Rendering::Light::Buffer::SpotLightBuffer::Initialize(Device::DirectX & dx)
+void Rendering::Light::Buffer::SpotLightBuffer::Initialize(Device::DirectX & dx)
 {
 	Parent::Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
