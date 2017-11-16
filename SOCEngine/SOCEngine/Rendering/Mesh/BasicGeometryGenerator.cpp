@@ -504,7 +504,7 @@ void BasicGeometryGenerator::CreateBox(Object& targetObj, Core::Engine& engine, 
 {
 	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(), args);
+		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
 	};
 
 	CreateBox(CreateObject, size, defautVertexInputTypeFlag);
@@ -514,7 +514,7 @@ void BasicGeometryGenerator::CreateSphere(Object& targetObj, Core::Engine& engin
 {
 	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(), args);
+		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
 	};
 
 	CreateSphere(CreateObject, radius, sliceCount, stackCount, defautVertexInputTypeFlag);
@@ -524,7 +524,7 @@ void BasicGeometryGenerator::CreateCylinder(Object& targetObj, Core::Engine& eng
 {
 	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(), args);
+		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
 	};
 
 	CreateCylinder(CreateObject, botRadius, topRadius, height, sliceCount, stackCount, defautVertexInputTypeFlag);
@@ -534,7 +534,7 @@ void BasicGeometryGenerator::CreatePlane(Object& targetObj, Core::Engine& engine
 {
 	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetBufferManager(), args);
+		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
 	};
 
 	CreatePlane(CreateObject, width, height, widthVertexCount, heightVertexCount, defautVertexInputTypeFlag);
