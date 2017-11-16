@@ -17,10 +17,12 @@ namespace Rendering
 				uint x = 0;
 				uint y = 0;
 				uint z = 0;
+				ThreadGroup() = default;
 				ThreadGroup(uint _x, uint _y, uint _z) : x(_x), y(_y), z(_z) {}
 			};
 
 		public:
+			ComputeShader() = default;
 			ComputeShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 		public:

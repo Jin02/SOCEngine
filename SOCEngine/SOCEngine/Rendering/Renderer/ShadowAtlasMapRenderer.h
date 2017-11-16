@@ -17,6 +17,7 @@ namespace Rendering
 		class ShadowAtlasMapRenderer final
 		{
 		public:
+			ShadowAtlasMapRenderer() = default;
 			void Initialize(Device::DirectX& dx, uint dlMapResolution, uint slMapResolution, uint plMapResolution);
 			void Destroy();
 

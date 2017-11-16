@@ -21,6 +21,7 @@ namespace Rendering
 		class VXGI final
 		{
 		public:
+			VXGI() = default;
 			struct Param
 			{
 				const MainRenderingSystemParam&&		main;

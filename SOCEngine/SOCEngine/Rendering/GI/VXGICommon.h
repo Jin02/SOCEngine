@@ -28,6 +28,7 @@ namespace Rendering
 				};
 			};
 			
+			VXGIStaticInfo() = default;
 			VXGIStaticInfo(uint _dimension, float voxelizeSize)
 				:	dimension(_dimension), voxelSize(voxelizeSize / float(dimension))
 			{
