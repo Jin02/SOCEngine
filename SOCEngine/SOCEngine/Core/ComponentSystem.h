@@ -36,6 +36,8 @@ namespace Core
 			const Core::ObjectManager& objectManager,
 			const Core::ObjectID::IndexHashMap& lightShaftIndexer);
 
+		void Destroy();
+
 	public:
 #pragma region MultiTypeComponents
 		template <class Component>
@@ -184,11 +186,16 @@ namespace Core
 
 #pragma endregion MainCamera
 
-	private:
+	public:
 		template <class ManagerType> auto& GetManager_Direct()
 		{
 			return std::get<ManagerType>(_componentMgrs);
 		}
+		template <class ManagerType> const auto& GetManager_Direct() const
+		{
+			return std::get<ManagerType>(_componentMgrs);
+		}
+
 		template <class Component> auto& GetManager()
 		{
 			return std::get<Component::ManagerType>(_componentMgrs);

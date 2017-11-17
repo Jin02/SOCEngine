@@ -31,9 +31,9 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 
 	// Check Dirty
 	{
-//		lightMgr.CheckDirtyLights(transformPool);
-//		shadowMgr.CheckDirtyShadows(lightMgr, transformPool);
-//		meshMgr.CheckDirty(transformPool);
+		lightMgr.CheckDirtyLights(transformPool);
+		shadowMgr.CheckDirtyWithCullShadows(camMgr, objectManager, lightMgr, transformPool);
+		meshMgr.CheckDirty(transformPool, objectManager, camMgr);
 	}
 
 	bool isDirtyMesh = meshMgr.GetHasDirtyMeshes();
@@ -77,4 +77,9 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		shadowMgr.ClearDirty();
 		meshMgr.ClearDirty();
 	}
+}
+
+void ComponentSystem::Destroy()
+{
+
 }
