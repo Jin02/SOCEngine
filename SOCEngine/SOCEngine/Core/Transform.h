@@ -60,9 +60,9 @@ namespace Core
 
 		bool		HasChild(ObjectID id) const;
 		void		DeleteChild(ObjectID id);
+		void		UpdateWorldMatrix(TransformPool& pool);
 
-		void Update(TransformPool& pool);
-		void ClearDirty();
+		void		ClearDirty();
 
 	private:
 		const Math::Vector3 GetWorldForward(const Math::Vector3& scale)	const;
@@ -71,10 +71,7 @@ namespace Core
 
 		const Math::Matrix& ComputeLocalMatrix();
 
-		void _ComputeWorldMatrix(TransformPool& pool);
-
-		void ComputeWorldMatrix(TransformPool& pool);
-		void UpdateDirty(TransformPool& pool);
+		void _ComputeWorldMatrixWithDirty(TransformPool& pool, bool parentDirty);
 
 		inline void SetDirty()		{ _dirty = true; }
 

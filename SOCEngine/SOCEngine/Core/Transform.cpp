@@ -4,7 +4,7 @@
 using namespace Core;
 using namespace Math;
 
-const Matrix & Transform::ComputeLocalMatrix()
+const Matrix& Transform::ComputeLocalMatrix()
 {
 	_localMat._11 = _scale.x * _right.x;
 	_localMat._12 = _scale.y * _up.x;
@@ -179,45 +179,33 @@ void Transform::DeleteChild(ObjectID id)
 	_childIDs.erase(_childIDs.begin() + pos);
 }
 
-void Transform::Update(TransformPool& pool)
-{
-	// this func must be run in root
-	assert(_parentID.Literal() == ObjectID::Undefined());
-
-	UpdateDirty(pool);
-	ComputeWorldMatrix(pool);
-}
-
 void Transform::ClearDirty()
 {
 	_dirty = false;
 }
 
-void Transform::UpdateDirty(TransformPool& pool)
+void Transform::_ComputeWorldMatrixWithDirty(TransformPool& pool, bool parentDirty)
 {
-	for (uint id = _objectID.Literal(); id != ObjectID::Undefined(); id = _parentID.Literal())
-		pool.Find(id)->_dirty |= _dirty;
-}
-
-void Transform::_ComputeWorldMatrix(TransformPool& pool)
-{
+	_dirty |= parentDirty;
 	for (auto childID : _childIDs)
 	{
 		auto child = pool.Find(childID.Literal());
 		assert(child);
 
-		child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
-		child->_ComputeWorldMatrix(pool);
+		if(child->GetDirty() | _dirty)
+			child->_worldMat = child->ComputeLocalMatrix() * _worldMat;
+
+		child->_ComputeWorldMatrixWithDirty(pool, _dirty);
 	}
 }
 
-void Transform::ComputeWorldMatrix(TransformPool& pool)
-{
+void Transform::UpdateWorldMatrix(TransformPool& pool)
+{	
 	// this func must be run in root
 	assert(_parentID.Literal() == ObjectID::Undefined());
 
-	if(_dirty == false)	return;
-	_worldMat = ComputeLocalMatrix();
+	if (_dirty)
+		_worldMat = ComputeLocalMatrix();
 
-	_ComputeWorldMatrix(pool);
+	_ComputeWorldMatrixWithDirty(pool, false);
 }
