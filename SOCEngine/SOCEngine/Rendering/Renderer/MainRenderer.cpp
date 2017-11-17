@@ -308,7 +308,8 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 4 Pass Sky
 	{
-		_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, param.skyBoxMaterial);
+		if(param.skyBoxMaterial)
+			_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
 	}
 
 	// 5 Pass Render Transparent Mesh

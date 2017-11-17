@@ -42,7 +42,7 @@ namespace Rendering
 				const Renderer::ShadowAtlasMapRenderer&	shadowRenderer;
 				const CullingParam&&					cullingParam;
 
-				const Material::SkyBoxMaterial&			skyBoxMaterial;
+				const Material::SkyBoxMaterial*			skyBoxMaterial;
 			};
 			void Render(Device::DirectX& dx, const Param&& param);
 
