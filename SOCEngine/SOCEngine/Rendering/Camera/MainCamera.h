@@ -11,6 +11,8 @@
 #include "ObjectID.hpp"
 #include "MeshRenderQueue.h"
 
+#include "MaterialID.hpp"
+
 #undef near
 #undef far
 
@@ -77,6 +79,9 @@ namespace Rendering
 			GET_CONST_ACCESSOR(OpaqueMeshRenderQ,		const auto&,	_opaqueMeshRenderQ);
 			GET_CONST_ACCESSOR(AlphaTestMeshRenderQ,	const auto&,	_alphaTestMeshRenderQ);
 
+			GET_CONST_ACCESSOR(SkyBoxMaterialID,		MaterialID,		_skyBoxMaterialID);
+			SET_ACCESSOR(SkyBoxMaterialID,				MaterialID,		_skyBoxMaterialID);
+
 			void ClassifyMesh(Geometry::MeshPoolRefs pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
 
 		private:
@@ -97,6 +102,7 @@ namespace Rendering
 			RenderQueue::AlphaTestMeshRenderQueue		_alphaTestMeshRenderQ;
 
 			Core::ObjectID								_objID;
+			MaterialID									_skyBoxMaterialID;
 			bool										_dirty = true;
 		};
 	}
