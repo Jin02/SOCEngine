@@ -256,8 +256,7 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 
 	float bias			= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth			= shadowUV.z;
-	float resolution	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));		
-	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 6);
+	float2 stepUV		= ComputeStepUV(oneShadowMapSize, lightCapacityCount, shadowParam.softness, 6);
 	float shadow		= saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 
 	float3 result	= lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
