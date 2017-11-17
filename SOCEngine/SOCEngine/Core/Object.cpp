@@ -56,3 +56,42 @@ Transform& Object::FetchTransform()
 
 	return *transform;
 }
+
+void Object::HierarchyUse(bool parentUse)
+{
+	CoreConnector* connector	= CoreConnector::SharedInstance();
+	TransformPool* tfPool		= connector->GetTransformPool();
+	TransformPool* cantUseTFPool= connector->GetCantUseTransformPool();
+	ObjectManager* objPool		= connector->GetObjectManager();
+
+	Transform* thisTransform = tfPool->Find(_id.Literal());
+
+	uint childCount = thisTransform->GetChildCount();
+	for (uint i = 0; i < childCount; ++i)
+	{
+		ObjectID childID = thisTransform->GetChild(i);
+		Object* child = objPool->Find(childID);
+
+		child->_parentUse = parentUse;
+		uint childLiteralID = childID.Literal();
+
+		if (parentUse && cantUseTFPool->Has(childLiteralID))
+		{
+			tfPool->Add(childLiteralID, *cantUseTFPool->Find(childLiteralID));
+			cantUseTFPool->Delete(childLiteralID);
+		}
+		else if(parentUse == false && tfPool->Has(childLiteralID))
+		{
+			cantUseTFPool->Add(childLiteralID, *tfPool->Find(childLiteralID));
+			tfPool->Delete(childLiteralID);
+		}
+
+		child->HierarchyUse(_parentUse);
+	}
+}
+
+void Object::Use(bool use)
+{
+	_use = use;
+	HierarchyUse(_use);
+}

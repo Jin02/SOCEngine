@@ -27,8 +27,10 @@ namespace Core
 		auto FindChildUsingIndex(uint index);
 
 		uint GetChildCount() const;
-
 		Transform& FetchTransform();
+
+		void HierarchyUse(bool parentUse);
+		void Use(bool use);
 
 		/* Component */
 		template <class Component>
@@ -58,13 +60,13 @@ namespace Core
 		GET_CONST_ACCESSOR(Name,		auto&,	_name);
 		GET_CONST_ACCESSOR(ObjectID,	auto,	_id);
 
-		GET_CONST_ACCESSOR(Use,			bool,	_use);
-		SET_ACCESSOR(Use,				bool,	_use);
+		GET_CONST_ACCESSOR(Use,			bool,	_use & _parentUse);
 
 	private:
 		std::string			_name = "";
 		ObjectID			_id;
 
-		bool				_use = true;
+		bool				_parentUse	= true;
+		bool				_use		= true;
 	};
 }
