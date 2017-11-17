@@ -38,18 +38,21 @@ namespace Rendering
 		GET_ACCESSOR_REF(PostProcessPipeline,		_postProcessing);
 		GET_ACCESSOR_REF(MainRenderer,				_mainRenderer);
 		GET_ACCESSOR_REF(ShadowAtlasMapRenderer,	_shadowRenderer);
-		GET_ACCESSOR_REF(LightManager,				_lightManager);
-		GET_ACCESSOR_REF(ShadowManager,				_shadowManager);
+
+		Renderer::MeshRenderer::Param GetMeshRenderParam() const
+		{
+			return Renderer::MeshRenderer::Param(_bufferManager, _defaultShaders);
+		}
 
 	private:
 		Manager::MaterialManager			_materialManager;
+		Manager::PostProcessPipeline		_postProcessing;
+		Renderer::MainRenderer				_mainRenderer;
+		Renderer::ShadowAtlasMapRenderer	_shadowRenderer;
+
 		Manager::BufferManager				_bufferManager;
 		Manager::ShaderManager				_shaderManager;
 		Manager::Texture2DManager			_tex2dManager;
-		Manager::PostProcessPipeline		_postProcessing;
-		Manager::LightManager				_lightManager;
-		Manager::ShadowManager				_shadowManager;
-		Renderer::MainRenderer				_mainRenderer;
-		Renderer::ShadowAtlasMapRenderer	_shadowRenderer;
+		Manager::DefaultShaders				_defaultShaders;
 	};
 }
