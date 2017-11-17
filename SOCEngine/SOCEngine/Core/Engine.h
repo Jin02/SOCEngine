@@ -53,6 +53,15 @@ namespace Core
 		GET_ACCESSOR_REF(Importer,			_importer);
 
 		GET_CONST_ACCESSOR(Exit,	bool,	_exit);
+//		GET_CONST_ACCESSOR(CullingParam, CullingParam, CullingParam{});
+		Rendering::Renderer::CullingParam GetCullingParam() const
+		{
+			return Rendering::Renderer::CullingParam{
+				_componentSystem.GetManager_Direct<Rendering::Manager::MeshManager>(),
+				_objectManager,
+				_transformPool
+			};
+		}
 
 	private:
 		NullScene									_nullScene;
@@ -64,11 +73,15 @@ namespace Core
 		Core::RootObjectIDs							_rootObjectIDs;
 
 		Core::ObjectManager							_objectManager;
-		Device::DirectX&							_dx;
 		Core::ComponentSystem						_componentSystem;
+
 		Core::TransformPool							_transformPool;
+		Core::TransformPool							_dontUseTransformPool;
+
 		Rendering::RenderingSystem					_rendering;
+
 		Importer::MeshImporter						_importer;
+		Device::DirectX&							_dx;
 
 	private:
 		std::vector<Core::Transform*>				_dirtyTransforms;

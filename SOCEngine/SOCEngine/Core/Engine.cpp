@@ -33,25 +33,24 @@ void Engine::RunScene()
 		_lag -= MS_PER_UPDATE;
 	}
 
+	// Update Root Transform
+	{
+		for (ObjectID rootID : _rootObjectIDs.GetVector())
+		{
+			Transform* find = _transformPool.Find(rootID.Literal());	assert(find);
+			find->UpdateWorldMatrix(_transformPool);
+		}
+	}
+
 	// check dirty transform
 	{
 		uint size = _transformPool.GetSize();
 		for (uint i = 0; i < size; ++i)
 		{
 			auto& tf = _transformPool.Get(i);
-			tf.Update(_transformPool);
 
 			if (tf.GetDirty())
 				_dirtyTransforms.push_back(&tf);
-		}
-	}
-
-	// Update Root Transform
-	{
-		for (ObjectID rootID : _rootObjectIDs.GetVector())
-		{
-			Transform* find = _transformPool.Find(rootID.Literal());	assert(find);	
-			find->Update(_transformPool);
 		}
 	}
 
@@ -78,7 +77,7 @@ void Engine::ChangeScene(IScene* scene)
 
 void Engine::Initialize(IScene* scene)
 {
-	CoreConnector::SharedInstance()->Connect(&_transformPool, &_objectManager, &_componentSystem);
+	CoreConnector::SharedInstance()->Connect(&_transformPool, &_dontUseTransformPool, &_objectManager, &_componentSystem);
 
 	const auto& renderSetting = scene->RegistRenderSetting(*this);
 	_rendering.InitializeRenderer(*this, scene->RegistRenderSetting(*this));
