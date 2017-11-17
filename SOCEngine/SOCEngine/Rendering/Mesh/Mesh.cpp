@@ -52,12 +52,14 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 	_transformCB.Initialize(dx);
 }
 
-void Mesh::Initialize(const VertexBuffer::Semantics& semantics, BaseBuffer::Key vbKey, BaseBuffer::Key ibKey)
+void Mesh::Initialize(DirectX& dx, const VertexBuffer::Semantics& semantics, BaseBuffer::Key vbKey, BaseBuffer::Key ibKey)
 {
 	_vbKey = vbKey;
 	_ibKey = ibKey;
 
 	_bufferFlag = ComputeBufferFlag(semantics);
+
+	_transformCB.Initialize(dx);
 }
 
 uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& semantics, uint maxRecognizeBoneCount) const

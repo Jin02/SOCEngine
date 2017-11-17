@@ -54,7 +54,7 @@ namespace Importer
 		Mesh ParseMesh(const rapidjson::Value& meshNode, const NodeHashMap& nodeHashMap);
 
 		std::set<std::string> MakeMaterials(ManagerParam manager, const std::vector<Material>& materials, const std::string& folderDir, const std::string& meshFileName);
-		void MakeHierarchy(Core::ObjectID parentID, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
+		void MakeHierarchy(Device::DirectX& dx, Core::ObjectID parentID, const Node& node, const std::string& meshFileName, const ManagerParam& managerParam, const IntersectionHashMap& intersectionHashMap);
 		Core::ObjectID BuildMesh(ManagerParam managerParam,
 								std::vector<Mesh>& meshes, const std::vector<Material>& materials, const std::vector<Node>& nodes,
 								const std::string& folderDir, const std::string& meshFileName,

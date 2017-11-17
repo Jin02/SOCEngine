@@ -786,7 +786,7 @@ Core::ObjectID MeshImporter::BuildMesh(
 	Object root = managerParam.objManager.Add(meshFileName);
 		
 	for(auto& node : nodes)
-		MakeHierarchy(root.GetObjectID(), node, meshFileName, managerParam, intersectionHashMap);
+		MakeHierarchy(managerParam.dx, root.GetObjectID(), node, meshFileName, managerParam, intersectionHashMap);
 
 	_originObjects.Add(registKey, { true, root.GetObjectID() });
 	return root.GetObjectID();
@@ -875,7 +875,8 @@ std::set<std::string> MeshImporter::MakeMaterials(	ManagerParam manager,
 	return outNormalMapMaterialKeys;
 }
 
-void MeshImporter::MakeHierarchy(	Core::ObjectID parentID, const Node& node,
+void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
+									Core::ObjectID parentID, const Node& node,
 									const std::string& meshFileName,
 									const ManagerParam& managerParam,
 									const IntersectionHashMap& intersectionHashMap	)
@@ -895,7 +896,7 @@ void MeshImporter::MakeHierarchy(	Core::ObjectID parentID, const Node& node,
 		thisTF->UpdateScale(node.scale.tf);
 	}
 
-	auto AttachMeshComponent = [intersectionHashMap, managerParam, meshFileName](Object& object, const Node::Parts& part)
+	auto AttachMeshComponent = [&dx, intersectionHashMap, managerParam, meshFileName](Object& object, const Node::Parts& part)
 	{
 		// Setting Intersection
 		BoundBox boundBox;
@@ -923,7 +924,7 @@ void MeshImporter::MakeHierarchy(	Core::ObjectID parentID, const Node& node,
 		assert(vertexBuffer); // "Error, Can't find VB. Invalid VBKey"
 
 		auto& mesh = object.AddComponent<Rendering::Geometry::Mesh>();
-		mesh.Initialize(vertexBuffer->GetSemantics(), vbKey, ibKey);
+		mesh.Initialize(dx, vertexBuffer->GetSemantics(), vbKey, ibKey);
 		mesh.SetBoundBox(boundBox);
 		mesh.SetRadius(radius);
 
@@ -957,7 +958,7 @@ void MeshImporter::MakeHierarchy(	Core::ObjectID parentID, const Node& node,
 
 	auto& childs = node.childs;
 	for(auto iter = childs.begin(); iter != childs.end(); ++iter)
-		MakeHierarchy(object.GetObjectID(), *iter, meshFileName, managerParam, intersectionHashMap);
+		MakeHierarchy(dx, object.GetObjectID(), *iter, meshFileName, managerParam, intersectionHashMap);
 }
 
 void MeshImporter::FetchNodeHashMap(NodeHashMap& outNodeHashMap, const std::vector<Node>& nodes)
