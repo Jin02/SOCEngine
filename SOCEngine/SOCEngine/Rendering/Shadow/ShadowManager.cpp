@@ -14,6 +14,8 @@
 
 #include <type_traits>
 
+#include "ShadowAtlasMapRenderer.h"
+
 using namespace Core;
 using namespace Rendering;
 using namespace Rendering::Manager;
@@ -23,6 +25,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
 using namespace Rendering::Camera;
+using namespace Rendering::Renderer;
 using namespace Intersection;
 
 void ShadowManager::Initialize(Device::DirectX& dx)
@@ -34,7 +37,7 @@ void ShadowManager::Initialize(Device::DirectX& dx)
 	GetBuffer<PointLightShadow>().GetBuffer().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
 
-void ShadowManager::UpdateGlobalCB(Device::DirectX& dx)
+void ShadowManager::UpdateGlobalCB(Device::DirectX& dx, const ShadowAtlasMapRenderer& shadowAtlasMapRenderer)
 {
 	if(_dirtyGlobalParam == false)
 		return;

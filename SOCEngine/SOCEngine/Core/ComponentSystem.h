@@ -34,6 +34,7 @@ namespace Core
 		void UpdateBuffer(Device::DirectX& dx,
 			const Core::TransformPool& transformPool,
 			const Core::ObjectManager& objectManager,
+			const Rendering::Renderer::ShadowAtlasMapRenderer& shadowAtlasMapRenderer,
 			const Core::ObjectID::IndexHashMap& lightShaftIndexer);
 
 		void Destroy();

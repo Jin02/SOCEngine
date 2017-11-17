@@ -1,5 +1,6 @@
 #include "ComponentSystem.h"
 #include "MeshUtility.h"
+#include "ShadowAtlasMapRenderer.h"
 
 using namespace Device;
 using namespace Rendering;
@@ -10,6 +11,7 @@ using namespace Rendering::Geometry;
 using namespace Rendering::Shadow;
 using namespace Rendering::Camera;
 using namespace Rendering::Manager;
+using namespace Rendering::Renderer;
 using namespace Math;
 using namespace Intersection;
 
@@ -22,6 +24,7 @@ void ComponentSystem::Initialize(DirectX& dx)
 void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const TransformPool& transformPool,
 	const ObjectManager& objectManager,
+	const ShadowAtlasMapRenderer& shadowAtlasMapRenderer,
 	const ObjectID::IndexHashMap& lightShaftIndexer)
 {
 	ShadowManager& shadowMgr	= GetManager_Direct<ShadowManager>();
@@ -66,7 +69,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	lightMgr.UpdateParamBuffer(shadowMgr, lightShaftIndexer);
 	lightMgr.UpdateSRBuffer(dx);
 
-	shadowMgr.UpdateGlobalCB(dx);
+	shadowMgr.UpdateGlobalCB(dx, shadowAtlasMapRenderer);
 	shadowMgr.UpdateConstBuffer(dx);
 	shadowMgr.UpdateBuffer(lightMgr, transformPool, _sceneBoundBox);
 	shadowMgr.UpdateSRBuffer(dx);

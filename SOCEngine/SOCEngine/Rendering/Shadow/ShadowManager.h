@@ -16,6 +16,11 @@
 
 namespace Rendering
 {
+	namespace Renderer
+	{
+		class ShadowAtlasMapRenderer;
+	}
+
 	namespace Manager
 	{
 		class ShadowManager final
@@ -36,7 +41,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx);
-			void UpdateGlobalCB(Device::DirectX& dx);
+			void UpdateGlobalCB(Device::DirectX& dx, const Renderer::ShadowAtlasMapRenderer& shadowAtlasMapRenderer);
 
 			void CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const Core::ObjectManager& objMgr, const LightManager& lightMgr, const Core::TransformPool& tfPool);			
 			void ClearDirty();
