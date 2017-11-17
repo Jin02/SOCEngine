@@ -9,6 +9,7 @@
 
 namespace Rendering
 {
+	class RenderingSystem;
 	namespace Manager
 	{
 		class DefaultShaders
@@ -21,8 +22,15 @@ namespace Rendering
 				Shader::GeometryShader	gs;
 
 				Shaders() = default;
-				Shaders(const Shader::ShaderGroup& shaderGroup);
+				Shaders(const Shader::ShaderGroup& shaderGroup)					 
+				{
+					if(shaderGroup.vs)	vs = *shaderGroup.vs;
+					if(shaderGroup.gs)	gs = *shaderGroup.gs;
+					if(shaderGroup.ps)	ps = *shaderGroup.ps;
+				}					
 			};
+
+			friend class RenderingSystem;
 
 		public:
 			bool			Has(uint key) const;
@@ -34,7 +42,7 @@ namespace Rendering
 
 		private:
 			void Initialize(Device::DirectX& dx, ShaderManager& shaderMgr);
-			const Shaders&	Add(uint key, const Shader::ShaderGroup& shaders);
+			const Shaders& Add(uint key, const Shader::ShaderGroup& shaders);
 			void Destroy();
 
 			const Shaders& LoadDefaultSahder(	Device::DirectX& dx, ShaderManager& shaderMgr,

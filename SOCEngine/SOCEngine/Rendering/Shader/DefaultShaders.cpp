@@ -99,7 +99,7 @@ void DefaultShaders::Destroy()
 
 const DefaultShaders::Shaders& DefaultShaders::Add(uint key, const ShaderGroup& shaders)
 {
-	_shaders.insert(std::make_pair(key, Shaders(shaders)));
+	_shaders.insert(std::make_pair(key, shaders));
 	return _shaders[key];
 }
 
@@ -222,9 +222,4 @@ std::string DefaultShaders::MakeDefaultSahderFileName(DefaultRenderType renderTy
 	}
 
 	return frontFileName + defaultVertexInputTypeStr;
-}
-
-DefaultShaders::Shaders::Shaders(const ShaderGroup& shaderGroup)
-	: vs(*shaderGroup.vs), ps(*shaderGroup.ps), gs(*shaderGroup.gs)
-{
 }
