@@ -92,7 +92,7 @@ float GeometryKelemen(float NdotL, float NdotV, float VdotH)
 	return NdotL * NdotV / (VdotH * VdotH);
 }
 
-// Smith¿Í µ¿ÀÛÀÌ ÀÏÄ¡ÇÏµµ·Ï Á¶Á¤ µÊ
+// Smithì™€ ë™ì‘ì´ ì¼ì¹˜í•˜ë„ë¡ ì¡°ì • ë¨
 // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
 float GeometrySchlick(float NdotL, float NdotV, float roughness)
 {
@@ -128,11 +128,10 @@ float GeometrySmithJointApproximately(float NdotV, float NdotL, float roughness)
 	return 0.5 * rcp( smithV + smithL );
 }
 
-float3 FresnelSchlick(float3 f0, float VdotH)
+float3 FresnelSchlick(float3 specularColor, float VdotH)
 {
-	float exponential = pow(1.0f - VdotH, 5.0f);
-	return f0 + (1.0f - f0) * exponential;
-	return (f0 * (1 - exponential)) + exponential;
+	float fc = pow(1.0f - VdotH, 5.0f);
+	return fc + (1 - fc) * specularColor; 
 }
 
 
@@ -157,21 +156,20 @@ float3 DiffuseBurley(float3 diffuseColor, float roughness, float NdotV, float Nd
 	float FdV		= 1.0f + (fd90 - 1.0f) * NdotVPow5;
 	float FdL		= 1.0f + (fd90 - 1.0f) * NdotLPow5;
 
-	return diffuseColor * (1.0 / PI * FdV * FdL) * ( 1 - 0.3333f * roughness );
+	return diffuseColor * ((1.0f / PI) * FdV * FdL);
 }
 
 // Gotanda 2012, Beyond a Simple Physically Based Blinn-Phong Model in Real-Time
-float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotL)
+float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float NdotL, float VdotH)
 {
-	float m = roughness * roughness;
-	float m2 = m * m;
-
-	float A = 1.0f - 0.5f * (m2 / (m2 + 0.57f));
-	float B = 0.45f * (m2 / (m2 + 0.09f));
-	float cosTerm = VdotL - NdotV * NdotL; //cos(r - i)
-	B = B * cosTerm * (cosTerm >= 0 ? min(1.0f, NdotL / NdotV) : NdotL);
-	
-	return diffuseColor / PI * (NdotL * A + B);
+	float a = roughness * roughness;
+	float s = a;// / ( 1.29 + 0.5 * a );
+	float s2 = s * s;
+	float VoL = 2 * VdotH * VdotH - 1;		// double angle identity
+	float Cosri = VoL - NdotV * NdotL;
+	float C1 = 1 - 0.5 * s2 / (s2 + 0.33);
+	float C2 = 0.45 * s2 / (s2 + 0.09) * Cosri * (Cosri >= 0 ? rcp(max(NdotL, NdotV)) : 1);
+	return diffuseColor / PI * (C1 + C2) * (1 + roughness * 0.5); 	
 }
 
 
@@ -183,7 +181,7 @@ float3 Diffuse(float3 diffuseColor, float roughness, float NdotV, float NdotL, f
 #elif defined(DIFFUSE_BURLEY)
 	return DiffuseBurley(diffuseColor, roughness, NdotV, NdotL, VdotH);
 #elif defined(DIFFUSE_OREN_NAYAR)
-	return DiffuseOrenNayar(diffuseColor, roughness, NdotV, NdotL, VdotL);
+	return DiffuseOrenNayar(diffuseColor, roughness, NdotV, NdotL, VdotH);
 #endif
 }
 
@@ -217,7 +215,7 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 
 float3 Fresnel(float3 f0, float VdotH)
 {
-	//³ª¸ÓÁö´Â ±¸ÇöÇÏ±â ±ÍÂúÀ¸´Ï ³ªÁß¿¡ »ı°¢³¯¶§ ÇÏ¸é µÉ °Í °°´Ù
+	//ë‚˜ë¨¸ì§€ëŠ” êµ¬í˜„í•˜ê¸° ê·€ì°®ìœ¼ë‹ˆ ë‚˜ì¤‘ì— ìƒê°ë‚ ë•Œ í•˜ë©´ ë  ê²ƒ ê°™ë‹¤
 	return FresnelSchlick(f0, VdotH); //Default
 }
 
@@ -258,8 +256,8 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 }
 #endif
 
-// Unreal4ÀÇ ReflectionEnvironmentShared.usf¿¡ ÀÖ´Â
-// ComputeReflectionCaptureMipFromRoughness ÀÌ°ÅÀÓ. ±×¸®°í, ¾à°£ ¼öÁ¤ÇÔ
+// Unreal4ì˜ ReflectionEnvironmentShared.usfì— ìˆëŠ”
+// ComputeReflectionCaptureMipFromRoughness ì´ê±°ì„. ê·¸ë¦¬ê³ , ì•½ê°„ ìˆ˜ì •í•¨
 float ComputeRoughnessLOD(float roughness, uint mipCount)
 {
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
