@@ -69,8 +69,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	lightMgr.UpdateParamBuffer(shadowMgr, lightShaftIndexer);
 	lightMgr.UpdateSRBuffer(dx);
 
-	shadowMgr.UpdateGlobalCB(dx, shadowAtlasMapRenderer);
-	shadowMgr.UpdateConstBuffer(dx);
+	shadowMgr.UpdateConstBuffer(dx, shadowAtlasMapRenderer);
 	shadowMgr.UpdateBuffer(lightMgr, transformPool, _sceneBoundBox);
 	shadowMgr.UpdateSRBuffer(dx);
 
