@@ -246,8 +246,9 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	}
 
 	const auto& lightMgr		= param.lightMgr;
-	const auto& shadowMgr		= param.shadowMgr;
-	const auto& shadowRenderer	= param.shadowRenderer;
+	const auto& shadowParam		= param.shadowParam;
+	const auto& shadowMgr		= shadowParam.manager;
+	const auto& shadowRenderer	= shadowParam.renderer;
 
 	// 2 Pass - Light Culling and Deferred Shading
 	{
@@ -256,26 +257,26 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 		AutoBinderCB<ComputeShader> tbrCB(dx,				ConstBufferBindIndex::TBRParam,				_tbrCB);
 		AutoBinderCB<ComputeShader> cameraCB(dx,			ConstBufferBindIndex::Camera,				mainCamera.GetCameraCB());
-		AutoBinderCB<ComputeShader> shadowGlobalParam(dx,	ConstBufferBindIndex::ShadowGlobalParam,	shadowMgr.GetGlobalParamCB());
+		AutoBinderCB<ComputeShader> shadowGlobalParam(dx,	ConstBufferBindIndex::ShadowGlobalParam,	shadowParam.manager.GetGlobalCB());
 
 		AutoBinderSRV<ComputeShader> dlDirXY(dx,			TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlColor(dx,			TextureBindIndex::DirectionalLightColor,				lightMgr.GetBuffer<DirectionalLight>().GetColorSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlOptionalParam(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr.GetBuffer<DirectionalLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> dlShadowParam(dx,		TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> dlShadowVPMat(dx,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> dlShadowParam(dx,		TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> dlShadowVPMat(dx,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> plTF(dx,				TextureBindIndex::PointLightRadiusWithCenter,			lightMgr.GetBuffer<PointLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> plColor(dx,			TextureBindIndex::PointLightColor,						lightMgr.GetBuffer<PointLight>().GetColorSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> plOptionalParam(dx,	TextureBindIndex::PointLightOptionalParamIndex,			lightMgr.GetBuffer<PointLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> plShadowParam(dx,		TextureBindIndex::PointLightShadowParam,				shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> plShadowVPMat(dx,		TextureBindIndex::PointLightShadowViewProjMatrix,		shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> plShadowParam(dx,		TextureBindIndex::PointLightShadowParam,				shadowMgr.GetBuffer<PointLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> plShadowVPMat(dx,		TextureBindIndex::PointLightShadowViewProjMatrix,		shadowMgr.GetBuffer<PointLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> slTF(dx,				TextureBindIndex::SpotLightRadiusWithCenter,			lightMgr.GetBuffer<SpotLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> slParam(dx,			TextureBindIndex::SpotLightParam,						lightMgr.GetBuffer<SpotLight>().GetParamSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> slColor(dx,			TextureBindIndex::SpotLightColor,						lightMgr.GetBuffer<SpotLight>().GetColorSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> slOptionalParam(dx,	TextureBindIndex::SpotLightOptionalParamIndex,			lightMgr.GetBuffer<SpotLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> slShadowParam(dx,		TextureBindIndex::SpotLightShadowParam,					shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> slShadowVPMat(dx,		TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> slShadowParam(dx,		TextureBindIndex::SpotLightShadowParam,					shadowMgr.GetBuffer<SpotLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> slShadowVPMat(dx,		TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> gbufferDepth(dx,		TextureBindIndex::GBuffer_Depth,						_gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> gbufferAlbedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,				_gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
@@ -303,7 +304,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 3 - Pass GI
 	{
-		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, ShadowSystemParam{shadowMgr, shadowRenderer}, std::move(param.cullingParam), param.renderParam, param.materialMgr});
+		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
 	// 4 Pass Sky
@@ -327,26 +328,26 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 		ComputeShader::BindConstBuffer(dx, 			ConstBufferBindIndex::TBRParam,							_tbrCB);
 		ComputeShader::BindConstBuffer(dx, 			ConstBufferBindIndex::Camera,							mainCamera.GetCameraCB());
-		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::ShadowGlobalParam,				shadowMgr.GetGlobalParamCB());
+		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::ShadowGlobalParam,				shadowMgr.GetGlobalCB());
 
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightColor,				lightMgr.GetBuffer<DirectionalLight>().GetColorSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr.GetBuffer<DirectionalLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightRadiusWithCenter,			lightMgr.GetBuffer<PointLight>().GetTransformSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightColor,						lightMgr.GetBuffer<PointLight>().GetColorSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::PointLightOptionalParamIndex,			lightMgr.GetBuffer<PointLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowParam,				shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowViewProjMatrix,		shadowMgr.GetBuffer<PointLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowParam,				shadowMgr.GetBuffer<PointLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowViewProjMatrix,		shadowMgr.GetBuffer<PointLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightRadiusWithCenter,			lightMgr.GetBuffer<SpotLight>().GetTransformSRBuffer().GetShaderResourceView());
 
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightParam,						lightMgr.GetBuffer<SpotLight>().GetParamSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightColor,						lightMgr.GetBuffer<SpotLight>().GetColorSRBuffer().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::SpotLightOptionalParamIndex,			lightMgr.GetBuffer<SpotLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowParam,					shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetParamSRBuffer().GetShaderResourceView());
-		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetBuffer().GetViewProjMatSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowParam,					shadowMgr.GetBuffer<SpotLightShadow>().GetParamSRBuffer().GetShaderResourceView());
+		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::PointLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
 		ComputeShader::BindShaderResourceView(dx, 	TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());

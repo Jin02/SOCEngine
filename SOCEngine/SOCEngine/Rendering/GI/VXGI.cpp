@@ -82,30 +82,28 @@ void VXGI::Run(DirectX& dx, const VXGI::Param&& param)
 	ClearInjectColorVoxelMap(dx);
 	
 	const auto& lightMgr		= param.lightMgr;
-	const auto& shadowSystem	= param.shadowSystem;
 	const auto& tbrCB			= param.main.renderer.GetTBRParamCB();
 
 	// 1. Voxelization Pass
 	{
 		// Clear Voxel Map and voxelize
 		_voxelization.Voxelize(dx, _injectionSourceMap,
-			Voxelization::Param{_dynamicInfo.startCenterWorldPos, _infoCB, lightMgr, shadowSystem,
+			Voxelization::Param{_dynamicInfo.startCenterWorldPos, _infoCB, lightMgr, param.shadowParam,
 								tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr}
 		);
 	}
 
 	// 2. Injection Pass
-	{
-		InjectRadianceFormUtility::BindParam param{
-			_infoCB, _voxelization,  tbrCB,
-			shadowSystem.manager.GetGlobalParamCB()
+	{				
+		InjectRadianceFormUtility::BindParam injParam{
+			_infoCB, _voxelization, tbrCB, param.shadowParam.manager.GetGlobalCB()
 		};
 
 		if(lightMgr.GetLightCount<PointLight>() > 0)
-			_injectPointLight.Inject(dx, _injectionSourceMap, lightMgr, shadowSystem, param);
+			_injectPointLight.Inject(dx, _injectionSourceMap, lightMgr, param.shadowParam, injParam);
 
 		if(lightMgr.GetLightCount<SpotLight>() > 0)
-			_injectSpotLight.Inject(dx, _injectionSourceMap, lightMgr, shadowSystem, param);
+			_injectSpotLight.Inject(dx, _injectionSourceMap, lightMgr, param.shadowParam, injParam);
 	}
 
 	// 3. Mipmap Pass

@@ -26,7 +26,7 @@ namespace Rendering
 			{
 				const MainRenderingSystemParam&&		main;
 				const Manager::LightManager&			lightMgr;
-				const ShadowSystemParam&&				shadowSystem;
+				const Renderer::ShadowSystem&			shadowParam;
 				const Renderer::CullingParam&			cullParam;
 				const Renderer::MeshRenderer::Param&	meshRenderParam;
 				const Manager::MaterialManager&			materialMgr;

@@ -13,6 +13,7 @@ using namespace Rendering::Manager;
 using namespace Rendering::GI;
 using namespace Rendering::Shader;
 using namespace Rendering::Factory;
+using namespace Rendering::Renderer;
 
 void InjectRadianceFromPointLight::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
@@ -24,7 +25,7 @@ void InjectRadianceFromPointLight::Initialize(DirectX& dx, ShaderManager& shader
 
 void InjectRadianceFromPointLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,
 											const LightManager& lightMgr,
-											const ShadowSystemParam& shadowSystem,
+											const ShadowSystem& shadowParam,
 											const InjectRadianceFormUtility::BindParam& bindParam	)
 {
 	auto& plBuffer = lightMgr.GetBuffer<PointLight>();
@@ -32,10 +33,10 @@ void InjectRadianceFromPointLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightColor,				plBuffer.GetColorSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightOptionalParamIndex,	plBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
-	auto& plsBuffer = shadowSystem.manager.GetBuffer<PointLightShadow>().GetBuffer();
+	auto& plsBuffer = shadowParam.manager.GetBuffer<PointLightShadow>();
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightShadowParam,			plsBuffer.GetParamSRBuffer().GetShaderResourceView());
 	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightShadowViewProjMatrix,	plsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightShadowMapAtlas,		shadowSystem.renderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
+	ComputeShader::BindShaderResourceView(dx, TextureBindIndex::PointLightShadowMapAtlas,		shadowParam.renderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
 
 	InjectRadianceFormUtility::Bind(dx, outVoxelMap, bindParam);
 

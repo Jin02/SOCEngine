@@ -56,7 +56,7 @@ namespace Rendering
 				const Math::Vector3&					startCenterWorldPos;
 				const VXGIInfoCB&						infoCB;
 				const Manager::LightManager&			lightMgr;
-				const ShadowSystemParam&				shadowSystem;
+				const Renderer::ShadowSystem&			shadowParam;
 				const Renderer::TBRParamCB&				tbrParamCB;
 				const Renderer::CullingParam&			cullParam;
 				const Renderer::MeshRenderer::Param&	meshRenderParam;

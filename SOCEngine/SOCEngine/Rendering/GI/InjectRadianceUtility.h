@@ -1,8 +1,8 @@
 #pragma once
 
 #include "VXGICommon.h"
-#include "ShadowAtlasMapRenderer.h"
 #include "Voxelization.h"
+#include "ShadowGlobalParamCB.h"
 
 namespace Rendering
 {
@@ -13,10 +13,10 @@ namespace Rendering
 		public:
 			struct BindParam
 			{
-				const VXGIInfoCB&								infoCB;
-				const Voxelization&								voxelization;
-				const Renderer::TBRParamCB&						tbrParamCB;
-				const Manager::ShadowManager::GlobalParamCB&	shadowGlobalParamCB;
+				const VXGIInfoCB&							infoCB;
+				const Voxelization&							voxelization;
+				const Renderer::TBRParamCB&					tbrParamCB;
+				const Shadow::Buffer::ShadowGlobalParamCB&	shadowGlobalParamCB;
 			};
 
 			static void Bind(Device::DirectX& dx, VoxelMap& outVoxelMap, const BindParam& param);

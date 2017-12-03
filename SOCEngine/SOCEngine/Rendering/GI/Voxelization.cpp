@@ -89,16 +89,17 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightColor,					dlBuffer.GetColorSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,		dlBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
-	const auto& dlsBuffer = param.shadowSystem.manager.GetBuffer<DirectionalLightShadow>().GetBuffer();
+	const auto& shadowParam	= param.shadowParam;
+	const auto& dlsBuffer	= shadowParam.manager.GetBuffer<DirectionalLightShadow>();
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowParam,				dlsBuffer.GetParamSRBuffer().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		dlsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			param.shadowSystem.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowParam.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
 	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::TBRParam,								param.tbrParamCB);
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					param.shadowSystem.manager.GetGlobalParamCB());
+	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					shadowParam.manager.GetGlobalCB());
 
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowComprisonSamplerState,			SamplerState::ShadowGreaterEqualComp);	
 	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
