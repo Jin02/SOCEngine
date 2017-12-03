@@ -110,7 +110,7 @@ namespace Device
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();
 
-		void CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format);
+		std::vector<DXGI_SAMPLE_DESC> CheckAbleMultiSampler(DXGI_FORMAT format);
 
 	private:
 		DXUniqueResource<ID3D11Device>				_device;

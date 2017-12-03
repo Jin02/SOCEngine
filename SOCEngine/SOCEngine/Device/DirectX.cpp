@@ -168,8 +168,10 @@ void DirectX::SetRenderTargets(const uint size, RenderTexture* const* renderText
 	SetRenderTargets(size, renderTextures, depthMap.GetRawDepthStencilView());
 }
 
-void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXGI_FORMAT format)
+std::vector<DXGI_SAMPLE_DESC> DirectX::CheckAbleMultiSampler(DXGI_FORMAT format)
 {
+	std::vector<DXGI_SAMPLE_DESC> outDescs;
+
 	unsigned int ableMultiSample = D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT;
 	for(ableMultiSample; ableMultiSample >= 0; ableMultiSample/=2)
 	{
@@ -184,6 +186,8 @@ void DirectX::CheckAbleMultiSampler(std::vector<DXGI_SAMPLE_DESC>& outDescs, DXG
 
 		outDescs.push_back(desc);
 	}
+	
+	return outDescs;
 }
 
 void DirectX::CreateBlendStates()
