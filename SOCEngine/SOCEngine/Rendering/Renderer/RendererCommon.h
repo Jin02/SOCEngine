@@ -17,6 +17,12 @@ namespace Rendering
 				:	meshManager(_meshManager), objMgr(_objMgr), transformPool(_transformPool) { }
 		};
 
+		struct ShadowSystem
+		{
+			const Manager::ShadowManager&				manager;
+			const ShadowAtlasMapRenderer&				renderer;
+		};
+
 		struct TempRenderQueue
 		{
 			RenderQueue::OpaqueMeshRenderQueue		opaqueRenderQ;
