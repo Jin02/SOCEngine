@@ -18,6 +18,7 @@
 
 using namespace Core;
 using namespace Rendering;
+using namespace Device;
 using namespace Rendering::Manager;
 using namespace Rendering::Shadow;
 using namespace Rendering::Shadow::Buffer;
@@ -28,55 +29,13 @@ using namespace Rendering::Camera;
 using namespace Rendering::Renderer;
 using namespace Intersection;
 
-void ShadowManager::Initialize(Device::DirectX& dx)
+void ShadowManager::Initialize(DirectX& dx)
 {
 	_globalCB.Initialize(dx);
 
-	GetBuffer<DirectionalLightShadow>().GetBuffer().Initialize(dx);
-	GetBuffer<SpotLightShadow>().GetBuffer().Initialize(dx, SPOT_LIGHT_BUFFER_MAX_NUM);
-	GetBuffer<PointLightShadow>().GetBuffer().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
-}
-
-void ShadowManager::UpdateGlobalCB(Device::DirectX& dx, const ShadowAtlasMapRenderer& shadowAtlasMapRenderer)
-{
-	if(_dirtyGlobalParam == false)
-		return;
-
-	ShadowGlobalParam param;
-	{
-		auto& dlsBufferObj = GetBuffer<DirectionalLightShadow>();
-		auto& plsBufferObj = GetBuffer<PointLightShadow>();
-		auto& slsBufferObj = GetBuffer<SpotLightShadow>();
-
-		auto Pack = [](uint d, uint s, uint p) -> uint
-		{
-			return ((p & 0x7ff) << 21) | ((s & 0x7ff) << 10) | (d & 0x3ff);
-		};
-		auto Log2Uint = [](uint i) -> uint
-		{
-			return static_cast<uint>(log(static_cast<float>(i)) / log(2.0f));
-		};
-
-		param.packedNumOfShadowAtlasCapacity	= Pack(	dlsBufferObj.GetLightCapacityInAtlas(),
-														slsBufferObj.GetLightCapacityInAtlas(),
-														plsBufferObj.GetLightCapacityInAtlas());
-
-		param.packedPowerOfTwoShadowResolution	= Pack(	Log2Uint(dlsBufferObj.GetMapResolution()),
-														Log2Uint(slsBufferObj.GetMapResolution()),
-														Log2Uint(plsBufferObj.GetMapResolution())	);
-
-		param.packedNumOfShadows				= Pack(	GetPool<DirectionalLightShadow>().GetSize(),
-														GetPool<SpotLightShadow>().GetSize(),
-														GetPool<PointLightShadow>().GetSize()		);
-		param.dummy = 0;
-
-		dlsBufferObj.SetDirty(false);
-		plsBufferObj.SetDirty(false);
-		slsBufferObj.SetDirty(false);
-	}
-
-	_globalCB.UpdateSubResource(dx, param);
-	_dirtyGlobalParam = false;
+	GetBuffer<DirectionalLightShadow>().Initialize(dx);
+	GetBuffer<SpotLightShadow>().Initialize(dx, SPOT_LIGHT_BUFFER_MAX_NUM);
+	GetBuffer<PointLightShadow>().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
 
 void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const ObjectManager& objMgr,
@@ -139,10 +98,6 @@ void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camM
 	Work(GetShadowDatas<PointLightShadow>());
 	Work(GetShadowDatas<SpotLightShadow>());
 	Work(GetShadowDatas<DirectionalLightShadow>());
-
-	_dirtyGlobalParam |=	GetBuffer<DirectionalLightShadow>().GetDirty()	|
-							GetBuffer<PointLightShadow>().GetDirty()		|
-							GetBuffer<SpotLightShadow>().GetDirty();
 }
 
 void ShadowManager::ClearDirty()
@@ -161,13 +116,15 @@ void ShadowManager::ClearDirty()
 	Clear(GetShadowDatas<DirectionalLightShadow>());
 	Clear(GetShadowDatas<PointLightShadow>());
 	Clear(GetShadowDatas<SpotLightShadow>());
+
+	_changedShadowCounts = false;
 }
 
 void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox)
 {
 	auto Update = [&lightMgr, &tfPool, &sceneBoundBox](auto& shadowDatas)
 	{
-		auto& buffer	= shadowDatas.buffers.GetBuffer();
+		auto& buffer	= shadowDatas.buffers;
 		auto& dirty		= shadowDatas.dirtyShadows;
 		auto& pool		= shadowDatas.pool;
 
@@ -175,7 +132,7 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 		buffer.UpdateBuffer(dirty, lightMgr.GetPool<LightType>(), tfPool, pool.GetIndexer());
 	};
 
-	GetBuffer<DirectionalLightShadow>().GetBuffer().UpdateBuffer(
+	GetBuffer<DirectionalLightShadow>().UpdateBuffer(
 		GetDirtyShadows<DirectionalLightShadow>(),
 		lightMgr.GetPool<DirectionalLight>(),
 		tfPool, GetPool<DirectionalLightShadow>().GetIndexer(),
@@ -186,11 +143,11 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 	Update(GetShadowDatas<SpotLightShadow>());
 }
 
-void ShadowManager::UpdateSRBuffer(Device::DirectX& dx)
+void ShadowManager::UpdateSRBuffer(DirectX& dx)
 {	
 	auto UpdateSRBuffer = [& dx](auto& shadowDatas)
 	{
-		shadowDatas.buffers.GetBuffer().UpdateSRBuffer(dx, shadowDatas.mustUpdateToGPU);
+		shadowDatas.buffers.UpdateSRBuffer(dx, shadowDatas.mustUpdateToGPU);
 		shadowDatas.mustUpdateToGPU = false;
 	};
 
@@ -199,8 +156,10 @@ void ShadowManager::UpdateSRBuffer(Device::DirectX& dx)
 	UpdateSRBuffer(GetShadowDatas<SpotLightShadow>());
 }
 
-void ShadowManager::UpdateConstBuffer(Device::DirectX& dx)
+void ShadowManager::UpdateConstBuffer(DirectX& dx, const ShadowAtlasMapRenderer& renderer)
 {
+	_globalCB.UpdateSubResource(dx, *this, renderer);
+
 	GetShadowMapVPMatCBPool<DirectionalLightShadow>().InitializePreparedCB(dx);
 	GetShadowMapVPMatCBPool<PointLightShadow>().InitializePreparedCB(dx);
 	GetShadowMapVPMatCBPool<SpotLightShadow>().InitializePreparedCB(dx);
@@ -216,7 +175,7 @@ void ShadowManager::DeleteAll()
 	{
 		shadowDatas.pool.DeleteAll();
 		shadowDatas.dirtyShadows.clear();
-		shadowDatas.buffers.GetBuffer().DeleteAll();
+		shadowDatas.buffers.DeleteAll();
 		shadowDatas.cbPool.DeleteAll();
 
 		shadowDatas.mustUpdateToGPU = true;
@@ -225,9 +184,11 @@ void ShadowManager::DeleteAll()
 	DeleteAll(GetShadowDatas<DirectionalLightShadow>());
 	DeleteAll(GetShadowDatas<PointLightShadow>());
 	DeleteAll(GetShadowDatas<SpotLightShadow>());
+
+	_changedShadowCounts = true;
 }
 
-void ShadowManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
+void ShadowManager::BindResources(DirectX& dx, bool bindVS, bool bindGS, bool bindPS)
 {	
 	auto Bind = [& dx, bindVS, bindGS, bindPS](
 		TextureBindIndex bind, ShaderResourceBuffer& srb)
@@ -237,20 +198,20 @@ void ShadowManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS,
 		if (bindPS)	PixelShader::BindShaderResourceView(dx, bind, srb.GetShaderResourceView());
 	};
 
-	auto& plBuffer = GetBuffer<PointLightShadow>().GetBuffer();
+	auto& plBuffer = GetBuffer<PointLightShadow>();
 	{
 		Bind(TextureBindIndex::PointLightShadowParam,			plBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::PointLightShadowViewProjMatrix,	plBuffer.GetViewProjMatSRBuffer());
 	}
 
-	auto& dlBuffer = GetBuffer<DirectionalLightShadow>().GetBuffer();
+	auto& dlBuffer = GetBuffer<DirectionalLightShadow>();
 	{
 		Bind(TextureBindIndex::DirectionalLightShadowParam,				dlBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightShadowViewProjMatrix,	dlBuffer.GetViewProjMatSRBuffer());
 		Bind(TextureBindIndex::DirectionalLightShadowInvProjParam,		dlBuffer.GetInvProjParamSRBuffer());
 	}
 
-	auto& slBuffer = GetBuffer<SpotLightShadow>().GetBuffer();
+	auto& slBuffer = GetBuffer<SpotLightShadow>();
 	{
 		Bind(TextureBindIndex::SpotLightShadowParam, slBuffer.GetParamSRBuffer());
 		Bind(TextureBindIndex::SpotLightShadowViewProjMatrix, slBuffer.GetViewProjMatSRBuffer());
@@ -261,7 +222,7 @@ void ShadowManager::BindResources(Device::DirectX& dx, bool bindVS, bool bindGS,
 	if (bindPS) PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::ShadowGlobalParam, _globalCB);
 }
 
-void ShadowManager::UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const
+void ShadowManager::UnbindResources(DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const
 {	
 	auto Unbind = [& dx, bindVS, bindGS, bindPS](TextureBindIndex bind)
 	{

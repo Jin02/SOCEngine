@@ -10,9 +10,9 @@
 #include "LightManager.h"
 #include "ShadowMapCBPool.h"
 #include "PointLightShadowMapCBPool.h"
-#include "ShadowBufferObject.hpp"
 
 #include "CameraManager.h"
+#include "ShadowGlobalParamCB.h"
 
 namespace Rendering
 {
@@ -26,29 +26,14 @@ namespace Rendering
 		class ShadowManager final
 		{
 		public:
-			struct ShadowGlobalParam
-			{
-				uint packedNumOfShadowAtlasCapacity;
-				uint packedPowerOfTwoShadowResolution;
-				uint packedNumOfShadows;
-				uint dummy;
-			};
-			using GlobalParamCB = Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParam>;
-
-			constexpr static const uint DirectionalLightInitCount	= 1;
-			constexpr static const uint SpotLightInitCount			= 1;
-			constexpr static const uint PointLightInitCount			= 1;
-
-		public:
 			void Initialize(Device::DirectX& dx);
-			void UpdateGlobalCB(Device::DirectX& dx, const Renderer::ShadowAtlasMapRenderer& shadowAtlasMapRenderer);
 
 			void CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const Core::ObjectManager& objMgr, const LightManager& lightMgr, const Core::TransformPool& tfPool);			
 			void ClearDirty();
 
 			void UpdateBuffer(const LightManager& lightMgr, const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox);
 			void UpdateSRBuffer(Device::DirectX& dx);
-			void UpdateConstBuffer(Device::DirectX& dx);
+			void UpdateConstBuffer(Device::DirectX& dx, const Renderer::ShadowAtlasMapRenderer& renderer);
 
 			template <class ShadowType>
 			ShadowType& Acquire(Core::ObjectID objID)
@@ -58,10 +43,10 @@ namespace Rendering
 
 			template <class ShadowType>	ShadowType& Add(ShadowType& shadow)
 			{
-				GetBuffer<ShadowType>().GetBuffer().PushShadow(shadow);
-				GetShadowMapVPMatCBPool<ShadowType>().PushConstBufferToQueue();
+				_changedShadowCounts = true;
 
-				_dirtyGlobalParam = true;
+				GetBuffer<ShadowType>().PushShadow(shadow);
+				GetShadowMapVPMatCBPool<ShadowType>().PushConstBufferToQueue();
 
 				uint objLiteralID = shadow.GetObjectID().Literal();
 				return GetPool<ShadowType>().Add(objLiteralID, shadow);
@@ -71,14 +56,14 @@ namespace Rendering
 				uint index = GetPool<ShadowType>().GetIndexer().Find(objID.Literal());
 
 				GetPool<ShadowType>().Delete(objID.Literal());
-				GetBuffer<ShadowType>().GetBuffer().Delete(index);
+				GetBuffer<ShadowType>().Delete(index);
 				GetShadowMapVPMatCBPool<ShadowType>().Delete(index);
 
-				_dirtyGlobalParam = true;
 				GetShadowDatas<ShadowType>().mustUpdateToGPU = true;
+				_changedShadowCounts = true;
 			}
 			template <class ShadowType>	bool Has(Core::ObjectID objID) const
-			{
+			{ 
 				return GetPool<ShadowType>().Has(objID.Literal());
 			}
 			template <class ShadowType>	auto Find(Core::ObjectID id)
@@ -131,7 +116,8 @@ namespace Rendering
 				return GetShadowDatas<ShadowType>().influentialLights;
 			}
 
-			GET_ACCESSOR_REF(GlobalParamCB, _globalCB);
+			GET_CONST_ACCESSOR(GlobalCB,				const auto&,	_globalCB);
+			GET_CONST_ACCESSOR(HasChangedShadowCount,	bool,			_changedShadowCounts);
 
 		private:
 			template <class ShadowType> auto&		GetShadowDatas()
@@ -157,7 +143,7 @@ namespace Rendering
 			struct ShadowDatas
 			{
 				Shadow::ShadowPool<ShadowType>							pool;
-				Shadow::Buffer::ShadowBufferObject<ShadowType>			buffers;
+				typename ShadowType::ShadowBufferType					buffers;
 				typename ShadowType::CBPoolType							cbPool;
 
 				std::vector<ShadowType*>								dirtyShadows;
@@ -170,8 +156,9 @@ namespace Rendering
 						ShadowDatas<Shadow::PointLightShadow>,
 						ShadowDatas<Shadow::DirectionalLightShadow>	> _datas;
 
-			GlobalParamCB		_globalCB;
-			bool				_dirtyGlobalParam = true;
+			Shadow::Buffer::ShadowGlobalParamCB							_globalCB;
+			bool														_changedShadowCounts = true;
+
 		};
 	}
 }
