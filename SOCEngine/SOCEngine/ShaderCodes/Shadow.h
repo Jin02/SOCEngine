@@ -50,11 +50,10 @@ void ParseShadowParam(out ShadowParam outParam, uint4 param)
 	outParam.strength		= shadowColor.a;
 }
 
-float2 ComputeStepUV(uint lightCapacityCount, float softness, uniform uint faceCount)
+float2 ComputeStepUV(float oneShadowMapSize, uint lightCapacityCount, float softness, uniform uint faceCount)
 {
-	float oneShadowMapSize	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
-	float2 atlasMapSize	= float2(lightCapacityCount, float(faceCount)) * oneShadowMapSize;
-	float2 stepUV		= softness * rcp(atlasMapSize);
+	float2 atlasMapSize		= float2(lightCapacityCount, float(faceCount)) * oneShadowMapSize;
+	float2 stepUV			= softness * rcp(atlasMapSize);
 	
 	return stepUV;
 }
@@ -174,10 +173,11 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, SpotLightShadowParams[shadowIndex]);
 
-	float bias		= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
-	float depth		= shadowUV.z;
-	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);	
-	float shadow	= saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float bias			= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
+	float depth			= shadowUV.z;
+	float resolution	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
+	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
+	float shadow		= saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 
@@ -200,10 +200,11 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, DirectionalLightShadowParams[shadowIndex]);
 
-	float bias		= shadowParam.bias;
-	float depth		= shadowUV.z;
-	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 1);	
-	float shadow	= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float bias			= shadowParam.bias;
+	float depth			= shadowUV.z;
+	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
+	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
+	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
@@ -253,11 +254,10 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	shadowUV.x += (float)shadowIndex;
 	shadowUV.x *= rcp((float)lightCapacityCount);//(1.0f / (float)lightCapacityCount);
 
-	float bias	= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
-	float depth	= shadowUV.z;
-
-	float2 stepUV	= ComputeStepUV(lightCapacityCount, shadowParam.softness, 6);
-	float shadow	= saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float bias			= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
+	float depth			= shadowUV.z;
+	float2 stepUV		= ComputeStepUV(oneShadowMapSize, lightCapacityCount, shadowParam.softness, 6);
+	float shadow		= saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 
 	float3 result	= lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 	float3 ret		= lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
