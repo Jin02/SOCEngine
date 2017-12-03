@@ -9,6 +9,7 @@
 
 #include "PointLightShadowMapRenderer.h"
 #include "ShadowMapRenderer.h"
+#include "ShadowAtlasMapRenderer.h"
 
 namespace Rendering
 {
@@ -17,21 +18,28 @@ namespace Rendering
 		class ShadowAtlasMapRenderer final
 		{
 		public:
+			struct ResizeParam
+			{
+				uint mapResolution	= 256;
+				uint capacity		= 1;
+
+				explicit ResizeParam(uint resolution, uint _capacity)
+					: mapResolution(resolution), capacity(_capacity) { }
+			};
+
+		public:
 			ShadowAtlasMapRenderer() = default;
 			void Initialize(Device::DirectX& dx, uint dlMapResolution, uint slMapResolution, uint plMapResolution);
 			void Destroy();
 
-			struct ReSizeParam
+			template <typename ShadowType>
+			void ReSizeShadowMap(Device::DirectX& dx, uint shadowCount)
 			{
-				uint mapResolution	= 128;
-				uint capacity		= 8;
-
-				ReSizeParam(uint resolution, uint _capacity)
-					: mapResolution(resolution), capacity(_capacity) { }
-			};
+				ReSizeShadowMap<ShadowType>(dx, ResizeParam(GetShadowAtlasMap<ShadowType>().GetResolution(), shadowCount));
+			}
 
 			template <typename ShadowType>
-			void ReSizeShadowMap(Device::DirectX& dx, ReSizeParam param, bool useDestroy = true)
+			void ReSizeShadowMap(Device::DirectX& dx, ResizeParam&& param)
 			{
 				// Compute Param
 				{
@@ -42,9 +50,10 @@ namespace Rendering
 
 					auto& atlasMap = GetShadowAtlasMap<ShadowType>();
 
-					bool changedShadowMap = (atlasMap.GetResolution() != param.mapResolution) | (atlasMap.GetCapacity() < param.capacity);
+					bool hasChanged = (atlasMap.GetResolution() != param.mapResolution) | (atlasMap.GetCapacity() < param.capacity);
+					_hasChangedAtlasMapSize |= hasChanged;
 
-					if (changedShadowMap == false)
+					if (hasChanged == false)
 						return;
 
 					param.capacity		= Next2Squre(param.capacity);
@@ -53,8 +62,7 @@ namespace Rendering
 
 				// Resize Map
 				{
-					if (useDestroy)
-						GetShadowAtlasMap<ShadowType>().Destroy();
+					GetShadowAtlasMap<ShadowType>().Destroy();
 
 					auto MakeMap = [&dx, &param](auto& depthMap, const Size<uint>& mapSize)
 					{
@@ -65,7 +73,6 @@ namespace Rendering
 					MakeMap(GetShadowAtlasMap<ShadowType>(), mapSize);
 				}
 			}
-
 
 			template <class ShadowType>
 			void RenderShadowMap(	Device::DirectX& dx,
@@ -87,15 +94,22 @@ namespace Rendering
 				// 1 단계
 				// 현재 카메라 범위안에 속한 그림자를 그리는 빛만 추려냄
 				const auto& influentialLights = shadowMgr.GetInfluentialLights<ShadowType>();
+
+				// 2 단계
+				// 그림자를 그릴 빛 갯수만 체크해서 ShadowAtlasMap 크기를 재조정 함
+				{
+					ReSizeShadowMap<ShadowType>(dx, influentialLights.size());
+				}
+
 				for (auto light : influentialLights)
 				{
-					// 2 단계
+					// 3 단계
 					// 이 빛들은 하나의 카메라가 된다.
 					// 렌더링 전에 컬링을 했던 것 처럼 여기서도 컬링한다. 
 					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, cullParam.meshManager.GetOpaqueMeshPool(), light);
 					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, cullParam.meshManager.GetAlphaTestMeshPool(), light);
 
-					// 3 단계 - 그린다					
+					// 4 단계 - 그린다					
 					uint shadowIndex				= shadowMgr.GetIndexer<ShadowType>().Find(light->GetObjectID().Literal());
 					auto& shadowMap					= GetShadowAtlasMap<ShadowType>();
 					uint resolution					= shadowMap.GetResolution();
@@ -115,15 +129,18 @@ namespace Rendering
 				return std::get<Shadow::ShadowAtlasMap<ShadowType>>(_shadowAtlasMaps);
 			}
 
+			void ClearDirty() { _hasChangedAtlasMapSize = false; }
+			GET_CONST_ACCESSOR(HasChangedAtlasMapSize, bool, _hasChangedAtlasMapSize);
+
 		private:
 			template <typename ShadowType>
-			Size<uint> ComputeShadowAtlasMapSize(const ReSizeParam& param)
+			Size<uint> ComputeShadowAtlasMapSize(const ResizeParam& param)
 			{
 				return Size<uint>(	param.mapResolution * param.capacity,
 									param.mapResolution	);
 			}
 			template <>
-			Size<uint> ComputeShadowAtlasMapSize<Shadow::PointLightShadow>(const ReSizeParam& param)
+			Size<uint> ComputeShadowAtlasMapSize<Shadow::PointLightShadow>(const ResizeParam& param)
 			{
 				return Size<uint>(	param.mapResolution * param.capacity,
 									param.mapResolution * 6	);
@@ -137,12 +154,7 @@ namespace Rendering
 			> _shadowAtlasMaps;
 
 			TempRenderQueue _tempRenderQ;
+			bool			_hasChangedAtlasMapSize = true;
 		};
 	}
-
-	struct ShadowSystemParam
-	{
-		const Manager::ShadowManager&			manager;
-		const Renderer::ShadowAtlasMapRenderer&	renderer;
-	};
 }
