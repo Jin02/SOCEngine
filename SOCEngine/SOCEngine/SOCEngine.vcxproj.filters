@@ -448,6 +448,9 @@
     <Filter Include="ShaderCodes\VXGI\Debug">
       <UniqueIdentifier>{047ff906-6dc8-4398-88c7-c69737967de4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\GlobalParamCB">
+      <UniqueIdentifier>{a602bfdc-9d57-49f8-954c-230fdce056c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -775,13 +778,7 @@
     <ClInclude Include="Rendering\Light\LightCullingUtility.h">
       <Filter>Rendering\Light\Culling</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowManager.h">
-      <Filter>Rendering\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
-      <Filter>Rendering\Shadow\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
       <Filter>Rendering\Shadow\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Mesh\BasicGeometryGenerator.h">
@@ -985,6 +982,12 @@
     <ClInclude Include="Rendering\RenderSetting.h">
       <Filter>Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowGlobalParamCB.h">
+      <Filter>Rendering\Shadow\Buffer\GlobalParamCB</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowManager.h">
+      <Filter>Rendering\Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1152,9 +1155,6 @@
     <ClCompile Include="Rendering\Shader\ShaderCompiler.cpp">
       <Filter>Rendering\Shader\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
-      <Filter>Rendering\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Mesh\BasicGeometryGenerator.cpp">
       <Filter>Rendering\Mesh\Generator</Filter>
     </ClCompile>
@@ -1283,6 +1283,12 @@
     </ClCompile>
     <ClCompile Include="Rendering\RenderingSystem.cpp">
       <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowGlobalParamCB.cpp">
+      <Filter>Rendering\Shadow\Buffer\GlobalParamCB</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
+      <Filter>Rendering\Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -224,12 +224,10 @@
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowBufferObject.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowGlobalParamCB.h" />
     <ClInclude Include="Rendering\Shadow\ShadowMapCBPool.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -433,6 +431,7 @@
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Shadow\ShadowGlobalParamCB.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowMapCBPool.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
