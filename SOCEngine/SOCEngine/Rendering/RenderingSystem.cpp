@@ -59,10 +59,12 @@ void RenderingSystem::Render(Engine& engine)
 
 	SkyBoxMaterial* skyboxMaterial = _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
 	_mainRenderer.UpdateCB(dx, mainCamera, lightMgr);
-	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, shadowMgr, _shadowRenderer, std::move(cullParam), skyboxMaterial});
+	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
 	_postProcessing.UpdateCB(dx);
 	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+
+	_shadowRenderer.ClearDirty();
 }
 
 void RenderingSystem::Destroy(Engine& engine)
