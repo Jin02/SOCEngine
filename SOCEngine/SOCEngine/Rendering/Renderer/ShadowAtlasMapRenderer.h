@@ -90,9 +90,11 @@ namespace Rendering
 				const auto& influentialLights = shadowMgr.GetInfluentialLights<ShadowType>();
 
 				// 2 단계
-				// 그림자를 그릴 빛 갯수만 체크해서 ShadowAtlasMap 크기를 재조정 함
+				// 현재 그림자 갯수를 체크해서 ShadowMap 크기를 조정한다.
+				// TODO :	그림자를 그릴 빛 갯수만 체크해서 ShadowAtlasMap 크기를 재조정 해야한다.
+				//			나중에 시간나면 고친다.
 				{
-					ReSizeShadowMap<ShadowType>(dx, influentialLights.size());
+					ReSizeShadowMap<ShadowType>(dx, shadowMgr.GetPool<ShadowType>().GetSize());
 				}
 
 				for (auto light : influentialLights)
