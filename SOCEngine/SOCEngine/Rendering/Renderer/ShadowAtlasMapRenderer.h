@@ -41,26 +41,20 @@ namespace Rendering
 			template <typename ShadowType>
 			void ReSizeShadowMap(Device::DirectX& dx, ResizeParam&& param)
 			{
-				// Compute Param
+				auto Next2Squre = [](uint value) -> uint
 				{
-					auto Next2Squre = [](uint value) -> uint
-					{
-						return 1 << (uint)(ceil(log((uint)value) / log(2.0f)));
-					};
+					return 1 << (uint)(ceil(log((uint)value) / log(2.0f)));
+				};
 
-					auto& atlasMap = GetShadowAtlasMap<ShadowType>();
+				param.capacity		= Next2Squre(param.capacity);
+				param.mapResolution	= Next2Squre(param.mapResolution);
 
-					bool hasChanged = (atlasMap.GetResolution() != param.mapResolution) | (atlasMap.GetCapacity() < param.capacity);
-					_hasChangedAtlasMapSize |= hasChanged;
+				const auto& atlasMap = GetShadowAtlasMap<ShadowType>();
 
-					if (hasChanged == false)
-						return;
+				bool hasChanged = (atlasMap.GetResolution() != param.mapResolution) | (atlasMap.GetCapacity() < param.capacity);
+				_hasChangedAtlasMapSize |= hasChanged;
 
-					param.capacity		= Next2Squre(param.capacity);
-					param.mapResolution	= Next2Squre(param.mapResolution);
-				}
-
-				// Resize Map
+				if (hasChanged)
 				{
 					GetShadowAtlasMap<ShadowType>().Destroy();
 
