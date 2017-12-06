@@ -30,12 +30,10 @@ namespace Rendering
 				: public Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParamCBData>
 			{
 			public:
-				using Parent = Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParamCBData>;
-
-			public:
 				void UpdateSubResource(Device::DirectX& dx, const Manager::ShadowManager& manager, const Renderer::ShadowAtlasMapRenderer& renderer);
 
 			private:
+				using Parent = Rendering::Buffer::ExplicitConstBuffer<ShadowGlobalParamCBData>;
 				using Parent::UpdateSubResource;
 			};
 		}
