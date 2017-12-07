@@ -42,16 +42,16 @@ namespace Rendering
 			}
 
 			template <class CallPreRender, class CallPostRender>
-			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPreRender func, CallPostRender postCall)
+			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPreRender preRenderCall, CallPostRender postCall)
 			{
 				meshes.Iterate(
-					[&dx, &param, renderType, &func](const Mesh* mesh)
+					[&dx, &param, renderType, &preRenderCall](const Mesh* mesh)
 					{
 						const auto& vbPool	= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
 						const auto* vb		= vbPool.Find(mesh->GetVBKey()); assert(vb);
 
 						vb->IASetBuffer(dx);
-						func(mesh);
+						preRenderCall(mesh);
 
 						RenderWithoutIASetVB(dx, param, renderType, *mesh);
 					}

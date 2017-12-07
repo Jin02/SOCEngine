@@ -75,11 +75,13 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 
 	_skyBox.Initialize(dx);
 	_gi.Initialize(dx, shaderMgr, renderSize, std::move(giParam));
+
+	_mainRTBuilder.Initialize(dx, shaderMgr);
 }
 
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
 {
-	if( (_dirty == false) & (mainCamera.GetDirty() == false) & (lightMgr.GetChangedLightCount() == false) )
+	if( (_dirty == false) & (mainCamera.GetDirty() == false) & (lightMgr.GetHasChangedLightCount() == false) )
 		return;
 
 	const auto& renderRect = mainCamera.GetRenderRect();
@@ -201,7 +203,8 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 				[&dx, &materialMgr](const Mesh* mesh) // Pre Render
 				{
 					const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
-					BindGBufferResourceTextures(dx, material);
+					if(material)
+						BindGBufferResourceTextures(dx, material);
 				},
 				[&dx](/*Post Render*/)
 				{
@@ -222,7 +225,8 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 				[&dx, &materialMgr](const Mesh* mesh)	// Pre-Render
 				{
 					const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
-					BindGBufferResourceTextures(dx, material);
+					if(material)
+						BindGBufferResourceTextures(dx, material);
 				},
 				[&dx](/*Post Render*/) { UnBindGBufferResourceTextures(dx); }
 			);	
@@ -302,18 +306,18 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		_mainRTBuilder.Render(dx, _resultMap, _scaledMap);
 	}
 
-	// 3 - Pass GI
+	// 3 - GI
 	{
 		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
-	// 4 Pass Sky
+	// 4 - Sky
 	{
 		if(param.skyBoxMaterial)
 			_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
 	}
 
-	// 5 Pass Render Transparent Mesh
+	// 5 - Render Transparent Mesh
 	{
 		dx.SetRenderTarget(_resultMap, _gbuffer.opaqueDepthBuffer);
 		dx.SetDepthStencilState(DepthState::GreaterAndDisableDepthWrite, 0);
