@@ -53,6 +53,7 @@ namespace Rendering
 			MainCamera(Core::ObjectID objID) : _objID(objID) {}
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
 			bool UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
+			void ClearDirty() { _dirty = false; }
 
 			Math::Matrix ComputePerspectiveMatrix(bool isInverted) const;
 			Math::Matrix ComputeOrthogonalMatrix(bool isInverted) const;

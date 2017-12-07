@@ -72,7 +72,6 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 	_camCBChangeState = TransformCB::ChangeState((static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 	_prevViewProjMat = _viewProjMat;
 
-	_dirty = false;
 	return true;
 }
 
