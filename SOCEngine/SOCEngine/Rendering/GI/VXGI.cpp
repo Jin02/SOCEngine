@@ -51,7 +51,7 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& r
 		_infoCB.staticInfoCB.UpdateSubResource(dx, info);
 
 		_infoCB.dynamicInfoCB.Initialize(dx);
-		_infoCB.dynamicInfoCB.UpdateSubResource(dx, VXGIDynamicInfo());
+		UpdateGIDynamicInfoCB(dx);
 	}
 
 	// Init Voxelization
