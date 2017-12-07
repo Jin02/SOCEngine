@@ -115,7 +115,7 @@ namespace Rendering
 				return GetPool<LightType>().GetSize();
 			}
 
-			GET_CONST_ACCESSOR(ChangedLightCount, bool, _changedLightCounts);
+			GET_CONST_ACCESSOR(HasChangedLightCount, bool, _changedLightCounts);
 
 		private:
 			template <class LightType> auto&		GetLightDatas()

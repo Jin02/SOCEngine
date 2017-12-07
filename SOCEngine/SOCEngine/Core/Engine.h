@@ -35,7 +35,6 @@ namespace Core
 
 		// System
 		void Initialize(IScene* scene);
-		void Render();
 		void Destroy();
 
 		// Importer

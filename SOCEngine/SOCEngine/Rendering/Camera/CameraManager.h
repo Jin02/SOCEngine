@@ -21,6 +21,8 @@ namespace Rendering
 			CameraManager();
 
 		public:
+			void ClearDirty() { _mainCamera.ClearDirty(); }
+
 			bool CheckCanUseMainCam(const Core::ObjectIDManager& objIDMgr) const;
 			void SetMainCamera(Core::ObjectID objectID);
 			GET_ACCESSOR_REF(MainCamera, _mainCamera);

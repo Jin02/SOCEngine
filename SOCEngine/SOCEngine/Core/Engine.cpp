@@ -59,15 +59,16 @@ void Engine::RunScene()
 	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer(), nullIndexer);
 
 	_scene->OnRenderPreview();
-	Render();
+	_rendering.Render(*this);
 	_scene->OnRenderPost();
 
 	for (auto& iter : _dirtyTransforms)
 		iter->ClearDirty();
 
 	_dirtyTransforms.clear();
+	_componentSystem.ClearDirty();
 
-	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
+//	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
 }
 
 void Engine::ChangeScene(IScene* scene)
@@ -94,10 +95,6 @@ void Engine::Destroy()
 {
 	_scene->OnDestroy(*this);
 	_exit = true;
-}
-
-void Engine::Render()
-{
 }
 
 Object* Engine::LoadMesh(const std::string& fileDir, bool useDynamicVB, bool useDynamicIB)

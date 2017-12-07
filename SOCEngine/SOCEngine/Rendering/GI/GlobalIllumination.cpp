@@ -16,9 +16,11 @@ RenderTexture& GlobalIllumination::Run(DirectX& dx, const VXGI::Param&& param)
 {
 	// TODO :	현재는 In-door GI만 처리 중
 	//			나중에 시간이 난다면(?) Out-door 까지 처리한다
-	if(_vxgi.GetDirty() == false)
+	if(_vxgi.GetDirty() | param.lightMgr.GetHasChangedLightCount())
+	{
+		_vxgi.SetPackedNumfOfLights(param.lightMgr.GetPackedLightCount());
 		_vxgi.UpdateGIDynamicInfoCB(dx);
-
+	}
 	_vxgi.Run(dx, std::move(param));
 	return _vxgi.GetIndirectColorMap();
 }

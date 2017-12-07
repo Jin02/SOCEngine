@@ -13,8 +13,7 @@ void Texture3D::Initialize(	Device::DirectX& dx,
 	_size = Vector3(static_cast<float>(width), static_cast<float>(height), static_cast<float>(depth));
 
 	uint bindFlag = ((srvFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_SHADER_RESOURCE	: 0) |
-					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPS???¬ìš©?˜ë ¤ë©?
-																		// D3D11_BIND_RENDER_TARGET ?¤ì •???íƒœ?¬ì•¼ ?œë‹¤.
+					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |
 					((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS	: 0) | optionBindFlag;
 
 	D3D11_TEXTURE3D_DESC textureDesc;
