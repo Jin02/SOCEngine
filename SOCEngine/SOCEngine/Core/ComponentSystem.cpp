@@ -72,13 +72,14 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	shadowMgr.UpdateConstBuffer(dx, shadowAtlasMapRenderer);
 	shadowMgr.UpdateBuffer(lightMgr, transformPool, _sceneBoundBox);
 	shadowMgr.UpdateSRBuffer(dx);
+}
 
-	// Clear Dirty
-	{
-		lightMgr.ClearDirty();
-		shadowMgr.ClearDirty();
-		meshMgr.ClearDirty();
-	}
+void ComponentSystem::ClearDirty()
+{
+	GetManager_Direct<ShadowManager>().ClearDirty();
+	GetManager_Direct<LightManager>().ClearDirty();
+	GetManager_Direct<MeshManager>().ClearDirty();
+	GetManager_Direct<CameraManager>().ClearDirty();
 }
 
 void ComponentSystem::Destroy()

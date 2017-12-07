@@ -36,7 +36,7 @@ namespace Core
 			const Core::ObjectManager& objectManager,
 			const Rendering::Renderer::ShadowAtlasMapRenderer& shadowAtlasMapRenderer,
 			const Core::ObjectID::IndexHashMap& lightShaftIndexer);
-
+		void ClearDirty();
 		void Destroy();
 
 	public:
