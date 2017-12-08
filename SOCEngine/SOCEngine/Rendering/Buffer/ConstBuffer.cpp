@@ -21,5 +21,5 @@ void ConstBuffer::Initialize(Device::DirectX& dx, uint size)
 
 void ConstBuffer::UpdateSubResource(Device::DirectX& dx, const void* data)
 {
-	_base.UpdateSubResource(dx, &data);
+	_base.UpdateSubResource(dx, data);
 }
