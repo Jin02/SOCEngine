@@ -50,6 +50,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(GBuffers,	const auto&,	_gbuffer);
 			GET_CONST_ACCESSOR(TBRParamCB,	const auto&,	_tbrCB);
 			GET_ACCESSOR_REF(ResultMap,						_resultMap);
+			GET_ACCESSOR_REF(GlobalIllumination,			_gi);
 
 		private:
 			Texture::RenderTexture						_resultMap;

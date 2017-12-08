@@ -11,13 +11,14 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
 	return RenderSetting("MainCamera",
 		engine.GetDirectX().GetBackBufferRect().Cast<uint>(),
-		1024, 256, 15.0f
+		256, 256, 15.0f
 	);
 }
 
 void TestScene::OnInitialize(Engine& engine)
 {
 	Object* mainCamObj = engine.GetObjectManager().Find("MainCamera");
+	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().GetVXGI().SetStartCenterWorldPos(Vector3(0.3f, 0.3f, 17.8f));
 	assert(mainCamObj);
 	bool hasMainCam = mainCamObj->HasComponent<MainCamera>();
 	assert(hasMainCam); // ????
