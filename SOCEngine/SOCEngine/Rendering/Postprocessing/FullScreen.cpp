@@ -20,7 +20,6 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 	}
 	assert(folderPath.empty() == false);// "Error!, Invalid File Path"
 
-#pragma region MacroKey
 	std::vector<ShaderMacro> vsMacro;
 
 	std::string vsKey	= "FullScreenVS";
@@ -49,10 +48,9 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 		for (auto iter : (*param.psMacros))
 			_psUniqueKey += ":[" + iter.GetName() + "/" + iter.GetDefinition() + "]";
 	}
-#pragma endregion MacroKey
 
-#pragma region VertexShader
-	if (shaderManager.GetPool<VertexShader>().Has(vsKey) == false)
+	_vs = shaderManager.GetPool<VertexShader>().Find(vsKey);
+	if (_vs == nullptr)
 	{
 		// Setting Vertex Shader
 		{
@@ -65,10 +63,9 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 			shaderManager.GetPool<VertexShader>().Add(vsKey, _vs);
 		}
 	}
-#pragma endregion VertexShader
 
-#pragma region PixelShader
-	if (shaderManager.GetPool<PixelShader>().Has(_psUniqueKey) == false)
+	_ps = shaderManager.GetPool<PixelShader>().Find(_psUniqueKey);
+	if (_ps == nullptr)
 	{
 		auto blob = shaderManager.GetCompiler().CreateBlob(folderPath, param.shaderFileName, "ps", param.psName, false, param.psMacros);
 		_ps = std::make_shared<PixelShader>(blob, _psUniqueKey);
@@ -76,7 +73,6 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 
 		shaderManager.GetPool<PixelShader>().Add(_psUniqueKey, _ps);
 	}
-#pragma endregion PixelShader
 }
 
 void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool useOutRTViewportSize) const
