@@ -372,6 +372,4 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 			}
 		);
 	}
-
-	dx.ClearDeviceContext();
 }
