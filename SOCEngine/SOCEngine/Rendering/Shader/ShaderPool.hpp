@@ -37,14 +37,10 @@ namespace Rendering
 				_shaders.insert(make_pair(key, shader));
 			}
 
-			bool Find(ShaderPtr& out, const std::string& key)
+			ShaderPtr Find(const std::string& key)
 			{
 				auto findIter	= _shaders.find(key);
-				bool success	= findIter != _shaders.end();
-				if (success)
-					out = findIter->second;
-
-				return success;
+				return findIter != _shaders.end() ? findIter->second : nullptr;
 			}
 			bool Has(const std::string& key)
 			{

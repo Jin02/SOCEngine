@@ -140,8 +140,8 @@ namespace Rendering
 
 				std::string key = (uniqueKey.empty() == false) ? uniqueKey : Shader::ShaderCompiler::MakeKey(shaderName, mainFuncName, "cs", macros);
 
-				std::shared_ptr<Shader::ComputeShader> shaderPtr(nullptr);
-				if (_shaderMgr->GetPool<Shader::ComputeShader>().Find(shaderPtr, key))
+				std::shared_ptr<Shader::ComputeShader> shaderPtr = _shaderMgr->GetPool<Shader::ComputeShader>().Find(key);
+				if(shaderPtr)
 					return shaderPtr;
 
 				auto& compiler = _shaderMgr->GetCompiler();
