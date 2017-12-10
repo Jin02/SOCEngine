@@ -101,41 +101,9 @@ uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& sema
 
 	return flag;
 }
-/*
-void Mesh::AddMaterialID(MaterialID id)
-{
-	assert(id.Literal() != MaterialID::Undefined());
-	_materialIDs.push_back(id);
-}
 
-bool Mesh::HasMaterialID(MaterialID id) const
-{
-	for (auto& iter : _materialIDs)
-	{
-		if (iter == id)
-			return true;
-	}
-
-	return false;
-}
-
-void Mesh::DeleteMaterialID(MaterialID id)
-{
-	uint size = _materialIDs.size();
-	for (uint i = 0; i < size; ++i)
-	{
-		if (_materialIDs[i] == id)
-		{
-			_materialIDs.erase( _materialIDs.begin() + i );
-			return;
-		}
-	}
-}
-*/
 void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const
 {
-	assert(transform.GetDirty());
-
 	Vector3 extents		= _boundBox.GetExtents();
 	Vector3 boxCenter	= _boundBox.GetCenter();
 
@@ -163,8 +131,7 @@ void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
 	if(transform.GetDirty())
 		_tfChangeState = TransformCB::ChangeState::HasChanged;
 
-	if ((_tfChangeState != TransformCB::ChangeState::No) == false)
-		return;
+	assert(_tfChangeState != TransformCB::ChangeState::No);
 
 	const Matrix& worldMat = transform.GetWorldMatrix();
 	

@@ -59,12 +59,6 @@ namespace Rendering
 			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);
 
 		public:
-			//void AddMaterialID(MaterialID id);
-			//bool HasMaterialID(MaterialID id) const;
-			//void DeleteMaterialID(MaterialID id);
-
-		public:
-//			GET_CONST_ACCESSOR(MaterialIDs,		const std::vector<MaterialID>&,	_materialIDs);
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID,					_objectID);
 			GET_CONST_ACCESSOR(PrevWorldMat,	const Math::Matrix&,			_prevWorldMat);
 
@@ -83,6 +77,9 @@ namespace Rendering
 			GET_CONST_ACCESSOR(PBRMaterialID,	MaterialID,						_pbrMaterialID);
 			SET_ACCESSOR(PBRMaterialID,			MaterialID,						_pbrMaterialID);
 
+			GET_CONST_ACCESSOR(TFChangeState,	TransformCB::ChangeState,		_tfChangeState);
+			GET_CONST_ACCESSOR(Dirty,			bool,							_tfChangeState != TransformCB::ChangeState::No);
+
 		private:
 			uint ComputeBufferFlag(
 				const std::vector<Shader::VertexShader::SemanticInfo>& semantics,
@@ -91,18 +88,17 @@ namespace Rendering
 		private:
 			Buffer::BaseBuffer::Key						_vbKey;
 			Buffer::BaseBuffer::Key						_ibKey;
-//			std::vector<MaterialID>						_materialIDs;
 			MaterialID									_pbrMaterialID;
 
-			uint										_bufferFlag = 0;
+			uint										_bufferFlag		= 0;
 			Core::ObjectID								_objectID;
 			Buffer::ExplicitConstBuffer<TransformCB>	_transformCB;
 
-			float										_radius = 0.0f;
+			float										_radius			= 0.0f;
 			Intersection::BoundBox						_boundBox;
 
 			Math::Matrix								_prevWorldMat;
-			TransformCB::ChangeState					_tfChangeState;
+			TransformCB::ChangeState					_tfChangeState	= TransformCB::ChangeState::HasChanged;
 		};
 	}
 }
