@@ -45,7 +45,7 @@ namespace Rendering
 				float			near				= 0.1f;
 				float			far					= 1000.0f;
 				float			aspect				= 1.0f;
-				Color			clearColor			= Color::Black();
+				Color			clearColor			= Color::Clear();
 				Rect<uint>		renderRect			= Rect<uint>(0, 0, 0, 0);
 			};
 
