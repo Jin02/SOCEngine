@@ -928,8 +928,9 @@ void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
 		mesh.SetBoundBox(boundBox);
 		mesh.SetRadius(radius);
 
-		auto material		= materialMgr.Find<PhysicallyBasedMaterial>(meshFileName + ":" + part.materialID);
-		MaterialID matID	= managerParam.materialManager.FindID<PhysicallyBasedMaterial>(material ? material->GetName() : "@Default");
+		std::string strKey	= meshFileName + ":" + part.materialID;
+		bool existMaterial	= materialMgr.Has<PhysicallyBasedMaterial>(strKey);
+		MaterialID matID	= managerParam.materialManager.FindID<PhysicallyBasedMaterial>(existMaterial ? strKey : "@Default");
 		mesh.SetPBRMaterialID(matID);
 	};
 
