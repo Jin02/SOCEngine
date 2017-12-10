@@ -51,20 +51,19 @@ namespace Rendering
 			}
 
 		private:
-			PostProcessing::TempTextures			_tempTextures;
+			PostProcessing::TempTextures				_tempTextures;
 
-			Texture::RenderTexture					_tempResultMap;
-			Texture::RenderTexture					_bluredCurScene;
+			Texture::RenderTexture						_tempResultMap;
+			Texture::RenderTexture						_bluredCurScene;
 
 			std::tuple<	PostProcessing::Bloom,
 						PostProcessing::SSAO,
-						PostProcessing::DepthOfField> _postprocessing;
+						PostProcessing::DepthOfField>	_postprocessing;
 
+			PostProcessing::Copy						_copy;
 
-			PostProcessing::Copy					_copy;
-
-			bool									_useSSAO = false;
-			bool									_useDoF = false;
+			bool										_useSSAO = false;
+			bool										_useDoF = false;
 		};
 	}
 }
