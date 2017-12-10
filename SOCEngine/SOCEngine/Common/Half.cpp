@@ -16,22 +16,22 @@ Half::Half(float f)
 	// 1   5       10
 	// s eeeee mmmmmmmmmm
 
-	ushort floatBit = *(reinterpret_cast<uint*>(&f));
+	unsigned int floatBit = *((unsigned int*)&f);
 
-	int exponent = static_cast<int>((floatBit & 0x7F800000) >> 23) - 127 + 15;
-	assert(exponent < 31);
+	int exponent = (int)((floatBit &0x7F800000) >> 23) - 127 + 15;
+	assert(exponent < 31);// "Strange Exp"
 
 	if (exponent <= 0)
 	{
-		_value = static_cast<ushort>((floatBit & 0x80000000) >> 16);
+		_value = (unsigned short)((floatBit & 0x80000000) >> 16);
 		return;
-	}
+	}		
 
-	uint outSign		= (floatBit & 0x80000000) >> 16;
-	uint outExp			= static_cast<uint>(exponent) << 10;
-	uint outMantissa	= (floatBit & 0x007FFFFF) >> 13;
+	unsigned int outSign		= (floatBit & 0x80000000) >> 16;
+	unsigned int outExp			= ((unsigned int)exponent) << 10;
+	unsigned int outMantissa	= (floatBit & 0x007FFFFF) >> 13;
 
-	_value = (outSign | outExp | outMantissa);
+	_value = (unsigned short)(outSign | outExp | outMantissa);
 }
 
 Half::operator float() const
