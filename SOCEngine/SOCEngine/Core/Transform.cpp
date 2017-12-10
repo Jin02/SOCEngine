@@ -58,8 +58,10 @@ void Transform::UpdateForward(const Vector3& f)
 
 void Transform::UpdateEulerAngle(const Vector3 & e)
 {
-	_eulerAngle = e;
-	_quaternion = Quaternion::FromEuler(-e);
+	_eulerAngle = Vector3::EulerNormalize(e);
+	_quaternion = Quaternion::FromEuler(-Vector3(DEG_TO_RAD(_eulerAngle.x),
+												 DEG_TO_RAD(_eulerAngle.y),
+												 DEG_TO_RAD(_eulerAngle.z)));
 
 	_right		= _quaternion.GetRight();
 	_up			= _quaternion.GetUp();
