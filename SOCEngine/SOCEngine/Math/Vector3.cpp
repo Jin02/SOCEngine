@@ -326,5 +326,16 @@ Vector3 Vector3::FromRotationMatrix(const Matrix& matrix)
 		thetaZ = 0;
 	}
 
-	return Vector3(thetaX, thetaY, thetaZ);
+	return Vector3::EulerNormalize(Vector3(thetaX, thetaY, thetaZ));
+}
+
+Vector3 Vector3::EulerNormalize(const Vector3& euler)
+{
+	int x = (int)(euler.x / 360.0f);
+	int y = (int)(euler.y / 360.0f);
+	int z = (int)(euler.z / 360.0f);
+
+	return Vector3(	euler.x - x * 360.0f + (int)(euler.x < 0) * 360.0f,
+					euler.y - y * 360.0f + (int)(euler.y < 0) * 360.0f,
+					euler.z - z * 360.0f + (int)(euler.z < 0) * 360.0f);
 }

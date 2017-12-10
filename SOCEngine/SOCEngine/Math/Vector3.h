@@ -60,6 +60,7 @@ namespace Math
 		static Vector3 TransformCoord(const Vector3& v, const Matrix& mat);
 		static Vector3 TransformNormal(const Vector3& v, const Matrix& mat);
 		static Vector3 FromRotationMatrix(const Matrix& rotMat);
+		static Vector3 EulerNormalize(const Vector3& euler);
 
 	public:
 		const Vector3 Normalized() const;
