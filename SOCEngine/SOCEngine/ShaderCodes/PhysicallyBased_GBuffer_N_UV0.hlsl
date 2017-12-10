@@ -11,10 +11,8 @@ struct VS_OUTPUT
 {
 	float4 sv_position 		 	: SV_POSITION;
 
-//#ifdef USE_MOTION_BLUR
 	float4 position				: NDC_POSITION;
 	float4 prevPosition			: PREV_POSITION;
-//#endif
 
 	float3 worldPos				: WORLD_POS;
 	float3 normal 				: NORMAL;
@@ -23,26 +21,24 @@ struct VS_OUTPUT
 
 VS_OUTPUT VS( VS_INPUT input )
 {
-	VS_OUTPUT ps;
+	VS_OUTPUT output;
 	
 	float4 localPos		= float4(input.position, 1.0f);
 	float4 worldPos		= mul(localPos, transform_world);
 	float4 position		= mul(worldPos, camera_viewProjMat);
 	
-	ps.worldPos			= worldPos.xyz / worldPos.w;
+	output.worldPos		= worldPos.xyz / worldPos.w;
 
-	ps.uv				= input.uv;
-	ps.normal 			= mul(input.normal, (float3x3)transform_worldInvTranspose);
+	output.uv			= input.uv;
+	output.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
 
-//#ifdef USE_MOTION_BLUR
 	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
-	ps.prevPosition		= mul(prevWorldPos, camera_prevViewProjMat);
+	output.prevPosition	= mul(prevWorldPos, camera_prevViewProjMat);
 	
-	ps.position			= position;
-//#endif
- 	ps.sv_position 		= ps.prevPosition;
+	output.position		= position;
+ 	output.sv_position 	= position;
 
-    return ps;
+    return output;
 }
 
 GBuffer PS( VS_OUTPUT input ) : SV_Target

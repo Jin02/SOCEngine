@@ -8,38 +8,49 @@ struct VS_INPUT
 	float2 uv						: TEXCOORD0;
 };
 
-struct PS_SCENE_INPUT
+struct VS_OUTPUT
 {
-	float4 position 	 			: SV_POSITION;
-	float3 positionWorld			: POSITION_WORLD;
+	float4 sv_position 		 	: SV_POSITION;
 
-	float2 uv						: TEXCOORD0;
+	float4 position				: POSITION;
+	float4 prevPosition			: PREV_POSITION;
 
-	float3 normal 					: NORMAL;
-	float3 tangent 					: TANGENT;
+	float3 worldPos				: WORLD_POS;
+	float3 normal 				: NORMAL;
+	float2 uv					: TEXCOORD0;
+	float3 tangent 				: TANGENT;
 };
 
-PS_SCENE_INPUT VS(VS_INPUT input)
+VS_OUTPUT VS(VS_INPUT input)
 {
-	PS_SCENE_INPUT ps;
-	float4 posWorld		= mul(float4(input.position, 1.0f), transform_world);
-	ps.position 		= mul(posWorld,						camera_viewProjMat);
-	ps.positionWorld	= posWorld.xyz;
+	VS_OUTPUT output;
 
-	ps.uv				= input.uv;
-	ps.normal 			= mul(input.normal, (float3x3)transform_worldInvTranspose);
-	ps.tangent			= mul(input.tangent, (float3x3)transform_worldInvTranspose);
+	float4 localPos		= float4(input.position, 1.0f);
+	float4 worldPos		= mul(localPos, transform_world);
+	float4 position		= mul(worldPos, camera_viewProjMat);
 
-	return ps;
+	output.sv_position 	= position;
+	output.worldPos		= worldPos.xyz / worldPos.w;
+
+	output.uv			= input.uv;
+	output.normal 		= mul(input.normal, (float3x3)transform_worldInvTranspose);
+	output.tangent 		= normalize( mul(input.tangent, (float3x3)transform_worldInvTranspose ) );
+
+	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
+	output.prevPosition	= mul(prevWorldPos, camera_prevViewProjMat);
+
+	output.position		= position;
+
+	return output;
 }
 
-float4 PS(PS_SCENE_INPUT input) : SV_Target
+float4 PS(VS_OUTPUT input) : SV_Target
 {
 	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
 	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
 	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
 
-	return Lighting(normal, input.positionWorld, input.position.xy, input.uv);
+	return Lighting(normal, input.worldPos, input.position.xy, input.uv);
 }
 
 #include "OptionalRendering_Forward.h"
