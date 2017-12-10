@@ -51,7 +51,8 @@ void MeshManager::CheckDirty(	const TransformPool& tfPool,
 					const Transform*	tf	= tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 					const Object*		obj	= objMgr.Find(mesh.GetObjectID()); assert(obj);
 
-					if (tf->GetDirty() & obj->GetUse())
+					bool mustUpdate = (tf->GetDirty() | mesh.GetDirty()) & obj->GetUse();
+					if (mustUpdate)
 					{
 						dirty.push_back(&mesh);
 
@@ -78,7 +79,8 @@ void MeshManager::ComputeWorldSize(
 			ObjectID id = iter->GetObjectID();
 
 			const Transform* tf = tfPool.Find(id.Literal()); assert(tf);
-			iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
+			if (tf->GetDirty())
+				iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
 		}
 	};
 
