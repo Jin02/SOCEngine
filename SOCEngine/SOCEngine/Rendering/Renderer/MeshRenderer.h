@@ -27,9 +27,10 @@ namespace Rendering
 			template <class CallPreRender, class CallPostRender>
 			static void RenderTransparentMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::TransparentMeshRenderQueue& meshes, CallPreRender func, CallPostRender postFunc)
 			{
+				const auto& vbPool			= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
+
 				for (const auto meshPtr : meshes)
 				{
-					const auto& vbPool			= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
 					const auto* vertexBuffer	= vbPool.Find(meshPtr->GetVBKey()); assert(vertexBuffer);
 
 					vertexBuffer->IASetBuffer(dx);
@@ -45,9 +46,9 @@ namespace Rendering
 			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPreRender preRenderCall, CallPostRender postCall)
 			{
 				meshes.Iterate(
-					[&dx, &param, renderType, &preRenderCall](const Mesh* mesh)
+					[&dx, &param, renderType, &preRenderCall,
+					 &vbPool = param.bufferMgr.GetPool<Buffer::VertexBuffer>()](const Mesh* mesh)
 					{
-						const auto& vbPool	= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
 						const auto* vb		= vbPool.Find(mesh->GetVBKey()); assert(vb);
 
 						vb->IASetBuffer(dx);
