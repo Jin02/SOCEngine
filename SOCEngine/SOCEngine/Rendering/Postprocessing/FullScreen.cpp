@@ -83,17 +83,17 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 		dx.SetViewport(Rect<float>(0.0f, 0.0f, size.w, size.h));
 	}
 
+	auto rtv = outResultRT.GetRaw();
 	dx.SetRenderTarget(outResultRT);
 	dx.SetDepthStencilState(DepthState::DisableDepthTest, 0);
 	dx.SetBlendState(BlendState::Opaque);
+	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+	dx.SetRasterizerState(RasterizerState::CWDefault);
 
 	_vs->BindShaderToContext(dx);
 	_vs->BindInputLayoutToContext(dx);
 	
 	_ps->BindShaderToContext(dx);
-
-	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
-	dx.SetRasterizerState(RasterizerState::CWDefault);
 
 	dx.GetContext()->Draw(3, 0);
 
