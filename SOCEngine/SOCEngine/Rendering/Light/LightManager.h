@@ -87,9 +87,6 @@ namespace Rendering
 			void CheckDirtyLights(const Core::TransformPool& transformPool);
 			void ClearDirty();
 
-			void BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS);
-			void UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const;
-
 			template <class LightType> auto&		GetBuffer()
 			{
 				return GetLightDatas<LightType>().lightBuffer;
