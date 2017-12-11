@@ -70,4 +70,5 @@ void SkyBox::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDe
 	vs.UnBindShaderToContext(dx);
 	vs.UnBindInputLayoutToContext(dx);
 	material.GetPixelShader().UnBindShaderToContext(dx);
+	dx.ReSetRenderTargets(1);
 }
