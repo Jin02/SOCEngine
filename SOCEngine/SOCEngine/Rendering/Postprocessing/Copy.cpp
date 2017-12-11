@@ -1,5 +1,6 @@
 #include "Copy.h"
 #include "BindIndexInfo.h"
+#include "AutoBinder.hpp"
 
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
@@ -16,11 +17,8 @@ void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 
 void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap) const
 {
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
+	AutoBinderSRV<PixelShader> inputMap(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
 	
 	_screen.Render(dx, outResultRT, true);
-
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 }
