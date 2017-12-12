@@ -26,6 +26,5 @@ void SkyGeometry::Initialize(Device::DirectX& dx)
 		_indexBuffer.Initialize(dx, args.indices, -1, false);
 	};
 
-	BasicGeometryGenerator gen;
-	gen.CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
+	BasicGeometryGenerator::CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
 }
