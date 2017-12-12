@@ -54,12 +54,13 @@ namespace Rendering
 						const auto& base		= shadow->GetBase();
 						Core::ObjectID objID	= base.GetObjectID();
 
-						uint index				= indexer.Find(objID.Literal());
-						_paramBuffer[index]		= base.GetParam();
-						_transformBuffer[index]	= shadow->MakeVPMatParam(lightPool, tfPool);
+						uint index						= indexer.Find(objID.Literal());
+						_paramBuffer[index]				= base.GetParam();
+						_paramBuffer[index].lightIndex	= lightPool.GetIndexer().Find(objID.Literal());
+						_transformBuffer[index]			= shadow->MakeVPMatParam(lightPool, tfPool);
 					}
 
-					_mustUpdateParamSRBuffer		|= (dirtyShadows.empty() != false);
+					_mustUpdateParamSRBuffer		|= (dirtyShadows.empty() == false);
 					_mustUpdateTransformSRBuffer	|= _mustUpdateParamSRBuffer;
 				}
 				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate)
