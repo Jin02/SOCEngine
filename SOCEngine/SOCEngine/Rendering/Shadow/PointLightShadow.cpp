@@ -50,7 +50,7 @@ PointLightShadow::ViewProjMatType PointLightShadow::MakeVPMatParam(const LightPo
 
 	auto ComputeViewProj = [](const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
 	{
-		Matrix view = Matrix::LookAtDir((eyePos + forward).Normalized(), &up);
+		Matrix view = Matrix::LookAtDir(forward, &up);
 		{
 			view._41 = eyePos.x;
 			view._42 = eyePos.y;
