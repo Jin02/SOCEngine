@@ -14,16 +14,16 @@ namespace Rendering
 		public:
 			struct Param
 			{
-				float	projNear		= 0.1f;
+				float	projNear		= 0.1f;			// x
 
-				Half	softness		= Half(1.0f);
-				Half	underScanSize	= Half(4.25f);
+				Half	softness		= Half(1.0f);	// y
+				Half	underScanSize	= Half(4.25f);	// y
 
-				uchar	flag			= 0;
-				uchar	bias			= 1;
-				ushort	lightIndex		= -1;
+				uchar	flag			= 0;			// z
+				uchar	bias			= 1;			// z
+				ushort	lightIndex		= -1;			// z
 
-				uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);
+				uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);	// a
 
 				Param() = default;
 			};
