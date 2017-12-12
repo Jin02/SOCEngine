@@ -20,8 +20,8 @@ namespace Core
 			return !operator==(rhs);
 		}
 
-		static constexpr LiteralType Undefined() { return -1; }
-		UniqueID() : _id(Undefined()) {}
+		static constexpr LiteralType UndefinedLiteral() { return -1; }
+		UniqueID() : _id(UndefinedLiteral()) {}
 
 	public:
 		using IndexMap		= Core::IndexMap<LiteralType>;
@@ -30,8 +30,8 @@ namespace Core
 		friend class Core::Indexer<T, std::map<LiteralType, uint>>;
 
 	protected:
-		inline LiteralType Literal() const { return _id; }
-		inline operator LiteralType() const { return _id; }
+		inline LiteralType Literal() const	{ return _id; }
+		inline operator LiteralType() const	{ return _id; }
 
 	protected:
 		explicit UniqueID(LiteralType id) : _id(id) {}
