@@ -39,7 +39,6 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		meshMgr.CheckDirty(transformPool, objectManager, camMgr);
 	}
 
-	bool isDirtyMesh = meshMgr.GetHasDirtyMeshes();
 	if (meshMgr.GetHasDirtyMeshes())
 	{
 		uint value = 0xff7fffff;
@@ -69,8 +68,8 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	lightMgr.UpdateParamBuffer(shadowMgr, lightShaftIndexer);
 	lightMgr.UpdateSRBuffer(dx);
 
-	shadowMgr.UpdateConstBuffer(dx, shadowAtlasMapRenderer);
 	shadowMgr.UpdateBuffer(lightMgr, transformPool, _sceneBoundBox);
+	shadowMgr.UpdateConstBuffer(dx, shadowAtlasMapRenderer);
 	shadowMgr.UpdateSRBuffer(dx);
 }
 
