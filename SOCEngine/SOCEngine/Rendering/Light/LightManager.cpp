@@ -133,6 +133,8 @@ void LightManager::ClearDirty()
 	{
 		for (auto light : dirtyLights)
 			light->GetBase().SetDirty(false);
+
+		dirtyLights.clear();
 	};
 
 	UpdateDirtyLight(GetDirtyParamLights<DirectionalLight>());
