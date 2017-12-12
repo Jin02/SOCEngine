@@ -99,29 +99,30 @@ namespace Core
 #pragma endregion Light
 
 #pragma region Shadow
+	private:
+		template <class ShadowType>
+		ShadowType& _AddShadow(ObjectID id)
+		{
+			auto& lightMgr = GetManager<ShadowType::LightType>();
+			assert(lightMgr.Has<ShadowType::LightType>(id));
+
+			auto& shadowMgr = GetManager<ShadowType>();
+			return shadowMgr.Acquire<ShadowType>(id);
+		}
+
+	public:
 		template <> DLShadow& Add<DLShadow>(ObjectID id)
 		{
-			auto& lightMgr = GetManager<DLShadow::LightType>();
-			assert(lightMgr.Has<DLShadow::LightType>(id));
-
-			auto& shadowMgr = GetManager<DLShadow>();
-			return shadowMgr.Acquire<DLShadow>(id);
+			return _AddShadow<DLShadow>(id);
 		}
 		template <> PLShadow& Add<PLShadow>(ObjectID id)
 		{
-			auto& lightMgr = GetManager<PLShadow::LightType>();
-			assert(lightMgr.Has<PLShadow::LightType>(id));
+			return _AddShadow<PLShadow>(id);
 
-			auto& shadowMgr = GetManager<PLShadow>();
-			return shadowMgr.Acquire<PLShadow>(id);
 		}
 		template <> SLShadow& Add<SLShadow>(ObjectID id)
 		{
-			auto& lightMgr = GetManager<SLShadow::LightType>();
-			assert(lightMgr.Has<SLShadow::LightType>(id));
-
-			auto& shadowMgr = GetManager<SLShadow>();
-			return shadowMgr.Acquire<SLShadow>(id);
+			return _AddShadow<SLShadow>(id);
 		}
 #pragma endregion Shadow
 
