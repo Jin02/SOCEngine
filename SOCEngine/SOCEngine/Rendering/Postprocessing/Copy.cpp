@@ -15,10 +15,10 @@ void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 	_screen.Initialize(dx, FullScreen::InitParam("Copy", "Copy_InFullScreen_PS", nullptr), shaderMgr);
 }
 
-void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap) const
+void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, const Texture2D& inputColorMap) const
 {
 	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
-	AutoBinderSRV<PixelShader> inputMap(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> inputMap(dx, TextureBindIndex(0), inputColorMap.GetShaderResourceView());
 	
 	_screen.Render(dx, outResultRT, true);
 }

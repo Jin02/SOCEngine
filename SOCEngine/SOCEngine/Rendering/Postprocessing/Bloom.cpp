@@ -55,10 +55,10 @@ void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, con
 		{
 			// Down Scale
 			{
-				copy.Render(dx, temp.downScaledTextures[0], _bloomThresholdMap);			// source	-> /2
-				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[0]);	// /2		-> /4
-				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[1]);	// /4		-> /8
-				copy.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[2]);	// /8		-> /16
+				copy.Render(dx, temp.downScaledTextures[0], _bloomThresholdMap.GetTexture2D());			// source	-> /2
+				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[0].GetTexture2D());	// /2		-> /4
+				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /8
+				copy.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /16
 			}
 
 			for (uint i = 0; i<2; ++i)
@@ -66,10 +66,10 @@ void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, con
 
 			// Up Scale
 			{
-				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[3]);	// /16		-> /8
-				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[2]);	// /8		-> /4
-				copy.Render(dx, temp.downScaledTextures[0], temp.downScaledTextures[1]);	// /4		-> /2
-				copy.Render(dx, _bloomThresholdMap, temp.downScaledTextures[0]);			// /2		-> source
+				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[3].GetTexture2D());	// /16		-> /8
+				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /4
+				copy.Render(dx, temp.downScaledTextures[0], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /2
+				copy.Render(dx, _bloomThresholdMap, temp.downScaledTextures[0].GetTexture2D());			// /2		-> source
 			}
 		}
 	}

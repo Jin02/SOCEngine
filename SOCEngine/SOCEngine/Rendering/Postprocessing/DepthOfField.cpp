@@ -42,13 +42,13 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 	// Blur color map
 	{
 		// down scale
-		copy.Render(dx, tempTextures.downScaledTextures[0], inColorMap);
+		copy.Render(dx, tempTextures.downScaledTextures[0], inColorMap.GetTexture2D());
 
 		for (uint i = 0; i < 2; ++i)
 			_blur.Render(dx, tempTextures.downScaledTextures[0], tempTextures.downScaledTextures[0], tempTextures.halfSizeMap);
 
 		// up
-		copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0]);
+		copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0].GetTexture2D());
 	}
 
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),				inColorMap.GetTexture2D().GetShaderResourceView());
