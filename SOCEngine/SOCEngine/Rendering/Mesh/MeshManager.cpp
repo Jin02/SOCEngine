@@ -43,29 +43,36 @@ void MeshManager::CheckDirty(	const TransformPool& tfPool,
 {
 	auto Check = [&tfPool, &camMgr, &objMgr,
 				  &dirty				= _dirtyMeshes,
-				  &mustUpdateCBMeshes	= _mustUpdateCBMeshes](auto& pool)
+				  &mustUpdateCBMeshes	= _mustUpdateCBMeshes](auto& pool) -> bool
 	{
+		bool hasChanged = false;
+
 		pool.Iterate(
-			[&dirty, &tfPool, &camMgr, &objMgr, &mustUpdateCBMeshes](Mesh& mesh)
+			[&dirty, &tfPool, &camMgr, &objMgr, &mustUpdateCBMeshes, &hasChanged](Mesh& mesh)
 			{
 					const Transform*	tf	= tfPool.Find(mesh.GetObjectID().Literal()); assert(tf);
 					const Object*		obj	= objMgr.Find(mesh.GetObjectID()); assert(obj);
 
-					bool mustUpdate = (tf->GetDirty() | mesh.GetDirty()) & obj->GetUse();
+					bool meshDirty	= mesh.GetTFChangeState() != TransformCB::ChangeState::No;
+					bool mustUpdate	= (tf->GetDirty() | meshDirty) & obj->GetUse();
 					if (mustUpdate)
 					{
 						dirty.push_back(&mesh);
 
 						if (camMgr.InFrustumAllCamera(tf->GetWorldPosition(), mesh.GetRadius()))
 							mustUpdateCBMeshes.push_back(&mesh);
+
+						hasChanged |= mesh.GetTFChangeState() == TransformCB::ChangeState::HasChanged;
 					}
 			}
 		);
+
+		return hasChanged;
 	};
 
-	Check(GetOpaqueMeshPool());
-	Check(GetAlphaTestMeshPool());
-	Check(GetTransparentMeshPool());
+	_dirty |= Check(GetOpaqueMeshPool());
+	_dirty |= Check(GetAlphaTestMeshPool());
+	_dirty |= Check(GetTransparentMeshPool());
 }
 
 void MeshManager::ComputeWorldSize(
@@ -89,16 +96,11 @@ void MeshManager::ComputeWorldSize(
 
 void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPool)
 {
-	auto Update = [& dx, &tfPool](auto& vector)
-	{		
-		for (auto& mesh : vector)
-		{
-			uint id = mesh->GetObjectID().Literal();
-			
-			const Transform* tf = tfPool.Find(id); assert(tf);
-			mesh->UpdateTransformCB(dx, *tf);
-		}
-	};
+	for (auto& mesh : _mustUpdateCBMeshes)
+	{
+		uint id = mesh->GetObjectID().Literal();
 
-	Update(_mustUpdateCBMeshes);
+		const Transform* tf = tfPool.Find(id); assert(tf);
+		mesh->UpdateTransformCB(dx, *tf);
+	}
 }

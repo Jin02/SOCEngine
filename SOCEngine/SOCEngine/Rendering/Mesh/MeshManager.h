@@ -48,7 +48,7 @@ namespace Rendering
 			GET_ACCESSOR_REF(AlphaTestMeshPool,				_alphaTestMeshPool);
 			GET_ACCESSOR(AllMeshPoolRefs,			auto,	Geometry::MeshPoolRefs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
 
-			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,	_dirtyMeshes.empty() == false);
+			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,	_dirty);
 
 
 		public:
@@ -100,7 +100,7 @@ namespace Rendering
 			void ComputeWorldSize(Math::Vector3& refWorldMin, Math::Vector3& refWorldMax, const Core::TransformPool& tfPool) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::TransformPool& tfPool);
 
-			void ClearDirty() { _dirtyMeshes.clear(); _mustUpdateCBMeshes.clear(); }
+			void ClearDirty() { _dirtyMeshes.clear(); _mustUpdateCBMeshes.clear(); _dirty = false; }
 
 			bool ChangeTrait(Core::ObjectID id,
 							 Geometry::OpaqueMeshPool& fromPool, Geometry::TransparentMeshPool& toPool)
@@ -131,6 +131,8 @@ namespace Rendering
 
 			std::vector<Geometry::Mesh*>				_mustUpdateCBMeshes;
 			std::vector<const Geometry::Mesh*>			_dirtyMeshes;
+			
+			bool										_dirty = true;
 		};
 	}
 }
