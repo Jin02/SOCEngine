@@ -33,14 +33,7 @@ void Engine::RunScene()
 		_lag -= MS_PER_UPDATE;
 	}
 
-	// Update Root Transform
-	{
-		for (ObjectID rootID : _rootObjectIDs.GetVector())
-		{
-			Transform* find = _transformPool.Find(rootID.Literal());	assert(find);
-			find->UpdateWorldMatrix(_transformPool);
-		}
-	}
+	UpdateRootTransform();
 
 	// check dirty transform
 	{
@@ -69,6 +62,15 @@ void Engine::RunScene()
 	_componentSystem.ClearDirty();
 
 //	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
+}
+
+void Engine::UpdateWorldMatrix()
+{
+	for (ObjectID rootID : _rootObjectIDs.GetVector())
+	{
+		Transform* find = _transformPool.Find(rootID.Literal());	assert(find);
+		find->UpdateWorldMatrix(_transformPool);
+	}
 }
 
 void Engine::ChangeScene(IScene* scene)
@@ -111,7 +113,7 @@ Object* Engine::LoadMesh(const std::string& fileDir, bool useDynamicVB, bool use
 	},
 	fileDir, useDynamicVB, useDynamicIB);
 
-	return (id.Literal() != ObjectID::Undefined()) ? _objectManager.Find(id) : nullptr;
+	return (id != ObjectID::Undefined()) ? _objectManager.Find(id) : nullptr;
 }
 
 void Engine::AddRootObject(const Object& object)

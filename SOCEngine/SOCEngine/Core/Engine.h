@@ -42,6 +42,7 @@ namespace Core
 
 		// Root
 		void AddRootObject(const Core::Object& object);
+		void UpdateWorldMatrix();
 
 		GET_ACCESSOR_REF(DirectX,			_dx);
 		GET_ACCESSOR_REF(ComponentSystem,	_componentSystem);
