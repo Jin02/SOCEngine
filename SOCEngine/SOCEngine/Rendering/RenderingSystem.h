@@ -54,5 +54,7 @@ namespace Rendering
 		Manager::ShaderManager				_shaderManager;
 		Manager::Texture2DManager			_tex2dManager;
 		Manager::DefaultShaders				_defaultShaders;
+
+		PostProcessing::Copy				_backBufferMaker;
 	};
 }

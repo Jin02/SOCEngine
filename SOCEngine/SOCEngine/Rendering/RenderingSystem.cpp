@@ -27,6 +27,7 @@ void RenderingSystem::InitializeRenderer(Engine& engine, const RenderSetting&& p
 	});	
 
 	_defaultShaders.Initialize(engine.GetDirectX(), _shaderManager);
+	_backBufferMaker.Initialize(engine.GetDirectX(), _shaderManager);
 }
 
 void RenderingSystem::Initialize(Engine& engine)
@@ -42,27 +43,28 @@ void RenderingSystem::Update(Engine& engine, float dt)
 
 void RenderingSystem::Render(Engine& engine)
 {
-	auto& dx				= engine.GetDirectX();
-	const auto& compoSys	= engine.GetComponentSystem();
-	const auto& mainCamera	= compoSys.GetMainCamera();
-
+	auto& dx = engine.GetDirectX();
 	_materialManager.UpdateConstBuffer(dx);
 
+	const auto& compoSys		= engine.GetComponentSystem();
 	const auto& shadowMgr		= compoSys.GetManager_Direct<ShadowManager>();
-	const auto& lightMgr		= compoSys.GetManager_Direct<LightManager>();
 	const auto cullParam		= engine.GetCullingParam();
 	const auto meshRenderParam	= GetMeshRenderParam();
-
 	_shadowRenderer.RenderShadowMap<SpotLightShadow>(dx, shadowMgr, _materialManager, cullParam, meshRenderParam);
 	_shadowRenderer.RenderShadowMap<PointLightShadow>(dx, shadowMgr, _materialManager, cullParam, meshRenderParam);
 	_shadowRenderer.RenderShadowMap<DirectionalLightShadow>(dx, shadowMgr, _materialManager, cullParam, meshRenderParam);
 
-	SkyBoxMaterial* skyboxMaterial = _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
+	const auto& lightMgr			= compoSys.GetManager_Direct<LightManager>();
+	const auto& mainCamera			= compoSys.GetMainCamera();
+	SkyBoxMaterial* skyboxMaterial	= _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
 	_mainRenderer.UpdateCB(dx, mainCamera, lightMgr);
 	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
-	_postProcessing.UpdateCB(dx);
-	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+//	_postProcessing.UpdateCB(dx);
+//	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+
+	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), _mainRenderer.GetResultMap().GetTexture2D());
+	dx.GetSwapChain()->Present(0, 0);
 
 	_shadowRenderer.ClearDirty();
 }
