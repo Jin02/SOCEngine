@@ -49,8 +49,6 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Flag,			uchar,			_param.flag);
 			GET_CONST_ACCESSOR(Flag,			uchar,			_param.flag);
 
-			GET_CONST_ACCESSOR(LightIndex,		ushort,			_param.lightIndex);
-
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID,	_objectID);
 
 			inline float GetBias() const { return static_cast<float>(_param.bias) * 1020.0f; }
