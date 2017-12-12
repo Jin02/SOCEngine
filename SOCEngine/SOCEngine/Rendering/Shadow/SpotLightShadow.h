@@ -38,7 +38,7 @@ namespace Rendering
 			using CBPoolType		= Buffer::ShadowMapCBPool;
 
 		public:
-			SpotLightShadow(BaseShadow base) : _base(base) {}
+			SpotLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
 
 			GET_CONST_ACCESSOR(ViewProjectionMatrix,	const auto&,	_transposedViewProjMat);

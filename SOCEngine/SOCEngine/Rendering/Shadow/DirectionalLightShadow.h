@@ -44,7 +44,7 @@ namespace Rendering
 			};
 
 		public:
-			DirectionalLightShadow(BaseShadow base) : _base(base) {}
+			DirectionalLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(	const Light::LightPool<Light::DirectionalLight>& lightPool,
 											const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox	);
 
