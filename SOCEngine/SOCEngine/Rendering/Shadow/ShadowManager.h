@@ -73,9 +73,6 @@ namespace Rendering
 
 			void DeleteAll();
 
-			void BindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS);
-			void UnbindResources(Device::DirectX& dx, bool bindVS, bool bindGS, bool bindPS) const;
-
 		public:
 			template <class ShadowType>	auto& GetPool()
 			{
