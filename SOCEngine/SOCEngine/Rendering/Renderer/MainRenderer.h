@@ -38,7 +38,7 @@ namespace Rendering
 				const MeshRenderer::Param&				renderParam;
 				const Manager::MaterialManager&			materialMgr;
 				const Manager::LightManager&			lightMgr;
-				const ShadowSystem&&						shadowParam;
+				const ShadowSystem&&					shadowParam;
 				const CullingParam&&					cullingParam;
 
 				const Material::SkyBoxMaterial*			skyBoxMaterial;
