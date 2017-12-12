@@ -145,7 +145,7 @@ void ShadowManager::UpdateBuffer(const LightManager& lightMgr, const TransformPo
 
 void ShadowManager::UpdateSRBuffer(DirectX& dx)
 {	
-	auto UpdateSRBuffer = [& dx](auto& shadowDatas)
+	auto UpdateSRBuffer = [&dx](auto& shadowDatas)
 	{
 		shadowDatas.buffers.UpdateSRBuffer(dx, shadowDatas.mustUpdateToGPU);
 		shadowDatas.mustUpdateToGPU = false;
