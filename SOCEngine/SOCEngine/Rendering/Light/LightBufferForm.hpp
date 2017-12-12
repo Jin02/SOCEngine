@@ -79,7 +79,7 @@ namespace Rendering
 						_transformBuffer[index] = light->MakeTransform(*tf);
 					}
 
-					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() != false);
+					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() == false);
 				}
 
 				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const Core::ObjectID::IndexHashMap& indexer)
@@ -96,7 +96,7 @@ namespace Rendering
 						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 
-					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() != false);
+					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() == false);
 				}
 
 				void UpdateSRBuffer(Device::DirectX& dx, bool forcedUpdate)
