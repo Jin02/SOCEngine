@@ -78,7 +78,6 @@ namespace Rendering
 			SET_ACCESSOR(PBRMaterialID,			MaterialID,						_pbrMaterialID);
 
 			GET_CONST_ACCESSOR(TFChangeState,	TransformCB::ChangeState,		_tfChangeState);
-			GET_CONST_ACCESSOR(Dirty,			bool,							_tfChangeState != TransformCB::ChangeState::No);
 
 		private:
 			uint ComputeBufferFlag(
