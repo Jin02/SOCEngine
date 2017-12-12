@@ -331,7 +331,7 @@ Matrix Matrix::RotateUsingAxis(const Vector3& v, float angle)
 					0.0f,									0.0f,									0.0f,									1.0f	);
 }
 
-Matrix Matrix::ComputeViewMatrix(const Matrix & worldMatrix)
+Matrix Matrix::ComputeViewMatrix(const Matrix& worldMatrix)
 {
 	Matrix outMatrix = worldMatrix;
 
@@ -366,7 +366,7 @@ Matrix Matrix::ComputeInvViewportMatrix(const Rect<uint>& rect)
 	return Matrix::Inverse(viewportMat);
 }
 
-inline Matrix Math::Matrix::MakeRotationMatrix(const Vector3 & right, const Vector3 & up, const Vector3 & forward)
+inline Matrix Math::Matrix::MakeRotationMatrix(const Vector3& right, const Vector3& up, const Vector3& forward)
 {
 	return Matrix(	right.x,	up.x,	forward.x,	0.0f,
 					right.y,	up.y,	forward.y,	0.0f,
@@ -374,7 +374,7 @@ inline Matrix Math::Matrix::MakeRotationMatrix(const Vector3 & right, const Vect
 					0.0f,		0.0f,	0.0f,		1.0f	);
 }
 
-Matrix Math::Matrix::LookAtDir(const Vector3 & targetDir, const Vector3 * upVec)
+Matrix Math::Matrix::LookAtDir(const Vector3& targetDir, const Vector3 * upVec)
 {
 	Vector3 worldUp	= upVec ? *upVec : Vector3::Up();
 
