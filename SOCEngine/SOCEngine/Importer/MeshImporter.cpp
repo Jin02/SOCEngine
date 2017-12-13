@@ -891,9 +891,9 @@ void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
 	auto& transformPool	= managerParam.transformPool;
 	Transform* thisTF	= transformPool.Find(objID);
 	{
-		thisTF->UpdatePosition(node.translation.tf);
+		thisTF->SetLocalPosition(node.translation.tf);
 		thisTF->UpdateQuaternion(node.rotation.tf);
-		thisTF->UpdateScale(node.scale.tf);
+		thisTF->SetLocalScale(node.scale.tf);
 	}
 
 	auto AttachMeshComponent = [&dx, intersectionHashMap, managerParam, meshFileName](Object& object, const Node::Parts& part)

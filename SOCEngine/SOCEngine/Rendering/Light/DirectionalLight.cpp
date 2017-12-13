@@ -20,6 +20,6 @@ DirectionalLight::TransformType DirectionalLight::MakeTransform(const Transform&
 {
 	assert(transform.GetObjectID() == _base.GetObjectID());
 
-	const auto& forward = transform.GetForward();
+	const auto& forward = transform.GetLocalForward();
 	return TransformType(Half(forward.x), Half(forward.y));
 }
