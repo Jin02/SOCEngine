@@ -21,12 +21,12 @@ SamplerState GBufferDefaultSampler 	: register( s0 );
 void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 		 out float4 albedo_occlusion, out float4 velocity_metallic_specularity, out float4 normal_roughness, out float4 emission_materialFlag)
 {
-	float3 albedo			= GetDiffuse(GBufferDefaultSampler, uv).rgb;
+	float3 albedo			= ToLinear(GetDiffuse(GBufferDefaultSampler, uv).rgb, GetGamma());
 	float occlusion			= GetOcclusion(GBufferDefaultSampler, uv);
 	float3 normal			= PackNormal(worldNormal);
 	float roughness			= GetRoughness(GBufferDefaultSampler, uv);
 	float specularity		= GetMaterialSpecularity();
-	float3 emissiveColor	= GetEmissiveColor(GBufferDefaultSampler, uv);
+	float3 emissiveColor	= ToLinear(GetEmissiveColor(GBufferDefaultSampler, uv), GetGamma());
 //	float height			= GetHeight(GBufferDefaultSampler, uv);
 	float metallic			= GetMetallic(GBufferDefaultSampler, uv);
 
