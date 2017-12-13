@@ -33,7 +33,7 @@ void Engine::RunScene()
 		_lag -= MS_PER_UPDATE;
 	}
 
-	UpdateRootTransform();
+	UpdateWorldMatrix();
 
 	// check dirty transform
 	{
