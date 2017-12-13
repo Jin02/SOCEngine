@@ -49,7 +49,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	GBuffer outGBuffer;
 
 #ifdef ENABLE_ALPHA_TEST
-	float alpha		= GetAlpha(GBufferDefaultSampler, input.uv);
+	float alpha		= GetDiffuse(GBufferDefaultSampler, input.uv).a;
 
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
@@ -59,10 +59,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
 	float2 velocity			= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 
-	float4 normalTex		= normalMap.Sample(GBufferDefaultSampler, input.uv);
-	float3 bumpedNormal		= NormalMapping(normalTex.rgb, input.normal, input.tangent);
-	float3 normal			= normalize(lerp(input.normal, bumpedNormal, HasNormalMap()));
-
+	float3 normal			= UnpackNormalMap(GBufferDefaultSampler, input.uv, input.normal, input.tangent);
 	MakeGBuffer(normal, velocity, input.uv, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;

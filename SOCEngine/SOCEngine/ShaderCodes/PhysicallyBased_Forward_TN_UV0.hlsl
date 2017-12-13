@@ -46,10 +46,7 @@ VS_OUTPUT VS(VS_INPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	float4 normalTex	= normalMap.Sample(defaultSampler, input.uv);
-	float3 bumpedNormal	= NormalMapping(normalTex.rgb, input.normal, input.tangent);
-	float3 normal		= lerp(normalize(input.normal), bumpedNormal, HasNormalMap());
-
+	float3 normal = UnpackNormalMap(defaultSampler, input.uv, input.normal, input.tangent);
 	return Lighting(normal, input.worldPos, input.position.xy, input.uv);
 }
 
