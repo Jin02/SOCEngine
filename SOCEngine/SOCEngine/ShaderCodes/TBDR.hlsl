@@ -114,7 +114,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	GroupMemoryBarrierWithGroupSync();
 
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, 0, true);
+	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
 	float3 viewDir				= normalize( camera_worldPos - surface.worldPos );
 
