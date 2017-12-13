@@ -68,5 +68,5 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<GS_OUTPUT> outputStrea
 void PS( GS_OUTPUT input )
 {
 	float3 normal = normalize(input.normal);
-	VoxelizationInPSStage(normalize(normal), input.uv, input.worldPos);
+	VoxelizationInPSStage(normal, input.uv, input.worldPos);
 }
