@@ -129,23 +129,28 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 		MeshRenderer::RenderOpaqueMeshes(dx, param.meshRenderParam, DefaultRenderType::Voxelization, renderQ,
 			[&dx, &materialMgr = param.materialMgr](const Mesh* mesh)
 			{
-				auto material	= materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
+				const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
+				assert(material);
 
-				if (material)
+				auto BindTexture = [&dx](TextureBindIndex bind, const auto* texture)
 				{
-					auto diffuseMap	= material->GetTextures().Find(PhysicallyBasedMaterial::GetDiffuseMapKey());
-					if(diffuseMap)
-						PixelShader::BindShaderResourceView(dx, TextureBindIndex::DiffuseMap, diffuseMap->resource.GetShaderResourceView());
+					if (texture)
+						PixelShader::BindShaderResourceView(dx, bind, texture->resource.GetShaderResourceView());
+				};
 
-					auto opacityMap = material->GetTextures().Find(PhysicallyBasedMaterial::GetOpacityMapKey());
-					if (opacityMap)
-						PixelShader::BindShaderResourceView(dx, TextureBindIndex::OpacityMap, opacityMap->resource.GetShaderResourceView());
-				}
+				BindTexture(TextureBindIndex::DiffuseMap,	material->GetDiffuseMap());
+				BindTexture(TextureBindIndex::NormalMap,	material->GetNormalMap());
+				BindTexture(TextureBindIndex::EmissionMap,	material->GetEmissionMap());
+
+				PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::PhysicallyBasedMaterial,	material->GetParamCB());
 			},
 			[&dx]()
 			{
-				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::OpacityMap);
 				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DiffuseMap);
+				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::NormalMap);
+				PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::EmissionMap);
+
+				PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::PhysicallyBasedMaterial);
 			}
 		);
 
