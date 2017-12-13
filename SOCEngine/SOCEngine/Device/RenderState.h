@@ -48,7 +48,7 @@ namespace Rendering
 			ShadowLessEqualComp,
 			ShadowGreaterEqualComp,
 			ShadowLinear,
-			ConeTracing,
+			ConeTracingLinear,
 			MAX
 		};
 		constexpr unsigned int MaxCountSamplerState = static_cast<unsigned int>(SamplerState::MAX);

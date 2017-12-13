@@ -536,7 +536,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	desc.MaxLOD			= D3D11_FLOAT32_MAX;
 
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
-	_samplerStates[static_cast<uint>(SamplerState::ConeTracing)] = DXUniqueResource<ID3D11SamplerState>(ss);
+	_samplerStates[static_cast<uint>(SamplerState::ConeTracingLinear)] = DXUniqueResource<ID3D11SamplerState>(ss);
 }
 
 unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
