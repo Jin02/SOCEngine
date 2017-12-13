@@ -84,17 +84,30 @@ bool HasOcclusionMap()	{	return (GetMaterialExistTextureFlag() & (1 << 5));	}
 bool HasRoughnessMap()	{	return (GetMaterialExistTextureFlag() & (1 << 6));	}
 bool HasEmissionMap()	{	return (GetMaterialExistTextureFlag() & (1 << 7));	}
 
-float3 GetAlbedo(SamplerState samplerState, float2 uv)
+float4 GetDiffuse(SamplerState samplerState, float2 uv)
 {
-	float3 mtlMainColor	= GetMaterialMainColor().rgb;
-	float3 diffuseTex	= diffuseMap.Sample(samplerState, uv).rgb;
+	float4 mtlMainColor	= GetMaterialMainColor();
+	float4 diffuseTex	= diffuseMap.Sample(samplerState, uv);
 
-	return lerp(mtlMainColor, diffuseTex * mtlMainColor, HasDiffuseMap());
+	return HasDiffuseMap() ? diffuseTex * mtlMainColor : mtlMainColor;
 }
 
-float3 GetOcclusion(SamplerState samplerState, float2 uv)
+float GetOcclusion(SamplerState samplerState, float2 uv)
 {
 	return occlusionMap.Sample(samplerState, uv).x;
+}
+
+float3 UnpackNormalMap(SamplerState samplerState, float2 uv, float3 vertexNormal, float3 vertexTangent)
+{
+	float4 normalTex		= normalMap.Sample(samplerState, uv);
+	float3 bumpedNormal		= UnpackNormal(normalTex.rgb, vertexNormal, vertexTangent);
+	
+	return normalize(lerp(vertexNormal, bumpedNormal, HasNormalMap()));
+}
+
+float3 PackNormal(float3 normal)
+{
+	return normalize(normal) * 0.5f + 0.5f;
 }
 
 float GetRoughness(SamplerState samplerState, float2 uv)
@@ -130,14 +143,6 @@ void GetDiffuseSpecularColor(out float3 outDiffuseColor, out float3 outSpecularC
 {
 	outDiffuseColor		= baseColor - baseColor * metallic;
 	outSpecularColor	= lerp(0.08f * specularity.xxx, baseColor, metallic);
-}
-
-float GetAlpha(SamplerState samplerState, float2 uv)
-{
-	float diffuseMapAlpha	= lerp(1.0f, diffuseMap.Sample(samplerState, uv).a, HasDiffuseMap());
-	float alpha				= diffuseMapAlpha * (1.0f - opacityMap.Sample(samplerState, uv).x) * GetMaterialMainColor().a;
-
-	return alpha;
 }
 
 #endif
