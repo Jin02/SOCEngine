@@ -20,7 +20,6 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 void TestScene::OnInitialize(Engine& engine)
 {
 	Object* mainCamObj = engine.GetObjectManager().Find("MainCamera");
-	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().GetVXGI().SetStartCenterWorldPos(Vector3(0.3f, 0.3f, 17.8f));
 	assert(mainCamObj);
 	bool hasMainCam = mainCamObj->HasComponent<MainCamera>();
 	assert(hasMainCam); // ????
@@ -33,12 +32,12 @@ void TestScene::OnInitialize(Engine& engine)
 	engine.AddRootObject(*box);
 
 	Transform& tf = box->FetchTransform();
-	tf.UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
+	tf.SetLocalPosition(Vector3(0.3f, -4.7f, 17.7f));
 	tf.UpdateEulerAngle(Vector3(-90.0f, 0.0f, 180.0f));
-	tf.UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
+	tf.SetLocalScale(Vector3(5.0f, 5.0f, 5.0f));
 
 	Object& light = engine.GetObjectManager().Add("PointLight");
-	light.FetchTransform().UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
+	light.FetchTransform().SetLocalPosition(Vector3(0.0f, 2.0f, 16.0f));
 
 	PointLight& pl = light.AddComponent<PointLight>();
 	pl.GetBase().SetRadius(30.0f);
@@ -48,6 +47,10 @@ void TestScene::OnInitialize(Engine& engine)
 	pls.GetBase().SetUnderScanSize( Half(0.0f) );
 
 	engine.AddRootObject(light);
+	engine.UpdateWorldMatrix();
+
+	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
+	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
 }
 
 void TestScene::OnDestroy(Engine&)
