@@ -85,10 +85,13 @@ void VXGI::Run(DirectX& dx, const VXGI::Param&& param)
 
 	// 1. Voxelization Pass
 	{
+		if (_dirtyVoxelizeCenterPos)
+			_voxelization.UpdateConstBuffer(dx, _dynamicInfo.startCenterWorldPos);
+
 		// Clear Voxel Map and voxelize
 		_voxelization.Voxelize(dx, _injectionSourceMap,
-			Voxelization::Param{_dynamicInfo.startCenterWorldPos, _infoCB, lightMgr, param.shadowParam,
-								tbrCB, param.cullParam, param.meshRenderParam, param.materialMgr}
+			Voxelization::Param{_infoCB, lightMgr, param.shadowParam, tbrCB,
+			param.cullParam, param.meshRenderParam, param.materialMgr}
 		);
 	}
 
@@ -111,6 +114,8 @@ void VXGI::Run(DirectX& dx, const VXGI::Param&& param)
 	// 4. Voxel Cone Tracing Pass
 	_indirectColorMap.Clear(dx, Color::Clear());
 	_voxelConeTracing.Run(dx, _indirectColorMap, {_injectionSourceMap, _mipmappedInjectionMap, _infoCB, param.main});
+
+	_dirtyVoxelizeCenterPos = false;
 }
 
 void VXGI::UpdateGIDynamicInfoCB(DirectX& dx)

@@ -33,8 +33,15 @@ namespace Rendering
 			};
 
 			GET_CONST_ACCESSOR(StartCenterWorldPos, const Math::Vector3&,	_dynamicInfo.startCenterWorldPos);
-			SET_ACCESSOR_DIRTY(StartCenterWorldPos,	const Math::Vector3&,	_dynamicInfo.startCenterWorldPos);
 			SET_ACCESSOR_DIRTY(PackedNumfOfLights,	uint,					_dynamicInfo.packedNumfOfLights);
+
+			inline void SetStartCenterWorldPos(const Math::Vector3& pos)
+			{
+				_dynamicInfo.startCenterWorldPos = pos;
+
+				_dirty					= true;
+				_dirtyVoxelizeCenterPos	= true;
+			}
 
 			GET_CONST_ACCESSOR(StaticInfo,			const VXGIStaticInfo&,	_staticInfo);
 			GET_CONST_ACCESSOR(Dirty,				bool,					_dirty);
@@ -67,7 +74,8 @@ namespace Rendering
 			Texture::RenderTexture					_indirectColorMap;
 
 			VXGIDynamicInfo							_dynamicInfo;
-			bool									_dirty = true;
+			bool									_dirty					= true;
+			bool									_dirtyVoxelizeCenterPos	= true;
 		};
 	}
 }

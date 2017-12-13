@@ -105,8 +105,6 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	AutoBinderSampler<PixelShader> shadowPointS(dx,	SamplerStateBindIndex::ShadowPointSamplerState,			SamplerState::Point);
 	AutoBinderSampler<PixelShader> defaultS(dx,		SamplerStateBindIndex::DefaultSamplerState,				SamplerState::Anisotropic);	
 
-	UpdateConstBuffer(dx, param.startCenterWorldPos);
-
 	AutoBinderCB<GeometryShader> infoCBGS(dx,		ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 	AutoBinderCB<PixelShader> infoCBPS(dx,			ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 

@@ -53,7 +53,6 @@ namespace Rendering
 
 			struct Param
 			{
-				const Math::Vector3&					startCenterWorldPos;
 				const VXGIInfoCB&						infoCB;
 				const Manager::LightManager&			lightMgr;
 				const Renderer::ShadowSystem&			shadowParam;
