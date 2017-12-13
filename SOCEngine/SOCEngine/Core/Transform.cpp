@@ -29,34 +29,22 @@ const Matrix& Transform::ComputeLocalMatrix()
 	return _localMat;
 }
 
-void Transform::UpdatePosition(const Vector3& pos)
-{
-	_position = pos;
-	SetDirty();
-}
-
-void Transform::UpdateScale(const Vector3& scale)
-{
-	_scale = scale;
-	SetDirty();
-}
-
 void Transform::UpdateRight(const Vector3& r)
 {
-	LookAtDir(Vector3::Cross(_up, r));
+	LookAtWorldDir(Vector3::Cross(_up, r));
 }
 
 void Transform::UpdateUp(const Vector3& u)
 {
-	LookAtDir(Vector3::Cross(u, _right));
+	LookAtWorldDir(Vector3::Cross(u, _right));
 }
 
 void Transform::UpdateForward(const Vector3& f)
 {
-	LookAtDir(f);
+	LookAtWorldDir(f);
 }
 
-void Transform::UpdateEulerAngle(const Vector3 & e)
+void Transform::UpdateEulerAngle(const Vector3& e)
 {
 	_eulerAngle = Vector3::EulerNormalize(e);
 	_quaternion = Quaternion::FromEuler(-Vector3(DEG_TO_RAD(_eulerAngle.x),
@@ -67,10 +55,10 @@ void Transform::UpdateEulerAngle(const Vector3 & e)
 	_up			= _quaternion.GetUp();
 	_forward	= _quaternion.GetForward();
 
-	SetDirty();
+	_dirty = true;
 }
 
-void Transform::UpdateQuaternion(const Quaternion & q)
+void Transform::UpdateQuaternion(const Quaternion& q)
 {
 	_quaternion = q;
 
@@ -81,30 +69,26 @@ void Transform::UpdateQuaternion(const Quaternion & q)
 	_up			= _quaternion.GetUp();
 	_forward	= _quaternion.GetForward();
 
-	SetDirty();
+	_dirty = true;
 }
 
-void Transform::LookAtPos(const Vector3 & targetPos, const Vector3* upVec)
-{
-	Vector3 position	= GetPosition();
-	Vector3 forward		= (targetPos - position).Normalized();
-
-	LookAtDir(forward, upVec);
-}
-
-void Transform::LookAtDir(const Vector3 & targetDir, const Vector3* upVec)
+void Transform::LookAtWorldDir(const Vector3& targetDir, const Vector3* upVec)
 {
 	Matrix rotMat = Matrix::LookAtDir(targetDir, upVec);
 
 	_eulerAngle = Vector3::FromRotationMatrix(rotMat);
 	_quaternion = Quaternion::FromRotationMatrix(rotMat);
 
-	SetDirty();
+	_right		= _quaternion.GetRight();
+	_up			= _quaternion.GetUp();
+	_forward	= _quaternion.GetForward();
+
+	_dirty = true;
 }
 
 void Transform::AddChild(Transform& child)
 {
-	bool hasParent = child._parentID.Literal() != Core::ObjectID::Undefined();
+	bool hasParent = child._parentID != Core::ObjectID::Undefined();
 	assert(hasParent == false);
 	assert(HasChild(child.GetObjectID()) == false);
 
@@ -165,7 +149,7 @@ bool Transform::HasChild(ObjectID id) const
 {
 	for (const auto childID : _childIDs)
 	{
-		if(childID.Literal() == id.Literal())
+		if(childID == id)
 			return true;
 	}
 
@@ -204,7 +188,7 @@ void Transform::_ComputeWorldMatrixWithDirty(TransformPool& pool, bool parentDir
 void Transform::UpdateWorldMatrix(TransformPool& pool)
 {	
 	// this func must be run in root
-	assert(_parentID.Literal() == ObjectID::Undefined());
+	assert(_parentID == ObjectID::Undefined());
 
 	if (_dirty)
 		_worldMat = ComputeLocalMatrix();

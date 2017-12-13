@@ -24,30 +24,30 @@ namespace Core
 		inline const Math::Vector3	GetWorldRight()			const { return GetWorldRight(GetWorldScale()); }
 		inline const Math::Vector3	GetWorldUp()			const { return GetWorldUp(GetWorldScale()); }
 
-		void UpdatePosition(const Math::Vector3& p);
-		void UpdateScale(const Math::Vector3& s);
 		void UpdateRight(const Math::Vector3& r);
 		void UpdateUp(const Math::Vector3& u);
 		void UpdateForward(const Math::Vector3& f);
 		void UpdateEulerAngle(const Math::Vector3& e);
 		void UpdateQuaternion(const Math::Quaternion& q);
 
-		GET_CONST_ACCESSOR(Position,	const Math::Vector3&,		_position);
-		GET_CONST_ACCESSOR(Scale,		const Math::Vector3&,		_scale);
-		GET_CONST_ACCESSOR(Right,		const Math::Vector3&,		_right);
-		GET_CONST_ACCESSOR(Up,			const Math::Vector3&,		_up);
-		GET_CONST_ACCESSOR(Forward,		const Math::Vector3&,		_forward);
-		GET_CONST_ACCESSOR(EularAngle,	const Math::Vector3&,		_eulerAngle);
-		GET_CONST_ACCESSOR(Quaternion,	const Math::Quaternion&,	_quaternion);
-		GET_CONST_ACCESSOR(LocalMatrix,	const Math::Matrix&,		_localMat);
-		GET_CONST_ACCESSOR(WorldMatrix,	const Math::Matrix&,		_worldMat);
+		SET_ACCESSOR_DIRTY(LocalPosition,	const Math::Vector3&,		_position);
+		SET_ACCESSOR_DIRTY(LocalScale,		const Math::Vector3&,		_scale);
 
-		GET_CONST_ACCESSOR(Dirty,		bool,						_dirty);
-		GET_CONST_ACCESSOR(ObjectID,	ObjectID,					_objectID);
-		GET_CONST_ACCESSOR(ParentID,	ObjectID,					_parentID);
+		GET_CONST_ACCESSOR(LocalPosition,	const Math::Vector3&,		_position);
+		GET_CONST_ACCESSOR(LocalScale,		const Math::Vector3&,		_scale);
+		GET_CONST_ACCESSOR(LocalRight,		const Math::Vector3&,		_right);
+		GET_CONST_ACCESSOR(LocalUp,			const Math::Vector3&,		_up);
+		GET_CONST_ACCESSOR(LocalForward,	const Math::Vector3&,		_forward);
+		GET_CONST_ACCESSOR(LocalEularAngle,	const Math::Vector3&,		_eulerAngle);
+		GET_CONST_ACCESSOR(LocalQuaternion,	const Math::Quaternion&,	_quaternion);
+		GET_CONST_ACCESSOR(LocalMatrix,		const Math::Matrix&,		_localMat);
+		GET_CONST_ACCESSOR(WorldMatrix,		const Math::Matrix&,		_worldMat);
 
-		void LookAtPos(const Math::Vector3& targetPos, const Math::Vector3* up = nullptr);
-		void LookAtDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
+		GET_CONST_ACCESSOR(Dirty,			bool,						_dirty);
+		GET_CONST_ACCESSOR(ObjectID,		ObjectID,					_objectID);
+		GET_CONST_ACCESSOR(ParentID,		ObjectID,					_parentID);
+
+		void LookAtWorldDir(const Math::Vector3& targetDir, const Math::Vector3* up = nullptr);
 
 		using Childs = std::vector<ObjectID>;
 
@@ -72,8 +72,6 @@ namespace Core
 		const Math::Matrix& ComputeLocalMatrix();
 
 		void _ComputeWorldMatrixWithDirty(TransformPool& pool, bool parentDirty);
-
-		inline void SetDirty()		{ _dirty = true; }
 
 	private:
 		Math::Matrix		_worldMat;
