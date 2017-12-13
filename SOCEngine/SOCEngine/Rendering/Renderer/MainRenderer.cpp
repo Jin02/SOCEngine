@@ -190,48 +190,51 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		dx.SetRenderTargets(ARRAYSIZE(renderTargets), renderTargets, _gbuffer.opaqueDepthBuffer);
 		dx.SetDepthStencilState(DepthState::Greater, 0);
 
-		AutoBinderSampler<PixelShader> defaultSampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Anisotropic);
-		AutoBinderCB<VertexShader> cameraCB(dx, ConstBufferBindIndex::Camera, mainCamera.GetCameraCB());
+		AutoBinderSampler<PixelShader>	sampler(dx,		SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Anisotropic);
+		AutoBinderCB<VertexShader>		cameraCB(dx,	ConstBufferBindIndex::Camera,				mainCamera.GetCameraCB());
 
-		// Opaque
 		{
-			dx.SetRasterizerState(RasterizerState::CWDefault);
-			dx.SetBlendState(BlendState::Opaque);
-
-			MeshRenderer::RenderOpaqueMeshes(dx, renderParam, DefaultRenderType::GBuffer_Opaque, mainCamera.GetOpaqueMeshRenderQ(),
-				[&dx, &materialMgr](const Mesh* mesh) // Pre Render
-				{
-					const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
-					if(material)
-						BindGBufferResourceTextures(dx, material);
-				},
-				[&dx](/*Post Render*/)
-				{
-					UnBindGBufferResourceTextures(dx);
-				}
-			);		
-		}
-
-		// AlphaTest
-		{
-			// GBuffer는 그대로 Output으로 사용한다.
-			// dx.SetRenderTargets(ARRAYSIZE(renderTargets), renderTargets, _gbuffer.opaqueDepthBuffer);
-
-			if(dx.GetMSAADesc().Count > 1)	// on msaa
-				dx.SetBlendState(BlendState::AlphaToCoverage);
-			// msaa가 아니라면 BlendState::Opaque를 그대로 쓴다.
-
-			dx.SetRasterizerState(RasterizerState::CWDisableCulling);
-
-			MeshRenderer::RenderAlphaTestMeshes(dx, renderParam, DefaultRenderType::GBuffer_AlphaTest, mainCamera.GetAlphaTestMeshRenderQ(),
-				[&dx, &materialMgr](const Mesh* mesh)	// Pre-Render
-				{
-					const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
-					if(material)
-						BindGBufferResourceTextures(dx, material);
-				},
-				[&dx](/*Post Render*/) { UnBindGBufferResourceTextures(dx); }
-			);	
+			AutoBinderCB<PixelShader> tbrParamCB(dx,	ConstBufferBindIndex::TBRParam,				_tbrCB);
+			// Opaque
+			{
+				dx.SetRasterizerState(RasterizerState::CWDefault);
+				dx.SetBlendState(BlendState::Opaque);
+	
+				MeshRenderer::RenderOpaqueMeshes(dx, renderParam, DefaultRenderType::GBuffer_Opaque, mainCamera.GetOpaqueMeshRenderQ(),
+					[&dx, &materialMgr](const Mesh* mesh) // Pre Render
+					{
+						const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
+						if(material)
+							BindGBufferResourceTextures(dx, material);
+					},
+					[&dx](/*Post Render*/)
+					{
+						UnBindGBufferResourceTextures(dx);
+					}
+				);		
+			}
+	
+			// AlphaTest
+			{
+				// GBuffer는 그대로 Output으로 사용한다.
+				// dx.SetRenderTargets(ARRAYSIZE(renderTargets), renderTargets, _gbuffer.opaqueDepthBuffer);
+	
+				if(dx.GetMSAADesc().Count > 1)	// on msaa
+					dx.SetBlendState(BlendState::AlphaToCoverage);
+				// msaa가 아니라면 BlendState::Opaque를 그대로 쓴다.
+	
+				dx.SetRasterizerState(RasterizerState::CWDisableCulling);
+	
+				MeshRenderer::RenderAlphaTestMeshes(dx, renderParam, DefaultRenderType::GBuffer_AlphaTest, mainCamera.GetAlphaTestMeshRenderQ(),
+					[&dx, &materialMgr](const Mesh* mesh)	// Pre-Render
+					{
+						const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
+						if(material)
+							BindGBufferResourceTextures(dx, material);
+					},
+					[&dx](/*Post Render*/) { UnBindGBufferResourceTextures(dx); }
+				);	
+			}
 		}
 
 		// Transparent
