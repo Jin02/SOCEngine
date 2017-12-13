@@ -988,6 +988,9 @@
     <ClInclude Include="Rendering\Shadow\ShadowManager.h">
       <Filter>Rendering\Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCodes\TBRParam.h">
+      <Filter>ShaderCodes\TiledRendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">

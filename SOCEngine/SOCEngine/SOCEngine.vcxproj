@@ -277,6 +277,7 @@
     <ClInclude Include="ShaderCodes\Shadow.h" />
     <ClInclude Include="ShaderCodes\SimpleImageEffect.h" />
     <ClInclude Include="ShaderCodes\TBDRInput.h" />
+    <ClInclude Include="ShaderCodes\TBRParam.h" />
     <ClInclude Include="ShaderCodes\ToneMapping.h" />
     <ClInclude Include="ShaderCodes\Voxelization_Common.h" />
     <ClInclude Include="Template\ShaderFactoryTemplate.hpp">
