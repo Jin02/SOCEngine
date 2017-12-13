@@ -19,7 +19,8 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float specularity			= GetMaterialSpecularity();
 
 	float3 emissiveColor		= GetEmissiveColor(defaultSampler, uv);
-	float3 albedo				= GetAlbedo(defaultSampler, uv);
+	float4 diffuse				= GetDiffuse(defaultSampler, uv);
+	float3 albedo				= diffuse.rgb;
 
 	LightingParams lightParams;
 
@@ -136,7 +137,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
 	float3	result	= front + back;
-	float	alpha	= GetAlpha(defaultSampler, uv);
+	float	alpha	= diffuse.a;
 #else
 	float3	result = accumulativeDiffuse + accumulativeSpecular;
 	float	alpha = 1.0f;

@@ -46,7 +46,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	GBuffer outGBuffer;
 
 #ifdef ENABLE_ALPHA_TEST
-	float alpha		= GetAlpha(GBufferDefaultSampler, input.uv);
+	float alpha		= GetDiffuse(GBufferDefaultSampler, input.uv).a;
 
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;

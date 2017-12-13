@@ -28,7 +28,7 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 {
 	ApproximateIBLParam param;
 	{
-		float3 baseColor	= GetAlbedo(defaultSampler, uv);
+		float3 baseColor	= GetDiffuse(defaultSampler, uv).rgb;
 
 		float metallic		= GetMetallic(defaultSampler, uv);
 		float specularity	= GetMaterialSpecularity();
@@ -55,7 +55,7 @@ float3 IBLPass(float2 uv, float3 worldPos, float3 normal)
 float4 ReflectionProbeLighting(float3 normal, float3 worldPos, float2 uv)
 {
 	float3 ibl		= IBLPass(uv, worldPos, normal);
-	return float4(GetAlbedo(defaultSampler, uv) + ibl, 1.0f);
+	return float4(GetDiffuse(defaultSampler, uv).rgb + ibl, 1.0f);
 }
 
 #endif

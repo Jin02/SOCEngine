@@ -158,13 +158,11 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 
 void VoxelizationInPSStage(float3 normal, float2 uv, float3 worldPos)
 {
-	float3	albedo	= GetAlbedo(DefaultSampler, uv);
-	float	alpha	= GetAlpha(DefaultSampler, uv);
+	float4 diffuse	= GetDiffuse(DefaultSampler, uv);
+	int3 voxelIdx	= ComputeVoxelIdx(voxelization_minPos.xyz, worldPos);
 
-	int3 voxelIdx = ComputeVoxelIdx(voxelization_minPos.xyz, worldPos);
-	StoreVoxelMap(float4(albedo, alpha), normal, voxelIdx);
-
-	InjectRadianceFromDirectionalLight(voxelIdx, worldPos, albedo, alpha, normal);
+	StoreVoxelMap(diffuse, normal, voxelIdx);
+	InjectRadianceFromDirectionalLight(voxelIdx, worldPos, diffuse.rgb, diffuse.a, normal);
 }
 
 #endif

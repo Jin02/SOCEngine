@@ -53,7 +53,7 @@ float4 MomentDepthPS(PS_MOMENT_DEPTH_INPUT input) : SV_TARGET
 	float4 outColor = DistributePrecision(moment);
 
 #if defined(ENABLE_ALPHA_TEST)
-	float alpha = GetAlpha(defaultSampler, input.uv);
+	float alpha = GetDiffuse(defaultSampler, input.uv).a;
 	if(alpha < ALPHA_TEST_BIAS)
 		discard;
 #endif
