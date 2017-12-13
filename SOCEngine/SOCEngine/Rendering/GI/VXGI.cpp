@@ -2,6 +2,7 @@
 #include "BindIndexInfo.h"
 #include "ShaderFactory.hpp"
 #include "MainRenderer.h"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Core;
@@ -31,11 +32,9 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 			return static_cast<uint>( static_cast<float>(sideLength + 8 - 1) / 8.0f );
 		};
 		
-		ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex(0), uav);
-
+		AutoBinderUAV outUAV(dx, UAVBindIndex(0), uav);
 		uint yz = ComputeThreadGroupSideLength(sideLength);
 		shader.Dispatch(dx, ComputeShader::ThreadGroup(ComputeThreadGroupSideLength(sideLength * (isAnisotropic ? (uint)VoxelMap::Direction::Num : 1)), yz, yz));
-		ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex(0));
 	};
 
 	Clear(_injectionSourceMap.GetSourceMapUAV(), _staticInfo.dimension, false);
