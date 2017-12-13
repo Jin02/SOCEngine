@@ -3,6 +3,7 @@
 #include "ShaderFactory.hpp"
 #include "MeshUtility.h"
 #include "DirectionalLight.h"
+#include "AutoBinder.hpp"
 
 using namespace Core;
 using namespace Math;
@@ -85,30 +86,29 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
 	const auto& dlBuffer = param.lightMgr.GetBuffer<DirectionalLight>();
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightDirXY,					dlBuffer.GetTransformSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightColor,					dlBuffer.GetColorSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,		dlBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlTF(dx,				TextureBindIndex::DirectionalLightDirXY,				dlBuffer.GetTransformSRBuffer().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlColor(dx,			TextureBindIndex::DirectionalLightColor,				dlBuffer.GetColorSRBuffer().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlOptionalParam(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	dlBuffer.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
 	const auto& shadowParam	= param.shadowParam;
 	const auto& dlsBuffer	= shadowParam.manager.GetBuffer<DirectionalLightShadow>();
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowParam,				dlsBuffer.GetParamSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowViewProjMatrix,		dlsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex::DirectionalLightShadowMapAtlas,			shadowParam.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlsParam(dx,			TextureBindIndex::DirectionalLightShadowParam,			dlsBuffer.GetParamSRBuffer().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlsVPMat(dx,			TextureBindIndex::DirectionalLightShadowViewProjMatrix,	dlsBuffer.GetViewProjMatSRBuffer().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> dlsAtlasMap(dx,		TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowParam.renderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::TBRParam,								param.tbrParamCB);
+	AutoBinderCB<PixelShader> staticInfoCB(dx,		ConstBufferBindIndex::VXGIStaticInfoCB,					param.infoCB.staticInfoCB);
+	AutoBinderCB<PixelShader> dynamicInfoCB(dx,		ConstBufferBindIndex::VXGIDynamicInfoCB,				param.infoCB.dynamicInfoCB);
+	AutoBinderCB<PixelShader> tbrParamCB(dx,		ConstBufferBindIndex::TBRParam,							param.tbrParamCB);
+	AutoBinderCB<PixelShader> shadowGlobalCB(dx,	ConstBufferBindIndex::ShadowGlobalParam,				shadowParam.manager.GetGlobalCB());
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::ShadowGlobalParam,					shadowParam.manager.GetGlobalCB());
-
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowComprisonSamplerState,			SamplerState::ShadowGreaterEqualComp);	
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);	
+	AutoBinderSampler<PixelShader> shadowCompS(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,		SamplerState::ShadowGreaterEqualComp);	
+	AutoBinderSampler<PixelShader> shadowPointS(dx,	SamplerStateBindIndex::ShadowPointSamplerState,			SamplerState::Point);
+	AutoBinderSampler<PixelShader> defaultS(dx,		SamplerStateBindIndex::DefaultSamplerState,				SamplerState::Anisotropic);	
 
 	UpdateConstBuffer(dx, param.startCenterWorldPos);
 
-	GeometryShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex::VoxelizationInfoCB,					_infoCB);
+	AutoBinderCB<GeometryShader> infoCBGS(dx,		ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
+	AutoBinderCB<PixelShader> infoCBPS(dx,			ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 
 	// Voxel World BoundBox에 들어오는 Mesh들만 복셀화를 한다.
 	const auto& cullParam = param.cullParam;
@@ -156,22 +156,6 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	VoxelizeMesh(_renderQ.opaqueRenderQ);
 	VoxelizeMesh(_renderQ.alphaTestRenderQ);
 
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightDirXY);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightColor);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightOptionalParamIndex);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowParam);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowViewProjMatrix);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::DirectionalLightShadowMapAtlas);
-
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::ShadowGlobalParam);
-
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState);
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState);
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
-
 	dx.ReSetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs));
 	dx.SetRasterizerState(RasterizerState::CWDefault);
 }
@@ -191,18 +175,23 @@ void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 	{
 		Matrix orthoProjMat = Matrix::OrthoLH(_worldSize, _worldSize, 0.0f, _worldSize);
 
-		auto LookAt = [](const Vector3& worldPos, const Vector3& targetPos, const Vector3& up)
+		auto ComputeViewMatLookAtWorldPos = [](const Vector3& worldPos, const Vector3& targetPos, const Vector3& up)
 		{
 			Matrix worldMat = Matrix::LookAtDir((targetPos - worldPos).Normalized(), &up);
+
+			worldMat._41 = worldPos.x;
+			worldMat._42 = worldPos.y;
+			worldMat._43 = worldPos.z;
+
 			return Matrix::ComputeViewMatrix(worldMat);
 		};
 
 		const Vector3& center = _voxeWorldBoundBox.GetCenter();
 		float halfWorldSize = _worldSize / 2.0f;
 
-		Matrix viewAxisX = LookAt(center + Vector3(halfWorldSize, 0.0f, 0.0f), center, Vector3(0.0f, 1.0f, 0.0f)); //x
-		Matrix viewAxisY = LookAt(center + Vector3(0.0f, halfWorldSize, 0.0f), center, Vector3(0.0f, 0.0f,-1.0f)); //y
-		Matrix viewAxisZ = LookAt(center + Vector3(0.0f, 0.0f, halfWorldSize), center, Vector3(0.0f, 1.0f, 0.0f)); //z
+		Matrix viewAxisX = ComputeViewMatLookAtWorldPos(center + Vector3(halfWorldSize, 0.0f, 0.0f), center, Vector3(0.0f, 1.0f, 0.0f)); //x
+		Matrix viewAxisY = ComputeViewMatLookAtWorldPos(center + Vector3(0.0f, halfWorldSize, 0.0f), center, Vector3(0.0f, 0.0f,-1.0f)); //y
+		Matrix viewAxisZ = ComputeViewMatLookAtWorldPos(center + Vector3(0.0f, 0.0f, halfWorldSize), center, Vector3(0.0f, 1.0f, 0.0f)); //z
 
 		currentVoxelizeInfo.viewProjX = viewAxisX * orthoProjMat;
 		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
