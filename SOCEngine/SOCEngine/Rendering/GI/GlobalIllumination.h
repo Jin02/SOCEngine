@@ -16,8 +16,6 @@ namespace Rendering
 				const GI::VXGIStaticInfo&& vxgiInitParam;
 			};
 
-			GET_ACCESSOR_REF(VXGI, _vxgi);
-
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const InitParam&& giParam);
 			Texture::RenderTexture& Run(Device::DirectX& dx, const GI::VXGI::Param&& param);
