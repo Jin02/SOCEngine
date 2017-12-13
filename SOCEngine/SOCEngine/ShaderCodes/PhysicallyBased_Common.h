@@ -5,6 +5,7 @@
 
 #include "NormalMapping.h"
 #include "CommonConstBuffer.h"
+#include "TBRParam.h"
 
 #if (MSAA_SAMPLES_COUNT > 1)
 #define ALPHA_TEST_BIAS		0.003f
