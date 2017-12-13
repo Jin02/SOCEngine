@@ -2,6 +2,7 @@
 #include "ShaderFactory.hpp"
 #include "ShaderManager.h"
 #include "MainRenderer.h"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Core;
@@ -31,43 +32,23 @@ void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr, const S
 
 void VoxelConeTracing::Run(DirectX& dx, RenderTexture& outIndirectColorMap, const Param&& param)
 {
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTInjectionSourceColorMap,				param.injectionSourceMap.GetTexture3D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			param.mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> injection(dx,	TextureBindIndex::VCTInjectionSourceColorMap,				param.injectionSourceMap.GetTexture3D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> mipmapped(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			param.mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
 
 	auto& gbuffer = param.mainSystem.renderer.GetGBuffers();
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-	ComputeShader::BindShaderResourceView(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> albedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> velocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> normal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> depth(dx,		TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> emission(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
 
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::TBRParam,								param.mainSystem.renderer.GetTBRParamCB());
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Camera,								param.mainSystem.camera.GetCameraCB());
+	AutoBinderCB<ComputeShader> tbr(dx,			ConstBufferBindIndex::TBRParam,								param.mainSystem.renderer.GetTBRParamCB());
+	AutoBinderCB<ComputeShader> cam(dx,			ConstBufferBindIndex::Camera,								param.mainSystem.camera.GetCameraCB());
+	AutoBinderCB<ComputeShader> vxgiStatic(dx,	ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
+	AutoBinderCB<ComputeShader> vxgiDynamic(dx,	ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
 
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIStaticInfoCB,						param.infoCB.staticInfoCB);
-	ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
-
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::ConeTracing);
-
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VCTOutIndirectMap, outIndirectColorMap.GetTexture2D().GetUnorderedAccessView());
+	AutoBinderSampler<ComputeShader> sampler(dx,SamplerStateBindIndex::DefaultSamplerState,					SamplerState::ConeTracingLinear);
+	AutoBinderUAV output(dx,					UAVBindIndex::VCTOutIndirectMap,							outIndirectColorMap.GetTexture2D().GetUnorderedAccessView());
 
 	_shader.Dispatch(dx, _group);
-
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::VCTInjectionSourceColorMap);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::VCTMipmappedInjectionColorMap);
-
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Albedo_Occlusion);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Velocity_Metallic_Specularity);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Normal_Roughness);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth);
-	ComputeShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Emission_MaterialFlag);
-
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Camera);
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB);
-	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB);
-
-	ComputeShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
-
-	ComputeShader::UnBindUnorderedAccessView(dx, UAVBindIndex::VCTOutIndirectMap);
 }

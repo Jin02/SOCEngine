@@ -1,5 +1,6 @@
 #include "MipmapVoxelMap.h"
 #include "ShaderFactory.hpp"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Core;
@@ -36,16 +37,13 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, Vox
 		info.sourceDimension = curDimension;
 		infoCB.UpdateSubResource(dx, info);
 
-		ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_InputVoxelMap,	sourceUAV);
-		ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap,	targetUAV);
-		ComputeShader::BindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB,		infoCB);
+		AutoBinderUAV input(dx,		UAVBindIndex::VoxelMipmap_InputVoxelMap,	sourceUAV);
+		AutoBinderUAV output(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap,	targetUAV);
+
+		AutoBinderCB<ComputeShader> infoCB(dx, ConstBufferBindIndex::Mipmap_InfoCB, infoCB);
 
 		uint threadCount = ((curDimension/2) + MIPMAPPING_TILE_RES_HALF - 1) / MIPMAPPING_TILE_RES_HALF;
 		shader.Dispatch(dx, ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
-
-		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_InputVoxelMap);
-		ComputeShader::UnBindUnorderedAccessView(dx,	UAVBindIndex::VoxelMipmap_OutputVoxelMap);
-		ComputeShader::UnBindConstBuffer(dx,			ConstBufferBindIndex::Mipmap_InfoCB);
 	};
 
 	Mipmap(_baseMipmap, sourceColorMap.GetSourceMapUAV(), outAnisotropicMap.GetSourceMapUAV(), 0);
