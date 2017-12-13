@@ -170,8 +170,7 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 						uint3 groupIdx	: SV_GroupID)
 {
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, 0, true);
-	surface.roughness =0.0f;
+	ParseGBufferSurface(surface, globalIdx.xy, 0);
 
 	float3 diffuseVCT	= DiffuseVCT(surface.worldPos, surface.normal, GetDiffuseSamplingCount());
 
@@ -180,11 +179,9 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float halfConeAngle	= lerp(1.73206060282f, 0.0174533f, (1.0f - surface.roughness));
 	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle, GetSpecularSamplingCount());
 
-	float3 indirectDiffuse	= diffuseVCT	* surface.albedo;
-	float3 indirectSpecular	= specularVCT	* surface.specular;
+	float3 indirectDiffuse	= diffuseVCT	* ToGamma(surface.albedo,	GetGamma());
+	float3 indirectSpecular	= specularVCT	* ToGamma(surface.specular,	GetGamma());
 
 	float3 indirectColor	= saturate(indirectDiffuse + indirectSpecular);
-	indirectColor			= ToGamma(indirectColor, GetGamma());
-
-	OutIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);
+	OutIndirectColorMap[globalIdx.xy] = float4(ToLinear(indirectColor, GetGamma()), 1.0f);
 }
