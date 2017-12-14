@@ -46,8 +46,8 @@ void PostProcessPipeline::Render(	DirectX& dx,
 	RenderTexture& mainScene = mainRenderer.GetResultMap();
 	mainScene.GetTexture2D().GenerateMips(dx);
 
-	RenderTexture& output		= _tempResultMap;
-	RenderTexture& input		= mainScene;
+	RenderTexture* output		= &_tempResultMap;
+	RenderTexture* input		= &_tempTextures.originSizeMap;
 
 	dx.ClearDeviceContext();
 
@@ -55,18 +55,17 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	if(_useSSAO)
 	{
-		GetPostproessing<SSAO>().Render(dx, output, input, mainRenderer);
+		GetPostproessing<SSAO>().Render(dx, *output, mainScene, mainRenderer);
 		std::swap(input, output);
 	}
 
 	if(_useDoF)
 	{
-		GetPostproessing<DepthOfField>().Render(dx, output, input, std::move(mains), _copy, _tempTextures);
+		GetPostproessing<DepthOfField>().Render(dx, *output, *input, std::move(mains), _copy, _tempTextures);
 		std::swap(input, output);
 	}
 
-	GetPostproessing<Bloom>().RenderBloom(dx, output, input, mainRenderer);
-	std::swap(input, output);
+	GetPostproessing<Bloom>().RenderBloom(dx, mainScene, *input, mainRenderer);
 }
 
 void PostProcessPipeline::UpdateCB(DirectX & dx)
