@@ -18,9 +18,9 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float roughness				= GetRoughness(defaultSampler, uv);
 	float specularity			= GetMaterialSpecularity();
 
-	float3 emissiveColor		= GetEmissiveColor(defaultSampler, uv);
+	float3 emissiveColor		= ToLinear(GetEmissiveColor(defaultSampler, uv), GetGamma());
 	float4 diffuse				= GetDiffuse(defaultSampler, uv);
-	float3 albedo				= diffuse.rgb;
+	float3 albedo				= ToLinear(diffuse.rgb, GetGamma());
 
 	LightingParams lightParams;
 
