@@ -7,8 +7,8 @@
 cbuffer DoFParam : register(b1)
 {
 	float	dofParam_focusNear;
-	float	dofParam_blurNear;
 	float	dofParam_focusFar;
+	float	dofParam_blurNear;
 	float	dofParam_blurFar;
 };
 
@@ -25,14 +25,27 @@ float4 DoF_InFullScreen_PS(PS_INPUT input) : SV_Target
 
 	float depth		= InvertProjDepthToView(GBufferDepth.Sample( LinearSampler, input.uv ).x);
 	
-#if 1
-	float a		= 0.0f;
-	if(depth < dofParam_focusNear)		a = min(dofParam_blurNear / depth, 1.0f);		
-	else if(depth > dofParam_focusFar)	a = min((depth - dofParam_focusFar) / (dofParam_blurFar - dofParam_focusFar), 1.0f);
-		
-	return lerp(sceneMap, blurMap, a);
+	const float bn = dofParam_blurNear;
+	const float bf = dofParam_blurFar;
+
+	const float fn = dofParam_focusNear;
+	const float ff = dofParam_focusFar;
+
+#ifdef DEBUG_DOF
+	float4 result = float4(1, 1, 1, 1);
+
+	if(depth < fn)
+		result.rgb = lerp(float3(1, 0, 0), float3(1, 1, 1), 1.0f - saturate((fn - depth) / (fn - bn)));
+	else if(depth >= ff)
+		result.rgb = lerp(float3(0, 0, 1), float3(1, 1, 1), 1.0f - saturate((depth - ff) / (bf - ff)));
+	
+	return result;
 #else
-	float a = (depth - dofParam_focusNear) / (dofParam_focusFar - dofParam_focusNear);	
+	float a = 1.0f;
+
+	if(depth < fn)			a = 1.0f - saturate((fn - depth) / (fn - bn));
+	else if(depth >= ff)	a = 1.0f - saturate((depth - ff) / (bf - ff));
+
 	return lerp(blurMap, sceneMap, a);
 #endif
 }
