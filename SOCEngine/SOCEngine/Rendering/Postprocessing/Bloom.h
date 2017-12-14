@@ -22,9 +22,9 @@ namespace Rendering
 			struct ParamCBData
 			{
 				float dt					= 0.0f;
-				float exposureStrength		= 0.1f;
+				float exposureStrength		= 0.4f;
 				float exposureSpeed			= 0.4f;
-				float bloomThreshold		= 0.001f;
+				float bloomThreshold		= 0.4f;
 			};
 
 		public:

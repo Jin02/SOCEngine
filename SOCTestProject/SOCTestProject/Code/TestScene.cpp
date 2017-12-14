@@ -11,9 +11,12 @@ using namespace Rendering::Geometry;
 
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
+//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
+
 	return RenderSetting("MainCamera",
 		engine.GetDirectX().GetBackBufferRect().Cast<uint>(),
-		128, 256, 15.0f
+		512, 256, 15.0f
 	);
 }
 
