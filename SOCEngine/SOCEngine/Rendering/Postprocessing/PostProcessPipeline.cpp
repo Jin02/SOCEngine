@@ -9,6 +9,7 @@ using namespace Rendering::Texture;
 using namespace Rendering::Camera;
 using namespace Rendering::Renderer;
 using namespace Rendering::Manager;
+using namespace Rendering::RenderState;
 using namespace Device;
 
 void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera)
@@ -45,8 +46,8 @@ void PostProcessPipeline::Render(	DirectX& dx,
 	RenderTexture& mainScene = mainRenderer.GetResultMap();
 	mainScene.GetTexture2D().GenerateMips(dx);
 
-	RenderTexture& back			= _tempResultMap;
-	RenderTexture& front		= mainScene;
+	RenderTexture& output		= _tempResultMap;
+	RenderTexture& input		= mainScene;
 
 	dx.ClearDeviceContext();
 
@@ -54,18 +55,18 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	if(_useSSAO)
 	{
-		GetPostproessing<SSAO>().Render(dx, back, front, mainRenderer);
-		std::swap(front, back);
+		GetPostproessing<SSAO>().Render(dx, output, input, mainRenderer);
+		std::swap(input, output);
 	}
 
 	if(_useDoF)
 	{
-		GetPostproessing<DepthOfField>().Render(dx, back, front, std::move(mains), _copy, _tempTextures);
-		std::swap(front, back);
+		GetPostproessing<DepthOfField>().Render(dx, output, input, std::move(mains), _copy, _tempTextures);
+		std::swap(input, output);
 	}
 
-	GetPostproessing<Bloom>().RenderBloom(dx, back, front, mainRenderer);
-	std::swap(front, back);
+	GetPostproessing<Bloom>().RenderBloom(dx, output, input, mainRenderer);
+	std::swap(input, output);
 }
 
 void PostProcessPipeline::UpdateCB(DirectX & dx)
