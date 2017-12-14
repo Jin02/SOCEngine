@@ -18,13 +18,12 @@ Engine::Engine(Device::DirectX& dx)
 
 void Engine::RunScene()
 {
+	_scene->OnInput();
+
 	clock_t curTime = clock();
 	clock_t elapsed = curTime - _prevTime;
 
-	_prevTime = curTime;
 	_lag += elapsed;
-
-	_scene->OnInput();
 
 	constexpr clock_t MS_PER_UPDATE = 100;
 	while (_lag >= MS_PER_UPDATE)
@@ -52,7 +51,7 @@ void Engine::RunScene()
 	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer(), nullIndexer);
 
 	_scene->OnRenderPreview();
-	_rendering.Render(*this);
+	_rendering.Render(*this, std::max(float(clock() - _prevTime) / 1000.0f, 0.0f));
 	_scene->OnRenderPost();
 
 	for (auto& iter : _dirtyTransforms)
@@ -61,7 +60,7 @@ void Engine::RunScene()
 	_dirtyTransforms.clear();
 	_componentSystem.ClearDirty();
 
-//	float dt = static_cast<float>(clock() - _prevTime) / static_cast<float>(CLOCKS_PER_SEC);
+	_prevTime = curTime;
 }
 
 void Engine::UpdateWorldMatrix()

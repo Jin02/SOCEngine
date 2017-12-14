@@ -41,7 +41,7 @@ void RenderingSystem::Update(Engine& engine, float dt)
 	_postProcessing.SetElapsedTime(dt);
 }
 
-void RenderingSystem::Render(Engine& engine)
+void RenderingSystem::Render(Engine& engine, float dt)
 {
 	auto& dx = engine.GetDirectX();
 	_materialManager.UpdateConstBuffer(dx);
@@ -60,8 +60,9 @@ void RenderingSystem::Render(Engine& engine)
 	_mainRenderer.UpdateCB(dx, mainCamera, lightMgr);
 	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
-//	_postProcessing.UpdateCB(dx);
-//	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+	_postProcessing.SetElapsedTime(dt);
+	_postProcessing.UpdateCB(dx);
+	_postProcessing.Render(dx, _mainRenderer, mainCamera);
 
 	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), _mainRenderer.GetResultMap().GetTexture2D());
 	dx.GetSwapChain()->Present(0, 0);

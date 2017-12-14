@@ -28,7 +28,7 @@ namespace Rendering
 		void InitializeRenderer(Core::Engine& engine, const RenderSetting&& param);
 		void Initialize(Core::Engine& engine);
 		void Update(Core::Engine& engine, float dt);
-		void Render(Core::Engine& engine);
+		void Render(Core::Engine& engine, float dt);
 		void Destroy(Core::Engine& engine);
 
 		GET_ACCESSOR_REF(MaterialManager,			_materialManager);
