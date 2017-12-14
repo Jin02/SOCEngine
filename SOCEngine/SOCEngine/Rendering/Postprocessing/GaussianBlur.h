@@ -16,6 +16,11 @@ namespace Rendering
 				float numPixelPerSide	= 6.0f;
 				float blurSize			= 8.0f;
 				float scale				= 1.0f;
+
+				ParamCBData() = default;
+				ParamCBData(float _sigma, float _numPixelPerSide, float _blurSize, float _scale)
+					: sigma(_sigma), numPixelPerSide(_numPixelPerSide), blurSize(_blurSize), scale(_scale)
+				{ }
 			};
 
 		public:
