@@ -11,7 +11,7 @@ using namespace Rendering::Geometry;
 
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
-//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
 	return RenderSetting("MainCamera",
