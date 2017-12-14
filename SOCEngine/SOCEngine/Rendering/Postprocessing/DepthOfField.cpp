@@ -1,4 +1,5 @@
 #include "DepthOfField.h"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Rendering;
@@ -51,25 +52,15 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 		copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0].GetTexture2D());
 	}
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),				inColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1),				_blurredColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth,	mains.renderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> blurred(dx,		TextureBindIndex(1),						_blurredColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> depth(dx,		TextureBindIndex::GBuffer_Depth,			mains.renderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam,			mains.renderer.GetTBRParamCB());
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex(1),					_paramCB);
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				mains.renderer.GetTBRParamCB());
+	AutoBinderCB<PixelShader> dofParam(dx,		ConstBufferBindIndex(1),					_paramCB);
+	AutoBinderCB<PixelShader> camParam(dx,		ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
 	_screen.Render(dx, outRT, true);
-
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(1));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth);
-
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex(1));
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Camera);
-
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 }

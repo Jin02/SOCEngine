@@ -1,4 +1,5 @@
 #include "Bloom.h"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Rendering;
@@ -37,13 +38,13 @@ void Bloom::UpdateParamCB(Device::DirectX& dx)
 
 void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, const Copy& copy, TempTextures& temp, const MainRenderer& renderer)
 {
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> inColor(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> lumiance(dx,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
-	PixelShader::BindConstBuffer(dx,	ConstBufferBindIndex::TBRParam,				renderer.GetTBRParamCB());
+	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				renderer.GetTBRParamCB());
 
-	PixelShader::BindSamplerState(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
 	_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 
@@ -73,37 +74,20 @@ void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, con
 			}
 		}
 	}
-
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(1));
-
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::HDRGlobalParamCB);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
-
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 }
 
 void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& inputColorMap, const MainRenderer& mainRenderer)
-{
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0), inputColorMap.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(1), _adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(2), _bloomThresholdMap.GetTexture2D().GetShaderResourceView());
+{	
+	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),	inputColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> luminance(dx,	TextureBindIndex(1),	_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> threshold(dx,	TextureBindIndex(2),	_bloomThresholdMap.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
+	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,			_paramCB);
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,					mainRenderer.GetTBRParamCB());
 
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::HDRGlobalParamCB, _paramCB);
-	PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::TBRParam, mainRenderer.GetTBRParamCB());
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Linear);
 
 	_bloom.Render(dx, outRT, true);
-
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(1));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(2));
-
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
-
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::HDRGlobalParamCB);
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::TBRParam);
 
 	_currentAdaptedLuminanceIndx = !_currentAdaptedLuminanceIndx;
 }
