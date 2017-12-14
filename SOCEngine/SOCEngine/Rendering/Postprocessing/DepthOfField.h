@@ -19,10 +19,10 @@ namespace Rendering
 		public:
 			struct ParamCBData
 			{
-				float fousuNear	= 10.0f;
-				float blurNear	= 9.0f;
-				float focusFar	= 15.0f;
-				float blurFar	= 16.0f;
+				float fousuNear	= 16.0f;
+				float focusFar	= 18.0f;
+				float blurNear	= 12.0f;
+				float blurFar	= 22.0f;
 			};
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
