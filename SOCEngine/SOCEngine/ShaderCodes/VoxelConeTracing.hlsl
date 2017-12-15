@@ -182,9 +182,9 @@ void VoxelConeTracingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float halfConeAngle	= lerp(0.363970234f, 0.017455064f, surface.metallic);
 	float3 specularVCT	= SpecularVCT(surface.worldPos, surface.normal, halfConeAngle, GetSpecularSamplingCount());
 
-	float3 indirectDiffuse	= diffuseVCT	* surface.albedo;
-	float3 indirectSpecular	= specularVCT	* surface.specular;
+	float3 indirectDiffuse	= diffuseVCT * surface.albedo;//	* ToGamma(surface.albedo,	GetGamma());
+	float3 indirectSpecular	= specularVCT * surface.specular;//	* ToGamma(surface.specular,	GetGamma());
 
 	float3 indirectColor	= saturate(indirectDiffuse + indirectSpecular);
-	OutIndirectColorMap[globalIdx.xy] = float4(ToLinear(indirectColor, GetGamma()), 1.0f);
+	OutIndirectColorMap[globalIdx.xy] = float4(indirectColor, 1.0f);//float4(ToLinear(indirectColor, GetGamma()), 1.0f);
 }
