@@ -20,7 +20,7 @@ namespace Rendering
 
 			union
 			{
-				uint packedSamplingCount	= (256 << 16) | 128;
+				uint packedSamplingCount	= (128 << 16) | 256;
 				struct
 				{
 					ushort specularSamplingCount;
