@@ -22,11 +22,11 @@ RWBuffer<uint>		OutPerLightIndicesInTile	: register( u1 );
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 void MSAALighting(
-	out float4 outAccumulativeDiffuse, out float4 outAccumulativeSpecular,
+	out float3 outAccumulativeDiffuse, out float3 outAccumulativeSpecular,
 	uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisTile)
 {
 	Surface surface;
-	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx, true);
+	ParseGBufferSurface(surface, globalIdx.xy, sampleIdx);
 
 	float3 viewDir = normalize( camera_worldPos - surface.worldPos );
 
@@ -224,11 +224,11 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		scale_sample_coord.x += sampleIdx % 2; // 1,0 / 0,1 / 1,1
 		scale_sample_coord.y += sampleIdx > 1; // 1,0 / 0,1 / 1,1
 		
-		float4 diffuse	= float4(0.0f, 0.0f, 0.0f, 0.0f);
-		float4 specular	= float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float3 diffuse	= float3(0.0f, 0.0f, 0.0f);
+		float3 specular	= float3(0.0f, 0.0f, 0.0f);
 		MSAALighting(diffuse, specular, edge_globalIdx_inThisTile, sampleIdx, pointLightCountInThisTile);
 
-		OutDynamicLightBuffer[scale_sample_coord] = diffuse + specular + surface.emission.rgb;
+		OutDynamicLightBuffer[scale_sample_coord] = float4(diffuse + specular + surface.emission.rgb, 1.0f);
 	}
 
 #else // off MSAA
