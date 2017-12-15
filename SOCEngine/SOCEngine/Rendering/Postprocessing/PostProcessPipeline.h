@@ -50,7 +50,7 @@ namespace Rendering
 				return std::get<Postprocessing>(_postprocessing);
 			}
 
-		private:
+		public:
 			PostProcessing::TempTextures				_tempTextures;
 
 			Texture::RenderTexture						_tempResultMap;

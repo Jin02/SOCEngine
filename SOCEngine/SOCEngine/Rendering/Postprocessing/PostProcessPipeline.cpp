@@ -51,7 +51,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	dx.ClearDeviceContext();
 
-	GetPostproessing<Bloom>().RenderThresholdMap(dx, mainScene, _copy, _tempTextures, mainRenderer);
+	GetPostproessing<Bloom>().RenderThresholdMap(dx, mainScene, _copy, _tempTextures, mainRenderer.GetTBRParamCB());
 
 	if(_useSSAO)
 	{
@@ -65,7 +65,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 		std::swap(input, output);
 	}
 
-	GetPostproessing<Bloom>().RenderBloom(dx, mainScene, *input, mainRenderer);
+	GetPostproessing<Bloom>().RenderBloom(dx, mainScene, *input, mainRenderer.GetTBRParamCB());
 }
 
 void PostProcessPipeline::UpdateCB(DirectX & dx)
