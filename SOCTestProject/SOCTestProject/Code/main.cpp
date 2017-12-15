@@ -16,6 +16,6 @@ INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )
 		desc.parentHandle	= NULL;
 	}
 
-	Launcher::Run(desc, desc.rect, false, new TestScene);
+	Launcher::Run(desc, desc.rect, true, new TestScene);
 	return 0;
 }
