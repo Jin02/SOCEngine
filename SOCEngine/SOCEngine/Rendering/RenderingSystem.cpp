@@ -62,9 +62,9 @@ void RenderingSystem::Render(Engine& engine, float dt)
 
 	_postProcessing.SetElapsedTime(dt);
 	_postProcessing.UpdateCB(dx);
-	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+	auto result = _postProcessing.Render(dx, _mainRenderer, mainCamera);
 
-	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), _mainRenderer.GetResultMap().GetTexture2D());
+	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), result->GetTexture2D());
 	dx.GetSwapChain()->Present(0, 0);
 
 	_shadowRenderer.ClearDirty();

@@ -37,7 +37,7 @@ void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, cons
 	_copy.Initialize(dx, shaderMgr);
 }
 
-void PostProcessPipeline::Render(	DirectX& dx,
+const RenderTexture* PostProcessPipeline::Render(	DirectX& dx,
 									MainRenderer& mainRenderer,
 									const MainCamera& mainMeshCamera	)
 {
@@ -47,7 +47,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 	mainScene.GetTexture2D().GenerateMips(dx);
 
 	RenderTexture* output		= &_tempResultMap;
-	RenderTexture* input		= &_tempTextures.originSizeMap;
+	RenderTexture* input		= &mainScene;
 
 	dx.ClearDeviceContext();
 
@@ -55,7 +55,7 @@ void PostProcessPipeline::Render(	DirectX& dx,
 
 	if(_useSSAO)
 	{
-		GetPostproessing<SSAO>().Render(dx, *output, mainScene, mainRenderer);
+		GetPostproessing<SSAO>().Render(dx, *output, *input, mainRenderer);
 		std::swap(input, output);
 	}
 
@@ -65,7 +65,8 @@ void PostProcessPipeline::Render(	DirectX& dx,
 		std::swap(input, output);
 	}
 
-	GetPostproessing<Bloom>().RenderBloom(dx, mainScene, *input, mainRenderer.GetTBRParamCB());
+	GetPostproessing<Bloom>().RenderBloom(dx, *output, *input, mainRenderer.GetTBRParamCB());
+	return output;
 }
 
 void PostProcessPipeline::UpdateCB(DirectX & dx)
