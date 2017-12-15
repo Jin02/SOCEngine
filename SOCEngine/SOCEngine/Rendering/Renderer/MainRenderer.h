@@ -19,7 +19,7 @@
 #include "SkyBox.h"
 #include "GlobalIllumination.h"
 
-#include "Copy.h"
+#include "MainSceneMaker.h"
 
 namespace Rendering
 {
@@ -55,6 +55,7 @@ namespace Rendering
 		private:
 			Texture::RenderTexture						_resultMap;
 			Texture::RenderTexture						_scaledMap;
+			Texture::RenderTexture						_transparentMap;
 
 			GBuffers									_gbuffer;
 
@@ -65,7 +66,8 @@ namespace Rendering
 
 			Sky::SkyBox									_skyBox;
 			GlobalIllumination							_gi;
-			PostProcessing::Copy						_mainRTBuilder;
+
+			MainSceneMaker								_mainSceneMaker;
 
 		private:
 			TempRenderQueue								_renderQ;

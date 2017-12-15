@@ -44,6 +44,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		float maxLength	= static_cast<float>( std::max(renderSize.w, renderSize.h) );
 		uint mipLevel	= static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
 		_resultMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1, mipLevel);
+		_transparentMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 	}
 
 	// Gbuffer
@@ -75,7 +76,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 	_skyBox.Initialize(dx);
 	_gi.Initialize(dx, shaderMgr, renderSize, std::move(giParam));
 
-	_mainRTBuilder.Initialize(dx, shaderMgr);
+	_mainSceneMaker.Initialize(dx, shaderMgr, renderSize);
 }
 
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
@@ -304,25 +305,11 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		_blendedDepthLightCulling.Dispatch(dx, _tbdrThreadGroup);
 	}
 
-	// 2.5 - Build Main RT
+	// 2 - Render Transparent Mesh
 	{
-		_mainRTBuilder.Render(dx, _resultMap, _scaledMap.GetTexture2D());
-	}
+		_transparentMap.Clear(dx, Color::Clear());
 
-	// 3 - GI
-	{
-		//_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
-	}
-
-	// 4 - Sky
-	{
-		if(param.skyBoxMaterial)
-			_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
-	}
-
-	// 5 - Render Transparent Mesh
-	{
-		dx.SetRenderTarget(_resultMap, _gbuffer.opaqueDepthBuffer);
+		dx.SetRenderTarget(_transparentMap, _gbuffer.opaqueDepthBuffer);
 		dx.SetDepthStencilState(DepthState::GreaterAndDisableDepthWrite, 0);
 		dx.SetViewport(mainCamera.GetRenderRect().Cast<float>());
 		dx.SetRasterizerState(RasterizerState::CWDisableCulling);
@@ -378,5 +365,25 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		);
 
 		dx.ReSetRenderTargets(1);
+	}
+
+	// 3 - GI
+	{
+		//_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
+	}
+
+	// 4 - Sky
+	{
+		if(param.skyBoxMaterial)
+			_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
+	}
+
+	// 5 - Build Main RT
+	{		
+		_mainSceneMaker.Render(dx, _resultMap,	{	
+													_scaledMap.GetTexture2D(),
+													_gi.GetVXGIResultMap(),
+													_transparentMap.GetTexture2D()
+												}	);
 	}
 }
