@@ -36,13 +36,13 @@ void Bloom::UpdateParamCB(Device::DirectX& dx)
 	_paramCB.UpdateSubResource(dx, _paramData);
 }
 
-void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, const Copy& copy, TempTextures& temp, const MainRenderer& renderer)
+void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, const Copy& copy, TempTextures& temp, const TBRParamCB& tbrParamCB)
 {
 	AutoBinderSRV<PixelShader> inColor(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
 	AutoBinderSRV<PixelShader> lumiance(dx,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
 
 	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
-	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				renderer.GetTBRParamCB());
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
 
 	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
@@ -76,14 +76,14 @@ void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, con
 	}
 }
 
-void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& inputColorMap, const MainRenderer& mainRenderer)
+void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& inputColorMap, const TBRParamCB& tbrParamCB)
 {	
 	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),	inputColorMap.GetTexture2D().GetShaderResourceView());
 	AutoBinderSRV<PixelShader> luminance(dx,	TextureBindIndex(1),	_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
 	AutoBinderSRV<PixelShader> threshold(dx,	TextureBindIndex(2),	_bloomThresholdMap.GetTexture2D().GetShaderResourceView());
 
 	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,			_paramCB);
-	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,					mainRenderer.GetTBRParamCB());
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,					tbrParamCB);
 
 	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Linear);
 

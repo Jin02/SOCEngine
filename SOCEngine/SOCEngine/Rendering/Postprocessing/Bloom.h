@@ -31,8 +31,8 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
 			void UpdateParamCB(Device::DirectX& dx);
 
-			void RenderThresholdMap(Device::DirectX& dx, const Texture::RenderTexture& inColorMap, const Copy& copy, TempTextures& tempTextures, const Renderer::MainRenderer& renderer);
-			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inputColorMap, const Renderer::MainRenderer& mainRenderer);
+			void RenderThresholdMap(Device::DirectX& dx, const Texture::RenderTexture& inColorMap, const Copy& copy, TempTextures& tempTextures, const Renderer::TBRParamCB& tbrParamCB);
+			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inputColorMap, const Renderer::TBRParamCB& tbrParamCB);
 
 			SET_ACCESSOR(ElapsedTime,	float,				_paramData.dt);
 			SET_ACCESSOR(Param,			const ParamCBData&,	_paramData);
