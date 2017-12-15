@@ -33,7 +33,7 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 			vsKey += ":[ViewInfoMacro]:";
 		}
 
-		if (param.useMSAAMacro)
+		if (param.useMSAAMacroInVS)
 		{
 			vsMacro.push_back(dx.GetMSAAShaderMacro());
 

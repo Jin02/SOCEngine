@@ -20,11 +20,11 @@ namespace Rendering
 				std::string psName									= "";
 				const std::vector<Shader::ShaderMacro>* psMacros	= nullptr;
 				bool useViewInfo									= false;
-				bool useMSAAMacro									= false;
+				bool useMSAAMacroInVS								= false;
 
 				InitParam() = default;
-				InitParam(std::string _shaderFileName, std::string _psName, decltype(psMacros) _psMacros, bool _useViewInfo = false, bool _useMSAAMacro = false)
-					: shaderFileName(_shaderFileName), psName(_psName), psMacros(_psMacros), useViewInfo(_useViewInfo), useMSAAMacro(_useMSAAMacro)
+				InitParam(std::string _shaderFileName, std::string _psName, decltype(psMacros) _psMacros, bool _useViewInfo = false, bool _useMSAAMacroInVS = false)
+					: shaderFileName(_shaderFileName), psName(_psName), psMacros(_psMacros), useViewInfo(_useViewInfo), useMSAAMacroInVS(_useMSAAMacroInVS)
 				{
 
 				}
