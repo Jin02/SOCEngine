@@ -369,7 +369,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 3 - GI
 	{
-		//_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
+		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
 	// 4 - Sky
