@@ -101,9 +101,9 @@ namespace Rendering
 		private:
 			Color		_mainColor		= Color(1.0f, 1.0f, 1.0f, 1.0f);
 			Color		_emissiveColor	= Color(0.0f, 0.0f, 0.0f, 0.0f);;
-			float		_metallic		= 0.0f;
-			float		_specularity	= 0.0f;
-			float		_roughness		= 0.0f;
+			float		_metallic		= 0.5f;
+			float		_specularity	= 0.5f;
+			float		_roughness		= 0.5f;
 			float		_ior			= 0.0f;
 			uchar		_flag			= 0;
 			bool		_dirty			= true;
