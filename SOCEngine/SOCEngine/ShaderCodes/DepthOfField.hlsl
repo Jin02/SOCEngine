@@ -23,7 +23,13 @@ float4 DoF_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float4 sceneMap = InputSceneMap.Sample(LinearSampler, input.uv);
 	float4 blurMap	= InputBlurSceneMap.Sample(LinearSampler, input.uv);
 
-	float depth		= InvertProjDepthToView(GBufferDepth.Sample( LinearSampler, input.uv ).x);
+#if (MSAA_SAMPLES_COUNT > 1)
+	float depth		= GBufferDepth.Load(GetViewportSize() * input.uv, 0).r;
+#else
+	float depth		= GBufferDepth.Sample(LinearSampler, input.uv).r;
+#endif
+
+	depth		= InvertProjDepthToView(depth);
 	
 	const float bn = dofParam_blurNear;
 	const float bf = dofParam_blurFar;

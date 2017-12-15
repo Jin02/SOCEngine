@@ -13,11 +13,14 @@ using namespace Rendering::Camera;
 
 void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
+	std::vector<ShaderMacro> psMacro{ dx.GetMSAAShaderMacro() };
+
 	FullScreen::InitParam param;
 	{
 		param.psMacros			= nullptr;
 		param.psName			= "DoF_InFullScreen_PS";
 		param.shaderFileName	= "DepthOfField";
+		param.psMacros			= &psMacro;
 	}
 
 	_screen.Initialize(dx, param, shaderMgr);
@@ -26,6 +29,14 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 
 	_blur.Initialize(dx, shaderMgr);
+	{
+		_blurParamCBData.sigma				= 1.5f;
+		_blurParamCBData.numPixelPerSide	= 4.0f;
+		_blurParamCBData.blurSize			= 4.0f;
+		_blurParamCBData.scale				= 1.0f;
+	}
+	_blur.UpdateParamCB(dx, _blurParamCBData);
+
 	_blurredColorMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
@@ -35,6 +46,8 @@ void DepthOfField::UpdateParamCB(Device::DirectX& dx)
 		return;
 
 	_paramCB.UpdateSubResource(dx, _paramData);
+	_blur.UpdateParamCB(dx, _blurParamCBData);
+
 	_dirty = false;
 }
 

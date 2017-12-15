@@ -32,12 +32,16 @@ namespace Rendering
 
 			void UpdateParamCB(Device::DirectX& dx);
 
-			SET_ACCESSOR_DIRTY(Param, const ParamCBData&, _paramData);
-			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);
+			SET_ACCESSOR_DIRTY(Param,		const ParamCBData&,					_paramData);
+			SET_ACCESSOR_DIRTY(Param,		const GaussianBlur::ParamCBData&,	_blurParamCBData);
+
+			GET_CONST_ACCESSOR(Param,		const ParamCBData&,					_paramData);
+			GET_CONST_ACCESSOR(BlurParam,	const GaussianBlur::ParamCBData&,	_blurParamCBData);
 
 		private:
 			FullScreen									_screen;
 			GaussianBlur								_blur;
+			GaussianBlur::ParamCBData					_blurParamCBData;
 
 			Texture::RenderTexture						_blurredColorMap;
 			Buffer::ExplicitConstBuffer<ParamCBData>	_paramCB;
