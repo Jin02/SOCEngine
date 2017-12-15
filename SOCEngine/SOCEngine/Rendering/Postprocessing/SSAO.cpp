@@ -11,11 +11,13 @@ using namespace Rendering::RenderState;
 
 void SSAO::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 {
+	std::vector<ShaderMacro> psMacro{ dx.GetMSAAShaderMacro() };
 	FullScreen::InitParam param;
 	{
 		param.psMacros			= nullptr;
 		param.psName			= "SSAO_InFullScreen_PS";
 		param.shaderFileName	= "SSAO";
+		param.psMacros			= &psMacro;
 	}
 	_screen.Initialize(dx, param, shaderMgr);
 
