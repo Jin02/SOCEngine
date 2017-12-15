@@ -24,11 +24,7 @@ float4 PS( PS_INPUT input ) : SV_Target
 	uint2 screenPt		= input.position.xy;
 
 	Surface surface;
-#if (MSAA_SAMPLES_COUNT > 1)
-	ParseGBufferSurface(surface, screenPt, input.sampleIdx);
-#else
 	ParseGBufferSurface(surface, screenPt, 0);
-#endif
 
 	float3 normal		= surface.normal;
 	float3 viewDir		= normalize( camera_worldPos - surface.worldPos );

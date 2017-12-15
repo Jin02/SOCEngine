@@ -57,12 +57,13 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( globalIdx, sampleIdx );
 	float4 velocity_metallic_specularity	= GBufferVelocity_metallic_specularity.Load( globalIdx, sampleIdx );
 	float3 emission							= GBufferEmission_materialFlag.Load(globalIdx, sampleIdx).rgb;
+	uint matFlag							= uint( GBufferEmission_materialFlag.Load(globalIdx, 0).a * 255.0f );
 #else
 	float4 albedo_occlusion					= GBufferAlbedo_occlusion.Load( uint3(globalIdx, 0) );
 	float4 velocity_metallic_specularity	= GBufferVelocity_metallic_specularity.Load( uint3(globalIdx, 0) );
 	float3 emission							= GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).rgb;
+	uint	matFlag							= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
 #endif
-	uint	matFlag			= uint( GBufferEmission_materialFlag.Load(uint3(globalIdx, 0)).a * 255.0f );
 	float	specularity		= velocity_metallic_specularity.a;
 
 	float3	baseColor		= albedo_occlusion.rgb;
