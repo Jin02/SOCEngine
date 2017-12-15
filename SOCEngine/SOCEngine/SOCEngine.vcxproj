@@ -180,6 +180,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\MainSceneMaker.h" />
     <ClInclude Include="Rendering\Renderer\MeshRenderer.h" />
     <ClInclude Include="Rendering\Renderer\RendererCommon.h" />
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h" />
@@ -405,6 +406,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp" />
     <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.cpp" />
@@ -470,6 +472,7 @@
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
+    <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl" />
     <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl" />
     <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

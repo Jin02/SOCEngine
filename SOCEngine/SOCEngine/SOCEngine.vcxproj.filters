@@ -451,6 +451,9 @@
     <Filter Include="Rendering\Shadow\Buffer\GlobalParamCB">
       <UniqueIdentifier>{a602bfdc-9d57-49f8-954c-230fdce056c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Renderer\Main\SceneMaker">
+      <UniqueIdentifier>{2b09879f-20c4-4bbb-b63f-e6b9112732cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -991,6 +994,9 @@
     <ClInclude Include="ShaderCodes\TBRParam.h">
       <Filter>ShaderCodes\TiledRendering</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Renderer\MainSceneMaker.h">
+      <Filter>Rendering\Renderer\Main\SceneMaker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1293,6 +1299,9 @@
     <ClCompile Include="Rendering\Shadow\ShadowManager.cpp">
       <Filter>Rendering\Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp">
+      <Filter>Rendering\Renderer\Main\SceneMaker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
@@ -1414,6 +1423,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
       <Filter>ShaderCodes\ReflectionProbe\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl">
+      <Filter>ShaderCodes\Merger</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
