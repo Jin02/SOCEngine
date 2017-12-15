@@ -334,9 +334,6 @@
     <Filter Include="Rendering\Renderer\Main">
       <UniqueIdentifier>{aa5613c9-00cf-4e6a-9c93-db2414304664}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Postprocessing\Renderer">
-      <UniqueIdentifier>{f00b15b4-7573-4e54-a083-50939c61ade8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Postprocessing\Bloom">
       <UniqueIdentifier>{179e467e-4149-417b-9a78-be44ade9d44f}</UniqueIdentifier>
     </Filter>
@@ -838,9 +835,6 @@
     <ClInclude Include="Rendering\Postprocessing\IBLPass.h">
       <Filter>Rendering\Postprocessing\IBL</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
-      <Filter>Rendering\Postprocessing\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Renderer\MainRenderer.h">
       <Filter>Rendering\Renderer\Main</Filter>
     </ClInclude>
@@ -996,6 +990,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\Renderer\MainSceneMaker.h">
       <Filter>Rendering\Renderer\Main\SceneMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
+      <Filter>Rendering\Postprocessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1197,9 +1194,6 @@
     <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp">
       <Filter>Rendering\Postprocessing\IBL</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
-      <Filter>Rendering\Postprocessing\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp">
       <Filter>Rendering\Renderer\Main</Filter>
     </ClCompile>
@@ -1301,6 +1295,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp">
       <Filter>Rendering\Renderer\Main\SceneMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
+      <Filter>Rendering\Postprocessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
