@@ -36,7 +36,13 @@ float Distance_2(float2 a, float2 b)
 
 float GetViewDepth(int2 screenPos)
 {
-	return InvertProjDepthToView(GBufferDepth.Load(int3(screenPos, 0)).r);
+#if (MSAA_SAMPLES_COUNT > 1) //MSAA
+	float depth = GBufferDepth.Load( screenPos, 0 ).x;
+#else
+	float depth = GBufferDepth.Load( uint3(screenPos, 0) ).x;
+#endif
+
+	return InvertProjDepthToView(depth);
 }
 
 bool IntersectDepth(float z, float minZ, float maxZ)
@@ -145,11 +151,10 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
 }
 
-void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, out float outRoughness,
-													int2 screenPos, uint sampleIdx)
+void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, out float outRoughness, int2 screenPos)
 {
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-    float4 normal_roughness = GBufferNormal_roughness.Load( screenPos, sampleIdx );
+    float4 normal_roughness = GBufferNormal_roughness.Load( screenPos, 0 );
 #else
     float4 normal_roughness = GBufferNormal_roughness.Load( int3(screenPos, 0) );
 #endif

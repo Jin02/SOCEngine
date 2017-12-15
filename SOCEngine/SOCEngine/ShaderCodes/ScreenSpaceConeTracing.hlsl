@@ -65,7 +65,12 @@ float4 SSCT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float3	toViewSpacePos		= normalize(viewSpacePos);
 	
 	float4	specularColor		= DirectSpecularColorMap.Load( screenPos );
+
+#if (MSAA_SAMPLES_COUNT > 1) // MSAA
+	float	roughness			= GBufferNormal_roughness.Load( screenPos.xy, 0 ).a;
+#else // non-MSAA
 	float	roughness			= GBufferNormal_roughness.Load( screenPos ).a;
+#endif
 
 	float	specularPower		= SpecularPowerFromRoughness(roughness);
 	
@@ -107,7 +112,13 @@ float4 SSCT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	}
 	
 	float3 toEye			= -toViewSpacePos;
-	float3 worldNormal		= GBufferNormal_roughness.Load(screenPos).rgb * 2.0f - float3(1.0f, 1.0f, 1.0f);
+
+#if (MSAA_SAMPLES_COUNT > 1) //MSAA
+	float3 packedNormal		= GBufferNormal_roughness.Load(screenPos.xy, 0).rgb;
+#else
+	float3 packedNormal		= GBufferNormal_roughness.Load(screenPos).rgb;
+#endif
+	float3 worldNormal		= packedNormal * 2.0f - float3(1.0f, 1.0f, 1.0f);
 	float3 viewNormal		= mul(float4(worldNormal, 0.0f), camera_viewMat).xyz;
 	float3 specular			= FresnelSchlick(specularColor.rgb, abs( dot(viewNormal, toEye) ) );
 

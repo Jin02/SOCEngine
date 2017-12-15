@@ -8,11 +8,7 @@ float4 SSRT_InFullScreen_PS(PS_INPUT input) : SV_Target
 
 	float3	viewNormal	= float3(0.0f, 0.0f, 0.0f);
 	float	roughness	= 0.0f;
-#if (MSAA_SAMPLES_COUNT > 1) //MSAA
-    ComputeViewNormalFromGBuffer_with_GetRoughness(viewNormal, roughness, screenPos.xy, input.sampleIdx);
-#else
-    ComputeViewNormalFromGBuffer_with_GetRoughness(viewNormal, roughness, screenPos.xy, 0);
-#endif
+    ComputeViewNormalFromGBuffer_with_GetRoughness(viewNormal, roughness, screenPos.xy);
 
     if( any(viewNormal) == 0.0f )
         return float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -31,7 +27,11 @@ float4 SSRT_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float jitter				= ssrt_stride > 1.0f ? float( (screenPos.x + screenPos.y) & 1 ) * 0.5f : 0.0f;
 	bool intersect				= TraceScreenSpaceRay(hitScreenPos, hitPos, viewRayOrigin, rayDir, jitter);
 	
-	float depth					= GBufferDepth.Load(int3(hitScreenPos, 0)).r;
+#if (MSAA_SAMPLES_COUNT > 1) //MSAA
+	float depth					= GBufferDepth.Load( uint2(hitScreenPos), 0 ).x;
+#else
+	float depth					= GBufferDepth.Load( uint3(hitScreenPos, 0) ).x;
+#endif
 
     float2 viewportSize			= GetViewportSize();
     float2 texelSize			= float2(1.0f, 1.0f) / viewportSize;
