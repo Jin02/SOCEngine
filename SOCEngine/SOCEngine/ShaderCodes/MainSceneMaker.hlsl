@@ -19,7 +19,10 @@ float4 AlphaBlending(float4 front, float4 back)
 
 float4 PS(PS_INPUT input) : SV_Target
 {
-	float4 opaque = opaqueMap.Sample(linearSampler, input.uv);
+	float4 opaque	= opaqueMap.Sample(linearSampler, input.uv);
+	float4 gi		= giMap.Sample(linearSampler, input.uv);
+
+	opaque = min(opaque + gi, 1.0f);
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 transparent = float4(0.0f, 0.0f, 0.0f, 0.0f);
