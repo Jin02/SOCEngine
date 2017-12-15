@@ -16,10 +16,6 @@ struct PS_INPUT
 	float3 viewPosition			: VIEW_POSITION;
 	float3 viewRay				: VIEW_RAY;
 #endif
-
-#if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	uint sampleIdx				: SV_SAMPLEINDEX;
-#endif
 };
 
 PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
