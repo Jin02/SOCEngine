@@ -17,7 +17,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
-			const Texture::RenderTexture* Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera);
+			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera);
 
 			void UpdateCB(Device::DirectX& dx);
 
@@ -52,9 +52,7 @@ namespace Rendering
 
 		public:
 			PostProcessing::TempTextures				_tempTextures;
-
 			Texture::RenderTexture						_tempResultMap;
-			Texture::RenderTexture						_bluredCurScene;
 
 			std::tuple<	PostProcessing::Bloom,
 						PostProcessing::SSAO,
@@ -62,8 +60,8 @@ namespace Rendering
 
 			PostProcessing::Copy						_copy;
 
-			bool										_useSSAO = false;
-			bool										_useDoF = false;
+			bool										_useSSAO	= false;
+			bool										_useDoF		= false;
 		};
 	}
 }
