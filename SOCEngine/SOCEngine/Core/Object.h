@@ -51,7 +51,7 @@ namespace Core
 		template <class Component>
 		Component& GetComponent()
 		{
-			return CoreConnector::SharedInstance()->GetComponentSystem()->Find<Compoent>(_id);
+			return CoreConnector::SharedInstance()->GetComponentSystem()->Find<Component>(_id);
 		}
 
 		// Object Clone() const; TODO: https://goo.gl/qVi3Yo
