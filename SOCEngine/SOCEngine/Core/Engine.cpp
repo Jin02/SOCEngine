@@ -81,7 +81,6 @@ void Engine::Initialize(IScene* scene)
 {
 	CoreConnector::SharedInstance()->Connect(&_transformPool, &_dontUseTransformPool, &_objectManager, &_componentSystem);
 
-	const auto& renderSetting = scene->RegistRenderSetting(*this);
 	_rendering.InitializeRenderer(*this, scene->RegistRenderSetting(*this));
 
 	_componentSystem.Initialize(_dx);
