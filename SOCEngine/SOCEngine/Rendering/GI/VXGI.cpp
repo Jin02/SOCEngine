@@ -41,7 +41,7 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 	Clear(_mipmappedInjectionMap.GetSourceMapUAV(), _staticInfo.dimension / 2, true);
 }
 
-void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo&& info)
+void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo& info)
 {
 	// Setting Infos
 	{

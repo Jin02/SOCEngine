@@ -50,7 +50,7 @@ namespace Rendering
 
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo&& info);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo& info);
 			void Run(Device::DirectX& dx, const Param&& param);
 			void UpdateGIDynamicInfoCB(Device::DirectX& dx);
 			
