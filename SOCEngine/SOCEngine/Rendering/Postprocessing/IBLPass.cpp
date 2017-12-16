@@ -1,6 +1,5 @@
 #include "IBLPass.h"
 #include "BindIndexInfo.h"
-#include "SkyBox.h"
 #include "SkyBoxMaterial.h"
 
 using namespace Rendering::PostProcessing;
