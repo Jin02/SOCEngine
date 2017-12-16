@@ -15,18 +15,18 @@ cbuffer DoFParam : register(b1)
 Texture2D<float4>	InputSceneMap			: register( t0 );
 Texture2D<float4>	InputBlurSceneMap		: register( t1 );
 
-SamplerState		LinearSampler			: register( s0 );
+SamplerState		Sampler					: register( s0 );
 
 
 float4 DoF_InFullScreen_PS(PS_INPUT input) : SV_Target
 {	
-	float4 sceneMap = InputSceneMap.Sample(LinearSampler, input.uv);
-	float4 blurMap	= InputBlurSceneMap.Sample(LinearSampler, input.uv);
+	float4 sceneMap = InputSceneMap.Sample(Sampler, input.uv);
+	float4 blurMap	= InputBlurSceneMap.Sample(Sampler, input.uv);
 
 #if (MSAA_SAMPLES_COUNT > 1)
 	float depth		= GBufferDepth.Load(GetViewportSize() * input.uv, 0).r;
 #else
-	float depth		= GBufferDepth.Sample(LinearSampler, input.uv).r;
+	float depth		= GBufferDepth.Sample(Sampler, input.uv).r;
 #endif
 
 	depth		= InvertProjDepthToView(depth);

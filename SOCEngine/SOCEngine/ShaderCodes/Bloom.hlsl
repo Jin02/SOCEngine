@@ -9,7 +9,7 @@ Texture2D<float4>	CurColorMap				: register( t0 );
 Texture2D<float4>	PrevAdaptedLuminanceMap	: register( t1 );
 Texture2D<float4>	InputBloomMap			: register( t2 );
 
-SamplerState		LinearSampler			: register( s0 );
+SamplerState		Sampler					: register( s0 );
 
 float AverageLuminance()
 {
@@ -30,7 +30,7 @@ float3 ComputeExposedColor(float3 color, float avgLum, float threshold)
 
 float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
-	float3 color		= CurColorMap.Sample(LinearSampler, input.uv).rgb;
+	float3 color		= CurColorMap.Sample(Sampler, input.uv).rgb;
 	float avgLum		= AverageLuminance();
 
 	color = ComputeExposedColor(color.rgb, avgLum, bloom_threshold);
@@ -41,17 +41,19 @@ float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 float3 BloomToneMapping(float3 color, float avgLum, float threshold)
 {
 	color = ComputeExposedColor(color, avgLum, threshold);
-	color = ToGamma(Uncharted2ToneMapping(color), GetGamma());
+	color = Uncharted2ToneMapping(color);
 
 	return color;
 }
 
 float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
-	float4 color		= CurColorMap.Sample(LinearSampler, input.uv);
+	float4 color		= CurColorMap.Sample(Sampler, input.uv);
 	float avgLum		= AverageLuminance();
-	color.rgb			= saturate( BloomToneMapping(color.rgb, avgLum, 0.0f) );
+	color.rgb			= ToGamma(BloomToneMapping(color.rgb, avgLum, 0.0f), GetGamma());
 
-	float3 bloom		= InputBloomMap.Sample(LinearSampler, input.uv).rgb;
-	return float4(saturate( (color.rgb + bloom).rgb ), color.a);
+	float3 bloom		= InputBloomMap.Sample(Sampler, input.uv).rgb;
+	float3 finalColor	= min(color.rgb + bloom.rgb, 1.0f);
+
+	return float4(finalColor, color.a);
 }
