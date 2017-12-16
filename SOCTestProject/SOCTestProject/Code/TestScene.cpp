@@ -14,10 +14,11 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
-	return RenderSetting("MainCamera",
-		engine.GetDirectX().GetBackBufferRect().Cast<uint>(),
-		512, 256, 15.0f
-	);
+	GIInitParam param;
+	{
+		param.vxgiParam = GIInitParam::VXGIParam();
+	}
+	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 512, param);
 }
 
 void TestScene::OnInitialize(Engine& engine)
