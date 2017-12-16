@@ -47,7 +47,7 @@ void TestScene::OnInitialize(Engine& engine)
 	pl.GetBase().SetLumen(100);
 
 	PointLightShadow& pls = light.AddComponent<PointLightShadow>();
-	pls.GetBase().SetUnderScanSize( Half(0.0f) );
+	pls.GetBase().SetUnderScanSize( Half(1.0f) );
 
 	engine.AddRootObject(light);
 	engine.UpdateWorldMatrix();
