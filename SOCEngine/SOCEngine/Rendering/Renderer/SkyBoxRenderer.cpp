@@ -1,25 +1,27 @@
-#include "SkyBox.h"
+#include "SkyBoxRenderer.h"
 #include "BindIndexInfo.h"
 #include <math.h>
+#include "AutoBinder.hpp"
 
 using namespace Core;
 using namespace Device;
 using namespace Math;
 using namespace Rendering;
 using namespace Rendering::Sky;
+using namespace Rendering::Renderer;
 using namespace Rendering::Shader;
 using namespace Rendering::Material;
 using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 using namespace Rendering::RenderState;
 
-void SkyBox::Initialize(DirectX& dx)
+void SkyBoxRenderer::Initialize(DirectX& dx)
 {
 	_geometry.Initialize(dx);
 	_transformCB.Initialize(dx);
 }
 
-void SkyBox::UpdateCB(DirectX& dx, const Vector3& worldPos, const Matrix& viewProjMat, float far)
+void SkyBoxRenderer::UpdateCB(DirectX& dx, const Vector3& worldPos, const Matrix& viewProjMat, float far)
 {
 	Matrix matrix;
 	{
@@ -37,11 +39,11 @@ void SkyBox::UpdateCB(DirectX& dx, const Vector3& worldPos, const Matrix& viewPr
 	_transformCB.UpdateSubResource(dx, matrix);
 }
 
-void SkyBox::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDepthMap, const Material::SkyBoxMaterial& material)
+void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDepthMap, const Material::SkyBoxMaterial& material)
 {
 	// Render Setting
 	{
-		dx.SetRasterizerState(RasterizerState::CWDisableCulling);
+		dx.SetRasterizerState(RasterizerState::CCWDefault);
 		dx.SetBlendState(BlendState::Opaque);	
 		dx.SetDepthStencilState(DepthState::GreaterEqualAndDisableDepthWrite, 0);
 		dx.SetRenderTarget(target, const_cast<DepthMap&>(targetDepthMap));	// depth state Âü°í.
@@ -57,15 +59,11 @@ void SkyBox::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDe
 	vs.BindInputLayoutToContext(dx);
 	material.GetPixelShader().BindShaderToContext(dx);
 
-	VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::SkyBoxWVP, _transformCB);
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::SkyBoxCubeMap, material.GetCubeMap().GetShaderResourceView());
-	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
+	AutoBinderCB<VertexShader> wvp(dx,			ConstBufferBindIndex::SkyBoxWVP,			_transformCB);
+	AutoBinderSRV<PixelShader> cubeMap(dx,		TextureBindIndex::SkyBoxCubeMap,			material.GetCubeMap().GetShaderResourceView());
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
 	dx.GetContext()->DrawIndexed(_geometry.GetIndexBuffer().GetIndexCount(), 0, 0);
-
-	VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::SkyBoxWVP);
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex::SkyBoxCubeMap);
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
 
 	vs.UnBindShaderToContext(dx);
 	vs.UnBindInputLayoutToContext(dx);

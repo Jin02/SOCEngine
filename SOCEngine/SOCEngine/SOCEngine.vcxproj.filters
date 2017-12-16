@@ -217,9 +217,6 @@
     <Filter Include="Rendering\Sky">
       <UniqueIdentifier>{1af3d5a1-1903-401a-80df-71e53c5c40b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Sky\Box">
-      <UniqueIdentifier>{0cea5a99-4942-4d6e-91ad-ab1328674f23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Sky\Material">
       <UniqueIdentifier>{a9f849e8-f639-44fe-b42b-bc63f9a02a09}</UniqueIdentifier>
     </Filter>
@@ -382,12 +379,6 @@
     <Filter Include="Rendering\Camera\Manager">
       <UniqueIdentifier>{31f76783-c4db-440b-8c20-32525b3095f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Renderer\Shadow\Map">
-      <UniqueIdentifier>{dcbf417c-c46c-4509-954b-0ed044fa2b73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Renderer\Shadow\Map\Point">
-      <UniqueIdentifier>{a9aecc69-90d8-48f8-b3a3-b811273f89c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shadow\Buffer\MapCB">
       <UniqueIdentifier>{05121a58-83e0-4537-9de3-7f2c5daff3af}</UniqueIdentifier>
     </Filter>
@@ -450,6 +441,9 @@
     </Filter>
     <Filter Include="Rendering\Renderer\Main\SceneMaker">
       <UniqueIdentifier>{2b09879f-20c4-4bbb-b63f-e6b9112732cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Sky">
+      <UniqueIdentifier>{d945dabd-aa8f-4052-9fea-b167e72eaa20}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -706,9 +700,6 @@
     <ClInclude Include="Rendering\Shader\DefaultRenderTypes.h">
       <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyBox.h">
-      <Filter>Rendering\Sky\Box</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h">
       <Filter>Rendering\Sky\Material</Filter>
     </ClInclude>
@@ -925,12 +916,6 @@
     <ClInclude Include="Device\RenderState.h">
       <Filter>Device</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow\Map\Point</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Mesh\MeshManager.h">
       <Filter>Rendering\Mesh\Manager</Filter>
     </ClInclude>
@@ -996,6 +981,15 @@
     </ClInclude>
     <ClInclude Include="Rendering\GI\GIInitParam.h">
       <Filter>Rendering\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\PointLightShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\SkyBoxRenderer.h">
+      <Filter>Rendering\Renderer\Sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1115,9 +1109,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\Mesh.cpp">
       <Filter>Rendering\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyBox.cpp">
-      <Filter>Rendering\Sky\Box</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp">
       <Filter>Rendering\Sky\Material</Filter>
@@ -1263,12 +1254,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\Shadow\ShadowMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow\Map\Point</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shadow\PointLightShadowMapCBPool.cpp">
       <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
     </ClCompile>
@@ -1301,6 +1286,15 @@
     </ClCompile>
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <Filter>Rendering\Postprocessing</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\PointLightShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\SkyBoxRenderer.cpp">
+      <Filter>Rendering\Renderer\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

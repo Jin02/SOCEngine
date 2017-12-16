@@ -183,10 +183,11 @@
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MainSceneMaker.h" />
     <ClInclude Include="Rendering\Renderer\MeshRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\PointLightShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\RendererCommon.h" />
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h" />
-    <ClInclude Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.h" />
-    <ClInclude Include="Rendering\Renderer\Shadow\ShadowMapRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\SkyBoxRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\RenderSetting.h" />
@@ -237,9 +238,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadowBuffer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Rendering\Sky\SkyBox.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
@@ -409,9 +407,10 @@
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp" />
     <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\PointLightShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp" />
-    <ClCompile Include="Rendering\Renderer\Shadow\PointLightShadowMapRenderer.cpp" />
-    <ClCompile Include="Rendering\Renderer\Shadow\ShadowMapRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\SkyBoxRenderer.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaders.cpp" />
@@ -438,9 +437,6 @@
     <ClCompile Include="Rendering\Shadow\ShadowGlobalParamCB.cpp" />
     <ClCompile Include="Rendering\Shadow\ShadowMapCBPool.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Rendering\Sky\SkyBox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
