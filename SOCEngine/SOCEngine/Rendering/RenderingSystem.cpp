@@ -24,10 +24,7 @@ void RenderingSystem::InitializeRenderer(Engine& engine, const RenderSetting&& p
 	engine.AddRootObject(object);
 
 	_shadowRenderer.Initialize(engine.GetDirectX(), param.shadowMapResolution, param.shadowMapResolution, param.shadowMapResolution);
-	_mainRenderer.Initialize(engine.GetDirectX(), _shaderManager, maincam,
-		GlobalIllumination::InitParam{
-		VXGIStaticInfo(param.voxelizeDimension, param.voxelizeSize)
-	});	
+	_mainRenderer.Initialize(engine.GetDirectX(), _shaderManager, maincam, param.giParam);	
 
 	_defaultShaders.Initialize(engine.GetDirectX(), _shaderManager);
 	_backBufferMaker.Initialize(engine.GetDirectX(), _shaderManager);
