@@ -54,9 +54,9 @@ void RenderingSystem::Render(Engine& engine, float dt)
 	_shadowRenderer.RenderShadowMap<PointLightShadow>(dx, shadowMgr, _materialManager, cullParam, meshRenderParam);
 	_shadowRenderer.RenderShadowMap<DirectionalLightShadow>(dx, shadowMgr, _materialManager, cullParam, meshRenderParam);
 
-	const auto& lightMgr			= compoSys.GetManager_Direct<LightManager>();
-	const auto& mainCamera			= compoSys.GetMainCamera();
-	SkyBoxMaterial* skyboxMaterial	= _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
+	const auto& lightMgr					= compoSys.GetManager_Direct<LightManager>();
+	const auto& mainCamera					= compoSys.GetMainCamera();
+	const SkyBoxMaterial* skyboxMaterial	= _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
 	_mainRenderer.UpdateCB(dx, mainCamera, lightMgr);
 	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
