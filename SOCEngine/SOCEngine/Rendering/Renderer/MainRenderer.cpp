@@ -22,7 +22,7 @@ using namespace Rendering::Light;
 using namespace Rendering::Shadow;
 using namespace Rendering::GI;
 
-void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, const GlobalIllumination::InitParam&& giParam)
+void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, const GIInitParam& giParam)
 {
 	_blendedDepthLightCulling.Initialize(dx, shaderMgr, mainCamera.GetRenderRect().size);
 
@@ -74,7 +74,9 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 	}
 
 	_skyBox.Initialize(dx);
-	_gi.Initialize(dx, shaderMgr, renderSize, std::move(giParam));
+
+	if (_useGI = giParam.GetUseGI())
+		_gi.Initialize(dx, shaderMgr, renderSize, giParam);
 
 	_mainSceneMaker.Initialize(dx, shaderMgr, renderSize);
 }
@@ -368,6 +370,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	}
 
 	// 3 - GI
+	if (_useGI)
 	{
 		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
