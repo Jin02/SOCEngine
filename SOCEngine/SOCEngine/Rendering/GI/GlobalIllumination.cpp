@@ -7,9 +7,13 @@ using namespace Rendering::Manager;
 using namespace Rendering::GI;
 using namespace Rendering::Texture;
 
-void GlobalIllumination::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const InitParam&& giParam)
+void GlobalIllumination::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const GIInitParam& giParam)
 {
-	_vxgi.Initialize(dx, shaderMgr, renderSize, std::move(giParam.vxgiInitParam));
+	if (giParam.GetUseVXGI())
+	{
+		VXGIStaticInfo staticInfo(giParam.vxgiParam.voxelizeDimension, giParam.vxgiParam.voxelizeSize);
+		_vxgi.Initialize(dx, shaderMgr, renderSize, staticInfo);
+	}
 }
 
 void GlobalIllumination::Run(DirectX& dx, const VXGI::Param&& param)

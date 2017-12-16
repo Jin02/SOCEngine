@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VXGI.h"
+#include "GIInitParam.h"
 
 namespace Rendering
 {
@@ -12,13 +13,8 @@ namespace Rendering
 			GET_ACCESSOR(VXGIResultMap, const Texture::Texture2D&, _vxgi.GetIndirectColorMap());
 			void SetVXGI_VoxelizeCenterPos(const Math::Vector3& pos) { _vxgi.SetStartCenterWorldPos(pos); }
 
-			struct InitParam
-			{
-				const GI::VXGIStaticInfo&& vxgiInitParam;
-			};
-
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const InitParam&& giParam);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const GIInitParam& giParam);
 			void Run(Device::DirectX& dx, const GI::VXGI::Param&& param);
 
 		private:
