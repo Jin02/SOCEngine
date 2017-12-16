@@ -14,7 +14,7 @@ namespace Rendering
 		public:
 			using MaterialForm::MaterialForm;
 
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager* shaderMgr);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
 			void UpdateCubeMap(const Texture::Texture2D& tex);
 
 			GET_CONST_ACCESSOR(VertexShader,	const auto&,	_vertexShader);

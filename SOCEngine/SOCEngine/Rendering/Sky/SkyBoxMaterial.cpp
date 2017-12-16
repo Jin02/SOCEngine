@@ -12,21 +12,18 @@ using namespace Math;
 using namespace Device;
 using namespace Rendering;
 
-void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager* shaderMgr)
+void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
-	if(shaderMgr)
-	{
-		Factory::ShaderFactory loader(shaderMgr);
-	
-		std::shared_ptr<VertexShader>	vs(nullptr);
-		std::shared_ptr<PixelShader>	ps(nullptr);
-	
-		auto result = loader.LoadShader(dx, "SkyBox", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
-		assert(result.loadVS & result.loadPS); // Error, cant load shader
-	
-		_vertexShader	= *vs;
-		_pixelShader	= *ps;
-	}
+	Factory::ShaderFactory loader(&shaderMgr);
+
+	std::shared_ptr<VertexShader>	vs(nullptr);
+	std::shared_ptr<PixelShader>	ps(nullptr);
+
+	auto result = loader.LoadShader(dx, "SkyBox", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
+	assert(result.loadVS & result.loadPS); // Error, cant load shader
+
+	_vertexShader = *vs;
+	_pixelShader = *ps;
 }
 
 void SkyBoxMaterial::UpdateCubeMap(const Texture2D& tex)
