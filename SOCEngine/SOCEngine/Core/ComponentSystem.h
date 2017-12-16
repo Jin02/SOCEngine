@@ -152,11 +152,16 @@ namespace Core
 #pragma region MainCamera
 		template <> MainCamera& Add<MainCamera>(ObjectID id)
 		{
-			assert(!"MainCamera must use SetMainCamera");
+			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			mgr.SetMainCamera(id);
+
+			OutputDebugString("Warning | MainCamera component has detached from origin main camera object ");
+
+			return mgr.GetMainCamera();
 		}
 		template <> void Delete<MainCamera>(ObjectID id)
 		{
-			assert(!"Invalid Call");
+			assert(!"MainCam must exist");
 		}
 		template <> bool Has<MainCamera>(ObjectID id) const
 		{
@@ -165,7 +170,8 @@ namespace Core
 		}
 		template <> auto Find<MainCamera>(ObjectID id)
 		{
-			assert(!"MainCamera must use GetMainCamera");
+			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			return mgr.GetMainCamera().GetObjectID() == id ? &mgr.GetMainCamera() : nullptr;
 		}
 
 		MainCamera& SetMainCamera(ObjectID id)
