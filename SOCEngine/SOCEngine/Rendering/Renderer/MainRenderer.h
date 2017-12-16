@@ -16,7 +16,7 @@
 #include "ComputeShader.h"
 #include "ShadowAtlasMapRenderer.h"
 
-#include "SkyBox.h"
+#include "SkyBoxRenderer.h"
 #include "GlobalIllumination.h"
 
 #include "MainSceneMaker.h"
@@ -64,7 +64,7 @@ namespace Rendering
 			Shader::ComputeShader						_tbdrShader;
 			Light::OnlyLightCulling						_blendedDepthLightCulling;
 
-			Sky::SkyBox									_skyBox;
+			SkyBoxRenderer								_skyBoxRenderer;
 			MainSceneMaker								_mainSceneMaker;
 
 		private:

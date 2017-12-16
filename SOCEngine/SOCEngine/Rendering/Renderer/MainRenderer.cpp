@@ -73,7 +73,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		_tbdrThreadGroup = ComputeShader::ThreadGroup(size.w, size.h, 1);
 	}
 
-	_skyBox.Initialize(dx);
+	_skyBoxRenderer.Initialize(dx);
 
 	if (_useGI = giParam.GetUseGI())
 		_gi.Initialize(dx, shaderMgr, renderSize, giParam);
@@ -113,7 +113,7 @@ void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const Lig
 	_dirty = false;
 
 	const Matrix& worldMat = mainCamera.GetWorldMatrix();
-	_skyBox.UpdateCB(dx, Vector3(worldMat._41, worldMat._42, worldMat._43), mainCamera.GetViewProjMatrix(), mainCamera.GetFar());
+	_skyBoxRenderer.UpdateCB(dx, Vector3(worldMat._41, worldMat._42, worldMat._43), mainCamera.GetViewProjMatrix(), mainCamera.GetFar());
 }
 
 template <class ShaderType>
@@ -378,7 +378,9 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	// 4 - Sky
 	{
 		if(param.skyBoxMaterial)
-			_skyBox.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
+		{
+			_skyBoxRenderer.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
+		}
 	}
 
 	// 5 - Build Main RT
