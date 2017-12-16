@@ -77,6 +77,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
+    <ClInclude Include="Rendering\GI\GIInitParam.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>

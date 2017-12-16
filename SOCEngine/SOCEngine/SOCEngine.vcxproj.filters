@@ -994,6 +994,9 @@
     <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
       <Filter>Rendering\Postprocessing</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\GI\GIInitParam.h">
+      <Filter>Rendering\GI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
