@@ -42,8 +42,7 @@ void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, const RenderTexture
 	
 	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				mainRenderer.GetTBRParamCB());
 	AutoBinderCB<PixelShader> ssaoParam(dx,		ConstBufferBindIndex(1),					_paramCB);
-
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
 
 	_screen.Render(dx, outRT, true);
 }

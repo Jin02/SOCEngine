@@ -38,40 +38,43 @@ void Bloom::UpdateParamCB(Device::DirectX& dx)
 
 void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, const Copy& copy, TempTextures& temp, const TBRParamCB& tbrParamCB)
 {
-	AutoBinderSRV<PixelShader> inColor(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<PixelShader> lumiance(dx,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
-
-	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
-	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
-
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
-
-	_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
-
-	// Bloom Map
+	// Render EyeAdaptation / BloomThreshold Map
 	{
+		AutoBinderSRV<PixelShader> inColor(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
+		AutoBinderSRV<PixelShader> lumiance(dx,		TextureBindIndex(1),						_adaptedLuminanceMaps[!_currentAdaptedLuminanceIndx].GetTexture2D().GetShaderResourceView());
+	
+		AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
+		AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
+	
+		AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
+	
+		_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 		_bloomThreshold.Render(dx, _bloomThresholdMap, true);
+	}
 
-		// Blur
+	// Scalling / Blurring
+	{
+		// Down Scale
 		{
-			// Down Scale
-			{
-				copy.Render(dx, temp.downScaledTextures[0], _bloomThresholdMap.GetTexture2D());			// source	-> /2
-				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[0].GetTexture2D());	// /2		-> /4
-				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /8
-				copy.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /16
-			}
+			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
 
-			for (uint i = 0; i<2; ++i)
-				_blur.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[3], temp.minSizeMap);
+			copy.Render(dx, temp.downScaledTextures[0], _bloomThresholdMap.GetTexture2D());			// source	-> /2
+			copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[0].GetTexture2D());	// /2		-> /4
+			copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /8
+			copy.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /16
+		}
 
-			// Up Scale
-			{
-				copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[3].GetTexture2D());	// /16		-> /8
-				copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /4
-				copy.Render(dx, temp.downScaledTextures[0], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /2
-				copy.Render(dx, _bloomThresholdMap, temp.downScaledTextures[0].GetTexture2D());			// /2		-> source
-			}
+		for (uint i = 0; i<2; ++i)
+			_blur.Render(dx, temp.downScaledTextures[3], temp.downScaledTextures[3], temp.minSizeMap);
+
+		// Up Scale
+		{
+			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
+
+			copy.Render(dx, temp.downScaledTextures[2], temp.downScaledTextures[3].GetTexture2D());	// /16		-> /8
+			copy.Render(dx, temp.downScaledTextures[1], temp.downScaledTextures[2].GetTexture2D());	// /8		-> /4
+			copy.Render(dx, temp.downScaledTextures[0], temp.downScaledTextures[1].GetTexture2D());	// /4		-> /2
+			copy.Render(dx, _bloomThresholdMap, temp.downScaledTextures[0].GetTexture2D());			// /2		-> source
 		}
 	}
 }
@@ -85,7 +88,7 @@ void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& 
 	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,			_paramCB);
 	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,					tbrParamCB);
 
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Linear);
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Point);
 
 	_bloom.Render(dx, outRT, true);
 

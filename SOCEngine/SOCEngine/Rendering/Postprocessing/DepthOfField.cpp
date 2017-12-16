@@ -56,13 +56,19 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 	// Blur color map
 	{
 		// down scale
-		copy.Render(dx, tempTextures.downScaledTextures[0], inColorMap.GetTexture2D());
+		{
+			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
+			copy.Render(dx, tempTextures.downScaledTextures[0], inColorMap.GetTexture2D());
+		}
 
 		for (uint i = 0; i < 2; ++i)
 			_blur.Render(dx, tempTextures.downScaledTextures[0], tempTextures.downScaledTextures[0], tempTextures.halfSizeMap);
 
 		// up
-		copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0].GetTexture2D());
+		{
+			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
+			copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0].GetTexture2D());
+		}
 	}
 
 	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
@@ -73,7 +79,7 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 	AutoBinderCB<PixelShader> dofParam(dx,		ConstBufferBindIndex(1),					_paramCB);
 	AutoBinderCB<PixelShader> camParam(dx,		ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
 
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
+	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
 
 	_screen.Render(dx, outRT, true);
 }

@@ -1,11 +1,14 @@
 #include "RenderingSystem.h"
 #include "Engine.h"
+#include "AutoBinder.hpp"
 
 using namespace Core;
 using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Camera;
+using namespace Rendering::Shader;
 using namespace Rendering::Renderer;
+using namespace Rendering::RenderState;
 using namespace Rendering::GI;
 using namespace Rendering::Manager;
 using namespace Rendering::Light;
@@ -62,9 +65,11 @@ void RenderingSystem::Render(Engine& engine, float dt)
 
 	_postProcessing.SetElapsedTime(dt);
 	_postProcessing.UpdateCB(dx);
-	auto result = _postProcessing.Render(dx, _mainRenderer, mainCamera);
+	_postProcessing.Render(dx, _mainRenderer, mainCamera);
 
-	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), result->GetTexture2D());
+	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
+	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), _mainRenderer.GetResultMap().GetTexture2D());
+
 	dx.GetSwapChain()->Present(0, 0);
 
 	_shadowRenderer.ClearDirty();

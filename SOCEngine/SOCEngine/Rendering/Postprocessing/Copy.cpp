@@ -17,8 +17,6 @@ void Copy::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 
 void Copy::Render(Device::DirectX& dx, RenderTexture& outResultRT, const Texture2D& inputColorMap) const
 {
-	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 	AutoBinderSRV<PixelShader> inputMap(dx, TextureBindIndex(0), inputColorMap.GetShaderResourceView());
-	
 	_screen.Render(dx, outResultRT, true);
 }
