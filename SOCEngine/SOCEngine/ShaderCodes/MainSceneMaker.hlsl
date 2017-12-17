@@ -1,8 +1,6 @@
 //EMPTY_META_DATA
 
 #include "FullScreenShader.h"
-#include "TBRParam.h"
-#include "ShaderCommon.h"
 
 SamplerState		linearSampler	: register( s0 );
 Texture2D<float4>	opaqueMap		: register( t0 );
