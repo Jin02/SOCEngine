@@ -55,7 +55,7 @@ namespace Rendering
 		private:
 			Texture::RenderTexture						_resultMap;
 			Texture::RenderTexture						_scaledMap;
-			Texture::RenderTexture						_transparentMap;
+			Texture::RenderTexture						_forwardPassMap;
 
 			GBuffers									_gbuffer;
 

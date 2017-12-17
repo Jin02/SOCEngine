@@ -44,7 +44,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		float maxLength	= static_cast<float>( std::max(renderSize.w, renderSize.h) );
 		uint mipLevel	= static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
 		_resultMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1, mipLevel);
-		_transparentMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_forwardPassMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 	}
 
 	// Gbuffer
@@ -309,9 +309,9 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 2 - Render Transparent Mesh
 	{
-		_transparentMap.Clear(dx, Color::Clear());
+		_forwardPassMap.Clear(dx, Color::Clear());
 
-		dx.SetRenderTarget(_transparentMap, _gbuffer.opaqueDepthBuffer);
+		dx.SetRenderTarget(_forwardPassMap, _gbuffer.opaqueDepthBuffer);
 		dx.SetDepthStencilState(DepthState::GreaterAndDisableDepthWrite, 0);
 		dx.SetViewport(mainCamera.GetRenderRect().Cast<float>());
 		dx.SetRasterizerState(RasterizerState::CWDisableCulling);
@@ -376,19 +376,17 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	}
 
 	// 4 - Sky
+	if(param.skyBoxMaterial)
 	{
-		if(param.skyBoxMaterial)
-		{
-			_skyBoxRenderer.Render(dx, _resultMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial);
-		}
+		_skyBoxRenderer.Render(dx, _forwardPassMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial, _tbrCB);
 	}
 
 	// 5 - Build Main RT
-	{		
+	{
 		_mainSceneMaker.Render(dx, _resultMap,	{	
 													_scaledMap.GetTexture2D(),
 													_gi.GetVXGIResultMap(),
-													_transparentMap.GetTexture2D()
+													_forwardPassMap.GetTexture2D()
 												}	);
 	}
 }
