@@ -49,7 +49,7 @@ namespace Core
 			return CoreConnector::SharedInstance()->GetComponentSystem()->Has<Component>(_id);
 		}
 		template <class Component>
-		Component& GetComponent()
+		Component* GetComponent()
 		{
 			return CoreConnector::SharedInstance()->GetComponentSystem()->Find<Component>(_id);
 		}
