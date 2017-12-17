@@ -5,6 +5,7 @@
 
 #include "ShaderCommon.h"
 #include "TBDRInput.h"
+#include "TBRParam.h"
 #include "CommonConstBuffer.h"
 
 #define EDGE_DETECTION_COMPARE_DISTANCE			10.0f

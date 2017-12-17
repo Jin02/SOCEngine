@@ -3,6 +3,7 @@
 #define USE_TBR_PARAM
 #include "FullScreenShader.h"
 #include "ShaderCommon.h"
+#include "TBDRInput.h"
 
 cbuffer SSAOParam : register(b1)
 {

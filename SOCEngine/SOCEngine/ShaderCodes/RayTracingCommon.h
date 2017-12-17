@@ -6,6 +6,7 @@
 #define USE_VIEW_INFORMATION
 #include "FullScreenShader.h"
 #include "CommonConstBuffer.h"
+#include "TBDRInput.h"
 #include "TBRParam.h"
 
 cbuffer ScreenSpaceRayTracing_ViewToTexSpace			: register( b5 )

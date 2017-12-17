@@ -7,7 +7,6 @@
 
 #include "GBufferParser.h"
 #include "GICommon.h"
-#include "TBDRInput.h"
 #include "CommonConstBuffer.h"
 
 Texture3D<float4>	SourceVoxelMap						: register( t29 );

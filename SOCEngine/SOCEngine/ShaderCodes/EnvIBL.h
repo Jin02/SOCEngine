@@ -1,8 +1,6 @@
 #ifndef __SOC_ENV_IBL_H__
 #define __SOC_ENV_IBL_H__
 
-#define NOT_USE_BRDF_LIGHTING
-
 #include "../GlobalDefine.h"
 #include "ShaderCommon.h"
 #include "BRDF.h"

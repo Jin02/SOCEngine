@@ -1,7 +1,5 @@
 //EMPTY_META_DATA
 
-#define NOT_USE_BRDF_LIGHTING
-
 #include "MonteCarlo.h"
 #include "BRDF.h"
 

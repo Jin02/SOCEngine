@@ -2,6 +2,7 @@
 
 #define USE_TBR_PARAM
 #include "FullScreenShader.h"
+#include "TBDRInput.h"
 #include "CommonConstBuffer.h"
 
 cbuffer DoFParam : register(b1)

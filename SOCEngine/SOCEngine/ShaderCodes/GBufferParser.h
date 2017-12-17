@@ -4,6 +4,7 @@
 #define __SOC_GBUFFER_COMMON_H__
 
 #include "TBDRInput.h"
+#include "TBRParam.h"
 #include "ShaderCommon.h"
 
 struct Surface
