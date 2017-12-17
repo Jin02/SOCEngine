@@ -39,7 +39,7 @@ void SkyBoxRenderer::UpdateCB(DirectX& dx, const Vector3& worldPos, const Matrix
 	_transformCB.UpdateSubResource(dx, matrix);
 }
 
-void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDepthMap, const Material::SkyBoxMaterial& material)
+void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& targetDepthMap, const Material::SkyBoxMaterial& material, const TBRParamCB& tbrParamCB)
 {
 	// Render Setting
 	{
@@ -60,6 +60,7 @@ void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& 
 	material.GetPixelShader().BindShaderToContext(dx);
 
 	AutoBinderCB<VertexShader> wvp(dx,			ConstBufferBindIndex::SkyBoxWVP,			_transformCB);
+	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
 	AutoBinderSRV<PixelShader> cubeMap(dx,		TextureBindIndex::SkyBoxCubeMap,			material.GetCubeMap().GetShaderResourceView());
 	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
