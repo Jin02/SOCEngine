@@ -94,7 +94,7 @@ namespace Rendering
 		VCT_GlobalInfoCB				= 1,
 		HDRGlobalParamCB				= 1,
 
-		SkyBoxWVP						= 0,
+		SkyBoxWVP						= 1,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
