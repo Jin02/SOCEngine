@@ -44,7 +44,8 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		float maxLength	= static_cast<float>( std::max(renderSize.w, renderSize.h) );
 		uint mipLevel	= static_cast<uint>( log(maxLength) / log(2.0f) ) + 1;
 		_resultMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1, mipLevel);
-		_forwardPassMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_transparentMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
+		_skyBoxMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 	}
 
 	// Gbuffer
@@ -307,11 +308,18 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		_blendedDepthLightCulling.Dispatch(dx, _tbdrThreadGroup);
 	}
 
-	// 2 - Render Transparent Mesh
+	// 2 - Sky
+	if(param.skyBoxMaterial)
 	{
-		_forwardPassMap.Clear(dx, Color::Clear());
+		_skyBoxMap.Clear(dx, Color::Clear());
+		_skyBoxRenderer.Render(dx, _skyBoxMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial, _tbrCB);
+	}
 
-		dx.SetRenderTarget(_forwardPassMap, _gbuffer.opaqueDepthBuffer);
+	// 3 - Render Transparent Mesh
+	{
+		_transparentMap.Clear(dx, Color::Clear());
+
+		dx.SetRenderTarget(_transparentMap, _gbuffer.opaqueDepthBuffer);
 		dx.SetDepthStencilState(DepthState::GreaterAndDisableDepthWrite, 0);
 		dx.SetViewport(mainCamera.GetRenderRect().Cast<float>());
 		dx.SetRasterizerState(RasterizerState::CWDisableCulling);
@@ -369,16 +377,10 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		dx.ReSetRenderTargets(1);
 	}
 
-	// 3 - GI
+	// 4 - GI
 	if (_useGI)
 	{
 		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
-	}
-
-	// 4 - Sky
-	if(param.skyBoxMaterial)
-	{
-		_skyBoxRenderer.Render(dx, _forwardPassMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial, _tbrCB);
 	}
 
 	// 5 - Build Main RT
@@ -386,7 +388,8 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		_mainSceneMaker.Render(dx, _resultMap,	{	
 													_scaledMap.GetTexture2D(),
 													_gi.GetVXGIResultMap(),
-													_forwardPassMap.GetTexture2D()
+													_transparentMap.GetTexture2D(),
+													_skyBoxMap.GetTexture2D()
 												}	);
 	}
 }

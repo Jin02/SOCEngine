@@ -27,6 +27,8 @@ void MainSceneMaker::Render(DirectX& dx, RenderTexture& output, const RenderPara
 {
 	AutoBinderSRV<PixelShader>	colorMap(dx,		TextureBindIndex(0),			param.opaqueMap.GetShaderResourceView());
 	AutoBinderSRV<PixelShader>	giMap(dx,			TextureBindIndex(1),			param.giMap.GetShaderResourceView());
+	AutoBinderSRV<PixelShader>	transparentMap(dx,	TextureBindIndex(2),			param.transparentMap.GetShaderResourceView());
+	AutoBinderSRV<PixelShader>	skyBoxMap(dx,		TextureBindIndex(3),			param.skyBoxMap.GetShaderResourceView());
 
 	AutoBinderSampler<PixelShader> sampler(dx,		SamplerStateBindIndex(0),		SamplerState::Linear);
 
