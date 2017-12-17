@@ -152,7 +152,7 @@ namespace Core
 #pragma region MainCamera
 		template <> MainCamera& Add<MainCamera>(ObjectID id)
 		{
-			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			mgr.SetMainCamera(id);
 
 			OutputDebugString("Warning | MainCamera component has detached from origin main camera object ");
@@ -165,30 +165,30 @@ namespace Core
 		}
 		template <> bool Has<MainCamera>(ObjectID id) const
 		{
-			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			return mgr.GetMainCamera().GetObjectID() == id;
 		}
 		template <> auto Find<MainCamera>(ObjectID id)
 		{
-			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			return mgr.GetMainCamera().GetObjectID() == id ? &mgr.GetMainCamera() : nullptr;
 		}
 
 		MainCamera& SetMainCamera(ObjectID id)
 		{
-			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			mgr.SetMainCamera(id);
 
 			return mgr.GetMainCamera();
 		}
 		MainCamera& GetMainCamera()
 		{
-			auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			return mgr.GetMainCamera();
 		}
 		const MainCamera& GetMainCamera() const
 		{
-			const auto& mgr = std::get<Rendering::Manager::CameraManager>(_componentMgrs);
+			auto& mgr = GetManager_Direct<Rendering::Manager::CameraManager>();
 			return mgr.GetMainCamera();
 		}
 
