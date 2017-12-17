@@ -4,6 +4,7 @@
 #define __SOC_SHADOW_H__
 
 #include "TBDRInput.h"
+#include "TBRParam.h"
 #include "ShaderCommon.h"
 
 #define SHADOW_KERNEL_LEVEL				4
@@ -14,10 +15,17 @@
 #define BLOCKER_SEARCH_DIM				(BLOCKER_SEARCH_STEP_COUNT * 2 + 1)
 #define BLOCKER_SEARCH_COUNT			(BLOCKER_SEARCH_DIM * BLOCKER_SEARCH_DIM)
 
+cbuffer ShadowGlobalParam						: register( b4 )
+{	
+	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
+	uint	shadowGlobalParam_packedPowerOfTwoShadowResolution;
+	uint	shadowGlobalParam_packedNumOfShadows;
+	uint	shadowGlobalParam_dummy;
+};
+
 SamplerComparisonState shadowSamplerCmpState	:	register( s2 );
 SamplerState shadowSamplerState					:	register( s3 );
 SamplerState pointSamplerState					:	register( s4 );
-
 
 struct ShadowParam
 {

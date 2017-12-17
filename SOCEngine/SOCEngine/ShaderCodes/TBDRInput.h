@@ -4,7 +4,6 @@
 #define __SOC_TBDR_INPUT_H__
 
 #include "../GlobalDefine.h"
-#include "TBRParam.h"
 
 Buffer<float4>								PointLightTransformBuffer					: register( t0 ); // center, radius
 Buffer<float4>								PointLightColorBuffer						: register( t1 ); // rgb, lumen(maximum : 30,000)
@@ -65,30 +64,6 @@ StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: regist
 
 Buffer<float2>								DirectionalLightShadowInvProjParam			: register( t26 );
 
-struct LightingParams
-{
-	uint	lightIndex;
-	float3	viewDir;
-	float3	normal;
-	float	roughness;
-	float3	diffuseColor;
-	float3	specularColor;
-};
-
-struct LightingCommonParams
-{
-	float3	lightColor;
-	float3	lightDir;
-};
-
-cbuffer ShadowGlobalParam : register( b4 )
-{	
-	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
-	uint	shadowGlobalParam_packedPowerOfTwoShadowResolution;
-	uint	shadowGlobalParam_packedNumOfShadows;
-	uint	shadowGlobalParam_dummy;
-};
-
 uint GetShadowIndex(uint lightOptionalParamIndex)
 {
 	return lightOptionalParamIndex >> 16;
@@ -109,7 +84,5 @@ float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
 	uint isMinus = GetLightFlag(directionalLightOptionalParamIndex) & 0x1;
 	return float( 1.0f - 2.0f * float(isMinus) );
 }
-
-
 
 #endif

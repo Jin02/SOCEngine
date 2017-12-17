@@ -6,6 +6,46 @@
 #include "Shadow.h"
 #include "BRDF.h"
 
+struct LightingParams
+{
+	uint	lightIndex;
+	float3	viewDir;
+	float3	normal;
+	float	roughness;
+	float3	diffuseColor;
+	float3	specularColor;
+};
+
+struct LightingCommonParams
+{
+	float3	lightColor;
+	float3	lightDir;
+};
+
+void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
+	in LightingParams lightingParams, in LightingCommonParams commonParamas)
+{
+	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
+
+	float NdotL			= saturate( dot(lightingParams.normal,	commonParamas.lightDir) );
+	float NdotH			= saturate( dot(lightingParams.normal,	halfVector) );
+	float NdotV			= saturate( dot(lightingParams.normal,	lightingParams.viewDir) );
+	float VdotH			= saturate( dot(lightingParams.viewDir,	halfVector) );
+	float VdotL			= saturate( dot(lightingParams.viewDir,	commonParamas.lightDir) );
+
+	float3 fresnel0		= lightingParams.specularColor;
+	float roughness		= lightingParams.roughness; //0.6f
+
+	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
+	float3 diffuseTerm = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL);
+	resultDiffuseColor = diffuseTerm * commonParamas.lightColor * diffuseEnergyConservation;
+	resultDiffuseColor = saturate(resultDiffuseColor);
+
+	float3 Fr = ( Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) ) / (4.0f * NdotL * NdotV);
+	resultSpecularColor	= Fr * commonParamas.lightColor;
+	resultSpecularColor	= saturate(resultSpecularColor);
+}
+
 void RenderDirectionalLight(
 #if defined(RENDER_TRANSPARENCY)
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
