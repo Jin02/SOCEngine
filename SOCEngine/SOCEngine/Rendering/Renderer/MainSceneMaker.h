@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FullScreen.h"
+#include "TileBasedShadingHeader.h"
 
 namespace Rendering
 {
@@ -13,7 +14,7 @@ namespace Rendering
 		{
 			const Texture::Texture2D&	opaqueMap;
 			const Texture::Texture2D&	giMap;
-			const Texture::Texture2D&	transparentMap;
+			const Texture::Texture2D&	forwardPassMap;
 		};
 		void Render(Device::DirectX& dx, Texture::RenderTexture& output, const RenderParam&& param);
 
