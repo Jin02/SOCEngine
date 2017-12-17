@@ -193,9 +193,6 @@
     <Filter Include="Rendering\Texture">
       <UniqueIdentifier>{8332ca01-10a2-46da-a4ce-1e2222a48f40}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Texture\Cube">
-      <UniqueIdentifier>{773d7a21-aecf-4481-8d80-0b16d90e991e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Texture\RenderTarget">
       <UniqueIdentifier>{51989f1d-9e9c-4df8-8cd3-c137e2bf88ab}</UniqueIdentifier>
     </Filter>
@@ -664,9 +661,6 @@
     <ClInclude Include="Rendering\Buffer\ConstBuffer.h">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Texture\DepthBufferCube.h">
-      <Filter>Rendering\Texture\Cube</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Texture\RenderTexture.h">
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClInclude>
@@ -675,9 +669,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Texture\Texture3D.h">
       <Filter>Rendering\Texture\Texture3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Texture\TextureCube.h">
-      <Filter>Rendering\Texture\Cube</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Offline\PreIntegrateEnvBRDF.h">
       <Filter>Rendering\Offline</Filter>
@@ -991,6 +982,12 @@
     <ClInclude Include="Rendering\Renderer\SkyBoxRenderer.h">
       <Filter>Rendering\Renderer\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\RenderTextureCube.h">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\AtmosphericScattering-PreethamModel.hlsl">
+      <Filter>ShaderCodes\Sky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1083,9 +1080,6 @@
     <ClCompile Include="Rendering\Buffer\ConstBuffer.cpp">
       <Filter>Rendering\Buffer\Const</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp">
-      <Filter>Rendering\Texture\Cube</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp">
       <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClCompile>
@@ -1094,9 +1088,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\Texture3D.cpp">
       <Filter>Rendering\Texture\Texture3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture\TextureCube.cpp">
-      <Filter>Rendering\Texture\Cube</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Offline\PreIntegrateEnvBRDF.cpp">
       <Filter>Rendering\Offline</Filter>
@@ -1295,6 +1286,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\SkyBoxRenderer.cpp">
       <Filter>Rendering\Renderer\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\RenderTextureCube.cpp">
+      <Filter>Rendering\Texture\RenderTarget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

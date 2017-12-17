@@ -243,14 +243,16 @@
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
     <ClInclude Include="Rendering\Sky\SkyGeometry.h" />
     <ClInclude Include="Rendering\Texture\DepthMap.h" />
-    <ClInclude Include="Rendering\Texture\DepthBufferCube.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
     <ClInclude Include="Rendering\Texture\Texture3D.h" />
-    <ClInclude Include="Rendering\Texture\TextureCube.h" />
+    <ClInclude Include="Rendering\Texture\RenderTextureCube.h" />
     <ClInclude Include="Rendering\Texture\Texture2DManager.h" />
     <ClInclude Include="Rendering\View\ShaderResourceView.h" />
     <ClInclude Include="Rendering\View\UnorderedAccessView.h" />
+    <ClInclude Include="ShaderCodes\AtmosphericScattering-PreethamModel.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="ShaderCodes\BRDF.h" />
     <ClInclude Include="ShaderCodes\CommonConstBuffer.h" />
     <ClInclude Include="ShaderCodes\DynamicLighting.h" />
@@ -442,17 +444,18 @@
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
     <ClCompile Include="Rendering\Sky\SkyGeometry.cpp" />
     <ClCompile Include="Rendering\Texture\DepthMap.cpp" />
-    <ClCompile Include="Rendering\Texture\DepthBufferCube.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
     <ClCompile Include="Rendering\Texture\Texture3D.cpp" />
-    <ClCompile Include="Rendering\Texture\TextureCube.cpp" />
+    <ClCompile Include="Rendering\Texture\RenderTextureCube.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2DManager.cpp" />
     <ClCompile Include="Rendering\View\ShaderResourceView.cpp" />
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl" />
+    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
     <FxCompile Include="ShaderCodes\Bloom.hlsl" />
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl" />
@@ -498,7 +501,9 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
-    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl" />
+    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\SSAO.hlsl" />
     <FxCompile Include="ShaderCodes\TBDR.hlsl" />
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl" />
