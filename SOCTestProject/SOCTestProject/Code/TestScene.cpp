@@ -11,12 +11,12 @@ using namespace Rendering::Geometry;
 
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
-//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
 	GIInitParam param;
 	{
-		param.vxgiParam = GIInitParam::VXGIParam();
+		param.vxgiParam = GIInitParam::VXGIParam(256, 15.0f);
 	}
 	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 512, param);
 }
