@@ -11,7 +11,7 @@ using namespace Rendering::Geometry;
 
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
-	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
+//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
 	GIInitParam param;
@@ -25,8 +25,21 @@ void TestScene::OnInitialize(Engine& engine)
 {
 	Object* mainCamObj = engine.GetObjectManager().Find("MainCamera");
 	assert(mainCamObj);
-	bool hasMainCam = mainCamObj->HasComponent<MainCamera>();
-	assert(hasMainCam); // ????
+	MainCamera* mainCam = mainCamObj->GetComponent<MainCamera>();
+	MainCamera& mainCam2 = engine.GetComponentSystem().GetMainCamera();
+
+	// Load SkyBox
+	{
+		auto cubeMap = engine.GetRenderingSystem().GetTexture2DManager().LoadTextureFromFile(engine.GetDirectX(), "Resources/CubeMap/desertcube1024.dds", false);
+		assert(cubeMap);
+
+		Material::SkyBoxMaterial skyMat("@SkyBox");
+		skyMat.UpdateCubeMap(*cubeMap);
+		skyMat.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetShaderManager());
+
+		auto key = engine.GetRenderingSystem().GetMaterialManager().Add(skyMat.GetName(), skyMat).first;
+		mainCam2.SetSkyBoxMaterialID(key);
+	}
 
 //	Object sphere = engine.GetObjectManager().Add("Sphere");
 //	BasicGeometryGenerator::CreateBox(sphere, engine, Vector3(1.0f, 1.0f, 1.0f), uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL));
