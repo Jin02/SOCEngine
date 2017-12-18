@@ -65,7 +65,7 @@ void RenderingSystem::Render(Engine& engine, float dt)
 	_postProcessing.Render(dx, _mainRenderer, mainCamera);
 
 	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
-	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), _mainRenderer.GetResultMap().GetTexture2D());
+	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), *_mainRenderer.GetResultMap()->GetTexture2D());
 
 	dx.GetSwapChain()->Present(0, 0);
 

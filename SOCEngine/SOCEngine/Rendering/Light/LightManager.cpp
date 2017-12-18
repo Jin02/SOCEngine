@@ -112,7 +112,7 @@ void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 		{
 			auto& light = pool.Get(i);
 
-			if (light.GetBase().GetDirty())
+			if (light.GetBase()->GetDirty())
 				dirtyParamLights.push_back(&light);
 
 			uint objID		= light.GetObjectID().Literal();
@@ -132,7 +132,7 @@ void LightManager::ClearDirty()
 	auto UpdateDirtyLight = [](auto& dirtyLights)
 	{
 		for (auto light : dirtyLights)
-			light->GetBase().SetDirty(false);
+			light->GetBase()->SetDirty(false);
 
 		dirtyLights.clear();
 	};

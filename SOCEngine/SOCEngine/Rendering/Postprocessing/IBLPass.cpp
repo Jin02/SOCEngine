@@ -34,13 +34,13 @@ void IBLPass::Render(	DirectX& dx, RenderTexture& outResultRT,
 {
 
 	auto& gbuffer = mains.renderer.GetGBuffers();
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D()->GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D()->GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D()->GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D()->GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_IlluminationMap,					mains.renderer.GetResultMap().GetTexture2D().GetShaderResourceView());
+	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_IlluminationMap,					mains.renderer.GetResultMap()->GetTexture2D()->GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap,			_envBRDFMap.GetTexture2D().GetShaderResourceView());
 	PixelShader::BindShaderResourceView(dx, TextureBindIndex::AmbientCubeMap,							skyBox.GetCubeMap().GetShaderResourceView());
 

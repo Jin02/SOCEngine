@@ -59,7 +59,7 @@ namespace Rendering
 			template <class LightType>
 			LightType& Add(LightType& light)
 			{
-				light.GetBase().SetDirty(true);
+				light.GetBase()->SetDirty(true);
 				_changedLightCounts = true;
 
 				GetBuffer<LightType>().PushLight(light);

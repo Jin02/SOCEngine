@@ -2,12 +2,16 @@
 
 #include <cassert>
 
-#define SET_ACCESSOR(name, type, variable)			inline void Set##name(type t)	{ variable = t; }
-#define SET_ACCESSOR_DIRTY(name, type, variable)	inline void Set##name(type t)	{ variable = t; _dirty = true; }
-
-#define GET_CONST_ACCESSOR(name, type, variable)	inline type Get##name() const		{ return variable; }
-#define GET_ACCESSOR(name, type, variable)			inline type Get##name() 			{ return variable; }
-#define GET_ACCESSOR_REF(name, variable)			GET_CONST_ACCESSOR(name, const auto&, variable) GET_ACCESSOR(name, auto&, variable);
+#define SET_ACCESSOR(name, type, variable)				inline void Set##name(type t)	{ variable = t; }
+#define SET_ACCESSOR_DIRTY(name, type, variable)		inline void Set##name(type t)	{ variable = t; _dirty = true; }
+#define GET_CONST_ACCESSOR(name, type, variable)		inline type Get##name() const		{ return variable; }
+#define GET_ACCESSOR(name, type, variable)				inline type Get##name() 			{ return variable; }
+#define GET_ACCESSOR_REF(name, variable)				GET_ACCESSOR(name, auto&, variable);
+#define GET_CONST_ACCESSOR_REF(name, variable)			GET_CONST_ACCESSOR(name, const auto&, variable)
+#define GET_ALL_ACCESSOR_REF(name, variable)			GET_ACCESSOR_REF(name, variable); GET_CONST_ACCESSOR_REF(name, variable)
+#define GET_CONST_ACCESSOR_PTR(name, type, variable)	inline const type* Get##name() const { return &variable; }
+#define GET_ACCESSOR_PTR(name, type, variable)			inline type* const Get##name() { return &variable; }
+#define GET_ALL_ACCESSOR_PTR(name, type, variable)		GET_CONST_ACCESSOR_PTR(name, type, variable); GET_ACCESSOR_PTR(name, type, variable)
 
 #define SAFE_DELETE(x)				{ if(x){ delete x; x = nullptr; } }
 #define SAFE_DELETE_ARRAY(x)		{ if(x){ delete[] x; x = nullptr; } }

@@ -10,7 +10,10 @@ namespace Rendering
 		class GlobalIllumination final
 		{
 		public:
-			GET_ACCESSOR(VXGIResultMap, const Texture::Texture2D&, _vxgi.GetIndirectColorMap());
+			GlobalIllumination() = default;
+			DISALLOW_ASSIGN_COPY(GlobalIllumination);
+
+			GET_CONST_ACCESSOR(VXGIResultMap, const Texture::Texture2D&, _vxgi.GetIndirectColorMap());
 			void SetVXGI_VoxelizeCenterPos(const Math::Vector3& pos) { _vxgi.SetStartCenterWorldPos(pos); }
 
 		public:

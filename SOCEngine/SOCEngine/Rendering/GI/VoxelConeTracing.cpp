@@ -37,11 +37,11 @@ void VoxelConeTracing::Run(DirectX& dx, RenderTexture& outIndirectColorMap, cons
 	AutoBinderSRV<ComputeShader> mipmapped(dx,	TextureBindIndex::VCTMipmappedInjectionColorMap,			param.mipmappedInjectionMap.GetTexture3D().GetShaderResourceView());
 
 	auto& gbuffer = param.mainSystem.renderer.GetGBuffers();
-	AutoBinderSRV<ComputeShader> albedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<ComputeShader> velocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<ComputeShader> normal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> albedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,					gbuffer.albedo_occlusion.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> velocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,	gbuffer.velocity_metallic_specularity.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> normal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,					gbuffer.normal_roughness.GetTexture2D()->GetShaderResourceView());
 	AutoBinderSRV<ComputeShader> depth(dx,		TextureBindIndex::GBuffer_Depth,							gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<ComputeShader> emission(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<ComputeShader> emission(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,			gbuffer.emission_materialFlag.GetTexture2D()->GetShaderResourceView());
 
 	AutoBinderCB<ComputeShader> tbr(dx,			ConstBufferBindIndex::TBRParam,								param.mainSystem.renderer.GetTBRParamCB());
 	AutoBinderCB<ComputeShader> cam(dx,			ConstBufferBindIndex::Camera,								param.mainSystem.camera.GetCameraCB());
@@ -49,7 +49,7 @@ void VoxelConeTracing::Run(DirectX& dx, RenderTexture& outIndirectColorMap, cons
 	AutoBinderCB<ComputeShader> vxgiDynamic(dx,	ConstBufferBindIndex::VXGIDynamicInfoCB,					param.infoCB.dynamicInfoCB);
 
 	AutoBinderSampler<ComputeShader> sampler(dx,SamplerStateBindIndex::DefaultSamplerState,					SamplerState::ConeTracingLinear);
-	AutoBinderUAV output(dx,					UAVBindIndex::VCTOutIndirectMap,							outIndirectColorMap.GetTexture2D().GetUnorderedAccessView());
+	AutoBinderUAV output(dx,					UAVBindIndex::VCTOutIndirectMap,							outIndirectColorMap.GetTexture2D()->GetUnorderedAccessView());
 
 	_shader.Dispatch(dx, _group);
 }

@@ -24,10 +24,10 @@ namespace Core
 		}
 
 	private:
-		GET_ACCESSOR(TransformPool,			auto,	_tfPool);
-		GET_ACCESSOR(CantUseTransformPool,	auto,	_cantUseTFPool);
-		GET_ACCESSOR(ObjectManager,			auto,	_objMgr);
-		GET_ACCESSOR(ComponentSystem,		auto,	_compoSystem);
+		GET_ACCESSOR_PTR(TransformPool,			TransformPool,		*_tfPool);
+		GET_ACCESSOR_PTR(CantUseTransformPool,	TransformPool,		*_cantUseTFPool);
+		GET_ACCESSOR_PTR(ObjectManager,			ObjectManager,		*_objMgr);
+		GET_ACCESSOR_PTR(ComponentSystem,		ComponentSystem,	*_compoSystem);
 
 	private:
 		TransformPool*			_tfPool			= nullptr;

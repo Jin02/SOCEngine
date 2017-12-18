@@ -8,7 +8,8 @@ namespace Core
 	class RootObjectIDs final
 	{
 	public:
-		DISALLOW_ASSIGN(RootObjectIDs);
+		RootObjectIDs() = default;
+		DISALLOW_ASSIGN_COPY(RootObjectIDs);
 
 		ObjectID	Add(ObjectID root)		{ return ObjectID( _rootIDs.Add(root.Literal(), root) ); }
 		void		Delete(ObjectID root)	{ _rootIDs.Delete(root.Literal()); }

@@ -27,7 +27,7 @@ namespace Rendering
 				void Delete(uint index);
 				void DeleteAll();
 
-				GET_ACCESSOR_REF(InvProjParamSRBuffer, _dlParamBuffer.GetShaderResourceBuffer());
+				GET_CONST_ACCESSOR_REF(InvProjParamSRBuffer, _dlParamBuffer.GetShaderResourceBuffer());
 
 			private:
 				using Parent = Buffer::ShadowBufferForm<Shadow::DirectionalLightShadow>;

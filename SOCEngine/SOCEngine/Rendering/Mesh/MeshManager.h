@@ -1,12 +1,10 @@
 #pragma once
 
-#include "VectorIndexer.hpp"
-#include "Mesh.h"
-#include "ObjectID.hpp"
 #include <tuple>
 #include <assert.h>
-#include "VBSortedMeshpool.h"
 #include "OpaqueMeshRenderQueue.h"
+#include "VectorIndexer.hpp"
+#include "VBSortedMeshPool.h"
 
 namespace Core
 {
@@ -21,14 +19,14 @@ namespace Rendering
 		using OpaqueMeshPool		= VBSortedMeshPool;
 		using AlphaTestMeshPool		= OpaqueMeshPool;
 
-		struct MeshPoolRefs
+		struct MeshPoolPtrs
 		{
-			AlphaTestMeshPool&		alphaTestMeshes;
-			OpaqueMeshPool&			opaqueMeshes;
-			TransparentMeshPool&	transparentMeshes;
+			AlphaTestMeshPool* const	alphaTestMeshes;
+			OpaqueMeshPool* const		opaqueMeshes;
+			TransparentMeshPool* const	transparentMeshes;
 
-			explicit MeshPoolRefs(AlphaTestMeshPool& _alphaTestMeshes, OpaqueMeshPool& _opaqueMeshes, TransparentMeshPool& _transparentMeshes)
-					: alphaTestMeshes(_alphaTestMeshes), opaqueMeshes(_opaqueMeshes), transparentMeshes(_transparentMeshes) { }
+			explicit MeshPoolPtrs(AlphaTestMeshPool& _alphaTestMeshes, OpaqueMeshPool& _opaqueMeshes, TransparentMeshPool& _transparentMeshes)
+					: alphaTestMeshes(&_alphaTestMeshes), opaqueMeshes(&_opaqueMeshes), transparentMeshes(&_transparentMeshes) { }
 		};
 	};
 		
@@ -43,10 +41,11 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MeshManager);
 
 		public:
-			GET_ACCESSOR_REF(TransparentMeshPool,			_transparentMeshPool);
-			GET_ACCESSOR_REF(OpaqueMeshPool,				_opaqueMeshPool);
-			GET_ACCESSOR_REF(AlphaTestMeshPool,				_alphaTestMeshPool);
-			GET_ACCESSOR(AllMeshPoolRefs,			auto,	Geometry::MeshPoolRefs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
+			GET_ALL_ACCESSOR_PTR(TransparentMeshPool,	Geometry::TransparentMeshPool,	_transparentMeshPool);
+			GET_ALL_ACCESSOR_PTR(OpaqueMeshPool,		Geometry::OpaqueMeshPool,		_opaqueMeshPool);
+			GET_ALL_ACCESSOR_PTR(AlphaTestMeshPool,		Geometry::AlphaTestMeshPool,	_alphaTestMeshPool);
+
+			GET_ACCESSOR(AllMeshPoolPtrs,			auto,	Geometry::MeshPoolPtrs(_alphaTestMeshPool, _opaqueMeshPool, _transparentMeshPool));
 
 			GET_CONST_ACCESSOR(HasDirtyMeshes,		bool,	_dirty);
 
@@ -83,13 +82,13 @@ namespace Rendering
 
 			Geometry::Mesh& Add(Geometry::Mesh& mesh)
 			{
-				return Add(mesh, GetOpaqueMeshPool());
+				return Add(mesh, *GetOpaqueMeshPool());
 			}
 
 			Geometry::Mesh& Acquire(Core::ObjectID id)
 			{
 				Geometry::Mesh mesh(id);
-				return Add(mesh, GetOpaqueMeshPool());
+				return Add(mesh, *GetOpaqueMeshPool());
 			}
 
 			void Delete(Core::ObjectID objID);

@@ -37,8 +37,8 @@ void VXGI::ClearInjectColorVoxelMap(DirectX& dx)
 		shader.Dispatch(dx, ComputeShader::ThreadGroup(ComputeThreadGroupSideLength(sideLength * (isAnisotropic ? (uint)VoxelMap::Direction::Num : 1)), yz, yz));
 	};
 
-	Clear(_injectionSourceMap.GetSourceMapUAV(), _staticInfo.dimension, false);
-	Clear(_mipmappedInjectionMap.GetSourceMapUAV(), _staticInfo.dimension / 2, true);
+	Clear(*_injectionSourceMap.GetSourceMapUAV(), _staticInfo.dimension, false);
+	Clear(*_mipmappedInjectionMap.GetSourceMapUAV(), _staticInfo.dimension / 2, true);
 }
 
 void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo& info)

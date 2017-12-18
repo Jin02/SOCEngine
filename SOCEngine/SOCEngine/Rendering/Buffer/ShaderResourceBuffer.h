@@ -24,8 +24,8 @@ namespace Rendering
 				_baseBuffer.UpdateResourceUsingMapUnMap(dx, data, startOffset, size, mapType);
 			}
 
-			GET_ACCESSOR_REF(ShaderResourceView,					_srv);
-			GET_CONST_ACCESSOR(BaseBuffer,			const auto&,	_baseBuffer);
+			GET_CONST_ACCESSOR_REF(ShaderResourceView,	_srv);
+			GET_CONST_ACCESSOR_REF(BaseBuffer,			_baseBuffer);
 
 		private:
 			BaseBuffer					_baseBuffer;

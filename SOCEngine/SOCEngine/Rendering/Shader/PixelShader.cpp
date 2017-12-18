@@ -42,7 +42,7 @@ void PixelShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, Samp
 
 void PixelShader::BindConstBuffer(DirectX& dx, ConstBufferBindIndex bind, const ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = const_cast<ConstBuffer&>(cb).GetBaseBuffer().GetRaw();
+	ID3D11Buffer* buf = const_cast<BaseBuffer&>(cb.GetBaseBuffer()).GetRaw();
 	dx.GetContext()->PSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

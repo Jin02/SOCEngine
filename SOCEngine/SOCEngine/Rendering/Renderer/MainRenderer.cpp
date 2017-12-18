@@ -292,16 +292,16 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderSRV<ComputeShader> slShadowVPMat(dx,		TextureBindIndex::SpotLightShadowViewProjMatrix,		shadowMgr.GetBuffer<SpotLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> gbufferDepth(dx,		TextureBindIndex::GBuffer_Depth,						_gbuffer.opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> gbufferAlbedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,				_gbuffer.albedo_occlusion.GetTexture2D().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> gbufferVelocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,_gbuffer.velocity_metallic_specularity.GetTexture2D().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> gbufferNormal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,				_gbuffer.normal_roughness.GetTexture2D().GetShaderResourceView());
-		AutoBinderSRV<ComputeShader> gbufferEmission(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,		_gbuffer.emission_materialFlag.GetTexture2D().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> gbufferAlbedo(dx,		TextureBindIndex::GBuffer_Albedo_Occlusion,				_gbuffer.albedo_occlusion.GetTexture2D()->GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> gbufferVelocity(dx,	TextureBindIndex::GBuffer_Velocity_Metallic_Specularity,_gbuffer.velocity_metallic_specularity.GetTexture2D()->GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> gbufferNormal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,				_gbuffer.normal_roughness.GetTexture2D()->GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> gbufferEmission(dx,	TextureBindIndex::GBuffer_Emission_MaterialFlag,		_gbuffer.emission_materialFlag.GetTexture2D()->GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> plShadowMap(dx,		TextureBindIndex::PointLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> slShadowMap(dx,		TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowMap(dx,		TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
-		AutoBinderUAV outLightBuffer(dx, UAVBindIndex::TBDR_OutLightBuffer, _scaledMap.GetTexture2D().GetUnorderedAccessView());
+		AutoBinderUAV outLightBuffer(dx, UAVBindIndex::TBDR_OutLightBuffer, _scaledMap.GetTexture2D()->GetUnorderedAccessView());
 		_tbdrShader.Dispatch(dx, _tbdrThreadGroup);
 
 		AutoBinderSRV<ComputeShader> gbufferBlendDepth(dx,	TextureBindIndex::GBuffer_BlendedDepth,					_gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
@@ -386,10 +386,10 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	// 5 - Build Main RT
 	{
 		_mainSceneMaker.Render(dx, _resultMap,	{	
-													_scaledMap.GetTexture2D(),
+													*_scaledMap.GetTexture2D(),
 													_gi.GetVXGIResultMap(),
-													_transparentMap.GetTexture2D(),
-													_skyBoxMap.GetTexture2D()
+													*_transparentMap.GetTexture2D(),
+													*_skyBoxMap.GetTexture2D()
 												}	);
 	}
 }

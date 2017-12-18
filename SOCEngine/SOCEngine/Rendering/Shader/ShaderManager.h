@@ -23,6 +23,7 @@ namespace Rendering
 		{
 		public:
 			ShaderManager() = default;
+			DISALLOW_ASSIGN_COPY(ShaderManager);
 
 			void Destroy();
 
@@ -32,7 +33,7 @@ namespace Rendering
 				return std::get<ShaderPool<ShaderType>>(_pools);
 			}
 
-			GET_ACCESSOR_REF(Compiler, _compiler);
+			GET_ALL_ACCESSOR_REF(Compiler, _compiler);
 
 		private:
 			std::tuple<

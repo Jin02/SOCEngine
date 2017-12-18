@@ -51,6 +51,8 @@ namespace Rendering
 
 		public:
 			MainCamera(Core::ObjectID objID) : _objID(objID) {}
+			DISALLOW_ASSIGN_COPY(MainCamera);
+
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
 			bool UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
 			void ClearDirty() { _dirty = false; }
@@ -83,7 +85,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(SkyBoxMaterialID,		MaterialID,		_skyBoxMaterialID);
 			SET_ACCESSOR(SkyBoxMaterialID,				MaterialID,		_skyBoxMaterialID);
 
-			void ClassifyMesh(Geometry::MeshPoolRefs pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
+			void ClassifyMesh(const Geometry::MeshPoolPtrs&& pool, const Core::ObjectManager& objMgr, const Core::TransformPool& transformPool);
 
 		private:
 			Buffer::ExplicitConstBuffer<CameraCBData>	_camCB;

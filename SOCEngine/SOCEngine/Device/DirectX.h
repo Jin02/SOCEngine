@@ -42,8 +42,7 @@ namespace Device
 		DirectX(const Rect<float>& backBufferRect);
 		~DirectX() = default;
 
-		DISALLOW_ASSIGN(DirectX);
-		DISALLOW_COPY_CONSTRUCTOR(DirectX);
+		DISALLOW_ASSIGN_COPY(DirectX);
 
 	public:
 		unsigned int		CalcFormatSize(DXGI_FORMAT format) const;

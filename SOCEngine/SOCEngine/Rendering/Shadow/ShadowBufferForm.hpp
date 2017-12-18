@@ -39,7 +39,7 @@ namespace Rendering
 					const auto& base = shadow.GetBase();
 
 					_transformBuffer.PushData(ShadowType::ViewProjMatType());
-					_paramBuffer.PushData(base.GetParamCBData());
+					_paramBuffer.PushData(base->GetParamCBData());
 
 					_mustUpdateTransformSRBuffer =
 						_mustUpdateParamSRBuffer = true;
@@ -52,10 +52,10 @@ namespace Rendering
 					for (auto& shadow : dirtyShadows)
 					{
 						const auto& base		= shadow->GetBase();
-						Core::ObjectID objID	= base.GetObjectID();
+						Core::ObjectID objID	= base->GetObjectID();
 
 						uint index						= indexer.Find(objID.Literal());
-						_paramBuffer[index]				= base.GetParam();
+						_paramBuffer[index]				= base->GetParam();
 						_paramBuffer[index].lightIndex	= lightPool.GetIndexer().Find(objID.Literal());
 						_transformBuffer[index]			= shadow->MakeVPMatParam(lightPool, tfPool);
 					}
@@ -88,8 +88,8 @@ namespace Rendering
 						_mustUpdateParamSRBuffer = true;
 				}
 
-				GET_ACCESSOR_REF(ViewProjMatSRBuffer,	_transformBuffer.GetShaderResourceBuffer());
-				GET_ACCESSOR_REF(ParamSRBuffer,			_paramBuffer.GetShaderResourceBuffer());
+				GET_CONST_ACCESSOR_REF(ViewProjMatSRBuffer,	_transformBuffer.GetShaderResourceBuffer());
+				GET_CONST_ACCESSOR_REF(ParamSRBuffer,		_paramBuffer.GetShaderResourceBuffer());
 
 			protected:
 				ViewProjMatBuffer	_transformBuffer;

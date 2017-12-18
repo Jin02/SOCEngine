@@ -24,6 +24,7 @@ namespace Rendering
 	{
 	public:
 		RenderingSystem() = default;
+		DISALLOW_ASSIGN_COPY(RenderingSystem);
 
 		void InitializeRenderer(Core::Engine& engine, const RenderSetting&& param);
 		void Initialize(Core::Engine& engine);
@@ -31,13 +32,13 @@ namespace Rendering
 		void Render(Core::Engine& engine, float dt);
 		void Destroy(Core::Engine& engine);
 
-		GET_ACCESSOR_REF(MaterialManager,			_materialManager);
-		GET_ACCESSOR_REF(BufferManager,				_bufferManager);
-		GET_ACCESSOR_REF(ShaderManager,				_shaderManager);
-		GET_ACCESSOR_REF(Texture2DManager,			_tex2dManager);
-		GET_ACCESSOR_REF(PostProcessPipeline,		_postProcessing);
-		GET_ACCESSOR_REF(MainRenderer,				_mainRenderer);
-		GET_ACCESSOR_REF(ShadowAtlasMapRenderer,	_shadowRenderer);
+		GET_ALL_ACCESSOR_REF(MaterialManager,			_materialManager);
+		GET_ALL_ACCESSOR_REF(BufferManager,				_bufferManager);
+		GET_ALL_ACCESSOR_REF(ShaderManager,				_shaderManager);
+		GET_ALL_ACCESSOR_REF(Texture2DManager,			_tex2dManager);
+		GET_ALL_ACCESSOR_REF(PostProcessPipeline,		_postProcessing);
+		GET_ALL_ACCESSOR_REF(MainRenderer,				_mainRenderer);
+		GET_ALL_ACCESSOR_REF(ShadowAtlasMapRenderer,	_shadowRenderer);
 
 		Renderer::MeshRenderer::Param GetMeshRenderParam() const
 		{

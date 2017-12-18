@@ -29,6 +29,8 @@ namespace Rendering
 
 		public:
 			ShadowAtlasMapRenderer() = default;
+			DISALLOW_ASSIGN_COPY(ShadowAtlasMapRenderer);
+
 			void Initialize(Device::DirectX& dx, uint dlMapResolution, uint slMapResolution, uint plMapResolution);
 			void Destroy();
 
@@ -102,8 +104,8 @@ namespace Rendering
 					// 3 단계
 					// 이 빛들은 하나의 카메라가 된다.
 					// 렌더링 전에 컬링을 했던 것 처럼 여기서도 컬링한다. 
-					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, cullParam.meshManager.GetOpaqueMeshPool(), light);
-					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, cullParam.meshManager.GetAlphaTestMeshPool(), light);
+					ClassifyMeshes(_tempRenderQ.opaqueRenderQ, *cullParam.meshManager.GetOpaqueMeshPool(), light);
+					ClassifyMeshes(_tempRenderQ.alphaTestRenderQ, *cullParam.meshManager.GetAlphaTestMeshPool(), light);
 
 					// 4 단계 - 그린다					
 					uint shadowIndex				= shadowMgr.GetIndexer<ShadowType>().Find(light->GetObjectID().Literal());

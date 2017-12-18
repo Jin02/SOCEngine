@@ -19,13 +19,13 @@ SpotLightShadow::ViewProjMatType SpotLightShadow::MakeVPMatParam(
 
 	const auto& lightBase = light->GetBase();
 
-	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
+	auto transform = tfPool.Find(lightBase->GetObjectID().Literal());
 	assert(transform);
 
 	Matrix view = Matrix::ComputeViewMatrix(transform->GetWorldMatrix());
 
 	float spotAngle	= DEG_2_RAD(light->GetSpotAngleDegree());
-	float radius	= lightBase.GetRadius();
+	float radius	= lightBase->GetRadius();
 	float projNear	= _base.GetProjNear();
 
 	Matrix proj				= Matrix::PerspectiveFovLH(1.0f, spotAngle, radius, projNear);

@@ -20,8 +20,8 @@ namespace Rendering
 			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup& group);
 			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup&& group) { Dispatch(dx, group); }
 
-			GET_ACCESSOR_REF(LightIndexSRBuffer,	_srb);
-			GET_ACCESSOR_REF(LightIndexUAV,			_uav);
+			GET_CONST_ACCESSOR_REF(LightIndexSRBuffer,	_srb);
+			GET_CONST_ACCESSOR_REF(LightIndexUAV,		_uav);
 
 		private:
 			Rendering::Buffer::ShaderResourceBuffer	_srb;

@@ -21,6 +21,9 @@ namespace Importer
 	class MeshImporter
 	{
 	public:
+		MeshImporter() = default;
+		DISALLOW_ASSIGN_COPY(MeshImporter);
+
 		struct ManagerParam
 		{
 			Rendering::Manager::BufferManager&		bufferManager;

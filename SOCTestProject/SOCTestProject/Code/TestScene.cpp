@@ -57,11 +57,11 @@ void TestScene::OnInitialize(Engine& engine)
 	light.FetchTransform().SetLocalPosition(Vector3(0.0f, 2.0f, 16.0f));
 
 	PointLight& pl = light.AddComponent<PointLight>();
-	pl.GetBase().SetRadius(30.0f);
-	pl.GetBase().SetLumen(100);
+	pl.GetBase()->SetRadius(30.0f);
+	pl.GetBase()->SetLumen(100);
 
 	PointLightShadow& pls = light.AddComponent<PointLightShadow>();
-	pls.GetBase().SetUnderScanSize( Half(1.0f) );
+	pls.GetBase()->SetUnderScanSize( Half(1.0f) );
 
 	engine.AddRootObject(light);
 	engine.UpdateWorldMatrix();

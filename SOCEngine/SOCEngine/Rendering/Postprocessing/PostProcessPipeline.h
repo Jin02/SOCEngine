@@ -10,10 +10,11 @@ namespace Rendering
 {
 	namespace Manager
 	{
-		class PostProcessPipeline
+		class PostProcessPipeline final
 		{
 		public:
 			PostProcessPipeline() = default;
+			DISALLOW_ASSIGN_COPY(PostProcessPipeline);
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);

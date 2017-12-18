@@ -61,7 +61,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 		assert(transform);
 
 		camMgr.GetMainCamera().UpdateCB(dx, *transform);
-		camMgr.GetMainCamera().ClassifyMesh(meshMgr.GetAllMeshPoolRefs(), objectManager, transformPool);
+		camMgr.GetMainCamera().ClassifyMesh(meshMgr.GetAllMeshPoolPtrs(), objectManager, transformPool);
 	}
 
 	lightMgr.UpdateTransformBuffer(transformPool);

@@ -12,7 +12,7 @@ namespace Rendering
 		{
 		public:
 			Texture::Texture2D& CreatePreBRDFMap(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
-			GET_ACCESSOR_REF(Texture2D, _texture);
+			GET_CONST_ACCESSOR_REF(Texture2D, _texture);
 
 		private:
 			Texture::Texture2D		_texture;

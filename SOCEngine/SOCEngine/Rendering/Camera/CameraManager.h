@@ -25,7 +25,7 @@ namespace Rendering
 
 			bool CheckCanUseMainCam(const Core::ObjectIDManager& objIDMgr) const;
 			void SetMainCamera(Core::ObjectID objectID);
-			GET_ACCESSOR_REF(MainCamera, _mainCamera);
+			GET_ALL_ACCESSOR_REF(MainCamera, _mainCamera);
 
 			bool InFrustumAllCamera(const Math::Vector3& worldPos, float radius = 0.0f) const;
 

@@ -29,6 +29,8 @@ namespace Rendering
 		{
 		public:
 			MainRenderer() = default;
+			DISALLOW_ASSIGN_COPY(MainRenderer);
+
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, const GIInitParam& giParam);
 			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
@@ -45,12 +47,12 @@ namespace Rendering
 			};
 			void Render(Device::DirectX& dx, const Param&& param);
 
-			SET_ACCESSOR_DIRTY(Gamma,		float,			_gamma);
-			GET_CONST_ACCESSOR(Gamma,		float,			_gamma);
-			GET_CONST_ACCESSOR(GBuffers,	const auto&,	_gbuffer);
-			GET_CONST_ACCESSOR(TBRParamCB,	const auto&,	_tbrCB);
-			GET_ACCESSOR_REF(ResultMap,						_resultMap);
-			GET_ACCESSOR_REF(GlobalIllumination,			_gi);
+			SET_ACCESSOR_DIRTY(Gamma,		float,						_gamma);
+			GET_CONST_ACCESSOR(Gamma,		float,						_gamma);
+			GET_ALL_ACCESSOR_PTR(ResultMap,	Texture::RenderTexture,		_resultMap);
+			GET_CONST_ACCESSOR_REF(GBuffers,							_gbuffer);
+			GET_CONST_ACCESSOR_REF(TBRParamCB,							_tbrCB);
+			GET_ALL_ACCESSOR_REF(GlobalIllumination,					_gi);
 
 		private:
 			Texture::RenderTexture						_resultMap;

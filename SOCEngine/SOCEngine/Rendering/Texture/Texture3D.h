@@ -17,10 +17,11 @@ namespace Rendering
 							DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
 							uint optionBindFlag, uint mipLevels);
 
-			GET_ACCESSOR_REF(Texture,								_texture);
-			GET_ACCESSOR_REF(RenderTargetView,						_rtv);
-			GET_ACCESSOR_REF(ShaderResourceView,					_srv);
-			GET_ACCESSOR_REF(UnorderedAccessView,					_uav);
+			GET_CONST_ACCESSOR_REF(ShaderResourceView,				_srv);
+			GET_CONST_ACCESSOR_REF(Texture,							_texture);
+
+			GET_ALL_ACCESSOR_PTR(RenderTargetView,		DXSharedResource<ID3D11RenderTargetView>,	_rtv);
+			GET_ALL_ACCESSOR_PTR(UnorderedAccessView,	View::UnorderedAccessView,					_uav);
 
 			GET_CONST_ACCESSOR(Size,				const auto&,	_size);
 

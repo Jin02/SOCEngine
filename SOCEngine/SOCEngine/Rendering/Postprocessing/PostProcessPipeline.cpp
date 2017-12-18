@@ -41,25 +41,25 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 {
 	MainRenderingSystemParam mains{mainRenderer, mainMeshCamera};
 
-	RenderTexture& mainScene = mainRenderer.GetResultMap();
-	mainScene.GetTexture2D().GenerateMips(dx);
+	RenderTexture* mainScene = mainRenderer.GetResultMap();
+	mainScene->GetTexture2D()->GenerateMips(dx);
 
 	RenderTexture* output		= &_tempTextures.originSizeMap;
 	RenderTexture* input		= &_tempResultMap;
 
 	dx.ClearDeviceContext();
 
-	GetPostproessing<Bloom>().RenderThresholdMap(dx, mainScene, _copy, _tempTextures, mainRenderer.GetTBRParamCB());
+	GetPostproessing<Bloom>().RenderThresholdMap(dx, *mainScene, _copy, _tempTextures, mainRenderer.GetTBRParamCB());
 
 	if(_useSSAO)
 	{
-		GetPostproessing<SSAO>().Render(dx, *output, mainScene, mainRenderer);
+		GetPostproessing<SSAO>().Render(dx, *output, *mainScene, mainRenderer);
 		std::swap(input, output);
 	}
 
 	if(_useDoF)
 	{
-		GetPostproessing<DepthOfField>().Render(dx, *output, _useSSAO ? *input : mainScene, std::move(mains), _copy, _tempTextures);
+		GetPostproessing<DepthOfField>().Render(dx, *output, _useSSAO ? *input : *mainScene, std::move(mains), _copy, _tempTextures);
 		std::swap(input, output);
 	}
 
@@ -67,10 +67,10 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 	if (allOff)
 	{
 		AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
-		_copy.Render(dx, *input, mainScene.GetTexture2D());
+		_copy.Render(dx, *input, *mainScene->GetTexture2D());
 	}
 
-	GetPostproessing<Bloom>().RenderBloom(dx, mainScene, *input, mainRenderer.GetTBRParamCB());
+	GetPostproessing<Bloom>().RenderBloom(dx, *mainScene, *input, mainRenderer.GetTBRParamCB());
 }
 
 void PostProcessPipeline::UpdateCB(DirectX& dx)

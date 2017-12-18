@@ -46,8 +46,8 @@ void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, Vox
 		shader.Dispatch(dx, ComputeShader::ThreadGroup(threadCount, threadCount, threadCount));
 	};
 
-	Mipmap(_baseMipmap, sourceColorMap.GetSourceMapUAV(), outAnisotropicMap.GetSourceMapUAV(), 0);
-	Mipmap(_anisotropicMipmap, outAnisotropicMap.GetSourceMapUAV(), outAnisotropicMap.GetMipmapUAV(0), 1);
+	Mipmap(_baseMipmap, *sourceColorMap.GetSourceMapUAV(), *outAnisotropicMap.GetSourceMapUAV(), 0);
+	Mipmap(_anisotropicMipmap, *outAnisotropicMap.GetSourceMapUAV(), outAnisotropicMap.GetMipmapUAV(0), 1);
 
 	uint maxMipLevel = outAnisotropicMap.GetMaxMipmapLevel();
 	for(uint i=1; i<maxMipLevel; ++i)

@@ -85,7 +85,7 @@ void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camM
 
 			if (visibleLight)
 			{
-				bool dirty = light->GetBase().GetDirty() | shadow.GetDirty() | lightTF.GetDirty();
+				bool dirty = light->GetBase()->GetDirty() | shadow.GetDirty() | lightTF.GetDirty();
 				if (dirty)
 					dirtys.push_back(&shadow);
 

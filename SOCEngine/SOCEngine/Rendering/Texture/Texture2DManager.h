@@ -13,6 +13,8 @@ namespace Rendering
 		{
 		public:
 			Texture2DManager() = default;
+			DISALLOW_ASSIGN_COPY(Texture2DManager);
+
 			using Texture2DPtr = std::shared_ptr<Texture::Texture2D>;
 
 			Texture2DPtr LoadTextureFromFile(Device::DirectX& dx, const std::string& fileDir, bool hasAlpha);

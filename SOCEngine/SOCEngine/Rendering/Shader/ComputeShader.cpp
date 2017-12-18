@@ -38,7 +38,7 @@ void ComputeShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, Sa
 
 void ComputeShader::BindConstBuffer(DirectX& dx, ConstBufferBindIndex bind, const ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = const_cast<ConstBuffer&>(cb).GetBaseBuffer().GetRaw();
+	ID3D11Buffer* buf = const_cast<BaseBuffer&>(cb.GetBaseBuffer()).GetRaw();
 	dx.GetContext()->CSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

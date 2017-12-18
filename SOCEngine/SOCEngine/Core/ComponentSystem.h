@@ -24,9 +24,7 @@ namespace Core
 
 	public:
 		ComponentSystem() = default;
-
-		DISALLOW_ASSIGN(ComponentSystem);
-		DISALLOW_COPY_CONSTRUCTOR(ComponentSystem);
+		DISALLOW_ASSIGN_COPY(ComponentSystem);
 
 	public:
 		void Initialize(Device::DirectX& dx);

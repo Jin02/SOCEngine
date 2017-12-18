@@ -21,8 +21,11 @@ void VoxelMap::Initialize(
 
 	for(uint i=1; i<mipmapCount; ++i)
 	{
+		using DeviceTexture = std::decay_t<decltype(_tex3D.GetTexture())>;
+		DeviceTexture& texture = const_cast<DeviceTexture&>(_tex3D.GetTexture());
+
 		UnorderedAccessView uav;
-		uav.Initialize(dx, uavFormat, 0, _tex3D.GetTexture(), D3D11_UAV_DIMENSION_TEXTURE3D, i, -1);
+		uav.Initialize(dx, uavFormat, 0, texture, D3D11_UAV_DIMENSION_TEXTURE3D, i, -1);
 
 		_mipmapUAVs.push_back(uav);
 	}

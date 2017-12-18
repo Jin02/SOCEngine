@@ -19,7 +19,7 @@ PointLightShadow::ViewProjMatType PointLightShadow::MakeVPMatParam(const LightPo
 
 	const auto& lightBase = light->GetBase();
 
-	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
+	auto transform = tfPool.Find(lightBase->GetObjectID().Literal());
 	assert(transform);
 
 
@@ -43,7 +43,7 @@ PointLightShadow::ViewProjMatType PointLightShadow::MakeVPMatParam(const LightPo
 	};
 
 
-	float radius	= lightBase.GetRadius();
+	float radius	= lightBase->GetRadius();
 	float projNear	= _base.GetProjNear();
 
 	Matrix proj = Matrix::PerspectiveFovLH(1.0f, DEG_2_RAD(90.0f), radius, projNear);

@@ -10,7 +10,7 @@ namespace Rendering
 {
 	namespace Geometry
 	{
-		class VBSortedMeshPool final
+		class VBSortedMeshPool
 		{
 		public:
 			VBSortedMeshPool() = default;

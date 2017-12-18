@@ -21,7 +21,7 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 
 	const auto& lightBase = light->GetBase();
 
-	auto transform = tfPool.Find(lightBase.GetObjectID().Literal());
+	auto transform = tfPool.Find(lightBase->GetObjectID().Literal());
 	assert(transform);
 
 	Matrix view = transform->GetWorldMatrix();

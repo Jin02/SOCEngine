@@ -73,7 +73,7 @@ void VertexShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, Sam
 
 void VertexShader::BindConstBuffer(DirectX& dx, ConstBufferBindIndex bind, const ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = const_cast<ConstBuffer&>(cb).GetBaseBuffer().GetRaw();
+	ID3D11Buffer* buf = const_cast<BaseBuffer&>(cb.GetBaseBuffer()).GetRaw();
 	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 

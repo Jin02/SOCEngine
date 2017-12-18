@@ -58,7 +58,7 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 		// down scale
 		{
 			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
-			copy.Render(dx, tempTextures.downScaledTextures[0], inColorMap.GetTexture2D());
+			copy.Render(dx, tempTextures.downScaledTextures[0], *inColorMap.GetTexture2D());
 		}
 
 		for (uint i = 0; i < 2; ++i)
@@ -67,12 +67,12 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 		// up
 		{
 			AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Linear);
-			copy.Render(dx, _blurredColorMap, tempTextures.downScaledTextures[0].GetTexture2D());
+			copy.Render(dx, _blurredColorMap, *tempTextures.downScaledTextures[0].GetTexture2D());
 		}
 	}
 
-	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<PixelShader> blurred(dx,		TextureBindIndex(1),						_blurredColorMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> blurred(dx,		TextureBindIndex(1),						_blurredColorMap.GetTexture2D()->GetShaderResourceView());
 	AutoBinderSRV<PixelShader> depth(dx,		TextureBindIndex::GBuffer_Depth,			mains.renderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
 
 	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				mains.renderer.GetTBRParamCB());

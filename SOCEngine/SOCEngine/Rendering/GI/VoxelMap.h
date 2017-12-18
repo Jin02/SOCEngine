@@ -25,9 +25,10 @@ namespace Rendering
 			GET_CONST_ACCESSOR(MaxMipmapLevel,	uint,		_mipmapCount-1);
 			GET_CONST_ACCESSOR(MipmapCount,		uint,		_mipmapCount);
 
-			GET_ACCESSOR_REF(Texture3D,						_tex3D);
-			GET_ACCESSOR_REF(SourceMapUAV,					_tex3D.GetUnorderedAccessView());	
+			GET_CONST_ACCESSOR_REF(Texture3D,				_tex3D);
 
+			GET_CONST_ACCESSOR(SourceMapUAV, const	View::UnorderedAccessView*, _tex3D.GetUnorderedAccessView());	
+			GET_ACCESSOR(SourceMapUAV,				View::UnorderedAccessView*, _tex3D.GetUnorderedAccessView());	
 
 			auto& GetMipmapUAV(uint index)				{ return _mipmapUAVs[index]; }
 			const auto& GetMipmapUAV(uint index) const	{ return _mipmapUAVs[index]; }

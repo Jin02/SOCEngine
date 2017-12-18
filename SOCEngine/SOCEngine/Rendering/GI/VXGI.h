@@ -46,7 +46,7 @@ namespace Rendering
 			GET_CONST_ACCESSOR(StaticInfo,			const VXGIStaticInfo&,	_staticInfo);
 			GET_CONST_ACCESSOR(Dirty,				bool,					_dirty);
 
-			GET_CONST_ACCESSOR(IndirectColorMap,	const auto&,			_indirectColorMap.GetTexture2D());
+			GET_CONST_ACCESSOR(IndirectColorMap,	const Texture::Texture2D&,	*_indirectColorMap.GetTexture2D());
 
 
 		public:

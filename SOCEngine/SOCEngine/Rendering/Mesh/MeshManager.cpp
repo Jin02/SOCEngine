@@ -13,27 +13,27 @@ using namespace Intersection;
 
 void MeshManager::Delete(Core::ObjectID objID)
 {
-	GetOpaqueMeshPool().Delete(objID.Literal());
-	GetAlphaTestMeshPool().Delete(objID.Literal());
-	GetTransparentMeshPool().Delete(objID.Literal());
+	GetOpaqueMeshPool()->Delete(objID.Literal());
+	GetAlphaTestMeshPool()->Delete(objID.Literal());
+	GetTransparentMeshPool()->Delete(objID.Literal());
 }
 
 bool MeshManager::Has(Core::ObjectID objID) const
 {
-	return	GetOpaqueMeshPool().Has(objID.Literal())		|
-			GetAlphaTestMeshPool().Has(objID.Literal())	|
-			GetTransparentMeshPool().Has(objID.Literal());
+	return	GetOpaqueMeshPool()->Has(objID.Literal())		|
+			GetAlphaTestMeshPool()->Has(objID.Literal())	|
+			GetTransparentMeshPool()->Has(objID.Literal());
 }
 
 Mesh* MeshManager::Find(Core::ObjectID id)
 {
-	auto opaque = GetOpaqueMeshPool().Find(id.Literal());
+	auto opaque = GetOpaqueMeshPool()->Find(id.Literal());
 	if (opaque) return opaque;
 
-	auto alpha = GetAlphaTestMeshPool().Find(id.Literal());
+	auto alpha = GetAlphaTestMeshPool()->Find(id.Literal());
 	if (alpha) return alpha;
 
-	auto transparency = GetTransparentMeshPool().Find(id.Literal());
+	auto transparency = GetTransparentMeshPool()->Find(id.Literal());
 	return transparency;
 }
 
@@ -70,9 +70,9 @@ void MeshManager::CheckDirty(	const TransformPool& tfPool,
 		return hasChanged;
 	};
 
-	_dirty |= Check(GetOpaqueMeshPool());
-	_dirty |= Check(GetAlphaTestMeshPool());
-	_dirty |= Check(GetTransparentMeshPool());
+	_dirty |= Check(*GetOpaqueMeshPool());
+	_dirty |= Check(*GetAlphaTestMeshPool());
+	_dirty |= Check(*GetTransparentMeshPool());
 }
 
 void MeshManager::ComputeWorldSize(

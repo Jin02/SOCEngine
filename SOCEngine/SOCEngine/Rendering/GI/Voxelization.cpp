@@ -44,9 +44,9 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 
 void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)
 {
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Albedo,	_voxelAlbedoRawBuffer.GetUnorderedAccessView());
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Emission,	_voxelEmissionRawBuffer.GetUnorderedAccessView());
-	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Normal,	_voxelNormalRawBuffer.GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Albedo,	*_voxelAlbedoRawBuffer.GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Emission,	*_voxelEmissionRawBuffer.GetUnorderedAccessView());
+	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Normal,	*_voxelNormalRawBuffer.GetUnorderedAccessView());
 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB, vxgiStaticInfoCB);
 
@@ -72,10 +72,10 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 
 	UnorderedAccessView* uavs[] =
 	{
-		&_voxelAlbedoRawBuffer.GetUnorderedAccessView(),
-		&_voxelNormalRawBuffer.GetUnorderedAccessView(),
-		&_voxelEmissionRawBuffer.GetUnorderedAccessView(),
-		&outDLInjectVoxelMap.GetSourceMapUAV()
+		_voxelAlbedoRawBuffer.GetUnorderedAccessView(),
+		_voxelNormalRawBuffer.GetUnorderedAccessView(),
+		_voxelEmissionRawBuffer.GetUnorderedAccessView(),
+		outDLInjectVoxelMap.GetSourceMapUAV()
 	};
 
 	dx.SetUAVsWithoutRenderTarget(0, ARRAYSIZE(uavs), uavs);
@@ -110,14 +110,14 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 
 	// Voxel World BoundBox에 들어오는 Mesh들만 복셀화를 한다.
 	const auto& cullParam = param.cullParam;
-	MeshUtility::ClassifyOpaqueMesh(_renderQ.opaqueRenderQ, cullParam.meshManager.GetOpaqueMeshPool(), cullParam.objMgr, cullParam.transformPool,
+	MeshUtility::ClassifyOpaqueMesh(_renderQ.opaqueRenderQ, *cullParam.meshManager.GetOpaqueMeshPool(), cullParam.objMgr, cullParam.transformPool,
 		[&worldBB = _voxeWorldBoundBox](const Mesh& mesh, const Transform&)
 		{
 			return worldBB.Intersects(mesh.GetBoundBox());
 		}
 	);
 
-	MeshUtility::ClassifyOpaqueMesh(_renderQ.alphaTestRenderQ, cullParam.meshManager.GetAlphaTestMeshPool(), cullParam.objMgr, cullParam.transformPool,
+	MeshUtility::ClassifyOpaqueMesh(_renderQ.alphaTestRenderQ, *cullParam.meshManager.GetAlphaTestMeshPool(), cullParam.objMgr, cullParam.transformPool,
 		[&worldBB = _voxeWorldBoundBox](const Mesh& mesh, const Transform&)
 		{
 			return worldBB.Intersects(mesh.GetBoundBox());

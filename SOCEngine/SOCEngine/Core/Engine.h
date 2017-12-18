@@ -44,13 +44,14 @@ namespace Core
 		void AddRootObject(const Core::Object& object);
 		void UpdateWorldMatrix();
 
-		GET_ACCESSOR_REF(DirectX,			_dx);
-		GET_ACCESSOR_REF(ComponentSystem,	_componentSystem);
-		GET_ACCESSOR_REF(TransformPool,		_transformPool);
-		GET_ACCESSOR_REF(RootObjectIDs,		_rootObjectIDs);
-		GET_ACCESSOR_REF(RenderingSystem,	_rendering);
-		GET_ACCESSOR_REF(ObjectManager,		_objectManager);
-		GET_ACCESSOR_REF(Importer,			_importer);
+		//복사 이동 금지시켜야함
+		GET_ALL_ACCESSOR_REF(DirectX,			_dx);
+		GET_ALL_ACCESSOR_REF(ComponentSystem,	_componentSystem);
+		GET_ALL_ACCESSOR_REF(TransformPool,		_transformPool);
+		GET_ALL_ACCESSOR_REF(RootObjectIDs,		_rootObjectIDs);
+		GET_ALL_ACCESSOR_REF(RenderingSystem,	_rendering);
+		GET_ALL_ACCESSOR_REF(ObjectManager,		_objectManager);
+		GET_ALL_ACCESSOR_REF(Importer,			_importer);
 
 		GET_CONST_ACCESSOR(Exit,	bool,	_exit);
 //		GET_CONST_ACCESSOR(CullingParam, CullingParam, CullingParam{});

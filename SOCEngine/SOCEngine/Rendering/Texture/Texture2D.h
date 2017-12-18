@@ -39,8 +39,8 @@ namespace Rendering
 			SET_ACCESSOR(Size,						const Size<uint>&,							_size);
 			SET_ACCESSOR(Texture,					const DXSharedResource<ID3D11Texture2D>&,	_texture);
 
-			GET_ACCESSOR_REF(ShaderResourceView,												_srv);
-			GET_ACCESSOR_REF(UnorderedAccessView,												_uav);
+			GET_CONST_ACCESSOR_REF(ShaderResourceView,											_srv);
+			GET_CONST_ACCESSOR_REF(UnorderedAccessView,											_uav);
 
 		private:
 			DXSharedResource<ID3D11Texture2D>		_texture;

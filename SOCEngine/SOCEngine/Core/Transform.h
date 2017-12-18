@@ -101,7 +101,8 @@ namespace Core
 		using Parent::Parent;
 		using Parent::Add;
 
-		DISALLOW_ASSIGN(TransformPool);
+		TransformPool() = default;
+		DISALLOW_ASSIGN_COPY(TransformPool);
 
 		auto& Add(ObjectID id)
 		{

@@ -50,7 +50,7 @@ namespace Rendering
 				void PushLight(const LightType& light)
 				{
 					_transformBuffer.PushData(LightType::TransformType());
-					_commonBuffer.PushData(light.GetBase(), -1, -1);
+					_commonBuffer.PushData(*light.GetBase(), -1, -1);
 
 					_mustUpdateTransformSRBuffer	= true;
 					_mustUpdateCommonSRBuffer		= true;
@@ -93,7 +93,7 @@ namespace Rendering
 						uint lightShaftIdx	= indexers.lightShaftIndexer.Find(literalID);
 
 						uint index = indexer.Find(literalID);
-						_commonBuffer.SetData(index, light->GetBase(), shadowIdx, lightShaftIdx);
+						_commonBuffer.SetData(index, *light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 
 					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() == false);

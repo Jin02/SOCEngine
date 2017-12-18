@@ -61,7 +61,7 @@ namespace Rendering
 			SET_ACCESSOR(ProjectionSize,					float,			_projectionSize);
 			SET_ACCESSOR(UseAutoProjectionLocation,			bool,			_useAutoProjectLocation);
 
-			GET_ACCESSOR_REF(Base,											_base);
+			GET_ALL_ACCESSOR_PTR(Base,						BaseShadow,		_base);
 
 			inline void SetDirty(bool b) { _base.SetDirty(b); }
 

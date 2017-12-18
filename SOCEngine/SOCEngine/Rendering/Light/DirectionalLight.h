@@ -51,7 +51,7 @@ namespace Rendering
 		public:
 			GET_CONST_ACCESSOR(LightShaftSize,	float,			_base.GetRadius());
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID, _base.GetObjectID());
-			GET_ACCESSOR_REF(Base,								_base);
+			GET_ALL_ACCESSOR_PTR(Base,			BaseLight,		_base); //복사이동 금지시켜야함
 
 			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
 

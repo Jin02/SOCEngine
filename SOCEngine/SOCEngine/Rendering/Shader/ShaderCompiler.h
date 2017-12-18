@@ -21,6 +21,7 @@ namespace Rendering
 		{
 		public:
 			ShaderCompiler() = default;
+			DISALLOW_ASSIGN_COPY(ShaderCompiler);
 
 			static std::string MakeKey(	const std::string& fileName,
 										const std::string& mainFunc, const std::string& shaderTypeStr,
