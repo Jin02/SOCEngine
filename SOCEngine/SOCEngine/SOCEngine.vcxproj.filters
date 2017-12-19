@@ -442,6 +442,9 @@
     <Filter Include="Rendering\Renderer\Sky">
       <UniqueIdentifier>{d945dabd-aa8f-4052-9fea-b167e72eaa20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Renderer\Sky\Scattering">
+      <UniqueIdentifier>{e98c8431-dc1b-4b67-8650-cea50c2f55b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -991,6 +994,9 @@
     <ClInclude Include="Rendering\Texture\DepthMapCube.h">
       <Filter>Rendering\Texture\DepthMap</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Renderer\SkyPreethamModelRenderer.h">
+      <Filter>Rendering\Renderer\Sky\Scattering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1295,6 +1301,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\DepthMapCube.cpp">
       <Filter>Rendering\Texture\DepthMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\SkyPreethamModelRenderer.cpp">
+      <Filter>Rendering\Renderer\Sky\Scattering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

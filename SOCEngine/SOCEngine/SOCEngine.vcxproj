@@ -188,6 +188,7 @@
     <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\SkyBoxRenderer.h" />
+    <ClInclude Include="Rendering\Renderer\SkyPreethamModelRenderer.h" />
     <ClInclude Include="Rendering\Renderer\TileBasedShadingHeader.h" />
     <ClInclude Include="Rendering\RenderingSystem.h" />
     <ClInclude Include="Rendering\RenderSetting.h" />
@@ -414,6 +415,7 @@
     <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\SkyBoxRenderer.cpp" />
+    <ClCompile Include="Rendering\Renderer\SkyPreethamModelRenderer.cpp" />
     <ClCompile Include="Rendering\RenderingSystem.cpp" />
     <ClCompile Include="Rendering\Shader\ComputeShader.cpp" />
     <ClCompile Include="Rendering\Shader\DefaultShaders.cpp" />
