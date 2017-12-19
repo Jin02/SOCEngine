@@ -38,6 +38,27 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr,
 	_renderTarget.Initialize(dx, mainCam.GetRenderRect().size, DXGI_FORMAT_R16G16B16A16_FLOAT);
 }
 
+void SkyPreethamModelRenderer::Destroy()
+{
+	_resultMaterial.Destroy();
+
+	_ssParamData = SkyScatteringParam();
+
+	_geometry.Destroy();
+	_renderTarget.Destroy();
+
+	_vertexShader.Destroy();
+	_geometryShader.Destroy();
+	_pixelShader.Destroy();
+
+	_lpParamCB.Destroy();
+	_ssParamCB.Destroy();
+
+	_renderAble			= false;
+	_dirty				= true;
+	_directionalLightID	= ObjectID::Undefined();
+}
+
 void SkyPreethamModelRenderer::CheckRenderAbleWithUpdateCB(DirectX& dx, const TransformPool& tfPool, const LightManager& lightMgr)
 {
 	const Vector3 forwards[6] = 

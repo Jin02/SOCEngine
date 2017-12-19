@@ -15,6 +15,7 @@ namespace Rendering
 			using MaterialForm::MaterialForm;
 
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Destroy();
 			void UpdateCubeMap(const Texture::Texture2D& tex);
 
 			GET_CONST_ACCESSOR(VertexShader,	const auto&,	_vertexShader);

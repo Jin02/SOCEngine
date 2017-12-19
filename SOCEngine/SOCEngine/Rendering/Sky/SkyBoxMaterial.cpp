@@ -25,6 +25,17 @@ void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	_pixelShader = *ps;
 }
 
+void SkyBoxMaterial::Destroy()
+{
+	MaterialForm::Destroy();
+
+	_vertexShader.Destroy();
+	_pixelShader.Destroy();
+	_cubeMap.Destroy();
+
+	_maxMipLevel = 0.0f;
+}
+
 void SkyBoxMaterial::UpdateCubeMap(const Texture2D& tex)
 {
 	MaterialForm::BindTextured2D bindData;

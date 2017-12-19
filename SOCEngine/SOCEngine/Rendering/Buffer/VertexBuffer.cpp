@@ -24,6 +24,14 @@ void VertexBuffer::Initialize(Device::DirectX& dx, const Desc& desc, const void*
 	_baseBuffer.SetBuffer( dx.CreateBuffer(bufferDesc, &data) );
 }
 
+void VertexBuffer::Destroy()
+{
+	_desc = Desc();
+	_semantics.clear();
+
+	_baseBuffer.Destroy();
+}
+
 void VertexBuffer::IASetBuffer(Device::DirectX& dx, uint offset) const
 {
 	ID3D11Buffer* buffer	= const_cast<BaseBuffer*>(&_baseBuffer)->GetRaw();

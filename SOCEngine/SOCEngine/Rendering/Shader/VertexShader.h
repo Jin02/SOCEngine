@@ -22,6 +22,7 @@ namespace Rendering
 			VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 			void Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			void Destroy();
 
 			void BindShaderToContext(Device::DirectX& dx) const;
 			void BindInputLayoutToContext(Device::DirectX& dx) const;

@@ -4,6 +4,11 @@
 using namespace Rendering::Buffer;
 using namespace Device;
 
+void BaseBuffer::Destroy()
+{
+	_buffer.Destroy();
+}
+
 void BaseBuffer::UpdateSubResource(DirectX& dx, const void* data)
 {
 	dx.GetContext()->UpdateSubresource(_buffer.GetRaw(), 0, nullptr, data, 0, 0);

@@ -24,6 +24,8 @@ namespace Rendering
 			BaseShader() = default;
 			BaseShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key) : _blob(blob), _key(key) {}
 
+			void Destroy() { _key = ""; _blob.Destroy(); }
+
 			GET_CONST_ACCESSOR(Blob,		DXSharedResource<ID3DBlob>,		_blob);
 			GET_CONST_ACCESSOR(Key,			const std::string&,				_key);
 			GET_CONST_ACCESSOR(IsCanUse,	bool,							_blob.IsCanUse());

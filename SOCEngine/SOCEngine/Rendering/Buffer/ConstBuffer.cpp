@@ -23,3 +23,9 @@ void ConstBuffer::UpdateSubResource(Device::DirectX& dx, const void* data)
 {
 	_base.UpdateSubResource(dx, data);
 }
+
+void ConstBuffer::Destroy()
+{
+	_base.Destroy();
+	_size = 0;
+}

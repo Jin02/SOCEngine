@@ -28,3 +28,9 @@ void SkyGeometry::Initialize(Device::DirectX& dx)
 
 	BasicGeometryGenerator::CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
 }
+
+void SkyGeometry::Destroy()
+{
+	_vertexBuffer.Destroy();
+	_indexBuffer.Destroy();
+}

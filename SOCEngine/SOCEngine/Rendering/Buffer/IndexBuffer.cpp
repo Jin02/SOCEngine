@@ -24,6 +24,14 @@ void IndexBuffer::Initialize(Device::DirectX& dx, const std::vector<uint>& indic
 	_baseBuffer.SetBuffer(dx.CreateBuffer(bufferDesc, &data));
 }
 
+void IndexBuffer::Destroy()
+{
+	_indexCount = 0;
+	_vbKey		= -1;
+
+	_baseBuffer.Destroy();
+}
+
 void IndexBuffer::IASetBuffer(Device::DirectX& dx) const
 {
 	ID3D11Buffer* buffer = const_cast<BaseBuffer*>(&_baseBuffer)->GetRaw();

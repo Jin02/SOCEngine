@@ -13,6 +13,7 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx);
+			void Destroy();
 
 			GET_CONST_ACCESSOR(VertexBuffer,	const auto&, _vertexBuffer);
 			GET_CONST_ACCESSOR(IndexBuffer,		const auto&, _indexBuffer);

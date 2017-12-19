@@ -39,6 +39,15 @@ void VertexShader::Initialize(DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT
 	_semanticInfo.back().size = dx.CalcFormatSize(vertexDeclations[count-1].Format);
 }
 
+void VertexShader::Destroy()
+{
+	_shader.Destroy();
+	_baseShader.Destroy();
+	_layout.Destroy();
+	
+	_semanticInfo.clear();
+}
+
 void VertexShader::BindShaderToContext(DirectX& dx) const
 {
 	dx.GetContext()->VSSetShader(const_cast<ID3D11VertexShader*>(_shader.GetRaw()), nullptr, 0);

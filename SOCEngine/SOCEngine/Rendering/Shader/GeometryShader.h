@@ -13,6 +13,7 @@ namespace Rendering
 			GeometryShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
 
 			void Initialize(Device::DirectX& dx);
+			void Destroy();
 			
 			void BindShaderToContext(Device::DirectX& dx) const;
 			static void UnBindShaderToContext(Device::DirectX& dx);

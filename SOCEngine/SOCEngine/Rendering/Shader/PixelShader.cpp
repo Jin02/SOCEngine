@@ -17,6 +17,12 @@ void PixelShader::Initialize(DirectX& dx)
 	_shader = dx.CreatePixelShader(_baseShader);
 }
 
+void PixelShader::Destroy()
+{
+	_shader.Destroy();
+	_baseShader.Destroy();
+}
+
 void PixelShader::BindShaderToContext(DirectX& dx) const
 {
 	dx.GetContext()->PSSetShader(const_cast<ID3D11PixelShader*>(_shader.GetRaw()), nullptr, 0);

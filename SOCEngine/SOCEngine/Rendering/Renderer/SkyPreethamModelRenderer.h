@@ -42,6 +42,8 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCam);
+			void Destroy();
+
 			void CheckRenderAbleWithUpdateCB(Device::DirectX& dx, const Core::TransformPool& tfPool, const Manager::LightManager& lightMgr);
 			void Render(Device::DirectX& dx, const Camera::MainCamera& mainCam, const Manager::LightManager& lightMgr);
 

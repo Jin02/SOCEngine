@@ -17,6 +17,12 @@ void GeometryShader::Initialize(DirectX& dx)
 	_shader = dx.CreateGeometryShader(_baseShader);
 }
 
+void GeometryShader::Destroy()
+{
+	_shader.Destroy();
+	_baseShader.Destroy();
+}
+
 void GeometryShader::BindShaderToContext(DirectX& dx) const
 {
 	dx.GetContext()->GSSetShader(const_cast<ID3D11GeometryShader*>(_shader.GetRaw()), nullptr, 0);

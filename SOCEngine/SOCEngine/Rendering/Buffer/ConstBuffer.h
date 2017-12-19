@@ -18,6 +18,7 @@ namespace Rendering
 
 			void Initialize(Device::DirectX& dx, uint size);
 			void UpdateSubResource(Device::DirectX& dx, const void* data);
+			void Destroy();
 
 		private:
 			BaseBuffer			_base;
@@ -32,6 +33,7 @@ namespace Rendering
 			ExplicitConstBuffer(Device::DirectX& dx) { Initialize(dx); }
 
 			void Initialize(Device::DirectX& dx)							{ _cb.Initialize(dx, sizeof(Type)); }
+			void Destroy()													{ _cb.Destroy(); }
 			void UpdateSubResource(Device::DirectX& dx, const Type& data)	{ _cb.UpdateSubResource(dx, &data); }
 
 			operator ConstBuffer&()				{ return _cb; }

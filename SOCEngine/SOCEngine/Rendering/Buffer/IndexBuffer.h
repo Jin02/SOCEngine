@@ -14,6 +14,7 @@ namespace Rendering
 			IndexBuffer() = default;
 
 			void Initialize(Device::DirectX& dx, const std::vector<uint>& indices, BaseBuffer::Key vbKey, bool isDynamic = false);
+			void Destroy();
 			void IASetBuffer(Device::DirectX& dx) const;
 
 			GET_CONST_ACCESSOR(IndexCount,	uint,				_indexCount);
