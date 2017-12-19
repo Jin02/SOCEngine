@@ -14,6 +14,45 @@ namespace Rendering
 	namespace Shader
 	{
 		template <class ShaderType>
+		class AutoBinderShaderToContext final
+		{
+		public:
+			AutoBinderShaderToContext(Device::DirectX& dx, const ShaderType& shader) : _dx(dx)
+			{
+				shader.BindShaderToContext(dx);
+			}
+
+			~AutoBinderShaderToContext()
+			{
+				ShaderType::UnBindShaderToContext(_dx);
+			}
+
+			DISALLOW_ASSIGN_COPY(AutoBinderShaderToContext<ShaderType>);
+
+		private:
+			Device::DirectX& _dx;
+		};
+
+		class AutoBinderInputLayoutToContext final
+		{
+		public:
+			AutoBinderInputLayoutToContext(Device::DirectX& dx, const VertexShader& shader) : _dx(dx)
+			{
+				shader.BindInputLayoutToContext(dx);
+			}
+
+			~AutoBinderInputLayoutToContext()
+			{
+				VertexShader::UnBindInputLayoutToContext(_dx);
+			}
+
+			DISALLOW_ASSIGN_COPY(AutoBinderInputLayoutToContext);
+
+		private:
+			Device::DirectX& _dx;
+		};
+
+		template <class ShaderType>
 		class AutoBinderSRV final
 		{
 		public:
