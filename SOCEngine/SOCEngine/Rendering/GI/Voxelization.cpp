@@ -38,8 +38,7 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 	_infoCB.Initialize(dx);
 
 	// Init Clear VoxelMap
-	ShaderFactory factory(&shaderMgr);
-	_clearVoxelRawMapCS = *factory.LoadComputeShader(dx, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
+	_clearVoxelRawMapCS = *ShaderFactory::LoadComputeShader(dx, shaderMgr, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
 }
 
 void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)

@@ -7,15 +7,13 @@ using namespace Rendering::Shader;
 using namespace Rendering::Texture;
 using namespace Rendering::Manager;
 using namespace Rendering::RenderState;
+using namespace Rendering::Factory;
 
 void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderManager& shaderManager)
 {
 	std::string folderPath = "";
 	{
-		Factory::ShaderFactory pathFinder(nullptr);
-
-		std::string path = pathFinder.FetchShaderFullPath(param.shaderFileName);
-
+		std::string path = ShaderFactory::FetchShaderFullPath(param.shaderFileName);
 		Utility::String::ParseDirectory(path, &folderPath, nullptr, nullptr);
 	}
 	assert(folderPath.empty() == false);// "Error!, Invalid File Path"

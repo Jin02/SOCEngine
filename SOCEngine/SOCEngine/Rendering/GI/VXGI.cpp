@@ -19,8 +19,7 @@ using namespace Rendering::Renderer;
 
 void VXGI::InitializeClearVoxelMap(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
-	ShaderFactory factory(&shaderMgr);
-	_clearVoxelMap = *factory.LoadComputeShader(dx, "ClearVoxelMap", "CS", nullptr, "@ClearVoxelMap");
+	_clearVoxelMap = *ShaderFactory::LoadComputeShader(dx, shaderMgr, "ClearVoxelMap", "CS", nullptr, "@ClearVoxelMap");
 }
 
 void VXGI::ClearInjectColorVoxelMap(DirectX& dx)

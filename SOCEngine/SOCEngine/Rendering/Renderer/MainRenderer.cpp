@@ -21,6 +21,7 @@ using namespace Rendering::Material;
 using namespace Rendering::Light;
 using namespace Rendering::Shadow;
 using namespace Rendering::GI;
+using namespace Rendering::Factory;
 
 void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, const GIInitParam& giParam)
 {
@@ -67,8 +68,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		std::vector<Shader::ShaderMacro> macros{	dx.GetMSAAShaderMacro(),
 													ShaderMacro("USE_COMPUTE_SHADER")};
 
-		Factory::ShaderFactory factory(&shaderMgr);
-		_tbdrShader = *factory.LoadComputeShader(dx, "TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
+		_tbdrShader = *ShaderFactory::LoadComputeShader(dx, shaderMgr,"TBDR", "TileBasedDeferredShadingCS", &macros, "@TBDR");
 
 		Size<uint> size = Light::CullingUtility::ComputeThreadGroupSize(renderSize);
 		_tbdrThreadGroup = ComputeShader::ThreadGroup(size.w, size.h, 1);

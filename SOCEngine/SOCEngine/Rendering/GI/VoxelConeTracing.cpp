@@ -23,9 +23,8 @@ using namespace Rendering::RenderState;
 
 void VoxelConeTracing::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& renderSize)
 {
-	ShaderFactory factory(&shaderMgr);
 	std::vector<ShaderMacro> macro{dx.GetMSAAShaderMacro()};
-	_shader = *factory.LoadComputeShader(dx, "VoxelConeTracing", "VoxelConeTracingCS", &macro, "@VCT");
+	_shader = *ShaderFactory::LoadComputeShader(dx, shaderMgr, "VoxelConeTracing", "VoxelConeTracingCS", &macro, "@VCT");
 
 	_group = ComputeShader::ThreadGroup{(renderSize.w + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES,
 										(renderSize.h + VOXEL_CONE_TRACING_TILE_RES - 1) / VOXEL_CONE_TRACING_TILE_RES, 1};

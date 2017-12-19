@@ -19,17 +19,9 @@ namespace Rendering
 				bool isOnlyHasPath;
 			};
 
-		private:
-			Manager::ShaderManager*	_shaderMgr;
-
 		public:
-			[ClassName](Manager::ShaderManager* shaderMgr) : _shaderMgr(shaderMgr)
-			{
-			}
-
-		public:
-			LoadShaderResult LoadShader(
-				Device::DirectX& dx,
+			static LoadShaderResult LoadShader(
+				Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
 				const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName, const std::string& mainGSFuncName,
 				const std::vector<Shader::ShaderMacro>* macros,
@@ -63,8 +55,7 @@ namespace Rendering
 				/** Script Begin **/
 				/** Script End **/
 				
-				assert(_shaderMgr);
-				auto& compiler = _shaderMgr->GetCompiler();
+				auto& compiler = shaderMgr.GetCompiler();
 
 				std::shared_ptr<Shader::VertexShader> vs = nullptr;
 				if (mainVSFuncName.empty() == false)
@@ -75,7 +66,7 @@ namespace Rendering
 					vs = std::make_shared<Shader::VertexShader>(blob, key);
 					vs->Initialize(dx, vertexDeclations);
 
-					_shaderMgr->GetPool<Shader::VertexShader>().Add(key, vs);
+					shaderMgr.GetPool<Shader::VertexShader>().Add(key, vs);
 				}
 
 				std::shared_ptr<Shader::PixelShader> ps = nullptr;
@@ -87,7 +78,7 @@ namespace Rendering
 					ps = std::make_shared<Shader::PixelShader>(blob, key);
 					ps->Initialize(dx);
 
-					_shaderMgr->GetPool<Shader::PixelShader>().Add(key, ps);
+					shaderMgr.GetPool<Shader::PixelShader>().Add(key, ps);
 				}
 
 				std::shared_ptr<Shader::GeometryShader> gs = nullptr;
@@ -99,7 +90,7 @@ namespace Rendering
 					gs = std::make_shared<Shader::GeometryShader>(blob, key);
 					gs->Initialize(dx);
 
-					_shaderMgr->GetPool<Shader::GeometryShader>().Add(key, gs);
+					shaderMgr.GetPool<Shader::GeometryShader>().Add(key, gs);
 				}
 
 				if(outVertexShader)
@@ -120,7 +111,7 @@ namespace Rendering
 				return result;
 			}
 			
-			std::string FetchShaderFullPath(const std::string& fileName)
+			static std::string FetchShaderFullPath(const std::string& fileName)
 			{
 				std::string out = "";
 
@@ -130,21 +121,19 @@ namespace Rendering
 				return out;
 			}
 
-			std::shared_ptr<Shader::ComputeShader> LoadComputeShader(
-				Device::DirectX& dx,
+			static std::shared_ptr<Shader::ComputeShader> LoadComputeShader(
+				Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
 				const std::string& shaderName, const std::string& mainFuncName,
 				const std::vector<Shader::ShaderMacro>* macros,
 				const std::string& uniqueKey)
 			{
-				assert(_shaderMgr);
-
 				std::string key = (uniqueKey.empty() == false) ? uniqueKey : Shader::ShaderCompiler::MakeKey(shaderName, mainFuncName, "cs", macros);
 
-				std::shared_ptr<Shader::ComputeShader> shaderPtr = _shaderMgr->GetPool<Shader::ComputeShader>().Find(key);
+				std::shared_ptr<Shader::ComputeShader> shaderPtr = shaderMgr.GetPool<Shader::ComputeShader>().Find(key);
 				if(shaderPtr)
 					return shaderPtr;
 
-				auto& compiler = _shaderMgr->GetCompiler();
+				auto& compiler = shaderMgr.GetCompiler();
 
 				std::string fullPath = FetchShaderFullPath(shaderName);
 
@@ -156,7 +145,7 @@ namespace Rendering
 				shaderPtr = std::make_shared<Shader::ComputeShader>(blob, key);
 				shaderPtr->Initialize(dx);
 
-				_shaderMgr->GetPool<Shader::ComputeShader>().Add(key, shaderPtr);
+				shaderMgr.GetPool<Shader::ComputeShader>().Add(key, shaderPtr);
 
 				return shaderPtr;
 			}

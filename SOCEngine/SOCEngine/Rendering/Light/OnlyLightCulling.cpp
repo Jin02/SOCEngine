@@ -19,8 +19,7 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 										ShaderMacro("ENABLE_BLEND", ""),
 										dx.GetMSAAShaderMacro() };
 
-	ShaderFactory factory(&shaderMgr);
-	_cs = *factory.LoadComputeShader(dx, "OnlyLightCullingCS", "OnlyLightCullingCS", &macros, "@OnlyLightCulling");
+	_cs = *ShaderFactory::LoadComputeShader(dx, shaderMgr, "OnlyLightCullingCS", "OnlyLightCullingCS", &macros, "@OnlyLightCulling");
 
 	// Ouput Buffer Setting
 	{

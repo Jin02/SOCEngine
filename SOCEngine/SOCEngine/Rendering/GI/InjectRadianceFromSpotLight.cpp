@@ -17,10 +17,8 @@ using namespace Rendering::Renderer;
 
 void InjectRadianceFromSpotLight::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimension)
 {
-	ShaderFactory factory(&shaderMgr);
-	_shader = *factory.LoadComputeShader(dx, "InjectRadianceFromSpotLight", "CS", nullptr, "@InjectRadianceFromSpotLight");
-
-	_threadLength = InjectRadianceFormUtility::CalcThreadSideLength(dimension);
+	_shader			= *ShaderFactory::LoadComputeShader(dx, shaderMgr, "InjectRadianceFromSpotLight", "CS", nullptr, "@InjectRadianceFromSpotLight");
+	_threadLength	= InjectRadianceFormUtility::CalcThreadSideLength(dimension);
 }
 
 void InjectRadianceFromSpotLight::Inject(	DirectX& dx, VoxelMap& outVoxelMap,

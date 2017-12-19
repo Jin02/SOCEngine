@@ -6,6 +6,7 @@ using namespace Utility;
 using namespace Rendering;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
+using namespace Rendering::Factory;
 
 const DefaultShaders::Shaders& 
 DefaultShaders::LoadDefaultSahder(
@@ -48,10 +49,8 @@ DefaultShaders::LoadDefaultSahder(
 		const std::string& vsMainName, const std::string& psMainName, const std::string& gsMainName,
 		const std::vector<ShaderMacro>* macros) -> ShaderGroup
 	{
-		Factory::ShaderFactory shaderLoader(&shaderMgr);
-
 		ShaderGroup shaders;
-		shaderLoader.LoadShader(dx, fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);
+		ShaderFactory::LoadShader(dx, shaderMgr, fileName, vsMainName, psMainName, gsMainName, macros, &shaders.vs, &shaders.ps, &shaders.gs);
 
 		//ASSERT_MSG_IF(shaders.vs, "RenderManager Error : can not load shader");
 		return shaders;

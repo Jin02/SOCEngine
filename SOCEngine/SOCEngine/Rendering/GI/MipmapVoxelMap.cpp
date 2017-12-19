@@ -17,9 +17,8 @@ void MipmapVoxelMap::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
 	std::vector<ShaderMacro> baseMipmapMacro{ ShaderMacro("BASE_MIP_MAP") };
 
-	ShaderFactory factory(&shaderMgr);
-	_baseMipmap			= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", &baseMipmapMacro, "@MipmapVoxelBase");
-	_anisotropicMipmap	= *factory.LoadComputeShader(dx, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", nullptr, "@MipmapVoxelAnisotropic");
+	_baseMipmap			= *ShaderFactory::LoadComputeShader(dx, shaderMgr, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", &baseMipmapMacro, "@MipmapVoxelBase");
+	_anisotropicMipmap	= *ShaderFactory::LoadComputeShader(dx, shaderMgr, "MipmapAnisotropicVoxelTexture", "MipmapAnisotropicVoxelMapCS", nullptr, "@MipmapVoxelAnisotropic");
 
 	_infoCB.Initialize(dx);
 }
