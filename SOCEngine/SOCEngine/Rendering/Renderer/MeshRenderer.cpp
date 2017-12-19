@@ -1,4 +1,5 @@
 #include "MeshRenderer.h"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Rendering;
@@ -17,10 +18,11 @@ void MeshRenderer::RenderWithoutIASetVB(DirectX& dx, Param param, DefaultRenderT
 
 	const DefaultShaders::Shaders& defaultShaders = param.defaultShaders.Find(mesh.GetBufferFlag(), renderType);
 	
-	defaultShaders.vs.BindShaderToContext(dx);
-	defaultShaders.vs.BindInputLayoutToContext(dx);
-	defaultShaders.gs.BindShaderToContext(dx);
-	defaultShaders.ps.BindShaderToContext(dx);
+	AutoBinderShaderToContext<VertexShader>		vsBinder(dx, defaultShaders.vs);
+	AutoBinderShaderToContext<GeometryShader>	gsBinder(dx, defaultShaders.gs);
+	AutoBinderShaderToContext<PixelShader>		psBinder(dx, defaultShaders.ps);
+
+	AutoBinderInputLayoutToContext layoutBinder(dx, defaultShaders.vs);
 
 	VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::Transform, mesh.GetTransformCB());
 	if (defaultShaders.ps.GetIsCanUse()) PixelShader::BindConstBuffer(dx, ConstBufferBindIndex::Transform, mesh.GetTransformCB());
@@ -31,8 +33,4 @@ void MeshRenderer::RenderWithoutIASetVB(DirectX& dx, Param param, DefaultRenderT
 	VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Transform);
 	if (defaultShaders.ps.GetIsCanUse()) PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Transform);
 	if (defaultShaders.gs.GetIsCanUse()) GeometryShader::UnBindConstBuffer(dx, ConstBufferBindIndex::Transform);
-
-	VertexShader::UnBindShaderToContext(dx);
-	PixelShader::UnBindShaderToContext(dx);
-	GeometryShader::UnBindShaderToContext(dx);
 }

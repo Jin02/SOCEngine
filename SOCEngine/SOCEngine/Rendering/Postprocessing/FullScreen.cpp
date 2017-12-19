@@ -1,5 +1,6 @@
 #include "FullScreen.h"
 #include "ShaderFactory.hpp"
+#include "AutoBinder.hpp"
 
 using namespace Device;
 using namespace Rendering::PostProcessing;
@@ -88,10 +89,10 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 	dx.SetRasterizerState(RasterizerState::CWDefault);
 
-	_vs->BindShaderToContext(dx);
-	_vs->BindInputLayoutToContext(dx);
-	
-	_ps->BindShaderToContext(dx);
+	AutoBinderShaderToContext<VertexShader>	vs(dx, *_vs);
+	AutoBinderShaderToContext<PixelShader>	ps(dx, *_ps);
+
+	AutoBinderInputLayoutToContext layout(dx, *_vs);
 
 	dx.GetContext()->Draw(3, 0);
 

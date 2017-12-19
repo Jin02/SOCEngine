@@ -54,10 +54,10 @@ void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& 
 	_geometry.GetVertexBuffer().IASetBuffer(dx);
 	_geometry.GetIndexBuffer().IASetBuffer(dx);
 
-	const auto& vs = material.GetVertexShader();
-	vs.BindShaderToContext(dx);
-	vs.BindInputLayoutToContext(dx);
-	material.GetPixelShader().BindShaderToContext(dx);
+	AutoBinderShaderToContext<VertexShader> vs(dx, material.GetVertexShader());
+	AutoBinderShaderToContext<PixelShader> ps(dx, material.GetPixelShader());
+
+	AutoBinderInputLayoutToContext layout(dx, material.GetVertexShader());
 
 	AutoBinderCB<VertexShader> wvp(dx,			ConstBufferBindIndex::SkyBoxWVP,			_transformCB);
 	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
@@ -65,9 +65,5 @@ void SkyBoxRenderer::Render(DirectX& dx, RenderTexture& target, const DepthMap& 
 	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
 
 	dx.GetContext()->DrawIndexed(_geometry.GetIndexBuffer().GetIndexCount(), 0, 0);
-
-	vs.UnBindShaderToContext(dx);
-	vs.UnBindInputLayoutToContext(dx);
-	material.GetPixelShader().UnBindShaderToContext(dx);
 	dx.ReSetRenderTargets(1);
 }
