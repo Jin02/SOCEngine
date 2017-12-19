@@ -130,4 +130,5 @@ void SkyPreethamModelRenderer::Render(DirectX& dx, const MainCamera& mainCam, co
 	AutoBinderSRV<PixelShader>		dlOParamPS(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	dlBuffers.GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 
 	dx.GetContext()->DrawIndexed(_geometry.GetIndexBuffer().GetIndexCount(), 0, 0);
+	dx.ReSetRenderTargets(1);
 }
