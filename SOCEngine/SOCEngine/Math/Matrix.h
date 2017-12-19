@@ -56,6 +56,7 @@ namespace Math
 		static Matrix ComputeInvViewportMatrix(const Rect<uint>& rect);
 		static Matrix MakeRotationMatrix(const Vector3& right, const Vector3& up, const Vector3& forward);
 		static Matrix LookAtDir(const Vector3 & targetDir, const Vector3* upVec = nullptr);
+		static Matrix ComputeViewProjMatrix(const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat);
 
 	public:
 		void Set(	float _11, float _12, float _13, float _14,

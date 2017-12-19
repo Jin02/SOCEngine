@@ -384,3 +384,17 @@ Matrix Math::Matrix::LookAtDir(const Vector3& targetDir, const Vector3 * upVec)
 
 	return Matrix::MakeRotationMatrix(right, up, forward);
 }
+
+Matrix Matrix::ComputeViewProjMatrix(const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat)
+{
+	Matrix view = Matrix::LookAtDir(forward, &up);
+
+	view._41 = eyePos.x;
+	view._42 = eyePos.y;
+	view._43 = eyePos.z;
+	view._44 = 1.0f;
+
+	view = Matrix::ComputeViewMatrix(view);
+	
+	return view * projMat;
+}
