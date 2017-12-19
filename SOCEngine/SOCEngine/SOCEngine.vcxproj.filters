@@ -988,6 +988,9 @@
     <ClInclude Include="ShaderCodes\AtmosphericScattering-PreethamModel.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Texture\DepthMapCube.h">
+      <Filter>Rendering\Texture\DepthMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1289,6 +1292,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Texture\RenderTextureCube.cpp">
       <Filter>Rendering\Texture\RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture\DepthMapCube.cpp">
+      <Filter>Rendering\Texture\DepthMap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -242,6 +242,7 @@
     </ClInclude>
     <ClInclude Include="Rendering\Sky\SkyBoxMaterial.h" />
     <ClInclude Include="Rendering\Sky\SkyGeometry.h" />
+    <ClInclude Include="Rendering\Texture\DepthMapCube.h" />
     <ClInclude Include="Rendering\Texture\DepthMap.h" />
     <ClInclude Include="Rendering\Texture\RenderTexture.h" />
     <ClInclude Include="Rendering\Texture\Texture2D.h" />
@@ -443,6 +444,7 @@
     </ClCompile>
     <ClCompile Include="Rendering\Sky\SkyBoxMaterial.cpp" />
     <ClCompile Include="Rendering\Sky\SkyGeometry.cpp" />
+    <ClCompile Include="Rendering\Texture\DepthMapCube.cpp" />
     <ClCompile Include="Rendering\Texture\DepthMap.cpp" />
     <ClCompile Include="Rendering\Texture\RenderTexture.cpp" />
     <ClCompile Include="Rendering\Texture\Texture2D.cpp" />
