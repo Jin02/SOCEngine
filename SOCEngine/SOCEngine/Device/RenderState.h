@@ -29,7 +29,7 @@ namespace Rendering
 		enum class DepthState : unsigned int
 		{
 			DisableDepthWrite					= 0,
-			DisableDepthTest,
+			DisableDepthTestWrite,
 			Less,
 			EqualAndDisableDepthWrite,
 			Greater,

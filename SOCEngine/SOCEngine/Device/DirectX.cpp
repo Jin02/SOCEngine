@@ -453,7 +453,7 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 		//disable depth test
 		desc.DepthEnable	= false;
 		assert(SUCCEEDED(_device->CreateDepthStencilState(&desc, &dss)));
-		_depthStencilStates[static_cast<uint>(DepthState::DisableDepthTest)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
+		_depthStencilStates[static_cast<uint>(DepthState::DisableDepthTestWrite)] = DXUniqueResource<ID3D11DepthStencilState>(dss);
 
 		desc.DepthEnable	= true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;

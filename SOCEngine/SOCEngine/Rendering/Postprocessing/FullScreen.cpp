@@ -83,7 +83,7 @@ void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool us
 
 	auto rtv = outResultRT.GetRaw();
 	dx.SetRenderTarget(outResultRT);
-	dx.SetDepthStencilState(DepthState::DisableDepthTest, 0);
+	dx.SetDepthStencilState(DepthState::DisableDepthTestWrite, 0);
 	dx.SetBlendState(BlendState::Opaque);
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 	dx.SetRasterizerState(RasterizerState::CWDefault);
