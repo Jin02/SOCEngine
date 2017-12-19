@@ -1,15 +1,6 @@
 #include "CommonConstBuffer.h"
 #include "TBDRInput.h"
 
-// LightProbe	b0		GS
-// camera		b2		GS PS
-// Sky			b3		GS PS
-
-// SRBuffers
-// DirectionalLightDirXYBuffer			GS PS
-// DirectionalLightOptionalParamIndex	GS PS
-// 얘네는 TBDRInput에 속해 cbuffer는 없으니 ㄱㅊ
-
 cbuffer LightProbeParam : register( b0 )
 {
 	matrix	lpParam_viewProjs[6];
