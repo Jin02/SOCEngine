@@ -152,10 +152,15 @@ void DirectX::SetRenderTarget(RenderTexture& rt, DepthMap& depthMap)
 	SetRenderTarget(rt, depthMap.GetRawDepthStencilView());
 }
 
-void DirectX::SetRenderTarget(RenderTextureCube& target, DepthMapCube& targetDepthMap)
+void DirectX::SetRenderTarget(RenderTextureCube& target, ID3D11DepthStencilView* dsv)
 {
 	ID3D11RenderTargetView* rtv = target.GetRaw();
-	_immediateContext->OMSetRenderTargets(1, &rtv, targetDepthMap.GetRawDepthStencilView());
+	_immediateContext->OMSetRenderTargets(1, &rtv, dsv);
+}
+
+void DirectX::SetRenderTarget(RenderTextureCube& target, DepthMapCube& targetDepthMap)
+{
+	SetRenderTarget(target, targetDepthMap.GetRawDepthStencilView());
 }
 
 void DirectX::SetRenderTargets(const uint size, RenderTexture* const * renderTextures, ID3D11DepthStencilView* dsv)
