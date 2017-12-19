@@ -14,8 +14,6 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 	const TransformPool& tfPool,
 	const BoundBox& sceneBoundBox)
 {
-	assert(_base.GetDirty());
-
 	auto light = lightPool.Find(_base.GetObjectID().Literal());
 	assert(light);
 

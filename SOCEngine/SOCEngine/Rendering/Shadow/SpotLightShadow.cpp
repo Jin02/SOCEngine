@@ -12,8 +12,6 @@ using namespace Core;
 SpotLightShadow::ViewProjMatType SpotLightShadow::MakeVPMatParam(
 	const LightPool<SpotLight>& lightPool, const TransformPool& tfPool)
 {		
-	assert(_base.GetDirty());
-
 	auto light = lightPool.Find(_base.GetObjectID().Literal());
 	assert(light);
 
