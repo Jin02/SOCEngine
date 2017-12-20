@@ -1,5 +1,6 @@
 #include "CommonConstBuffer.h"
 #include "TBDRInput.h"
+#include "ToneMapping.h"
 
 cbuffer LightProbeParam : register( b0 )
 {
@@ -93,7 +94,7 @@ VS_OUTPUT VS(VS_INPUT input)
 	VS_OUTPUT output;
 	output.localPos = input.position;
 
-	return out;
+	return output;
 }
 
 struct PS_INPUT
