@@ -6,20 +6,18 @@ using namespace Rendering;
 using namespace Rendering::Texture;
 using namespace Rendering::View;
 
-void RenderTextureCube::Initialize(DirectX& dx, const Size<uint>& size, DXGI_FORMAT format)
+void RenderTextureCube::Initialize(DirectX& dx, uint resolution, DXGI_FORMAT format)
 {
-	_size = size;
-
 	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
 	auto Log2 = [](float f) { return log(f) / log(2.0f); };
-	const uint mipLevel = max((uint)Log2(static_cast<float>(max(size.w, size.h))) + 1, 1);
+	const uint mipLevel = max(uint(Log2(resolution + 1)), 1);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	memset(&texDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
 
-	texDesc.Width				= size.w;
-	texDesc.Height				= size.h;
+	texDesc.Width				= resolution;
+	texDesc.Height				= resolution;
 	texDesc.MipLevels			= mipLevel;
 	texDesc.ArraySize			= 6;
 	texDesc.Format				= format;
@@ -30,7 +28,7 @@ void RenderTextureCube::Initialize(DirectX& dx, const Size<uint>& size, DXGI_FOR
 	texDesc.SampleDesc.Quality	= 0;
 	texDesc.MiscFlags			= D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
 	
-	_texture = dx.CreateTexture2D(texDesc);
+	_tex2D.Initialize(dx, texDesc, format, DXGI_FORMAT_UNKNOWN);
 
 	// render target
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
@@ -41,18 +39,16 @@ void RenderTextureCube::Initialize(DirectX& dx, const Size<uint>& size, DXGI_FOR
 	rtvDesc.Texture2DArray.ArraySize		= 6;
 	rtvDesc.Texture2DArray.MipSlice			= 0;
 
-	_renderTargetView = dx.CreateRenderTargetView(_texture.GetRaw(), rtvDesc);
-	_srv.InitializeUsingTexture(dx, _texture, format, mipLevel, D3D11_SRV_DIMENSION_TEXTURECUBE);
+	_renderTargetView = dx.CreateRenderTargetView(_tex2D.GetRawTexture(), rtvDesc);
 }
 
 void RenderTextureCube::Destroy()
 {
-	_texture.Destroy();
-	_srv.Destroy();
-	_size = Size<uint>(0, 0);
+	_tex2D.Destroy();
+	_renderTargetView.Destroy();
 }
 
 void RenderTextureCube::GenerateMips(DirectX& dx)
 {
-	dx.GetContext()->GenerateMips(_srv.GetRaw());
+	_tex2D.GenerateMips(dx);
 }
