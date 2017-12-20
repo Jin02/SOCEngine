@@ -14,16 +14,20 @@ namespace Rendering
 		public:
 			struct Param
 			{
-				float	projNear		= 0.1f;			// x
-
-				Half	softness		= Half(1.0f);	// y
-				Half	underScanSize	= Half(4.25f);	// y
-
-				uchar	flag			= 0;			// z
-				uchar	bias			= 1;			// z
-				ushort	lightIndex		= -1;			// z
-
-				uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);	// a
+				struct
+				{
+					float	projNear		= 0.1f;			// x
+	
+					Half	softness		= Half(1.0f);	// y
+					Half	underScanSize	= Half(4.25f);	// y
+	
+					uchar	flag			= 0;			// z
+					uchar	bias			= 0;			// z
+					ushort	lightIndex		= -1;			// z
+	
+					uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);	// a
+				};
+				uint packedParam[4];
 
 				Param() = default;
 			};
@@ -51,8 +55,8 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID,	_objectID);
 
-			inline float GetBias() const { return static_cast<float>(_param.bias) * 1020.0f; }
-			inline void SetBias(float f) { _param.bias = static_cast<uchar>(f / 1020.0f); _dirty = true; }
+			inline float GetBias() const { return static_cast<float>(_param.bias) / 1020.0f; }
+			inline void SetBias(float f) { _param.bias = static_cast<uchar>(f * 1020.0f); _dirty = true; }
 
 			inline Color GetColor() const { return Color(_param.shadowColor); }
 			inline void SetColor(const Color& c) { _param.shadowColor = c.Get32BitUintColor(); _dirty = true; }
