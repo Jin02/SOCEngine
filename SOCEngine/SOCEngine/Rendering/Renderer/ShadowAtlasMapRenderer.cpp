@@ -12,9 +12,9 @@ using namespace Device;
 void ShadowAtlasMapRenderer::Initialize(DirectX& dx,
 	uint dlMapResolution, uint slMapResolution, uint plMapResolution)
 {
-	ReSizeShadowMap<SpotLightShadow>(dx, ResizeParam(dlMapResolution, 1));
+	ReSizeShadowMap<DirectionalLightShadow>(dx, ResizeParam(dlMapResolution, 1));
 	ReSizeShadowMap<PointLightShadow>(dx, ResizeParam(plMapResolution, 1));
-	ReSizeShadowMap<DirectionalLightShadow>(dx, ResizeParam(slMapResolution, 1));
+	ReSizeShadowMap<SpotLightShadow>(dx, ResizeParam(slMapResolution, 1));
 }
 
 void ShadowAtlasMapRenderer::Destroy()
