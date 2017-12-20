@@ -63,6 +63,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 	PointLightShadow& pls = light.AddComponent<PointLightShadow>();
 	pls.GetBase()->SetUnderScanSize( Half(1.0f) );
+	pls.GetBase()->SetBias(0.001f);
 
 	engine.AddRootObject(light);
 
