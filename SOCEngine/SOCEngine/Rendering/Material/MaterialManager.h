@@ -25,10 +25,10 @@ namespace Rendering
 
 		public:
 			template <typename MaterialType> 
-			std::pair<MaterialID, MaterialType&> Add(const std::string& strKey, MaterialType& material)
+			std::pair<MaterialID, MaterialType&> Add(MaterialType& material)
 			{
 				MaterialID key = GetIDManager<MaterialType>().Acquire();
-				GetIDBookmark<MaterialType>().Add(strKey, key.Literal());
+				GetIDBookmark<MaterialType>().Add(material.GetName(), key.Literal());
 
 				return std::pair<MaterialID, MaterialType&>(
 					key,

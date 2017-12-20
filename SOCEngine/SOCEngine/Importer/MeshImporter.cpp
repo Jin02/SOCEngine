@@ -835,7 +835,7 @@ std::set<std::string> MeshImporter::MakeMaterials(	ManagerParam manager,
 
 		if(material == nullptr)
 		{
-			auto material = PhysicallyBasedMaterial(materialName);			
+			auto material = PhysicallyBasedMaterial(meshFileName + ":" + materialName);			
 			material.Initialize(dx);
 			material.SetMainColor(Color(impMat.diffuse[0], impMat.diffuse[1], impMat.diffuse[2], impMat.opacity));
 			material.SetEmissiveColor(Color(impMat.emissive[0], impMat.emissive[1], impMat.emissive[2], 0.0f));
@@ -865,7 +865,7 @@ std::set<std::string> MeshImporter::MakeMaterials(	ManagerParam manager,
 				
 			}
 
-			materialMgr.Add<PhysicallyBasedMaterial>(meshFileName + ":" + materialName, material);
+			materialMgr.Add<PhysicallyBasedMaterial>(material);
 		}
 	};
 
