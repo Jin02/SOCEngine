@@ -23,7 +23,7 @@ using namespace Rendering::Shadow;
 using namespace Rendering::GI;
 using namespace Rendering::Factory;
 
-void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, const GIInitParam& giParam)
+void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, BufferManager& bufferMgr, const MainCamera& mainCamera, const GIInitParam& giParam)
 {
 	_blendedDepthLightCulling.Initialize(dx, shaderMgr, mainCamera.GetRenderRect().size);
 
@@ -74,7 +74,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainC
 		_tbdrThreadGroup = ComputeShader::ThreadGroup(size.w, size.h, 1);
 	}
 
-	_skyBoxRenderer.Initialize(dx);
+	_skyBoxRenderer.Initialize(dx, bufferMgr);
 
 	if (_useGI = giParam.GetUseGI())
 		_gi.Initialize(dx, shaderMgr, renderSize, giParam);
