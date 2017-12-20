@@ -3,9 +3,9 @@
 using namespace Math;
 using namespace Intersection;
 
-void Frustum::Make(const Matrix &viewProjection)
+void Frustum::Make(const Matrix& viewProjection)
 {
-	Matrix matInv = Matrix::Inverse( viewProjection);
+	Matrix matInv = Matrix::Inverse(viewProjection);
 
 	_planeVertex[0].x = -1.0f;	_planeVertex[0].y = -1.0f;	_planeVertex[0].z = 0.0f;
 	_planeVertex[1].x =  1.0f;	_planeVertex[1].y = -1.0f;	_planeVertex[1].z = 0.0f;
