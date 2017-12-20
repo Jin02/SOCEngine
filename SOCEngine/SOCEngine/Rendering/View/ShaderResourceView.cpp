@@ -34,6 +34,8 @@ void ShaderResourceView::InitializeUsingTexture(
 		srdesc.Texture3D.MipLevels = mipLevel;
 	else if(viewDimension == D3D11_SRV_DIMENSION_TEXTURE1D)
 		srdesc.Texture1D.MipLevels = mipLevel;
+	else if(viewDimension == D3D11_SRV_DIMENSION_TEXTURECUBE)
+		srdesc.TextureCube.MipLevels = mipLevel;
 
 	_srv = dx.CreateShaderResourceView(resource, srdesc);
 }
