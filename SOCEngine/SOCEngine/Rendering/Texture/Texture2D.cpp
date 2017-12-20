@@ -78,10 +78,33 @@ void Texture2D::Initialize(Device::DirectX& dx,
 	_texture = dx.CreateTexture2D(textureDesc);
 
 	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
-		_srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, (textureDesc.SampleDesc.Count > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D);
+	{
+		D3D_SRV_DIMENSION dimension =	(textureDesc.ArraySize == 6)		? D3D_SRV_DIMENSION_TEXTURECUBE : 
+										(textureDesc.SampleDesc.Count > 1)	? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+
+		_srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, dimension);
+	}
 
 	if (bindFlags & D3D11_BIND_UNORDERED_ACCESS)
 		_uav.Initialize(dx, uavFormat, width * height, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
+}
+
+void Texture2D::Initialize(Device::DirectX& dx, const D3D11_TEXTURE2D_DESC& texDesc, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat)
+{
+	_size.w = texDesc.Width;
+	_size.h = texDesc.Height;
+
+	_texture = dx.CreateTexture2D(texDesc);
+
+	if (texDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		D3D_SRV_DIMENSION dimension =	(texDesc.ArraySize == 6)		? D3D_SRV_DIMENSION_TEXTURECUBE : 
+										(texDesc.SampleDesc.Count > 1)	? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		_srv.InitializeUsingTexture(dx, _texture, srvFormat, texDesc.MipLevels, dimension);
+	}
+
+	if (texDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+		_uav.Initialize(dx, uavFormat, _size.w * _size.h, _texture, D3D11_UAV_DIMENSION_TEXTURE2D);
 }
 
 void Texture2D::Destroy()

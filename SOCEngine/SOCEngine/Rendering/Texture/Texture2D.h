@@ -24,6 +24,7 @@ namespace Rendering
 
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
+			void Initialize(Device::DirectX& dx, const D3D11_TEXTURE2D_DESC& texDesc, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat);
 			void Destroy();
 
 			void GenerateMips(Device::DirectX& dx);
