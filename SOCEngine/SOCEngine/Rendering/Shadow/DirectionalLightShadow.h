@@ -75,7 +75,7 @@ namespace Rendering
 			Param			_param;
 
 			float			_projectionSize			= 0.0f;
-			bool			_useAutoProjectLocation	= false;
+			bool			_useAutoProjectLocation	= true;
 		};
 	}
 }
