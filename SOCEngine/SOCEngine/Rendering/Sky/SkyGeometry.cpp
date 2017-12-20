@@ -11,19 +11,42 @@ using namespace Rendering::Texture;
 using namespace Rendering::Geometry;
 using namespace Math;
 using namespace Utility;
+using namespace Device;
 
-void SkyGeometry::Initialize(Device::DirectX& dx)
+void SkyGeometry::Initialize(DirectX& dx, BufferManager& bufferMgr)
 {
-	auto CreateMeshContent = [this, &dx](const Mesh::CreateFuncArguments& args)
+	auto CreateMeshContent = [this, &dx, &bufferMgr](const Mesh::CreateFuncArguments& args)
 	{
-		VertexBuffer::Desc desc;
-		{
-			desc.stride			= args.vertices.byteWidth;
-			desc.vertexCount	= args.vertices.count;
-		}
+		uint vbKey = String::MakeKey({"@SkyGeometryVB"});
+		uint ibKey = String::MakeKey({"@SkyGeometryIB"});
 
-		_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);		
-		_indexBuffer.Initialize(dx, args.indices, -1, false);
+		auto& vbPool	= bufferMgr.GetPool<VertexBuffer>();
+		auto vb			= vbPool.Find(vbKey);
+
+		if (vb == nullptr)
+		{
+			VertexBuffer::Desc desc;
+			{
+				desc.stride			= args.vertices.byteWidth;
+				desc.vertexCount	= args.vertices.count;
+			}
+
+			_vertexBuffer.Initialize(dx, desc, args.vertices.data, false, args.semanticInfos);		
+			vbPool.Add(vbKey, _vertexBuffer);
+		}
+		else
+			_vertexBuffer = *vb; 
+
+		auto& ibPool	= bufferMgr.GetPool<IndexBuffer>();
+		auto ib			= ibPool.Find(ibKey);
+
+		if (ib == nullptr)
+		{
+			_indexBuffer.Initialize(dx, args.indices, -1, false);
+			ibPool.Add(ibKey, _indexBuffer);
+		}
+		else
+			_indexBuffer = *ib;
 	};
 
 	BasicGeometryGenerator::CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);

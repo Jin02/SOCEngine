@@ -12,7 +12,7 @@ namespace Rendering
 		class SkyGeometry final
 		{
 		public:
-			void Initialize(Device::DirectX& dx);
+			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr);
 			void Destroy();
 
 			GET_CONST_ACCESSOR(VertexBuffer,	const auto&, _vertexBuffer);
