@@ -7,6 +7,7 @@
 #include "PostProcessPipeline.h"
 #include "MainRenderer.h"
 #include "ShadowAtlasMapRenderer.h"
+#include "SkyPreethamModelRenderer.h"
 
 #include "LightManager.h"
 #include "ShadowManager.h"
@@ -45,11 +46,17 @@ namespace Rendering
 			return Renderer::MeshRenderer::Param(_bufferManager, _defaultShaders);
 		}
 
+		void ActivateSkyScattering(Core::Engine& engine, uint resolution);
+		void DeactivateSkyScattering();
+
+		GET_CONST_ACCESSOR(UseSkyScattering,	bool,	_useSkyScattering);
+
 	private:
 		Manager::MaterialManager			_materialManager;
 		Manager::PostProcessPipeline		_postProcessing;
 		Renderer::MainRenderer				_mainRenderer;
 		Renderer::ShadowAtlasMapRenderer	_shadowRenderer;
+		Renderer::SkyPreethamModelRenderer	_skyScatteringRenderer;
 
 		Manager::BufferManager				_bufferManager;
 		Manager::ShaderManager				_shaderManager;
@@ -57,5 +64,8 @@ namespace Rendering
 		Manager::DefaultShaders				_defaultShaders;
 
 		PostProcessing::Copy				_backBufferMaker;
+
+	private:
+		bool								_useSkyScattering = false;
 	};
 }

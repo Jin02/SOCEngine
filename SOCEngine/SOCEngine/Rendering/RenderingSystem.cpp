@@ -24,7 +24,7 @@ void RenderingSystem::InitializeRenderer(Engine& engine, const RenderSetting&& p
 	engine.AddRootObject(object);
 
 	_shadowRenderer.Initialize(engine.GetDirectX(), param.shadowMapResolution, param.shadowMapResolution, param.shadowMapResolution);
-	_mainRenderer.Initialize(engine.GetDirectX(), _shaderManager, maincam, param.giParam);	
+	_mainRenderer.Initialize(engine.GetDirectX(), _shaderManager, _bufferManager, maincam, param.giParam);	
 
 	_defaultShaders.Initialize(engine.GetDirectX(), _shaderManager);
 	_backBufferMaker.Initialize(engine.GetDirectX(), _shaderManager);
@@ -56,8 +56,18 @@ void RenderingSystem::Render(Engine& engine, float dt)
 
 	const auto& lightMgr					= compoSys.GetManager_Direct<LightManager>();
 	const auto& mainCamera					= compoSys.GetMainCamera();
-	const SkyBoxMaterial* skyboxMaterial	= _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
+
+	if (_useSkyScattering)
+	{
+		_skyScatteringRenderer.CheckRenderAbleWithUpdateCB(engine.GetDirectX(), engine.GetTransformPool(), lightMgr);
+
+		if (_skyScatteringRenderer.GetRenderAble())
+			_skyScatteringRenderer.Render(engine.GetDirectX(), mainCamera, lightMgr);
+	}
+
 	_mainRenderer.UpdateCB(dx, mainCamera, lightMgr);
+
+	const SkyBoxMaterial* skyboxMaterial	= _materialManager.Find<SkyBoxMaterial>(mainCamera.GetSkyBoxMaterialID());
 	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
 	_postProcessing.SetElapsedTime(dt);
@@ -75,4 +85,20 @@ void RenderingSystem::Render(Engine& engine, float dt)
 void RenderingSystem::Destroy(Engine& engine)
 {
 
+}
+
+void RenderingSystem::ActivateSkyScattering(Engine& engine, uint resolution)
+{
+	assert(_useSkyScattering == false);
+	_useSkyScattering = true;
+
+	_skyScatteringRenderer.Initialize(engine.GetDirectX(), _bufferManager, _shaderManager, resolution);
+}
+
+void RenderingSystem::DeactivateSkyScattering()
+{
+	assert(_useSkyScattering);
+	_useSkyScattering = false;
+
+	_skyScatteringRenderer.Destroy();
 }
