@@ -44,6 +44,10 @@ namespace Core
 		void AddRootObject(const Core::Object& object);
 		void UpdateWorldMatrix();
 
+		// Sky
+		void ActivateSkyScattering(uint resolution);
+		void DeactivateSkyScattering();
+
 		//복사 이동 금지시켜야함
 		GET_ALL_ACCESSOR_REF(DirectX,			_dx);
 		GET_ALL_ACCESSOR_REF(ComponentSystem,	_componentSystem);

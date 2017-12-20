@@ -72,6 +72,16 @@ void Engine::UpdateWorldMatrix()
 	}
 }
 
+void Engine::ActivateSkyScattering(uint resolution)
+{
+	_rendering.ActivateSkyScattering(*this, resolution);
+}
+
+void Engine::DeactivateSkyScattering()
+{
+	_rendering.DeactivateSkyScattering();
+}
+
 void Engine::ChangeScene(IScene* scene)
 {
 	_scene = scene ? scene : &_nullScene;
