@@ -7,8 +7,6 @@ using namespace Rendering::Texture;
 
 void DepthMapCube::Initialize(DirectX& dx, const Size<uint>& size, bool useSRV)
 {
-	_size = size;
-
 	uint bindFlag =	D3D11_BIND_DEPTH_STENCIL | (useSRV ? D3D11_BIND_SHADER_RESOURCE : 0);
 
 	D3D11_TEXTURE2D_DESC texDesc;
@@ -26,7 +24,7 @@ void DepthMapCube::Initialize(DirectX& dx, const Size<uint>& size, bool useSRV)
 	texDesc.SampleDesc.Count	= 1;
 	texDesc.SampleDesc.Quality	= 0;
 
-	_texture = dx.CreateTexture2D(texDesc);
+	_tex2D.Initialize(dx, texDesc, DXGI_FORMAT_D32_FLOAT, DXGI_FORMAT_UNKNOWN);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	memset(&dsvDesc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -36,13 +34,12 @@ void DepthMapCube::Initialize(DirectX& dx, const Size<uint>& size, bool useSRV)
 	dsvDesc.Texture2DArray.ArraySize		= 6;
 	dsvDesc.Texture2DArray.MipSlice			= 0;
 
-	_dsv = dx.CreateDepthStencilView(_texture.GetRaw(), dsvDesc);
+	_dsv = dx.CreateDepthStencilView(_tex2D.GetRawTexture(), dsvDesc);
 }
 
 void DepthMapCube::Destroy()
 {
 	_dsv.Destroy();
-	_texture.Destroy();
 }
 
 void DepthMapCube::Clear(DirectX& dx, float depth, unsigned char stencil)

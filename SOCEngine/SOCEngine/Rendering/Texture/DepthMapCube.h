@@ -16,15 +16,12 @@ namespace Rendering
 			void Clear(Device::DirectX& dx, float depth, unsigned char stencil);
 
 		public:
-			GET_ACCESSOR(RawDepthStencilView,		ID3D11DepthStencilView* const,	_dsv.GetRaw());
-			GET_CONST_ACCESSOR(Size,				const auto&,					_size);
+			GET_ACCESSOR(RawDepthStencilView, ID3D11DepthStencilView* const, _dsv.GetRaw());
+			GET_CONST_ACCESSOR(Texture2D, const auto&, _tex2D);
 
 		private:
 			DXSharedResource<ID3D11DepthStencilView>		_dsv;
-			DXSharedResource<ID3D11Texture2D>				_texture;
-
-			View::ShaderResourceView						_srv;
-			Size<uint>										_size = Size<uint>(0, 0);
+			Texture::Texture2D								_tex2D;
 		};
 	}
 }
