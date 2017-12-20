@@ -17,7 +17,7 @@ using namespace Rendering::Material;
 
 void RenderingSystem::InitializeRenderer(Engine& engine, const RenderSetting&& param)
 {
-	Object& object		= engine.GetObjectManager().Add(param.mainCamName);
+	Object& object		= engine.GetObjectManager().Acquire(param.mainCamName);
 	MainCamera& maincam	= engine.GetComponentSystem().SetMainCamera(object.GetObjectID());
 
 	maincam.Initialize(engine.GetDirectX(), _shaderManager, param.renderRect);

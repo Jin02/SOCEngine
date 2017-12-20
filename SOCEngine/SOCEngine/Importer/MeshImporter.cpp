@@ -783,7 +783,7 @@ Core::ObjectID MeshImporter::BuildMesh(
 	}
 
 	// Make Hierachy
-	Object root = managerParam.objManager.Add(meshFileName);
+	Object root = managerParam.objManager.Acquire(meshFileName);
 		
 	for(auto& node : nodes)
 		MakeHierarchy(managerParam.dx, root.GetObjectID(), node, meshFileName, managerParam, intersectionHashMap);
@@ -882,7 +882,7 @@ void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
 									const IntersectionHashMap& intersectionHashMap	)
 {
 	auto& objManager	= managerParam.objManager;
-	Object object		= objManager.Add(node.id);
+	Object object		= objManager.Acquire(node.id);
 
 	uint objID			= object.GetObjectID().Literal();
 	objManager.Find(parentID)->AddChild(object);
@@ -944,7 +944,7 @@ void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
 			for(auto iter = parts.begin(); iter != parts.end(); ++iter)
 			{
 				const std::string& subMeshName = iter->meshPartID;
-				Object subMeshObj = objManager.Add(subMeshName);
+				Object subMeshObj = objManager.Acquire(subMeshName);
 				object.AddChild(subMeshObj);
 
 				AttachMeshComponent(subMeshObj, *iter);
