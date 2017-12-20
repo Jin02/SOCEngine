@@ -15,9 +15,9 @@ using namespace Rendering::Manager;
 using namespace Rendering::Texture;
 using namespace Rendering::RenderState;
 
-void SkyBoxRenderer::Initialize(DirectX& dx)
+void SkyBoxRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr)
 {
-	_geometry.Initialize(dx);
+	_geometry.Initialize(dx, bufferMgr);
 	_transformCB.Initialize(dx);
 }
 
