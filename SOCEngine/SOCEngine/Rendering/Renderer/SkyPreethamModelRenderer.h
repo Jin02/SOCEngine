@@ -20,8 +20,7 @@ namespace Rendering
 		class SkyPreethamModelRenderer final
 		{
 		public:
-			SkyPreethamModelRenderer() = default;
-			DISALLOW_ASSIGN_COPY(SkyPreethamModelRenderer);
+			SkyPreethamModelRenderer();
 
 			struct LightProbeParam	// TODO : 나중에 LightProbe 관련 기능 구현할 때 옮겨야 한다.
 			{
@@ -41,13 +40,14 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCam);
+			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, Manager::ShaderManager& shaderMgr, uint resolution);
 			void Destroy();
 
 			void CheckRenderAbleWithUpdateCB(Device::DirectX& dx, const Core::TransformPool& tfPool, const Manager::LightManager& lightMgr);
 			void Render(Device::DirectX& dx, const Camera::MainCamera& mainCam, const Manager::LightManager& lightMgr);
 
-			GET_CONST_ACCESSOR_REF(SkyScatteringParam, _directionalLightID);
+			GET_CONST_ACCESSOR_REF(ResultMaterial,		_resultMaterial);
+			GET_CONST_ACCESSOR_REF(SkyScatteringParam,	_ssParamData);
 
 			SET_ACCESSOR_DIRTY(Rayleigh,		Half, _ssParamData.rayleigh);
 			SET_ACCESSOR_DIRTY(Turbidity,		Half, _ssParamData.turbidity);
@@ -57,6 +57,8 @@ namespace Rendering
 
 			GET_CONST_ACCESSOR(DirectionalLightID, Core::ObjectID, _directionalLightID);
 			SET_ACCESSOR_DIRTY(DirectionalLightID, Core::ObjectID, _directionalLightID);
+
+			GET_CONST_ACCESSOR(RenderAble, bool, _renderAble);
 
 		private:
 			Material::SkyBoxMaterial		_resultMaterial;

@@ -19,7 +19,12 @@ using namespace Rendering::Factory;
 using namespace Rendering::Light;
 using namespace Rendering::Camera;
 
-void SkyPreethamModelRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCam)
+SkyPreethamModelRenderer::SkyPreethamModelRenderer()
+	: _resultMaterial("@SkyScatteringPreethamModel")
+{
+}
+
+void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr, ShaderManager& shaderMgr, uint resolution)
 {
 	std::shared_ptr<VertexShader>	vs(nullptr);
 	std::shared_ptr<GeometryShader>	gs(nullptr);
@@ -30,12 +35,15 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr,
 								"AtmosphericScattering-PreethamModel",
 								"VS", "PS", "GS", &macro, &vs, &ps, &gs);
 
-	_geometry.Initialize(dx);
+	_geometry.Initialize(dx, bufferMgr);
 
 	_lpParamCB.Initialize(dx);
 	_ssParamCB.Initialize(dx);
 
-	_renderTarget.Initialize(dx, mainCam.GetRenderRect().size, DXGI_FORMAT_R16G16B16A16_FLOAT);
+	_renderTarget.Initialize(dx, resolution, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+	_resultMaterial.Initialize(dx, shaderMgr);
+	_resultMaterial.UpdateCubeMap(_renderTarget.GetTexture2D());
 }
 
 void SkyPreethamModelRenderer::Destroy()
@@ -122,7 +130,7 @@ void SkyPreethamModelRenderer::Render(DirectX& dx, const MainCamera& mainCam, co
 		dx.SetBlendState(BlendState::Opaque);	
 		dx.SetDepthStencilState(DepthState::DisableDepthTestWrite, 0);
 		dx.SetRenderTarget(_renderTarget);
-		dx.SetViewport(Rect <float>(0.0f, 0.0f, _renderTarget.GetSize().Cast<float>()));
+		dx.SetViewport(Rect <float>(0.0f, 0.0f, _renderTarget.GetTexture2D().GetSize().Cast<float>()));
 		dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	}
 
