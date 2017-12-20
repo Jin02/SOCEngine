@@ -16,9 +16,7 @@ namespace Core
 	class Object final
 	{
 	public:
-		Object(const std::string& name) : _name(name) {}
 		static Object Create(ObjectID id, const std::string& name) { Object obj(name); obj.Initialize(id); return obj; }
-		void Initialize(ObjectID id);
 		void Destroy();
 
 		void AddChild(Object& child);
@@ -55,6 +53,10 @@ namespace Core
 		}
 
 		// Object Clone() const; TODO: https://goo.gl/qVi3Yo
+
+	private:
+		Object(const std::string& name) : _name(name) {}
+		void Initialize(ObjectID id);
 
 	public:
 		GET_CONST_ACCESSOR(Name,		auto&,	_name);
