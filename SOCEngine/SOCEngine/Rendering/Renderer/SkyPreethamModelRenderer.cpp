@@ -24,7 +24,7 @@ SkyPreethamModelRenderer::SkyPreethamModelRenderer()
 {
 }
 
-void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr, ShaderManager& shaderMgr, uint resolution)
+void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr, ShaderManager& shaderMgr, MaterialManager& materialMgr, uint resolution)
 {
 	std::shared_ptr<VertexShader>	vs(nullptr);
 	std::shared_ptr<GeometryShader>	gs(nullptr);
@@ -35,6 +35,10 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr,
 								"AtmosphericScattering-PreethamModel",
 								"VS", "PS", "GS", &macro, &vs, &ps, &gs);
 
+	_vertexShader	= *vs;
+	_geometryShader	= *gs;
+	_pixelShader	= *ps;
+
 	_geometry.Initialize(dx, bufferMgr);
 
 	_lpParamCB.Initialize(dx);
@@ -44,6 +48,8 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr,
 
 	_resultMaterial.Initialize(dx, shaderMgr);
 	_resultMaterial.UpdateCubeMap(_renderTarget.GetTexture2D());
+
+	_materialID = materialMgr.Add(_resultMaterial).first;
 }
 
 void SkyPreethamModelRenderer::Destroy()
@@ -65,6 +71,7 @@ void SkyPreethamModelRenderer::Destroy()
 	_renderAble			= false;
 	_dirty				= true;
 	_directionalLightID	= ObjectID::Undefined();
+	_materialID			= MaterialID::Undefined();
 }
 
 void SkyPreethamModelRenderer::CheckRenderAbleWithUpdateCB(DirectX& dx, const TransformPool& tfPool, const LightManager& lightMgr)
@@ -105,7 +112,7 @@ void SkyPreethamModelRenderer::CheckRenderAbleWithUpdateCB(DirectX& dx, const Tr
 	auto transform = tfPool.Find(_directionalLightID.Literal());
 	assert(transform);
 
-	if (transform->GetDirty() == false)
+	if (transform->GetDirty())
 	{
 		Matrix worldMat	= transform->GetWorldMatrix();
 		Matrix projMat	= Matrix::PerspectiveFovLH(1.0f, DEG_2_RAD(90.0f), 0.001f, 1.0f);

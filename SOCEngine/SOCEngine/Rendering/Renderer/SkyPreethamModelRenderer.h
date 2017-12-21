@@ -13,6 +13,8 @@
 #include "RenderTextureCube.h"
 #include "DepthMapCube.h"
 
+#include "MaterialManager.h"
+
 namespace Rendering
 {
 	namespace Renderer
@@ -40,7 +42,7 @@ namespace Rendering
 			};
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, Manager::ShaderManager& shaderMgr, uint resolution);
+			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, Manager::ShaderManager& shaderMgr, Manager::MaterialManager& materialMgr, uint resolution);
 			void Destroy();
 
 			void CheckRenderAbleWithUpdateCB(Device::DirectX& dx, const Core::TransformPool& tfPool, const Manager::LightManager& lightMgr);
@@ -58,10 +60,12 @@ namespace Rendering
 			GET_CONST_ACCESSOR(DirectionalLightID, Core::ObjectID, _directionalLightID);
 			SET_ACCESSOR_DIRTY(DirectionalLightID, Core::ObjectID, _directionalLightID);
 
-			GET_CONST_ACCESSOR(RenderAble, bool, _renderAble);
+			GET_CONST_ACCESSOR(RenderAble, bool,		_renderAble);
+			GET_CONST_ACCESSOR(MaterialID, MaterialID,	_materialID);
 
 		private:
 			Material::SkyBoxMaterial		_resultMaterial;
+			MaterialID						_materialID;
 
 		private:
 			SkyScatteringParam				_ssParamData;
