@@ -15,7 +15,7 @@ using namespace Rendering::Geometry;
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
 //	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
-//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
 	GIInitParam param;
 	{
@@ -51,7 +51,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 	Transform& tf = box->FetchTransform();
 	tf.SetLocalPosition(Vector3(0.3f, -4.7f, 17.7f));
-	tf.UpdateEulerAngle(Vector3(-90.0f, 0.0f, 180.0f));
+	tf.UpdateLocalEulerAngle(Vector3(-90.0f, 0.0f, 180.0f));
 	tf.SetLocalScale(Vector3(5.0f, 5.0f, 5.0f));
 
 	Object& light = engine.GetObjectManager().Acquire("PointLight");
@@ -78,7 +78,7 @@ void TestScene::OnInitialize(Engine& engine)
 	
 		Transform& tf = house->FetchTransform();
 		tf.SetLocalPosition(Vector3(0, -5, 20));
-		tf.UpdateEulerAngle(Vector3(-90, -90, 0));
+		tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 	}
 
 	Object plane = engine.GetObjectManager().Acquire("Plane");
@@ -90,7 +90,7 @@ void TestScene::OnInitialize(Engine& engine)
 		engine.AddRootObject(plane);
 
 		plane.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
-		plane.FetchTransform().UpdateEulerAngle(Vector3(0, 0, 0));
+		plane.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
 
 		Material::PhysicallyBasedMaterial pbr("PlaneMaterial");
 		pbr.Initialize(engine.GetDirectX());
@@ -102,7 +102,7 @@ void TestScene::OnInitialize(Engine& engine)
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
 		light.FetchTransform().SetLocalPosition(Vector3(0, 0, 0));
-		light.FetchTransform().UpdateEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
 	
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>();
@@ -112,6 +112,11 @@ void TestScene::OnInitialize(Engine& engine)
 
 	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
 	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5));
+
+#ifndef SKYBOX_ON
+	MaterialID matID = engine.ActivateSkyScattering(1024, light);
+	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
+#endif
 #endif
 }
 
@@ -119,18 +124,23 @@ void TestScene::OnDestroy(Engine&)
 {
 }
 
-void TestScene::OnRenderPreview()
+void TestScene::OnRenderPreview(Engine&)
 {
 }
 
-void TestScene::OnUpdate()
+void TestScene::OnUpdate(Engine& engine)
+{
+	static constexpr float rate = 0.01f;
+
+	auto tf = engine.GetObjectManager().Find("Light")->FetchTransform();
+	Vector3 euler = tf.GetLocalEularAngle();
+	tf.UpdateLocalEulerAngle(euler + Vector3(rate, rate, 0));
+}
+
+void TestScene::OnRenderPost(Engine&)
 {
 }
 
-void TestScene::OnRenderPost()
-{
-}
-
-void TestScene::OnInput()
+void TestScene::OnInput(Engine&)
 {
 }
