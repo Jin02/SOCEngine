@@ -13,12 +13,11 @@ using namespace Rendering::Manager;
 Engine::Engine(Device::DirectX& dx)
 	: _dx(dx), _scene(&_nullScene)
 {
-	_prevTime = std::numeric_limits<clock_t>::max();
 }
 
 void Engine::RunScene()
 {
-	_scene->OnInput();
+	_scene->OnInput(*this);
 
 	clock_t curTime = clock();
 	clock_t elapsed = curTime - _prevTime;
@@ -28,7 +27,7 @@ void Engine::RunScene()
 	constexpr clock_t MS_PER_UPDATE = 100;
 	while (_lag >= MS_PER_UPDATE)
 	{
-		_scene->OnUpdate();
+		_scene->OnUpdate(*this);
 		_lag -= MS_PER_UPDATE;
 	}
 
@@ -50,9 +49,9 @@ void Engine::RunScene()
 	ObjectID::IndexHashMap nullIndexer;
 	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer(), nullIndexer);
 
-	_scene->OnRenderPreview();
+	_scene->OnRenderPreview(*this);
 	_rendering.Render(*this, std::max(float(clock() - _prevTime) / 1000.0f, 0.0f));
-	_scene->OnRenderPost();
+	_scene->OnRenderPost(*this);
 
 	for (auto& iter : _dirtyTransforms)
 		iter->ClearDirty();
@@ -72,9 +71,9 @@ void Engine::UpdateWorldMatrix()
 	}
 }
 
-void Engine::ActivateSkyScattering(uint resolution)
+MaterialID Engine::ActivateSkyScattering(uint resolution, const Object& directionalLight)
 {
-	_rendering.ActivateSkyScattering(*this, resolution);
+	return _rendering.ActivateSkyScattering(*this, resolution, directionalLight);
 }
 
 void Engine::DeactivateSkyScattering()

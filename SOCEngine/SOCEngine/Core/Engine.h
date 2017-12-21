@@ -45,8 +45,9 @@ namespace Core
 		void UpdateWorldMatrix();
 
 		// Sky
-		void ActivateSkyScattering(uint resolution);
+		Rendering::MaterialID ActivateSkyScattering(uint resolution, const Object& directionalLight);
 		void DeactivateSkyScattering();
+		void StartLoop() { _prevTime = clock(); }
 
 		//복사 이동 금지시켜야함
 		GET_ALL_ACCESSOR_REF(DirectX,			_dx);
