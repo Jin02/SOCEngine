@@ -892,7 +892,7 @@ void MeshImporter::MakeHierarchy(	Device::DirectX& dx,
 	Transform* thisTF	= transformPool.Find(objID);
 	{
 		thisTF->SetLocalPosition(node.translation.tf);
-		thisTF->UpdateQuaternion(node.rotation.tf);
+		thisTF->UpdateLocalQuaternion(node.rotation.tf);
 		thisTF->SetLocalScale(node.scale.tf);
 	}
 

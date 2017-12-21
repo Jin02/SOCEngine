@@ -20,6 +20,8 @@ namespace Rendering
 
 		friend class Core::IDManagerForm<MaterialID>;
 		friend class Manager::MaterialManager;
+
+		static MaterialID Undefined() { return MaterialID(); }
 	};
 
 	using MaterialIDManager = Core::IDManagerForm<MaterialID>;

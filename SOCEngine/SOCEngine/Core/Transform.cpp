@@ -29,22 +29,22 @@ const Matrix& Transform::ComputeLocalMatrix()
 	return _localMat;
 }
 
-void Transform::UpdateRight(const Vector3& r)
+void Transform::UpdateLocalRight(const Vector3& r)
 {
 	LookAtWorldDir(Vector3::Cross(_up, r));
 }
 
-void Transform::UpdateUp(const Vector3& u)
+void Transform::UpdateLocalUp(const Vector3& u)
 {
 	LookAtWorldDir(Vector3::Cross(u, _right));
 }
 
-void Transform::UpdateForward(const Vector3& f)
+void Transform::UpdateLocalForward(const Vector3& f)
 {
 	LookAtWorldDir(f);
 }
 
-void Transform::UpdateEulerAngle(const Vector3& e)
+void Transform::UpdateLocalEulerAngle(const Vector3& e)
 {
 	_eulerAngle = Vector3::EulerNormalize(e);
 	_quaternion = Quaternion::FromEuler(-Vector3(DEG_TO_RAD(_eulerAngle.x),
@@ -58,7 +58,7 @@ void Transform::UpdateEulerAngle(const Vector3& e)
 	_dirty = true;
 }
 
-void Transform::UpdateQuaternion(const Quaternion& q)
+void Transform::UpdateLocalQuaternion(const Quaternion& q)
 {
 	_quaternion = q;
 

@@ -24,11 +24,11 @@ namespace Core
 		inline const Math::Vector3	GetWorldRight()			const { return GetWorldRight(GetWorldScale()); }
 		inline const Math::Vector3	GetWorldUp()			const { return GetWorldUp(GetWorldScale()); }
 
-		void UpdateRight(const Math::Vector3& r);
-		void UpdateUp(const Math::Vector3& u);
-		void UpdateForward(const Math::Vector3& f);
-		void UpdateEulerAngle(const Math::Vector3& e);
-		void UpdateQuaternion(const Math::Quaternion& q);
+		void UpdateLocalRight(const Math::Vector3& r);
+		void UpdateLocalUp(const Math::Vector3& u);
+		void UpdateLocalForward(const Math::Vector3& f);
+		void UpdateLocalEulerAngle(const Math::Vector3& e);
+		void UpdateLocalQuaternion(const Math::Quaternion& q);
 
 		SET_ACCESSOR_DIRTY(LocalPosition,	const Math::Vector3&,		_position);
 		SET_ACCESSOR_DIRTY(LocalScale,		const Math::Vector3&,		_scale);
