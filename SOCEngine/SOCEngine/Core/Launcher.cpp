@@ -23,6 +23,7 @@ void Launcher::Run(const WinApp::Desc& desc, const Rect<uint>& viewport, bool us
 		MSG msg;
 		ZeroMemory(&msg, sizeof(msg));
 
+		engine.StartLoop();
 		while ((msg.message != WM_QUIT) & (engine.GetExit() == false))
 		{
 			if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) == false)
