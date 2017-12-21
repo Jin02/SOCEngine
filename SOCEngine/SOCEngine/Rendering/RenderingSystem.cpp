@@ -60,7 +60,7 @@ void RenderingSystem::Render(Engine& engine, float dt)
 	if (_useSkyScattering)
 	{
 		_skyScatteringRenderer.CheckRenderAbleWithUpdateCB(engine.GetDirectX(), engine.GetTransformPool(), lightMgr);
-
+		
 		if (_skyScatteringRenderer.GetRenderAble())
 			_skyScatteringRenderer.Render(engine.GetDirectX(), mainCamera, lightMgr);
 	}
@@ -87,12 +87,17 @@ void RenderingSystem::Destroy(Engine& engine)
 
 }
 
-void RenderingSystem::ActivateSkyScattering(Engine& engine, uint resolution)
+MaterialID RenderingSystem::ActivateSkyScattering(Engine& engine, uint resolution, const Object& directionalLightObject)
 {
 	assert(_useSkyScattering == false);
 	_useSkyScattering = true;
 
-	_skyScatteringRenderer.Initialize(engine.GetDirectX(), _bufferManager, _shaderManager, resolution);
+	_skyScatteringRenderer.Initialize(engine.GetDirectX(), _bufferManager, _shaderManager, _materialManager, resolution);
+	
+	assert(directionalLightObject.HasComponent<DirectionalLight>());
+	_skyScatteringRenderer.SetDirectionalLightID(directionalLightObject.GetObjectID());
+
+	return _skyScatteringRenderer.GetMaterialID();
 }
 
 void RenderingSystem::DeactivateSkyScattering()
