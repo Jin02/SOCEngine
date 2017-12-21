@@ -11,7 +11,7 @@ void MaterialManager::Initialize(Device::DirectX& dx)
 	materal.Initialize(dx);
 	materal.SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 
-	_pbmDefaultKey = Add<PhysicallyBasedMaterial>("@Default", materal).first;
+	_pbmDefaultKey = Add<PhysicallyBasedMaterial>(materal).first;
 }
 
 void MaterialManager::UpdateConstBuffer(DirectX & dx)
