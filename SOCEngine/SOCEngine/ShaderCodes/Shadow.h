@@ -11,10 +11,6 @@
 #define SHADOW_KERNEL_WIDTH				2 * SHADOW_KERNEL_LEVEL + 1
 #define SHADOW_PARAM_FLAG_USE_VSM		1
 
-#define BLOCKER_SEARCH_STEP_COUNT		3
-#define BLOCKER_SEARCH_DIM				(BLOCKER_SEARCH_STEP_COUNT * 2 + 1)
-#define BLOCKER_SEARCH_COUNT			(BLOCKER_SEARCH_DIM * BLOCKER_SEARCH_DIM)
-
 cbuffer ShadowGlobalParam						: register( b4 )
 {	
 	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
@@ -81,90 +77,6 @@ float PCF(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
 
 	shadow /= (float)(SHADOW_KERNEL_WIDTH * SHADOW_KERNEL_WIDTH);
 	return shadow;
-}
-
-void FindBlocker(out float outAccumBlockerDepth, out uint outNumBlockers,
-				 Texture2D<float> atlas, float2 uv, float lightVPDepth, float2 stepUV)
-{
-	for(uint x = -BLOCKER_SEARCH_STEP_COUNT; x <= BLOCKER_SEARCH_STEP_COUNT; ++x)
-	{
-		for(uint y = -BLOCKER_SEARCH_STEP_COUNT; y <= BLOCKER_SEARCH_STEP_COUNT; ++y)
-		{
-			float2 offset = float2(x, y) * stepUV;
-			float shadowMapDepth = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
-
-			if (shadowMapDepth > lightVPDepth)
-			{
-				outAccumBlockerDepth += shadowMapDepth;
-				outNumBlockers++;
-			}
-		}
-	}
-}
-
-struct PCSSParam
-{
-	float lightViewDepth;
-	float lightNear;
-	float softness;
-	float2 atlasMapSize;
-	float invProjMat_34;
-	float invProjMat_44;
-};
-
-float InvertLightProjDepthToView(float depth, float invProjMat_34, float invProjMat_44)
-{
-	return 1.0f / (depth * invProjMat_34 + invProjMat_44);
-}
-
-float2 ComputeSearchAreaRadiusUV(float softness, float lightViewDepth, float lightNear)
-{
-	return softness.xx * (lightViewDepth - lightNear) / lightViewDepth;
-}
-
-float PCSS(Texture2D<float> atlas, float2 uv, float lightVPDepth, PCSSParam param)
-{
-	float accumBlockerDepth = 0.0f;
-	uint blockerCount	= 0;
-	
-	float2 searchAreaUV	= ComputeSearchAreaRadiusUV(param.softness, param.lightViewDepth, param.lightNear) * rcp(param.atlasMapSize);
-	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, lightVPDepth, searchAreaUV);
-
-	if(blockerCount == 0)							return 1.0f;
-	else if(blockerCount == BLOCKER_SEARCH_COUNT)	return 0.0f;
-
-	float avgDepth		= InvertLightProjDepthToView(accumBlockerDepth / float(blockerCount),
-							     param.invProjMat_34, param.invProjMat_44);
-	float2 penumbraRadiusUV	= (param.softness.xx * (param.lightViewDepth - avgDepth) / avgDepth);
-	float2 filterRadiusUV	= (penumbraRadiusUV * param.lightNear / param.lightViewDepth);
-
-	float2 stepUV = filterRadiusUV * rcp(param.atlasMapSize);
-	return PCF(atlas, uv, lightVPDepth, stepUV);
-}
-
-float ChebyshevUpperBound(float2 moments, float t)
-{
-	float p = (t <= moments.x);
-
-	float variance = moments.y - (moments.x * moments.x);
-	variance = max(variance, 0.00002f);
-
-	float d = t - moments.x;
-	float pMax = smoothStep(0.2f, 1.0f, variance / (variance + d * d));
-
-	return max(p, pMax);
-}
-
-float2 RecombinePrecision(float4 value)
-{
-	float invFactor = 1.0f / 256.0f;
-	return (value.zw * invFactor + value.xy);
-}
-
-float VarianceShadow(Texture2D<float4> momentShadowMapAtlas, float2 uv, float depth)
-{
-	float2 moment = RecombinePrecision(momentShadowMapAtlas.SampleLevel(shadowSamplerState, uv, 0));
-	return ChebyshevUpperBound(moment, depth);
 }
 
 float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shadowDistanceTerm)
