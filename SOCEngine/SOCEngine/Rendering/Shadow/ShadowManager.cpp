@@ -33,7 +33,7 @@ void ShadowManager::Initialize(DirectX& dx)
 {
 	_globalCB.Initialize(dx);
 
-	GetBuffer<DirectionalLightShadow>().Initialize(dx);
+	GetBuffer<DirectionalLightShadow>().Initialize(dx, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM);
 	GetBuffer<SpotLightShadow>().Initialize(dx, SPOT_LIGHT_BUFFER_MAX_NUM);
 	GetBuffer<PointLightShadow>().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
