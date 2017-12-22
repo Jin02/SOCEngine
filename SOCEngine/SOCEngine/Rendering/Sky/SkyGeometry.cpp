@@ -49,7 +49,8 @@ void SkyGeometry::Initialize(DirectX& dx, BufferManager& bufferMgr)
 			_indexBuffer = *ib;
 	};
 
-	BasicGeometryGenerator::CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
+	BasicGeometryGenerator::CreateBox(CreateMeshContent, Vector3(1.0f, 1.0f, 1.0f), 0);
+//	BasicGeometryGenerator::CreateSphere(CreateMeshContent, 1.0f, 64, 64, 0);
 }
 
 void SkyGeometry::Destroy()
