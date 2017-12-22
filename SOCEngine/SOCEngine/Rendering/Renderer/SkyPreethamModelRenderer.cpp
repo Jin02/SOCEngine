@@ -65,7 +65,7 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr,
 			Vector3( 0.0f,  1.0f,  0.0f),
 		};
 
-		Matrix projMat	= Matrix::PerspectiveFovLH(1.0f, DEG_2_RAD(90.0f), 0.001f, 2.0f);
+		Matrix projMat	= Matrix::PerspectiveFovLH(1.0f, DEG_2_RAD(90.0f), 0.001f, 1.0f);
 
 		LightProbeParam data;
 		{
