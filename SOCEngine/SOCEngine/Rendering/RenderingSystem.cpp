@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "AutoBinder.hpp"
 
+#undef min
+
 using namespace Core;
 using namespace Device;
 using namespace Rendering;
@@ -91,6 +93,14 @@ MaterialID RenderingSystem::ActivateSkyScattering(Engine& engine, uint resolutio
 {
 	assert(_useSkyScattering == false);
 	_useSkyScattering = true;
+
+	Size<uint> viewport = engine.GetDirectX().GetBackBufferRect().size.Cast<uint>();
+	uint minSize = std::min(viewport.w, viewport.h);
+	auto Log2Uint = [](uint i) -> uint
+	{
+		return static_cast<uint>(log(static_cast<float>(i)) / log(2.0f));
+	};
+	resolution = std::min(static_cast<uint>(1 << Log2Uint(minSize)), resolution);
 
 	_skyScatteringRenderer.Initialize(engine.GetDirectX(), _bufferManager, _shaderManager, _materialManager, resolution);
 	
