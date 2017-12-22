@@ -84,7 +84,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, BufferManag
 
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
 {
-	if( (_dirty == false) & (mainCamera.GetDirty() == false) & (lightMgr.GetHasChangedLightCount() == false) )
+	if( (_dirty == false) & (mainCamera.GetDirty() == false) & (lightMgr.GetHasChangedLightCount() == false) & (mainCamera.GetHasChangedCB() == false) )
 		return;
 
 	const auto& renderRect = mainCamera.GetRenderRect();

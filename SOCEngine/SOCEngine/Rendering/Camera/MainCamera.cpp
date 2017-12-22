@@ -30,7 +30,7 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 	_camCB.Initialize(dx);
 }
 
-bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
+void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
 {
 	assert(dirtyTransform.GetObjectID() == _objID);
 
@@ -38,8 +38,9 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 	if (changedTF)
 		_camCBChangeState = TransformCB::ChangeState::HasChanged;
 
-	if ((_camCBChangeState != TransformCB::ChangeState::No) == false)
-		return false;
+	_hasChangedCB = _camCBChangeState != TransformCB::ChangeState::No;
+	if (_hasChangedCB == false)
+		return;
 
 	_worldMat = dirtyTransform.GetWorldMatrix();
 	{
@@ -71,8 +72,6 @@ bool MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTran
 
 	_camCBChangeState = TransformCB::ChangeState((static_cast<uint>(_camCBChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 	_prevViewProjMat = _viewProjMat;
-
-	return true;
 }
 
 Math::Matrix MainCamera::ComputePerspectiveMatrix(bool isInverted) const

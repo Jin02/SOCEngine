@@ -54,7 +54,7 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MainCamera);
 
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
-			bool UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
+			void UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
 			void ClearDirty() { _dirty = false; }
 
 			Math::Matrix ComputePerspectiveMatrix(bool isInverted) const;
@@ -76,8 +76,8 @@ namespace Rendering
 			GET_CONST_ACCESSOR(WorldMatrix,				const auto&,	_worldMat);
 			GET_CONST_ACCESSOR(CameraCB,				const auto&,	_camCB);
 			GET_CONST_ACCESSOR(Dirty,					bool,			_dirty);
+			GET_CONST_ACCESSOR(HasChangedCB,			bool,			_hasChangedCB);			
 			GET_CONST_ACCESSOR(Frustum,					const auto&,	_frustum);
-
 			GET_CONST_ACCESSOR(TransparentMeshRenderQ,	const auto&,	_transparentMeshRenderQ);
 			GET_CONST_ACCESSOR(OpaqueMeshRenderQ,		const auto&,	_opaqueMeshRenderQ);
 			GET_CONST_ACCESSOR(AlphaTestMeshRenderQ,	const auto&,	_alphaTestMeshRenderQ);
@@ -106,7 +106,8 @@ namespace Rendering
 
 			Core::ObjectID								_objID;
 			MaterialID									_skyBoxMaterialID;
-			bool										_dirty = true;
+			bool										_dirty			= true;
+			bool										_hasChangedCB	= true;
 		};
 	}
 }
