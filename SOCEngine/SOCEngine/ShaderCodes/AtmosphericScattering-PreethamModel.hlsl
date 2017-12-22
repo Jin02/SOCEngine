@@ -10,11 +10,13 @@ cbuffer LightProbeParam : register( b0 )
 
 cbuffer SkyScatteringParam : register( b3 )
 {
-	uint ssParam_rayleighWithTurbidity;
-	uint ssParam_directionalLightIndexWithLuminance;
+	uint	ssParam_rayleighWithTurbidity;
+	uint	ssParam_directionalLightIndexWithLuminance;
+	uint	ssParam_mieCoefficientWithDirectionalG;
 
-	float ssParam_mieCoefficient;
-	float ssParam_mieDirectionalG;
+	float	ssParam_sunFade;
+	float	ssParam_sunIntensity;
+	float3	ssParam_sunWorldPos;
 };
 
 float GetRayleigh()
@@ -25,33 +27,33 @@ float GetTurbidity()
 {
 	return f16tof32(ssParam_rayleighWithTurbidity >> 16);
 }
+uint GetDirectionalLightIndex()
+{
+	return ssParam_directionalLightIndexWithLuminance & 0xffff;
+}
 float GetLuminance()
 {
 	return f16tof32(ssParam_directionalLightIndexWithLuminance >> 16);
 }
 float GetMieCoefficient()
 {
-	return ssParam_mieCoefficient;
+	return f16tof32(ssParam_mieCoefficientWithDirectionalG & 0xffff);
 }
 float GetMieDirectionalG()
 {
-	return ssParam_mieDirectionalG;
+	return f16tof32(ssParam_mieCoefficientWithDirectionalG >> 16);
 }
-
-float ComputeSunItensity(float zenithAngleCos)
+float GetSunFade()
 {
-	// earth shadow hack
-	const float cutoffAngle	= PI / 1.95f;
-	const float steepness	= 1.5f;
-	const float EE			= 1000.0f;
-	
-	// constants for atmospheric scattering
-	const float e			= 2.7182818284f;
-
-	zenithAngleCos			= clamp(zenithAngleCos, -1.0f, 1.0f);
-
-	float n = -(cutoffAngle - acos(zenithAngleCos)) / steepness;
-	return EE * max(0.0, 1.0f - pow(e, n));
+	return ssParam_sunFade;
+}
+float GetSunIntensity()
+{
+	return ssParam_sunIntensity;
+}
+float3 GetSunWorldPosition()
+{
+	return ssParam_sunWorldPos;
 }
 
 float3 ComputeTotalMie(float3 lambda, float T)
@@ -63,11 +65,6 @@ float3 ComputeTotalMie(float3 lambda, float T)
 
 	float c = (0.2f * T ) * 10E-18f;
 	return 0.434f * c * PI * pow((2.0f * PI) / lambda, v - 2.0f) * K;
-}
-
-uint GetDirectionalLightIndex()
-{
-	return ssParam_directionalLightIndexWithLuminance & 0xffff;
 }
 
 float3 GetLightDir()
@@ -86,13 +83,13 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-	float3 localPos				: LOCAL_POSITION;
+	float4 localPos				: LOCAL_POSITION;
 };
 
 VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
-	output.localPos = input.position;
+	output.localPos = float4(input.position, 1.0f);
 
 	return output;
 }
@@ -100,10 +97,7 @@ VS_OUTPUT VS(VS_INPUT input)
 struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
-	float3 worldPos				: WORLD_POS;
-
-	float sunIntensity			: SUN_INTENSITY;
-	float sunFade				: SUN_FADE;
+	float3 localPos				: LOCAL_POS;
 
 	uint rtIndex				: SV_RenderTargetArrayIndex;
 };
@@ -111,17 +105,6 @@ struct PS_INPUT
 [maxvertexcount(18)]
 void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 {
-	float3 lightDir	= GetLightDir();
-	float camFar	= GetCameraFar();
-
-	float3 sunWorldPos = float3(0.0f, 0.0f, 0.0f);
-	sunWorldPos.x = camera_worldPos.x - (lightDir.x * camFar);
-	sunWorldPos.y = camera_worldPos.y - (lightDir.y * camFar);
-	sunWorldPos.z = camera_worldPos.z - (lightDir.z * camFar);
-
-	float intensity = ComputeSunItensity( dot(lightDir, float3(0.0f, 1.0f, 0.0f)) );
-	float fade		= 1.0f - saturate( 1.0f - exp(sunWorldPos.y / camFar ) );
-
 	for(uint faceIdx = 0; faceIdx < 6; ++faceIdx)
 	{
 		PS_INPUT output;
@@ -129,13 +112,8 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 
 		for(uint i=0; i<3; ++i)
 		{
-			float4 worldPos		= mul(float4(input[i].localPos, 1.0f), lpParam_worldMat);
-
-			output.position		= mul(worldPos, lpParam_viewProjs[faceIdx]);
-			output.worldPos		= worldPos.xyz / worldPos.w;
-
-			output.sunFade		= fade;
-			output.sunIntensity	= intensity;
+			output.position = mul(input[i].localPos, lpParam_viewProjs[faceIdx]);
+			output.localPos = input[i].localPos.xyz;
 
 			stream.Append(output);
 		}
@@ -155,7 +133,7 @@ float hgPhase(float cosTheta, float g)
 
 float4 PS(PS_INPUT input) : SV_Target
 {		
-	float rayleighCoefficient = GetRayleigh() - (1.0f * (1.0f - input.sunFade));
+	float rayleighCoefficient = GetRayleigh() - (1.0f * (1.0f - GetSunFade()));
 	// wavelength of used primaries, according to preetham
 	const float3 lambda = float3(680E-9f, 550E-9f, 450E-9f);
 
@@ -179,13 +157,11 @@ float4 PS(PS_INPUT input) : SV_Target
 	// Scattering
 	float3 result = float3(0.0f, 0.0f, 0.0f);
 	{
-		float3 ToCam		= input.worldPos - camera_worldPos;
-		float3 ToCamDir		= normalize(ToCam);
-		const float3 up		= float3(0.0f, 1.0f, 0.0f);
+		float3 ToCamDir		= normalize(input.localPos);
 
 		// optical length
 		// cutoff angle at 90 to avoid singularity in next formula.
-		float zenithAngle	= acos( max(0.0, dot(up, ToCamDir)) );
+		float zenithAngle	= acos( max(0.0, dot(float3(0.0f, 1.0f, 0.0f), ToCamDir)) );
 		float norm			= cos(zenithAngle) + 0.15f * pow(93.885f - RAD_2_DEG(zenithAngle), -1.253f);
 		float sR			= rayleighZenithLength	/ norm;
 		float sM			= mieZenithLength		/ norm;
@@ -205,14 +181,16 @@ float4 PS(PS_INPUT input) : SV_Target
 		float3 Fex			= exp( -(betaR * sR + betaM * sM) );
 		float3 x			= ((betaRTheta + betaMTheta) / (betaR + betaM));
 
-		float3	Lin			=	pow(input.sunIntensity * x * (1.0f - Fex), 1.5f);
-				Lin			*=	lerp(float3(1.0f, 1.0f, 1.0f), pow(input.sunIntensity * x * Fex, 1.0f / 2.0f), saturate( pow(1.0f - dot(up, lightDir), 5.0f) ));
-		float3 L0			= Fex * 0.1f;
-//		float3 L0			= Fex * 0.001f;
+		float3	Lin			=	pow(GetSunIntensity() * x * (1.0f - Fex), 1.5f);
+				Lin			*=	lerp(float3(1.0f, 1.0f, 1.0f),
+									pow(GetSunIntensity() * x * Fex, 1.0f / 2.0f),
+									saturate( pow(1.0f - dot(float3(0.0f, 1.0f, 0.0f), lightDir), 5.0f) ));
+		
+		float3 L0			= Fex * 0.001f;
 
 		// composition + solar disc
 		float sundisk = smoothstep(sunAngularDiameterCos, sunAngularDiameterCos + 0.00002f, cosTheta);
-		L0 += (input.sunIntensity * 500.0f * Fex) * sundisk;
+		L0 += (GetSunIntensity() * 500.0f * Fex) * sundisk;
 
 		float3 texColor = (Lin + L0) * 0.04f + float3(0.0f, 0.0003f, 0.00075f);
 
@@ -220,7 +198,7 @@ float4 PS(PS_INPUT input) : SV_Target
 		const float whiteScale	= 1.0748724675633854f;
 		float3 color			= curr * whiteScale;
 
-		float coff = 1.0f / (1.2f + (1.2f * input.sunFade));
+		float coff = 1.0f / (1.2f + (1.2f * GetSunFade()));
 		result.rgb = pow(color, coff);
 	}
 
