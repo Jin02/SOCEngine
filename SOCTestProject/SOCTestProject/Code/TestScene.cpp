@@ -2,7 +2,7 @@
 #include "BasicGeometryGenerator.h"
 
 //#define GI_TEST
-#define SKYBOX_ON
+//#define SKYBOX_ON
 
 using namespace Core;
 using namespace Math;
@@ -72,6 +72,7 @@ void TestScene::OnInitialize(Engine& engine)
 	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
 	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
 #else
+	
 	Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
 	{
 		engine.AddRootObject(*house);
@@ -98,12 +99,12 @@ void TestScene::OnInitialize(Engine& engine)
 		auto mesh = plane.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(key);
 	}
-
+	
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
 		light.FetchTransform().SetLocalPosition(Vector3(0, 0, 0));
 		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
-	
+
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>();
 	
@@ -111,10 +112,10 @@ void TestScene::OnInitialize(Engine& engine)
 	}
 
 	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
-	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5));
-
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
+//	mainCamObj->FetchTransform().UpdateLocalEulerAngle(Vector3(50, 50, 0));
 #ifndef SKYBOX_ON
-	MaterialID matID = engine.ActivateSkyScattering(1024, light);
+	MaterialID matID = engine.ActivateSkyScattering(512, light);
 	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
 #endif
@@ -130,11 +131,11 @@ void TestScene::OnRenderPreview(Engine&)
 
 void TestScene::OnUpdate(Engine& engine)
 {
-	static constexpr float rate = 0.01f;
+	//static constexpr float rate = 1.0f;
 
-	auto tf = engine.GetObjectManager().Find("Light")->FetchTransform();
-	Vector3 euler = tf.GetLocalEularAngle();
-	tf.UpdateLocalEulerAngle(euler + Vector3(rate, rate, 0));
+	//auto& tf = engine.GetObjectManager().Find("MainCamera")->FetchTransform();
+	//Vector3 euler = tf.GetLocalEularAngle();
+	//tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
 }
 
 void TestScene::OnRenderPost(Engine&)
