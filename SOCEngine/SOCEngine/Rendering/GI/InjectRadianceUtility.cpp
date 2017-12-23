@@ -12,7 +12,7 @@ using namespace Rendering::RenderState;
 
 void InjectRadianceFormUtility::Bind(DirectX& dx, VoxelMap& outVoxelMap, const BindParam& param)
 {
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowLessEqualComp);
 	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB,				param.infoCB.staticInfoCB);

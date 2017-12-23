@@ -21,11 +21,11 @@ void PointLightShadowMapRenderer::Render(DirectX& dx, Param&& param, const TempR
 	float mapResolution	= static_cast<float>(param.atlasMapResolution);
 
 	dx.SetDepthMapWithoutRenderTarget(param.shadowMap);
-	dx.SetDepthStencilState(DepthState::Greater, 0);
+	dx.SetDepthStencilState(DepthState::Less, 0);
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	dx.SetBlendState(BlendState::Opaque);
 
-	param.shadowMap.Clear(dx, 0.0f, 0u);
+	param.shadowMap.Clear(dx, 1.0f, 0u);
 
 	auto viewport = Rect<float>(mapResolution * float(param.shadowIndex), 0.0f, 
 								mapResolution, mapResolution);

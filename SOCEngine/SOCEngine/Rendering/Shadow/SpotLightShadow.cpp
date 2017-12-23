@@ -26,7 +26,7 @@ SpotLightShadow::ViewProjMatType SpotLightShadow::MakeVPMatParam(
 	float radius	= lightBase->GetRadius();
 	float projNear	= _base.GetProjNear();
 
-	Matrix proj				= Matrix::PerspectiveFovLH(1.0f, spotAngle, radius, projNear);
+	Matrix proj				= Matrix::PerspectiveFovLH(1.0f, spotAngle, projNear, radius);
 	_transposedViewProjMat	= Matrix::Transpose(view * proj);
 
 	return _transposedViewProjMat;

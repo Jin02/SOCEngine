@@ -97,7 +97,7 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	float depth			= shadowUV.z;
 	float resolution	= float(1 << GetNumOfSpotLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
-	float shadow		= saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float shadow		= saturate( PCF(SpotLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 
@@ -124,7 +124,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float depth			= shadowUV.z;
 	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
-	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 	float3 ret = lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);
@@ -177,7 +177,7 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float bias			= lerp(10.0f, 1.0f, saturate(5 * shadowDistanceTerm)) * shadowParam.bias;
 	float depth			= shadowUV.z;
 	float2 stepUV		= ComputeStepUV(oneShadowMapSize, lightCapacityCount, shadowParam.softness, 6);
-	float shadow		= saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float shadow		= saturate( PCF(PointLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 
 	float3 result	= lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
 	float3 ret		= lerp(float3(1.0f, 1.0f, 1.0f), result, shadowParam.strength);

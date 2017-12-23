@@ -49,11 +49,11 @@ void ShadowMapRenderer::Render(DirectX& dx, Param&& param, const TempRenderQueue
 
 	dx.SetViewport(viewport);
 	dx.SetDepthMapWithoutRenderTarget(param.shadowMap);
-	dx.SetDepthStencilState(DepthState::Greater, 0);
+	dx.SetDepthStencilState(DepthState::Less, 0);
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	dx.SetBlendState(BlendState::Opaque);
 
-	param.shadowMap.Clear(dx, 0.0f, 0u);
+	param.shadowMap.Clear(dx, 1.0f, 0u);
 
 	PixelShader::BindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
 	VertexShader::BindConstBuffer(dx, ConstBufferBindIndex::OnlyPassViewProjMat, shadowMapVPMatCB);

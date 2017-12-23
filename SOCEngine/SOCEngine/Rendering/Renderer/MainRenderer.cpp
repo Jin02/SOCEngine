@@ -265,7 +265,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 2 Pass - Light Culling and Deferred Shading
 	{
-		AutoBinderSampler<ComputeShader> shadowCompSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
+		AutoBinderSampler<ComputeShader> shadowCompSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowLessEqualComp);
 		AutoBinderSampler<ComputeShader> pointSampler(dx,		SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
 
 		AutoBinderCB<ComputeShader> tbrCB(dx,				ConstBufferBindIndex::TBRParam,				_tbrCB);
@@ -333,7 +333,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderCB<PixelShader> psShadowGlobalParam(dx,	ConstBufferBindIndex::ShadowGlobalParam,	shadowMgr.GetGlobalCB());
 
 		AutoBinderSampler<PixelShader> defaultSampler(dx,		SamplerStateBindIndex::DefaultSamplerState,			SamplerState::Anisotropic);
-		AutoBinderSampler<PixelShader> shadowGreaterSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
+		AutoBinderSampler<PixelShader> shadowGreaterSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowLessEqualComp);
 		AutoBinderSampler<PixelShader> pointSampler(dx,			SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
 
 		AutoBinderSRV<PixelShader> dlDirXY(dx,			TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());

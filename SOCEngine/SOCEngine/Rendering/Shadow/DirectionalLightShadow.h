@@ -37,20 +37,12 @@ namespace Rendering
 			using ShadowMapRenderer	= Renderer::ShadowMap::ShadowMapRenderer;
 			using CBPoolType		= Buffer::ShadowMapCBPool;
 
-			struct Param
-			{
-				float invProj_34 = 1.0f;
-				float invProj_44 = 1.0f;
-			};
-
 		public:
 			DirectionalLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(	const Light::LightPool<Light::DirectionalLight>& lightPool,
 											const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox	);
 
 			GET_CONST_ACCESSOR(ViewProjectionMatrix,		const auto&,	_transposedViewProjMat);
-			GET_CONST_ACCESSOR(Param,						const auto&,	_param);
-			GET_CONST_ACCESSOR(ParamCBData,					auto,			_param);
 
 			GET_CONST_ACCESSOR(ProjectionSize,				float,			_projectionSize);
 			GET_CONST_ACCESSOR(UseAutoProjectionLocation,	bool,			_useAutoProjectLocation);
@@ -72,7 +64,6 @@ namespace Rendering
 		private:
 			BaseShadow		_base;
 			Math::Matrix	_transposedViewProjMat;
-			Param			_param;
 
 			float			_projectionSize			= 0.0f;
 			bool			_useAutoProjectLocation	= true;

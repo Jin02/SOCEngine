@@ -38,18 +38,9 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 	view = Matrix::ComputeViewMatrix(view);
 
 	float orthogonalWH	= (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
-	Matrix proj			= Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
+	Matrix proj			= Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMinZ, FrustumMaxZ);
 
 	// Done!
 	_transposedViewProjMat = Matrix::Transpose(view * proj);
-
-	// Compute Param
-	{
-		proj = Matrix::Inverse(proj);
-
-		_param.invProj_34 = proj._34;
-		_param.invProj_44 = proj._44;
-	}
-
 	return _transposedViewProjMat;
 }
