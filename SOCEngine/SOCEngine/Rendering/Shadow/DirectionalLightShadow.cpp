@@ -45,10 +45,8 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 
 	// Compute Param
 	{
-		proj = Matrix::Inverse(proj);
-
-		_param.invProj_34 = proj._34;
-		_param.invProj_44 = proj._44;
+		_param.forward	= Vector3(view._13, view._23, view._33);
+		_param.zPos		= view._43;
 	}
 
 	return _transposedViewProjMat;

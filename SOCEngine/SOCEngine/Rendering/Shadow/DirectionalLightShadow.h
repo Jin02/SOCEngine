@@ -39,8 +39,8 @@ namespace Rendering
 
 			struct Param
 			{
-				float invProj_34 = 1.0f;
-				float invProj_44 = 1.0f;
+				Math::Vector3 forward	= Math::Vector3(0.0f, 0.0f, 0.0f);
+				float zPos				= 0.0f;
 			};
 
 		public:
