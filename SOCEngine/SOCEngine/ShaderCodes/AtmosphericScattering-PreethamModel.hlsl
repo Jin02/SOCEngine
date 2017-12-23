@@ -12,11 +12,8 @@ cbuffer SkyScatteringParam : register( b3 )
 {
 	uint	ssParam_rayleighWithTurbidity;
 	uint	ssParam_directionalLightIndexWithLuminance;
-	uint	ssParam_mieCoefficientWithDirectionalG;
-
-	float	ssParam_sunFade;
-	float	ssParam_sunIntensity;
-	float3	ssParam_sunWorldPos;
+	float	ssParam_mieCoefficient;
+	float	ssParam_mieDirectionalG;
 };
 
 float GetRayleigh()
@@ -37,23 +34,11 @@ float GetLuminance()
 }
 float GetMieCoefficient()
 {
-	return f16tof32(ssParam_mieCoefficientWithDirectionalG & 0xffff);
+	return ssParam_mieCoefficient;
 }
 float GetMieDirectionalG()
 {
-	return f16tof32(ssParam_mieCoefficientWithDirectionalG >> 16);
-}
-float GetSunFade()
-{
-	return ssParam_sunFade;
-}
-float GetSunIntensity()
-{
-	return ssParam_sunIntensity;
-}
-float3 GetSunWorldPosition()
-{
-	return ssParam_sunWorldPos;
+	return ssParam_mieDirectionalG;
 }
 
 float3 ComputeTotalMie(float3 lambda, float T)
@@ -73,7 +58,25 @@ float3 GetLightDir()
 	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
 	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
 
+//	lightDir.z *= -1;
+
 	return -lightDir;
+}
+
+float ComputeSunIntensity(float zenithAngleCos)
+{
+	// earth shadow hack
+	const float cutoffAngle	= PI / 1.95f;
+	const float steepness	= 1.5f;
+	const float EE			= 1000.0f;
+
+	// constants for atmospheric scattering
+	const float e			= 2.7182818284f;
+
+	zenithAngleCos			= clamp(zenithAngleCos, -1.0f, 1.0f);
+
+	float n = -(cutoffAngle - acos(zenithAngleCos)) / steepness;
+	return EE * max(0.0, 1.0f - pow(e, n));
 }
 
 struct VS_INPUT
@@ -98,6 +101,8 @@ struct PS_INPUT
 {
 	float4 position 			: SV_POSITION;
 	float3 localPos				: LOCAL_POS;
+	float fade					: SUN_FADE;
+	float intensity				: SUN_INTENSITY;
 
 	uint rtIndex				: SV_RenderTargetArrayIndex;
 };
@@ -105,6 +110,12 @@ struct PS_INPUT
 [maxvertexcount(18)]
 void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 {
+	float3 lightDir				= GetLightDir();
+	float far					= 1000.0f;
+	float sunWorldHeightPos		= camera_worldPos.y - (lightDir.y * far);
+	float fade					= 1.0f - saturate( 1.0f - exp(sunWorldHeightPos / far) );
+	float intensity				= ComputeSunIntensity(dot(lightDir, float3(0.0f, 1.0f, 0.0f)));
+
 	for(uint faceIdx = 0; faceIdx < 6; ++faceIdx)
 	{
 		PS_INPUT output;
@@ -112,8 +123,10 @@ void GS(triangle VS_OUTPUT input[3], inout TriangleStream<PS_INPUT> stream)
 
 		for(uint i=0; i<3; ++i)
 		{
-			output.position = mul(input[i].localPos, lpParam_viewProjs[faceIdx]);
-			output.localPos = input[i].localPos.xyz;
+			output.position	= mul(input[i].localPos, lpParam_viewProjs[faceIdx]);
+			output.localPos	= input[i].localPos.xyz;
+			output.fade		= fade;
+			output.intensity= intensity;
 
 			stream.Append(output);
 		}
@@ -133,7 +146,7 @@ float hgPhase(float cosTheta, float g)
 
 float4 PS(PS_INPUT input) : SV_Target
 {		
-	float rayleighCoefficient = GetRayleigh() - (1.0f * (1.0f - GetSunFade()));
+	float rayleighCoefficient = GetRayleigh() - (1.0f * (1.0f - input.fade));
 	// wavelength of used primaries, according to preetham
 	const float3 lambda = float3(680E-9f, 550E-9f, 450E-9f);
 
@@ -181,16 +194,16 @@ float4 PS(PS_INPUT input) : SV_Target
 		float3 Fex			= exp( -(betaR * sR + betaM * sM) );
 		float3 x			= ((betaRTheta + betaMTheta) / (betaR + betaM));
 
-		float3	Lin			=	pow(GetSunIntensity() * x * (1.0f - Fex), 1.5f);
+		float3	Lin			=	pow(input.intensity * x * (1.0f - Fex), 1.5f);
 				Lin			*=	lerp(float3(1.0f, 1.0f, 1.0f),
-									pow(GetSunIntensity() * x * Fex, 1.0f / 2.0f),
+									pow(input.intensity * x * Fex, 1.0f / 2.0f),
 									saturate( pow(1.0f - dot(float3(0.0f, 1.0f, 0.0f), lightDir), 5.0f) ));
 		
-		float3 L0			= Fex * 0.001f;
+		float3 L0			= Fex * 0.1f;
 
 		// composition + solar disc
 		float sundisk = smoothstep(sunAngularDiameterCos, sunAngularDiameterCos + 0.00002f, cosTheta);
-		L0 += (GetSunIntensity() * 500.0f * Fex) * sundisk;
+		L0 += (input.intensity * 500.0f * Fex) * sundisk;
 
 		float3 texColor = (Lin + L0) * 0.04f + float3(0.0f, 0.0003f, 0.00075f);
 
@@ -198,7 +211,7 @@ float4 PS(PS_INPUT input) : SV_Target
 		const float whiteScale	= 1.0748724675633854f;
 		float3 color			= curr * whiteScale;
 
-		float coff = 1.0f / (1.2f + (1.2f * GetSunFade()));
+		float coff = 1.0f / (1.2f + (1.2f * input.fade));
 		result.rgb = pow(color, coff);
 	}
 

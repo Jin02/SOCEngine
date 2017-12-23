@@ -37,19 +37,15 @@ namespace Rendering
 				ushort directionalLightIndex	= -1;			// y
 				Half luminance					= Half(1.0f);	// y
 
-				Half mieCoefficient				= Half(0.005f);	// z
-				Half mieDirectionalG			= Half(0.8f);	// z
-
-				float sunFade					= 0.0f;			// w
-				float sunIntensity				= 0.0f;			// x
-				Math::Vector3 sunWorldPos;						// yzw
+				float mieCoefficient			= 0.005f;		// z
+				float mieDirectionalG			= 0.8f;			// w
 			};
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, Manager::ShaderManager& shaderMgr, Manager::MaterialManager& materialMgr, uint resolution);
 			void Destroy();
 
-			void CheckRenderAbleWithUpdateCB(Device::DirectX& dx, const Core::TransformPool& tfPool, const Manager::LightManager& lightMgr, const Camera::MainCamera& mainCam);
+			void CheckRenderAbleWithUpdateCB(Device::DirectX& dx, const Manager::LightManager& lightMgr, const Camera::MainCamera& mainCam);
 			void Render(Device::DirectX& dx, const Camera::MainCamera& mainCam, const Manager::LightManager& lightMgr);
 
 			GET_CONST_ACCESSOR_REF(ResultMaterial,		_resultMaterial);
