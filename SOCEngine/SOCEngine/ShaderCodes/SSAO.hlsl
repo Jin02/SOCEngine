@@ -102,7 +102,7 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 #endif
 
 
-		if(abs( InvertProjDepthToView(occluedDepth) - InvertProjDepthToView(depth) ) > skipDist )
+		if(abs( ProjDepthToView(occluedDepth) - ProjDepthToView(depth) ) > skipDist )
 			continue;
 
 		float4 occluedH			= float4(sampledUV.x * 2.0f - 1.0f, sampledUV.y * 2.0f - 1.0f, occluedDepth, 1.0f);

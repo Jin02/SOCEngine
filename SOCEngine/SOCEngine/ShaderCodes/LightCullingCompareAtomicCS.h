@@ -21,10 +21,10 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 	for(uint sampleIdx=0; sampleIdx<MSAA_SAMPLES_COUNT; ++sampleIdx)
 	{
 		float opaqueDepth			= GBufferDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
-		float opaqueDepthToView		= InvertProjDepthToView(opaqueDepth);
+		float opaqueDepthToView		= ProjDepthToView(opaqueDepth);
 #if defined(ENABLE_BLEND)
 		float blendedDepth			= GBufferBlendedDepth.Load(uint2(globalIdx.x, globalIdx.y), sampleIdx).x;
-		float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
+		float blendedDepthToView	= ProjDepthToView(blendedDepth);
 
 		if(blendedDepth != 0.0f)
 		{
@@ -51,12 +51,12 @@ bool CalcDepthBoundMSAA(uint2 globalIdx)
 void CalcDepthBound(uint2 globalIdx)
 {
 	float opaqueDepth		= GBufferDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
-	float opaqueDepthToView	= InvertProjDepthToView(opaqueDepth);
+	float opaqueDepthToView	= ProjDepthToView(opaqueDepth);
 	uint opaqueZ = asuint(opaqueDepthToView);
 
 #if defined(ENABLE_BLEND)
 	float blendedDepth			= GBufferBlendedDepth.Load( uint3(globalIdx.x, globalIdx.y, 0) ).x;
-	float blendedDepthToView	= InvertProjDepthToView(blendedDepth);
+	float blendedDepthToView	= ProjDepthToView(blendedDepth);
 
 	uint blendedZ = asuint(blendedDepthToView);
 

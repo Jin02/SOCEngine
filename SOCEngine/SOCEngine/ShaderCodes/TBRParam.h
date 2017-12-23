@@ -33,16 +33,11 @@ float4 ProjToView( float4 p )
 	return p;
 }
 
-float InvertProjDepthToView(float depth)
+float ProjDepthToView(float depth)
 {
-	/*
-	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
-	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
-
-	if you dont understand, calculate inverse projection matrix.
-	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
-	*/
-
+	// 1.0f = ( (x * _14) + (y * _24) + (z * _34) + _44 )
+	// 1.0f = ( z * _34 + _44 )
+	// ViewSpace Depth = 1.0f / (z * _34 + _44)
 	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
 }
 

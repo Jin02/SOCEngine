@@ -43,7 +43,7 @@ float GetViewDepth(int2 screenPos)
 	float depth = GBufferDepth.Load( uint3(screenPos, 0) ).x;
 #endif
 
-	return InvertProjDepthToView(depth);
+	return ProjDepthToView(depth);
 }
 
 bool IntersectDepth(float z, float minZ, float maxZ)

@@ -30,7 +30,7 @@ float4 DoF_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float depth		= GBufferDepth.Sample(Sampler, input.uv).r;
 #endif
 
-	depth		= InvertProjDepthToView(depth);
+	depth		= ProjDepthToView(depth);
 	
 	const float bn = dofParam_blurNear;
 	const float bf = dofParam_blurFar;
