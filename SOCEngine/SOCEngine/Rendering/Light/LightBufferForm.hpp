@@ -82,17 +82,19 @@ namespace Rendering
 					_mustUpdateTransformSRBuffer |= (dirtyTFLights.empty() == false);
 				}
 
-				void UpdateLightCommonBuffer(const std::vector<LightType*>& dirtyParamLights, RequiredIndexer indexers, const Core::ObjectID::IndexHashMap& indexer)
+				void UpdateLightCommonBuffer(	const std::vector<LightType*>& dirtyParamLights,
+												RequiredIndexer shadowWithShaftIndexer,
+												const Core::ObjectID::IndexHashMap& objIDIndeer)
 				{
 					for (auto& light : dirtyParamLights)
 					{
 						Core::ObjectID objID = light->GetObjectID();
 						uint literalID = objID.Literal();
 
-						ushort shadowIdx	= indexers.shadowIndexer.Find(literalID);
-						uint lightShaftIdx	= indexers.lightShaftIndexer.Find(literalID);
+						ushort shadowIdx	= shadowWithShaftIndexer.shadowIndexer.Find(literalID);
+						uint lightShaftIdx	= shadowWithShaftIndexer.lightShaftIndexer.Find(literalID);
 
-						uint index = indexer.Find(literalID);
+						uint index = objIDIndeer.Find(literalID);
 						_commonBuffer.SetData(index, *light->GetBase(), shadowIdx, lightShaftIdx);
 					}
 

@@ -12,14 +12,15 @@ namespace Rendering
 			class DirectionalLightBuffer : public LightBufferForm<DirectionalLight>
 			{
 			public:
-				using LightBufferForm<DirectionalLight>::LightBufferForm;
+				using Parent = LightBufferForm<DirectionalLight>;
+				using Parent::LightBufferForm;
 				void Initialize(Device::DirectX& dx)
 				{
 					Initialize(dx, DIRECTIONAL_LIGHT_BUFFER_MAX_NUM, DXGI_FORMAT_R16G16_FLOAT);
 				}
 
 			private:
-				using LightBufferForm<DirectionalLight>::Initialize;
+				using Parent::Initialize;
 			};
 		}
 	}
