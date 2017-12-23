@@ -1,6 +1,8 @@
 #include "RenderTextureCube.h"
 #include "DirectX.h"
 
+#undef max
+
 using namespace Device;
 using namespace Rendering;
 using namespace Rendering::Texture;
@@ -10,8 +12,11 @@ void RenderTextureCube::Initialize(DirectX& dx, uint resolution, DXGI_FORMAT for
 {
 	const uint bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-	auto Log2 = [](float f) { return log(f) / log(2.0f); };
-	const uint mipLevel = max(uint(Log2(resolution + 1)), 1);
+	auto Log2 = [](float f) -> uint
+	{
+		return static_cast<uint>(log(f) / log(2.0f));
+	};
+	const uint mipLevel = std::max(Log2(float(resolution + 1)), 1u);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	memset(&texDesc, 0, sizeof(D3D11_TEXTURE2D_DESC));
