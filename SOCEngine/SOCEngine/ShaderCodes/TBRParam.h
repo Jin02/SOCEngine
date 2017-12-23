@@ -22,8 +22,7 @@ float GetGamma()
 
 float2 GetViewportSize()
 {
-	return float2(	tbrParam_packedViewportSize >> 16,
-		tbrParam_packedViewportSize & 0x0000ffff	);
+	return float2(tbrParam_packedViewportSize >> 16, tbrParam_packedViewportSize & 0x0000ffff);
 }
 
 
