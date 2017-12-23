@@ -20,7 +20,7 @@ float3 ComputeExposedColor(float3 color, float avgLum, float threshold)
 {
 	avgLum = max(avgLum, 0.0001f);
 
-	float linearExposure	= (hdr_exposureStrength / avgLum);
+	float linearExposure	= (GetExposureStrength() / avgLum);
 
 	float	exposure = log2( max(linearExposure, 0.001f) );
 			exposure -= threshold;
@@ -33,7 +33,7 @@ float4 Bloom_Threshold_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float3 color		= CurColorMap.Sample(Sampler, input.uv).rgb;
 	float avgLum		= AverageLuminance();
 
-	color = ComputeExposedColor(color.rgb, avgLum, bloom_threshold);
+	color = ComputeExposedColor(color.rgb, avgLum, GetBloomThreshold());
 
 	return float4(color, 1.0f);
 }
