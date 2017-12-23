@@ -61,7 +61,7 @@ void RenderingSystem::Render(Engine& engine, float dt)
 
 	if (_useSkyScattering)
 	{
-		_skyScatteringRenderer.CheckRenderAbleWithUpdateCB(engine.GetDirectX(), engine.GetTransformPool(), lightMgr, mainCamera);
+		_skyScatteringRenderer.CheckRenderAbleWithUpdateCB(engine.GetDirectX(), lightMgr, mainCamera);
 		
 		if (_skyScatteringRenderer.GetRenderAble())
 			_skyScatteringRenderer.Render(engine.GetDirectX(), mainCamera, lightMgr);
