@@ -508,14 +508,19 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 	// Shadow Sampler State
 	desc.Filter			= D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
 	desc.ComparisonFunc	= D3D11_COMPARISON_LESS_EQUAL;
-	desc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.MaxAnisotropy	= 1;
+	desc.AddressU		= D3D11_TEXTURE_ADDRESS_BORDER;
+	desc.AddressV		= D3D11_TEXTURE_ADDRESS_BORDER;
+	desc.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;
+	desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 1.0f;
+	desc.MipLODBias		= 0.0f;
+	desc.MaxAnisotropy	= 0;
+	desc.MinLOD			= 0;
+	desc.MaxLOD			= 0;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
 	_samplerStates[static_cast<uint>(SamplerState::ShadowLessEqualComp)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
-	desc.ComparisonFunc = D3D11_COMPARISON_GREATER_EQUAL;
+	desc.BorderColor[0]	= desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0.0f;
+	desc.ComparisonFunc = D3D11_COMPARISON_GREATER;
 	assert(SUCCEEDED(_device->CreateSamplerState(&desc, &ss)));
 	_samplerStates[static_cast<uint>(SamplerState::ShadowGreaterEqualComp)] = DXUniqueResource<ID3D11SamplerState>(ss);
 
