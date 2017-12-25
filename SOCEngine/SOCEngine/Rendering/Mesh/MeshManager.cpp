@@ -79,19 +79,14 @@ void MeshManager::ComputeWorldSize(
 	Vector3& refWorldMin, Vector3& refWorldMax,
 	const TransformPool& tfPool) const
 {
-	auto Compute = [&refWorldMin, &refWorldMax, &tfPool](auto& vector)
+	for (auto& iter : _dirtyMeshes)
 	{
-		for (auto& iter : vector)
-		{
-			ObjectID id = iter->GetObjectID();
+		ObjectID id = iter->GetObjectID();
 
-			const Transform* tf = tfPool.Find(id.Literal()); assert(tf);
-			if (tf->GetDirty())
-				iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
-		}
-	};
-
-	Compute(_dirtyMeshes);
+		const Transform* tf = tfPool.Find(id.Literal()); assert(tf);
+		if (tf->GetDirty())
+			iter->CalcWorldSize(refWorldMin, refWorldMax, *tf);
+	}
 }
 
 void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPool)
