@@ -54,13 +54,7 @@ float3 ComputeTotalMie(float3 lambda, float T)
 
 float3 GetLightDir()
 {
-	uint lightIndex = GetDirectionalLightIndex();
-	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
-	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
-
-//	lightDir.z *= -1;
-
-	return -lightDir;
+	return -GetDirectionalLightDir(GetDirectionalLightIndex());
 }
 
 float ComputeSunIntensity(float zenithAngleCos)
