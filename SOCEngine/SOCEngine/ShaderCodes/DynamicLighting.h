@@ -90,7 +90,7 @@ void RenderDirectionalLight(
 		uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
 		{
-			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition, lightDir);
+			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
 
 			resultDiffuseColor				*= shadowColor.rgb;
 			resultSpecularColor				*= shadowColor.rgb;

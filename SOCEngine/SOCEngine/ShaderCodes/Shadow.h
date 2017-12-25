@@ -190,7 +190,7 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	return float4(ret, shadow);
 }
 
-float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir)
+float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 {
 	uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 
@@ -210,21 +210,23 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, floa
 	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
 #if 1
-	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
+	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
 #else
-	float3 lightPos		= vertexWorldPos - lightDir * 5000.0f;
-	float viewDepth		= -dot(lightDir, lightPos);
+	const float lightFar	= 5000.0f;
+	float3 lightWorldPos	= normalize(float3(-2500, 3750, 2185)) * lightFar;//vertexWorldPos - (-lightDir) * lightFar;
+	float viewMat_43		= -dot(-lightDir, lightWorldPos);
+	float viewDepth			= dot(-lightDir, vertexWorldPos) + viewMat_43;
 
 	PCSSParam pcssParam;
 	{
 		pcssParam.lightViewDepth	= viewDepth;
 		pcssParam.lightNear			= shadowParam.lightNear;
-		pcssParam.lightFar			= 5000.0f;
+		pcssParam.lightFar			= lightFar;
 		pcssParam.softness			= shadowParam.softness;
 		pcssParam.rcpAtlasMapSize	= rcp(float2(lightCapacityCount, 1.0f) * resolution);
 	}
 
-	PCSS(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, pcssParam);
+	float shadow		= saturate(PCSS(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, pcssParam));
 #endif
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
