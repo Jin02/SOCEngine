@@ -69,10 +69,7 @@ void RenderDirectionalLight(
 	{
 		commonParams.lightColor		= DirectionalLightColorBuffer[lightIndex].xyz;
 
-		float3	lightDir			= float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
-		lightDir.z					= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y)
-										* -GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
-
+		float3	lightDir			= GetDirectionalLightDir(lightIndex);;
 		commonParams.lightDir		= -lightDir;
 
 		float intensity = DirectionalLightColorBuffer[lightIndex].a * 10.0f;
@@ -93,7 +90,7 @@ void RenderDirectionalLight(
 		uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
 		{
-			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition);
+			float4 shadowColor = RenderDirectionalLightShadow(lightIndex, vertexWorldPosition, lightDir);
 
 			resultDiffuseColor				*= shadowColor.rgb;
 			resultSpecularColor				*= shadowColor.rgb;

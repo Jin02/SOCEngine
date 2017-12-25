@@ -85,4 +85,12 @@ float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
 	return float( 1.0f - 2.0f * float(isMinus) );
 }
 
+float3 GetDirectionalLightDir(uint lightIndex)
+{
+	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
+	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * -GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
+
+	return lightDir;
+}
+
 #endif

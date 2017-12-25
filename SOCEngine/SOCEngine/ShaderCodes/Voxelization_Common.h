@@ -138,14 +138,13 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 
 	for(uint index=0; index<dlCount; ++index)
 	{
-		float3 lightDir			= float3(DirectionalLightDirXYBuffer[index], 0.0f);
-		lightDir.z				= sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[index]);
+		float3 lightDir			= GetDirectionalLightDir(index);
 
 		float3 lightColor		= DirectionalLightColorBuffer[index].rgb;
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
 		float intensity			= DirectionalLightColorBuffer[index].a * 10.0f;
 
-		shadowColor = RenderDirectionalLightShadow(index, worldPos);
+		shadowColor = RenderDirectionalLightShadow(index, worldPos, lightDir);
 
 		radiosity += (lambert / 1.0f) * lightColor * intensity * shadowColor.rgb;
 		radiosity += GetMaterialEmissiveColor().rgb;

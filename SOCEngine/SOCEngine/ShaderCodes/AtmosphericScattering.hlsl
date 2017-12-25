@@ -71,15 +71,6 @@ float3 ComputeTotalMie(float3 lambda, float T)
 	return 0.434f * c * PI * pow((2.0f * PI) / lambda, v - 2.0f) * K;
 }
 
-float3 GetLightDir()
-{
-	uint lightIndex = GetDirectionalLightIndex();
-	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
-	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
-
-	return -lightDir;
-}
-
 struct VS_INPUT
 {
 	float3 position 			: POSITION;
@@ -102,7 +93,7 @@ SS_PS_INPUT VS(VS_INPUT input)
 	ps.position = mul(float4(input.position, 1.0f), ssParam_worldViewProjMat);
 	ps.worldPos = worldPos.xyz / worldPos.w;
 	
-	float3 lightDir	= GetLightDir();
+	float3 lightDir	= -GetDirectionalLightDir(GetDirectionalLightIndex());
 	float camFar	= GetCameraFar();
 
 	float3 sunWorldPos = float3(0.0f, 0.0f, 0.0f);
@@ -166,7 +157,7 @@ float4 PS(SS_PS_INPUT input) : SV_Target
 		float sR			= rayleighZenithLength	/ norm;
 		float sM			= mieZenithLength		/ norm;
 
-		float3 lightDir		= GetLightDir();
+		float3 lightDir		= -GetDirectionalLightDir(GetDirectionalLightIndex());
 
 		// in scattering
 		float cosTheta		= dot(ToCamDir, lightDir);
