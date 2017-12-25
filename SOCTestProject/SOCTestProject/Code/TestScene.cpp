@@ -25,7 +25,7 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 		param.vxgiParam = GIInitParam::VXGIParam(0, 0);
 #endif
 	}
-	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 512, param);
+	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 2048, param);
 }
 
 void TestScene::OnInitialize(Engine& engine)
@@ -72,42 +72,57 @@ void TestScene::OnInitialize(Engine& engine)
 	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
 	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
 #else
-	
-	Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
+	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
+	defaultMaterial.Initialize(engine.GetDirectX());
+	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
+
+	constexpr uint defaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
+
+	//Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
+	//{
+	//	engine.AddRootObject(*house);
+	//
+	//	Transform& tf = house->FetchTransform();
+	//	tf.SetLocalPosition(Vector3(0, -5, 20));
+	//	tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+	//}
+	Object box = engine.GetObjectManager().Acquire("Box");
 	{
-		engine.AddRootObject(*house);
-	
-		Transform& tf = house->FetchTransform();
-		tf.SetLocalPosition(Vector3(0, -5, 20));
-		tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+		BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
+		engine.AddRootObject(box);
+
+		box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+		box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
+//		box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+
+		auto mesh = box.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
 	}
 
 	Object plane = engine.GetObjectManager().Acquire("Plane");
 	{
-		constexpr uint flag =	uint(DefaultVertexInputTypeFlag::UV0) |
-								uint(DefaultVertexInputTypeFlag::NORMAL);
-		BasicGeometryGenerator::CreatePlane(plane, engine, 20.0f, 20.0f, 4, 4, flag);
+		BasicGeometryGenerator::CreatePlane(plane, engine, 20.0f, 20.0f, 4, 4, defaultFlag);
 
 		engine.AddRootObject(plane);
 
 		plane.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
 		plane.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
 
-		Material::PhysicallyBasedMaterial pbr("PlaneMaterial");
-		pbr.Initialize(engine.GetDirectX());
-		auto key = engine.GetRenderingSystem().GetMaterialManager().Add(pbr).first;
 		auto mesh = plane.GetComponent<Mesh>();
-		mesh->SetPBRMaterialID(key);
+		mesh->SetPBRMaterialID(materialKey);
 	}
 	
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
-		light.FetchTransform().SetLocalPosition(Vector3(0, 0, 0));
+		light.FetchTransform().SetLocalPosition(Vector3(-2500, 3750, 2185));
 		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
 
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>();
-	
+
+		auto* shadow = light.GetComponent<DirectionalLightShadow>();
+		shadow->SetUseAutoProjectionLocation(false);
+
 		engine.AddRootObject(light);
 	}
 
