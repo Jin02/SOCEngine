@@ -152,7 +152,7 @@ float PCSS(Texture2D<float> atlas, float2 uv, float lightVPDepth, PCSSParam para
 	else if(blockerCount == BLOCKER_SEARCH_COUNT)	return 0.0f;
 
 	float avgBlockerDepth			= accumBlockerDepth / blockerCount;
-	float avgBlockerDepthWorld		= ZClipToZEye(lightNear, lightFar, avgBlockerDepth);
+	float avgBlockerDepthWorld		= ZClipToZEye(lightFar, lightNear, avgBlockerDepth); //inverted depth
 	float2 penumbraRadiusUV			= PenumbraRadiusUV(param.softness, param.lightViewDepth, avgBlockerDepthWorld);
 	float2 filterRadiusUV			= ProjectToLightUV(penumbraRadiusUV, lightNear, param.lightViewDepth) * param.rcpAtlasMapSize;
 
@@ -215,6 +215,16 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, floa
 	float3 lightPos		= vertexWorldPos - lightDir * 5000.0f;
 	float viewDepth		= -dot(lightDir, lightPos);
 
+	PCSSParam pcssParam;
+	{
+		pcssParam.lightViewDepth	= viewDepth;
+		pcssParam.lightNear			= shadowParam.lightNear;
+		pcssParam.lightFar			= 5000.0f;
+		pcssParam.softness			= shadowParam.softness;
+		pcssParam.rcpAtlasMapSize	= rcp(float2(lightCapacityCount, 1.0f) * resolution);
+	}
+
+	PCSS(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, pcssParam);
 #endif
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
