@@ -112,8 +112,8 @@ void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const
 
 	Vector3 worldScale = transform.GetWorldScale();
 
-	Vector3 minPos = (worldPos - extents) * worldScale;
-	Vector3 maxPos = (worldPos + extents) * worldScale;
+	Vector3 minPos = worldPos - (extents * worldScale);
+	Vector3 maxPos = worldPos + (extents * worldScale);
 
 	if (worldMin.x > minPos.x) worldMin.x = minPos.x;
 	if (worldMin.y > minPos.y) worldMin.y = minPos.y;
