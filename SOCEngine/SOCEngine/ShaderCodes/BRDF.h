@@ -21,6 +21,7 @@ GEOMETRY_COOK_TORRANCE
 GEOMETRY_KELEMEN
 GEOMETRY_SCHLICK
 GEOMETRY_SMITH
+GEOMETRY_SMITH_JOINT_APPROXIMATELY
 
 DIFFUSE_ENERGY_CONSERVATION_NONE
 DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
@@ -210,6 +211,8 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 	return GeometrySchlick(NdotL, NdotV, roughness);
 #elif defined(GEOMETRY_SMITH)
 	return GeometrySmith(NdotV, NdotL, roughness);
+#elif defiend(GEOMETRY_SMITH_JOINT_APPROXIMATELY)
+	return GeometrySmithJointApproximately(NdotV, NdotL, roughness);
 #endif
 }
 
