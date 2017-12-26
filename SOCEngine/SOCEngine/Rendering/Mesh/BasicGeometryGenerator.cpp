@@ -8,6 +8,7 @@ using namespace Math;
 using namespace Device;
 using namespace Core;
 using namespace Rendering;
+using namespace Intersection;
 
 bool BasicGeometryGenerator::HasFlag(uint vtxInputTypeFlag, DefaultVertexInputTypeFlag flag)
 {
@@ -502,9 +503,12 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 
 void BasicGeometryGenerator::CreateBox(Object& targetObj, Core::Engine& engine, const Vector3& size, uint defautVertexInputTypeFlag)
 {
-	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, size](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), size));
 	};
 
 	CreateBox(CreateObject, size, defautVertexInputTypeFlag);
@@ -512,9 +516,12 @@ void BasicGeometryGenerator::CreateBox(Object& targetObj, Core::Engine& engine, 
 
 void BasicGeometryGenerator::CreateSphere(Object& targetObj, Core::Engine& engine, float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, radius](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(radius, radius, radius)));
 	};
 
 	CreateSphere(CreateObject, radius, sliceCount, stackCount, defautVertexInputTypeFlag);
@@ -522,20 +529,27 @@ void BasicGeometryGenerator::CreateSphere(Object& targetObj, Core::Engine& engin
 
 void BasicGeometryGenerator::CreateCylinder(Object& targetObj, Core::Engine& engine, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, height, botRadius, topRadius](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		float widthMax	= std::max(botRadius, topRadius);
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(widthMax, height, widthMax)));
 	};
 
 	CreateCylinder(CreateObject, botRadius, topRadius, height, sliceCount, stackCount, defautVertexInputTypeFlag);
 }
 
-void BasicGeometryGenerator::CreatePlane(Object& targetObj, Core::Engine& engine, float width, float height, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
+void BasicGeometryGenerator::CreatePlane(Object& targetObj, Core::Engine& engine, float width, float depth, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
 {
-	auto CreateObject = [&targetObj, &engine](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, width, depth](const Mesh::CreateFuncArguments& args)
 	{
-		targetObj.AddComponent<Mesh>().Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(width, 1.0f, depth)));
 	};
 
-	CreatePlane(CreateObject, width, height, widthVertexCount, heightVertexCount, defautVertexInputTypeFlag);
+	CreatePlane(CreateObject, width, depth, widthVertexCount, heightVertexCount, defautVertexInputTypeFlag);
 }
