@@ -93,7 +93,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 		box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
 		box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
-//		box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+		box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 
 		auto mesh = box.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(materialKey);
@@ -120,8 +120,8 @@ void TestScene::OnInitialize(Engine& engine)
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>();
 
-		auto* shadow = light.GetComponent<DirectionalLightShadow>();
-		shadow->SetUseAutoProjectionLocation(false);
+//		auto* shadow = light.GetComponent<DirectionalLightShadow>();
+//		shadow->SetUseAutoProjectionLocation(false);
 
 		engine.AddRootObject(light);
 	}
@@ -148,9 +148,9 @@ void TestScene::OnUpdate(Engine& engine)
 {
 	//static constexpr float rate = 1.0f;
 
-	//auto& tf = engine.GetObjectManager().Find("MainCamera")->FetchTransform();
+	//auto& tf = engine.GetObjectManager().Find("SanFranciscoHouse")->FetchTransform();
 	//Vector3 euler = tf.GetLocalEularAngle();
-	//tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
+	//tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
 }
 
 void TestScene::OnRenderPost(Engine&)
