@@ -41,7 +41,7 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	resultDiffuseColor = diffuseTerm * commonParamas.lightColor * diffuseEnergyConservation;
 	resultDiffuseColor = saturate(resultDiffuseColor);
 
-	float3 Fr = ( Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) ) / (4.0f * NdotL * NdotV);
+	float3 Fr = ( Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) );// / (4.0f * NdotL * NdotV);
 	resultSpecularColor	= Fr * commonParamas.lightColor;
 	resultSpecularColor	= saturate(resultSpecularColor);
 }
@@ -70,7 +70,7 @@ void RenderDirectionalLight(
 		commonParams.lightColor		= DirectionalLightColorBuffer[lightIndex].xyz;
 
 		float3	lightDir			= GetDirectionalLightDir(lightIndex);;
-		commonParams.lightDir		= -lightDir;
+		commonParams.lightDir		= -normalize(lightDir);
 
 		float intensity = DirectionalLightColorBuffer[lightIndex].a * 10.0f;
 #if defined(RENDER_TRANSPARENCY)
