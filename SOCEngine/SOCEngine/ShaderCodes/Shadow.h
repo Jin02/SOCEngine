@@ -210,7 +210,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
 #if 1
-	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, stepUV) );
+	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 #else
 	const float lightFar	= 5000.0f;
 	float3 lightWorldPos	= normalize(float3(-2500, 3750, 2185)) * lightFar;//vertexWorldPos - (-lightDir) * lightFar;
