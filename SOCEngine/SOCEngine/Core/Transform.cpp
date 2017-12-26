@@ -103,9 +103,10 @@ const Vector3 Transform::GetWorldPosition() const
 
 const Vector3 Transform::GetWorldScale() const
 {
-	return Vector3(	Vector3(_worldMat._11, _worldMat._12, _worldMat._13).Length(),
-					Vector3(_worldMat._21, _worldMat._22, _worldMat._23).Length(),
-					Vector3(_worldMat._31, _worldMat._32, _worldMat._33).Length() );
+							// Forward			Up				Right
+	return Vector3(	Vector3(_worldMat._11, _worldMat._21, _worldMat._31).Length(),
+					Vector3(_worldMat._12, _worldMat._22, _worldMat._32).Length(),
+					Vector3(_worldMat._13, _worldMat._23, _worldMat._33).Length() );
 }
 
 const Vector3 Transform::GetWorldRight(const Vector3& scale) const
