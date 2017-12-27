@@ -45,7 +45,9 @@ void TestScene::OnInitialize(Engine& engine)
 	}
 #endif
 
-#ifdef GI_TEST
+	constexpr uint defaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
+
+#if defined(GI_TEST)
 	Object* box = engine.LoadMesh("./Resources/CornellBox/box.obj"); assert(box);
 	engine.AddRootObject(*box);
 
@@ -71,12 +73,10 @@ void TestScene::OnInitialize(Engine& engine)
 
 	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
 	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
-#else
+#elif defined(SOFT_SHADOW_TEST)
 	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
 	defaultMaterial.Initialize(engine.GetDirectX());
 	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
-
-	constexpr uint defaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
 
 	//Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
 	//{
@@ -128,12 +128,68 @@ void TestScene::OnInitialize(Engine& engine)
 
 	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
 	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
-//	mainCamObj->FetchTransform().UpdateLocalEulerAngle(Vector3(50, 50, 0));
+
 #ifndef SKYBOX_ON
 	MaterialID matID = engine.ActivateSkyScattering(512, light);
 	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
+
+#elif 1
+	Material::PhysicallyBasedMaterial defaultMaterial("Default");
+	defaultMaterial.Initialize(engine.GetDirectX());
+
+	// Setting Material
+	{
+		auto& texMgr		= engine.GetRenderingSystem().GetTexture2DManager();
+//		auto albedoMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/test.png", false);
+
+		auto albedoMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_basecolor.png", false);
+		auto metallicMap	= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_metallic.png", false);
+		auto roughnessMap	= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_roughness.png", false);
+
+		auto normalMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_normal.png", false);
+
+		defaultMaterial.RegistDiffuseMap(*albedoMap);
+		defaultMaterial.RegistMetallicMap(*metallicMap);
+		defaultMaterial.RegistRoughnessMap(*roughnessMap);
+		defaultMaterial.RegistNormalMap(*normalMap);
+	}
+
+	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
+
+	Object sphere = engine.GetObjectManager().Acquire("Sphere");
+	{
+		BasicGeometryGenerator::CreateSphere(sphere, engine, 8.0f, 32, 32, defaultFlag);
+//		BasicGeometryGenerator::CreateBox(sphere, engine, Vector3(5.0f, 5.0f, 5.0f), defaultFlag);
+
+		engine.AddRootObject(sphere);
+
+		sphere.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+		sphere.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 180, 0));
+
+		auto mesh = sphere.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+
+	Object& light = engine.GetObjectManager().Acquire("Light");
+	{
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(50.0f, 30.0f, 0.0f));
+
+		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(1.0f);
+		engine.AddRootObject(light);
+	}
+
+	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
+
+#ifndef SKYBOX_ON
+	MaterialID matID = engine.ActivateSkyScattering(512, light);
+	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
+
+
+#endif
+
 }
 
 void TestScene::OnDestroy(Engine&)
