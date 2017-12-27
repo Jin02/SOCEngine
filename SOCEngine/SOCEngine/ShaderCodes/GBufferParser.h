@@ -37,7 +37,7 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 #endif
 
 	float3 normal = normal_roughness.xyz;
-	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
+//	normal *= 2.0f; normal -= float3(1.0f, 1.0f, 1.0f);
 
 	outSurface.normal		= normal;
 	outSurface.roughness	= normal_roughness.w;
