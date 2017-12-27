@@ -106,9 +106,23 @@ float3 UnpackNormalMap(SamplerState samplerState, float2 uv, float3 vertexNormal
 	return normalize(lerp(vertexNormal, bumpedNormal, HasNormalMap()));
 }
 
-float3 PackNormal(float3 normal)
+float3 UnpackNormalMapWithoutTangent(SamplerState samplerState, float2 uv, float3 vertexNormal, float3 viewDir)
 {
-	return normalize(normal) * 0.5f + 0.5f;
+	float3 dp1 = ddx(-viewDir);
+	float3 dp2 = ddy(-viewDir);
+	float2 duv1 = ddx(uv);
+	float2 duv2 = ddy(-uv);
+
+	float3 dp2perp = cross(dp2, vertexNormal);
+	float3 dp1perp = cross(vertexNormal, dp1);
+	float3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+	float3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+	float invmax = rsqrt(max(dot(T, T), dot(B, B)));
+	float3x3 tbn = float3x3(T * invmax, B * invmax, vertexNormal);
+
+	float3 map = normalMap.Sample(samplerState, uv).xyz * 2.0f - 1.0f;
+	return normalize(mul(map, tbn));
 }
 
 float GetRoughness(SamplerState samplerState, float2 uv)
