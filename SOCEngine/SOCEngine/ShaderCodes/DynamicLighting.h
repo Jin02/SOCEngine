@@ -72,7 +72,7 @@ void RenderDirectionalLight(
 		float3	lightDir			= GetDirectionalLightDir(lightIndex);;
 		commonParams.lightDir		= -normalize(lightDir);
 
-		float intensity = DirectionalLightColorBuffer[lightIndex].a * 10.0f;
+		float intensity = DirectionalLightColorBuffer[lightIndex].a * 2.5f;
 #if defined(RENDER_TRANSPARENCY)
 		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
 		resultFrontFaceDiffuseColor		*= intensity;

@@ -22,8 +22,8 @@ namespace Rendering
 			struct ParamCBData
 			{
 				float dt					= 0.0f;
-				float exposureStrength		= 0.4f;
-				float exposureSpeed			= 0.4f;
+				float exposureStrength		= 0.2f;
+				float exposureSpeed			= 0.8f;
 				float bloomThreshold		= 0.4f;
 			};
 

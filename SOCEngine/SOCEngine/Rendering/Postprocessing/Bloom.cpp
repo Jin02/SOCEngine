@@ -21,6 +21,15 @@ void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, c
 
 	_blur.Initialize(dx, shaderMgr);
 
+	GaussianBlur::ParamCBData param;
+	{
+		param.sigma				= 1.2f;
+		param.numPixelPerSide	= 2.0f;
+		param.blurSize			= 3.0f;
+		param.scale				= 1.0f;
+	};
+	_blur.UpdateParamCB(dx, param);
+
 	_paramCB.Initialize(dx);
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 
