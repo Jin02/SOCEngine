@@ -207,12 +207,12 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 		for (uint j = 0; j <= sliceCount; ++j)
 		{
-			float theta = j*thetaStep;
+			float theta = float(j) * thetaStep;
 
 			Vector3 position(	radius * sinf(phi) * cosf(theta),
 								radius * cosf(phi),
 								radius * sinf(phi) * sinf(theta)	);
-			Vector2 uv(theta / MATH_PI * 2.0f, phi / MATH_PI);
+			Vector2 uv(theta / (MATH_PI * 2.0f), phi / MATH_PI);
 
 			Vector3 tangent = Vector3(	-radius*sinf(phi)*sinf(theta),
 										0.0f,
