@@ -23,7 +23,7 @@ void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 {
 	float3 albedo			= ToLinear(GetDiffuse(GBufferDefaultSampler, uv).rgb, GetGamma());
 	float occlusion			= GetOcclusion(GBufferDefaultSampler, uv);
-	float3 normal			= PackNormal(worldNormal);
+	float3 normal			= worldNormal;//PackNormal(worldNormal);
 	float roughness			= GetRoughness(GBufferDefaultSampler, uv);
 	float specularity		= GetMaterialSpecularity();
 	float3 emissiveColor	= ToLinear(GetEmissiveColor(GBufferDefaultSampler, uv), GetGamma());
