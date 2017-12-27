@@ -10,7 +10,7 @@
 #define SHADOW_KERNEL_LEVEL				4
 #define SHADOW_KERNEL_WIDTH				2 * SHADOW_KERNEL_LEVEL + 1
 
-#define BLOCKER_SEARCH_STEP_COUNT		3
+#define BLOCKER_SEARCH_STEP_COUNT		8
 #define BLOCKER_SEARCH_DIM				(BLOCKER_SEARCH_STEP_COUNT * 2 + 1)
 #define BLOCKER_SEARCH_COUNT			(BLOCKER_SEARCH_DIM * BLOCKER_SEARCH_DIM)
 
@@ -85,78 +85,51 @@ float PCF(Texture2D<float> atlas, float2 uv, float depth, float2 stepUV)
 /***********	PCF		************/
 
 /***********	PCSS	************/
-float2 ComputeSearchAreaRadiusUV(float softness, float lightViewDepth, float lightNear)
+float ComputePenumbraSize(Texture2D<float> atlas, float2 uv, float receiver, float softness, float2 rcpAtlasMapSize)
 {
-	return softness.xx * (lightViewDepth - lightNear) / lightViewDepth;
-}
+	float accumBlockerDepth	= 0.0f;
+	float numBlockers		= 0.0f;
 
-float2 PenumbraRadiusUV(float softness, float lightViewDepth, float avgViewDepth)
-{
-	return softness.xx * (lightViewDepth - avgViewDepth) / avgViewDepth;
-}
-
-float2 ProjectToLightUV(float2 penumbraUV, float lightNear, float viewDepth)
-{
-	return penumbraUV * lightNear / viewDepth;
-}
-
-float ZClipToZEye(float lightNear, float lightFar, float avgDepth)
-{
-	return lightFar * lightNear / (lightFar - avgDepth * (lightFar - lightNear));   
-}
-
-void FindBlocker(out float accumBlockerDepth, out uint numBlockers,
-	Texture2D<float> atlas, float2 uv, float lightVPDepth, float2 searchRegionRadiusUV)
-{
-	accumBlockerDepth	= 0;
-	numBlockers			= 0;
-
-	float2 stepUV = searchRegionRadiusUV / BLOCKER_SEARCH_STEP_COUNT;
+	float2 stepUV = rcpAtlasMapSize * softness;
 	for(float x = -BLOCKER_SEARCH_STEP_COUNT; x <= BLOCKER_SEARCH_STEP_COUNT; ++x)
 	{
 		for(float y = -BLOCKER_SEARCH_STEP_COUNT; y <= BLOCKER_SEARCH_STEP_COUNT; ++y)
 		{
 			float2 offset = float2(x, y) * stepUV;
-			float shadowMapDepth = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
+			float shadowMapDepth = atlas.SampleLevel(pointSamplerState, uv + offset, 0).x;
 
-			if (shadowMapDepth > lightVPDepth)
+			if (shadowMapDepth > receiver)
 			{
 				accumBlockerDepth += shadowMapDepth;
-				numBlockers++;
+				numBlockers += 1.0f;
 			}
 		}
 	}
+
+	float avgDepth = accumBlockerDepth / numBlockers;
+	return max((avgDepth - receiver) * softness / avgDepth, 0.0f);
 }
 
-struct PCSSParam
+float PCSS(Texture2D<float> atlas, float2 uv, float viewDepth, float softness, float2 rcpAtlasMapSize)
 {
-	float lightViewDepth;
-	float lightNear;
-	float lightFar;
-	float softness;
-	float2 rcpAtlasMapSize;
-};
+	float penumbra		= ComputePenumbraSize(atlas, uv, viewDepth, softness, rcpAtlasMapSize);
 
-float PCSS(Texture2D<float> atlas, float2 uv, float lightVPDepth, PCSSParam param)
-{
-	const float lightNear	= param.lightNear;
-	const float lightFar	= param.lightFar;
+	float shadow		= 0.0f;
+	float shadowSamples	= 0.0f;
 
-	float accumBlockerDepth = 0.0f;
-	uint blockerCount		= 0;
+	for(int i=-BLOCKER_SEARCH_STEP_COUNT; i<=BLOCKER_SEARCH_STEP_COUNT; ++i)
+	{
+		for(int j=-BLOCKER_SEARCH_STEP_COUNT; j<=BLOCKER_SEARCH_STEP_COUNT; ++j)
+		{
+			float offset = float2(i, j) * penumbra * rcpAtlasMapSize;
+			float depthSample = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
 
-	float2 searchRegionRadiusUV = ComputeSearchAreaRadiusUV(param.softness, param.lightViewDepth, lightNear) * param.rcpAtlasMapSize;
-	FindBlocker(accumBlockerDepth, blockerCount, atlas, uv, lightVPDepth, searchRegionRadiusUV);
+			shadow += depthSample > viewDepth ? 0.0f : 1.0f;
+			shadowSamples += 1.0f;
+		}
+	}
 
-	if(blockerCount == 0)							return 1.0f;
-	else if(blockerCount == BLOCKER_SEARCH_COUNT)	return 0.0f;
-
-	float avgBlockerDepth			= accumBlockerDepth / blockerCount;
-	float avgBlockerDepthWorld		= ZClipToZEye(lightFar, lightNear, avgBlockerDepth); //inverted depth
-	float2 penumbraRadiusUV			= PenumbraRadiusUV(param.softness, param.lightViewDepth, avgBlockerDepthWorld);
-	float2 filterRadiusUV			= ProjectToLightUV(penumbraRadiusUV, lightNear, param.lightViewDepth) * param.rcpAtlasMapSize;
-
-	return PCF(atlas, uv, lightVPDepth, filterRadiusUV);
+	return shadow / shadowSamples;
 }
 /***********	PCSS	************/
 
@@ -212,21 +185,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 #if 1
 	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 #else
-	const float lightFar	= 5000.0f;
-	float3 lightWorldPos	= normalize(float3(-2500, 3750, 2185)) * lightFar;//vertexWorldPos - (-lightDir) * lightFar;
-	float viewMat_43		= -dot(-lightDir, lightWorldPos);
-	float viewDepth			= dot(-lightDir, vertexWorldPos) + viewMat_43;
 
-	PCSSParam pcssParam;
-	{
-		pcssParam.lightViewDepth	= viewDepth;
-		pcssParam.lightNear			= shadowParam.lightNear;
-		pcssParam.lightFar			= lightFar;
-		pcssParam.softness			= shadowParam.softness;
-		pcssParam.rcpAtlasMapSize	= rcp(float2(lightCapacityCount, 1.0f) * resolution);
-	}
-
-	float shadow		= saturate(PCSS(DirectionalLightShadowMapAtlas, shadowUV.xy, depth - bias, pcssParam));
 #endif
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
