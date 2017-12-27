@@ -50,8 +50,11 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 	ID3D11Texture2D* tex2d = nullptr;
 	resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&tex2d);
 
-	uint texW = image.GetImages()[0].width;
-	uint texH = image.GetImages()[0].height;
+	D3D11_TEXTURE2D_DESC desc;
+	tex2d->GetDesc(&desc);
+
+	uint texW = desc.Width;
+	uint texH = desc.Height;
 	auto dxResource = DXSharedResource<ID3D11ShaderResourceView>(srv);
 	tex = std::make_shared<Texture2D>(ShaderResourceView(dxResource), DXSharedResource<ID3D11Texture2D>(tex2d), hasAlpha, Size<uint>(texW, texH));
 	_hash.insert(std::make_pair(name + format, tex));
