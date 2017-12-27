@@ -47,8 +47,7 @@ VS_OUTPUT VS(VS_INPUT input)
 float4 PS(VS_OUTPUT input) : SV_Target
 {
 	input.normal	= normalize(input.normal);
-
-	float3 normal = HasNormalMap() ? UnpackNormalMap(defaultSampler, input.uv, input.normal, input.tangent) : input.normal;
+	float3 normal	= HasNormalMap() ? UnpackNormalMap(defaultSampler, input.uv, input.normal, input.tangent) : input.normal;
 	return Lighting(normal, input.worldPos, input.position.xy, input.uv);
 }
 
