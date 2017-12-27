@@ -56,7 +56,10 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
 	float2 velocity			= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
 	
-	float3 normal = normalize(input.normal);
+	input.normal = normalize(input.normal);
+
+	float3 viewDir	= normalize(camera_worldPos - input.worldPos);
+	float3 normal	= HasNormalMap() ? UnpackNormalMapWithoutTangent(GBufferDefaultSampler, input.uv, input.normal, viewDir) : input.normal;
 	MakeGBuffer(normal, input.uv, velocity, outGBuffer.albedo_occlusion, outGBuffer.velocity_metallic_specularity, outGBuffer.normal_roughness, outGBuffer.emission_materialFlag);
 
 	return outGBuffer;

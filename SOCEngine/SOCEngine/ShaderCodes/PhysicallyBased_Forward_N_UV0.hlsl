@@ -43,7 +43,10 @@ VS_OUTPUT VS(VS_INPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	float3 normal	= normalize(input.normal);
+	input.normal	= normalize(input.normal);
+
+	float3 viewDir	= normalize(camera_worldPos - input.worldPos);
+	float3 normal	= HasNormalMap() ? UnpackNormalMapWithoutTangent(defaultSampler, input.uv, input.normal, viewDir) : input.normal;
 	return Lighting(normal, input.worldPos, input.position.xy, input.uv);
 }
 
