@@ -25,7 +25,7 @@ void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, c
 	{
 		param.sigma				= 1.2f;
 		param.numPixelPerSide	= 2.0f;
-		param.blurSize			= 3.0f;
+		param.blurSize			= 2.0f;
 		param.scale				= 1.0f;
 	};
 	_blur.UpdateParamCB(dx, param);
