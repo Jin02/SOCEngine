@@ -1,31 +1,28 @@
 #ifndef __SOC_ENV_IBL_H__
 #define __SOC_ENV_IBL_H__
 
-#include "../GlobalDefine.h"
+#include "GBufferParser.h"
+#include "CommonConstBuffer.h"
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
-SamplerState ambientCubeMapSampler	: register( s5  );
-TextureCube	ambientCubeMap			: register( t32 );
+#define USE_APPROXIMATE
 
-cbuffer SkyMapInfoParam				: register( b7 )
-{
-	float	skyMapInfoParam_maxMipCount;
-	uint	skyMapInfoParam_isSkyLightOn;
-	uint	skyMapInfoParam_isDynamicSkyLight;
-	float	skyMapInfoParam_blendFraction;
-};
+Texture2D<float2> preIntegrateEnvBRDFMap	: register( t29 );
+TextureCube	skyCubeMap						: register( t32 );
+
+SamplerState skyCubeMapSampler			: register( s5  );
+
+static const float MaxMipLevel = 5.0f;
 
 float3 GetSkyLightReflection(float3 reflectDir, float roughness, bool isDynamicSkyLight)
 {
-	const float maxMipCount = skyMapInfoParam_maxMipCount;
-
-	float absSpecularMip	= ComputeRoughnessLOD(roughness, maxMipCount);
-	float3 reflection		= ambientCubeMap.SampleLevel(ambientCubeMapSampler, reflectDir, absSpecularMip).rgb;
+	float absSpecularMip	= ComputeRoughnessLOD(roughness, MaxMipLevel);
+	float3 reflection		= skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, absSpecularMip).rgb;
 
 	if(isDynamicSkyLight)
 	{
-		float3 LowFrequencyReflection = ambientCubeMap.SampleLevel(ambientCubeMapSampler, reflectDir, maxMipCount).rgb;
+		float3 LowFrequencyReflection = skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, MaxMipLevel).rgb;
 		float LowFrequencyBrightness = Luminance(LowFrequencyReflection);
 
 		reflection /= max(LowFrequencyBrightness, 0.00001f);
@@ -48,7 +45,7 @@ float3 PreFilterEnvMap(float roughness, float3 reflectDir, uniform uint numSampl
 		float NdotL		= saturate( dot( reflectDir, lightDir ) );
 		if( NdotL > 0 )
 		{
-			filteredColor += ambientCubeMap.SampleLevel( ambientCubeMapSampler, lightDir, 0 ).rgb * NdotL;
+			filteredColor += skyCubeMap.SampleLevel( skyCubeMapSampler, lightDir, 0 ).rgb * NdotL;
 			weight += NdotL;
 		}
 	}
@@ -62,18 +59,18 @@ float3 ApproximateSpecularIBL(Texture2D<float2> preIntegrateEnvMap, float3 specu
 {
 	float NdotV			= abs(dot(normal, viewDir));
 	float3 reflectDir	= 2.0f * dot(normal, viewDir) * normal - viewDir;
-	float mip			= ComputeRoughnessLOD(roughness, skyMapInfoParam_maxMipCount);
+	float mip			= ComputeRoughnessLOD(roughness, MaxMipLevel);
 
 	float3 prefilteredColor	= float3(0.0f, 0.0f, 0.0f);
 	float2 envBRDF			= float2(0.0f, 0.0f);
 
-//	roughness	= saturate(roughness - 0.0002f);
-//	NdotV		= saturate(NdotV - 0.0002f);
+	roughness	= abs(roughness - 0.0002f);
+	NdotV		= abs(NdotV - 0.0002f);
 	
 	if(usePreIntegrateEnvMap)
 	{
-		prefilteredColor	= ambientCubeMap.SampleLevel(ambientCubeMapSampler, reflectDir, mip).rgb;
-		envBRDF				= saturate(preIntegrateEnvMap.SampleLevel(ambientCubeMapSampler, float2(roughness, NdotV), 0));
+		prefilteredColor	= skyCubeMap.SampleLevel(skyCubeMapSampler, reflectDir, mip).rgb;
+		envBRDF				= saturate(preIntegrateEnvMap.SampleLevel(skyCubeMapSampler, float2(roughness, NdotV), 0));
 	}
 	else
 	{
@@ -101,7 +98,7 @@ float3 SpecularIBL(float3 specularColor, float roughness, float3 normal, float3 
 		
 		if( NdotL > 0 )
 		{
-			float3 SampleColor = ambientCubeMap.SampleLevel( ambientCubeMapSampler, lightDir, 0 ).rgb;
+			float3 SampleColor = skyCubeMap.SampleLevel( skyCubeMapSampler, lightDir, 0 ).rgb;
 
 			float Vis	= GeometrySmithJointApproximately( NdotV, NdotL, roughness );
 			float Fc	= pow( 1.0f - VdotH, 5.0f );
@@ -138,7 +135,7 @@ float3 DiffuseIBL(float3 diffuseColor, float roughness, float3 normal, float3 vi
 
 		if( NdotL > 0 )
 		{
-			float3 SampleColor = ambientCubeMap.SampleLevel( ambientCubeMapSampler, lightDir, 0 ).rgb;
+			float3 SampleColor = skyCubeMap.SampleLevel( skyCubeMapSampler, lightDir, 0 ).rgb;
 
 			float FD90 = ( 0.5 + 2 * VdotH * VdotH ) * roughness;
 			//float FD90 = 0.5 + 2 * VdotH * VdotH * roughness;
@@ -168,14 +165,47 @@ float3 ApproximateIBL(Texture2D<float2> preIntegrateEnvMap, ApproximateIBLParam 
 {
 	float3 diffuse = float3(0.0f, 0.0f, 0.0f);
 	{
-		float absDiffuseMip = skyMapInfoParam_maxMipCount;
-		float3 diffsueLookUp = ambientCubeMap.SampleLevel(ambientCubeMapSampler, param.normal, absDiffuseMip).rgb;
-			
+		float3 diffsueLookUp = skyCubeMap.SampleLevel(skyCubeMapSampler, param.normal, MaxMipLevel).rgb;			
 		diffuse = param.diffuseColor * diffsueLookUp;
 	}
 
 	float3 specular = ApproximateSpecularIBL(preIntegrateEnvMap, param.specularColor, param.roughness, param.normal, param.viewDir, true, uint2(0, 0));
 	return diffuse + specular;
+}
+
+void IBL(out float3 outDiffuse, out float3 outSpecular, uint2 screenPt, Surface surface)
+{
+	float3 normal		= surface.normal;
+	float3 viewDir		= normalize( camera_worldPos - surface.worldPos );
+	float3 reflectDir	= reflect(-viewDir, normal);
+
+	float3 diffuse	= float3(0.0f, 0.0f, 0.0f);
+	float3 specular	= float3(0.0f, 0.0f, 0.0f);
+
+	uint2 random = uint2(0, 0);
+	// Diffuse
+	{
+#ifdef USE_APPROXIMATE
+		float3 diffsueLookUp = skyCubeMap.SampleLevel(skyCubeMapSampler, normal, MaxMipLevel).rgb;
+		diffuse = surface.albedo * diffsueLookUp;
+#else
+		diffuse = DiffuseIBL(surface.albedo, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES, random);
+#endif
+	}
+
+	// Specular
+	{
+#ifdef USE_APPROXIMATE
+		specular = ApproximateSpecularIBL(preIntegrateEnvBRDFMap, surface.specular,
+			surface.roughness, surface.normal, viewDir,
+			true, random);
+#else
+		specular = SpecularIBL(surface.specular, surface.roughness, surface.normal, viewDir, BRDF_SAMPLES, random);
+#endif
+	}
+
+	outDiffuse	= diffuse * float(surface.depth > 0.0f);
+	outSpecular	= specular * float(surface.depth > 0.0f);
 }
 
 #endif
