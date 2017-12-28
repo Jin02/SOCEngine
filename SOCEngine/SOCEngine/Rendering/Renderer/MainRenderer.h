@@ -20,6 +20,7 @@
 #include "GlobalIllumination.h"
 
 #include "MainSceneMaker.h"
+#include "PreIntegrateEnvBRDF.h"
 
 namespace Rendering
 {
@@ -77,6 +78,9 @@ namespace Rendering
 		private:
 			TempRenderQueue								_renderQ;
 			RenderQueue::TransparentMeshRenderQueue		_transparentMeshRenderQ;
+
+		private:
+			Precompute::PreIntegrateEnvBRDF				_envBRDFMap;
 
 		private:
 			Shader::ComputeShader::ThreadGroup			_tbdrThreadGroup;

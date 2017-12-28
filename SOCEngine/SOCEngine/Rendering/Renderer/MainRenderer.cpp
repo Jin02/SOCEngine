@@ -80,6 +80,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, BufferManag
 		_gi.Initialize(dx, shaderMgr, renderSize, giParam);
 
 	_mainSceneMaker.Initialize(dx, shaderMgr, renderSize);
+	_envBRDFMap.CreatePreBRDFMap(dx, shaderMgr);
 }
 
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
@@ -267,6 +268,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	{
 		AutoBinderSampler<ComputeShader> shadowCompSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
 		AutoBinderSampler<ComputeShader> pointSampler(dx,		SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
+		AutoBinderSampler<ComputeShader> ambientCubeSampler(dx, SamplerStateBindIndex::AmbientCubeMapSamplerState,	SamplerState::Linear);
 
 		AutoBinderCB<ComputeShader> tbrCB(dx,				ConstBufferBindIndex::TBRParam,				_tbrCB);
 		AutoBinderCB<ComputeShader> cameraCB(dx,			ConstBufferBindIndex::Camera,				mainCamera.GetCameraCB());
@@ -301,8 +303,15 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderSRV<ComputeShader> slShadowMap(dx,		TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowMap(dx,		TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
 
+		AutoBinderSRV<ComputeShader> envLUT(dx,				TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap,		_envBRDFMap.GetTexture2D().GetShaderResourceView());
+
+		if(param.skyBoxMaterial)
+			ComputeShader::BindShaderResourceView(dx,			TextureBindIndex::AmbientCubeMap,						param.skyBoxMaterial->GetCubeMap().GetShaderResourceView());
+
 		AutoBinderUAV outLightBuffer(dx, UAVBindIndex::TBDR_OutLightBuffer, _scaledMap.GetTexture2D()->GetUnorderedAccessView());
 		_tbdrShader.Dispatch(dx, _tbdrThreadGroup);
+
+		ComputeShader::UnBindShaderResourceView(dx,			TextureBindIndex::AmbientCubeMap);
 
 		AutoBinderSRV<ComputeShader> gbufferBlendDepth(dx,	TextureBindIndex::GBuffer_BlendedDepth,					_gbuffer.blendedDepthBuffer.GetTexture2D().GetShaderResourceView());
 		_blendedDepthLightCulling.Dispatch(dx, _tbdrThreadGroup);
