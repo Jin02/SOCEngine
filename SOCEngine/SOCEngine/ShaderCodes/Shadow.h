@@ -121,7 +121,7 @@ float PCSS(Texture2D<float> atlas, float2 uv, float viewDepth, float softness, f
 	{
 		for(int j=-BLOCKER_SEARCH_STEP_COUNT; j<=BLOCKER_SEARCH_STEP_COUNT; ++j)
 		{
-			float offset = float2(i, j) * penumbra * rcpAtlasMapSize;
+			float2 offset = float2(i, j) * penumbra * rcpAtlasMapSize;
 			float depthSample = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
 
 			shadow += depthSample > viewDepth ? 0.0f : 1.0f;

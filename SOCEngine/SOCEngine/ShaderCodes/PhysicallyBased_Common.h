@@ -110,8 +110,10 @@ float3 UnpackNormalMapWithoutTangent(SamplerState samplerState, float2 uv, float
 {
 	float3 dp1 = ddx(-viewDir);
 	float3 dp2 = ddy(-viewDir);
+
+	uv.y = 1.0f - uv.y;
 	float2 duv1 = ddx(uv);
-	float2 duv2 = ddy(-uv);
+	float2 duv2 = ddy(uv);
 
 	float3 dp2perp = cross(dp2, vertexNormal);
 	float3 dp1perp = cross(vertexNormal, dp1);
