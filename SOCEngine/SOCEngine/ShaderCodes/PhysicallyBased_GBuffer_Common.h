@@ -5,7 +5,6 @@
 
 #include "ShaderCommon.h"
 #include "PhysicallyBased_Common.h"
-#include "EnvIBL.h"
 
 struct GBuffer
 {
