@@ -27,14 +27,13 @@ DefaultShaders::LoadDefaultSahder(
 		if (macros)
 			targetShaderMacros = (*macros);
 
-		if (renderType == DefaultRenderType::GBuffer_AlphaTest ||
-			renderType == DefaultRenderType::ReflectionProbe_AlphaTestWithDiffuse)
+		if (renderType == DefaultRenderType::GBuffer_AlphaTest)
 		{
 			ShaderMacro alphaTestMacro;
 			alphaTestMacro.SetName("ENABLE_ALPHA_TEST");
 			targetShaderMacros.push_back(alphaTestMacro);
 		}
-		if (renderType == DefaultRenderType::Forward_Transparency || renderType == DefaultRenderType::ReflectionProbe_Transparency)
+		if (renderType == DefaultRenderType::Forward_Transparency)
 		{
 			ShaderMacro useTransparencyMacro;
 			useTransparencyMacro.SetName("RENDER_TRANSPARENCY");
@@ -141,28 +140,6 @@ void DefaultShaders::MakeDefaultShaderMainFuncNames(
 		vsMain = "DepthOnlyVS";
 		psMain = "";
 	}
-	else if(renderType == DefaultRenderType::ReflectionProbe_OnlyFrontFace			||
-			renderType == DefaultRenderType::ReflectionProbe_Transparency			||
-			renderType == DefaultRenderType::ReflectionProbe_AlphaTestWithDiffuse	||
-			renderType == DefaultRenderType::ReflectionProbe_OnlyDepth)
-	{
-		if(renderType == DefaultRenderType::ReflectionProbe_AlphaTestWithDiffuse)
-		{
-			vsMain = "OnlyAlpaTestWithDiffuseVS";
-			gsMain = "OnlyAlpaTestWithDiffuseGS";
-			psMain = "OnlyAlpaTestWithDiffusePS";
-		}
-		else if(renderType == DefaultRenderType::ReflectionProbe_OnlyDepth)
-		{
-			vsMain = "DepthOnlyVS";
-			gsMain = "DepthOnlyGS";
-			psMain = "";
-		}
-		else
-		{
-			gsMain = "GS";
-		}
-	}
 
 	outVSMain	= vsMain;
 	outGSMain	= gsMain;
@@ -208,12 +185,6 @@ std::string DefaultShaders::MakeDefaultSahderFileName(DefaultRenderType renderTy
 		break;
 	case DefaultRenderType::Voxelization:
 		frontFileName = "Voxelization_";
-		break;
-	case DefaultRenderType::ReflectionProbe_AlphaTestWithDiffuse:
-	case DefaultRenderType::ReflectionProbe_OnlyDepth:
-	case DefaultRenderType::ReflectionProbe_OnlyFrontFace:
-	case DefaultRenderType::ReflectionProbe_Transparency:
-		frontFileName = "ReflectionProbe_";
 		break;
 	default:
 		assert(!"Error, unsupported mesh type");

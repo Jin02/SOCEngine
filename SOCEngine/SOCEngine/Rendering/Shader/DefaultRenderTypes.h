@@ -9,10 +9,6 @@ namespace Rendering
 		Forward_Transparency					,
 		Forward_OnlyDepth						,
 		Forward_AlphaTestWithDiffuse			,
-		ReflectionProbe_Transparency			,
-		ReflectionProbe_OnlyDepth				,
-		ReflectionProbe_AlphaTestWithDiffuse	,
-		ReflectionProbe_OnlyFrontFace			,
 		Voxelization							,
 		MAX_NUM
 	};
