@@ -4,6 +4,8 @@
 #include "DynamicLighting.h"
 #include "GBufferParser.h"
 
+#include "EnvIBL.h"
+
 #if (MSAA_SAMPLES_COUNT > 1)
 
 groupshared uint s_edgePixelCounter;
@@ -42,12 +44,14 @@ void MSAALighting(
 	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
+	float accumNdotL			= 0.0f;
+
 	uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
 	for(; pointLightIdx<pointLightCountInThisTile; ++pointLightIdx)
 	{
 		lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 
-		RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+		RenderPointLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
@@ -58,7 +62,7 @@ void MSAALighting(
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
 
-		RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+		RenderSpotLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
@@ -70,14 +74,21 @@ void MSAALighting(
 	{
 		lightParams.lightIndex = directionalLightIdx;
 
-		RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+		RenderDirectionalLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 
 		accumulativeDiffuse			+= localDiffuse;
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	outAccumulativeDiffuse	= saturate(accumulativeDiffuse);
-	outAccumulativeSpecular	= saturate(accumulativeSpecular);
+	accumNdotL = clamp(accumNdotL, IBL_ACCUM_MIN_RATE, IBL_ACCUM_MAX_RATE);
+
+	float3 iblDiffuse	= 0.0f;
+	float3 iblSpecular	= 0.0f;
+
+	IBL(iblDiffuse, iblSpecular, surface);
+
+	outAccumulativeDiffuse	= saturate(accumulativeDiffuse + iblDiffuse * accumNdotL);
+	outAccumulativeSpecular	= saturate(accumulativeSpecular + iblSpecular * accumNdotL);
 }
 #endif
 
@@ -130,6 +141,8 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	float3 localDiffuse			= float3(0.0f, 0.0f, 0.0f);
 	float3 localSpecular		= float3(0.0f, 0.0f, 0.0f);
 
+	float accumNdotL			= 0.0f;
+
 	// Lighting Pass
 	{
 		uint pointLightIdx = (int)(surface.depth == 0.0f) * pointLightCountInThisTile;
@@ -137,7 +150,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		{
 			lightParams.lightIndex		= s_lightIdx[pointLightIdx];
 	
-			RenderPointLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+			RenderPointLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 	
 			accumulativeDiffuse			+= localDiffuse;
 			accumulativeSpecular		+= localSpecular;
@@ -148,7 +161,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		{
 			lightParams.lightIndex = s_lightIdx[spotLightIdx];
 	
-			RenderSpotLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+			RenderSpotLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 	
 			accumulativeDiffuse			+= localDiffuse;
 			accumulativeSpecular		+= localSpecular;
@@ -160,7 +173,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		{
 			lightParams.lightIndex = directionalLightIdx;
 	
-			RenderDirectionalLight(localDiffuse, localSpecular, lightParams, surface.worldPos);
+			RenderDirectionalLight(localDiffuse, localSpecular, accumNdotL, lightParams, surface.worldPos);
 	
 			accumulativeDiffuse			+= localDiffuse;
 			accumulativeSpecular		+= localSpecular;
@@ -171,8 +184,15 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		}
 	}
 	
-	accumulativeDiffuse		= saturate(accumulativeDiffuse);
-	accumulativeSpecular	= saturate(accumulativeSpecular);
+	accumNdotL = clamp(accumNdotL, IBL_ACCUM_MIN_RATE, IBL_ACCUM_MAX_RATE);
+
+	float3 iblDiffuse	= 0.0f;
+	float3 iblSpecular	= 0.0f;
+
+	IBL(iblDiffuse, iblSpecular, surface);
+
+	accumulativeDiffuse		= saturate(accumulativeDiffuse + iblDiffuse * accumNdotL);
+	accumulativeSpecular	= saturate(accumulativeSpecular + iblSpecular * accumNdotL);
 
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
 

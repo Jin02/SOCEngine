@@ -23,6 +23,10 @@ struct LightingCommonParams
 };
 
 void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
+#if defined(RENDER_TRANSPARENCY)
+#else
+	out float outNdotL,
+#endif
 	in LightingParams lightingParams, in LightingCommonParams commonParamas)
 {
 	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
@@ -44,6 +48,12 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	float3 Fr = ( Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) );// / (4.0f * NdotL * NdotV);
 	resultSpecularColor	= Fr * commonParamas.lightColor;
 	resultSpecularColor	= saturate(resultSpecularColor);
+
+#if defined(RENDER_TRANSPARENCY)
+
+#else
+	outNdotL = NdotL;
+#endif
 }
 
 void RenderDirectionalLight(
@@ -51,7 +61,7 @@ void RenderDirectionalLight(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
 #else
-					out float3 resultDiffuseColor, out float3 resultSpecularColor, 
+					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
@@ -83,9 +93,12 @@ void RenderDirectionalLight(
 		resultBackFaceDiffuseColor		*= intensity;
 		resultBackFaceSpecularColor		*= intensity;
 #else
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
+		float NdotL = 0.0f;
+		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
 		resultDiffuseColor				*= intensity;
 		resultSpecularColor				*= intensity;
+
+		accumNdotL						+= NdotL;
 
 		uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
@@ -104,7 +117,7 @@ void RenderPointLight(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
 #else
-					out float3 resultDiffuseColor, out float3 resultSpecularColor, 
+					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
@@ -144,10 +157,13 @@ void RenderPointLight(
 		resultBackFaceDiffuseColor		*= attenuation;
 		resultBackFaceSpecularColor		*= attenuation;
 #else
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
+		float NdotL = 0.0f;
+		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
 
 		resultDiffuseColor	*= attenuation;
 		resultSpecularColor	*= attenuation;
+
+		accumNdotL			+= NdotL;
 
 		uint shadowIndex = GetShadowIndex(PointLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true
@@ -166,7 +182,7 @@ void RenderSpotLight(
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
 #else
-					out float3 resultDiffuseColor, out float3 resultSpecularColor, 
+					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
 					in LightingParams lightingParams, float3 vertexWorldPosition)
 {
@@ -227,10 +243,12 @@ void RenderSpotLight(
 		resultBackFaceDiffuseColor		*= totalAttenTerm;
 		resultBackFaceSpecularColor		*= totalAttenTerm;
 #else
-		BRDFLighting(resultDiffuseColor, resultSpecularColor, lightingParams, commonParams);
+		float NdotL = 0.0f;
+		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
 
 		resultDiffuseColor	*= totalAttenTerm;
 		resultSpecularColor	*= totalAttenTerm;
+		accumNdotL			+= NdotL;
 
 		uint shadowIndex = GetShadowIndex(SpotLightOptionalParamIndex[lightIndex]);
 		if(shadowIndex != -1) //isShadow == true

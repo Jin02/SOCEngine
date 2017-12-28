@@ -9,6 +9,8 @@
 #include "LightCullingCommonCS.h"
 #include "DynamicLighting.h"
 
+#include "EnvIBL.h"
+
 Buffer<uint> g_perLightIndicesInTile	: register( t27 );
 SamplerState defaultSampler				: register( s0 );
 
@@ -45,6 +47,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 #else
 	float3 accumulativeDiffuse	= float3(0.0f, 0.0f, 0.0f);
 	float3 accumulativeSpecular	= float3(0.0f, 0.0f, 0.0f);
+	float accumNdotL			= 0.0f;
 #endif
 
 	uint endIdx = startIdx + pointLightCount;
@@ -67,7 +70,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
-		RenderPointLight(diffuse, specular, lightParams, vtxWorldPos);
+		RenderPointLight(diffuse, specular, accumNdotL, lightParams, vtxWorldPos);
 
 		accumulativeDiffuse		+= diffuse;
 		accumulativeSpecular	+= specular;
@@ -95,7 +98,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
-		RenderSpotLight(diffuse, specular, lightParams, vtxWorldPos);
+		RenderSpotLight(diffuse, specular, accumNdotL, lightParams, vtxWorldPos);
 
 		accumulativeDiffuse		+= diffuse;
 		accumulativeSpecular	+= specular;
@@ -122,7 +125,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 		accumulativeBackFaceSpecular	+= backFaceSpecularColor;
 #else
 		float3 diffuse, specular;
-		RenderDirectionalLight(diffuse, specular, lightParams, vtxWorldPos);
+		RenderDirectionalLight(diffuse, specular, accumNdotL, lightParams, vtxWorldPos);
 
 		accumulativeDiffuse		+= diffuse;
 		accumulativeSpecular	+= specular;
@@ -139,7 +142,20 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3	result	= front + back;
 	float	alpha	= diffuse.a;
 #else
-	float3	result = accumulativeDiffuse + accumulativeSpecular;
+	accumNdotL = clamp(accumNdotL, 0.2f, 1.0f);
+
+	Surface surface;
+	surface.normal		= normal;
+	surface.albedo		= lightParams.diffuseColor;
+	surface.specular	= lightParams.specularColor;
+	surface.worldPos	= vtxWorldPos;
+	surface.roughness	= roughness;
+	surface.depth		= 1.0f; // 어짜피 forward라 IBL에서 depth가 필요없다.
+
+	float3 iblDiffuse, iblSpecular;
+	IBL(iblDiffuse, iblSpecular, surface);
+
+	float3	result = accumulativeDiffuse + accumulativeSpecular + (iblDiffuse + iblSpecular) * accumNdotL;
 	float	alpha = 1.0f;
 #endif
 
