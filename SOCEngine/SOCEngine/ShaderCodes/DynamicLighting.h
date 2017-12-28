@@ -22,11 +22,7 @@ struct LightingCommonParams
 	float3	lightDir;
 };
 
-void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-#if defined(RENDER_TRANSPARENCY)
-#else
-	out float outNdotL,
-#endif
+void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor, out float outNdotL,
 	in LightingParams lightingParams, in LightingCommonParams commonParamas)
 {
 	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
@@ -49,17 +45,14 @@ void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
 	resultSpecularColor	= Fr * commonParamas.lightColor;
 	resultSpecularColor	= saturate(resultSpecularColor);
 
-#if defined(RENDER_TRANSPARENCY)
-
-#else
 	outNdotL = NdotL;
-#endif
 }
 
 void RenderDirectionalLight(
 #if defined(RENDER_TRANSPARENCY)
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
+					inout float accumFrontFaceNdotL, inout float accumBackFaceNdotL,
 #else
 					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
@@ -84,14 +77,18 @@ void RenderDirectionalLight(
 
 		float intensity = DirectionalLightColorBuffer[lightIndex].a * 5.0f;
 #if defined(RENDER_TRANSPARENCY)
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
+		float frontFaceNdotL = 0.0f;
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, frontFaceNdotL, lightingParams, commonParams);
 		resultFrontFaceDiffuseColor		*= intensity;
 		resultFrontFaceSpecularColor	*= intensity;
+		accumFrontFaceNdotL				+= frontFaceNdotL;
 
+		float backFaceNdotL = 0.0f;
 		lightingParams.normal = -lightingParams.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, backFaceNdotL, lightingParams, commonParams);
 		resultBackFaceDiffuseColor		*= intensity;
 		resultBackFaceSpecularColor		*= intensity;
+		accumBackFaceNdotL				+= backFaceNdotL;
 #else
 		float NdotL = 0.0f;
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
@@ -116,6 +113,7 @@ void RenderPointLight(
 #if defined(RENDER_TRANSPARENCY)
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
+					inout float accumFrontFaceNdotL, inout float accumBackFaceNdotL,
 #else
 					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
@@ -148,14 +146,18 @@ void RenderPointLight(
 		float attenuation = lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 
 #if defined(RENDER_TRANSPARENCY)
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
+		float frontFaceNdotL = 0.0f;
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, frontFaceNdotL, lightingParams, commonParams);
 		resultFrontFaceDiffuseColor		*= attenuation;
 		resultFrontFaceSpecularColor	*= attenuation;
+		accumFrontFaceNdotL				+= frontFaceNdotL;
 
+		float backFaceNdotL = 0.0f;
 		lightingParams.normal = -lightingParams.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, backFaceNdotL, lightingParams, commonParams);		
 		resultBackFaceDiffuseColor		*= attenuation;
 		resultBackFaceSpecularColor		*= attenuation;
+		accumBackFaceNdotL				+= backFaceNdotL;
 #else
 		float NdotL = 0.0f;
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
@@ -181,6 +183,7 @@ void RenderSpotLight(
 #if defined(RENDER_TRANSPARENCY)
 					out float3 resultFrontFaceDiffuseColor, out float3 resultFrontFaceSpecularColor,
 					out float3 resultBackFaceDiffuseColor, out float3 resultBackFaceSpecularColor,
+					inout float accumFrontFaceNdotL, inout float accumBackFaceNdotL,
 #else
 					out float3 resultDiffuseColor, out float3 resultSpecularColor, inout float accumNdotL,
 #endif
@@ -234,14 +237,18 @@ void RenderSpotLight(
 		float totalAttenTerm = lumen * plAttenuation * innerOuterAttenuation;
 
 #if defined(RENDER_TRANSPARENCY)
-		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, lightingParams, commonParams);
+		float frontFaceNdotL = 0.0f;
+		BRDFLighting(resultFrontFaceDiffuseColor, resultFrontFaceSpecularColor, frontFaceNdotL, lightingParams, commonParams);
 		resultFrontFaceDiffuseColor		*= totalAttenTerm;
 		resultFrontFaceSpecularColor	*= totalAttenTerm;
+		accumFrontFaceNdotL				+= frontFaceNdotL;
 
+		float backFaceNdotL = 0.0f;
 		lightingParams.normal = -lightingParams.normal;
-		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, lightingParams, commonParams);		
+		BRDFLighting(resultBackFaceDiffuseColor, resultBackFaceSpecularColor, backFaceNdotL, lightingParams, commonParams);		
 		resultBackFaceDiffuseColor		*= totalAttenTerm;
 		resultBackFaceSpecularColor		*= totalAttenTerm;
+		accumBackFaceNdotL				+= backFaceNdotL;
 #else
 		float NdotL = 0.0f;
 		BRDFLighting(resultDiffuseColor, resultSpecularColor, NdotL, lightingParams, commonParams);
