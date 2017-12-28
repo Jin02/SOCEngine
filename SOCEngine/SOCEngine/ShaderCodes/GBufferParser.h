@@ -7,27 +7,6 @@
 #include "TBRParam.h"
 #include "ShaderCommon.h"
 
-struct Surface
-{
-	float3	worldPos;
-	float	depth;
-
-	float3	albedo;
-	float	occlusion;
-
-	float3	normal;
-	float	roughness;
-
-	float3	specular;
-	float	metallic;
-
-	float3	emission;
-	float	specularity;
-
-	float2	motion;
-	uint	materialFlag;
-};
-
 void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx)
 {
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA

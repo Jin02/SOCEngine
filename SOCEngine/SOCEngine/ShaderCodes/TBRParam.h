@@ -41,4 +41,27 @@ float ProjDepthToView(float depth)
 	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
 }
 
+
+struct Surface
+{
+	float3	worldPos;
+	float	depth;
+
+	float3	albedo;
+	float	occlusion;
+
+	float3	normal;
+	float	roughness;
+
+	float3	specular;
+	float	metallic;
+
+	float3	emission;
+	float	specularity;
+
+	float2	motion;
+	uint	materialFlag;
+};
+
+
 #endif
