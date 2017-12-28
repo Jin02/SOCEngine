@@ -3,6 +3,7 @@
 #include "ComputeShader.h"
 #include "DirectX.h"
 #include "ShaderFactory.hpp"
+#include "AutoBinder.hpp"
 
 using namespace Math;
 using namespace Device;
@@ -17,7 +18,7 @@ using namespace Rendering::Factory;
 
 Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
-	std::shared_ptr<ComputeShader> shader = ShaderFactory::LoadComputeShader(dx, shaderMgr, "PreIntegrateEnvBRDF", "CS", nullptr, nullptr);
+	std::shared_ptr<ComputeShader> shader = ShaderFactory::LoadComputeShader(dx, shaderMgr, "PreIntegrateEnvBRDF", "CS", nullptr, "@PreIntegrateEnvBRDF");
 
 	const Size<uint> size(256, 256);
 
@@ -25,6 +26,7 @@ Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, S
 						DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT,
 						D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
 
+	AutoBinderUAV output(dx, UAVBindIndex(0), _texture.GetUnorderedAccessView());
 	shader->Dispatch(dx, ComputeShader::ThreadGroup((size.w + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES,
 													(size.h + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES, 1));
 	shaderMgr.GetPool<ComputeShader>().Delete(shader->GetKey());
