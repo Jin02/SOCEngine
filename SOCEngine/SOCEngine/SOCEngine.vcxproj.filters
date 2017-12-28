@@ -94,12 +94,6 @@
     <Filter Include="ShaderCodes\PBR">
       <UniqueIdentifier>{5dd7077f-b929-4daa-9718-43a20ee78a81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderCodes\Unused">
-      <UniqueIdentifier>{7947513b-c186-4a11-8e81-a048be9c00e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\ReflectionProbe">
-      <UniqueIdentifier>{f2cfdd2a-12d8-47a7-8b40-d0e806c1e93a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderCodes\Shadow">
       <UniqueIdentifier>{4d24e9f7-f44c-49a7-9b66-f3b6307fd24b}</UniqueIdentifier>
     </Filter>
@@ -135,9 +129,6 @@
     </Filter>
     <Filter Include="ShaderCodes\TiledRendering\Forward\Optional">
       <UniqueIdentifier>{bbe40f8f-2045-48aa-bd14-7a3990305cb0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderCodes\ReflectionProbe\Optional">
-      <UniqueIdentifier>{aec8aedb-baeb-4663-af97-78860d2b99f5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Importer">
       <UniqueIdentifier>{438b1cde-b2f7-4644-a485-8a799d567029}</UniqueIdentifier>
@@ -345,9 +336,6 @@
     </Filter>
     <Filter Include="Rendering\Postprocessing\Common">
       <UniqueIdentifier>{f8d029e7-482f-476c-b4f3-8855769c6998}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Postprocessing\IBL">
-      <UniqueIdentifier>{376e001b-8078-4d1d-a8eb-f7f69cae7246}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Texture\DepthMap">
       <UniqueIdentifier>{edb91c14-7d56-48db-af40-4e07373d0bd0}</UniqueIdentifier>
@@ -558,9 +546,6 @@
     </ClInclude>
     <ClInclude Include="ShaderCodes\LightCullingCompareParallelCS.h">
       <Filter>ShaderCodes\LightCulling</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h">
-      <Filter>ShaderCodes\ReflectionProbe</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCodes\Shadow.h">
       <Filter>ShaderCodes\Shadow</Filter>
@@ -816,9 +801,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\FullScreen.h">
       <Filter>Rendering\Postprocessing\FullScreen</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Postprocessing\IBLPass.h">
-      <Filter>Rendering\Postprocessing\IBL</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Renderer\MainRenderer.h">
       <Filter>Rendering\Renderer\Main</Filter>
@@ -1185,9 +1167,6 @@
     <ClCompile Include="Rendering\Postprocessing\FullScreen.cpp">
       <Filter>Rendering\Postprocessing\FullScreen</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp">
-      <Filter>Rendering\Postprocessing\IBL</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp">
       <Filter>Rendering\Renderer\Main</Filter>
     </ClCompile>
@@ -1307,9 +1286,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
-      <Filter>ShaderCodes\Sky</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
       <Filter>ShaderCodes\Postprocessing\Filter</Filter>
     </FxCompile>
@@ -1322,32 +1298,14 @@
     <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl">
       <Filter>ShaderCodes\PBR</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl">
-      <Filter>ShaderCodes\ReflectionProbe</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl">
-      <Filter>ShaderCodes\ReflectionProbe</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\SkyBox.hlsl">
-      <Filter>ShaderCodes\Sky</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
       <Filter>ShaderCodes\Sky</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl">
       <Filter>ShaderCodes\VXGI</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl">
-      <Filter>ShaderCodes\Unused</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl">
       <Filter>ShaderCodes\LightCulling</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl">
-      <Filter>ShaderCodes\Merger</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl">
-      <Filter>ShaderCodes\Merger</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl">
       <Filter>ShaderCodes\TiledRendering\Forward</Filter>
@@ -1363,9 +1321,6 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\TBDR.hlsl">
       <Filter>ShaderCodes\TiledRendering\Deferred</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
-      <Filter>ShaderCodes\Shadow</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl">
       <Filter>ShaderCodes\VXGI\Clear</Filter>
@@ -1406,9 +1361,6 @@
     <FxCompile Include="ShaderCodes\DepthOfField.hlsl">
       <Filter>ShaderCodes\Postprocessing\HDR</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\IBLPass.hlsl">
-      <Filter>ShaderCodes\PBR</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl">
       <Filter>ShaderCodes\Postprocessing\HDR</Filter>
     </FxCompile>
@@ -1420,12 +1372,6 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyDepth.hlsl">
       <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
-      <Filter>ShaderCodes\ReflectionProbe\Optional</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
-      <Filter>ShaderCodes\ReflectionProbe\Optional</Filter>
     </FxCompile>
     <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl">
       <Filter>ShaderCodes\Merger</Filter>

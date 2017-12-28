@@ -172,7 +172,6 @@
     <ClInclude Include="Rendering\Postprocessing\GaussianBlur.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Rendering\Postprocessing\IBLPass.h" />
     <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -276,7 +275,6 @@
     <ClInclude Include="ShaderCodes\PhysicallyBased_Forward_Common.h" />
     <ClInclude Include="ShaderCodes\PhysicallyBased_GBuffer_Common.h" />
     <ClInclude Include="ShaderCodes\RayTracingCommon.h" />
-    <ClInclude Include="ShaderCodes\ReflectionProbe_Common.h" />
     <ClInclude Include="ShaderCodes\ShaderCommon.h" />
     <ClInclude Include="ShaderCodes\Shadow.h" />
     <ClInclude Include="ShaderCodes\SimpleImageEffect.h" />
@@ -401,7 +399,6 @@
     <ClCompile Include="Rendering\Postprocessing\GaussianBlur.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Rendering\Postprocessing\IBLPass.cpp" />
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -457,9 +454,6 @@
     <ClCompile Include="Rendering\View\UnorderedAccessView.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderCodes\AtmosphericScattering.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl" />
     <FxCompile Include="ShaderCodes\Bloom.hlsl" />
     <FxCompile Include="ShaderCodes\ClearVoxelMap.hlsl" />
@@ -467,20 +461,14 @@
     <FxCompile Include="ShaderCodes\Copy.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\DeferredMainOffScreen.hlsl" />
     <FxCompile Include="ShaderCodes\DepthOfField.hlsl" />
     <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl" />
-    <FxCompile Include="ShaderCodes\FinalScreenMerger.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl" />
-    <FxCompile Include="ShaderCodes\IBLPass.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
     <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl" />
     <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl" />
-    <FxCompile Include="ShaderCodes\MomentDepth.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -493,21 +481,9 @@
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl" />
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_TN_UV0.hlsl" />
     <FxCompile Include="ShaderCodes\PreIntegrateEnvBRDF.hlsl" />
-    <FxCompile Include="ShaderCodes\ReflectionProbeAlphaTestWithDiffuse.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbeOnlyDepth.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ReflectionProbe_N_UV0.hlsl" />
-    <FxCompile Include="ShaderCodes\ReflectionProbe_TN_UV0.hlsl" />
     <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl" />
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
-    <FxCompile Include="ShaderCodes\SimpleUIImage2D.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
-    <FxCompile Include="ShaderCodes\SkyBoxForReflectionProbe.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\SSAO.hlsl" />
     <FxCompile Include="ShaderCodes\TBDR.hlsl" />
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl" />
