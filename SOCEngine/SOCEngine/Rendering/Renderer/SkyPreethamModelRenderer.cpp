@@ -80,7 +80,7 @@ void SkyPreethamModelRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr,
 	_renderTarget.Initialize(dx, resolution, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 	_resultMaterial.Initialize(dx, shaderMgr);
-	_resultMaterial.UpdateCubeMap(_renderTarget.GetTexture2D());
+	_resultMaterial.UpdateCubeMap(*_renderTarget.GetTexture2D());
 
 	_materialID = materialMgr.Add(_resultMaterial).first;
 }
@@ -132,7 +132,7 @@ void SkyPreethamModelRenderer::Render(DirectX& dx, const MainCamera& mainCam, co
 		dx.SetBlendState(BlendState::Opaque);	
 		dx.SetDepthStencilState(DepthState::DisableDepthTestWrite, 0);
 		dx.SetRenderTarget(_renderTarget);
-		dx.SetViewport(Rect <float>(0.0f, 0.0f, _renderTarget.GetTexture2D().GetSize().Cast<float>()));
+		dx.SetViewport(Rect <float>(0.0f, 0.0f, _renderTarget.GetTexture2D()->GetSize().Cast<float>()));
 		dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	}
 
@@ -158,4 +158,6 @@ void SkyPreethamModelRenderer::Render(DirectX& dx, const MainCamera& mainCam, co
 
 	dx.GetContext()->DrawIndexed(_geometry.GetIndexBuffer().GetIndexCount(), 0, 0);
 	dx.ReSetRenderTargets(1);
+
+	_renderTarget.GetTexture2D()->GenerateMips(dx);
 }
