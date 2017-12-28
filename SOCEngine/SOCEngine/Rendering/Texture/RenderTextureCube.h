@@ -17,7 +17,7 @@ namespace Rendering
 
 		public:
 			GET_ACCESSOR(Raw, ID3D11RenderTargetView* const, _renderTargetView.GetRaw());
-			GET_CONST_ACCESSOR(Texture2D, const auto&, _tex2D);
+			GET_ACCESSOR_PTR(Texture2D, Texture::Texture2D, _tex2D);
 
 		private:
 			DXSharedResource<ID3D11RenderTargetView>	_renderTargetView;
