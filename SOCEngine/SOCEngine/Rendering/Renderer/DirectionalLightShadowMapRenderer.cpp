@@ -25,21 +25,22 @@ void DirectionalLightShadowMapRenderer::Render(DirectX& dx, Param&& param,
 	auto viewport		= Rect<float>(mapResolution * float(param.shadowIndex), 0.0f, mapResolution, mapResolution);
 
 	dx.SetViewport(viewport);
-	dx.SetDepthMapWithoutRenderTarget(param.shadowMap);
+	dx.SetRenderTarget(*param.shadowMap.GetViewDepthMap(), param.shadowMap);
 	dx.SetDepthStencilState(DepthState::Greater, 0);
 	dx.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 	dx.SetBlendState(BlendState::Opaque);
 
 	param.shadowMap.Clear(dx, 0.0f, 0u);
 
-	AutoBinderSampler<PixelShader> defaultSampler(dx, SamplerStateBindIndex::DefaultSamplerState, SamplerState::Linear);
-	AutoBinderCB<VertexShader> only(dx, ConstBufferBindIndex::OnlyPassViewProjMat, shadowMapVPMatCB.viewProjMatCB);
+	AutoBinderSampler<PixelShader> defaultSampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Linear);
+	AutoBinderCB<VertexShader> viewProjMatCB(dx,		ConstBufferBindIndex::OnlyPassViewProjMat,		shadowMapVPMatCB.viewProjMatCB);
+	AutoBinderCB<VertexShader> viewMatCB(dx,			ConstBufferBindIndex::PCSSViewDepth,			shadowMapVPMatCB.viewMatCB);
 
 	dx.SetRasterizerState(RasterizerState::CWDefault);
-	MeshRenderer::RenderOpaqueMeshes(dx, meshParam, DefaultRenderType::Forward_OnlyDepth, renderQ.opaqueRenderQ, [](const Mesh* mesh){ }, [](){});
+	MeshRenderer::RenderOpaqueMeshes(dx, meshParam, DefaultRenderType::Forward_PCSSViewDepth, renderQ.opaqueRenderQ, [](const Mesh* mesh){ }, [](){});
 
 	dx.SetRasterizerState(RasterizerState::CWDisableCulling);
-	MeshRenderer::RenderAlphaTestMeshes(dx, meshParam, DefaultRenderType::Forward_AlphaTestWithDiffuse, renderQ.alphaTestRenderQ,
+	MeshRenderer::RenderAlphaTestMeshes(dx, meshParam, DefaultRenderType::Forward_PCSSViewDepthAlphaTest, renderQ.alphaTestRenderQ,
 		[&dx, &materialMgr = param.materialMgr](const Mesh* mesh)
 		{
 			auto material	= materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID()); assert(material);
@@ -59,4 +60,5 @@ void DirectionalLightShadowMapRenderer::Render(DirectX& dx, Param&& param,
 	);
 
 	dx.SetRasterizerState(RasterizerState::CWDefault);
+	dx.ReSetRenderTargets(1);
 }
