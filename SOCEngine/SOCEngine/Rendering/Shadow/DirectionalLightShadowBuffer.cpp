@@ -18,9 +18,11 @@ void DirectionalLightShadowBuffer::UpdateBuffer(
 		Core::ObjectID objID = base->GetObjectID();
 
 		uint index = indexer.Find(objID.Literal());
-		_paramBuffer[index]				= base->GetParam();
-		_paramBuffer[index].lightIndex	= lightPool.GetIndexer().Find(objID.Literal());
 		_transformBuffer[index]			= shadow->MakeVPMatParam(lightPool, tfPool, sceneBoundBox);
+
+		_paramBuffer[index]				= base->GetParam();
+		_paramBuffer[index].projNear	= shadow->GetTransposedViewMat()._34;
+		_paramBuffer[index].lightIndex	= lightPool.GetIndexer().Find(objID.Literal());
 	}
 
 	_mustUpdateParamSRBuffer		|= (dirtyShadows.empty() == false);
