@@ -41,6 +41,7 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 	Matrix proj			= Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
 
 	// Done!
-	_transposedViewProjMat = Matrix::Transpose(view * proj);
+	_transposedViewMat		= Matrix::Transpose(view);
+	_transposedViewProjMat	= Matrix::Transpose(view * proj);
 	return _transposedViewProjMat;
 }

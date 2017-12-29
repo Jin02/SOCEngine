@@ -4,7 +4,7 @@
 #include "BaseLight.h"
 #include "Transform.h"
 #include "DirectionalLight.h"
-#include "ShadowMapCBPool.h"
+#include "DirectionalLightShadowMapCBPool.h"
 
 namespace Rendering
 {
@@ -16,7 +16,7 @@ namespace Rendering
 	{
 		namespace ShadowMap
 		{
-			class ShadowMapRenderer;
+			class DirectionalLightShadowMapRenderer;
 		}
 	}
 
@@ -34,15 +34,16 @@ namespace Rendering
 			using ShadowBufferType	= Buffer::DirectionalLightShadowBuffer;
 			using LightType			= Light::DirectionalLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
-			using ShadowMapRenderer	= Renderer::ShadowMap::ShadowMapRenderer;
-			using CBPoolType		= Buffer::ShadowMapCBPool;
+			using ShadowMapRenderer	= Renderer::ShadowMap::DirectionalLightShadowMapRenderer;
+			using CBPoolType		= Buffer::DirectionalLightShadowMapCBPool;
 
 		public:
 			DirectionalLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(	const Light::LightPool<Light::DirectionalLight>& lightPool,
 											const Core::TransformPool& tfPool, const Intersection::BoundBox& sceneBoundBox	);
 
-			GET_CONST_ACCESSOR(ViewProjectionMatrix,		const auto&,	_transposedViewProjMat);
+			GET_CONST_ACCESSOR(TransposedVPMat,				const auto&,	_transposedViewProjMat);
+			GET_CONST_ACCESSOR(TransposedViewMat,			const auto&,	_transposedViewMat);
 
 			GET_CONST_ACCESSOR(ProjectionSize,				float,			_projectionSize);
 			GET_CONST_ACCESSOR(UseAutoProjectionLocation,	bool,			_useAutoProjectLocation);
@@ -63,6 +64,7 @@ namespace Rendering
 
 		private:
 			BaseShadow		_base;
+			Math::Matrix	_transposedViewMat;			
 			Math::Matrix	_transposedViewProjMat;
 
 			float			_projectionSize			= 0.0f;
