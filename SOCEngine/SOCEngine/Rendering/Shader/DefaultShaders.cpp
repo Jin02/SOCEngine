@@ -140,6 +140,16 @@ void DefaultShaders::MakeDefaultShaderMainFuncNames(
 		vsMain = "DepthOnlyVS";
 		psMain = "";
 	}
+	else if (renderType == DefaultRenderType::Forward_PCSSViewDepth)
+	{
+		vsMain = "PCSSViewDepthVS";
+		psMain = "PCSSViewDepthPS";
+	}
+	else if (renderType == DefaultRenderType::Forward_PCSSViewDepthAlphaTest)
+	{
+		vsMain = "PCSSViewDepthVS";
+		psMain = "PCSSViewDepthAlphaTestPS";
+	}
 
 	outVSMain	= vsMain;
 	outGSMain	= gsMain;
@@ -177,6 +187,8 @@ std::string DefaultShaders::MakeDefaultSahderFileName(DefaultRenderType renderTy
 	case DefaultRenderType::Forward_AlphaTestWithDiffuse:
 	case DefaultRenderType::Forward_OnlyDepth:
 	case DefaultRenderType::Forward_Transparency:
+	case DefaultRenderType::Forward_PCSSViewDepth:
+	case DefaultRenderType::Forward_PCSSViewDepthAlphaTest:
 		frontFileName = "PhysicallyBased_Forward_";
 		break;
 	case DefaultRenderType::GBuffer_AlphaTest:

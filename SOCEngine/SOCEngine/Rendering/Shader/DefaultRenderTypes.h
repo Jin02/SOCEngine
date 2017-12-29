@@ -9,6 +9,8 @@ namespace Rendering
 		Forward_Transparency					,
 		Forward_OnlyDepth						,
 		Forward_AlphaTestWithDiffuse			,
+		Forward_PCSSViewDepth					,
+		Forward_PCSSViewDepthAlphaTest			,
 		Voxelization							,
 		MAX_NUM
 	};
