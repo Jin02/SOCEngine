@@ -80,7 +80,7 @@ namespace Rendering
 		ShadowGlobalParam				= 4,
 		OnlyPassViewProjMat				= 4,
 
-		ReflectionProbe_Info			= 5,	
+		PCSSViewDepth					= 5,	
 
 		VoxelizationInfoCB				= 5,
 		VXGIStaticInfoCB				= 6,
