@@ -26,12 +26,13 @@ DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
 
 	if (_useAutoProjectLocation)
 	{
-		Vector3 forward = transform->GetWorldForward();
-		const Vector3& sceneCenter = sceneBoundBox.GetCenter();
+		Vector3 forward				= transform->GetWorldForward();
+		const Vector3& sceneCenter	= sceneBoundBox.GetCenter();
+		float near					= _base.GetProjNear();
 
-		view._41 = sceneCenter.x - (forward.x * FrustumMaxZ / 2.0f);
-		view._42 = sceneCenter.y - (forward.y * FrustumMaxZ / 2.0f);
-		view._43 = sceneCenter.z - (forward.z * FrustumMaxZ / 2.0f);
+		view._41 = sceneCenter.x - (forward.x * near / 2.0f);
+		view._42 = sceneCenter.y - (forward.y * near / 2.0f);
+		view._43 = sceneCenter.z - (forward.z * near / 2.0f);
 		view._44 = 1.0f;
 	}
 
