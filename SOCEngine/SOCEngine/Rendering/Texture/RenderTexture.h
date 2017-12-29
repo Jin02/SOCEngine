@@ -15,6 +15,7 @@ namespace Rendering
 			// if SampleCount = 0, sampleCount = msaa.count
 			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0, uint mipLevel = 1);
 			void Initialize(Device::DirectX& dx, const DXSharedResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size);
+			void Destroy();
 
 			void Clear(Device::DirectX& dx, const Color& color);
 

@@ -44,6 +44,12 @@ void RenderTexture::Initialize(Device::DirectX& dx,
 	_tex2D.SetSize(size);
 }
 
+void RenderTexture::Destroy()
+{
+	_tex2D.Destroy();
+	_renderTargetView.Destroy();
+}
+
 void RenderTexture::Clear(Device::DirectX& dx, const Color& color)
 {
 	// clear the back buffer.
