@@ -4,7 +4,7 @@
 #include "BaseLight.h"
 #include "Transform.h"
 #include "SpotLight.h"
-#include "ShadowMapCBPool.h"
+#include "SpotLightShadowMapCBPool.h"
 
 namespace Rendering
 {
@@ -35,13 +35,13 @@ namespace Rendering
 			using LightType			= Light::SpotLight;
 			using ManagerType		= Rendering::Manager::ShadowManager;
 			using ShadowMapRenderer	= Renderer::ShadowMap::ShadowMapRenderer;
-			using CBPoolType		= Buffer::ShadowMapCBPool;
+			using CBPoolType		= Buffer::SpotLightShadowMapCBPool;
 
 		public:
 			SpotLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::SpotLight>& lightPool, const Core::TransformPool& tfPool);
 
-			GET_CONST_ACCESSOR(ViewProjectionMatrix,	const auto&,	_transposedViewProjMat);
+			GET_CONST_ACCESSOR(TransposedVPMat,			const auto&,	_transposedViewProjMat);
 			GET_ALL_ACCESSOR_PTR(Base,					BaseShadow,		_base);
 
 			GET_CONST_ACCESSOR(ObjectID,				Core::ObjectID,	_base.GetObjectID());
