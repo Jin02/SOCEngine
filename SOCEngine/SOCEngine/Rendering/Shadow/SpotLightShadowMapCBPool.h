@@ -15,18 +15,15 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			class ShadowMapCBPool
+			class SpotLightShadowMapCBPool
 			{
 			public:
 				using ConstBufferType = Rendering::Buffer::ExplicitConstBuffer<Math::Matrix>;
 
 			public:
 				void PushConstBufferToQueue();
-
 				void InitializePreparedCB(Device::DirectX& dx);
-
 				void Delete(uint shadowIndex);
-				
 				void DeleteAll();
 				
 				template <class ShadowType>
@@ -39,7 +36,7 @@ namespace Rendering
 						Core::ObjectID objID	= shadow->GetObjectID();
 						uint shadowIndex		= indexer.Find(objID.Literal());
 
-						_constBuffers[shadowIndex].UpdateSubResource(dx, shadow->GetViewProjectionMatrix());
+						_constBuffers[shadowIndex].UpdateSubResource(dx, shadow->GetTransposedVPMat());
 					}
 				}
 

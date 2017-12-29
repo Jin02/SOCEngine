@@ -1,14 +1,14 @@
-#include "ShadowMapCBPool.h"
+#include "SpotLightShadowMapCBPool.h"
 
 using namespace Device;
 using namespace Rendering::Shadow::Buffer;
 
-void ShadowMapCBPool::PushConstBufferToQueue()
+void SpotLightShadowMapCBPool::PushConstBufferToQueue()
 {
 	_preparedConstBuffers.push_back(ConstBufferType());
 }
 
-void ShadowMapCBPool::InitializePreparedCB(DirectX & dx)
+void SpotLightShadowMapCBPool::InitializePreparedCB(DirectX & dx)
 {
 	if (_preparedConstBuffers.empty())
 		return;
@@ -20,13 +20,13 @@ void ShadowMapCBPool::InitializePreparedCB(DirectX & dx)
 	_preparedConstBuffers.clear();
 }
 
-void ShadowMapCBPool::Delete(uint shadowIndex)
+void SpotLightShadowMapCBPool::Delete(uint shadowIndex)
 {
 	auto iter = _constBuffers.begin() + shadowIndex;
 	_constBuffers.erase(iter);
 }
 
-void ShadowMapCBPool::DeleteAll()
+void SpotLightShadowMapCBPool::DeleteAll()
 {
 	_constBuffers.clear();
 	_preparedConstBuffers.clear();
