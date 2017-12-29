@@ -3,7 +3,7 @@
 #include "ShadowManager.h"
 #include "Rect.h"
 #include "DepthMap.h"
-#include "ShadowAtlasMap.h"
+#include "ShadowAtlasMap.hpp"
 #include "MeshUtility.h"
 #include "MeshRenderer.h"
 

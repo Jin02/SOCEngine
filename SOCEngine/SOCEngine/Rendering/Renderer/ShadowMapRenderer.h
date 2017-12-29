@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "ShadowAtlasMap.h"
+#include "ShadowAtlasMap.hpp"
 #include "MeshRenderer.h"
 
 #include "RendererCommon.h"
