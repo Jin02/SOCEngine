@@ -2,7 +2,7 @@
 #include "BasicGeometryGenerator.h"
 
 //#define GI_TEST
-//#define SKYBOX_ON
+#define SKYBOX_ON
 
 using namespace Core;
 using namespace Math;
@@ -47,7 +47,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 	constexpr uint defaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
 
-#if defined(GI_TEST)
+#if 0
 	Object* box = engine.LoadMesh("./Resources/CornellBox/box.obj"); assert(box);
 	engine.AddRootObject(*box);
 
@@ -73,7 +73,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
 	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
-#elif defined(SOFT_SHADOW_TEST)
+#elif 1
 	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
 	defaultMaterial.Initialize(engine.GetDirectX());
 	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
@@ -118,7 +118,7 @@ void TestScene::OnInitialize(Engine& engine)
 		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
 
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
-		light.AddComponent<DirectionalLightShadow>();
+		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
 
 //		auto* shadow = light.GetComponent<DirectionalLightShadow>();
 //		shadow->SetUseAutoProjectionLocation(false);
@@ -134,7 +134,7 @@ void TestScene::OnInitialize(Engine& engine)
 	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
 
-#elif 1
+#elif 0
 	Material::PhysicallyBasedMaterial defaultMaterial("Default");
 	defaultMaterial.Initialize(engine.GetDirectX());
 
@@ -165,7 +165,7 @@ void TestScene::OnInitialize(Engine& engine)
 		engine.AddRootObject(sphere);
 
 		sphere.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
-		sphere.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 180, 0));
+		sphere.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
 
 		auto mesh = sphere.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(materialKey);
