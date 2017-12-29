@@ -189,8 +189,6 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, floa
 	float viewDepth			= dot(lightDir, vertexWorldPos) + viewMat_43;
 	float2 rcpAtlasMapSize	= rcp(float2(lightCapacityCount, 1) * resolution);
 	
-	shadowParam.softness	= 10.0f;
-
 	float penumbra			= ComputePenumbraSize(DirectionalLightShadowViewDepthMap, shadowUV.xy, viewDepth, shadowParam.softness, rcpAtlasMapSize);
 	float shadow			= saturate(PCSS(DirectionalLightShadowViewDepthMap, shadowUV.xy, viewDepth, shadowParam.softness, rcpAtlasMapSize));
 #endif
