@@ -61,9 +61,10 @@ namespace Rendering
 				_capacity	= 0;
 			}
 
-			GET_CONST_ACCESSOR(Resolution,	uint,						_resolution);
-			GET_CONST_ACCESSOR(Capacity,	uint,						_capacity);
-			GET_ACCESSOR_PTR(ViewDepthMap,	Texture::RenderTexture,		_viewDepthMap);
+			GET_CONST_ACCESSOR(Resolution,			uint,						_resolution);
+			GET_CONST_ACCESSOR(Capacity,			uint,						_capacity);
+			GET_ACCESSOR_PTR(ViewDepthMap,			Texture::RenderTexture,		_viewDepthMap);
+			GET_CONST_ACCESSOR_PTR(ViewDepthMap,	Texture::RenderTexture,		_viewDepthMap);
 
 		private:
 			using Parent::Initialize;

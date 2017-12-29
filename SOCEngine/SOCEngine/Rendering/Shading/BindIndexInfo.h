@@ -53,6 +53,7 @@ namespace Rendering
 		PointLightShadowViewProjMatrix			= 23,
 		SpotLightShadowViewProjMatrix			= 24,
 		DirectionalLightShadowViewProjMatrix	= 25,
+		DirectionalLightShadowViewDepthMap		= 26,
 
 		VoxelAlbedoRawBuffer					= 29,
 		VoxelNormalRawBuffer					= 30,

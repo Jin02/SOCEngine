@@ -62,7 +62,7 @@ StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
 StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
-Buffer<float2>								DirectionalLightShadowInvProjParam			: register( t26 );
+Texture2D<float>							DirectionalLightShadowViewDepthMap			: register( t26 );
 
 uint GetShadowIndex(uint lightOptionalParamIndex)
 {

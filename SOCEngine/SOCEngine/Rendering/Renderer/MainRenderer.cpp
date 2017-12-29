@@ -279,7 +279,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderSRV<ComputeShader> dlOptionalParam(dx,	TextureBindIndex::DirectionalLightOptionalParamIndex,	lightMgr.GetBuffer<DirectionalLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowParam(dx,		TextureBindIndex::DirectionalLightShadowParam,			shadowMgr.GetBuffer<DirectionalLightShadow>().GetParamSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowVPMat(dx,		TextureBindIndex::DirectionalLightShadowViewProjMatrix,	shadowMgr.GetBuffer<DirectionalLightShadow>().GetViewProjMatSRBuffer().GetShaderResourceView());
-
+		
 		AutoBinderSRV<ComputeShader> plTF(dx,				TextureBindIndex::PointLightRadiusWithCenter,			lightMgr.GetBuffer<PointLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> plColor(dx,			TextureBindIndex::PointLightColor,						lightMgr.GetBuffer<PointLight>().GetColorSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> plOptionalParam(dx,	TextureBindIndex::PointLightOptionalParamIndex,			lightMgr.GetBuffer<PointLight>().GetOptionalParamIndexSRBuffer().GetShaderResourceView());
@@ -302,6 +302,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderSRV<ComputeShader> plShadowMap(dx,		TextureBindIndex::PointLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<PointLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> slShadowMap(dx,		TextureBindIndex::SpotLightShadowMapAtlas,				shadowRenderer.GetShadowAtlasMap<SpotLightShadow>().GetTexture2D().GetShaderResourceView());
 		AutoBinderSRV<ComputeShader> dlShadowMap(dx,		TextureBindIndex::DirectionalLightShadowMapAtlas,		shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetTexture2D().GetShaderResourceView());
+		AutoBinderSRV<ComputeShader> dlShadowViewDepth(dx,	TextureBindIndex::DirectionalLightShadowViewDepthMap,	shadowRenderer.GetShadowAtlasMap<DirectionalLightShadow>().GetViewDepthMap()->GetTexture2D()->GetShaderResourceView());
 
 		AutoBinderSRV<ComputeShader> envLUT(dx,				TextureBindIndex::IBLPass_PreIntegrateEnvBRDFMap,		_envBRDFMap.GetTexture2D().GetShaderResourceView());
 
