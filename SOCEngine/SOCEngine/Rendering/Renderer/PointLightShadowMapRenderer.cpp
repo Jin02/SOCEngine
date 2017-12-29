@@ -43,4 +43,5 @@ void PointLightShadowMapRenderer::Render(DirectX& dx, Param&& param, const TempR
 
 	VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPassViewProjMat);
 	dx.SetRasterizerState(RasterizerState::CWDefault);
+	dx.ReSetRenderTargets(1);
 }

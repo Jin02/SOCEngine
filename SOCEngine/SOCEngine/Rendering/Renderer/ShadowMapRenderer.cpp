@@ -61,4 +61,5 @@ void ShadowMapRenderer::Render(DirectX& dx, Param&& param, const TempRenderQueue
 	VertexShader::UnBindConstBuffer(dx, ConstBufferBindIndex::OnlyPassViewProjMat);
 
 	dx.SetRasterizerState(RasterizerState::CWDefault);
+	dx.ReSetRenderTargets(1);
 }
