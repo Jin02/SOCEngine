@@ -10,7 +10,7 @@
 #define SHADOW_KERNEL_LEVEL				4
 #define SHADOW_KERNEL_WIDTH				2 * SHADOW_KERNEL_LEVEL + 1
 
-#define BLOCKER_SEARCH_STEP_COUNT		8
+#define BLOCKER_SEARCH_STEP_COUNT		4
 #define BLOCKER_SEARCH_DIM				(BLOCKER_SEARCH_STEP_COUNT * 2 + 1)
 #define BLOCKER_SEARCH_COUNT			(BLOCKER_SEARCH_DIM * BLOCKER_SEARCH_DIM)
 
@@ -98,7 +98,7 @@ float ComputePenumbraSize(Texture2D<float> atlas, float2 uv, float receiver, flo
 			float2 offset = float2(x, y) * stepUV;
 			float shadowMapDepth = atlas.SampleLevel(pointSamplerState, uv + offset, 0).x;
 
-			if (shadowMapDepth > receiver)
+			if (shadowMapDepth < receiver)
 			{
 				accumBlockerDepth += shadowMapDepth;
 				numBlockers += 1.0f;
@@ -107,7 +107,7 @@ float ComputePenumbraSize(Texture2D<float> atlas, float2 uv, float receiver, flo
 	}
 
 	float avgDepth = accumBlockerDepth / numBlockers;
-	return max((avgDepth - receiver) * softness / avgDepth, 0.0f);
+	return max((receiver - avgDepth) * softness / avgDepth, 0.0f);
 }
 
 float PCSS(Texture2D<float> atlas, float2 uv, float viewDepth, float softness, float2 rcpAtlasMapSize)
@@ -124,7 +124,7 @@ float PCSS(Texture2D<float> atlas, float2 uv, float viewDepth, float softness, f
 			float2 offset = float2(i, j) * penumbra * rcpAtlasMapSize;
 			float depthSample = atlas.SampleLevel(pointSamplerState, uv + offset, 0);
 
-			shadow += depthSample > viewDepth ? 0.0f : 1.0f;
+			shadow += depthSample < viewDepth ? 0.0f : 1.0f;
 			shadowSamples += 1.0f;
 		}
 	}
@@ -163,7 +163,7 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	return float4(ret, shadow);
 }
 
-float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
+float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lightDir)
 {
 	uint shadowIndex = GetShadowIndex(DirectionalLightOptionalParamIndex[lightIndex]);
 
@@ -182,10 +182,17 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos)
 	float depth			= shadowUV.z;
 	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
-#if 1
+#if 0
 	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowUV.xy, depth + bias, stepUV) );
 #else
+	float viewMat_43		= shadowParam.lightNear;
+	float viewDepth			= dot(lightDir, vertexWorldPos) + viewMat_43;
+	float2 rcpAtlasMapSize	= rcp(float2(lightCapacityCount, 1) * resolution);
+	
+	shadowParam.softness	= 10.0f;
 
+	float penumbra			= ComputePenumbraSize(DirectionalLightShadowViewDepthMap, shadowUV.xy, viewDepth, shadowParam.softness, rcpAtlasMapSize);
+	float shadow			= saturate(PCSS(DirectionalLightShadowViewDepthMap, shadowUV.xy, viewDepth, shadowParam.softness, rcpAtlasMapSize));
 #endif
 
 	float3 result = lerp((float3(1.0f, 1.0f, 1.0f) - shadow.xxx) * shadowParam.color, float3(1.0f, 1.0f, 1.0f), shadow);
