@@ -179,6 +179,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
+    <ClInclude Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MainSceneMaker.h" />
     <ClInclude Include="Rendering\Renderer\MeshRenderer.h" />
@@ -213,6 +214,9 @@
     <ClInclude Include="Rendering\Shadow\DirectionalLightShadowBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadowMapCBPool.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Rendering\Shadow\PointLightShadow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -223,7 +227,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\PointLightShadowMapCBPool.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h" />
+    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.hpp" />
     <ClInclude Include="Rendering\Shadow\ShadowBufferForm.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -231,7 +235,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowGlobalParamCB.h" />
-    <ClInclude Include="Rendering\Shadow\ShadowMapCBPool.h">
+    <ClInclude Include="Rendering\Shadow\SpotLightShadowMapCBPool.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadow.h">
@@ -405,6 +409,7 @@
     <ClCompile Include="Rendering\Postprocessing\SSAO.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp" />
     <ClCompile Include="Rendering\Renderer\MeshRenderer.cpp" />
@@ -429,6 +434,9 @@
     <ClCompile Include="Rendering\Shadow\DirectionalLightShadowBuffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadowMapCBPool.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Rendering\Shadow\PointLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -437,7 +445,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\ShadowGlobalParamCB.cpp" />
-    <ClCompile Include="Rendering\Shadow\ShadowMapCBPool.cpp" />
+    <ClCompile Include="Rendering\Shadow\SpotLightShadowMapCBPool.cpp" />
     <ClCompile Include="Rendering\Shadow\SpotLightShadow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>

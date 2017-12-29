@@ -433,6 +433,15 @@
     <Filter Include="Rendering\Renderer\Sky\Scattering">
       <UniqueIdentifier>{e98c8431-dc1b-4b67-8650-cea50c2f55b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\MapCB\Point">
+      <UniqueIdentifier>{26bb7c8a-493b-43b8-bbc1-5c6857e0c899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\MapCB\Spot">
+      <UniqueIdentifier>{1c78b32a-5a07-4bcc-92c8-69c7e2ccc369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shadow\Buffer\MapCB\Directional">
+      <UniqueIdentifier>{33d31574-dd2a-4e16-af8d-e961064684b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -823,9 +832,6 @@
     <ClInclude Include="Rendering\GI\VoxelConeTracing.h">
       <Filter>Rendering\GI\VXGI\ConTracing</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.h">
-      <Filter>Rendering\Shadow\AtlasMap</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GI\InjectRadianceUtility.h">
       <Filter>Rendering\GI\VXGI\Injection\Utility</Filter>
     </ClInclude>
@@ -897,12 +903,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Material\MaterialManager.h">
       <Filter>Rendering\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\PointLightShadowMapCBPool.h">
-      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shadow\ShadowMapCBPool.h">
-      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
     </ClInclude>
     <ClInclude Include="Core\ComponentSystem.h">
       <Filter>Core\Component</Filter>
@@ -978,6 +978,21 @@
     </ClInclude>
     <ClInclude Include="Rendering\Renderer\SkyPreethamModelRenderer.h">
       <Filter>Rendering\Renderer\Sky\Scattering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.hpp">
+      <Filter>Rendering\Shadow\AtlasMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\PointLightShadowMapCBPool.h">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\DirectionalLightShadowMapCBPool.h">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Shadow\SpotLightShadowMapCBPool.h">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Spot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1233,12 +1248,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Shadow\PointLightShadowMapCBPool.cpp">
-      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shadow\ShadowMapCBPool.cpp">
-      <Filter>Rendering\Shadow\Buffer\MapCB</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp">
       <Filter>Rendering\Renderer\Shadow</Filter>
     </ClCompile>
@@ -1283,6 +1292,18 @@
     </ClCompile>
     <ClCompile Include="Rendering\Renderer\SkyPreethamModelRenderer.cpp">
       <Filter>Rendering\Renderer\Sky\Scattering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\PointLightShadowMapCBPool.cpp">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\DirectionalLightShadowMapCBPool.cpp">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Shadow\SpotLightShadowMapCBPool.cpp">
+      <Filter>Rendering\Shadow\Buffer\MapCB\Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
