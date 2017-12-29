@@ -442,6 +442,18 @@
     <Filter Include="Rendering\Shadow\Buffer\MapCB\Directional">
       <UniqueIdentifier>{33d31574-dd2a-4e16-af8d-e961064684b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Directional">
+      <UniqueIdentifier>{c2a6cf13-a1f4-462e-866b-8d29bb9f7862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Point">
+      <UniqueIdentifier>{66af7a6f-4852-47ce-8655-4785c5ebff0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Atlas">
+      <UniqueIdentifier>{9e4d1ccb-6634-491a-8978-673b99005888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer\Shadow\Common/Spot">
+      <UniqueIdentifier>{236008c1-a143-4715-8294-216daddce02c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -907,9 +919,6 @@
     <ClInclude Include="Core\ComponentSystem.h">
       <Filter>Core\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shader\DefaultShaders.h">
       <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClInclude>
@@ -958,12 +967,6 @@
     <ClInclude Include="Rendering\GI\GIInitParam.h">
       <Filter>Rendering\GI</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Renderer\PointLightShadowMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Renderer\SkyBoxRenderer.h">
       <Filter>Rendering\Renderer\Sky</Filter>
     </ClInclude>
@@ -979,9 +982,6 @@
     <ClInclude Include="Rendering\Renderer\SkyPreethamModelRenderer.h">
       <Filter>Rendering\Renderer\Sky\Scattering</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.h">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Shadow\ShadowAtlasMap.hpp">
       <Filter>Rendering\Shadow\AtlasMap</Filter>
     </ClInclude>
@@ -993,6 +993,18 @@
     </ClInclude>
     <ClInclude Include="Rendering\Shadow\SpotLightShadowMapCBPool.h">
       <Filter>Rendering\Shadow\Buffer\MapCB\Spot</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Directional</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\PointLightShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\ShadowAtlasMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Atlas</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h">
+      <Filter>Rendering\Renderer\Shadow\Common/Spot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1248,9 +1260,6 @@
     <ClCompile Include="Rendering\Camera\CameraManager.cpp">
       <Filter>Rendering\Camera\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shader\DefaultShaders.cpp">
       <Filter>Rendering\Shader\DefaultShaders</Filter>
     </ClCompile>
@@ -1275,12 +1284,6 @@
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <Filter>Rendering\Postprocessing</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Renderer\PointLightShadowMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Renderer\SkyBoxRenderer.cpp">
       <Filter>Rendering\Renderer\Sky</Filter>
     </ClCompile>
@@ -1293,9 +1296,6 @@
     <ClCompile Include="Rendering\Renderer\SkyPreethamModelRenderer.cpp">
       <Filter>Rendering\Renderer\Sky\Scattering</Filter>
     </ClCompile>
-    <ClCompile Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.cpp">
-      <Filter>Rendering\Renderer\Shadow</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Shadow\PointLightShadowMapCBPool.cpp">
       <Filter>Rendering\Shadow\Buffer\MapCB\Point</Filter>
     </ClCompile>
@@ -1304,6 +1304,18 @@
     </ClCompile>
     <ClCompile Include="Rendering\Shadow\SpotLightShadowMapCBPool.cpp">
       <Filter>Rendering\Shadow\Buffer\MapCB\Spot</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Directional</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\PointLightShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\ShadowAtlasMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Atlas</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp">
+      <Filter>Rendering\Renderer\Shadow\Common/Spot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1396,6 +1408,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl">
       <Filter>ShaderCodes\Merger</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\PCSSViewDepth.hlsl">
+      <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

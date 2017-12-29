@@ -484,6 +484,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="ShaderCodes\OnlyLightCullingCS.hlsl" />
+    <FxCompile Include="ShaderCodes\PCSSViewDepth.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_N_UV0.hlsl" />
     <FxCompile Include="ShaderCodes\PhysicallyBased_Forward_TN_UV0.hlsl" />
     <FxCompile Include="ShaderCodes\PhysicallyBased_GBuffer_N_UV0.hlsl" />
