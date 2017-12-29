@@ -100,9 +100,10 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	AutoBinderCB<PixelShader> tbrParamCB(dx,		ConstBufferBindIndex::TBRParam,							param.tbrParamCB);
 	AutoBinderCB<PixelShader> shadowGlobalCB(dx,	ConstBufferBindIndex::ShadowGlobalParam,				shadowParam.manager.GetGlobalCB());
 
-	AutoBinderSampler<PixelShader> shadowCompS(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,		SamplerState::ShadowGreaterEqualComp);	
-	AutoBinderSampler<PixelShader> shadowPointS(dx,	SamplerStateBindIndex::ShadowPointSamplerState,			SamplerState::Point);
-	AutoBinderSampler<PixelShader> defaultS(dx,		SamplerStateBindIndex::DefaultSamplerState,				SamplerState::Anisotropic);	
+	AutoBinderSampler<PixelShader> shadowCompS(dx,	SamplerStateBindIndex::ShadowComprisonGreaterSamplerState,	SamplerState::ShadowGreaterEqualComp);	
+	AutoBinderSampler<PixelShader> shadowPointS(dx,	SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
+	AutoBinderSampler<PixelShader> defaultS(dx,		SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);	
+	AutoBinderSampler<PixelShader> shadowLessrS(dx,	SamplerStateBindIndex::ShadowComprisonLessSamplerState,		SamplerState::ShadowLessEqualComp);
 
 	AutoBinderCB<GeometryShader> infoCBGS(dx,		ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 	AutoBinderCB<PixelShader> infoCBPS(dx,			ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);

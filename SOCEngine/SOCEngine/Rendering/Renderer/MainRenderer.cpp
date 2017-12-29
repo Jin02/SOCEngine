@@ -266,9 +266,10 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 
 	// 2 Pass - Light Culling and Deferred Shading
 	{
-		AutoBinderSampler<ComputeShader> shadowCompSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
-		AutoBinderSampler<ComputeShader> pointSampler(dx,		SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
-		AutoBinderSampler<ComputeShader> ambientCubeSampler(dx, SamplerStateBindIndex::AmbientCubeMapSamplerState,	SamplerState::Linear);
+		AutoBinderSampler<ComputeShader> shadowCompGreaterS(dx,	SamplerStateBindIndex::ShadowComprisonGreaterSamplerState,	SamplerState::ShadowGreaterEqualComp);
+		AutoBinderSampler<ComputeShader> pointS(dx,				SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
+		AutoBinderSampler<ComputeShader> ambientCubeS(dx,		SamplerStateBindIndex::AmbientCubeMapSamplerState,			SamplerState::Linear);
+		AutoBinderSampler<ComputeShader> shadowCompLessS(dx,	SamplerStateBindIndex::ShadowComprisonLessSamplerState,		SamplerState::ShadowLessEqualComp);
 
 		AutoBinderCB<ComputeShader> tbrCB(dx,				ConstBufferBindIndex::TBRParam,				_tbrCB);
 		AutoBinderCB<ComputeShader> cameraCB(dx,			ConstBufferBindIndex::Camera,				mainCamera.GetCameraCB());
@@ -342,9 +343,10 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderCB<PixelShader> psTBRCB(dx,				ConstBufferBindIndex::TBRParam,				_tbrCB);
 		AutoBinderCB<PixelShader> psShadowGlobalParam(dx,	ConstBufferBindIndex::ShadowGlobalParam,	shadowMgr.GetGlobalCB());
 
-		AutoBinderSampler<PixelShader> defaultSampler(dx,		SamplerStateBindIndex::DefaultSamplerState,			SamplerState::Anisotropic);
-		AutoBinderSampler<PixelShader> shadowGreaterSampler(dx,	SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
-		AutoBinderSampler<PixelShader> pointSampler(dx,			SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
+		AutoBinderSampler<PixelShader> defaultS(dx,			SamplerStateBindIndex::DefaultSamplerState,					SamplerState::Anisotropic);
+		AutoBinderSampler<PixelShader> shadowGreaterS(dx,	SamplerStateBindIndex::ShadowComprisonGreaterSamplerState,	SamplerState::ShadowGreaterEqualComp);
+		AutoBinderSampler<PixelShader> pointS(dx,			SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
+		AutoBinderSampler<PixelShader> shadowLessrS(dx,		SamplerStateBindIndex::ShadowComprisonLessSamplerState,		SamplerState::ShadowLessEqualComp);
 
 		AutoBinderSRV<PixelShader> dlDirXY(dx,			TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<PixelShader> dlColor(dx,			TextureBindIndex::DirectionalLightColor,				lightMgr.GetBuffer<DirectionalLight>().GetColorSRBuffer().GetShaderResourceView());

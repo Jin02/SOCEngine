@@ -98,12 +98,13 @@ namespace Rendering
 
 	enum class SamplerStateBindIndex : unsigned int
 	{
-		DefaultSamplerState				= 0,
-		UISamplerState					= 1,
-		ShadowComprisonSamplerState		= 2,
-		VSMShadowSamplerState			= 3,
-		ShadowPointSamplerState			= 4,
-		AmbientCubeMapSamplerState		= 5,
+		DefaultSamplerState					= 0,
+		UISamplerState						= 1,
+		ShadowComprisonGreaterSamplerState	= 2,
+		VSMShadowSamplerState				= 3,
+		ShadowPointSamplerState				= 4,
+		AmbientCubeMapSamplerState			= 5,
+		ShadowComprisonLessSamplerState		= 6,
 	};
 
 	enum class UAVBindIndex : unsigned int

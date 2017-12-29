@@ -12,8 +12,8 @@ using namespace Rendering::RenderState;
 
 void InjectRadianceFormUtility::Bind(DirectX& dx, VoxelMap& outVoxelMap, const BindParam& param)
 {
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState,	SamplerState::ShadowGreaterEqualComp);
-	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,		SamplerState::Point);
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonGreaterSamplerState,	SamplerState::ShadowGreaterEqualComp);
+	ComputeShader::BindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
 
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB,				param.infoCB.staticInfoCB);
 	ComputeShader::BindConstBuffer(dx, ConstBufferBindIndex::VXGIDynamicInfoCB,				param.infoCB.dynamicInfoCB);
@@ -29,7 +29,7 @@ void InjectRadianceFormUtility::Bind(DirectX& dx, VoxelMap& outVoxelMap, const B
 
 void InjectRadianceFormUtility::UnBind(Device::DirectX & dx)
 {
-	ComputeShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonSamplerState);
+	ComputeShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowComprisonGreaterSamplerState);
 	ComputeShader::UnBindSamplerState(dx, SamplerStateBindIndex::ShadowPointSamplerState);
 
 	ComputeShader::UnBindConstBuffer(dx, ConstBufferBindIndex::VXGIStaticInfoCB);
