@@ -3,5 +3,6 @@
 
 #include "OnlyDepth.hlsl"
 #include "OnlyAlphaTestWithDiffusePS.hlsl"
+#include "PCSSViewDepth.hlsl"
 
 #endif
