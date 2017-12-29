@@ -8,6 +8,8 @@
 #include "MeshRenderer.h"
 
 #include "PointLightShadowMapRenderer.h"
+#include "DirectionalLightShadowMapRenderer.h"
+
 #include "ShadowMapRenderer.h"
 #include "ShadowAtlasMapRenderer.h"
 

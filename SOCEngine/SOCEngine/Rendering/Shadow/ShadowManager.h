@@ -8,8 +8,9 @@
 #include "PointLightShadowBuffer.h"
 
 #include "LightManager.h"
-#include "ShadowMapCBPool.h"
+#include "SpotLightShadowMapCBPool.h"
 #include "PointLightShadowMapCBPool.h"
+#include "DirectionalLightShadowMapCBPool.h"
 
 #include "CameraManager.h"
 #include "ShadowGlobalParamCB.h"
