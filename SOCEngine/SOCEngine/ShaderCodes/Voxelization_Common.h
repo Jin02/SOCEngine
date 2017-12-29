@@ -144,7 +144,7 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
 		float intensity			= DirectionalLightColorBuffer[index].a * 10.0f;
 
-		shadowColor = RenderDirectionalLightShadow(index, worldPos);
+		shadowColor = RenderDirectionalLightShadow(index, worldPos, lightDir);
 
 		radiosity += (lambert / 1.0f) * lightColor * intensity * shadowColor.rgb;
 		radiosity += GetMaterialEmissiveColor().rgb;
