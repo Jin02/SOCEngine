@@ -57,11 +57,13 @@ namespace Rendering
 				Parent::Destroy();
 				_viewDepthMap.Destroy();
 
-				_resolution = _capacity = 0;
+				_resolution	= 0;
+				_capacity	= 0;
 			}
 
-			GET_CONST_ACCESSOR(Resolution,	uint,	_resolution);
-			GET_CONST_ACCESSOR(Capacity,	uint,	_capacity);
+			GET_CONST_ACCESSOR(Resolution,	uint,						_resolution);
+			GET_CONST_ACCESSOR(Capacity,	uint,						_capacity);
+			GET_ACCESSOR_PTR(ViewDepthMap,	Texture::RenderTexture,		_viewDepthMap);
 
 		private:
 			using Parent::Initialize;
