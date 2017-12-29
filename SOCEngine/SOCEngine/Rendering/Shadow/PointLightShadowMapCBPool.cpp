@@ -44,6 +44,6 @@ void PointLightShadowMapCBPool::UpdateSubResource(DirectX& dx, const std::vector
 		uint index = indexer.Find(objID.Literal());
 
 		for (uint i = 0; i < 6; ++i)
-			_constBuffers[index][i].UpdateSubResource(dx, shadow->GetViewProjectionMatrix()[i]);
+			_constBuffers[index][i].UpdateSubResource(dx, shadow->GetTransposedVPMat()[i]);
 	}
 }

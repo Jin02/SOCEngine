@@ -41,7 +41,7 @@ namespace Rendering
 			PointLightShadow(const BaseShadow& base) : _base(base) {}
 			ViewProjMatType MakeVPMatParam(const Light::LightPool<Light::PointLight>& lightPool, const Core::TransformPool& tfPool);
 
-			GET_CONST_ACCESSOR(ViewProjectionMatrix,	const auto&,	_transposedViewProjMat);
+			GET_CONST_ACCESSOR(TransposedVPMat,			const auto&,	_transposedViewProjMat);
 			GET_ALL_ACCESSOR_PTR(Base,					BaseShadow,		_base);
 			GET_CONST_ACCESSOR(ObjectID,				Core::ObjectID,	_base.GetObjectID());
 			GET_CONST_ACCESSOR(Dirty,					bool,			_base.GetDirty());
