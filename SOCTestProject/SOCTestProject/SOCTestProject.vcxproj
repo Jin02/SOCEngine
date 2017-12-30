@@ -71,7 +71,7 @@
       <ShaderType>Effect</ShaderType>
     </FxCompile>
     <PreBuildEvent>
-      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)..\..\SOCEngine\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory) -ClassName ShaderFactory &amp; python $(ProjectDir)..\..\Script\FBX-Conv-Luncher.py -FBXConvPath $(ProjectDir)..\..\SOCEngine\SOCEngine\Tool\fbx-conv\fbx-conv-win32.winexe -OutputType json -RunStartDir $(MSBuildProjectDirectory)\Resources</Command>
+      <Command>python $(ProjectDir)..\..\Script\HLSLMetaDataGenerator.py -ProjectDir ./ -IsShaderWithMetaData True &amp; python $(ProjectDir)..\..\Script\ShaderFactoryCodeGenerator.py -OriginalShaderFactoryFile $(ProjectDir)..\..\SOCEngine\SOCEngine\Template\ShaderFactoryTemplate.hpp -SaveShaderFactoryFile $(MSBuildProjectDirectory)\Template\ShaderFactory.hpp -ScriptRunStartDir $(MSBuildProjectDirectory) -ClassName ShaderFactory &amp; python $(ProjectDir)..\..\Script\FBX-Conv-Luncher.py -FBXConvPath $(ProjectDir)..\..\Fbx-conv\build\vs2012\bin\debug\fbx-conv.exe -OutputType json -RunStartDir $(MSBuildProjectDirectory)\Resources</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
