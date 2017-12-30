@@ -40,11 +40,6 @@ CONSOLE_LINE = "***********************************************"
 print CONSOLE_LINE + '\n'
 print "SOC Framework FBX-Conv Luncher\n"
 
-if not 'FBX_SDK_ROOT' in os.environ:
-	print "ERROR: Environment variable FBX_SDK_ROOT is not set."
-	print "Set it to something like: C:\\Program Files\\Autodesk\\FBX\\FBX SDK\\2013.3"
-	exit()
-
 result, fbxConvPath, outputType, runStartDir = CheckParameter()
 if result == False:
 	Dump()
