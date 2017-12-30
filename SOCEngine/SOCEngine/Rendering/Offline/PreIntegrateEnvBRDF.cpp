@@ -1,86 +1,35 @@
 #include "PreIntegrateEnvBRDF.h"
-#include "EngineShaderFactory.hpp"
 #include "ShaderManager.h"
-#include "ResourceManager.h"
-#include "Director.h"
 #include "ComputeShader.h"
 #include "DirectX.h"
+#include "ShaderFactory.hpp"
+#include "AutoBinder.hpp"
 
 using namespace Math;
 using namespace Device;
 using namespace Core;
-using namespace Resource;
 using namespace Rendering;
 using namespace Rendering::Precompute;
 using namespace Rendering::Shader;
 using namespace Rendering::Manager;
-using namespace Rendering::Factory;
 using namespace Rendering::Texture;
-using namespace GPGPU::DirectCompute;
+using namespace Rendering::Manager;
+using namespace Rendering::Factory;
 
-PreIntegrateEnvBRDF::PreIntegrateEnvBRDF() : _map(nullptr)
+Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, ShaderManager& shaderMgr)
 {
-}
-
-PreIntegrateEnvBRDF::~PreIntegrateEnvBRDF()
-{
-	SAFE_DELETE(_map);
-}
-
-Texture::Texture2D* PreIntegrateEnvBRDF::CreatePreBRDFMap()
-{
-	auto LoadComputeShader = [](const std::string& fileName) -> ComputeShader*
-	{
-		ComputeShader* shader = nullptr;
-
-		std::string filePath = "";
-		EngineFactory pathFinder(nullptr);
-		pathFinder.FetchShaderFullPath(filePath, fileName);
-	
-		ASSERT_MSG_IF(filePath.empty() == false, "Error, File path is empty!");
-	
-		ResourceManager* resourceManager = ResourceManager::SharedInstance();
-		auto shaderMgr = resourceManager->GetShaderManager();
-	
-		ID3DBlob* blob = shaderMgr->CreateBlob(filePath, "cs", "CS", false, nullptr);
-		shader = new ComputeShader(ComputeShader::ThreadGroup(0, 0, 0), blob);
-		ASSERT_MSG_IF(shader->Initialize(), "can not create compute shader");
-
-		return shader;
-	};
-
-	ComputeShader* shader = LoadComputeShader("PreIntegrateEnvBRDF");
+	std::shared_ptr<ComputeShader> shader = ShaderFactory::LoadComputeShader(dx, shaderMgr, "PreIntegrateEnvBRDF", "CS", nullptr, "@PreIntegrateEnvBRDF");
 
 	const Size<uint> size(256, 256);
 
-	Texture2D* tex = new Texture2D;
-	tex->Initialize(size.w, size.h, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
+	_texture.Initialize(dx, size.w, size.h,
+						DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT,
+						D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 1, 1);
 
-	std::vector<ShaderForm::InputUnorderedAccessView> inputUAVs;
-	{
-		const View::UnorderedAccessView* uav = tex->GetUnorderedAccessView();
-		inputUAVs.push_back( ShaderForm::InputUnorderedAccessView(0, uav) );
-	}
-	shader->SetUAVs(inputUAVs);
+	AutoBinderUAV output(dx, UAVBindIndex(0), _texture.GetUnorderedAccessView());
+	shader->Dispatch(dx, ComputeShader::ThreadGroup((size.w + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES,
+													(size.h + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES, 1));
+	shaderMgr.GetPool<ComputeShader>().Delete(shader->GetKey());
 
-	ComputeShader::ThreadGroup threadGroup(0, 0, 1);
-	{
-		threadGroup.x = (size.w + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES;
-		threadGroup.y = (size.h + PRE_INTEGRATE_TILE_RES - 1) / PRE_INTEGRATE_TILE_RES;
-	}
-	shader->SetThreadGroupInfo(threadGroup);
-	shader->Dispatch(Director::SharedInstance()->GetDirectX()->GetContext());
-
-	SAFE_DELETE(shader);
-
-	return tex;
-}
-
-Texture::Texture2D* PreIntegrateEnvBRDF::FetchPreBRDFMap()
-{
-	if(_map)
-		return _map;
-
-	_map = CreatePreBRDFMap();
-	return _map;
+	return _texture;
 }

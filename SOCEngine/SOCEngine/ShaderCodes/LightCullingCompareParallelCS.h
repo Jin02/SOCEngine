@@ -57,16 +57,16 @@ void CalcMinMax(uint2 halfGlobalIdx, uint2 halfLocalIdx, uint idxInTile, uint de
 
 #endif
 
-	float viewDepth_tl = InvertProjDepthToView(depth_tl);
-	float viewDepth_tr = InvertProjDepthToView(depth_tr);
-	float viewDepth_bl = InvertProjDepthToView(depth_bl);
-	float viewDepth_br = InvertProjDepthToView(depth_br);
+	float viewDepth_tl = ProjDepthToView(depth_tl);
+	float viewDepth_tr = ProjDepthToView(depth_tr);
+	float viewDepth_bl = ProjDepthToView(depth_bl);
+	float viewDepth_br = ProjDepthToView(depth_br);
 
 #if defined(ENABLE_BLEND)
-	float viewBlendedDepth_tl = InvertProjDepthToView(blendedDepth_tl);
-	float viewBlendedDepth_tr = InvertProjDepthToView(blendedDepth_tr);
-	float viewBlendedDepth_br = InvertProjDepthToView(blendedDepth_br);
-	float viewBlendedDepth_bl = InvertProjDepthToView(blendedDepth_bl);
+	float viewBlendedDepth_tl = ProjDepthToView(blendedDepth_tl);
+	float viewBlendedDepth_tr = ProjDepthToView(blendedDepth_tr);
+	float viewBlendedDepth_br = ProjDepthToView(blendedDepth_br);
+	float viewBlendedDepth_bl = ProjDepthToView(blendedDepth_bl);
 
 	float minDepth_tl = (blendedDepth_tl != 0.0f) ? viewBlendedDepth_tl : FLOAT_MAX;
 	float minDepth_tr = (blendedDepth_tr != 0.0f) ? viewBlendedDepth_tr : FLOAT_MAX;

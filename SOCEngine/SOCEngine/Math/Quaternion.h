@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MathCommon.h"
-
 namespace Math
 {
 	class Vector3;
@@ -10,43 +8,49 @@ namespace Math
 	class Quaternion
 	{
 	public:
-		float x, y, z, w;
-
-	public:
-		Quaternion();
+		Quaternion() = default;
 		Quaternion(float x, float y, float z, float w);
-		~Quaternion();
 
-	public:
-		Quaternion operator + () const;
-		Quaternion operator - () const;
-		Quaternion operator + (const Quaternion& q) const;
-		Quaternion operator - (const Quaternion& q) const;
-		Quaternion operator * (const Quaternion& q) const;
-		Quaternion operator * (float f) const;
-		Quaternion operator / (float f) const;
+		const Quaternion operator + () const;
+		const Quaternion operator - () const;
+		const Quaternion operator + (const Quaternion& q) const;
+		const Quaternion operator - (const Quaternion& q) const;
+		const Quaternion operator * (const Quaternion& q) const;
+		const Quaternion operator * (float f) const;
+		const Quaternion operator / (float f) const;
+
 		bool operator == (const Quaternion& q) const;
 		bool operator != (const Quaternion& q) const;
+
 		Quaternion& operator += (const Quaternion& a);
 		Quaternion& operator -= (const Quaternion& a);
 		Quaternion& operator *= (const Quaternion& a);
 
-		static void Inverse(Quaternion& out, const Quaternion& in);
-		static void Normalize(Quaternion& out, const Quaternion& in);
-		static void Dot(float& out, const Quaternion& a, const Quaternion& b);
-		static void Slerp(Quaternion& out, const Quaternion& from, const Quaternion& to, float t);
-		static void Lerp(Quaternion& out, const Quaternion& from, const Quaternion& to, float t);
-		static void FromEuler(Quaternion& out, const Vector3& v);
+		static Quaternion Inverse(const Quaternion& in);
+		static Quaternion Normalize(const Quaternion& in);
+		static Quaternion Slerp(const Quaternion& from, const Quaternion& to, float t);
+		static Quaternion Lerp(const Quaternion& from, const Quaternion& to, float t);
+		static Quaternion FromEuler(const Vector3& v);
 
-		static void FromRotationMatrix(Quaternion& out, const Matrix& m);
-		static void FromAxis(Quaternion& out, const Vector3& axis, float angle);
-		static void FromYawPitchRoll(Quaternion& out, float yaw, float pitch, float roll);
+		static Quaternion FromRotationMatrix(const Matrix& m);
+		static Quaternion FromAxis(const Vector3& axis, float angle);
+		static Quaternion FromYawPitchRoll(float yaw, float pitch, float roll);
+
+		static float Dot(const Quaternion& a, const Quaternion& b);
 
 	public:
 		void Set(float x, float y, float z, float w);
-		Quaternion Normalized();
-		Quaternion Inversed();
-		void FromEuler(const Vector3& v);
+		const Quaternion Normalized();
+		const Quaternion Inversed();
+		const Vector3 GetForward() const;
+		const Vector3 GetRight() const;
+		const Vector3 GetUp() const;
+
+	public:
+		float	x = 0.0f,
+				y = 0.0f,
+				z = 0.0f,
+				w = 0.0f;
 	};
 
 }

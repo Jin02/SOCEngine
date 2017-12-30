@@ -1,5 +1,7 @@
+#include "TBRParam.h"
+#include "ShaderCommon.h"
 
-cbuffer WVPMat : register(b0)
+cbuffer WVPMat : register(b1)
 {
 	matrix worldViewProjMat;
 };
@@ -30,5 +32,7 @@ VS_OUTPUT VS(VS_INPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	return cubeMap.Sample(linearSampler, input.localPos);
+	float4 color = cubeMap.Sample(linearSampler, input.localPos);
+	color.rgb = ToLinear(color.rgb, GetGamma());
+	return color;
 }

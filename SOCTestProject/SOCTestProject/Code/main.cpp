@@ -1,14 +1,21 @@
-#include <Windows.h>
-#include <Director.h>
+#include "Launcher.h"
 #include "TestScene.h"
+
+using namespace Core;
+using namespace Device;
 
 INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )
 {
-	auto rect = Math::Rect<unsigned int>(0, 0, 1600, 900);
-	Device::Director::SharedInstance()->Initialize(rect, rect, hInst, "Test", true, false, 0, false);
-	Device::Director::SharedInstance()->SetCurrentScene(new TestScene);
-	Device::Director::SharedInstance()->Run();
-	Device::Director::Destroy();
+	WinApp::Desc desc;
+	{
+		desc.rect			= Rect<uint>(0, 0, 800, 600);
+		desc.instance		= hInst;
+		desc.name			= "Refactoring";
+		desc.windowMode		= true;
+		desc.isChild		= false;
+		desc.parentHandle	= NULL;
+	}
 
+	Launcher::Run(desc, desc.rect, true, new TestScene);
 	return 0;
 }

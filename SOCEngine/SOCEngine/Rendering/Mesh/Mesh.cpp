@@ -1,131 +1,146 @@
 #include "Mesh.h"
-#include "Director.h"
-//#include "TransformPipelineParam.h"
+#include "DefaultRenderTypes.h"
+#include "DefaultShaders.h"
+#include "MeshManager.h"
+#include "Utility.hpp"
 
-using namespace Rendering::Manager;
+using namespace Device;
+using namespace Rendering;
 using namespace Rendering::Geometry;
+using namespace Rendering::Shader;
+using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
+using namespace Core;
+using namespace Utility;
+using namespace Math;
+using namespace Intersection;
 
-Mesh::Mesh() : 
-	_filter(nullptr), _renderer(nullptr), 
-	_selectMaterialIndex(0), _prevRenderType(MeshRenderer::Type::Unknown),
-	_show(true), _prevShow(false), _isManagedRenderQ(false)
+void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const CreateFuncArguments& args)
 {
-	_updateType = MaterialUpdateType::All;
-}
+	uint vertexCount	= args.vertices.count;
+	uint indexCount		= args.indices.size();
 
-Mesh::~Mesh()
-{
-	OnDestroy();
-}
+	uint vbKey = Utility::String::MakeKey({ args.fileName, std::to_string(args.vbUserHashKey) });
 
-void Mesh::Initialize(const CreateFuncArguments& args, bool updateRenderQueue, bool allocTransformCB)
-{
-	_filter = new MeshFilter;
-	if (_filter->Initialize(args) == false)
-		ASSERT_MSG("Error, filter->cratebuffer");
-
-	_renderer = new MeshRenderer;
-	if (_renderer->AddMaterial(args.material) == false)
-		ASSERT_MSG("Error, renderer addmaterial");
-
-	if (allocTransformCB)
+	if (bufferMgr.GetPool<VertexBuffer>().Has(vbKey) == false)
 	{
-		_transformConstBuffer = new Buffer::ConstBuffer;
-		if (_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
-			ASSERT_MSG("Error, transformBuffer->Initialize");
+		VertexBuffer::Desc param;
+		{
+			param.stride		= args.vertices.byteWidth;
+			param.vertexCount	= args.vertices.count;
+		}
+
+		VertexBuffer vb;
+		vb.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
+
+		bufferMgr.GetPool<VertexBuffer>().Add(vbKey, vb);
+		_vbKey = vbKey;
 	}
+
+	uint ibKey = String::MakeKey({ args.fileName, args.ibPartID });
+	if (bufferMgr.GetPool<IndexBuffer>().Has(ibKey) == false)
+	{
+		IndexBuffer ib;
+		ib.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
+
+		bufferMgr.GetPool<IndexBuffer>().Add(ibKey, ib);
+		_ibKey = ibKey;
+	}	
+
+	_bufferFlag = ComputeBufferFlag(args.semanticInfos);
+
+	_transformCB.Initialize(dx);
+}
+
+void Mesh::Initialize(DirectX& dx, const VertexBuffer::Semantics& semantics, BaseBuffer::Key vbKey, BaseBuffer::Key ibKey)
+{
+	_vbKey = vbKey;
+	_ibKey = ibKey;
+
+	_bufferFlag = ComputeBufferFlag(semantics);
+
+	_transformCB.Initialize(dx);
+}
+
+uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& semantics, uint maxRecognizeBoneCount) const
+{
+	uint flag = 0;
+	for (auto iter = semantics.begin(); iter != semantics.end(); ++iter)
+	{
+		const auto& semantic = *iter;
+
+		if (semantic.name == "POSITION")		continue;
+		else if (semantic.name == "TEXCOORD")
+		{
+			if (semantic.semanticIndex > 1)
+				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::USERS);
+			else
+				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::UV0) << semantic.semanticIndex;
+		}
+		else if (semantic.name == "NORMAL")
+			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL);
+		else if (semantic.name == "TANGENT")
+			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT);
+		else if (semantic.name == "COLOR")
+			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::COLOR);
+		else if (semantic.name == "BONEWEIGHT")
+		{
+			if (semantic.semanticIndex + 1 >= maxRecognizeBoneCount)
+				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::BONE) << semantic.semanticIndex;
+			else
+				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::USERS);
+		}
+		else
+		{
+			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::USERS);
+		}
+	}
+
+	// Error, You use undefined semantic in RenderManager::DefaultVertexInputTypeFlag.
+	assert((flag & static_cast<uint>(DefaultVertexInputTypeFlag::USERS)) == 0);
+
+	return flag;
+}
+
+void Mesh::CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const
+{
+	Vector3 extents		= _boundBox.GetExtents();
+	Vector3 boxCenter	= _boundBox.GetCenter();
+
+	const Matrix& worldMat	= transform.GetWorldMatrix();
+	Vector3 worldPos		= Vector3(worldMat._41, worldMat._42, worldMat._43) + boxCenter;
+
+	Vector3 worldScale = transform.GetWorldScale();
+
+	Vector3 minPos = worldPos - (extents * worldScale);
+	Vector3 maxPos = worldPos + (extents * worldScale);
+
+	if (worldMin.x > minPos.x) worldMin.x = minPos.x;
+	if (worldMin.y > minPos.y) worldMin.y = minPos.y;
+	if (worldMin.z > minPos.z) worldMin.z = minPos.z;
+
+	if (worldMax.x < maxPos.x) worldMax.x = maxPos.x;
+	if (worldMax.y < maxPos.y) worldMax.y = maxPos.y;
+	if (worldMax.z < maxPos.z) worldMax.z = maxPos.z;
+}
+
+void Mesh::UpdateTransformCB(DirectX& dx, const Transform& transform)
+{
+	assert(transform.GetObjectID() == _objectID);
+
+	if(transform.GetDirty())
+		_tfChangeState = TransformCB::ChangeState::HasChanged;
+
+	assert(_tfChangeState != TransformCB::ChangeState::No);
+
+	const Matrix& worldMat = transform.GetWorldMatrix();
 	
-	if (updateRenderQueue)
-		ClassifyRenderMeshType();
+	TransformCB tfCB;
+	tfCB.world				= Matrix::Transpose(worldMat);
+	tfCB.prevWorld			= Matrix::Transpose(_prevWorldMat);
+	tfCB.worldInvTranspose	= Matrix::Inverse(worldMat);
+	_transformCB.UpdateSubResource(dx, tfCB);
 
-	_isManagedRenderQ = updateRenderQueue;
-}
-
-void Mesh::Initialize(Rendering::Buffer::VertexBuffer*& vertexBuffer, 
-					  Rendering::Buffer::IndexBuffer*& indexBuffer,
-					  Rendering::Material*& initMaterial, bool updateRenderQueue, bool allocTransformCB)
-{
-	_filter = new MeshFilter;
-	if(_filter->Initialize(vertexBuffer, indexBuffer) == false)
-		ASSERT_MSG("Error, filter->cratebuffer");
-
-	_renderer = new MeshRenderer;
-	if(_renderer->AddMaterial(initMaterial) == false)
-		ASSERT_MSG("Error, cant add material in MeshRenderer");
-
-	if (allocTransformCB)
-	{
-		_transformConstBuffer = new Buffer::ConstBuffer;
-		if (_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB)) == false)
-			ASSERT_MSG("Error, transformBuffer->Initialize");
-	}
-
-	if (updateRenderQueue)
-		ClassifyRenderMeshType();
-
-	_isManagedRenderQ = updateRenderQueue;
-}
-
-void Mesh::OnInitialize()
-{
-}
-
-void Mesh::OnUpdate(float deltaTime)
-{
-}
-
-void Mesh::OnUpdateTransformCB(const Device::DirectX*& dx, const Rendering::TransformCB& transformCB)
-{
-	ID3D11DeviceContext* context = dx->GetContext();
-	_transformConstBuffer->UpdateSubResource(context, &transformCB);
-}
-
-void Mesh::OnDestroy()
-{
-	SAFE_DELETE(_filter);
-	SAFE_DELETE(_renderer);
-	SAFE_DELETE(_transformConstBuffer);
-}
-
-void Mesh::ClassifyRenderMeshType()
-{
-	if (_isManagedRenderQ == false)
-		return;
-
-	Manager::RenderManager* renderMgr = Device::Director::SharedInstance()->GetCurrentScene()->GetRenderManager();
-
-	renderMgr->UpdateRenderList(this, _prevShow);
-	_prevShow = _show;
-
-	_prevRenderType = _renderer->GetCurrentRenderType();
-}
-
-void Mesh::OnRenderPreview()
-{
-	ClassifyRenderMeshType();
-}
-
-Core::Component* Mesh::Clone() const
-{
-	Mesh* newMesh = new Mesh;
-	{
-		(*newMesh) = (*this);
-
-		newMesh->_filter = new MeshFilter(*_filter);
-		newMesh->_renderer = new MeshRenderer(*_renderer);
-		newMesh->_transformConstBuffer = new Buffer::ConstBuffer;
-		newMesh->_transformConstBuffer->Initialize(sizeof(Rendering::TransformCB));
-		newMesh->ClassifyRenderMeshType();
-
-		newMesh->_owner = _owner;
-	}
-
-	return newMesh;
-}
-
-void Mesh::SetShow(bool b)
-{
-	_show = b;
-	ClassifyRenderMeshType();
+	_prevWorldMat = worldMat;
+	_tfChangeState = TransformCB::ChangeState((static_cast<uint>(_tfChangeState) + 1) % static_cast<uint>(TransformCB::ChangeState::MAX));
 }

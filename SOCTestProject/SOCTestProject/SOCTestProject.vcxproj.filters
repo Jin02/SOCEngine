@@ -18,19 +18,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Template\ShaderFactory.hpp">
+      <Filter>템플릿</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\TestScene.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Code\main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Code\TestScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Code\TestScene.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Template\ShaderFactory.hpp">
-      <Filter>템플릿</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

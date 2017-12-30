@@ -1,49 +1,53 @@
 #pragma once
 
-#include <d3d11.h>
 #include "Color.h"
-#include "Size.h"
-#include "TextureForm.h"
+#include "Rect.h"
+
+#include "ShaderResourceView.h"
+#include "UnorderedAccessView.h"
 
 namespace Rendering
 {
 	namespace Manager
 	{
-		class TextureManager;
+		class Texture2DManager;
 	}
 
 	namespace Texture
 	{
-		class Texture2D : public TextureForm
+		class Texture2D final
 		{
 		public:
-			friend class Manager::TextureManager;
+			Texture2D() = default;
+			explicit Texture2D(const View::ShaderResourceView& srv, const DXSharedResource<ID3D11Texture2D>& tex, bool hasAlpha, const Size<uint>& size = Size<uint>(0, 0));
+			explicit Texture2D(const DXSharedResource<ID3D11Texture2D>& tex, const Size<uint>& size);
 
-		protected:
-			ID3D11Texture2D*			_texture;
-			bool						_hasAlpha;
-
-			Math::Size<uint>			_size;
-
-		public:
-			Texture2D();
-			Texture2D(ID3D11ShaderResourceView* srv, ID3D11Texture2D* tex, bool hasAlpha);
-			virtual ~Texture2D();
-
-		public:
 			// if SampleCount = 0, sampleCount = msaa.count
-			void Initialize(uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
+			void Initialize(Device::DirectX& dx, uint width, uint height, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint bindFlags, uint sampleCount, uint mipLevels);
+			void Initialize(Device::DirectX& dx, const D3D11_TEXTURE2D_DESC& texDesc, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat);
 			void Destroy();
-			void GenerateMips(const Device::DirectX* dx) const;
 
-		public:
-			const Math::Size<uint>& FetchSize();
+			void GenerateMips(Device::DirectX& dx);
 
-		public:
-			GET_ACCESSOR(Texture, ID3D11Texture2D*, _texture);
-			GET_ACCESSOR(HasAlpha, bool, _hasAlpha);
+			const Size<uint>& FetchSize();
 
-			GET_ACCESSOR(Size, const Math::Size<uint>&, _size);
+			GET_CONST_ACCESSOR(Texture,				DXSharedResource<ID3D11Texture2D>,			_texture);
+			GET_ACCESSOR(RawTexture,				ID3D11Texture2D* const,						_texture.GetRaw());
+
+			GET_CONST_ACCESSOR(Size,				const Size<uint>&,							_size);
+			GET_CONST_ACCESSOR(CanUse,				bool,										_texture.IsCanUse());
+
+			SET_ACCESSOR(Size,						const Size<uint>&,							_size);
+			SET_ACCESSOR(Texture,					const DXSharedResource<ID3D11Texture2D>&,	_texture);
+
+			GET_CONST_ACCESSOR_REF(ShaderResourceView,											_srv);
+			GET_CONST_ACCESSOR_REF(UnorderedAccessView,											_uav);
+
+		private:
+			DXSharedResource<ID3D11Texture2D>		_texture;
+			Size<uint>								_size = Size<uint>(0, 0);
+			View::ShaderResourceView				_srv;
+			View::UnorderedAccessView				_uav;
 		};
 	}
 }

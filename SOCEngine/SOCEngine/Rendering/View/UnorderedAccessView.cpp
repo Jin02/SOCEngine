@@ -1,24 +1,21 @@
 #include "UnorderedAccessView.h"
-#include "Director.h"
+#include "DirectX.h"
 
 using namespace Rendering::View;
 
-UnorderedAccessView::UnorderedAccessView(ID3D11UnorderedAccessView* uav) : _uav(uav)
+void UnorderedAccessView::Destroy()
 {
-}
-
-UnorderedAccessView::~UnorderedAccessView()
-{
-	Destroy();
+	_uav.Destroy();
 }
 
 void UnorderedAccessView::Initialize(
+	Device::DirectX& dx,
 	DXGI_FORMAT format, uint numElements, ID3D11Resource* resource,
 	D3D11_UAV_DIMENSION viewDimension,
 	uint tex3dMipSlice, uint tex3dWSize,
 	uint bufferFlags)
 {
-	ASSERT_MSG_IF(_uav == nullptr, "Error, _uav has already been allocated");
+	assert(_uav.GetRaw() == nullptr);
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
@@ -36,14 +33,5 @@ void UnorderedAccessView::Initialize(
 		desc.Texture3D.WSize		= tex3dWSize;
 	}
 
-	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
-	ID3D11Device* device = dx->GetDevice();
-
-	HRESULT hr = device->CreateUnorderedAccessView(resource, &desc, &_uav);
-	ASSERT_MSG_IF(SUCCEEDED(hr), "Error, Cant create UAV");
-}
-
-void UnorderedAccessView::Destroy()
-{
-	SAFE_RELEASE(_uav);
+	_uav = dx.CreateUnorderedAccessView(resource, desc);
 }

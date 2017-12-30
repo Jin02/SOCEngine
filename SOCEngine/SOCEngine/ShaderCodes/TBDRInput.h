@@ -62,89 +62,7 @@ StructuredBuffer<PLightVPMat>				PointLightShadowViewProjMatrix				: register( t
 StructuredBuffer<DSLightVPMat>				SpotLightShadowViewProjMatrix				: register( t24 );
 StructuredBuffer<DSLightVPMat>				DirectionalLightShadowViewProjMatrix		: register( t25 );
 
-struct LightingParams
-{
-	uint	lightIndex;
-	float3	viewDir;
-	float3	normal;
-	float	roughness;
-	float3	diffuseColor;
-	float3	specularColor;
-};
-
-struct LightingCommonParams
-{
-	float3	lightColor;
-	float3	lightDir;
-};
-
-cbuffer TBRParam : register( b0 )
-{
-	matrix 	tbrParam_invProjMat;
-	matrix 	tbrParam_invViewProjMat;
-	matrix	tbrParam_invViewProjViewportMat;
-
-	uint	tbrParam_packedViewportSize;
-	uint 	tbrParam_packedNumOfLights;
-	uint	tbrParam_maxNumOfPerLightInTile;
-	float	tbrParam_gammaWithSignUseHDR;
-};
-
-bool GetUseHDR()
-{
-	return tbrParam_gammaWithSignUseHDR < 0.0f;
-}
-
-float GetGamma()
-{
-	return GetUseHDR() ? abs(tbrParam_gammaWithSignUseHDR) : 1.0f;
-}
-
-float GetRealGammaValue()
-{
-	return abs(tbrParam_gammaWithSignUseHDR); 
-}
-
-float2 GetViewportSize()
-{
-	return float2(	tbrParam_packedViewportSize >> 16,
-					tbrParam_packedViewportSize & 0x0000ffff	);
-}
-
-cbuffer ShadowGlobalParam : register( b4 )
-{	
-	uint	shadowGlobalParam_packedNumOfShadowAtlasCapacity;
-	uint	shadowGlobalParam_packedPowerOfTwoShadowResolution;
-	uint	shadowGlobalParam_packedNumOfShadows;
-	uint	shadowGlobalParam_dummy;
-};
-
-
-float4 ProjToView( float4 p )
-{
-    p = mul( p, tbrParam_invProjMat );
-    p /= p.w;
-    return p;
-}
-
-float InvertProjDepthToView(float depth)
-{
-	/*
-	1.0f = (depth * tbrParam_invProjMat._33 + tbrParam_invProjMat._43)
-	but, tbrParam_invProjMat._33 is always zero and _43 is always 1
-		
-	if you dont understand, calculate inverse projection matrix.
-	but, I use inverted depth writing, so, far value is origin near value and near value is origin far value.
-	*/
-
-	return 1.0f / (depth * tbrParam_invProjMat._34 + tbrParam_invProjMat._44);
-}
-
-
-float LinearizeDepth(float depth, float camFar) // ?????
-{
-	return 0.0f;
-}
+Texture2D<float>							DirectionalLightShadowViewDepthMap			: register( t26 );
 
 uint GetShadowIndex(uint lightOptionalParamIndex)
 {
@@ -167,6 +85,12 @@ float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)
 	return float( 1.0f - 2.0f * float(isMinus) );
 }
 
+float3 GetDirectionalLightDir(uint lightIndex)
+{
+	float3 lightDir = float3(DirectionalLightDirXYBuffer[lightIndex], 0.0f);
+	lightDir.z = sqrt(1.0f - lightDir.x*lightDir.x - lightDir.y*lightDir.y) * GetSignDirectionalLightDirZSign(DirectionalLightOptionalParamIndex[lightIndex]);
 
+	return lightDir;
+}
 
 #endif

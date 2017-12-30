@@ -1,5 +1,5 @@
 #include "BasicGeometryGenerator.h"
-#include "Director.h"
+#include "Engine.h"
 
 using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
@@ -7,10 +7,12 @@ using namespace Rendering::Shader;
 using namespace Math;
 using namespace Device;
 using namespace Core;
+using namespace Rendering;
+using namespace Intersection;
 
-bool BasicGeometryGenerator::HasFlag(uint vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag flag)
+bool BasicGeometryGenerator::HasFlag(uint vtxInputTypeFlag, DefaultVertexInputTypeFlag flag)
 {
-	return (uint(flag) & vtxInputTypeFlag) != 0;
+	return (static_cast<uint>(flag) & vtxInputTypeFlag) != 0;
 }
 
 std::string BasicGeometryGenerator::UintToStr(uint data)
@@ -30,22 +32,22 @@ void BasicGeometryGenerator::AppendVertexData(	std::vector<float>& inoutVertexDa
 	inoutVertexDatas.push_back(pos.y);	
 	inoutVertexDatas.push_back(pos.z);
 
-	if(HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::NORMAL))
+	if(HasFlag(flag, DefaultVertexInputTypeFlag::NORMAL))
 	{
 		inoutVertexDatas.push_back(normal.x);
 		inoutVertexDatas.push_back(normal.y);
 		inoutVertexDatas.push_back(normal.z);
 	}
 
-	if(HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::TANGENT))
+	if(HasFlag(flag, DefaultVertexInputTypeFlag::TANGENT))
 	{
 		inoutVertexDatas.push_back(tangent.x);
 		inoutVertexDatas.push_back(tangent.y);
 		inoutVertexDatas.push_back(tangent.z);
 	}
 
-	if(	HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::UV0) || 
-		HasFlag(flag, RenderManager::DefaultVertexInputTypeFlag::UV1) )
+	if(	HasFlag(flag, DefaultVertexInputTypeFlag::UV0) || 
+		HasFlag(flag, DefaultVertexInputTypeFlag::UV1) )
 	{
 		inoutVertexDatas.push_back(uv.x);
 		inoutVertexDatas.push_back(uv.y);
@@ -69,18 +71,18 @@ void BasicGeometryGenerator::MakeMeshInfo(MeshInfo& outInfo, uint vtxInputTypeFl
 		};
 		AppendSemanticInfo("POSITION", 0, 12);
 
-		if(HasFlag(vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag::NORMAL))
+		if(HasFlag(vtxInputTypeFlag, DefaultVertexInputTypeFlag::NORMAL))
 		{
 			stride += 12;
 			AppendSemanticInfo("NORMAL", 0, 12);
 		}
-		if(HasFlag(vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag::TANGENT))
+		if(HasFlag(vtxInputTypeFlag, DefaultVertexInputTypeFlag::TANGENT))
 		{
 			stride += 12;
 			AppendSemanticInfo("TANGENT", 0, 12);
 		}
-		if(	HasFlag(vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag::UV0) ||
-			HasFlag(vtxInputTypeFlag, RenderManager::DefaultVertexInputTypeFlag::UV1) )
+		if(	HasFlag(vtxInputTypeFlag, DefaultVertexInputTypeFlag::UV0) ||
+			HasFlag(vtxInputTypeFlag, DefaultVertexInputTypeFlag::UV1) )
 		{
 			stride += 8;
 			AppendSemanticInfo("TEXCOORD", 0, 8);
@@ -97,9 +99,9 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 
 	std::vector<float> vertexDatas;
 
-	float halfWidth = 0.5f * size.x;
-	float halfHeight = 0.5f * size.y;
-	float halfDepth = 0.5f * size.z;
+	float halfWidth		= 0.5f * size.x;
+	float halfHeight	= 0.5f * size.y;
+	float halfDepth		= 0.5f * size.z;
 
 	// Fill in the front face vertex data.
 	AppendVertexData(vertexDatas, Vector3(-halfWidth, -halfHeight, -halfDepth), Vector3(0.0f, 0.0f, -1.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 1.0f), defautVertexInputTypeFlag);
@@ -181,20 +183,11 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
-	Mesh::CreateFuncArguments args("@DefaultBox", key);
+	Mesh::CreateFuncArguments args("@DefaultBox", std::hash<std::string>()(key), "[Box]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertexDatas.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertexDatas.size() / (info.stride / 4));
 		args.vertices.data = vertexDatas.data();
-
-		args.indices = &indices;
-		args.semanticInfos = &info.semantics;
-
-		args.useDynamicIB = false;
-		args.useDynamicVB = false;
-
-		const Scene* scene = Director::SharedInstance()->GetCurrentScene();
-		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
 	createMeshCallback(args);
@@ -214,31 +207,18 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 		for (uint j = 0; j <= sliceCount; ++j)
 		{
-			float theta = j*thetaStep;
+			float theta = float(j) * thetaStep;
 
-			Vector3 position;
-			{
-				position.x = radius * sinf(phi) * cosf(theta);
-				position.y = radius * cosf(phi);
-				position.z = radius * sinf(phi) * sinf(theta);
-			}
+			Vector3 position(	radius * sinf(phi) * cosf(theta),
+								radius * cosf(phi),
+								radius * sinf(phi) * sinf(theta)	);
+			Vector2 uv(theta / (MATH_PI * 2.0f), phi / MATH_PI);
 
-			Vector3 tangent;
-			{
-				tangent.x = -radius*sinf(phi)*sinf(theta);
-				tangent.y = 0.0f;
-				tangent.z = +radius*sinf(phi)*cosf(theta);
-
-				tangent = tangent.Normalized();
-			}
+			Vector3 tangent = Vector3(	-radius*sinf(phi)*sinf(theta),
+										0.0f,
+										radius*sinf(phi)*cosf(theta)	).Normalized();
 
 			Vector3 normal = position.Normalized();
-
-			Vector2 uv;
-			{
-				uv.x = theta / MATH_PI * 2.0f;
-				uv.y = phi / MATH_PI;
-			}
 
 			AppendVertexData(vertexDatas, position, normal, tangent, uv, defautVertexInputTypeFlag);
 		}
@@ -273,7 +253,7 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
 
-	uint southPoleIndex = uint(vertexDatas.size() / (info.stride / 4)) - 1;
+	uint southPoleIndex = static_cast<uint>(vertexDatas.size() / (info.stride / 4)) - 1;
 	baseIndex = southPoleIndex - ringVertexCount;
 
 	for (uint i = 0; i < sliceCount; ++i)
@@ -291,20 +271,11 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 		key += UintToStr(defautVertexInputTypeFlag);
 	}
 
-	Mesh::CreateFuncArguments args("@DefaultSphere", key);
+	Mesh::CreateFuncArguments args("@DefaultSphere", std::hash<std::string>()(key), "[Sphere]", indices, info.semantics);
 	{
-		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertexDatas.size() / (info.stride / 4));
-		args.vertices.data = vertexDatas.data();
-
-		args.indices = &indices;
-		args.semanticInfos = &info.semantics;
-
-		args.useDynamicIB = false;
-		args.useDynamicVB = false;
-
-		const Scene* scene = Director::SharedInstance()->GetCurrentScene();
-		args.material = scene->GetMaterialManager()->Find("@Default");
+		args.vertices.byteWidth	= info.stride;
+		args.vertices.count		= static_cast<uint>(vertexDatas.size() / (info.stride / 4));
+		args.vertices.data		= vertexDatas.data();
 	}
 
 	createMeshCallback(args);
@@ -312,10 +283,10 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	float stackHeight = height / stackCount;
-	float radiusStep = (topRadius - botRadius) / stackCount;
+	float stackHeight	= height / stackCount;
+	float radiusStep	= (topRadius - botRadius) / stackCount;
 
-	uint ringCount = stackCount + 1;
+	uint ringCount		= stackCount + 1;
 
 	std::vector<float> vertices;
 	// Compute vertices for each stack ring starting at the bottom and moving up.
@@ -333,16 +304,11 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 			Vector3 position = Vector3(r * c, y, r * s);
 
-			Vector2 uv;
-			{
-				uv.x = (float)j / sliceCount;
-				uv.y = 1.0f - (float)i / stackCount;
-			}
-
+			Vector2 uv((float)j / sliceCount, 1.0f - (float)i / stackCount);
 			Vector3 tangent = Vector3(-s, 0.0f, c);
 
 			float dr = botRadius - topRadius;
-			Vector3 bitangent(dr*c, -height, dr*s);
+			Vector3 bitangent(dr * c, -height, dr * s);
 
 			Vector3 normal = Vector3::Cross(tangent, bitangent).Normalized();
 
@@ -373,7 +339,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 	// TopCap
 	{
-		uint baseIndex = uint(vertices.size() / (info.stride / 4));
+		uint baseIndex = static_cast<uint>(vertices.size() / (info.stride / 4));
 
 		float y = 0.5f * height;
 		float dTheta = 2.0f * MATH_PI / float(sliceCount);
@@ -396,7 +362,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		AppendVertexData(vertices, Vector3(0.0f, y, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.5f, 0.5f), defautVertexInputTypeFlag);
 
 		// Index of center vertex.
-		uint centerIndex = uint(vertices.size() / (info.stride / 4)) - 1;
+		uint centerIndex = static_cast<uint>(vertices.size() / (info.stride / 4)) - 1;
 
 		for (uint i = 0; i < sliceCount; ++i)
 		{
@@ -408,7 +374,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 	// BotCap
 	{
-		uint baseIndex = uint(vertices.size() / (info.stride / 4));
+		uint baseIndex = static_cast<uint>(vertices.size() / (info.stride / 4));
 		float y = -0.5f * height;
 		float dTheta = 2.0f * MATH_PI / float(sliceCount);
 
@@ -427,7 +393,7 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		AppendVertexData(vertices, Vector3(0.0f, y, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.5f, 0.5f), defautVertexInputTypeFlag);
 
 		// Cache the index of center vertex.
-		uint centerIndex = uint(vertices.size() / (info.stride / 4)) - 1;
+		uint centerIndex = static_cast<uint>(vertices.size() / (info.stride / 4)) - 1;
 
 		for (uint i = 0; i < sliceCount; ++i)
 		{
@@ -448,20 +414,11 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 		key += UintToStr(defautVertexInputTypeFlag);
 	}
 
-	Mesh::CreateFuncArguments args("@DefaultCylinder", key);
+	Mesh::CreateFuncArguments args("@DefaultCylinder", std::hash<std::string>()(key), "[Cylinder]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertices.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));
 		args.vertices.data = vertices.data();
-
-		args.indices = &indices;
-		args.semanticInfos = &info.semantics;
-
-		args.useDynamicIB = false;
-		args.useDynamicVB = false;
-
-		const Scene* scene = Director::SharedInstance()->GetCurrentScene();
-		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
 	createMeshCallback(args);
@@ -476,8 +433,8 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	// Create the vertices.
 	//
 
-	float halfWidth = 0.5f * width;
-	float halfHeight = 0.5f * height;
+	float halfWidth		= 0.5f * width;
+	float halfHeight	= 0.5f * height;
 
 	float dx = width / float(widthVertexCount - 1);
 	float dz = height / float(heightVertexCount - 1);
@@ -534,73 +491,65 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
 
-	Mesh::CreateFuncArguments args("@DefaultPlane", key);
+	Mesh::CreateFuncArguments args("@DefaultCylinder", std::hash<std::string>()(key), "[Plane]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
-		args.vertices.count = uint(vertices.size() / (info.stride / 4));
+		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));
 		args.vertices.data = vertices.data();
-
-		args.indices = &indices;
-		args.semanticInfos = &info.semantics;
-
-		args.useDynamicIB = false;
-		args.useDynamicVB = false;
-
-		const Scene* scene = Director::SharedInstance()->GetCurrentScene();
-		args.material = scene->GetMaterialManager()->Find("@Default");
 	}
 
 	createMeshCallback(args);
 }
 
-Object* BasicGeometryGenerator::CreateBox(const Math::Vector3& size, uint defautVertexInputTypeFlag)
+void BasicGeometryGenerator::CreateBox(Object& targetObj, Core::Engine& engine, const Vector3& size, uint defautVertexInputTypeFlag)
 {
-	Object* object = nullptr;
-	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, size](const Mesh::CreateFuncArguments& args)
 	{
-		object = new Object("Box");
-		object->AddComponent<Mesh>()->Initialize(args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), size));
 	};
 
 	CreateBox(CreateObject, size, defautVertexInputTypeFlag);
-	return object;
 }
 
-Object* BasicGeometryGenerator::CreateSphere(float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
+void BasicGeometryGenerator::CreateSphere(Object& targetObj, Core::Engine& engine, float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	Object* object = nullptr;
-	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, radius](const Mesh::CreateFuncArguments& args)
 	{
-		object = new Object("Sphere");
-		object->AddComponent<Mesh>()->Initialize(args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(radius, radius, radius)));
 	};
 
 	CreateSphere(CreateObject, radius, sliceCount, stackCount, defautVertexInputTypeFlag);
-	return object;
 }
 
-Object* BasicGeometryGenerator::CreateCylinder(float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
+void BasicGeometryGenerator::CreateCylinder(Object& targetObj, Core::Engine& engine, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag)
 {
-	Object* object = nullptr;
-	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, height, botRadius, topRadius](const Mesh::CreateFuncArguments& args)
 	{
-		object = new Object("Cylinder");
-		object->AddComponent<Mesh>()->Initialize(args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		float widthMax	= std::max(botRadius, topRadius);
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(widthMax, height, widthMax)));
 	};
 
 	CreateCylinder(CreateObject, botRadius, topRadius, height, sliceCount, stackCount, defautVertexInputTypeFlag);
-	return object;
 }
 
-Object* BasicGeometryGenerator::CreatePlane(float width, float height, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
+void BasicGeometryGenerator::CreatePlane(Object& targetObj, Core::Engine& engine, float width, float depth, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag)
 {
-	Object* object = nullptr;
-	auto CreateObject = [&](const Mesh::CreateFuncArguments& args)
+	auto CreateObject = [&targetObj, &engine, width, depth](const Mesh::CreateFuncArguments& args)
 	{
-		object = new Object("plane");
-		object->AddComponent<Mesh>()->Initialize(args);
+		Mesh& newMesh = targetObj.AddComponent<Mesh>();
+		newMesh.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetBufferManager(), args);
+
+		newMesh.SetBoundBox(BoundBox(Vector3::Zero(), Vector3(width, 1.0f, depth)));
 	};
 
-	CreatePlane(CreateObject, width, height, widthVertexCount, heightVertexCount, defautVertexInputTypeFlag);
-	return object;
+	CreatePlane(CreateObject, width, depth, widthVertexCount, heightVertexCount, defautVertexInputTypeFlag);
 }

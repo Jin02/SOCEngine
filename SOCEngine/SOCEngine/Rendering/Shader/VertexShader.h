@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderForm.h"
+#include "BaseShader.hpp"
 #include "ConstBuffer.h"
 #include "BindIndexInfo.h"
 
@@ -8,51 +8,47 @@ namespace Rendering
 {
 	namespace Shader
 	{
-		class VertexShader : public ShaderForm
+		class VertexShader final
 		{
 		public:
 			struct SemanticInfo
 			{
-				std::string name;
-				unsigned int semanticIndex;
-				unsigned int size;
+				std::string	name			= "";
+				uint		semanticIndex	= -1;
+				uint		size			= 0;
 			};
 
-		private:
-			std::vector<SemanticInfo> _semanticInfo;
+			VertexShader() = default;
+			VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
+
+			void Initialize(Device::DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
+			void Destroy();
+
+			void BindShaderToContext(Device::DirectX& dx) const;
+			void BindInputLayoutToContext(Device::DirectX& dx) const;
+			static void UnBindShaderToContext(Device::DirectX& dx);
+			static void UnBindInputLayoutToContext(Device::DirectX& dx);
+
+			static void BindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind, const View::ShaderResourceView& view);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, RenderState::SamplerState);
+			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
+
+			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
+			static void UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind);
+			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
+
+			static constexpr const char* GetCompileCode() { return "vs"; }
+
+			GET_CONST_ACCESSOR(SemanticInfos,	const std::vector<SemanticInfo>&,	_semanticInfo);
+			GET_CONST_ACCESSOR(Key,				const std::string&,					_baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse,		bool,								_baseShader.GetIsCanUse());
 
 		private:
-			ID3D11VertexShader* _shader;
-			ID3D11InputLayout*	_layout;
+			BaseShader								_baseShader;
+			DXSharedResource<ID3D11VertexShader>	_shader;
+			DXSharedResource<ID3D11InputLayout>		_layout;
 
-		public:
-			VertexShader(ID3DBlob* blob, const std::string& key);
-			virtual ~VertexShader(void);
-
-		public:
-			GET_ACCESSOR(SemanticInfos, const std::vector<SemanticInfo>&, _semanticInfo);
-
-		public:
-			bool Create(const Device::DirectX* dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations);
-			void Clear(ID3D11DeviceContext* context,
-				const std::vector<InputConstBuffer>*			constBuffers, 
-				const std::vector<InputTexture>*			textures,
-				const std::vector<InputShaderResourceBuffer>*		srBuffers);
-
-		public:
-			void BindShaderToContext(ID3D11DeviceContext* context);
-			void BindInputLayoutToContext(ID3D11DeviceContext* context);
-			void UnBindBasicInputs(ID3D11DeviceContext* context);
-
-			void BindResourcesToContext(ID3D11DeviceContext* context,
-				const std::vector<InputConstBuffer>*			constBuffers, 
-				const std::vector<InputTexture>*			textures,
-				const std::vector<InputShaderResourceBuffer>*		srBuffers);
-				
-			static void BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex);
-			static void BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState);
-			static void BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb);
-			static void BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer);
+			std::vector<SemanticInfo>				_semanticInfo;
 		};
 	}
 }

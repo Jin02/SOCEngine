@@ -1,341 +1,218 @@
 #include "TestScene.h"
-#include <fstream>
-#include <ShaderManager.h>
-#include <Mesh.h>
-#include <LightCulling.h>
+#include "BasicGeometryGenerator.h"
 
-#include <Director.h>
-#include <ResourceManager.h>
+//#define GI_TEST
+#define SKYBOX_ON
 
-#include <PhysicallyBasedMaterial.h>
-#include <SkyBox.h>
-
-using namespace Rendering;
 using namespace Core;
-using namespace Rendering::Camera;
-using namespace Rendering::Geometry;
-using namespace Rendering::Light;
-using namespace Rendering::Geometry;
-using namespace Rendering::Manager;
-using namespace Rendering::Sky;
-using namespace Resource;
-using namespace Device;
 using namespace Math;
-//using namespace Importer;
+using namespace Rendering;
+using namespace Rendering::Camera;
+using namespace Rendering::Light;
+using namespace Rendering::Shadow;
+using namespace Rendering::Geometry;
 
-TestScene::TestScene(void) : _testObject2(nullptr)
+RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
+//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
 
+	GIInitParam param;
+	{
+#ifdef GI_TEST
+		param.vxgiParam = GIInitParam::VXGIParam(256, 15.0f);
+#else
+		param.vxgiParam = GIInitParam::VXGIParam(0, 0);
+#endif
+	}
+	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 2048, param);
 }
 
-TestScene::~TestScene(void)
+void TestScene::OnInitialize(Engine& engine)
 {
-}
+#ifdef SKYBOX_ON
+	// Load SkyBox
+	{
+		auto cubeMap = engine.GetRenderingSystem().GetTexture2DManager().LoadTextureFromFile(engine.GetDirectX(), "Resources/CubeMap/desertcube1024.dds", false);
+		assert(cubeMap);
 
-void TestScene::OnInitialize()
-{
-	PostProcessing::DepthOfField::ParamCB dofParam = {10.0f, 9.0f, 15.0f, 16.0f};
-	GetPostProcessing()->GetDepthOfField()->UpdateParam(dofParam);
+		Material::SkyBoxMaterial skyMat("@SkyBox");
+		skyMat.UpdateCubeMap(*cubeMap);
+		skyMat.Initialize(engine.GetDirectX(), engine.GetRenderingSystem().GetShaderManager());
 
-	PostProcessing::SSAO::Param ssaoParam;
-	ssaoParam.stepUV = Vector2(1.0f, 1.0f);
-	ssaoParam.SetSampleCount(24);
-	ssaoParam.SetSkipDist(0.1f);
-	ssaoParam.SetScale(10.0f);
-	ssaoParam.SetOccluedRate(0.95f);
+		auto key = engine.GetRenderingSystem().GetMaterialManager().Add(skyMat).first;
+		engine.GetObjectManager().Find("MainCamera")->GetComponent<MainCamera>()->SetSkyBoxMaterialID(key);
+	}
+#endif
 
-	GetPostProcessing()->GetSSAO()->UpdateParam(ssaoParam);
+	constexpr uint defaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
 
-//	GetPostProcessing()->SetUseSSAO(true);
-//	GetPostProcessing()->SetUseBloom(true);
-//	GetPostProcessing()->SetUseDoF(true);
+#if 0
+	Object* box = engine.LoadMesh("./Resources/CornellBox/box.obj"); assert(box);
+	engine.AddRootObject(*box);
 
-	_camera = new Object("Default");
-	MeshCamera* cam = _camera->AddComponent<MeshCamera>();
-	AddObject(_camera);
+	Transform& tf = box->FetchTransform();
+	tf.SetLocalPosition(Vector3(0.3f, -4.7f, 17.7f));
+	tf.UpdateLocalEulerAngle(Vector3(-90.0f, 0.0f, 180.0f));
+	tf.SetLocalScale(Vector3(5.0f, 5.0f, 5.0f));
 
-#if 0 //GI Test
-//	ActivateGI(true, 256, 50.0f);
-//	ActivateGI(true, 256, 15.0f);
+	Object& light = engine.GetObjectManager().Acquire("PointLight");
+	light.FetchTransform().SetLocalPosition(Vector3(0.0f, 2.0f, 16.0f));
 
-	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
-	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
+	PointLight& pl = light.AddComponent<PointLight>();
+	pl.GetBase()->SetRadius(30.0f);
+	pl.GetBase()->SetLumen(100);
 
-	//_testObject2 = importer->Load("./Resources/Sphere/sphere.obj", false);
-	//_pos = Vector3(-2.7f, 3.3f, 17.7f);
-	//_testObject2->GetTransform()->UpdatePosition(_pos);
-	//_testObject2->GetTransform()->UpdateScale(Vector3(2.5f, 2.5f, 2.5f));
-	//
-	//AddObject(_testObject2);
+	PointLightShadow& pls = light.AddComponent<PointLightShadow>();
+	pls.GetBase()->SetUnderScanSize( Half(1.0f) );
+	pls.GetBase()->SetBias(0.001f);
 
-	_testObject = importer->Load("./Resources/CornellBox/box.obj", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0.3f, -4.7f, 17.7f));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90.0f, 0.0f, 180.0f));
-	_testObject->GetTransform()->UpdateScale(Vector3(5.0f, 5.0f, 5.0f));
+	engine.AddRootObject(light);
 
-	AddObject(_testObject);
+	engine.UpdateWorldMatrix();
 
-	_light = new Object("Light");
-
-	PointLight* light = _light->AddComponent<PointLight>();
-	light->SetLumen(100);
-	light->SetRadius(30.0f);
-	light->ActiveShadow(true);
-	light->GetShadow()->SetUnderScanSize(0.0f);
-	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
-
-	AddObject(_light);
-
-	//DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
-	//dl->SetIntensity(1);
-	//_light->GetTransform()->UpdateEulerAngles(Vector3(45.0f, 20.0f, 16.0f));
-	//_light->GetTransform()->UpdatePosition(Vector3(-10.0f, 7.0f, 16.0f));
-
-//	dl->ActiveShadow(true);
-//	dl->SetUseAutoProjectionLocation(true);
-
-	if(_vxgi)
-		_vxgi->SetStartCenterWorldPos(_testObject->GetTransform()->GetLocalPosition() + Vector3(0, 5.0f, 0.0f));
+	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
+	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
 #elif 1
-	const ResourceManager* resourceMgr	= ResourceManager::SharedInstance();
-	Importer::MeshImporter* importer	= resourceMgr->GetMeshImporter();
+	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
+	defaultMaterial.Initialize(engine.GetDirectX());
+	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
 
-	//_testObject = importer->Load("./Resources/Sponza/sponza.obj", false);
-	//_testObject->GetTransform()->UpdatePosition(Vector3(-15, -20, 70));
-	//_testObject->GetTransform()->UpdateEulerAngles(Vector3(270, 90.0f, 0.0f));
-	//_testObject->GetTransform()->UpdateScale(Vector3(0.1f, 0.1f, 0.1f));
-	_testObject = importer->Load("./Resources/House/SanFranciscoHouse.fbx", false);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, -5, 20));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(-90, -90, 0));
+	Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
+	{
+		engine.AddRootObject(*house);
+	
+		Transform& tf = house->FetchTransform();
+		tf.SetLocalPosition(Vector3(0, -5, 20));
+		tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+	}
+	//Object box = engine.GetObjectManager().Acquire("Box");
+	//{
+	//	BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
+	//	engine.AddRootObject(box);
 
-	AddObject(_testObject);
+	//	box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+	//	box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
+	//	box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 
-	BasicGeometryGenerator gen;
-	uint flag = uint(RenderManager::DefaultVertexInputTypeFlag::UV0) |
-				uint(RenderManager::DefaultVertexInputTypeFlag::NORMAL);
-	_testObject2 = gen.CreatePlane(20.0f, 20.0f, 4, 4, flag);
-	_testObject2->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));	
-	_testObject2->GetTransform()->UpdatePosition(Vector3(0, -5, 20));
-	AddObject(_testObject2);
+	//	auto mesh = box.GetComponent<Mesh>();
+	//	mesh->SetPBRMaterialID(materialKey);
+	//}
 
-	UpdateBoundBox();
+	Object plane = engine.GetObjectManager().Acquire("Plane");
+	{
+		BasicGeometryGenerator::CreatePlane(plane, engine, 20.0f, 20.0f, 4, 4, defaultFlag);
 
-	_camera->GetTransform()->UpdatePosition(GetBoundBox().GetCenter());
+		engine.AddRootObject(plane);
 
-	_light = new Object("Light");
-	_light->GetTransform()->UpdatePosition(Vector3(0.0f, 2.0f, 16.0f));
-	_light->GetTransform()->UpdateEulerAngles(Vector3(120.0f, 30.0f, 0.0f));
-	AddObject(_light);
+		plane.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
+		plane.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
 
-	DirectionalLight* dl = _light->AddComponent<DirectionalLight>();
-	dl->SetIntensity(20.0f);
-	dl->ActiveShadow(true);
+		auto mesh = plane.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	
+	Object& light = engine.GetObjectManager().Acquire("Light");
+	{
+		light.FetchTransform().SetLocalPosition(Vector3(-2500, 3750, 2185));
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
 
-	ActiveAtmosphericScattering(dl);
+		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
+		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
 
-#elif 0 //IBL Test
-	// SkyBox
-	ActiveSkyBox("@Skybox", "Resources/CubeMap/desertcube1024.dds");
-	_camera->GetTransform()->UpdatePosition(Vector3(0, 0, 0));
-	cam->SetFieldOfViewDegree(60.0f);	
+//		auto* shadow = light.GetComponent<DirectionalLightShadow>();
+//		shadow->SetUseAutoProjectionLocation(false);
 
-	BasicGeometryGenerator gen;
-	uint flag = uint(RenderManager::DefaultVertexInputTypeFlag::UV0) |
-				uint(RenderManager::DefaultVertexInputTypeFlag::NORMAL);
-	_testObject = gen.CreateSphere(1.0f, 30, 30, flag);
-	_testObject->GetTransform()->UpdatePosition(Vector3(0, 0.0f, 11.0f));
-	_testObject->GetTransform()->UpdateEulerAngles(Vector3(0.0f, 0.0f, 0.0f));
-	_testObject->GetTransform()->UpdateScale(Vector3(5, 5, 5));
-	AddObject(_testObject);
+		engine.AddRootObject(light);
+	}
 
-	_light = new Object("Light");
-	_light->GetTransform()->UpdateEulerAngles(Vector3(90.0f, 0.0f, 0));
-	_light->GetTransform()->UpdatePosition(_camera->GetTransform()->GetLocalPosition());
+	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
 
-	DirectionalLight* light = _light->AddComponent<DirectionalLight>();
-	light->SetIntensity(2.0f);
-	light->SetUseAutoProjectionLocation(true);
-	light->ActiveShadow(false);
-	AddObject(_light);
+#ifndef SKYBOX_ON
+	MaterialID matID = engine.ActivateSkyScattering(512, light);
+	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
-}
 
-void TestScene::OnRenderPreview()
-{
-	if(_vxgi)
-	{
-		auto voxelViwer = _vxgi->GetDebugVoxelViewer();
-		
-		if(voxelViwer)
-		{
-			Object* debugVoxels = voxelViwer->GetVoxelsParent();
-			if(debugVoxels)
-			{
-				Object* exist = FindObject(debugVoxels->GetName());
-				if( exist == nullptr )
-				{
-					_testObject->SetUse(false);
-
-					AddObject(debugVoxels);
-					_testObject2 = debugVoxels;
-//#ifndef USE_ANISOTROPIC_VOXELIZATION
-					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, -0.3f, -4.1f));
-//#else
-//					debugVoxels->GetTransform()->UpdatePosition(Vector3(0.0f, 1.8f, -3.1f));
-//#endif
-				}
-			}
-		}
-	}
-}
-
-void TestScene::OnInput(const Device::Win32::Mouse& mouse, const  Device::Win32::Keyboard& keyboard)
-{
-	const float scale = 2.5f;
-#if 1
-	Transform* control = _camera->GetTransform();
-
-	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, scale, 0));
-	}
-	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, -scale, 0));
-	}
-	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(-scale, 0, 0));
-	}
-	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(scale, 0, 0));
-	}
-
-	if(keyboard.states['T'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, 0, scale));
-	}
-	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
-	{
-		Vector3 pos = control->GetLocalPosition();
-		control->UpdatePosition(pos + Vector3(0, 0, -scale));
-	}
-
-	if(keyboard.states['U'] == Win32::Keyboard::Type::Up)
-	{
-		//PointLight* pl = _light->GetComponent<PointLight>();
-		//float us = pl->GetShadow()->GetUnderScanSize();
-		//pl->GetShadow()->SetUnderScanSize(us + scale);
-		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(5.0f, 0.0f, 0.0f));
-	}
-	if(keyboard.states['J'] == Win32::Keyboard::Type::Up)
-	{
-		//PointLight* pl = _light->GetComponent<PointLight>();
-		//float us = pl->GetShadow()->GetUnderScanSize();
-		//pl->GetShadow()->SetUnderScanSize(us - scale);
-		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(5.0f, 0.0f, 0.0f));
-	}
-	if(keyboard.states['H'] == Win32::Keyboard::Type::Up)
-	{
-		//PointLight* pl = _light->GetComponent<PointLight>();
-		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() - 0.01f);
-		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler - Vector3(0.0f, 5.0f, 0.0f));
-	}
-	if(keyboard.states['K'] == Win32::Keyboard::Type::Up)
-	{
-		//PointLight* pl = _light->GetComponent<PointLight>();
-		//pl->GetShadow()->SetBias(pl->GetShadow()->GetBias() + 0.01f);
-		Vector3 euler = control->GetLocalEulerAngle();
-		control->UpdateEulerAngles(euler + Vector3(0.0f, 5.0f, 0.0f));
-	}
-	if(keyboard.states['M'] == Win32::Keyboard::Type::Up)
-	{
-		_testObject->SetUse(!_testObject->GetUse());
-	}
 #elif 0
-	Vector3 pos = _vxgi->GetStartCenterWorldPos();
+	Material::PhysicallyBasedMaterial defaultMaterial("Default");
+	defaultMaterial.Initialize(engine.GetDirectX());
 
-	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, scale, 0));
-	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, -scale, 0));
-	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(-scale, 0, 0));
-	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(scale, 0, 0));
-
-	if(keyboard.states['T'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, scale));
-	if(keyboard.states['G'] == Win32::Keyboard::Type::Up)
-		_vxgi->SetStartCenterWorldPos(pos + Vector3(0, 0, -scale));
-#elif 0
-
-	auto dof = GetPostProcessing()->GetDepthOfField();
-	auto param = dof->GetParam();
-
-	if(keyboard.states['W'] == Win32::Keyboard::Type::Up)
+	// Setting Material
 	{
-		param.start += scale;
+		auto& texMgr		= engine.GetRenderingSystem().GetTexture2DManager();
+//		auto albedoMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/test.png", false);
 
-		dof->UpdateParam(param);
+		auto albedoMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_basecolor.png", false);
+		auto metallicMap	= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_metallic.png", false);
+		auto roughnessMap	= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_roughness.png", false);
+
+		auto normalMap		= texMgr.LoadTextureFromFile(engine.GetDirectX(), "./Resources/Rust/rustediron2_normal.png", false);
+
+		defaultMaterial.RegistDiffuseMap(*albedoMap);
+		defaultMaterial.RegistMetallicMap(*metallicMap);
+		defaultMaterial.RegistRoughnessMap(*roughnessMap);
+		defaultMaterial.RegistNormalMap(*normalMap);
 	}
-	if(keyboard.states['S'] == Win32::Keyboard::Type::Up)
+
+	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
+
+	Object sphere = engine.GetObjectManager().Acquire("Sphere");
 	{
-		param.start -= scale;
+		BasicGeometryGenerator::CreateSphere(sphere, engine, 8.0f, 32, 32, defaultFlag);
+//		BasicGeometryGenerator::CreateBox(sphere, engine, Vector3(5.0f, 5.0f, 5.0f), defaultFlag);
 
-		dof->UpdateParam(param);
+		engine.AddRootObject(sphere);
+
+		sphere.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+		sphere.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
+
+		auto mesh = sphere.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
 	}
-	if(keyboard.states['A'] == Win32::Keyboard::Type::Up)
+
+	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
-		param.end += scale;
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(50.0f, 30.0f, 0.0f));
 
-		dof->UpdateParam(param);
+		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(1.0f);
+		engine.AddRootObject(light);
 	}
-	if(keyboard.states['D'] == Win32::Keyboard::Type::Up)
-	{
-		param.end -= scale;
 
-		dof->UpdateParam(param);
-	}
+	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
+
+#ifndef SKYBOX_ON
+	MaterialID matID = engine.ActivateSkyScattering(512, light);
+	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
+#endif
+
 
 #endif
-}
-
-void TestScene::OnUpdate(float dt)
-{
-	//Transform* control = _testObject2->GetTransform();
-	//float scale = 20.0f;
-	//float distScale = 10.0f;
-
-	//static float count = 0.0f;
-	//count = count + dt * scale;
-
-	//control->UpdatePosition(_pos + Vector3(distScale * cos(Math::Common::Deg2Rad(count)), 0.0f, 0.0f));
-
-	Transform* tf = _light->GetTransform();
-	Vector3 euler = tf->GetLocalEulerAngle();
-	if( (uint(euler.x) % 90) == 0)
-	{
-		dt += 1; //use for break point
-	}
-	tf->UpdateEulerAngles(euler + Vector3(0.1f, 0.1f, 0.0f));
-}
-
-void TestScene::OnRenderPost()
-{
 
 }
 
-void TestScene::OnDestroy()
+void TestScene::OnDestroy(Engine&)
 {
+}
 
+void TestScene::OnRenderPreview(Engine&)
+{
+}
+
+void TestScene::OnUpdate(Engine& engine)
+{
+	//static constexpr float rate = 1.0f;
+
+	//auto& tf = engine.GetObjectManager().Find("SanFranciscoHouse")->FetchTransform();
+	//Vector3 euler = tf.GetLocalEularAngle();
+	//tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
+}
+
+void TestScene::OnRenderPost(Engine&)
+{
+}
+
+void TestScene::OnInput(Engine&)
+{
 }

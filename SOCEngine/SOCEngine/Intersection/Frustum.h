@@ -2,28 +2,22 @@
 
 #include "EngineMath.h"
 #include "Common.h"
+#include <array>
 
 namespace Intersection
 {
 	class Frustum
 	{
+	public:
+		Frustum() = default;
+		GET_CONST_ACCESSOR(Position, const Math::Vector3&, _position);
+
+		void Make(const Math::Matrix& viewProjection);
+		bool In(const Math::Vector3& v, float radius = 0.0f) const;
+
 	private:
-		Math::Vector3		_planeVertex[8];
-		Math::Vector3		_position;
-		Math::Plane			_plane[6];
-		float				_gap;
-		bool				_isMake;
-
-	public:
-		Frustum(float gap = 0.0);
-		~Frustum(void);
-
-	public:
-		void Make(const Math::Matrix &viewProjection);
-		bool In(const Math::Vector3 &v, float radius = 0.0f) const;
-
-	public:
-		GET_ACCESSOR(Position, const Math::Vector3, _position);
-		GET_ACCESSOR(IsComputed, bool, _isMake);
+		std::array<Math::Plane, 6>		_plane;
+		std::array<Math::Vector3, 8>	_planeVertex;
+		Math::Vector3					_position	= Math::Vector3(0.0f, 0.0f, 0.0f);
 	};
 }

@@ -1,34 +1,20 @@
 #include "Texture3D.h"
-#include "Director.h"
+#include "DirectX.h"
 
 using namespace Rendering::Texture;
 using namespace Rendering::View;
+using namespace Math;
 
-Texture3D::Texture3D()
-	: TextureForm(Type::Tex3D), _texture(nullptr), _size(0, 0, 0), _rtv(nullptr)
+void Texture3D::Initialize(	Device::DirectX& dx,
+				uint width, uint height, uint depth,
+				DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
+				uint optionBindFlag, uint mipLevels )
 {
-}
-
-Texture3D::~Texture3D()
-{
-	Destroy();
-}
-
-void Texture3D::Initialize(	uint width, uint height, uint depth,
-							DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
-							uint optionBindFlag, uint mipLevels )
-{
-	_size.x = (float)width;
-	_size.y = (float)height;
-	_size.z = (float)depth;
+	_size = Vector3(static_cast<float>(width), static_cast<float>(height), static_cast<float>(depth));
 
 	uint bindFlag = ((srvFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_SHADER_RESOURCE	: 0) |
-					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |	// D3D11_RESOURCE_MISC_GENERATE_MIPS을 사용하려면
-																		// D3D11_BIND_RENDER_TARGET 설정된 상태여야 한다.
+					((mipLevels > 1) ? D3D11_BIND_RENDER_TARGET	: 0) |
 					((uavFormat != DXGI_FORMAT_UNKNOWN) ? D3D11_BIND_UNORDERED_ACCESS	: 0) | optionBindFlag;
-
-	const Device::DirectX* dx = Device::Director::SharedInstance()->GetDirectX();
-	ID3D11Device* device = dx->GetDevice();
 
 	D3D11_TEXTURE3D_DESC textureDesc;
 	memset(&textureDesc, 0, sizeof(D3D11_TEXTURE3D_DESC));
@@ -41,22 +27,13 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 	textureDesc.MipLevels		= mipLevels;
 	textureDesc.MiscFlags		= mipLevels > 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 
-	textureDesc.Format			= typelessFormat;
+	textureDesc.Format			= tex3DFormat;
 	textureDesc.Usage			= D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags		= bindFlag;
 	textureDesc.CPUAccessFlags	= 0;
 
 	//Initialize texture
-	{
-		HRESULT hr = device->CreateTexture3D(&textureDesc, NULL, &_texture);
-		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, not create texture");
-	}
-
-	if(bindFlag & D3D11_BIND_SHADER_RESOURCE)
-	{
-		_srv = new ShaderResourceView;
-		_srv->InitializeUsingTexture(_texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
-	}
+	_texture = dx.CreateTexture3D(textureDesc);
 
 	if(bindFlag & D3D11_BIND_RENDER_TARGET)
 	{
@@ -66,21 +43,13 @@ void Texture3D::Initialize(	uint width, uint height, uint depth,
 		rtvDesc.Texture3D.MipSlice		= 0;
 		rtvDesc.Texture3D.FirstWSlice	= 0;
 		rtvDesc.Texture3D.WSize			= -1;
-		HRESULT hr = device->CreateRenderTargetView(_texture, &rtvDesc, &_rtv);
-		ASSERT_MSG_IF(SUCCEEDED(hr), "Error, can't create render target view");
+
+		_rtv = dx.CreateRenderTargetView(_texture.GetRaw(), rtvDesc);
 	}
 
-	if(bindFlag & D3D11_BIND_UNORDERED_ACCESS)
-	{
-		_uav = new UnorderedAccessView;
-		_uav->Initialize(uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
-	}
-}
+	if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
+		_srv.InitializeUsingTexture(dx, _texture, srvFormat, mipLevels, D3D11_SRV_DIMENSION_TEXTURE3D);
 
-void Texture3D::Destroy()
-{
-	TextureForm::Destroy();
-
-	SAFE_RELEASE(_texture);
-	SAFE_RELEASE(_rtv);
+	if (bindFlag & D3D11_BIND_UNORDERED_ACCESS)
+		_uav.Initialize(dx, uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
 }

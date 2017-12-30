@@ -10,6 +10,8 @@ namespace Rendering
 {
 	enum class TextureBindIndex : unsigned int
 	{
+		SkyBoxCubeMap							= 0,
+
 		PointLightRadiusWithCenter				= 0,
 		PointLightColor							= 1,
 		SpotLightRadiusWithCenter				= 2,
@@ -34,7 +36,7 @@ namespace Rendering
 		EmissionMap								= 34,
 
 		GBuffer_BlendedDepth					= 12,
-		LightIndexBuffer						= 13,
+		LightIndexBuffer						= 27,
 
 		PointLightShadowParam					= 14,
 		SpotLightShadowParam					= 15,
@@ -51,6 +53,7 @@ namespace Rendering
 		PointLightShadowViewProjMatrix			= 23,
 		SpotLightShadowViewProjMatrix			= 24,
 		DirectionalLightShadowViewProjMatrix	= 25,
+		DirectionalLightShadowViewDepthMap		= 26,
 
 		VoxelAlbedoRawBuffer					= 29,
 		VoxelNormalRawBuffer					= 30,
@@ -59,7 +62,6 @@ namespace Rendering
 		VCTInjectionSourceColorMap				= 29,
 		VCTMipmappedInjectionColorMap			= 30,
 
-//		GBuffer_Emission_MaterialFlag			31, 위에 있음
 		IBLPass_PreIntegrateEnvBRDFMap			= 29,
 		IBLPass_IlluminationMap					= 30,
 		ReflectionProbe_PreIntegrateEnvBRDFMap	= 29,
@@ -73,13 +75,13 @@ namespace Rendering
 	enum class ConstBufferBindIndex : unsigned int
 	{
 		TBRParam						= 0,
-		World							= 1,
+		Transform						= 1,
 		Camera							= 2,
 		PhysicallyBasedMaterial			= 3,
 		ShadowGlobalParam				= 4,
-		OnlyPass						= 4,
+		OnlyPassViewProjMat				= 4,
 
-		ReflectionProbe_Info			= 5,	
+		PCSSViewDepth					= 5,	
 
 		VoxelizationInfoCB				= 5,
 		VXGIStaticInfoCB				= 6,
@@ -91,24 +93,24 @@ namespace Rendering
 		VCT_GlobalInfoCB				= 1,
 		HDRGlobalParamCB				= 1,
 
-		SkyBoxWVP						= 0,
+		SkyBoxWVP						= 1,
 	};
 
 	enum class SamplerStateBindIndex : unsigned int
 	{
-		DefaultSamplerState				= 0,
-		UISamplerState					= 1,
-		ShadowComprisonSamplerState		= 2,
-		VSMShadowSamplerState			= 3,
-		ShadowPointSamplerState			= 4,
-		AmbientCubeMapSamplerState		= 5,
+		DefaultSamplerState					= 0,
+		UISamplerState						= 1,
+		ShadowComprisonGreaterSamplerState	= 2,
+		VSMShadowSamplerState				= 3,
+		ShadowPointSamplerState				= 4,
+		AmbientCubeMapSamplerState			= 5,
+		ShadowComprisonLessSamplerState		= 6,
 	};
 
 	enum class UAVBindIndex : unsigned int
 	{
-		TBDR_OutDiffuseLightBuffer		= 0,
-		TBDR_OutSpecularLightBuffer		= 1,
-		TBDR_OutPerLightIndicesInTile	= 2,
+		TBDR_OutLightBuffer		= 0,
+		TBDR_OutPerLightIndicesInTile	= 1,
 		
 		Lightculling_LightIndexBuffer	= 0,
 

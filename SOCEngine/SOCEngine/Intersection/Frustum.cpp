@@ -3,19 +3,9 @@
 using namespace Math;
 using namespace Intersection;
 
-Frustum::Frustum(float gap)
-	:_isMake(false), _gap(gap)
+void Frustum::Make(const Matrix& viewProjection)
 {
-}
-
-Frustum::~Frustum(void)
-{
-}
-
-void Frustum::Make(const Math::Matrix &viewProjection)
-{
-	Math::Matrix matInv;
-	Math::Matrix::Inverse(matInv, viewProjection);
+	Matrix matInv = Matrix::Inverse(viewProjection);
 
 	_planeVertex[0].x = -1.0f;	_planeVertex[0].y = -1.0f;	_planeVertex[0].z = 0.0f;
 	_planeVertex[1].x =  1.0f;	_planeVertex[1].y = -1.0f;	_planeVertex[1].z = 0.0f;
@@ -27,31 +17,25 @@ void Frustum::Make(const Math::Matrix &viewProjection)
 	_planeVertex[7].x = -1.0f;	_planeVertex[7].y =  1.0f;	_planeVertex[7].z = 1.0f;
 
 	for(int i=0; i<8; ++i)
-		Math::Vector3::TransformCoord(_planeVertex[i], _planeVertex[i], matInv);
+		_planeVertex[i] = Vector3::TransformCoord(_planeVertex[i], matInv);
 
 	_position = (_planeVertex[0] + _planeVertex[5]) / 2.0f;
 
-	Math::Plane::FromPoints(_plane[0], _planeVertex[4], _planeVertex[7], _planeVertex[6]);	// 상 평면(top)
-	Math::Plane::FromPoints(_plane[1], _planeVertex[0], _planeVertex[1], _planeVertex[2]);	// 하 평면(bottom)
-	Math::Plane::FromPoints(_plane[2], _planeVertex[0], _planeVertex[4], _planeVertex[5]);	// 근 평면(near)
-	Math::Plane::FromPoints(_plane[3], _planeVertex[2], _planeVertex[6], _planeVertex[7]);	// 원 평면(far)
-	Math::Plane::FromPoints(_plane[4], _planeVertex[0], _planeVertex[3], _planeVertex[7]);	// 좌 평면(left)
-	Math::Plane::FromPoints(_plane[5], _planeVertex[1], _planeVertex[5], _planeVertex[6]);	// 우 평면(right)
-
-	_isMake = true;
+	_plane[0] = Plane::FromPoints(_planeVertex[4], _planeVertex[7], _planeVertex[6]);	// 상 평면(top)
+	_plane[1] = Plane::FromPoints(_planeVertex[0], _planeVertex[1], _planeVertex[2]);	// 하 평면(bottom)
+	_plane[2] = Plane::FromPoints(_planeVertex[0], _planeVertex[4], _planeVertex[5]);	// 근 평면(near)
+	_plane[3] = Plane::FromPoints(_planeVertex[2], _planeVertex[6], _planeVertex[7]);	// 원 평면(far)
+	_plane[4] = Plane::FromPoints(_planeVertex[0], _planeVertex[3], _planeVertex[7]);	// 좌 평면(left)
+	_plane[5] = Plane::FromPoints(_planeVertex[1], _planeVertex[5], _planeVertex[6]);	// 우 평면(right)
 }
 
-bool Frustum::In(const Math::Vector3 &v, float radius) const
+bool Frustum::In(const Vector3& v, float radius) const
 {
-	if(_isMake == false)
-		return false;
-
-	float dist = 0.0f;
 	for(uint i=0; i<6; ++i)
 	{
-		dist = Plane::DotCoord(_plane[i], v);
+		float dist = Plane::DotCoord(_plane[i], v);
 
-		if(dist > (radius + _gap) )
+		if(dist > radius)
 			return false;
 	}
 

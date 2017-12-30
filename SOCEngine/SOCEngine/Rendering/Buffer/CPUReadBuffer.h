@@ -3,33 +3,28 @@
 #include "BaseBuffer.h"
 #include <functional>
 #include "UnorderedAccessView.h"
+#include "Common.h"
+#include <memory>
 
 namespace Rendering
 {
 	namespace Buffer
 	{
-		class ConstBuffer;
-
-		class CPUReadBuffer : private BaseBuffer
+		class CPUReadBuffer final
 		{
-		private:
-			ID3D11Buffer*				_readBuffer;
-			View::UnorderedAccessView*	_uav;
-
 		public:
-			CPUReadBuffer();
-			virtual ~CPUReadBuffer();
+			CPUReadBuffer() = default;
 
-		public:
-			bool Initialize(uint stride, uint num, DXGI_FORMAT format);
-			void Read(ID3D11DeviceContext* context, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
+			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format);
+			void Read(Device::DirectX& dx, const std::function<void(const void* dataRecive)>& dataReceiveFunc);
+
+			GET_CONST_ACCESSOR_REF(Buffer,	_baseBuffer);
+			GET_CONST_ACCESSOR_REF(UAV,		_uav);
 
 		private:
-			void Update(ID3D11DeviceContext* context, const void* data){}
-
-		public:
-			GET_ACCESSOR(Buffer,	ID3D11Buffer*,							_buffer);
-			GET_ACCESSOR(UAV,		const View::UnorderedAccessView*,		_uav);
+			DXSharedResource<ID3D11Buffer>	_readBuffer;
+			BaseBuffer						_baseBuffer;
+			View::UnorderedAccessView		_uav;
 		};
 
 	}

@@ -3,46 +3,24 @@
 using namespace Device;
 using namespace Rendering::Shader;
 using namespace Rendering;
+using namespace Rendering::Buffer;
+using namespace Rendering::View;
+using namespace Rendering::RenderState;
 
-VertexShader::VertexShader(ID3DBlob* blob, const std::string& key)
-	: ShaderForm(blob, key), _shader(nullptr), _layout(nullptr)
+VertexShader::VertexShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key)
+	: _baseShader(blob, key), _shader(nullptr), _layout(nullptr)
 {
-	_type = Type::Vertex;
 }
 
-VertexShader::~VertexShader(void)
+void VertexShader::Initialize(DirectX& dx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
 {
-	SAFE_RELEASE(_shader);
-	SAFE_RELEASE(_layout);
-}
+	_shader	= dx.CreateVertexShader(_baseShader);
 
-bool VertexShader::Create(
-	const Device::DirectX* dx,
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& vertexDeclations)
-{
-	if(_blob == nullptr)
-		return false;
+	if(vertexDeclations.empty()) return;
+	_layout	= dx.CreateInputLayout(_baseShader, vertexDeclations);
 
 	uint count = vertexDeclations.size();
-	ID3D11Device* device = dx->GetDevice();
-
-	HRESULT hr = device->CreateVertexShader( _blob->GetBufferPointer(), _blob->GetBufferSize(), nullptr, &_shader );
-
-	if( FAILED( hr ) )
-		return false;
-
-	if(vertexDeclations.size() == 0)
-		return true;
-
-	hr = device->CreateInputLayout(vertexDeclations.data(), count,
-		_blob->GetBufferPointer(), _blob->GetBufferSize(), &_layout);
-
-	_blob->Release();
-
-	if( FAILED( hr ) )
-		return false;
-
-	for(unsigned int i=0; i<count; ++i)
+	for(uint i=0; i<count; ++i)
 	{
 		const D3D11_INPUT_ELEMENT_DESC& desc = vertexDeclations[i];
 
@@ -51,130 +29,83 @@ bool VertexShader::Create(
 			info.name = desc.SemanticName;
 			info.semanticIndex = desc.SemanticIndex;
 
-			if( (i+1) != count )
-				info.size = vertexDeclations[i+1].AlignedByteOffset - desc.AlignedByteOffset;
+			if ((i + 1) != count)
+				info.size = vertexDeclations[i + 1].AlignedByteOffset - desc.AlignedByteOffset;
 		}
 
 		_semanticInfo.push_back(info);
 	}
 
-	_semanticInfo.back().size = dx->CalcFormatSize(vertexDeclations[count-1].Format);
-
-	return true;
+	_semanticInfo.back().size = dx.CalcFormatSize(vertexDeclations[count-1].Format);
 }
 
-void VertexShader::BindShaderToContext(ID3D11DeviceContext* context)
+void VertexShader::Destroy()
 {
-	context->VSSetShader(_shader, nullptr, 0);
+	_shader.Destroy();
+	_baseShader.Destroy();
+	_layout.Destroy();
+	
+	_semanticInfo.clear();
 }
 
-void VertexShader::UnBindBasicInputs(ID3D11DeviceContext* context)
+void VertexShader::BindShaderToContext(DirectX& dx) const
 {
-	context->VSSetShader(nullptr, nullptr, 0);
-	context->IASetInputLayout(nullptr);
+	dx.GetContext()->VSSetShader(const_cast<ID3D11VertexShader*>(_shader.GetRaw()), nullptr, 0);
 }
 
-void VertexShader::BindInputLayoutToContext(ID3D11DeviceContext* context)
+void VertexShader::BindInputLayoutToContext(DirectX& dx) const
 {
-	context->IASetInputLayout(_layout);
+	dx.GetContext()->IASetInputLayout(const_cast<ID3D11InputLayout*>(_layout.GetRaw()));
 }
 
-void VertexShader::BindResourcesToContext(
-				ID3D11DeviceContext* context,
-				const std::vector<InputConstBuffer>* constBuffers, 
-				const std::vector<InputTexture>* textures,
-				const std::vector<InputShaderResourceBuffer>* srBuffers)
+void VertexShader::UnBindShaderToContext(DirectX& dx)
 {
-	if(constBuffers)
-	{
-		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
-		{
-			ID3D11Buffer* buffer = (*iter).buffer->GetBuffer();
-			if(buffer && iter->useVS)
-				context->VSSetConstantBuffers( (*iter).bindIndex, 1, &buffer );
-		}
-	}
-
-	if(textures)
-	{
-		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
-		{
-			auto srv = iter->texture->GetShaderResourceView()->GetView();
-			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &srv );
-		}
-	}
-
-	if(srBuffers)
-	{
-		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
-		{
-			auto srv = iter->srBuffer->GetShaderResourceView()->GetView();
-			if(srv && iter->useVS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &srv );
-		}
-	}
+	dx.GetContext()->VSSetShader(nullptr, nullptr, 0);
 }
 
-void VertexShader::Clear(
-				ID3D11DeviceContext* context,
-				const std::vector<InputConstBuffer>* constBuffers, 
-				const std::vector<InputTexture>* textures,
-				const std::vector<InputShaderResourceBuffer>* srBuffers)
+void VertexShader::UnBindInputLayoutToContext(DirectX& dx)
 {
-	if(textures)
-	{
-		ID3D11ShaderResourceView* nullSrv = nullptr;
-
-		for(auto iter = textures->begin(); iter != textures->end(); ++iter)
-		{
-			if(iter->useVS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
-		}
-	}
-
-	if(srBuffers)
-	{
-		ID3D11ShaderResourceView* nullSrv = nullptr;
-
-		for(auto iter = srBuffers->begin(); iter != srBuffers->end(); ++iter)
-		{
-			if(iter->useVS)
-				context->VSSetShaderResources( iter->bindIndex, 1, &nullSrv );
-		}
-	}
-
-	if(constBuffers)
-	{
-		ID3D11Buffer* nullBuffer = nullptr;
-
-		for(auto iter = constBuffers->begin(); iter != constBuffers->end(); ++iter)
-		{
-			if(iter->useVS)
-				context->VSSetConstantBuffers( iter->bindIndex, 1, &nullBuffer );
-		}
-	}
+	dx.GetContext()->IASetInputLayout(nullptr);
 }
 
-void VertexShader::BindTexture(ID3D11DeviceContext* context, TextureBindIndex bind, const Texture::TextureForm* tex)
+void VertexShader::BindShaderResourceView(DirectX& dx, TextureBindIndex bind, const ShaderResourceView& view)
 {
-	ID3D11ShaderResourceView* srv = tex ? tex->GetShaderResourceView()->GetView() : nullptr;
-	context->VSSetShaderResources(uint(bind), 1, &srv);
+	ID3D11ShaderResourceView* srv = const_cast<ShaderResourceView&>(view).GetRaw();
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
 }
 
-void VertexShader::BindSamplerState(ID3D11DeviceContext* context, SamplerStateBindIndex bind, ID3D11SamplerState* samplerState)
+void VertexShader::BindSamplerState(DirectX& dx, SamplerStateBindIndex bind, SamplerState state)
 {
-	context->VSSetSamplers(uint(bind), 1, &samplerState);
+	auto samplerState = const_cast<ID3D11SamplerState*>( dx.GetSamplerState(state).GetRaw() );
+	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, const_cast<ID3D11SamplerState* const*>(&samplerState));
 }
 
-void VertexShader::BindConstBuffer(ID3D11DeviceContext* context, ConstBufferBindIndex bind, const Buffer::ConstBuffer* cb)
+void VertexShader::BindConstBuffer(DirectX& dx, ConstBufferBindIndex bind, const ConstBuffer& cb)
 {
-	ID3D11Buffer* buf = cb ? cb->GetBuffer() : nullptr;
-	context->VSSetConstantBuffers(uint(bind), 1, &buf);
+	ID3D11Buffer* buf = const_cast<BaseBuffer&>(cb.GetBaseBuffer()).GetRaw();
+	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }
 
-void VertexShader::BindShaderResourceBuffer(ID3D11DeviceContext* context, TextureBindIndex bind, const Buffer::ShaderResourceBuffer* srBuffer)
+//void VertexShader::BindConstBuffer(DirectX& dx, ConstBufferBindIndex bind, OnlyAccess<ConstBuffer>&& cb)
+//{
+//	ID3D11Buffer* buf = cb.GetData().GetBaseBuffer().GetRaw();
+//	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
+//}
+
+void VertexShader::UnBindShaderResourceView(DirectX& dx, TextureBindIndex bind)
 {
-	ID3D11ShaderResourceView* srv = srBuffer ? srBuffer->GetShaderResourceView()->GetView() : nullptr;
-	context->VSSetShaderResources(uint(bind), 1, &srv);
+	ID3D11ShaderResourceView* srv = nullptr;
+	dx.GetContext()->VSSetShaderResources(static_cast<uint>(bind), 1, &srv);
+}
+
+void VertexShader::UnBindSamplerState(DirectX& dx, SamplerStateBindIndex bind)
+{
+	ID3D11SamplerState* sampler = nullptr;
+	dx.GetContext()->VSSetSamplers(static_cast<uint>(bind), 1, &sampler);
+}
+
+void VertexShader::UnBindConstBuffer(DirectX& dx, ConstBufferBindIndex bind)
+{
+	ID3D11Buffer* buf = nullptr;
+	dx.GetContext()->VSSetConstantBuffers(static_cast<uint>(bind), 1, &buf);
 }

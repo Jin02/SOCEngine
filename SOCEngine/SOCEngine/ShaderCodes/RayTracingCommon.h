@@ -6,6 +6,8 @@
 #define USE_VIEW_INFORMATION
 #include "FullScreenShader.h"
 #include "CommonConstBuffer.h"
+#include "TBDRInput.h"
+#include "TBRParam.h"
 
 cbuffer ScreenSpaceRayTracing_ViewToTexSpace			: register( b5 )
 {
@@ -33,6 +35,16 @@ float Distance_2(float2 a, float2 b)
     return dot(x, x);
 }
 
+float GetViewDepth(int2 screenPos)
+{
+#if (MSAA_SAMPLES_COUNT > 1) //MSAA
+	float depth = GBufferDepth.Load( screenPos, 0 ).x;
+#else
+	float depth = GBufferDepth.Load( uint3(screenPos, 0) ).x;
+#endif
+
+	return ProjDepthToView(depth);
+}
 
 bool IntersectDepth(float z, float minZ, float maxZ)
 {
@@ -42,12 +54,6 @@ bool IntersectDepth(float z, float minZ, float maxZ)
 	z += ssrt_thickness + lerp(0.0f, 2.0f, scale);
     
     return (maxZ >= z) && (minZ - ssrt_thickness <= z);
-}
-
-float FetchLinearDepthFromGBuffer(int2 screenPos)
-{
-	float depth = GBufferDepth.Load(int3(screenPos, 0)).r;
-	return LinearizeDepth(depth, GetCameraFar());
 }
 
 bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
@@ -120,7 +126,6 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	float stepCount	= 0.0f;
 	
 	for(;
-
 		((pqk.x * stepDir) <= end) &&
 		(stepCount < ssrt_maxStepCount) &&
 		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &&
@@ -136,7 +141,7 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 				Swap(rayMinZ, rayMaxZ);
 			
 			outHitScreenPos	= permute ? pqk.yx : pqk.xy;
-			sceneMaxZ	= FetchLinearDepthFromGBuffer( int2(outHitScreenPos) );
+			sceneMaxZ	= GetViewDepth(outHitScreenPos);
 			
 			pqk += dpqk;
 		}
@@ -147,11 +152,10 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	return IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ);
 }
 
-void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, out float outRoughness,
-													int2 screenPos, uint sampleIdx)
+void ComputeViewNormalFromGBuffer_with_GetRoughness(out float3 outViewNormal, out float outRoughness, int2 screenPos)
 {
 #if (MSAA_SAMPLES_COUNT > 1) //MSAA
-    float4 normal_roughness = GBufferNormal_roughness.Load( screenPos, sampleIdx );
+    float4 normal_roughness = GBufferNormal_roughness.Load( screenPos, 0 );
 #else
     float4 normal_roughness = GBufferNormal_roughness.Load( int3(screenPos, 0) );
 #endif

@@ -2,7 +2,7 @@
 #define __SOC_TONE_MAPPING_H__
 
 #include "HDRCommon.h"
-#include "TBDRInput.h"
+#include "TBRParam.h"
 
 /*
 float3 LinearToneMapping(float3 color)

@@ -1,71 +1,42 @@
 #include "MaterialManager.h"
-#include "PhysicallyBasedMaterial.h"
 
+using namespace Device;
 using namespace Rendering;
+using namespace Rendering::Material;
 using namespace Rendering::Manager;
 
-MaterialManager::MaterialManager()
+void MaterialManager::Initialize(Device::DirectX& dx)
 {
+	PhysicallyBasedMaterial materal("@Default");
+	materal.Initialize(dx);
+	materal.SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	_pbmDefaultKey = Add<PhysicallyBasedMaterial>(materal).first;
 }
 
-MaterialManager::~MaterialManager()
+void MaterialManager::UpdateConstBuffer(DirectX & dx)
 {
-}
-
-void MaterialManager::Initialize()
-{
-	PhysicallyBasedMaterial* material = new PhysicallyBasedMaterial("@Default");
-	material->Initialize();
-	material->SetMainColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-
-	Add("@Default", material);
-}
-
-void MaterialManager::Add(const std::string& file, const std::string& name, Material* material)
-{
-	std::string key = file + ":" + name;
-	Add(key, material);
-}
-
-Material* MaterialManager::Find(const std::string& file, const std::string& name)
-{
-	std::string key = file + ":" + name;
-	return Find(key);
-}
-
-void MaterialManager::Delete(const std::string& file, const std::string& name)
-{
-	std::string key = file  + ":" + name;
-	Delete(key);
-}
-
-void MaterialManager::DeleteAll()
-{
-	auto materials = _materials.GetVector();
-	for(auto iter = materials.begin(); iter != materials.end(); ++iter)
-		SAFE_DELETE(*iter);
-
-	_materials.DeleteAll();
-}
-
-void MaterialManager::Add(const std::string& key, Material* material)
-{
-	ASSERT_MSG_IF(Find(key) == nullptr, "Error, Duplicated key");
-	_materials.Add(key, material);
-}
-
-Material* MaterialManager::Find(const std::string& key)
-{
-	Material** found = _materials.Find(key);
-	return found ? (*found) : nullptr;
-}
-
-void MaterialManager::Delete(const std::string& key)
-{
-	Material** found = _materials.Find(key);
-	if(found)
+	auto CheckDirty = [](auto& materialDatas)
 	{
-		SAFE_DELETE(*found);
-		_materials.Delete(key);
+		auto& pool	= materialDatas.pool;
+		auto& dirty	= materialDatas.dirty;
+
+		uint size = pool.GetSize();
+		for (uint i = 0; i<size; ++i)
+		{
+			auto& material = pool.Get(i);
+			if (material.GetDirty())
+				dirty.push_back(&material);
+		}
+	};
+	CheckDirty(GetMaterialDatas<PhysicallyBasedMaterial>());
+
+	// Update Buffer
+	{
+		auto& pbmDirty = GetDirty<PhysicallyBasedMaterial>();
+		for (auto& iter : pbmDirty)
+			iter->UpdateConstBuffer(dx);
 	}
+
+	GetDirty<PhysicallyBasedMaterial>().clear();
 }

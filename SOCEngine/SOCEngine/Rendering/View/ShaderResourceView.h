@@ -1,30 +1,36 @@
 #pragma once
 
-#include <d3d11.h>
 #include "Vector3.h"
-#include "Common.h"
+#include "BaseBuffer.h"
 
 namespace Rendering
 {
 	namespace View
 	{
-		class ShaderResourceView
+		class ShaderResourceView final
 		{
-		private:
-			ID3D11ShaderResourceView*		_srv;
-
 		public:
-			ShaderResourceView(ID3D11ShaderResourceView* srv = nullptr);
-			virtual ~ShaderResourceView();
+			ShaderResourceView() = default;
+			ShaderResourceView(const DXSharedResource<ID3D11ShaderResourceView>& srv) : _srv(srv) {}
 
-		public:
-			void InitializeUsingTexture(ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension);
-			void InitializeUsingBuffer(ID3D11Buffer* buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
+			GET_CONST_ACCESSOR(View,	DXSharedResource<ID3D11ShaderResourceView>,	_srv);
+			GET_ACCESSOR(Raw,			ID3D11ShaderResourceView* const,			_srv.GetRaw());
+
+			template <class DXResourceType>
+			void InitializeUsingTexture(Device::DirectX& dx, DXResourceType& resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension)
+			{
+				InitializeUsingTexture(dx, resource.GetRaw(), format, mipLevel, viewDimension);
+			}
+			void InitializeUsingBuffer(Device::DirectX& dx, DXSharedResource<ID3D11Buffer>& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
+			void InitializeUsingBuffer(Device::DirectX& dx, const Buffer::BaseBuffer& buffer, uint num, DXGI_FORMAT format, bool isRawBuffer);
 
 			void Destroy();
 
-		public:
-			GET_ACCESSOR(View, ID3D11ShaderResourceView*, _srv);
+		private:
+			void InitializeUsingTexture(Device::DirectX& dx, ID3D11Resource* resource, DXGI_FORMAT format, uint mipLevel, D3D11_SRV_DIMENSION viewDimension);
+
+		private:
+			DXSharedResource<ID3D11ShaderResourceView>		_srv;
 		};
 	}
 }

@@ -7,31 +7,37 @@ namespace Rendering
 {
 	namespace Buffer
 	{
-		class VertexBuffer : public BaseBuffer
+		class VertexBuffer
 		{
+		public:
+			using Key = BaseBuffer::Key;
+			using Semantics = std::vector<Shader::VertexShader::SemanticInfo>;
+			struct Desc
+			{
+				Desc() = default;
+				Desc(uint _stride, uint _vertexCount)
+					: stride(_stride), vertexCount(_vertexCount) { }
+
+				uint			stride		= 0;
+				uint			vertexCount	= 0;
+			};
+
+			VertexBuffer() = default;
+
+			void Initialize(Device::DirectX& dx, const Desc& desc, const void* sysMem, bool isDynamic, const std::vector<Shader::VertexShader::SemanticInfo>& semanticInfos);
+			void Destroy();
+
+			void IASetBuffer(Device::DirectX& dx, uint offset = 0) const;
+			void UpdateVertexData(Device::DirectX& dx, const void* data, uint size);
+
+			GET_CONST_ACCESSOR(VertexCount,	uint,			_desc.vertexCount);
+			GET_CONST_ACCESSOR(Semantics,	const auto&,	_semantics);
+
 		private:
-			std::string					_key;
-			unsigned int				_stride;
-			uint						_vertexCount;
+			BaseBuffer	_baseBuffer;
+			Desc		_desc;
 
-			std::vector<Shader::VertexShader::SemanticInfo>	_semantics; //attributes
-
-		public:
-			VertexBuffer();
-			virtual ~VertexBuffer();
-
-		public:
-			void Initialize(const void* sysMem, unsigned int bufferStrideSize,
-				unsigned int count, bool isDynamic, const std::string& key,
-				const std::vector<Shader::VertexShader::SemanticInfo>* semanticInfos);
-			void IASetBuffer(ID3D11DeviceContext* context);
-			void UpdateVertexData(ID3D11DeviceContext* context, const void* data, uint size);
-
-		public:
-			GET_ACCESSOR(VertexCount, uint, _vertexCount);
-			GET_ACCESSOR(Key, const std::string&, _key);
-
-			GET_ACCESSOR(Semantics, const std::vector<Shader::VertexShader::SemanticInfo>&, _semantics);
+			Semantics	_semantics; //attributes
 		};
 	}
 }

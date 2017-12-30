@@ -1,22 +1,48 @@
 #include "DirectionalLightShadow.h"
 #include "DirectionalLight.h"
+#include "ShadowManager.h"
+#include <assert.h>
 
 using namespace Rendering::Shadow;
 using namespace Rendering::Light;
+using namespace Math;
+using namespace Core;
+using namespace Intersection;
 
-DirectionalLightShadow::DirectionalLightShadow(const LightForm* owner)
-	: ShadowCommon(owner)
+DirectionalLightShadow::ViewProjMatType DirectionalLightShadow::MakeVPMatParam(
+	const LightPool<DirectionalLight>& lightPool,
+	const TransformPool& tfPool,
+	const BoundBox& sceneBoundBox)
 {
-	SetBias(0.0f);
-}
+	auto light = lightPool.Find(_base.GetObjectID().Literal());
+	assert(light);
 
-DirectionalLightShadow::~DirectionalLightShadow()
-{
-}
+	const auto& lightBase = light->GetBase();
 
-void DirectionalLightShadow::MakeMatrixParam(Math::Matrix& outViewProjMat) const
-{
-	const DirectionalLight* owner = dynamic_cast<const DirectionalLight*>(_owner);
+	auto transform = tfPool.Find(lightBase->GetObjectID().Literal());
+	assert(transform);
 
-	Math::Matrix::Transpose(outViewProjMat,		owner->GetViewProjectionMatrix());
+	Matrix view = transform->GetWorldMatrix();
+
+	if (_useAutoProjectLocation)
+	{
+		Vector3 forward				= transform->GetWorldForward();
+		const Vector3& sceneCenter	= sceneBoundBox.GetCenter();
+		float near					= _base.GetProjNear();
+
+		view._41 = sceneCenter.x - (forward.x * near / 2.0f);
+		view._42 = sceneCenter.y - (forward.y * near / 2.0f);
+		view._43 = sceneCenter.z - (forward.z * near / 2.0f);
+		view._44 = 1.0f;
+	}
+
+	view = Matrix::ComputeViewMatrix(view);
+
+	float orthogonalWH	= (_projectionSize < FLT_EPSILON) ? sceneBoundBox.GetSize().Length() : _projectionSize;
+	Matrix proj			= Matrix::OrthoLH(orthogonalWH, orthogonalWH, FrustumMaxZ, FrustumMinZ);
+
+	// Done!
+	_transposedViewMat		= Matrix::Transpose(view);
+	_transposedViewProjMat	= Matrix::Transpose(view * proj);
+	return _transposedViewProjMat;
 }

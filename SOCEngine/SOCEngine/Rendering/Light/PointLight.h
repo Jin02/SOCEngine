@@ -1,34 +1,49 @@
 #pragma once
 
-#include "LightForm.h"
-#include <array>
-#include "PointLightShadow.h"
+#include "BaseLight.h"
+#include "Transform.h"
+
+#include "Frustum.h"
 
 namespace Rendering
 {
+	namespace Shadow
+	{
+		class PointLightShadow;
+	}
+
+	namespace Manager
+	{
+		class LightManager;
+	}
+
 	namespace Light
 	{
-		class PointLight : public LightForm
+		namespace Buffer
+		{
+			class PointLightBuffer;
+		}
+
+		class PointLight final
 		{
 		public:
-			struct Param{};
+			using ManagerType		= Manager::LightManager;
+			using LightBufferType	= Buffer::PointLightBuffer;
+			using TransformType		= Math::Vector4;
+			using ShadowType		= Shadow::PointLightShadow;
 
-		public:
-			PointLight();
-			virtual ~PointLight();
+			explicit PointLight(Core::ObjectID objID) : _base(objID) {};
 
-		public:
-			virtual void CreateShadow();
+			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const;
+			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const;
 
-		public:
-			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(LightTransformBuffer& out, Param& dummyParam) const;
+			TransformType MakeTransform(const Core::Transform& transform) const;
 
-		public:
-			virtual Core::Component* Clone() const;
+			GET_ALL_ACCESSOR_PTR(Base,		BaseLight,			_base);
+			GET_CONST_ACCESSOR(ObjectID,	Core::ObjectID,		_base.GetObjectID());
 
-		public:
-			GET_ACCESSOR(Shadow, Shadow::PointLightShadow*, static_cast<Shadow::PointLightShadow*>(_shadow) );
+		private:
+			BaseLight					_base;
 		};
 
 	}

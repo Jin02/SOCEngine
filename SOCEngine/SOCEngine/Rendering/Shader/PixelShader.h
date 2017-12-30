@@ -1,40 +1,39 @@
 #pragma once
 
-#include "ShaderForm.h"
+#include "BaseShader.hpp"
 
 namespace Rendering
 {
 	namespace Shader
 	{
-		class PixelShader : public ShaderForm
+		class PixelShader final
 		{
+		public:
+			PixelShader() = default;
+			PixelShader(const DXSharedResource<ID3DBlob>& blob, const std::string& key);
+
+			void Initialize(Device::DirectX& dx);
+			void Destroy();
+
+			void BindShaderToContext(Device::DirectX& dx) const;
+			static void UnBindShaderToContext(Device::DirectX& dx);
+			
+			static void BindShaderResourceView(Device::DirectX& dx,	TextureBindIndex bind, const View::ShaderResourceView& view);
+			static void BindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind, RenderState::SamplerState);
+			static void BindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind, const Buffer::ConstBuffer& cb);
+
+			static void UnBindShaderResourceView(Device::DirectX& dx, TextureBindIndex bind);
+			static void UnBindSamplerState(Device::DirectX& dx, SamplerStateBindIndex bind);
+			static void UnBindConstBuffer(Device::DirectX& dx, ConstBufferBindIndex bind);
+
+			static constexpr const char* GetCompileCode() { return "ps"; }
+
+			GET_CONST_ACCESSOR(Key,			const std::string&,	_baseShader.GetKey());
+			GET_CONST_ACCESSOR(IsCanUse,	bool,				_baseShader.GetIsCanUse());
+
 		private:
-			ID3D11PixelShader* _shader;
-
-		public:
-			PixelShader(ID3DBlob* blob, const std::string& key);
-			virtual ~PixelShader(void);
-
-		public:
-			bool Create(ID3D11Device* device);
-			
-			void BindShaderToContext(ID3D11DeviceContext* context);
-			void UnBindShaderToContext(ID3D11DeviceContext* context);
-
-			void BindResourcesToContext(ID3D11DeviceContext*	context, 
-				const std::vector<InputConstBuffer>*		constBuffers, 
-				const std::vector<InputTexture>*		textures,
-				const std::vector<InputShaderResourceBuffer>*	srBuffers);
-
-			void Clear(ID3D11DeviceContext*				context,
-				const std::vector<InputConstBuffer>*		constBuffers, 
-				const std::vector<InputTexture>*		textures,
-				const std::vector<InputShaderResourceBuffer>*	srBuffers);
-			
-			static void BindTexture(ID3D11DeviceContext* context,				TextureBindIndex bind,		const Texture::TextureForm* tex);
-			static void BindSamplerState(ID3D11DeviceContext* context,			SamplerStateBindIndex bind,	ID3D11SamplerState* samplerState);
-			static void BindConstBuffer(ID3D11DeviceContext* context,			ConstBufferBindIndex bind,	const Buffer::ConstBuffer* cb);
-			static void BindShaderResourceBuffer(ID3D11DeviceContext* context,	TextureBindIndex bind,		const Buffer::ShaderResourceBuffer* srBuffer);
+			BaseShader _baseShader;
+			DXSharedResource<ID3D11PixelShader> _shader;
 		};
 	}
 }

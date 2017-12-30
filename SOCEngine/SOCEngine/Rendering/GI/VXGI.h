@@ -6,68 +6,76 @@
 
 #include "Voxelization.h"
 
-#include "InjectRadianceFromPointLIght.h"
-#include "InjectRadianceFromSpotLIght.h"
+#include "InjectRadianceFromPointLight.h"
+#include "InjectRadianceFromSpotLight.h"
 
 #include "MipmapVoxelMap.h"
 
 #include "VoxelConeTracing.h"
-#include "RenderManager.h"
-#include "ShadowRenderer.h"
-
-#include "VoxelViewer.h"
-
-namespace Core
-{
-	class Scene;
-}
+#include "ShadowAtlasMapRenderer.h"
 
 namespace Rendering
 {
 	namespace GI
 	{
-		class VXGI
+		class VXGI final
 		{
+		public:
+			VXGI() = default;
+			struct Param
+			{
+				const MainRenderingSystemParam&&		main;
+				const Manager::LightManager&			lightMgr;
+				const Renderer::ShadowSystem&			shadowParam;
+				const Renderer::CullingParam&			cullParam;
+				const Renderer::MeshRenderer::Param&	meshRenderParam;
+				const Manager::MaterialManager&			materialMgr;
+			};
+
+			GET_CONST_ACCESSOR(StartCenterWorldPos, const Math::Vector3&,	_dynamicInfo.startCenterWorldPos);
+			SET_ACCESSOR_DIRTY(PackedNumfOfLights,	uint,					_dynamicInfo.packedNumfOfLights);
+
+			inline void SetStartCenterWorldPos(const Math::Vector3& pos)
+			{
+				_dynamicInfo.startCenterWorldPos = pos;
+
+				_dirty					= true;
+				_dirtyVoxelizeCenterPos	= true;
+			}
+
+			GET_CONST_ACCESSOR(StaticInfo,			const VXGIStaticInfo&,	_staticInfo);
+			GET_CONST_ACCESSOR(Dirty,				bool,					_dirty);
+
+			GET_CONST_ACCESSOR(IndirectColorMap,	const Texture::Texture2D&,	*_indirectColorMap.GetTexture2D());
+
+
+		public:
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const VXGIStaticInfo& info);
+			void Run(Device::DirectX& dx, const Param&& param);
+			void UpdateGIDynamicInfoCB(Device::DirectX& dx);
+			
+		private:
+			void InitializeClearVoxelMap(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension);
+			void ClearInjectColorVoxelMap(Device::DirectX& dx);
+
 		private:
 			VXGIStaticInfo							_staticInfo;
-			Buffer::ConstBuffer*					_staticInfoCB;
+			VXGIInfoCB								_infoCB;
+
+			VoxelMap								_injectionSourceMap;
+			VoxelMap								_mipmappedInjectionMap;
+
+			Shader::ComputeShader					_clearVoxelMap;
+			Voxelization							_voxelization;
+			InjectRadianceFromPointLight			_injectPointLight;
+			InjectRadianceFromSpotLight				_injectSpotLight;
+			MipmapVoxelMap							_mipmap;
+			VoxelConeTracing						_voxelConeTracing;
+			Texture::RenderTexture					_indirectColorMap;
 
 			VXGIDynamicInfo							_dynamicInfo;
-			Buffer::ConstBuffer*					_dynamicInfoCB;
-
-			VoxelMap*								_injectionSourceMap;
-			VoxelMap*								_mipmappedInjectionMap;
-
-			GPGPU::DirectCompute::ComputeShader*	_clearVoxelMapCS;
-
-			Voxelization*							_voxelization;
-			InjectRadianceFromPointLIght*			_injectPointLight;
-			InjectRadianceFromSpotLIght*			_injectSpotLight;
-			MipmapVoxelMap*						_mipmap;
-			VoxelConeTracing*						_voxelConeTracing;
-
-			Debug::VoxelViewer*						_debugVoxelViewer;
-			Math::Vector3							_startCenterWorldPos;
-
-		public:
-			VXGI();
-			~VXGI();
-
-		private:
-			void InitializeClearVoxelMap(uint dimension);
-			void ClearInjectColorVoxelMap(const Device::DirectX* dx);
-			void UpdateGIDynamicInfo(const Device::DirectX* dx, const VXGIDynamicInfo& dynamicInfo);
-			void UpdateGIStaticDynamicInfo(const Device::DirectX* dx, const VXGIStaticInfo& info);
-
-		public:
-			void Initialize(const Device::DirectX* dx, uint dimension = 256, float minWorldSize = 4.0f);
-			void Run(const Device::DirectX* dx, const Camera::MeshCamera* camera, const Core::Scene* scene);
-			void Destroy();
-
-		public:
-			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*,	_voxelConeTracing->GetIndirectColorMap());
-			GET_ACCESSOR(DebugVoxelViewer, const Debug::VoxelViewer*,		_debugVoxelViewer);
-			GET_SET_ACCESSOR(StartCenterWorldPos, const Math::Vector3&,		_startCenterWorldPos);
+			bool									_dirty					= true;
+			bool									_dirtyVoxelizeCenterPos	= true;
 		};
 	}
 }

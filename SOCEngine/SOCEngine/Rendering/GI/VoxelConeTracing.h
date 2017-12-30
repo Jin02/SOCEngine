@@ -3,14 +3,10 @@
 #include "ComputeShader.h"
 #include "ConstBuffer.h"
 #include "VXGICommon.h"
-
-#include "ShadingWithLightCulling.h"
 #include "VoxelMap.h"
-
-#include "MeshCamera.h"
-
-#include "BilateralFiltering.h"
 #include "GaussianBlur.h"
+#include "BilateralFiltering.h"
+#include "ShaderManager.h"
 
 //#define USE_GAUSSIAN_BLUR
 
@@ -20,27 +16,21 @@ namespace Rendering
 	{
 		class VoxelConeTracing
 		{
+		public:
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
+
+			struct Param
+			{
+				const VoxelMap&						injectionSourceMap;
+				const VoxelMap&						mipmappedInjectionMap;
+				const VXGIInfoCB&					infoCB;
+				const MainRenderingSystemParam&		mainSystem;
+			};
+			void Run(Device::DirectX& dx, Texture::RenderTexture& outIndirectColorMap, const Param&& param);
+
 		private:
-			GPGPU::DirectCompute::ComputeShader*	_shader;
-			Texture::RenderTexture*					_indirectColorMap;
-
-#if defined(USE_GAUSSIAN_BLUR)
-			PostProcessing::GaussianBlur*			_blur;
-#elif defined(USE_BILATERAL_FILTERING)
-			PostProcessing::BilateralFiltering*		_blur;
-#endif
-
-		public:
-			VoxelConeTracing();
-			~VoxelConeTracing();
-
-		public:
-			void Initialize(const Device::DirectX* dx);
-			void Run(const Device::DirectX* dx, const VoxelMap* injectionSourceMap, const VoxelMap* mipmappedInjectionMap, const Camera::MeshCamera* meshCam, const Buffer::ConstBuffer* vxgiStaticInfoCB, const Buffer::ConstBuffer* vxgiDynamicInfoCB);
-			void Destroy();
-
-		public:
-			GET_ACCESSOR(IndirectColorMap, const Texture::RenderTexture*, _indirectColorMap);
+			Shader::ComputeShader					_shader;
+			Shader::ComputeShader::ThreadGroup		_group;
 		};
 	}
 }

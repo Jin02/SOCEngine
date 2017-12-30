@@ -4,7 +4,7 @@
 #define __SOC_FULL_SCREEN_H__
 
 #if defined(USE_VIEW_INFORMATION) | defined(USE_TBR_PARAM)
-#include "TBDRInput.h"
+#include "TBRParam.h"
 #endif
 
 struct PS_INPUT
@@ -15,10 +15,6 @@ struct PS_INPUT
 #ifdef USE_VIEW_INFORMATION
 	float3 viewPosition			: VIEW_POSITION;
 	float3 viewRay				: VIEW_RAY;
-#endif
-
-#if (MSAA_SAMPLES_COUNT > 1) //MSAA
-	uint sampleIdx				: SV_SAMPLEINDEX;
 #endif
 };
 

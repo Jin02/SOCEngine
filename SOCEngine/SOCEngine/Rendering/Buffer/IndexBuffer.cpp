@@ -1,44 +1,39 @@
 #include "IndexBuffer.h"
-#include "Director.h"
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
 using namespace Device;
 
-IndexBuffer::IndexBuffer() : BaseBuffer(), _indexCount(0)
+void IndexBuffer::Initialize(Device::DirectX& dx, const std::vector<uint>& indices, BaseBuffer::Key vbKey, bool isDynamic)
 {
-}
-
-IndexBuffer::~IndexBuffer()
-{
-}
-
-bool IndexBuffer::Initialize(
-	const std::vector<uint>& indices, const std::string& useVertexBufferKey, bool isDynamic)
-{
-	_indexCount = indices.size();
-	_useVertexBufferKey = useVertexBufferKey;
+	_indexCount	= indices.size();
+	_vbKey		= vbKey;
 
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.Usage = isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
-	bufferDesc.ByteWidth = sizeof(ENGINE_INDEX_TYPE) * _indexCount;
-	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bufferDesc.CPUAccessFlags = 0;
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
+	bufferDesc.Usage				= isDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
+	bufferDesc.ByteWidth			= sizeof(ENGINE_INDEX_TYPE) * _indexCount;
+	bufferDesc.BindFlags			= D3D11_BIND_INDEX_BUFFER;
+	bufferDesc.CPUAccessFlags		= 0;
+	bufferDesc.MiscFlags			= 0;
+	bufferDesc.StructureByteStride	= 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	memset(&data, 0, sizeof(D3D11_SUBRESOURCE_DATA));
 	data.pSysMem = indices.data();
 
-	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &_buffer);
-
-	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. does not create ib");
-
-	return true;
+	_baseBuffer.SetBuffer(dx.CreateBuffer(bufferDesc, &data));
 }
 
-void IndexBuffer::IASetBuffer(ID3D11DeviceContext* context)
+void IndexBuffer::Destroy()
 {
-	context->IASetIndexBuffer(_buffer, DXGI_FORMAT_R32_UINT, 0);
+	_indexCount = 0;
+	_vbKey		= -1;
+
+	_baseBuffer.Destroy();
+}
+
+void IndexBuffer::IASetBuffer(Device::DirectX& dx) const
+{
+	ID3D11Buffer* buffer = const_cast<BaseBuffer*>(&_baseBuffer)->GetRaw();
+	dx.GetContext()->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
 }

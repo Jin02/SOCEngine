@@ -1,17 +1,23 @@
 #pragma once
 
+#include "Common.h"
+#include "Rect.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+
 namespace Math
 {
-	class Vector2;
-	class Vector3;
-	class Vector4;
 	class Quaternion;
 
 	class Matrix
 	{
 	public:
-		Matrix(void);
-		~Matrix(void);
+		Matrix() = default;
+		Matrix(	float _11, float _12, float _13, float _14,
+				float _21, float _22, float _23, float _24,
+				float _31, float _32, float _33, float _34,
+				float _41, float _42, float _43, float _44	);
 
 	public:
 		bool operator != (const Matrix& mat) const;
@@ -23,33 +29,45 @@ namespace Math
 		Matrix& operator*= (float f);
 		Matrix& operator/= (float f);
 
-		Matrix operator+ (const Matrix& mat) const;
-		Matrix operator- (const Matrix& mat) const;
-		Matrix operator* (const Matrix& mat);
-		Matrix operator* (float f) const;
-		Matrix operator/ (float f) const;
-		Matrix operator* (const Matrix& mat) const;
+		const Matrix operator+ (const Matrix& mat) const;
+		const Matrix operator- (const Matrix& mat) const;
+		const Matrix operator* (const Matrix& mat);
+		const Matrix operator* (float f) const;
+		const Matrix operator/ (float f) const;
+		const Matrix operator* (const Matrix& mat) const;
 
 		const Vector2 operator* (const Vector2& v) const;
 		const Vector3 operator* (const Vector3& v) const;
 		const Vector4 operator* (const Vector4& v) const;
 
-	public:
-		static void RotateUsingQuaternion(Matrix& out, const Quaternion& q);
-		static void PerspectiveFovLH(Matrix& out, float aspect, float fovy, float zn, float zf);
-		static void OrthoLH(Matrix& out, float w, float h, float zn, float zf);
-		static void RotateUsingAxis(Matrix& out, const Vector3& v, float angle);
+		friend Matrix	operator*(float lhs, const Matrix& rhs)				{ return rhs * lhs; }
+		friend Vector4	operator*(const Vector4 &lhs, const Matrix& rhs)	{ return rhs * lhs; }
+		friend Vector3	operator*(const Vector3 &lhs, const Matrix& rhs)	{ return rhs * lhs; }
+		friend Vector4&	operator*=(Vector4 &lhs, const Matrix& rhs)			{ lhs = rhs * lhs; return lhs; }
+		friend Vector3&	operator*=(Vector3 &lhs, const Matrix& rhs)			{ lhs = rhs * lhs; return lhs; }
 
 	public:
-		void Set( float _11, float _12, float _13, float _14,
-			float _21, float _22, float _23, float _24,
-			float _31, float _32, float _33, float _34,
-			float _41, float _42, float _43, float _44 );
+		static Matrix RotateUsingQuaternion(const Quaternion& q);
+		static Matrix PerspectiveFovLH(float aspect, float fovy, float zn, float zf);
+		static Matrix OrthoLH(float w, float h, float zn, float zf);
+		static Matrix RotateUsingAxis(const Vector3& v, float angle);
+		static Matrix ComputeViewMatrix(const Matrix &worldMatrix);
+		static Matrix ComputeViewportMatrix(const Rect<uint>& rect);
+		static Matrix ComputeInvViewportMatrix(const Rect<uint>& rect);
+		static Matrix MakeRotationMatrix(const Vector3& right, const Vector3& up, const Vector3& forward);
+		static Matrix LookAtDir(const Vector3 & targetDir, const Vector3* upVec = nullptr);
+		static Matrix ComputeViewProjMatrix(const Vector3& eyePos, const Vector3& forward, const Vector3& up, const Matrix& projMat);
 
-		static void Multiply(Matrix& out, const Matrix& lhs, const Matrix& rhs);
-		static void Transpose(Matrix& out, const Matrix& mat);
-		static void Inverse(Matrix& out, const Matrix& mat); 		//using cramer's rule
-		static void Identity(Matrix& out);
+	public:
+		void Set(	float _11, float _12, float _13, float _14,
+					float _21, float _22, float _23, float _24,
+					float _31, float _32, float _33, float _34,
+					float _41, float _42, float _43, float _44 );
+
+		static Matrix Multiply(const Matrix& lhs, const Matrix& rhs);
+		static Matrix Transpose(const Matrix& mat);
+		static Matrix Inverse(const Matrix& mat); 		//using cramer's rule
+		static Matrix Identity();
 
 	public:
 		union
@@ -62,7 +80,7 @@ namespace Math
 				float        _41, _42, _43, _44;
 			};
 
-			float _m[4][4];
+			float _m[4][4] = { 0.0f, };
 		};
 	};
 

@@ -1,34 +1,22 @@
 #include "Sphere.h"
 
-namespace Intersection
+using namespace Intersection;
+using namespace Math;
+
+bool Sphere::Intersects(const Sphere& sphere1, const Sphere& sphere2)
 {
-	Sphere::Sphere(void) : radius(0.0f), center(0, 0, 0)
-	{
-	}
+	Vector3 between	= sphere1.center - sphere2.center;
+	float distance	= between.Length();
 
-	Sphere::Sphere(Math::Vector3 center, float radius) :
-		center(center), radius(radius)
-	{
-	}
+	return distance <= (sphere1.radius + sphere2.radius);
+}
 
-	bool Sphere::Intersects(const Sphere& sphere1, const Sphere& sphere2)
-	{
-		Math::Vector3 between = sphere1.center - sphere2.center;
-		float distance = between.Length();
+bool Sphere::Intersects(const Sphere &sphere)
+{
+	return Sphere::Intersects((*this), sphere);
+}
 
-		if(distance <= (sphere1.radius + sphere2.radius) )
-			return true;
-
-		return false;
-	}
-
-	bool Sphere::Intersects(const Sphere &sphere)
-	{
-		return Sphere::Intersects( (*this), sphere );
-	}
-
-	bool Sphere::Intersects(const Math::Vector3& center, float radius)
-	{
-		return Intersects(Sphere(center, radius));
-	}
+bool Sphere::Intersects(const Vector3& center, float radius)
+{
+	return Intersects(Sphere(center, radius));
 }

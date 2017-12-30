@@ -1,36 +1,37 @@
 #pragma once
 
-#include <d3d11.h>
-#include "Color.h"
-#include "Vector3.h"
-#include "TextureForm.h"
+#include "ShaderResourceView.h"
+#include "UnorderedAccessView.h"
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class Texture3D : public TextureForm
+		class Texture3D final
 		{
-		protected:
-			ID3D11Texture3D*				_texture;
-			Math::Vector3					_size;
-			ID3D11RenderTargetView*			_rtv;
-
-
 		public:
-			Texture3D();
-			virtual ~Texture3D();
+			Texture3D() = default;
 
-		public:
-			void Initialize(uint width, uint height, uint depth,
-							DXGI_FORMAT typelessFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
+			void Initialize(Device::DirectX& dx,
+							uint width, uint height, uint depth,
+							DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
 							uint optionBindFlag, uint mipLevels);
-			void Destroy();
 
-		public:
-			GET_ACCESSOR(Texture,				ID3D11Texture3D*,				_texture);
-			GET_ACCESSOR(RenderTargetView,		ID3D11RenderTargetView*,		_rtv);
-			GET_ACCESSOR(Size,					const Math::Vector3&,			_size);
+			GET_CONST_ACCESSOR_REF(ShaderResourceView,				_srv);
+			GET_CONST_ACCESSOR_REF(Texture,							_texture);
+
+			GET_ALL_ACCESSOR_PTR(RenderTargetView,		DXSharedResource<ID3D11RenderTargetView>,	_rtv);
+			GET_ALL_ACCESSOR_PTR(UnorderedAccessView,	View::UnorderedAccessView,					_uav);
+
+			GET_CONST_ACCESSOR(Size,				const auto&,	_size);
+
+		private:
+			Math::Vector3								_size = Math::Vector3(0.0f, 0.0f, 0.0f);
+
+			DXSharedResource<ID3D11Texture3D>			_texture;
+			DXSharedResource<ID3D11RenderTargetView>	_rtv;
+			View::ShaderResourceView					_srv;
+			View::UnorderedAccessView					_uav;
 		};
 	}
 }

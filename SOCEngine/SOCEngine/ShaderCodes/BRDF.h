@@ -21,6 +21,7 @@ GEOMETRY_COOK_TORRANCE
 GEOMETRY_KELEMEN
 GEOMETRY_SCHLICK
 GEOMETRY_SMITH
+GEOMETRY_SMITH_JOINT_APPROXIMATELY
 
 DIFFUSE_ENERGY_CONSERVATION_NONE
 DIFFUSE_ENERGY_CONSERVATION_1_MINUS_FRESNEL
@@ -92,7 +93,7 @@ float GeometryKelemen(float NdotL, float NdotV, float VdotH)
 	return NdotL * NdotV / (VdotH * VdotH);
 }
 
-// Smith¿Í µ¿ÀÛÀÌ ÀÏÄ¡ÇÏµµ·Ï Á¶Á¤ µÊ
+// Smithì™€ ë™ì‘ì´ ì¼ì¹˜í•˜ë„ë¡ ì¡°ì • ë¨
 // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
 float GeometrySchlick(float NdotL, float NdotV, float roughness)
 {
@@ -131,7 +132,7 @@ float GeometrySmithJointApproximately(float NdotV, float NdotL, float roughness)
 float3 FresnelSchlick(float3 specularColor, float VdotH)
 {
 	float fc = pow(1.0f - VdotH, 5.0f);
-	return fc + (1 - fc) * specularColor;
+	return fc + (1 - fc) * specularColor; 
 }
 
 
@@ -169,7 +170,7 @@ float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float
 	float Cosri = VoL - NdotV * NdotL;
 	float C1 = 1 - 0.5 * s2 / (s2 + 0.33);
 	float C2 = 0.45 * s2 / (s2 + 0.09) * Cosri * (Cosri >= 0 ? rcp(max(NdotL, NdotV)) : 1);
-	return diffuseColor / PI * (C1 + C2) * (1 + roughness * 0.5);
+	return diffuseColor / PI * (C1 + C2) * (1 + roughness * 0.5); 	
 }
 
 
@@ -210,12 +211,14 @@ float Geometry(float roughness, float NdotH, float NdotV, float NdotL, float Vdo
 	return GeometrySchlick(NdotL, NdotV, roughness);
 #elif defined(GEOMETRY_SMITH)
 	return GeometrySmith(NdotV, NdotL, roughness);
+#elif defiend(GEOMETRY_SMITH_JOINT_APPROXIMATELY)
+	return GeometrySmithJointApproximately(NdotV, NdotL, roughness);
 #endif
 }
 
 float3 Fresnel(float3 f0, float VdotH)
 {
-	//³ª¸ÓÁö´Â ±¸ÇöÇÏ±â ±ÍÂúÀ¸´Ï ³ªÁß¿¡ »ı°¢³¯¶§ ÇÏ¸é µÉ °Í °°´Ù
+	//ë‚˜ë¨¸ì§€ëŠ” êµ¬í˜„í•˜ê¸° ê·€ì°®ìœ¼ë‹ˆ ë‚˜ì¤‘ì— ìƒê°ë‚ ë•Œ í•˜ë©´ ë  ê²ƒ ê°™ë‹¤
 	return FresnelSchlick(f0, VdotH); //Default
 }
 
@@ -230,34 +233,8 @@ float3 DiffuseEnergyConservation(float3 f0, float NdotL)
 #endif
 }
 
-#ifndef NOT_USE_BRDF_LIGHTING
-void BRDFLighting(out float3 resultDiffuseColor, out float3 resultSpecularColor,
-				  in LightingParams lightingParams, in LightingCommonParams commonParamas)
-{
-	float3 halfVector	= normalize(lightingParams.viewDir + commonParamas.lightDir);
-
-	float NdotL			= saturate( dot(lightingParams.normal,	commonParamas.lightDir) );
-	float NdotH			= saturate( dot(lightingParams.normal,	halfVector) );
-	float NdotV			= saturate( dot(lightingParams.normal,	lightingParams.viewDir) );
-	float VdotH			= saturate( dot(lightingParams.viewDir,	halfVector) );
-	float VdotL			= saturate( dot(lightingParams.viewDir,	commonParamas.lightDir) );
-
-	float3 fresnel0		= lightingParams.specularColor;
-	float roughness		= lightingParams.roughness; //0.6f
-
-	float3 diffuseEnergyConservation = DiffuseEnergyConservation(fresnel0, NdotL);
-	float3 diffuseTerm = Diffuse(lightingParams.diffuseColor, roughness, NdotV, NdotL, VdotH, VdotL);
-	resultDiffuseColor = diffuseTerm * commonParamas.lightColor * diffuseEnergyConservation;
-	resultDiffuseColor = saturate(resultDiffuseColor);
-
-	float3 Fr = ( Fresnel(fresnel0, VdotH) * Geometry(roughness, NdotH, NdotV, NdotL, VdotH) * Distribution(roughness, NdotH) ) / (4.0f * NdotL * NdotV);
-	resultSpecularColor	= Fr * commonParamas.lightColor;
-	resultSpecularColor	= saturate(resultSpecularColor);
-}
-#endif
-
-// Unreal4ÀÇ ReflectionEnvironmentShared.usf¿¡ ÀÖ´Â
-// ComputeReflectionCaptureMipFromRoughness ÀÌ°ÅÀÓ. ±×¸®°í, ¾à°£ ¼öÁ¤ÇÔ
+// Unreal4ì˜ ReflectionEnvironmentShared.usfì— ìˆëŠ”
+// ComputeReflectionCaptureMipFromRoughness ì´ê±°ì„. ê·¸ë¦¬ê³ , ì•½ê°„ ìˆ˜ì •í•¨
 float ComputeRoughnessLOD(float roughness, uint mipCount)
 {
 	float levelFrom1x1 = 1.0f - 1.2f * log2(roughness);
@@ -266,7 +243,7 @@ float ComputeRoughnessLOD(float roughness, uint mipCount)
 	return max(mip, 0.0f);
 }
 
-float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
+float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount, uint2 random)
 {
 	float3 V = float3(	sqrt(1.0f - NoV * NoV), // sin
 						0.0f,
@@ -278,7 +255,7 @@ float2 IntegrateBRDF(float Roughness, float NoV, uniform uint sampleCount)
 
 	for (uint i = 0; i < sampleCount; i++)
 	{
-		float2 Xi = Hammersley(i, sampleCount);
+		float2 Xi = Hammersley(i, sampleCount, random);
 		float3 H = TangentToWorld(ImportanceSampleGGX(Xi, Roughness).xyz, float3(0.0f, 0.0f, 1.0f));
 		float3 L = 2 * dot(V, H) * H - V;
 

@@ -1,32 +1,31 @@
 #include "ConstBuffer.h"
-#include "Director.h"
-#include <type_traits> 
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
-using namespace Device;
 
-ConstBuffer::ConstBuffer() : BaseBuffer()
+void ConstBuffer::Initialize(Device::DirectX& dx, uint size)
 {
-}
+	assert(_base.GetBuffer().IsCanUse() == false);
+	_size = size;
 
-ConstBuffer::~ConstBuffer()
-{
-	SAFE_RELEASE(_buffer);
-}
-
-bool ConstBuffer::Initialize(unsigned int size)
-{
 	D3D11_BUFFER_DESC desc;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.ByteWidth = size;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-	desc.StructureByteStride = 0;
+	desc.Usage					= D3D11_USAGE_DEFAULT;
+	desc.ByteWidth				= size;
+	desc.BindFlags				= D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags			= 0;
+	desc.MiscFlags				= 0;
+	desc.StructureByteStride	= 0;
 
-	ID3D11Device* device = Director::SharedInstance()->GetDirectX()->GetDevice();
-	HRESULT hr = device->CreateBuffer(&desc, nullptr, &_buffer);
+	_base.SetBuffer(dx.CreateBuffer(desc, nullptr));
+}
 
-	ASSERT_MSG_IF(SUCCEEDED(hr), "Error!. Not create constant buffer");
-	return true;
+void ConstBuffer::UpdateSubResource(Device::DirectX& dx, const void* data)
+{
+	_base.UpdateSubResource(dx, data);
+}
+
+void ConstBuffer::Destroy()
+{
+	_base.Destroy();
+	_size = 0;
 }

@@ -1,75 +1,55 @@
 #pragma once
 
 #include "ShaderResourceBuffer.h"
-#include "VectorHashMap.h"
+#include "VectorIndexer.hpp"
 #include <memory>
+#include "DirectX.h"
+#include <assert.h>
 
 namespace Rendering
 {
 	namespace Buffer
 	{
-		template<typename KeyType, typename T>
+		template<typename T>
 		class GPUUploadBuffer
 		{
+		public:
+			GPUUploadBuffer() = default;
+
+			void Initialize(Device::DirectX& dx, uint count, DXGI_FORMAT format, const void* dummy = nullptr)
+			{
+				_srBuffer.Initialize(dx, sizeof(T), count, format, dummy, 0, D3D11_USAGE_DYNAMIC);
+			}
+
+			// _srBuffer
+			void UpdateSRBuffer(Device::DirectX& dx)
+			{
+				const void* raw = _pool.data();
+				_srBuffer.UpdateResourceUsingMapUnMap(dx, raw, _pool.size() * sizeof(T));
+			}
+
+			// _buffer
+			inline void PushData(T& data)				{	_pool.push_back(data);			}
+			inline void PushData(T&& data)				{	_pool.push_back(data);			}
+			inline void DeleteAll()						{	_pool.clear();					}
+			inline uint GetSize() const					{	return _pool.size();			}
+			inline T& operator[](uint index)
+			{
+				assert( (0 <= index) & (index < _pool.size()));
+				return _pool[index];
+			}
+
+			inline void Delete(uint index)
+			{
+				auto iter = _pool.begin() + index;
+				_pool.erase(iter);
+			}
+
+			GET_CONST_ACCESSOR_REF(ShaderResourceBuffer, _srBuffer);
+
 		private:
-			Structure::VectorHashMap<KeyType, T>	_buffer;
-			ShaderResourceBuffer*					_srBuffer;
-
-		public:
-			GPUUploadBuffer() : _srBuffer(nullptr)
-			{
-			}
-
-			~GPUUploadBuffer()
-			{
-				Destroy();
-			}
-
-		public:
-			static GPUUploadBuffer* Create(uint count, DXGI_FORMAT format, const void* dummy = nullptr)
-			{
-				GPUUploadBuffer<KeyType, T>* buffer = new GPUUploadBuffer<KeyType, T>;
-				buffer->Initialize(count, format, dummy);
-				
-				return buffer;
-			}
-			
-			void Initialize(uint count, DXGI_FORMAT format, const void* dummy = nullptr)
-			{
-				Destroy();
-
-				_srBuffer = new ShaderResourceBuffer;
-				_srBuffer->Initialize(sizeof(T), count, format, dummy, true, 0, D3D11_USAGE_DYNAMIC);
-			}
-
-			void Destroy()
-			{
-				SAFE_DELETE(_srBuffer);
-				_buffer.DeleteAll();
-			}
-			
-		public: // _srBuffer
-			void UpdateSRBuffer(ID3D11DeviceContext* context)
-			{
-				uint count		= _buffer.GetSize();
-				const void* raw	= _buffer.GetVector().data();
-
-				_srBuffer->UpdateResourceUsingMapUnMap(context, raw, count * sizeof(T));
-			}
-			
-		public: // _buffer
-			void Add(const KeyType& key, const T& object)	{	_buffer.Add(key, object);	}
-			void Delete(const KeyType& key)					{	_buffer.Delete(key);		}
-			void DeleteAll()								{	_buffer.DeleteAll();		}
-			const T* Find(const KeyType& key) const			{	return _buffer.Find(key);	}
-			T* Find(const KeyType& key)						{	return _buffer.Find(key);	}
-			bool Has(const KeyType& key) const				{	return _buffer.Has(key);	}
-			T& Get(uint index)								{	return _buffer.Get(index);	}
-			
-			GET_ACCESSOR(Size, const uint, _buffer.GetSize());
-
-		public:
-			GET_ACCESSOR(ShaderResourceBuffer, const ShaderResourceBuffer*, _srBuffer);
+			std::vector<T>				_pool;
+			ShaderResourceBuffer		_srBuffer;
 		};
 	}
 }

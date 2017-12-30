@@ -1,26 +1,21 @@
 #pragma once
 
+#include "DirectX.h"
 #include "Texture2D.h"
+#include "ShaderManager.h"
 
 namespace Rendering
 {
 	namespace Precompute
 	{
-		class PreIntegrateEnvBRDF
+		class PreIntegrateEnvBRDF final
 		{
+		public:
+			Texture::Texture2D& CreatePreBRDFMap(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			GET_CONST_ACCESSOR_REF(Texture2D, _texture);
+
 		private:
-			Texture::Texture2D*	_map;
-
-		public:
-			PreIntegrateEnvBRDF();
-			~PreIntegrateEnvBRDF();
-
-		public:
-			static Texture::Texture2D* CreatePreBRDFMap();
-			Texture::Texture2D* FetchPreBRDFMap();
-
-		public:
-			GET_ACCESSOR(PreIntegrateEnvBRDFMap, const Texture::Texture2D*, _map);
+			Texture::Texture2D		_texture;
 		};
 	}
 }

@@ -1,63 +1,50 @@
 #include "SkyBoxMaterial.h"
 #include "BindIndexInfo.h"
+#include "ShaderFactory.hpp"
 
-#include "ResourceManager.h"
-#include "EngineShaderFactory.hpp"
-
-using namespace Rendering::Sky;
-using namespace Rendering::Geometry;
 using namespace Rendering::Manager;
 using namespace Rendering::Buffer;
 using namespace Rendering::Factory;
 using namespace Rendering::Shader;
-using namespace Rendering::Camera;
 using namespace Rendering::Texture;
-using namespace Resource;
+using namespace Rendering::Material;
 using namespace Math;
+using namespace Device;
+using namespace Rendering;
+using namespace Rendering::Factory;
 
-SkyBoxMaterial::SkyBoxMaterial(const std::string& name)
-	: Material(name, Type::Sky), _wvpConstBuffer(nullptr)
+void SkyBoxMaterial::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 {
-}
+	std::shared_ptr<VertexShader>	vs(nullptr);
+	std::shared_ptr<PixelShader>	ps(nullptr);
 
-SkyBoxMaterial::~SkyBoxMaterial()
-{
-	SAFE_DELETE(_wvpConstBuffer);
-}
+	auto result = ShaderFactory::LoadShader(dx, shaderMgr, "SkyBox", "VS", "PS", "", nullptr, &vs, &ps, nullptr);
+	assert(result.loadVS & result.loadPS); // Error, cant load shader
 
-void SkyBoxMaterial::Initialize()
-{
-	const ResourceManager* resMgr = ResourceManager::SharedInstance();
-
-	ShaderManager* shaderMgr = resMgr->GetShaderManager();
-	{
-		EngineFactory factory(shaderMgr);
-
-		ShaderGroup& shaderGroup = _customShaders.shaderGroup;
-		factory.LoadShader("SkyBox", "VS", "PS", "", nullptr, &shaderGroup.vs, &shaderGroup.ps, &shaderGroup.gs);
-
-		if (shaderGroup.ableRender() == false)
-			ASSERT_MSG("Error, Invalid Shader");
-	}
-
-	_wvpConstBuffer = new ConstBuffer;
-	_wvpConstBuffer->Initialize(sizeof(Matrix));
-
-	SetConstBufferUseBindIndex(uint(ConstBufferBindIndex::SkyBoxWVP), _wvpConstBuffer, ShaderForm::Usage(true, false, false, false));
+	_vertexShader = *vs;
+	_pixelShader = *ps;
 }
 
 void SkyBoxMaterial::Destroy()
 {
+	MaterialForm::Destroy();
 
+	_vertexShader.Destroy();
+	_pixelShader.Destroy();
+	_cubeMap.Destroy();
+
+	_maxMipLevel = 0.0f;
 }
 
-void SkyBoxMaterial::UpdateCubeMap(const Texture2D* tex)
+void SkyBoxMaterial::UpdateCubeMap(const Texture2D& tex)
 {
-	SetTextureUseBindIndex(0, tex, ShaderForm::Usage(false, false, false, true));
-	_hasAlpha = tex->GetHasAlpha();
-}
+	MaterialForm::BindTextured2D bindData;
+	{
+		bindData.resource	= tex;
+		bindData.bindIndex	= static_cast<uint>(TextureBindIndex::SkyBoxCubeMap);
+		bindData.usePS		= true;
+	}
 
-void SkyBoxMaterial::UpdateWVPMatrix(const Device::DirectX* dx, const Math::Matrix& transposedWVPMat)
-{
-	_wvpConstBuffer->UpdateSubResource(dx->GetContext(), &transposedWVPMat);
+	_cubeMap		= GetTextures().Add("CubeMap", bindData).resource;
+	_maxMipLevel	= log(float(_cubeMap.GetSize().w)) / log(2.0f);
 }

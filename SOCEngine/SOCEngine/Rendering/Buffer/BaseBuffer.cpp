@@ -1,45 +1,36 @@
 #include "BaseBuffer.h"
-#include "Director.h"
+#include "DirectX.h"
 
 using namespace Rendering::Buffer;
 using namespace Device;
 
-BaseBuffer::BaseBuffer() : _buffer(nullptr)
+void BaseBuffer::Destroy()
 {
+	_buffer.Destroy();
 }
 
-BaseBuffer::~BaseBuffer()
+void BaseBuffer::UpdateSubResource(DirectX& dx, const void* data)
 {
-	Destroy();
+	dx.GetContext()->UpdateSubresource(_buffer.GetRaw(), 0, nullptr, data, 0, 0);
 }
 
-void BaseBuffer::UpdateSubResource(ID3D11DeviceContext* context, const void* data)
-{
-	context->UpdateSubresource(_buffer, 0, nullptr, data, 0, 0);
-}
-
-void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const void* data, uint size)
+void BaseBuffer::UpdateResourceUsingMapUnMap(DirectX& dx, const void* data, uint size)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT hr = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	ASSERT_SUCCEEDED(dx.GetContext()->Map(_buffer.GetRaw(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 
 	memcpy(mappedResource.pData, data, size);
 
-	context->Unmap(_buffer, 0);
+	dx.GetContext()->Unmap(_buffer.GetRaw(), 0);
 }
 
-void BaseBuffer::UpdateResourceUsingMapUnMap(ID3D11DeviceContext* context, const void* data, uint startOffset, uint size, D3D11_MAP mapType)
+void BaseBuffer::UpdateResourceUsingMapUnMap(DirectX& dx, const void* data, uint startOffset, uint size, D3D11_MAP mapType)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT hr = context->Map(_buffer, 0, mapType, 0, &mappedResource);
+	ASSERT_SUCCEEDED(dx.GetContext()->Map(_buffer.GetRaw(), 0, mapType, 0, &mappedResource));
 
-	void* mem = ((char*)mappedResource.pData + startOffset);
+	void* mem = reinterpret_cast<char*>(mappedResource.pData) + startOffset;
 	memcpy(mem, data, size);
 
-	context->Unmap(_buffer, 0);
-}
-
-void BaseBuffer::Destroy()
-{
-	SAFE_RELEASE(_buffer);
+	dx.GetContext()->Unmap(_buffer.GetRaw(), 0);
 }

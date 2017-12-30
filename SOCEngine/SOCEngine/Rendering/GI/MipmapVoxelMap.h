@@ -4,7 +4,7 @@
 #include "ConstBuffer.h"
 #include "VXGICommon.h"
 #include "VoxelMap.h"
-#include "InjectRadiance.h"
+#include "ShaderManager.h"
 
 namespace Rendering
 {
@@ -13,26 +13,21 @@ namespace Rendering
 		class MipmapVoxelMap
 		{
 		public:
-			struct InfoCB
+			struct InfoCBData
 			{
 				uint sourceDimension;
 				uint dummy1, dummy2, dummy3;
 			};
 
+		public:
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Mipmapping(Device::DirectX& dx, const VoxelMap& sourceColorMap, VoxelMap& outAnisotropicMap);
+
 		private:
-			GPGPU::DirectCompute::ComputeShader*		_baseMipmap;
-			GPGPU::DirectCompute::ComputeShader*		_anisotropicMipmap;
+			Shader::ComputeShader						_baseMipmap;
+			Shader::ComputeShader						_anisotropicMipmap;
 
-			Buffer::ConstBuffer*						_infoCB;
-
-		public:
-			MipmapVoxelMap();
-			~MipmapVoxelMap();
-
-		public:
-			void Initialize();
-			void Mipmapping(const Device::DirectX* dx, const VoxelMap* sourceColorMap, const VoxelMap* anisotropicMap);
-			void Destroy();
+			Buffer::ExplicitConstBuffer<InfoCBData>		_infoCB;
 		};
 	}
 }

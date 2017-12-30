@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ShaderManager.h"
+#include "ShaderCompiler.h"
+#include "Utility.hpp"
 
 namespace Rendering
 {
@@ -17,26 +19,15 @@ namespace Rendering
 				bool isOnlyHasPath;
 			};
 
-		private:
-			Rendering::Manager::ShaderManager	*_shaderMgr;
-
 		public:
-			[ClassName](Rendering::Manager::ShaderManager* shaderManager)
-			{
-				_shaderMgr = shaderManager;
-			}
-
-			~[ClassName](void)
-			{
-			}
-
-		public:
-			LoadShaderResult LoadShader(const std::string& shaderName,
+			static LoadShaderResult LoadShader(
+				Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
+				const std::string& shaderName,
 				const std::string& mainVSFuncName, const std::string& mainPSFuncName, const std::string& mainGSFuncName,
 				const std::vector<Shader::ShaderMacro>* macros,
-				Shader::VertexShader**		outVertexShader,
-				Shader::PixelShader**		outPixelShader,
-				Shader::GeometryShader**	outGeometryShader)
+				std::shared_ptr<Shader::VertexShader>*		outVertexShader,
+				std::shared_ptr<Shader::PixelShader>*		outPixelShader,
+				std::shared_ptr<Shader::GeometryShader>*	outGeometryShader)
 			{
 				std::string folderPath = "";
 				std::vector<D3D11_INPUT_ELEMENT_DESC> vertexDeclations;
@@ -64,19 +55,43 @@ namespace Rendering
 				/** Script Begin **/
 				/** Script End **/
 				
-				const std::string baseCommand = shaderName+':';
+				auto& compiler = shaderMgr.GetCompiler();
 
-				Shader::VertexShader* vs = nullptr;
-				if(mainVSFuncName.empty() == false)
-					vs = _shaderMgr->LoadVertexShader(folderPath, baseCommand + mainVSFuncName, true, vertexDeclations, macros);
+				std::shared_ptr<Shader::VertexShader> vs = nullptr;
+				if (mainVSFuncName.empty() == false)
+				{
+					auto blob = compiler.CreateBlob(folderPath, shaderName, "vs", mainVSFuncName, true, macros);
+					std::string key = Shader::ShaderCompiler::MakeKey(shaderName, mainVSFuncName, "vs", macros);
 
-				Shader::PixelShader* ps = nullptr;
-				if(mainPSFuncName.empty() == false)
-					ps = _shaderMgr->LoadPixelShader(folderPath, baseCommand + mainPSFuncName, true, macros);
+					vs = std::make_shared<Shader::VertexShader>(blob, key);
+					vs->Initialize(dx, vertexDeclations);
 
-				Shader::GeometryShader* gs = nullptr;
-				if(mainPSFuncName.empty() == false)
-					gs = _shaderMgr->LoadGeometryShader(folderPath, baseCommand + mainGSFuncName, true, macros);
+					shaderMgr.GetPool<Shader::VertexShader>().Add(key, vs);
+				}
+
+				std::shared_ptr<Shader::PixelShader> ps = nullptr;
+				if (mainPSFuncName.empty() == false)
+				{
+					auto blob = compiler.CreateBlob(folderPath, shaderName, "ps", mainPSFuncName, true, macros);
+					std::string key = Shader::ShaderCompiler::MakeKey(shaderName, mainPSFuncName, "ps", macros);
+
+					ps = std::make_shared<Shader::PixelShader>(blob, key);
+					ps->Initialize(dx);
+
+					shaderMgr.GetPool<Shader::PixelShader>().Add(key, ps);
+				}
+
+				std::shared_ptr<Shader::GeometryShader> gs = nullptr;
+				if (mainGSFuncName.empty() == false)
+				{
+					auto blob = compiler.CreateBlob(folderPath, shaderName, "gs", mainGSFuncName, true, macros);
+					std::string key = Shader::ShaderCompiler::MakeKey(shaderName, mainGSFuncName, "gs", macros);
+
+					gs = std::make_shared<Shader::GeometryShader>(blob, key);
+					gs->Initialize(dx);
+
+					shaderMgr.GetPool<Shader::GeometryShader>().Add(key, gs);
+				}
 
 				if(outVertexShader)
 					(*outVertexShader) = vs;
@@ -96,10 +111,43 @@ namespace Rendering
 				return result;
 			}
 			
-			void FetchShaderFullPath(std::string& out, const std::string& fileName)
+			static std::string FetchShaderFullPath(const std::string& fileName)
 			{
+				std::string out = "";
+
 				/** FullPath Script Begin **/
 				/** FullPath Script End **/
+
+				return out;
+			}
+
+			static std::shared_ptr<Shader::ComputeShader> LoadComputeShader(
+				Device::DirectX& dx, Manager::ShaderManager& shaderMgr,
+				const std::string& shaderName, const std::string& mainFuncName,
+				const std::vector<Shader::ShaderMacro>* macros,
+				const std::string& uniqueKey)
+			{
+				std::string key = (uniqueKey.empty() == false) ? uniqueKey : Shader::ShaderCompiler::MakeKey(shaderName, mainFuncName, "cs", macros);
+
+				std::shared_ptr<Shader::ComputeShader> shaderPtr = shaderMgr.GetPool<Shader::ComputeShader>().Find(key);
+				if(shaderPtr)
+					return shaderPtr;
+
+				auto& compiler = shaderMgr.GetCompiler();
+
+				std::string fullPath = FetchShaderFullPath(shaderName);
+
+				std::string folderPath = "";
+				assert(Utility::String::ParseDirectory(fullPath, &folderPath, nullptr, nullptr));
+
+				auto blob = compiler.CreateBlob(folderPath, shaderName, "cs", mainFuncName, true, macros);
+
+				shaderPtr = std::make_shared<Shader::ComputeShader>(blob, key);
+				shaderPtr->Initialize(dx);
+
+				shaderMgr.GetPool<Shader::ComputeShader>().Add(key, shaderPtr);
+
+				return shaderPtr;
 			}
 		};
 	}

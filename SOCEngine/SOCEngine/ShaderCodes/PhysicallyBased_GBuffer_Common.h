@@ -5,7 +5,6 @@
 
 #include "ShaderCommon.h"
 #include "PhysicallyBased_Common.h"
-#include "EnvIBL.h"
 
 struct GBuffer
 {
@@ -21,44 +20,14 @@ SamplerState GBufferDefaultSampler 	: register( s0 );
 void MakeGBuffer(float3 worldNormal, float2 uv, float2 velocity,
 		 out float4 albedo_occlusion, out float4 velocity_metallic_specularity, out float4 normal_roughness, out float4 emission_materialFlag)
 {
-	float3 albedo = float3(0.0f, 0.0f, 0.0f);
-	{
-		float3 mtlMainColor	= GetMaterialMainColor().rgb;
-		float3 diffuseTex	= diffuseMap.Sample(GBufferDefaultSampler, uv).rgb;
-
-		albedo = lerp(mtlMainColor, diffuseTex * mtlMainColor, HasDiffuseMap());
-	}
-	float occlusion = occlusionMap.Sample(GBufferDefaultSampler, uv).x;
-
-	float3 normal = normalize(worldNormal) * 0.5f + 0.5f;
-	float roughness = 0.0f;
-	{
-		float roughnessTex = roughnessMap.Sample(GBufferDefaultSampler, uv).x;
-		float matRoughness = GetMaterialRoughness();
-
-		roughness = lerp(matRoughness, roughnessTex, HasRoughnessMap());
-	}
-
-	float specularity = GetMaterialSpecularity();
-	float3 emissiveColor = float3(0.0f, 0.0f, 0.0f);
-	{
-		float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
-		float3 emissiveTex		= emissionMap.Sample(GBufferDefaultSampler, uv).rgb;
-
-		emissiveColor = lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
-	}
-
-	float height = heightMap.Sample(GBufferDefaultSampler, uv).x;
-	{
-	}
-		
-	float metallic = 0.0f;
-	{
-		float metallicTex = metallicMap.Sample(GBufferDefaultSampler, uv).x;
-		float mtlMetallic = GetMaterialMetallic();
-
-		metallic = lerp(mtlMetallic, metallicTex, HasMetallicMap());
-	}
+	float3 albedo			= ToLinear(GetDiffuse(GBufferDefaultSampler, uv).rgb, GetGamma());
+	float occlusion			= GetOcclusion(GBufferDefaultSampler, uv);
+	float3 normal			= worldNormal;//PackNormal(worldNormal);
+	float roughness			= GetRoughness(GBufferDefaultSampler, uv);
+	float specularity		= GetMaterialSpecularity();
+	float3 emissiveColor	= ToLinear(GetEmissiveColor(GBufferDefaultSampler, uv), GetGamma());
+//	float height			= GetHeight(GBufferDefaultSampler, uv);
+	float metallic			= GetMetallic(GBufferDefaultSampler, uv);
 
 	albedo_occlusion.rgb				= albedo;
 	albedo_occlusion.a					= occlusion;

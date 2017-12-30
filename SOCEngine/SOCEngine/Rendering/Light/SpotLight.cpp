@@ -1,79 +1,57 @@
 #include "SpotLight.h"
-#include "Object.h"
-#include "MathCommon.h"
-#include "CameraForm.h"
+#include "Cone.h"
+#include "GlobalDefine.h"
+#include <assert.h>
+#include "LightManager.h"
 
 using namespace Intersection;
 using namespace Rendering;
-using namespace Rendering::Camera;
-using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-SpotLight::SpotLight()  : LightForm(),
-	_spotAngleDegree(0)
+bool SpotLight::Intersect(const Sphere& sphere, const TransformPool& tfPool) const
 {
-	_type = LightType::Spot;
-}
-
-SpotLight::~SpotLight()
-{
-
-}
-
-void SpotLight::CreateShadow()
-{
-	_shadow = new SpotLightShadow(this);
-}
-
-bool SpotLight::Intersect(const Intersection::Sphere &sphere) const
-{
+	const auto* lightTF = tfPool.Find(GetObjectID().Literal()); assert(lightTF);
 #if 0
-	Vector3 wp;
-	_owner->GetTransform()->FetchWorldPosition(wp);
-
-	Cone cone(_spotAngleDegree, _radius, _owner->GetTransform()->GetForward(), wp);
+	Cone cone(_spotAngleDegree, _base.GetRadius(), lightTF->GetWorldForward(), lightTF->GetWorldPosition());
 	return cone.Intersects(sphere);
 #else
-	Core::Transform* tf = _owner->GetTransform();
-	Math::Vector3 wp;
-	tf->FetchWorldPosition(wp);
-
-	return Sphere::Intersects(sphere, Sphere(wp, _radius));
+	const Vector3& wp = lightTF->GetWorldPosition();
+	return Sphere::Intersects(sphere, Sphere(wp, _base.GetRadius()));
 #endif
 }
 
-void SpotLight::MakeLightBufferElement(LightTransformBuffer& outTransform, Param& outParam) const
-{
-	const Transform* transform = _owner->GetTransform();
-
-	Transform worldTransform(nullptr);
-	transform->FetchWorldTransform(worldTransform);
-	outTransform.worldPosition = worldTransform.GetLocalPosition();
-
-	const auto& forward = worldTransform.GetForward();
-	outTransform.radius = forward.z >= 0.0f ? _radius : -_radius;
-
-	outParam.dirX = Common::FloatToHalf(forward.x);
-	outParam.dirY = Common::FloatToHalf(forward.y);
-
-	float radian = Common::Deg2Rad(_spotAngleDegree);
-	outParam.outerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
-
-	radian = Common::Deg2Rad(_spotAngleDegree * 0.3333f);
-	outParam.innerConeCosAngle = Math::Common::FloatToHalf(cos(radian));
+bool SpotLight::Intersect(const Frustum& frustum, const TransformPool& tfPool) const
+{											
+	const auto* lightTF = tfPool.Find(GetObjectID().Literal()); assert(lightTF);
+	return frustum.In(lightTF->GetWorldPosition(), _base.GetRadius());
 }
 
-Component* SpotLight::Clone() const
+
+SpotLight::TransformType SpotLight::MakeTransform(const Transform& transform) const
 {
-	return new SpotLight(*this);
+	assert(transform.GetObjectID() == _base.GetObjectID());
+
+	Vector3 forward	= transform.GetWorldForward();
+	float radius	= (forward.z >= 0.0f) ? _base.GetRadius() : -_base.GetRadius();
+
+	Vector3 wp		= transform.GetWorldPosition();
+	return Vector4(wp.x, wp.y, wp.z, radius);
 }
 
-void SpotLight::SetSpotAngleDegree(float d)
+SpotLight::Param SpotLight::MakeParam(const Core::Transform& transform) const
 {
-	_spotAngleDegree = d;
+	assert(transform.GetObjectID() == _base.GetObjectID());
+	Vector3 forward = transform.GetWorldForward();
 
-	if(_owner)
-		_owner->GetTransform()->AddUpdateCounter();
+	Param param;
+	{
+		param.dirX				= Half(forward.x);
+		param.dirY				= Half(forward.y);
+		param.outerConeCosAngle	= Half(cos(DEG_2_RAD(_spotAngleDegree)));
+		param.innerConeCosAngle	= Half(cos(DEG_2_RAD(_spotAngleDegree * 0.3333f)));
+	}
+	
+	return param;
 }

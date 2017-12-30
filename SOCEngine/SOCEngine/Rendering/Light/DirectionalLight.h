@@ -1,63 +1,60 @@
 #pragma once
 
-#include "LightForm.h"
-#include "Frustum.h"
-#include "DirectionalLightShadow.h"
+#include "BaseLight.h"
+#include "Transform.h"
+#include "Half.h"
 
-#define DIRECTIONAL_LIGHT_FRUSTUM_MIN_Z		1.0f
-#define DIRECTIONAL_LIGHT_FRUSTUM_MAX_Z		10000.0f
+#include "Frustum.h"
 
 namespace Rendering
 {
+	namespace Shadow
+	{
+		class DirectionalLightShadow;
+	}
+
+	namespace Manager
+	{
+		class LightManager;
+	}
+
 	namespace Light
 	{
-		class DirectionalLight : public LightForm
+		namespace Buffer
+		{
+			class DirectionalLightBuffer;
+		}
+
+		class DirectionalLight final
 		{
 		public:
-			struct Param
-			{
-				float invProj_33;
-				float invProj_44;
+			using ManagerType		= Manager::LightManager;
+			using LightBufferType	= Buffer::DirectionalLightBuffer;
+			using ShadowType		= Shadow::DirectionalLightShadow;
 
-				Param() : invProj_33(0.0f), invProj_44(0.0f) {}
-				~Param() {}
+			struct TransformType
+			{
+				TransformType() = default;
+				TransformType(Half _x, Half _y) : x(_x), y(_y) {}
+
+				Half	x = Half(0.0f),
+						y = Half(0.0f);
 			};
+			explicit DirectionalLight(Core::ObjectID objID) : _base(objID) {};
+
+			TransformType MakeTransform(const Core::Transform& transform) const;
+			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const { return true; }
+			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const { return true; }
+
+		public:
+			GET_CONST_ACCESSOR(LightShaftSize,	float,			_base.GetRadius());
+			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID, _base.GetObjectID());
+			GET_ALL_ACCESSOR_PTR(Base,			BaseLight,		_base);
+
+			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
 
 		private:
-			Param						_param;
-			Math::Matrix				_viewProjMat;
-
-			Intersection::Frustum		_frustum;
-			
-			float						_projectionSize;
-			bool						_useAutoProjectLocation;
-
-		public:
-			DirectionalLight();
-			virtual ~DirectionalLight();
-
-		public:
-			virtual void OnUpdate(float deltaTime);
-
-		public:
-			void ComputeViewProjMatrix(const Intersection::BoundBox& sceneBoundBox, const Math::Matrix& invViewportMat);
-			virtual void CreateShadow();
-
-		public:
-			bool Intersect(const Intersection::Sphere &sphere) const;
-			void MakeLightBufferElement(std::pair<ushort, ushort>& outDir, Param& outParam) const;
-
-		public:
-			virtual Core::Component* Clone() const;
-
-		public:
-			GET_ACCESSOR(Frustum,							const Intersection::Frustum&,		_frustum);
-			GET_ACCESSOR(Shadow,							Shadow::DirectionalLightShadow*,	static_cast<Shadow::DirectionalLightShadow*>(_shadow));
-			GET_ACCESSOR(ViewProjectionMatrix,				const Math::Matrix&,				_viewProjMat);
-
-			GET_SET_ACCESSOR(ProjectionSize,				float,								_projectionSize);
-			GET_SET_ACCESSOR(UseAutoProjectionLocation,		bool,								_useAutoProjectLocation);
-			GET_SET_ACCESSOR(LightShaftSize,				float,								_radius);
+			BaseLight					_base;
 		};
 	}
 }

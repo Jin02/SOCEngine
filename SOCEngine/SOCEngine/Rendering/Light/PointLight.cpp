@@ -1,45 +1,31 @@
 #include "PointLight.h"
-#include "Object.h"
-#include "CameraForm.h"
+#include <assert.h>
+#include "LightManager.h"
 
 using namespace Intersection;
 using namespace Rendering;
-using namespace Rendering::Camera;
-using namespace Rendering::Shadow;
 using namespace Rendering::Light;
 using namespace Math;
 using namespace Core;
 
-PointLight::PointLight() : LightForm()
+bool PointLight::Intersect(const Sphere& sphere, const TransformPool& tfPool) const
 {
-	_type = LightType::Point;
+	const auto* transform = tfPool.Find(GetObjectID().Literal()); assert(transform);
+	Vector3 wp = transform->GetWorldPosition();
+
+	return Sphere::Intersects(sphere, Sphere(wp, _base.GetRadius()));
 }
 
-PointLight::~PointLight(void)
+bool PointLight::Intersect(const Frustum& frustum, const TransformPool& tfPool) const
 {
+	const auto* transform = tfPool.Find(GetObjectID().Literal()); assert(transform);
+	return frustum.In(transform->GetWorldPosition(), _base.GetRadius());
 }
 
-void PointLight::CreateShadow()
+PointLight::TransformType PointLight::MakeTransform(const Transform& transform) const
 {
-	_shadow = new PointLightShadow(this);
-}
+	assert(transform.GetObjectID() == _base.GetObjectID());
+	const Vector3& wp = transform.GetWorldPosition();
 
-bool PointLight::Intersect(const Sphere &sphere) const
-{
-	Core::Transform* tf = _owner->GetTransform();
-	Math::Vector3 wp;
-	tf->FetchWorldPosition(wp);
-
-	return Sphere::Intersects(sphere, Sphere(wp, _radius));
-}
-
-void PointLight::MakeLightBufferElement(LightTransformBuffer& out, Param& dummyParam) const
-{
-	_owner->GetTransform()->FetchWorldPosition(out.worldPosition);
-	out.radius = _radius;
-}
-
-Core::Component* PointLight::Clone() const
-{
-	return new PointLight(*this);
+	return Vector4(wp.x, wp.y, wp.z, _base.GetRadius());
 }

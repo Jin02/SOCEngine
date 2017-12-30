@@ -1,41 +1,32 @@
 #pragma once
 
-#include <d3d11.h>
-#include "Color.h"
-#include "Size.h"
 #include "Texture2D.h"
-#include "DepthBuffer.h"
-
-namespace Device
-{
-	class DirectX;
-};
 
 namespace Rendering
 {
 	namespace Texture
 	{
-		class RenderTexture : public Texture2D
+		class RenderTexture final
 		{
-		protected:
-			ID3D11RenderTargetView*		_renderTargetView;
-
 		public:
-			RenderTexture();
-			virtual ~RenderTexture();
+			RenderTexture() = default;
+			explicit RenderTexture(const DXSharedResource<ID3D11RenderTargetView>& rawRtv, const DXSharedResource<ID3D11Texture2D>& rawTex2D, const Size<uint>& size);
 
-		public:
 			// if SampleCount = 0, sampleCount = msaa.count
-			bool Initialize(const Math::Size<unsigned int>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0, uint mipLevel = 1);
-			bool Initialize(ID3D11RenderTargetView* rtv, const Math::Size<uint>& size);
-
+			void Initialize(Device::DirectX& dx, const Size<uint>& size, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat, DXGI_FORMAT uavFormat, uint optionalBindFlags, uint sampleCount = 0, uint mipLevel = 1);
+			void Initialize(Device::DirectX& dx, const DXSharedResource<ID3D11RenderTargetView>& rtv, const Size<uint>& size);
 			void Destroy();
 
-		public:
-			void Clear(ID3D11DeviceContext* context, const Color& color);
+			void Clear(Device::DirectX& dx, const Color& color);
 
-		public:
-			GET_ACCESSOR(RenderTargetView, ID3D11RenderTargetView*, _renderTargetView);
+			//GET_CONST_ACCESSOR(RenderTargetView, const DXSharedResource<ID3D11RenderTargetView>&, _renderTargetView);
+			GET_ACCESSOR(Raw,			ID3D11RenderTargetView* const,	_renderTargetView.GetRaw());
+			GET_CONST_ACCESSOR(Size,	const auto&,					_tex2D.GetSize());
+			GET_ALL_ACCESSOR_PTR(Texture2D,	Texture2D,					_tex2D);
+
+		private:
+			DXSharedResource<ID3D11RenderTargetView>	_renderTargetView;
+			Texture2D									_tex2D;
 		};
 	}
 }
