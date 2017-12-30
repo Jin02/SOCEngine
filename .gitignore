@@ -7,6 +7,9 @@ SOCEngine/Output/
 *.VC.VC.opendb
 *.VC.db
 
+Fbx-conv/build/vs2012/bin/
+Fbx-conv/build/vs2012/obj/
+
 SOCEngine-Backup/
 SOCTestProject/Debug/
 SOCTestProject/SOCTestProject/Debug/
