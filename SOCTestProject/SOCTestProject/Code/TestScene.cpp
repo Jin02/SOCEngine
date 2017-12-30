@@ -78,26 +78,26 @@ void TestScene::OnInitialize(Engine& engine)
 	defaultMaterial.Initialize(engine.GetDirectX());
 	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
 
-	//Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
-	//{
-	//	engine.AddRootObject(*house);
-	//
-	//	Transform& tf = house->FetchTransform();
-	//	tf.SetLocalPosition(Vector3(0, -5, 20));
-	//	tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
-	//}
-	Object box = engine.GetObjectManager().Acquire("Box");
+	Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
 	{
-		BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
-		engine.AddRootObject(box);
-
-		box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
-		box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
-		box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
-
-		auto mesh = box.GetComponent<Mesh>();
-		mesh->SetPBRMaterialID(materialKey);
+		engine.AddRootObject(*house);
+	
+		Transform& tf = house->FetchTransform();
+		tf.SetLocalPosition(Vector3(0, -5, 20));
+		tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 	}
+	//Object box = engine.GetObjectManager().Acquire("Box");
+	//{
+	//	BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
+	//	engine.AddRootObject(box);
+
+	//	box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+	//	box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
+	//	box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+
+	//	auto mesh = box.GetComponent<Mesh>();
+	//	mesh->SetPBRMaterialID(materialKey);
+	//}
 
 	Object plane = engine.GetObjectManager().Acquire("Plane");
 	{
