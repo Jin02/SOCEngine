@@ -454,6 +454,15 @@
     <Filter Include="Rendering\Renderer\Shadow\Common/Spot">
       <UniqueIdentifier>{236008c1-a143-4715-8294-216daddce02c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Postprocessing\GodRay">
+      <UniqueIdentifier>{886af9c4-d267-481d-a686-05bcb9381a91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Postprocessing\GodRay\Sun/LightShaft">
+      <UniqueIdentifier>{c547cf2b-6809-482d-85fb-3c7978cb3b36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\GodRay">
+      <UniqueIdentifier>{e77d6e18-3f6c-40d1-96d6-803da963f0f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1006,6 +1015,9 @@
     <ClInclude Include="Rendering\Renderer\ShadowMapRenderer.h">
       <Filter>Rendering\Renderer\Shadow\Common/Spot</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\SunShaft.h">
+      <Filter>Rendering\Postprocessing\GodRay\Sun/LightShaft</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1317,6 +1329,9 @@
     <ClCompile Include="Rendering\Renderer\ShadowMapRenderer.cpp">
       <Filter>Rendering\Renderer\Shadow\Common/Spot</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\SunShaft.cpp">
+      <Filter>Rendering\Postprocessing\GodRay\Sun/LightShaft</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
@@ -1411,6 +1426,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\PCSSViewDepth.hlsl">
       <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\SunShaft.hlsl">
+      <Filter>ShaderCodes\Postprocessing\GodRay</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

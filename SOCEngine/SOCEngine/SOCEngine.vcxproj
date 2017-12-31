@@ -179,6 +179,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Rendering\Postprocessing\PPCommon.h" />
+    <ClInclude Include="Rendering\PostProcessing\SunShaft.h" />
     <ClInclude Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MainRenderer.h" />
     <ClInclude Include="Rendering\Renderer\MainSceneMaker.h" />
@@ -409,6 +410,7 @@
     <ClCompile Include="Rendering\Postprocessing\SSAO.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\SunShaft.cpp" />
     <ClCompile Include="Rendering\Renderer\DirectionalLightShadowMapRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\MainRenderer.cpp" />
     <ClCompile Include="Rendering\Renderer\MainSceneMaker.cpp" />
@@ -496,6 +498,7 @@
     <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl" />
     <FxCompile Include="ShaderCodes\SkyBox.hlsl" />
     <FxCompile Include="ShaderCodes\SSAO.hlsl" />
+    <FxCompile Include="ShaderCodes\SunShaft.hlsl" />
     <FxCompile Include="ShaderCodes\TBDR.hlsl" />
     <FxCompile Include="ShaderCodes\VoxelConeTracing.hlsl" />
     <FxCompile Include="ShaderCodes\Voxelization_N_UV0.hlsl" />
