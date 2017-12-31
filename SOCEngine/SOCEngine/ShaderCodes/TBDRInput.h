@@ -74,9 +74,9 @@ uint GetLightFlag(uint lightOptionalParamIndex)
 	return (lightOptionalParamIndex & 0x0000ff00) >> 8;
 }
 
-uint GetLightShaftIndex(uint pl_dl_lightOptionalParamIndex)
+uint GetLightUserFlag(uint lightOptionalParamIndex)
 {
-	return (pl_dl_lightOptionalParamIndex & 0xff); 
+	return (lightOptionalParamIndex & 0xff); 
 }
 
 float GetSignDirectionalLightDirZSign(uint directionalLightOptionalParamIndex)

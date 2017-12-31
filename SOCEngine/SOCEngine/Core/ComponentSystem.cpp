@@ -24,8 +24,7 @@ void ComponentSystem::Initialize(DirectX& dx)
 void ComponentSystem::UpdateBuffer(DirectX& dx,
 	const TransformPool& transformPool,
 	const ObjectManager& objectManager,
-	const ShadowAtlasMapRenderer& shadowAtlasMapRenderer,
-	const ObjectID::IndexHashMap& lightShaftIndexer)
+	const ShadowAtlasMapRenderer& shadowAtlasMapRenderer)
 {
 	ShadowManager& shadowMgr	= GetManager_Direct<ShadowManager>();
 	LightManager& lightMgr		= GetManager_Direct<LightManager>();
@@ -65,7 +64,7 @@ void ComponentSystem::UpdateBuffer(DirectX& dx,
 	}
 
 	lightMgr.UpdateTransformBuffer(transformPool);
-	lightMgr.UpdateParamBuffer(shadowMgr, lightShaftIndexer);
+	lightMgr.UpdateParamBuffer(shadowMgr);
 	lightMgr.UpdateSRBuffer(dx);
 
 	shadowMgr.UpdateBuffer(lightMgr, transformPool, _sceneBoundBox);

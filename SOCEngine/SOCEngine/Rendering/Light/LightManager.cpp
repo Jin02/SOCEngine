@@ -60,28 +60,26 @@ void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPoo
 	GetBuffer<DirectionalLight>().UpdateTransformBuffer(GetDirtyTransformLights<DirectionalLight>(), transformPool, GetPool<DirectionalLight>().GetIndexer());
 }
 
-void LightManager::UpdateParamBuffer(
-	const ShadowManager& shadowMgr,
-	const Core::ObjectID::IndexHashMap& shaftIndexer)
+void LightManager::UpdateParamBuffer(const ShadowManager& shadowMgr)
 {
 	GetBuffer<DirectionalLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<DirectionalLight>(),
-			RequiredIndexer(shadowMgr.GetIndexer<DirectionalLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<DirectionalLightShadow>(),
 			GetPool<DirectionalLight>().GetIndexer()
 		);
 
 	GetBuffer<PointLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<PointLight>(),
-			RequiredIndexer(shadowMgr.GetIndexer<PointLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<PointLightShadow>(),
 			GetPool<PointLight>().GetIndexer()
 		);
 
 	GetBuffer<SpotLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<SpotLight>(), 
-			RequiredIndexer(shadowMgr.GetIndexer<SpotLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<SpotLightShadow>(),
 			GetPool<SpotLight>().GetIndexer()
 		);
 }

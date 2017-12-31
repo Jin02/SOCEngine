@@ -11,20 +11,6 @@ namespace Rendering
 	{
 		namespace Buffer
 		{
-			struct RequiredIndexer
-			{
-				const Core::ObjectID::IndexHashMap& shadowIndexer;
-				const Core::ObjectID::IndexHashMap& lightShaftIndexer;
-
-				RequiredIndexer(
-					const Core::ObjectID::IndexHashMap& _shadowIndexer,
-					const Core::ObjectID::IndexHashMap& _lightShaftIndexer)
-					: shadowIndexer(_shadowIndexer), lightShaftIndexer(_lightShaftIndexer)
-				{
-
-				}
-			};
-
 			template<typename LightType>
 			class LightBufferForm
 			{
@@ -50,7 +36,7 @@ namespace Rendering
 				void PushLight(const LightType& light)
 				{
 					_transformBuffer.PushData(LightType::TransformType());
-					_commonBuffer.PushData(*light.GetBase(), -1, -1);
+					_commonBuffer.PushData(*light.GetBase(), -1);
 
 					_mustUpdateTransformSRBuffer	= true;
 					_mustUpdateCommonSRBuffer		= true;
@@ -83,7 +69,7 @@ namespace Rendering
 				}
 
 				void UpdateLightCommonBuffer(	const std::vector<LightType*>& dirtyParamLights,
-												RequiredIndexer shadowWithShaftIndexer,
+												const Core::ObjectID::IndexHashMap& shadowIndexer,
 												const Core::ObjectID::IndexHashMap& objIDIndeer)
 				{
 					for (auto& light : dirtyParamLights)
@@ -91,11 +77,10 @@ namespace Rendering
 						Core::ObjectID objID = light->GetObjectID();
 						uint literalID = objID.Literal();
 
-						ushort shadowIdx	= shadowWithShaftIndexer.shadowIndexer.Find(literalID);
-						uint lightShaftIdx	= shadowWithShaftIndexer.lightShaftIndexer.Find(literalID);
+						ushort shadowIdx	= shadowIndexer.Find(literalID);
 
 						uint index = objIDIndeer.Find(literalID);
-						_commonBuffer.SetData(index, *light->GetBase(), shadowIdx, lightShaftIdx);
+						_commonBuffer.SetData(index, *light->GetBase(), shadowIdx);
 					}
 
 					_mustUpdateCommonSRBuffer |= (dirtyParamLights.empty() == false);

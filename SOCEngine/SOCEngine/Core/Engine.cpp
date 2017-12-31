@@ -45,9 +45,7 @@ void Engine::RunScene()
 		}
 	}
 
-	// TODO : LightShaftMgr 구현하면 바꿔야함
-	ObjectID::IndexHashMap nullIndexer;
-	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer(), nullIndexer);
+	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer());
 
 	_scene->OnRenderPreview(*this);
 	_rendering.Render(*this, std::max(float(clock() - _prevTime) / 1000.0f, 0.0f));
