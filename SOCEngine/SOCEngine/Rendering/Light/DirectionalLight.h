@@ -47,11 +47,8 @@ namespace Rendering
 			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const { return true; }
 
 		public:
-			GET_CONST_ACCESSOR(LightShaftSize,	float,			_base.GetRadius());
 			GET_CONST_ACCESSOR(ObjectID,		Core::ObjectID, _base.GetObjectID());
 			GET_ALL_ACCESSOR_PTR(Base,			BaseLight,		_base);
-
-			inline void SetLightShaftSize(float f) { _base.SetRadius(f); }
 
 		private:
 			BaseLight					_base;

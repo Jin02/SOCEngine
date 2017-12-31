@@ -71,12 +71,4 @@ float3 ToGamma(float3 color, float gamma)
 	return pow(color, 1.0f / gamma);
 }
 
-float DrawCircle(float2 uv, float2 circlePosUV, float size, float aspect, float intensity)
-{
-	float2 viewportSize = GetViewportSize();
-	float circle = saturate(length((uv - circlePosUV) * float2(aspect, 1.0f)) / size);
-
-	return saturate((1.0f - circle * circle) * intensity);
-}
-
 #endif
