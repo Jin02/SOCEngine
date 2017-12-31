@@ -8,7 +8,7 @@ INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )
 {
 	WinApp::Desc desc;
 	{
-		desc.rect			= Rect<uint>(0, 0, 800, 600);
+		desc.rect			= Rect<uint>(0, 0, 1600, 900);
 		desc.instance		= hInst;
 		desc.name			= "Refactoring";
 		desc.windowMode		= true;
