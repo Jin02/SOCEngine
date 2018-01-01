@@ -42,6 +42,7 @@ namespace Rendering
 			};
 			explicit DirectionalLight(Core::ObjectID objID) : _base(objID) {};
 
+			void UpdateFlag(const Core::Transform& transform);
 			TransformType MakeTransform(const Core::Transform& transform) const;
 			bool Intersect(const Intersection::Sphere& sphere, const Core::TransformPool& tfPool) const { return true; }
 			bool Intersect(const Intersection::Frustum& frustum, const Core::TransformPool& tfPool) const { return true; }
