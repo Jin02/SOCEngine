@@ -2,7 +2,7 @@
 #include "BasicGeometryGenerator.h"
 
 //#define GI_TEST
-#define SKYBOX_ON
+//#define SKYBOX_ON
 
 using namespace Core;
 using namespace Math;
@@ -112,11 +112,23 @@ void TestScene::OnInitialize(Engine& engine)
 		auto mesh = plane.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(materialKey);
 	}
-	
+	Object plane2 = engine.GetObjectManager().Acquire("Plane2");
+	{
+		BasicGeometryGenerator::CreatePlane(plane2, engine, 20.0f, 20.0f, 4, 4, defaultFlag);
+
+		engine.AddRootObject(plane2);
+
+		plane2.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
+		plane2.FetchTransform().UpdateLocalEulerAngle(Vector3(180, 0, 0));
+
+		auto mesh = plane2.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
 //		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
-		light.FetchTransform().UpdateLocalEulerAngle(Vector3(170.0f, 1.0f, 0.0f));
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(175.0f, 0.0f, 0.0f));
 
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
@@ -124,7 +136,7 @@ void TestScene::OnInitialize(Engine& engine)
 //		auto* shadow = light.GetComponent<DirectionalLightShadow>();
 //		shadow->SetUseAutoProjectionLocation(false);
 
-		engine.GetRenderingSystem().GetPostProcessPipeline().SetSunShaftParam(light.GetObjectID(), 0.7f, 1.0f);
+		engine.GetRenderingSystem().GetPostProcessPipeline().SetSunShaftParam(light.GetObjectID(), 0.2f, 30.0f);
 		engine.AddRootObject(light);
 	}
 
@@ -204,11 +216,11 @@ void TestScene::OnRenderPreview(Engine&)
 
 void TestScene::OnUpdate(Engine& engine)
 {
-	static constexpr float rate = 1.0f;
+	//static constexpr float rate = 0.16f;
 
-	auto& tf = engine.GetObjectManager().Find("Light")->FetchTransform();
-	Vector3 euler = tf.GetLocalEularAngle();
-	tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
+	//auto& tf = engine.GetObjectManager().Find("Light")->FetchTransform();
+	//Vector3 euler = tf.GetLocalEularAngle();
+	//tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
 }
 
 void TestScene::OnRenderPost(Engine&)
