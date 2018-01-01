@@ -6,10 +6,10 @@
 
 cbuffer SunShaftParam : register( b0 )
 {
-	uint	bufferSize;
-	uint	sunShaft_UV;
 	uint	packedDLIndexWithAspect;
 	uint	packedSizeWithIntensity;
+	uint	bufferSize;
+	uint	sunShaft_UV;
 };
 uint2 GetSize()
 {
@@ -42,8 +42,18 @@ float DrawCircle(float2 uv, float2 circlePosUV, float size, float aspect, float 
 	return saturate((1.0f - circle * circle) * intensity);
 }
 
+SamplerState		DefaultSampler	: register( s0 );
+
 float4 OcclusionMapPS(PS_INPUT input) : SV_Target
 {
+#if (MSAA_SAMPLES_COUNT > 1)
+	if(GBufferDepth.Load(GetSize() * input.uv, 0).r)
+		discard;
+#else
+	if(GBufferDepth.Sample(DefaultSampler, input.uv).r > 0.0f)
+		discard;
+#endif
+
 	uint lightIndex = GetDirectionalLightIndex();
 	float3 color	= DirectionalLightColorBuffer[lightIndex].rgb;
 	float3 lightDir = GetDirectionalLightDir(lightIndex);
@@ -53,18 +63,10 @@ float4 OcclusionMapPS(PS_INPUT input) : SV_Target
 	return float4(circle, 1.0f);
 }
 
-#if (MSAA_SAMPLES_COUNT > 1)
-Texture2DMS<float4, MSAA_SAMPLES_COUNT>		OcclusionMap : register( t27 );
-#else
-Texture2D<float4>							OcclusionMap : register( t27 );
-#endif
+Texture2D<float4>	OcclusionMap	: register( t27 );
+Texture2D<float4>	InputColorMap	: register( t28 );
 
-Texture2D<float4>							InputColorMap : register( t28 );
-
-SamplerState DefaultSampler	: register( s0 );
-
-
-#define NUM_SAMPLES 32
+#define NUM_SAMPLES 128
 static const float Weight		= 1.0f / float(NUM_SAMPLES);
 static const float ShaftDecay	= 1.0f;// - 0.0f / float(NUM_SAMPLES);
 
@@ -72,18 +74,12 @@ float4 SunShaftPS(PS_INPUT input) : SV_Target
 {
 	float3 resultColor	= 0.0f;
 	float decay			= 1.0f;
-	uint2 size			= GetSize();
 
 	for (uint i = 0; i < NUM_SAMPLES; ++i)
 	{
-		float2 nextUV = lerp(input.uv, GetSunUV(), float(i) / float(NUM_SAMPLES-1));
+		float2 uv = lerp(input.uv, GetSunUV(), float(i) / float(NUM_SAMPLES-1));
 
-#if (MSAA_SAMPLES_COUNT > 1) //MSAA
-		float3 sampledColor =  OcclusionMap.Load(input.uv * size, 0).rgb;
-#else
-		float3 sampledColor =  OcclusionMap.Load(uint3(input.uv * size, 0)).rgb;
-#endif
-
+		float3 sampledColor =  OcclusionMap.Sample(DefaultSampler, uv).rgb;
 		sampledColor *= decay * Weight;
 
 		resultColor += sampledColor;
