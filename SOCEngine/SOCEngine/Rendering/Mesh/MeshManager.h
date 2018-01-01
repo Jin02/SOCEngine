@@ -101,7 +101,7 @@ namespace Rendering
 
 			void ClearDirty() { _dirtyMeshes.clear(); _mustUpdateCBMeshes.clear(); _dirty = false; }
 
-			bool ChangeTrait(Core::ObjectID id,
+			void ChangeTrait(Core::ObjectID id,
 							 Geometry::OpaqueMeshPool& fromPool, Geometry::TransparentMeshPool& toPool)
 			{
 				uint literlID = id.Literal();
@@ -111,7 +111,7 @@ namespace Rendering
 				toPool.Add(literlID, *fromPool.Find(literlID));
 				fromPool.Delete(literlID);
 			}
-			bool ChangeTrait(Core::ObjectID id,
+			void ChangeTrait(Core::ObjectID id,
 							 Geometry::TransparentMeshPool& fromPool, Geometry::OpaqueMeshPool& toPool) // or AlphaTest
 			{
 				uint literlID = id.Literal();

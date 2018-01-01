@@ -377,8 +377,9 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 			mainCamera.GetTransparentMeshRenderQ(),
 			[&dx, &materialMgr](const Mesh* mesh)
 			{
-				const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());
-				BindGBufferResourceTextures(dx, material);
+				const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
+				if(material)
+					BindGBufferResourceTextures(dx, material);
 			},
 			[&dx]()
 			{
