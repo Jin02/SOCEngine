@@ -347,6 +347,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		AutoBinderSampler<PixelShader> shadowGreaterS(dx,	SamplerStateBindIndex::ShadowComprisonGreaterSamplerState,	SamplerState::ShadowGreaterEqualComp);
 		AutoBinderSampler<PixelShader> pointS(dx,			SamplerStateBindIndex::ShadowPointSamplerState,				SamplerState::Point);
 		AutoBinderSampler<PixelShader> shadowLessrS(dx,		SamplerStateBindIndex::ShadowComprisonLessSamplerState,		SamplerState::ShadowLessEqualComp);
+		AutoBinderSampler<PixelShader> ambientCubeS(dx,		SamplerStateBindIndex::AmbientCubeMapSamplerState,			SamplerState::Linear);
 
 		AutoBinderSRV<PixelShader> dlDirXY(dx,			TextureBindIndex::DirectionalLightDirXY,				lightMgr.GetBuffer<DirectionalLight>().GetTransformSRBuffer().GetShaderResourceView());
 		AutoBinderSRV<PixelShader> dlColor(dx,			TextureBindIndex::DirectionalLightColor,				lightMgr.GetBuffer<DirectionalLight>().GetColorSRBuffer().GetShaderResourceView());
