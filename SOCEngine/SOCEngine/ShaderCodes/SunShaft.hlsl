@@ -43,11 +43,14 @@ float DrawCircle(float2 uv, float2 circlePosUV, float size, float aspect, float 
 }
 
 SamplerState		DefaultSampler	: register( s0 );
+Texture2D<float4>	OcclusionMap	: register( t27 );
+Texture2D<float4>	InputColorMap	: register( t28 );
 
 float4 OcclusionMapPS(PS_INPUT input) : SV_Target
 {
+	uint2 size = GetSize();
 #if (MSAA_SAMPLES_COUNT > 1)
-	if(GBufferDepth.Load(GetSize() * input.uv, 0).r)
+	if(GBufferDepth.Load(size * input.uv, 0).r > 0.0f)
 		discard;
 #else
 	if(GBufferDepth.Sample(DefaultSampler, input.uv).r > 0.0f)
@@ -62,9 +65,6 @@ float4 OcclusionMapPS(PS_INPUT input) : SV_Target
 
 	return float4(circle, 1.0f);
 }
-
-Texture2D<float4>	OcclusionMap	: register( t27 );
-Texture2D<float4>	InputColorMap	: register( t28 );
 
 #define NUM_SAMPLES 128
 static const float Weight		= 1.0f / float(NUM_SAMPLES);
