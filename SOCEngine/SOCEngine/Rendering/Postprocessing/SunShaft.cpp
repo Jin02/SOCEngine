@@ -18,22 +18,23 @@ using namespace Math;
 
 void SunShaft::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCam)
 {
+	std::vector<ShaderMacro> macros{dx.GetMSAAShaderMacro()};
 	FullScreen::InitParam param;
 	{
-		param.psMacros			= nullptr;
+		param.psMacros			= &macros;
 		param.psName			= "OcclusionMapPS";
 		param.shaderFileName	= "SunShaft";
 	}
 
 	_occlusionMapScreen.Initialize(dx, param, shaderMgr);
 
-	param.psName = "SunShaftPS";
+	param.psMacros	= nullptr;
+	param.psName	= "SunShaftPS";
 	_shaftScreen.Initialize(dx, param, shaderMgr);
 
 	_paramCB.Initialize(dx);
 
 	auto renderRect = mainCam.GetRenderRect().size;
-	renderRect.w /= 2;	renderRect.h /= 2;
 
 	_paramCBData.bufferSizeW = renderRect.w;
 	_paramCBData.bufferSizeH = renderRect.h;
