@@ -24,7 +24,7 @@ PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 
 	ps.position.x = (float)(id / 2) * 4.0f - 1.0f;
 	ps.position.y = (float)(id % 2) * 4.0f - 1.0f;
-	ps.position.z = 0.0f;
+	ps.position.z = 1.0f;
 	ps.position.w = 1.0f;
 
 	ps.uv.x = (float)(id / 2) * 2.0f;
