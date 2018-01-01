@@ -43,7 +43,7 @@ float4 ToFloat4(uint value)
 
 float4 RGBA8UintColorToFloat4(uint value)
 {
-	return ToFloat4(value) / 255.0f;
+	return ToFloat4(value) * rcp(255.0f);
 }
 
 float smoothStep(float low, float high, float v)

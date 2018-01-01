@@ -58,7 +58,7 @@ void ParseGBufferSurface(out Surface outSurface, uint2 globalIdx, uint sampleIdx
 	outSurface.emission		= emission;
 	outSurface.specularity	= specularity;
 
-	outSurface.motion		= (velocity_metallic_specularity.xy * 2.0f) - float2(1.0f, 1.0f);
+	outSurface.motion		= velocity_metallic_specularity.xy;
 	outSurface.materialFlag	= matFlag;
 }
 

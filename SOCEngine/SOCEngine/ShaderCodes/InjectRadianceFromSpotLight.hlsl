@@ -41,14 +41,14 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float4 emission	= GetColorInVoxelRawBuf(VoxelEmissionRawBuf, globalIdx);
 	
 		float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
-		float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
+//		float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 		if( (distanceOfLightWithVertex < (radius * 1.5f)) &&
 			(outerCosineConeAngle < currentCosineConeAngle) )
 		{
 			float innerOuterAttenuation = saturate( (currentCosineConeAngle - outerCosineConeAngle) / (innerCosineConeAngle - outerCosineConeAngle));
 			innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;
 			innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;
-			innerOuterAttenuation = lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
+			innerOuterAttenuation = (innerCosineConeAngle < currentCosineConeAngle) ? 1 : innerOuterAttenuation;
 	
 			float4 lightColorWithLm = PointLightColorBuffer[lightIndex];
 			float lumen = lightColorWithLm.w * float(MAXIMUM_LUMEN); //maximum lumen is float(MAXIMUM_LUMEN)
@@ -59,8 +59,8 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float3 lightColor = lightColorWithLm.rgb;
 			float3 lambert = (albedo.rgb / PI) * saturate(dot(normal, lightDir));
 	
-			shadowColor = RenderSpotLightShadow(lightIndex, worldPos.xyz, 0.0f);
-			radiosity = lambert * totalAttenTerm * lightColor * shadowColor.rgb;
+//			shadowColor = RenderSpotLightShadow(lightIndex, worldPos.xyz, 0.0f);
+			radiosity = lambert * totalAttenTerm * lightColor;// * shadowColor.rgb;
 		}
 		radiosity += emission.rgb;
 	

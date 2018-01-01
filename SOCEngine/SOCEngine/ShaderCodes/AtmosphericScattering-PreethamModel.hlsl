@@ -190,7 +190,7 @@ float4 PS(PS_INPUT input) : SV_Target
 
 		float3	Lin			=	pow(input.intensity * x * (1.0f - Fex), 1.5f);
 				Lin			*=	lerp(float3(1.0f, 1.0f, 1.0f),
-									pow(input.intensity * x * Fex, 1.0f / 2.0f),
+									pow(input.intensity * x * Fex, rcp(2.0f)),
 									saturate( pow(1.0f - dot(float3(0.0f, 1.0f, 0.0f), lightDir), 5.0f) ));
 		
 		float3 L0			= Fex * 0.1f;

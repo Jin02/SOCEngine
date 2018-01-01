@@ -64,12 +64,12 @@ float3 filmicToneMapping(float3 color)
 
 float3 Uncharted2ToneMapping(float3 color)
 {
-    float A = 0.15f;
-    float B = 0.50f;
-    float C = 0.10f;
-    float D = 0.20f;
-    float E = 0.02f;
-    float F = 0.30f;
+    const float A = 0.15f;
+    const float B = 0.50f;
+    const float C = 0.10f;
+    const float D = 0.20f;
+    const float E = 0.02f;
+    const float F = 0.30f;
 
     return ((color*(A*color+C*B)+D*E) / (color*(A*color+B)+D*F))- E / F;
 }

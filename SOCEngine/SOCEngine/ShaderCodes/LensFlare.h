@@ -6,16 +6,16 @@ float3 LensFlare_1(float2 uv, float2 pos)
 	float2 main	= uv - pos;
 	float2 uvd	= uv * (length(uv));
 	
-	float	ang	= atan(main.x, main.y);
-	float	dist	= length(main);
-		dist	= pow(dist, 0.1f);
+	float ang	= atan(main.x, main.y);
+	float dist	= length(main);
+		  dist	= pow(dist, 0.1f);
 		
 	float f1	= max(0.01f - pow(length(uv+ 1.2f * pos), 1.9f), 0.0f) * 7.0f;
 	float f2	= max(1.0f / (1.0f + 32.0f * pow(length(uvd + 0.8f  * pos), 2.0f)), 0.0f) * 0.25f;
 	float f22	= max(1.0f / (1.0f + 32.0f * pow(length(uvd + 0.85f * pos), 2.0f)), 0.0f) * 0.23f;
 	float f23	= max(1.0f / (1.0f + 32.0f * pow(length(uvd + 0.9f  * pos), 2.0f)), 0.0f) * 0.21f;
 	
-	vec2 uvx = lerp(uv, uvd, -0.5f);
+	float2 uvx = lerp(uv, uvd, -0.5f);
 	
 	float f4	= max(0.01f - pow(length(uvx + 0.4f  * pos),	2.4f), 0.0f) * 6.0f;
 	float f42	= max(0.01f - pow(length(uvx + 0.45f * pos),	2.4f), 0.0f) * 5.0f;
@@ -29,13 +29,13 @@ float3 LensFlare_1(float2 uv, float2 pos)
 	
 	uvx = lerp(uv, uvd, -0.5f);
 	
-	float f6	= max(0.01f - pow(length(uvx - 0.3  f * pos), 1.6f), 0.0f) * 6.0f;
+	float f6	= max(0.01f - pow(length(uvx - 0.3f * pos), 1.6f), 0.0f) * 6.0f;
 	float f62	= max(0.01f - pow(length(uvx - 0.325f * pos), 1.6f), 0.0f) * 3.0f;
-	float f63	= max(0.01f - pow(length(uvx - 0.35 f * pos), 1.6f), 0.0f) * 5.0f;
+	float f63	= max(0.01f - pow(length(uvx - 0.35f * pos), 1.6f), 0.0f) * 5.0f;
 	
 	float3 c = float3(f2  + f4  + f5  + f6,
-			  f22 + f42 + f52 + f62,
-			  f23 + f43 + f53 + f63) * 1.3f - float3( (length(uvd) * 0.05f).xxx );
+						f22 + f42 + f52 + f62,
+						f23 + f43 + f53 + f63) * 1.3f - float3( (length(uvd) * 0.05f).xxx );
 	
 	return c;
 }
@@ -43,12 +43,12 @@ float3 LensFlare_1(float2 uv, float2 pos)
 float2 GetDistOffset(float2 uv, float2 pxoffset, uniform float DistortionBarrel)
 {
 	float2 tocenter		= uv.xy;
-	float3 prep		= normalize(float3(tocenter.y, -tocenter.x, 0.0f));
+	float3 prep			= normalize(float3(tocenter.y, -tocenter.x, 0.0f));
 	
-	float angle		= length(tocenter.xy) * 2.221f * DistortionBarrel;
-	float3 oldoffset 	= float3(pxoffset, 0.0f);
+	float angle			= length(tocenter.xy) * 2.221f * DistortionBarrel;
+	float3 oldoffset	= float3(pxoffset, 0.0f);
 	
-	float3 rotated = oldoffset * cos(angle) + cross(prep, oldoffset) * sin(angle) + prep * dot(prep, oldoffset) * (1.0f - cos(angle));    
+	float3 rotated		= oldoffset * cos(angle) + cross(prep, oldoffset) * sin(angle) + prep * dot(prep, oldoffset) * (1.0f - cos(angle));    
 	return rotated.xy;
 }
 
@@ -74,7 +74,7 @@ float3 Orb(float2 uv, float2 pos, float dist, float size, uniform uint OrbFlareC
 	
 	for(uint i=0; i<OrbFlareCount; i++)
 	{
-		float j		= float(i + 1);
+		float j			= float(i + 1);
 		float offset	= j / (j + 1.0f);
 		float colOffset	= j / float(OrbFlareCount * 2);
 		
@@ -82,7 +82,7 @@ float3 Orb(float2 uv, float2 pos, float dist, float size, uniform uint OrbFlareC
 	}
 	
 	c += Flare(uv, pos, dist + 0.5f, 4.0f * size, float3(1.0f, 1.0f, 1.0f), DistortionBarrel) * 4.0f; 
-	return c / 4.0f;
+	return c * 0.25f;
 }
 
 float3 Orb(float2 uv, float2 pos, float dist, float size, float3 color, uniform uint OrbFlareCount, uniform float DistortionBarrel)

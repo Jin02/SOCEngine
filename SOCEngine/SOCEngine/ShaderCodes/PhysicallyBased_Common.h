@@ -35,29 +35,29 @@ float4 GetMaterialMainColor()
 	return float4(	(material_mainColor_alpha & 0xff000000) >> 24,
 					(material_mainColor_alpha & 0x00ff0000) >> 16,
 					(material_mainColor_alpha & 0x0000ff00) >> 8,
-					(material_mainColor_alpha & 0x000000ff) >> 0	) / 255.0f;
+					(material_mainColor_alpha & 0x000000ff) >> 0	) * rcp(255.0f);
 }
 
 float3 GetMaterialEmissiveColor()
 {
 	return float3(	(material_emissiveColor_Metallic & 0xff000000) >> 24,
 					(material_emissiveColor_Metallic & 0x00ff0000) >> 16,
-					(material_emissiveColor_Metallic & 0x0000ff00) >> 8	) / 255.0f;
+					(material_emissiveColor_Metallic & 0x0000ff00) >> 8	) * rcp(255.0f);
 }
 
 float GetMaterialMetallic()
 {
-	return float(material_emissiveColor_Metallic & 0x000000ff) / 255.0f;
+	return float(material_emissiveColor_Metallic & 0x000000ff) * rcp(255.0f);
 }
 
 float GetMaterialSpecularity()
 {
-	return float( (material_roughness_specularity_existTextureFlag & 0x00ff0000) >> 16 ) / 255.0f;
+	return float( (material_roughness_specularity_existTextureFlag & 0x00ff0000) >> 16 ) * rcp(255.0f);
 }
 
 float GetMaterialRoughness()
 {
-	return float( (material_roughness_specularity_existTextureFlag & 0xff000000) >> 24 ) / 255.0f;
+	return float( (material_roughness_specularity_existTextureFlag & 0xff000000) >> 24 ) * rcp(255.0f);
 }
 
 uint GetMaterialExistTextureFlag()
@@ -103,7 +103,7 @@ float3 UnpackNormalMap(SamplerState samplerState, float2 uv, float3 vertexNormal
 	float4 normalTex		= normalMap.Sample(samplerState, uv);
 	float3 bumpedNormal		= UnpackNormal(normalTex.rgb, vertexNormal, vertexTangent);
 	
-	return normalize(lerp(vertexNormal, bumpedNormal, HasNormalMap()));
+	return normalize(HasNormalMap() ? bumpedNormal : vertexNormal);
 }
 
 float3 UnpackNormalMapWithoutTangent(SamplerState samplerState, float2 uv, float3 vertexNormal, float3 viewDir)
@@ -132,7 +132,7 @@ float GetRoughness(SamplerState samplerState, float2 uv)
 	float roughnessTex = roughnessMap.Sample(samplerState, uv).x;
 	float matRoughness = GetMaterialRoughness();
 
-	return lerp(matRoughness, roughnessTex, HasRoughnessMap());
+	return HasRoughnessMap() ? roughnessTex : matRoughness;
 }
 
 float3 GetEmissiveColor(SamplerState samplerState, float2 uv)
@@ -140,7 +140,7 @@ float3 GetEmissiveColor(SamplerState samplerState, float2 uv)
 	float3 mtlEmissiveColor	= GetMaterialEmissiveColor();
 	float3 emissiveTex		= emissionMap.Sample(samplerState, uv).rgb;
 
-	return lerp(mtlEmissiveColor, emissiveTex * mtlEmissiveColor, HasEmissionMap());
+	return HasEmissionMap() ? emissiveTex * mtlEmissiveColor : mtlEmissiveColor;
 }
 
 float GetMetallic(SamplerState samplerState, float2 uv)
@@ -148,7 +148,7 @@ float GetMetallic(SamplerState samplerState, float2 uv)
 	float metallicTex = metallicMap.Sample(samplerState, uv).x;
 	float mtlMetallic = GetMaterialMetallic();
 
-	return lerp(mtlMetallic, metallicTex, HasMetallicMap());
+	return HasMetallicMap() ? metallicTex : mtlMetallic;
 }
 
 float GetHeight(SamplerState samplerState, float2 uv)

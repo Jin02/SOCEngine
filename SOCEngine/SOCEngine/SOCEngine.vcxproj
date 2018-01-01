@@ -474,7 +474,6 @@
     <FxCompile Include="ShaderCodes\DepthOfField.hlsl" />
     <FxCompile Include="ShaderCodes\EyeAdaptation.hlsl" />
     <FxCompile Include="ShaderCodes\GaussianBlur.hlsl" />
-    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl" />
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
     <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl" />

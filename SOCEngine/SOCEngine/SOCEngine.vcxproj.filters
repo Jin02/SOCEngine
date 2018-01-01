@@ -1376,9 +1376,6 @@
     <FxCompile Include="ShaderCodes\ClearVoxelRawMap.hlsl">
       <Filter>ShaderCodes\VXGI\Clear</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\InjectRadianceFromDirectionalLight.hlsl">
-      <Filter>ShaderCodes\VXGI\Injection</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\InjectRadianceFromPointLight.hlsl">
       <Filter>ShaderCodes\VXGI\Injection</Filter>
     </FxCompile>

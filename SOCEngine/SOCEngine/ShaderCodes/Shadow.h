@@ -131,8 +131,8 @@ float4 RenderSpotLightShadow(uint lightIndex, float3 vertexWorldPos, float shado
 	shadowUV /= shadowUV.w;
 
 	uint lightCapacityCount = GetNumOfSpotLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
-	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
+	shadowUV.x = ((shadowUV.x * 0.5f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
+	shadowUV.y = (shadowUV.y * -0.5f) + 0.5f;
 
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, SpotLightShadowParams[shadowIndex]);
@@ -158,8 +158,8 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, floa
 
 	uint lightCapacityCount = GetNumOfDirectionalLight(shadowGlobalParam_packedNumOfShadowAtlasCapacity);
 
-	shadowUV.x = ((shadowUV.x / 2.0f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
-	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
+	shadowUV.x = ((shadowUV.x * 0.5f) + 0.5f + float(shadowIndex)) * rcp((float)lightCapacityCount);
+	shadowUV.y = (shadowUV.y * -0.5f) + 0.5f;
 
 	ShadowParam shadowParam;
 	ParseShadowParam(shadowParam, DirectionalLightShadowParams[shadowIndex]);
@@ -209,8 +209,8 @@ float4 RenderPointLightShadow(uint lightIndex, float3 vertexWorldPos, float3 lig
 	float4 shadowUV = mul( float4(vertexWorldPos, 1.0f), PointLightShadowViewProjMatrix[shadowIndex].mat[faceIndex] );
 	shadowUV /= shadowUV.w;
 
-	shadowUV.x = (shadowUV.x / 2.0f) + 0.5f;
-	shadowUV.y = (shadowUV.y /-2.0f) + 0.5f;
+	shadowUV.x = (shadowUV.x * 0.5f) + 0.5f;
+	shadowUV.y = (shadowUV.y * -0.5f) + 0.5f;
 
 	float oneShadowMapSize	= float(1 << GetNumOfPointLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));
 

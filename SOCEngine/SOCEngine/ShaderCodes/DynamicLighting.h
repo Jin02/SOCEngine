@@ -229,7 +229,7 @@ void RenderSpotLight(
 		float innerOuterAttenuation = saturate( (currentCosineConeAngle - outerCosineConeAngle) / (innerCosineConeAngle - outerCosineConeAngle));
 		innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;	// ^2
 		innerOuterAttenuation = innerOuterAttenuation * innerOuterAttenuation;	// ^4
-		innerOuterAttenuation = lerp(innerOuterAttenuation, 1, innerCosineConeAngle < currentCosineConeAngle);
+		innerOuterAttenuation = (innerCosineConeAngle < currentCosineConeAngle) ? 1 : innerOuterAttenuation;
 
 		float lumen = SpotLightColorBuffer[lightIndex].w * float(MAXIMUM_LUMEN); //maximum lumen is float(MAXIMUM_LUMEN)
 

@@ -55,7 +55,7 @@ float3 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
+	uint spotLightIdx = (surface.depth != 0.0f) ? pointLightCountInThisTile : s_lightIndexCounter;
 	for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 	{
 		lightParams.lightIndex = s_lightIdx[spotLightIdx];
@@ -156,7 +156,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 			accumulativeSpecular		+= localSpecular;
 		}
 	
-		uint spotLightIdx = lerp(s_lightIndexCounter, pointLightCountInThisTile, surface.depth != 0.0f);
+		uint spotLightIdx = (surface.depth != 0.0f) ? pointLightCountInThisTile : s_lightIndexCounter;
 		for(; spotLightIdx<s_lightIndexCounter; ++spotLightIdx)
 		{
 			lightParams.lightIndex = s_lightIdx[spotLightIdx];

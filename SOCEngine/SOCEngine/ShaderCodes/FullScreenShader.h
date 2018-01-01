@@ -22,14 +22,9 @@ PS_INPUT FullScreenVS(uint id : SV_VERTEXID)
 {
 	PS_INPUT ps = (PS_INPUT)0;
 
-	ps.position.x = (float)(id / 2) * 4.0f - 1.0f;
-	ps.position.y = (float)(id % 2) * 4.0f - 1.0f;
-	ps.position.z = 1.0f;
-	ps.position.w = 1.0f;
-
-	ps.uv.x = (float)(id / 2) * 2.0f;
-	ps.uv.y = 1.0f - (float)(id % 2) * 2.0f;
-	
+	float2 uv	= float2( (id << 1) & 2, id & 2);
+	ps.position	= float4(uv * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 1.0f, 1.0f);
+	ps.uv		= uv;
 	
 #ifdef USE_VIEW_INFORMATION
 	float4	viewSpacePosition	= mul(ps.position, tbrParam_invProjMat);

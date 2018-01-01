@@ -30,7 +30,7 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 		float4 emission	= GetColorInVoxelRawBuf(VoxelEmissionRawBuf, globalIdx);
 	
 		float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
-		float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
+//		float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 		if( distanceOfLightWithVertex < lightRadius )
 		{
 			float4 lightColorWithLm = PointLightColorBuffer[lightIndex];
@@ -40,8 +40,8 @@ void CS(uint3 globalIdx	: SV_DispatchThreadID,
 			float attenuation	= lumen / (distanceOfLightWithVertex * distanceOfLightWithVertex);
 			float3 lambert		= (albedo.rgb / PI)* saturate(dot(normal, lightDir));
 	
-			shadowColor = RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
-			radiosity = lambert * attenuation * lightColor * shadowColor.rgb;
+//			shadowColor = RenderPointLightShadow(lightIndex, worldPos.xyz, lightDir, 0.0f);
+			radiosity = lambert * attenuation * lightColor;// * shadowColor.rgb;
 		}
 		radiosity = saturate(radiosity + emission.rgb);
 

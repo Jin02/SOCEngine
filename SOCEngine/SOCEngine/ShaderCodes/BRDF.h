@@ -52,7 +52,7 @@ float DistributionBlinnPhong(float roughness, float NdotH)
 	float a = roughness * roughness;
 	float a2 = a * a;
 	float n = 2.0f / a2 - 2.0f;
-	return (n + 2.0f) / (2.0f * PI) * pow(max(NdotH, 0.0f), n);
+	return (n + 2.0f) * rcp(2.0f * PI) * pow(max(NdotH, 0.0f), n);
 }
 
 // Microfacet models for refraction through rough surfaces
@@ -107,7 +107,7 @@ float GeometrySchlick(float NdotL, float NdotV, float roughness)
 
 float GGX(float NdotV, float a)
 {
-	float k = a / 2.0f;
+	float k = a * 0.5f;
 	return NdotV / (NdotV * (1.0f - k) + k);
 }
 
@@ -139,7 +139,7 @@ float3 FresnelSchlick(float3 specularColor, float VdotH)
 
 float3 DiffuseLambert(float3 diffuseColor)
 {
-	return diffuseColor * (1.0f / PI);
+	return diffuseColor * rcp(PI);
 }
 
 // Burley 2012, Physically-Based Shading at Disney
@@ -157,7 +157,7 @@ float3 DiffuseBurley(float3 diffuseColor, float roughness, float NdotV, float Nd
 	float FdV		= 1.0f + (fd90 - 1.0f) * NdotVPow5;
 	float FdL		= 1.0f + (fd90 - 1.0f) * NdotLPow5;
 
-	return diffuseColor * ((1.0f / PI) * FdV * FdL);
+	return diffuseColor * (rcp(PI) * FdV * FdL);
 }
 
 // Gotanda 2012, Beyond a Simple Physically Based Blinn-Phong Model in Real-Time
@@ -170,7 +170,7 @@ float3 DiffuseOrenNayar(float3 diffuseColor, float roughness, float NdotV, float
 	float Cosri = VoL - NdotV * NdotL;
 	float C1 = 1 - 0.5 * s2 / (s2 + 0.33);
 	float C2 = 0.45 * s2 / (s2 + 0.09) * Cosri * (Cosri >= 0 ? rcp(max(NdotL, NdotV)) : 1);
-	return diffuseColor / PI * (C1 + C2) * (1 + roughness * 0.5); 	
+	return diffuseColor * rcp(PI) * (C1 + C2) * (1.0f + roughness * 0.5f); 	
 }
 
 

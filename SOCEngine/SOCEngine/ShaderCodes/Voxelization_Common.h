@@ -132,7 +132,7 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 albedo, float alpha, float3 normal)
 {
 	float3 radiosity	= float3(0.0f, 0.0f, 0.0f);
-	float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
+//	float4 shadowColor	= float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	uint dlCount = GetNumOfDirectionalLight(gi_packedNumfOfLights);
 
@@ -144,9 +144,9 @@ void InjectRadianceFromDirectionalLight(int3 voxelIdx, float3 worldPos, float3 a
 		float3 lambert			= albedo.rgb * saturate(dot(normal, lightDir));
 		float intensity			= DirectionalLightColorBuffer[index].a * 10.0f;
 
-		shadowColor = RenderDirectionalLightShadow(index, worldPos, lightDir);
+//		shadowColor = RenderDirectionalLightShadow(index, worldPos, lightDir);
 
-		radiosity += (lambert / 1.0f) * lightColor * intensity * shadowColor.rgb;
+		radiosity += (lambert / PI) * lightColor * intensity;// * shadowColor.rgb;
 		radiosity += GetMaterialEmissiveColor().rgb;
 	}
 

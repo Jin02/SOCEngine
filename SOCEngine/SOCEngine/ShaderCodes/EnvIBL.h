@@ -14,9 +14,9 @@
 Texture2D<float2> preIntegrateEnvBRDFMap	: register( t29 );
 TextureCube	skyCubeMap						: register( t32 );
 
-SamplerState skyCubeMapSampler			: register( s5  );
+SamplerState skyCubeMapSampler				: register( s5  );
 
-static const float MaxMipLevel = 5.0f;
+static const float MaxMipLevel = 7.0f;
 
 float3 GetSkyLightReflection(float3 reflectDir, float roughness, bool isDynamicSkyLight)
 {
