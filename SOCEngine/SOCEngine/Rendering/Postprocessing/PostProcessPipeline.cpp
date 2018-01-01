@@ -12,6 +12,7 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Manager;
 using namespace Rendering::RenderState;
 using namespace Device;
+using namespace Core;
 
 void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera)
 {
@@ -34,10 +35,11 @@ void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, cons
 	GetPostproessing<DepthOfField>().Initialize(dx, shaderMgr, renderSize);
 	GetPostproessing<Bloom>().Initialize(dx, shaderMgr, renderSize);
 	GetPostproessing<SSAO>().Initialize(dx, shaderMgr);
+	GetPostproessing<SunShaft>().Initialize(dx, shaderMgr, mainCamera);
 	_copy.Initialize(dx, shaderMgr);
 }
 
-void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const MainCamera& mainMeshCamera)
+void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const MainCamera& mainMeshCamera, const LightManager& lightMgr)
 {
 	MainRenderingSystemParam mains{mainRenderer, mainMeshCamera};
 
@@ -63,7 +65,15 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 		std::swap(input, output);
 	}
 
-	bool allOff = !_useSSAO & !_useDoF;
+	auto& sunShaft = GetPostproessing<SunShaft>();
+	bool runSunShaft = _useSunShaft & sunShaft.GetRenderAble();
+	if (runSunShaft)
+	{
+		GetPostproessing<SunShaft>().Render(dx, *output, *input->GetTexture2D(), mainRenderer, mainMeshCamera, lightMgr);
+		std::swap(input, output);
+	}
+
+	bool allOff = !_useSSAO & !_useDoF & !runSunShaft;
 	if (allOff)
 	{
 		AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
@@ -73,9 +83,11 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 	GetPostproessing<Bloom>().RenderBloom(dx, *mainScene, *input, mainRenderer.GetTBRParamCB());
 }
 
-void PostProcessPipeline::UpdateCB(DirectX& dx)
+void PostProcessPipeline::UpdateCB(DirectX& dx, const ObjectManager& objMgr,
+	const LightManager& lightMgr, const TransformPool& tfPool, const MainCamera& mainCam)
 {
-	GetPostproessing<DepthOfField>().UpdateParamCB(dx);
 	GetPostproessing<Bloom>().UpdateParamCB(dx);
-	GetPostproessing<SSAO>().UpdateParamCB(dx);
+	if(_useDoF)			GetPostproessing<DepthOfField>().UpdateParamCB(dx);
+	if(_useSSAO)		GetPostproessing<SSAO>().UpdateParamCB(dx);
+	if(_useSunShaft)	GetPostproessing<SunShaft>().UpdateParamCB(dx, objMgr, lightMgr, tfPool, mainCam);
 }

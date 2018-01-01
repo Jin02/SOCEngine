@@ -5,6 +5,7 @@
 #include "SSAO.h"
 #include "Bloom.h"
 #include "MainCamera.h"
+#include "SunShaft.h"
 
 namespace Rendering
 {
@@ -18,18 +19,27 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
-			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera);
+			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
-			void UpdateCB(Device::DirectX& dx);
+			void UpdateCB(Device::DirectX& dx, const Core::ObjectManager& objMgr, const Manager::LightManager& lightMgr, const Core::TransformPool& tfPool, const Camera::MainCamera& mainCam);
 
-			SET_ACCESSOR(UseSSAO,		bool,	_useSSAO);
-			SET_ACCESSOR(UseDoF,		bool,	_useDoF);
-			GET_CONST_ACCESSOR(UseSSAO, bool,	_useSSAO);
-			GET_CONST_ACCESSOR(UseDoF,	bool,	_useDoF);
+			SET_ACCESSOR(UseSSAO,			bool,	_useSSAO);
+			SET_ACCESSOR(UseDoF,			bool,	_useDoF);
+			SET_ACCESSOR(UseSunShaft,		bool,	_useSunShaft);
+
+			GET_CONST_ACCESSOR(UseSSAO,		bool,	_useSSAO);
+			GET_CONST_ACCESSOR(UseDoF,		bool,	_useDoF);
+			GET_CONST_ACCESSOR(UseSunShaft, bool,	_useSunShaft);
 
 			inline void SetElapsedTime(float time)
 			{
 				GetPostproessing<PostProcessing::Bloom>().SetElapsedTime(time);
+			}
+			inline void SetSunShaftParam(Core::ObjectID directionalLightID, float circleSize, float circleIntensity)
+			{
+				GetPostproessing<PostProcessing::SunShaft>().SetCircleIntensity(Half(circleIntensity));
+				GetPostproessing<PostProcessing::SunShaft>().SetCircleSize(Half(circleSize));
+				GetPostproessing<PostProcessing::SunShaft>().SetDirectionalLightID(directionalLightID);
 			}
 
 		public:
@@ -57,12 +67,14 @@ namespace Rendering
 
 			std::tuple<	PostProcessing::Bloom,
 						PostProcessing::SSAO,
-						PostProcessing::DepthOfField>	_postprocessing;
+						PostProcessing::DepthOfField,
+						PostProcessing::SunShaft>		_postprocessing;
 
 			PostProcessing::Copy						_copy;
 
-			bool										_useSSAO	= false;
-			bool										_useDoF		= false;
+			bool										_useSSAO		= false;
+			bool										_useDoF			= false;
+			bool										_useSunShaft	= false;
 		};
 	}
 }
