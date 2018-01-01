@@ -27,11 +27,13 @@ namespace Rendering
 			SET_ACCESSOR_DIRTY(Radius,		float,				_radius);
 			SET_ACCESSOR_DIRTY(Lumen,		uint,				_lumen);
 			SET_ACCESSOR_DIRTY(Flag,		uchar,				_flag);
+			SET_ACCESSOR_DIRTY(UserFlag,	uchar,				_userFlag);
 
 			GET_CONST_ACCESSOR(Color,		const Color&,		_color);
 			GET_CONST_ACCESSOR(Radius,		float,				_radius)
 			GET_CONST_ACCESSOR(Lumen,		uint,				_lumen);
 			GET_CONST_ACCESSOR(Flag,		uchar,				_flag);
+			GET_CONST_ACCESSOR(UserFlag,	uchar,				_userFlag);
 
 			GET_CONST_ACCESSOR(ObjectID,	Core::ObjectID,		_objectID);
 
@@ -41,11 +43,12 @@ namespace Rendering
 		private:
 			Core::ObjectID			_objectID;
 
-			Color					_color	= Color::White();
-			float					_radius	= 10.0f;
-			uint					_lumen	= 500; //intensity
-			uchar					_flag	= 0;
-			bool					_dirty	= true;
+			Color					_color		= Color::White();
+			float					_radius		= 10.0f;
+			uint					_lumen		= 500; //intensity
+			uchar					_flag		= 0;
+			uchar					_userFlag	= 0;
+			bool					_dirty		= true;
 		};
 
 		template<class LightType>

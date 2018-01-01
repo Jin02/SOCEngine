@@ -20,9 +20,8 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 	uint vertexCount	= args.vertices.count;
 	uint indexCount		= args.indices.size();
 
-	uint vbKey = Utility::String::MakeKey({ args.fileName, std::to_string(args.vbUserHashKey) });
-
-	if (bufferMgr.GetPool<VertexBuffer>().Has(vbKey) == false)
+	_vbKey = Utility::String::MakeKey({ args.fileName, std::to_string(args.vbUserHashKey) });
+	if (bufferMgr.GetPool<VertexBuffer>().Has(_vbKey) == false)
 	{
 		VertexBuffer::Desc param;
 		{
@@ -33,18 +32,16 @@ void Mesh::Initialize(Device::DirectX& dx, BufferManager& bufferMgr, const Creat
 		VertexBuffer vb;
 		vb.Initialize(dx, param, args.vertices.data, args.useDynamicVB, args.semanticInfos);
 
-		bufferMgr.GetPool<VertexBuffer>().Add(vbKey, vb);
-		_vbKey = vbKey;
+		bufferMgr.GetPool<VertexBuffer>().Add(_vbKey, vb);
 	}
 
-	uint ibKey = String::MakeKey({ args.fileName, args.ibPartID });
-	if (bufferMgr.GetPool<IndexBuffer>().Has(ibKey) == false)
+	_ibKey = String::MakeKey({ args.fileName, args.ibPartID });
+	if (bufferMgr.GetPool<IndexBuffer>().Has(_ibKey) == false)
 	{
 		IndexBuffer ib;
-		ib.Initialize(dx, args.indices, vbKey, args.useDynamicIB);
+		ib.Initialize(dx, args.indices, _vbKey, args.useDynamicIB);
 
-		bufferMgr.GetPool<IndexBuffer>().Add(ibKey, ib);
-		_ibKey = ibKey;
+		bufferMgr.GetPool<IndexBuffer>().Add(_ibKey, ib);
 	}	
 
 	_bufferFlag = ComputeBufferFlag(args.semanticInfos);

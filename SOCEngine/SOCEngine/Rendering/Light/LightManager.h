@@ -81,7 +81,7 @@ namespace Rendering
 			uint GetPackedLightCount() const;
 
 			void UpdateTransformBuffer(const Core::TransformPool& transformPool);
-			void UpdateParamBuffer(const ShadowManager& shadowMgr, const Core::ObjectID::IndexHashMap& shaftIndexer );
+			void UpdateParamBuffer(const ShadowManager& shadowMgr);
 			void UpdateSRBuffer(Device::DirectX& dx);
 
 			void CheckDirtyLights(const Core::TransformPool& transformPool);

@@ -169,7 +169,7 @@ float4 RenderDirectionalLightShadow(uint lightIndex, float3 vertexWorldPos, floa
 	float resolution	= float(1 << GetNumOfDirectionalLight(shadowGlobalParam_packedPowerOfTwoShadowResolution));	
 	float2 stepUV		= ComputeStepUV(resolution, lightCapacityCount, shadowParam.softness, 1);	
 
-#if 0
+#if 1
 	float shadow		= saturate( PCF(DirectionalLightShadowMapAtlas, shadowSamplerGreaterCmpState, shadowUV.xy, depth + bias, stepUV) );
 #else
 	float viewMat_43		= shadowParam.lightNear;

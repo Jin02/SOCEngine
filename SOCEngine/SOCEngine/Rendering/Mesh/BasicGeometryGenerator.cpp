@@ -175,9 +175,9 @@ void BasicGeometryGenerator::CreateBox(std::function<void(const Mesh::CreateFunc
 	{
 		Math::Vector3 _size = size;
 
-		key += UintToStr(*reinterpret_cast<uint*>(&_size.x));
-		key += UintToStr(*reinterpret_cast<uint*>(&_size.y));
-		key += UintToStr(*reinterpret_cast<uint*>(&_size.z));
+		key += UintToStr(static_cast<uint>(_size.x * 1000.0f));
+		key += UintToStr(static_cast<uint>(_size.y * 1000.0f));
+		key += UintToStr(static_cast<uint>(_size.z * 1000.0f));
 		key += UintToStr(defautVertexInputTypeFlag);
 	}
 
@@ -265,7 +265,7 @@ void BasicGeometryGenerator::CreateSphere(std::function<void(const Mesh::CreateF
 
 	std::string key = "";
 	{
-		key += UintToStr(*reinterpret_cast<uint*>(&radius));
+		key += UintToStr(static_cast<uint>(radius * 1000.0f));
 		key += UintToStr(sliceCount);
 		key += UintToStr(stackCount);
 		key += UintToStr(defautVertexInputTypeFlag);
@@ -405,10 +405,10 @@ void BasicGeometryGenerator::CreateCylinder(std::function<void(const Mesh::Creat
 
 	std::string key = "";
 	{
-		key += UintToStr(*reinterpret_cast<uint*>(&botRadius));
-		key += UintToStr(*reinterpret_cast<uint*>(&topRadius));
+		key += UintToStr(static_cast<uint>(botRadius * 1000.0f));
+		key += UintToStr(static_cast<uint>(topRadius * 1000.0f));
+		key += UintToStr(static_cast<uint>(height * 1000.0f));
 
-		key += UintToStr(*reinterpret_cast<uint*>(&height));
 		key += UintToStr(sliceCount);
 		key += UintToStr(stackCount);
 		key += UintToStr(defautVertexInputTypeFlag);
@@ -480,8 +480,8 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 
 	std::string key = "";
 	{
-		key += UintToStr(*reinterpret_cast<uint*>(&width));
-		key += UintToStr(*reinterpret_cast<uint*>(&height));
+		key += UintToStr(static_cast<uint>(width * 1000.0f));
+		key += UintToStr(static_cast<uint>(height * 1000.0f));
 
 		key += UintToStr(widthVertexCount);
 		key += UintToStr(heightVertexCount);
@@ -491,7 +491,7 @@ void BasicGeometryGenerator::CreatePlane(std::function<void(const Mesh::CreateFu
 	MeshInfo info;
 	MakeMeshInfo(info, defautVertexInputTypeFlag);
 
-	Mesh::CreateFuncArguments args("@DefaultCylinder", std::hash<std::string>()(key), "[Plane]", indices, info.semantics);
+	Mesh::CreateFuncArguments args("@DefaultPlane", std::hash<std::string>()(key), "[Plane]", indices, info.semantics);
 	{
 		args.vertices.byteWidth = info.stride;
 		args.vertices.count = static_cast<uint>(vertices.size() / (info.stride / 4));

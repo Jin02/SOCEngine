@@ -73,8 +73,8 @@ void RenderingSystem::Render(Engine& engine, float dt)
 	_mainRenderer.Render(dx, MainRenderer::Param{mainCamera, meshRenderParam, _materialManager, lightMgr, ShadowSystem{shadowMgr, _shadowRenderer}, std::move(cullParam), skyboxMaterial});
 
 	_postProcessing.SetElapsedTime(dt);
-	_postProcessing.UpdateCB(dx);
-	_postProcessing.Render(dx, _mainRenderer, mainCamera);
+	_postProcessing.UpdateCB(dx, cullParam.objMgr, lightMgr, cullParam.transformPool, mainCamera);
+	_postProcessing.Render(dx, _mainRenderer, mainCamera, lightMgr);
 
 	AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
 	_backBufferMaker.Render(dx, dx.GetBackBufferRT(), *_mainRenderer.GetResultMap()->GetTexture2D());

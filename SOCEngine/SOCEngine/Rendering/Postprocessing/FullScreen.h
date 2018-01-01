@@ -34,6 +34,9 @@ namespace Rendering
 			void Initialize(Device::DirectX& dx, const InitParam& param, Manager::ShaderManager& shaderManager);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT, bool useOutRTViewportSize = false) const;
 
+			GET_CONST_ACCESSOR_REF(VertexShader,	_vs);
+			GET_CONST_ACCESSOR_REF(PixelShader,		_ps);
+
 		private:
 			std::string								_psUniqueKey = "";
 			std::shared_ptr<Shader::VertexShader>	_vs;

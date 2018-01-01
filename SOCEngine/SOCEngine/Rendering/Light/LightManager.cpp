@@ -60,28 +60,26 @@ void LightManager::UpdateTransformBuffer(const Core::TransformPool& transformPoo
 	GetBuffer<DirectionalLight>().UpdateTransformBuffer(GetDirtyTransformLights<DirectionalLight>(), transformPool, GetPool<DirectionalLight>().GetIndexer());
 }
 
-void LightManager::UpdateParamBuffer(
-	const ShadowManager& shadowMgr,
-	const Core::ObjectID::IndexHashMap& shaftIndexer)
+void LightManager::UpdateParamBuffer(const ShadowManager& shadowMgr)
 {
 	GetBuffer<DirectionalLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<DirectionalLight>(),
-			RequiredIndexer(shadowMgr.GetIndexer<DirectionalLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<DirectionalLightShadow>(),
 			GetPool<DirectionalLight>().GetIndexer()
 		);
 
 	GetBuffer<PointLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<PointLight>(),
-			RequiredIndexer(shadowMgr.GetIndexer<PointLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<PointLightShadow>(),
 			GetPool<PointLight>().GetIndexer()
 		);
 
 	GetBuffer<SpotLight>().
 		UpdateLightCommonBuffer(
 			GetDirtyParamLights<SpotLight>(), 
-			RequiredIndexer(shadowMgr.GetIndexer<SpotLightShadow>(), shaftIndexer),
+			shadowMgr.GetIndexer<SpotLightShadow>(),
 			GetPool<SpotLight>().GetIndexer()
 		);
 }
@@ -101,7 +99,7 @@ void LightManager::UpdateSRBuffer(Device::DirectX& dx)
 
 void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 {
-	auto UpdateDirtyLight = [&transformPool](auto& lightDatas)
+	auto UpdateDirtyLight = [&transformPool](auto& lightDatas, auto dirtyTFAction)
 	{
 		auto& pool = lightDatas.pool;
 		auto& dirtyParamLights = lightDatas.dirtyParamLights;
@@ -112,19 +110,22 @@ void LightManager::CheckDirtyLights(const Core::TransformPool& transformPool)
 		{
 			auto& light = pool.Get(i);
 
-			if (light.GetBase()->GetDirty())
-				dirtyParamLights.push_back(&light);
-
 			uint objID		= light.GetObjectID().Literal();
 			auto transform	= transformPool.Find(objID);
 			if (transform->GetDirty())
+			{
+				dirtyTFAction(transform, light);
 				dirtyTFLights.push_back(&light);
+			}
+
+			if (light.GetBase()->GetDirty())
+				dirtyParamLights.push_back(&light);
 		}
 	};
 
-	UpdateDirtyLight(GetLightDatas<DirectionalLight>());
-	UpdateDirtyLight(GetLightDatas<PointLight>());
-	UpdateDirtyLight(GetLightDatas<SpotLight>());
+	UpdateDirtyLight(GetLightDatas<DirectionalLight>(),	[](const Transform* tf, auto& light){light.UpdateFlag(*tf);} );
+	UpdateDirtyLight(GetLightDatas<PointLight>(),		[](const Transform* tf, auto& light){} );
+	UpdateDirtyLight(GetLightDatas<SpotLight>(),		[](const Transform* tf, auto& light){} );
 }
 
 void LightManager::ClearDirty()

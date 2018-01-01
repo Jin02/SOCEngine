@@ -25,7 +25,7 @@ namespace Rendering
 					uchar	bias			= 0;			// z
 					ushort	lightIndex		= -1;			// z
 	
-					uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 0.8f);	// a
+					uint	shadowColor		= Color::Get32BitUintColor(0.0f, 0.0f, 0.0f, 1.0f);	// a
 				};
 				uint packedParam[4];
 

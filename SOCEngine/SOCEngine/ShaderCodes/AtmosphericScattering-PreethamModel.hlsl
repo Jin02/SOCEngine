@@ -202,7 +202,7 @@ float4 PS(PS_INPUT input) : SV_Target
 		float3 texColor = (Lin + L0) * 0.04f + float3(0.0f, 0.0003f, 0.00075f);
 
 		float3 curr				= Uncharted2ToneMapping((log2(2.0f / pow(GetLuminance(), 4.0f))) * texColor);
-		const float whiteScale	= 1.0748724675633854f;
+		const float whiteScale	= 1.0f;//1.0748724675633854f;
 		float3 color			= curr * whiteScale;
 
 		float coff = 1.0f / (1.2f + (1.2f * input.fade));

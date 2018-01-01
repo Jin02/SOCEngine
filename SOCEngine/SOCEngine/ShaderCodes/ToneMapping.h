@@ -71,8 +71,6 @@ float3 Uncharted2ToneMapping(float3 color)
     float E = 0.02f;
     float F = 0.30f;
 
-	color*=2.0f;
-
     return ((color*(A*color+C*B)+D*E) / (color*(A*color+B)+D*F))- E / F;
 }
 

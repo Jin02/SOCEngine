@@ -20,8 +20,8 @@ namespace Rendering
 			
 				void Initialize(Device::DirectX& dx, uint count, const void* dummy);
 				
-				void SetData(uint index, const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
-				void PushData(const Light::BaseLight& light, ushort shadowIndex, uint lightShaftIndex);
+				void SetData(uint index, const Light::BaseLight& light, ushort shadowIndex);
+				void PushData(const Light::BaseLight& light, ushort shadowIndex);
 
 				void UpdateSRBuffer(Device::DirectX& dx);
 				void Delete(uint index);
@@ -31,9 +31,9 @@ namespace Rendering
 				GET_CONST_ACCESSOR_REF(OptionalParamIndexSRBuffer,	_optionalParamIndexBuffer.GetShaderResourceBuffer());
 
 			private:
-				inline uint ComputeOptionalParamIndex(const Light::BaseLight& light, ushort shadowIndex, uint shaftIndex)
+				inline uint ComputeOptionalParamIndex(const Light::BaseLight& light, ushort shadowIndex)
 				{
-					return (shadowIndex << 16) | (light.GetFlag() << 8) | (shaftIndex & 0x7f);
+					return (shadowIndex << 16) | (light.GetFlag() << 8) | light.GetUserFlag();
 				}
 
 			private:
