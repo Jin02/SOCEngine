@@ -16,6 +16,7 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
 //	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
 	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
+	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSunShaft(true);
 
 	GIInitParam param;
 	{
@@ -114,8 +115,8 @@ void TestScene::OnInitialize(Engine& engine)
 	
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
-		light.FetchTransform().SetLocalPosition(Vector3(-2500, 3750, 2185));
-		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
+//		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(170.0f, 1.0f, 0.0f));
 
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
@@ -123,6 +124,7 @@ void TestScene::OnInitialize(Engine& engine)
 //		auto* shadow = light.GetComponent<DirectionalLightShadow>();
 //		shadow->SetUseAutoProjectionLocation(false);
 
+		engine.GetRenderingSystem().GetPostProcessPipeline().SetSunShaftParam(light.GetObjectID(), 0.7f, 1.0f);
 		engine.AddRootObject(light);
 	}
 
@@ -202,11 +204,11 @@ void TestScene::OnRenderPreview(Engine&)
 
 void TestScene::OnUpdate(Engine& engine)
 {
-	//static constexpr float rate = 1.0f;
+	static constexpr float rate = 1.0f;
 
-	//auto& tf = engine.GetObjectManager().Find("SanFranciscoHouse")->FetchTransform();
-	//Vector3 euler = tf.GetLocalEularAngle();
-	//tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
+	auto& tf = engine.GetObjectManager().Find("Light")->FetchTransform();
+	Vector3 euler = tf.GetLocalEularAngle();
+	tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
 }
 
 void TestScene::OnRenderPost(Engine&)
