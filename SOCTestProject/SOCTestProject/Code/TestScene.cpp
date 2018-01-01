@@ -15,8 +15,8 @@ using namespace Rendering::Geometry;
 RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 {
 //	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(true);
-	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(true);
-	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSunShaft(true);
+//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSSAO(false);
+//	engine.GetRenderingSystem().GetPostProcessPipeline().SetUseSunShaft(false);
 
 	GIInitParam param;
 	{
@@ -74,11 +74,12 @@ void TestScene::OnInitialize(Engine& engine)
 
 	auto v = box->FetchTransform().GetWorldPosition() + Vector3(0, 5, 0);
 	engine.GetRenderingSystem().GetMainRenderer().GetGlobalIllumination().SetVXGI_VoxelizeCenterPos(v);
-#elif 1
+#elif 0
 	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
 	defaultMaterial.Initialize(engine.GetDirectX());
 	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
 
+#ifdef 1
 	Object* house = engine.LoadMesh("./Resources/House/SanFranciscoHouse.fbx"); assert(house);
 	{
 		engine.AddRootObject(*house);
@@ -87,18 +88,20 @@ void TestScene::OnInitialize(Engine& engine)
 		tf.SetLocalPosition(Vector3(0, -5, 20));
 		tf.UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 	}
-	//Object box = engine.GetObjectManager().Acquire("Box");
-	//{
-	//	BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
-	//	engine.AddRootObject(box);
+#else
+	Object box = engine.GetObjectManager().Acquire("Box");
+	{
+		BasicGeometryGenerator::CreateBox(box, engine, Vector3(1, 1, 1), defaultFlag);
+		engine.AddRootObject(box);
 
-	//	box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
-	//	box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
-	//	box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
+		box.FetchTransform().SetLocalPosition(Vector3(0, 0, 20));
+		box.FetchTransform().SetLocalScale(Vector3(2, 10, 2));
+		box.FetchTransform().UpdateLocalEulerAngle(Vector3(-90, -90, 0));
 
-	//	auto mesh = box.GetComponent<Mesh>();
-	//	mesh->SetPBRMaterialID(materialKey);
-	//}
+		auto mesh = box.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+#endif
 
 	Object plane = engine.GetObjectManager().Acquire("Plane");
 	{
@@ -127,21 +130,17 @@ void TestScene::OnInitialize(Engine& engine)
 
 	Object& light = engine.GetObjectManager().Acquire("Light");
 	{
-//		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
-		light.FetchTransform().UpdateLocalEulerAngle(Vector3(175.0f, 0.0f, 0.0f));
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
 
 		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
 		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
-
-//		auto* shadow = light.GetComponent<DirectionalLightShadow>();
-//		shadow->SetUseAutoProjectionLocation(false);
 
 		engine.GetRenderingSystem().GetPostProcessPipeline().SetSunShaftParam(light.GetObjectID(), 0.2f, 30.0f);
 		engine.AddRootObject(light);
 	}
 
 	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
-	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5)); //-5
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5));
 
 #ifndef SKYBOX_ON
 	MaterialID matID = engine.ActivateSkyScattering(512, light);
@@ -201,6 +200,74 @@ void TestScene::OnInitialize(Engine& engine)
 	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
 #endif
 
+
+#elif 1
+	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
+	defaultMaterial.Initialize(engine.GetDirectX());
+	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
+
+	Object cube = engine.GetObjectManager().Acquire("Cube");
+	{
+		BasicGeometryGenerator::CreateBox(cube, engine, Vector3(1, 1, 1), defaultFlag);
+		engine.AddRootObject(cube);
+
+		cube.FetchTransform().SetLocalPosition(Vector3(-7, 0, 20));
+		cube.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
+		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, 45, 0));
+
+		auto mesh = cube.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	Object cube2 = engine.GetObjectManager().Acquire("Cube2");
+	{
+		Material::PhysicallyBasedMaterial tMat("Default White Transparent Material");
+		tMat.Initialize(engine.GetDirectX());
+		tMat.SetMainColor(Color(1, 1, 1, 0.5f));
+		auto tmk = engine.GetRenderingSystem().GetMaterialManager().Add(tMat).first;
+
+		BasicGeometryGenerator::CreateBox(cube2, engine, Vector3(1, 1, 1), defaultFlag);
+		engine.AddRootObject(cube2);
+
+		cube2.FetchTransform().SetLocalPosition(Vector3(7, 0, 20));
+		cube2.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
+		cube2.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, -45, 0));
+
+		auto& meshMgr = engine.GetComponentSystem().GetManager<Mesh>();
+		meshMgr.ChangeTrait(cube2.GetObjectID(), *meshMgr.GetOpaqueMeshPool(), *meshMgr.GetTransparentMeshPool());
+		cube2.GetComponent<Mesh>()->SetPBRMaterialID(tmk);
+	}
+
+	Object plane2 = engine.GetObjectManager().Acquire("Plane");
+	{
+		BasicGeometryGenerator::CreatePlane(plane2, engine, 20.0f, 20.0f, 4, 4, defaultFlag);
+	
+		engine.AddRootObject(plane2);
+	
+		plane2.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
+		plane2.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
+	
+		auto mesh = plane2.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	
+	Object& light = engine.GetObjectManager().Acquire("Light");
+	{
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
+	
+		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
+		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
+	
+		engine.GetRenderingSystem().GetPostProcessPipeline().SetSunShaftParam(light.GetObjectID(), 0.2f, 30.0f);
+		engine.AddRootObject(light);
+	}
+	
+	auto mainCamObj = engine.GetObjectManager().Find("MainCamera");
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5));
+
+#ifndef SKYBOX_ON
+	MaterialID matID = engine.ActivateSkyScattering(512, light);
+	mainCamObj->GetComponent<MainCamera>()->SetSkyBoxMaterialID(matID);
+#endif
 
 #endif
 
