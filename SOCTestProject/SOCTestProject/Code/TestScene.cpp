@@ -204,6 +204,7 @@ void TestScene::OnInitialize(Engine& engine)
 #elif 1
 	Material::PhysicallyBasedMaterial defaultMaterial("Default White Material");
 	defaultMaterial.Initialize(engine.GetDirectX());
+	defaultMaterial.SetReciveIBLMinRate(1.0f);
 	auto materialKey = engine.GetRenderingSystem().GetMaterialManager().Add(defaultMaterial).first;
 
 	Object cube = engine.GetObjectManager().Acquire("Cube");
@@ -213,7 +214,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 		cube.FetchTransform().SetLocalPosition(Vector3(-7, 0, 20));
 		cube.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
-		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, 45, 0));
+		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, -45, 0));
 
 		auto mesh = cube.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(materialKey);
@@ -223,6 +224,7 @@ void TestScene::OnInitialize(Engine& engine)
 		Material::PhysicallyBasedMaterial tMat("Default White Transparent Material");
 		tMat.Initialize(engine.GetDirectX());
 		tMat.SetMainColor(Color(1, 1, 1, 0.5f));
+		tMat.SetReciveIBLMinRate(1.0f);
 		auto tmk = engine.GetRenderingSystem().GetMaterialManager().Add(tMat).first;
 
 		BasicGeometryGenerator::CreateBox(cube2, engine, Vector3(1, 1, 1), defaultFlag);
