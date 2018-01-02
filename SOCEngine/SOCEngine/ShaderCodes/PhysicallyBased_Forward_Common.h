@@ -153,8 +153,8 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3 back		= (accumulativeBackFaceDiffuse + accumulativeBackFaceSpecular);
 	float3 front	= (accumulativeFrontFaceDiffuse + accumulativeFrontFaceSpecular);
 
-	accumFrontFaceNdotL	= clamp(accumFrontFaceNdotL, 0.2f, 1.0f);
-	accumBackFaceNdotL	= clamp(accumBackFaceNdotL, 0.0f, 0.2f);
+	accumFrontFaceNdotL	= clamp(accumFrontFaceNdotL, GetIBLAccumMin(), 1.0f);
+	accumBackFaceNdotL	= clamp(accumBackFaceNdotL, 0.0f, GetIBLAccumMin());
 
 	float3 iblDiffuse, iblSpecular;
 	IBL(iblDiffuse, iblSpecular, surface);	// front face
@@ -169,7 +169,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float3	result	= front + back * TRANSPARENCY_BACK_FACE_WEIGHT;
 	float	alpha	= diffuse.a;
 #else
-	accumNdotL = clamp(accumNdotL, 0.2f, 1.0f);
+	accumNdotL = clamp(accumNdotL, GetIBLAccumMin(), 1.0f);
 
 	float3 iblDiffuse, iblSpecular;
 	IBL(iblDiffuse, iblSpecular, surface);

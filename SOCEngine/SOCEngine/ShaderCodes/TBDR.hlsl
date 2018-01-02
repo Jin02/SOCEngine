@@ -78,7 +78,7 @@ float3 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 		accumulativeSpecular		+= localSpecular;
 	}
 
-	accumNdotL = clamp(accumNdotL, IBL_ACCUM_MIN_RATE, IBL_ACCUM_MAX_RATE);
+	accumNdotL = clamp(accumNdotL, surface.iblAccumMin, 1.0f);
 
 	float3 iblDiffuse	= 0.0f;
 	float3 iblSpecular	= 0.0f;
@@ -184,7 +184,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 		}
 	}
 	
-	accumNdotL = clamp(accumNdotL, IBL_ACCUM_MIN_RATE, IBL_ACCUM_MAX_RATE);
+	accumNdotL = clamp(accumNdotL, surface.iblAccumMin, 1.0f);
 
 	float3 iblDiffuse	= 0.0f;
 	float3 iblSpecular	= 0.0f;
