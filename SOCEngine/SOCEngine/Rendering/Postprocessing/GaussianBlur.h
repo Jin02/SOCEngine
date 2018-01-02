@@ -25,6 +25,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr);
+			void Destroy();
 
 			void UpdateParamCB(Device::DirectX& dx, const ParamCBData& param);
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outResultRT,  const Texture::RenderTexture& inputColorMap, Texture::RenderTexture& tempMap) const;

@@ -32,6 +32,15 @@ void GaussianBlur::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr)
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 }
 
+void GaussianBlur::Destroy()
+{
+	_vertical.Destroy();
+	_horizontal.Destroy();
+
+
+	_paramCB.Destroy();
+}
+
 void GaussianBlur::UpdateParamCB(Device::DirectX & dx, const ParamCBData & param)
 {
 	_paramCB.UpdateSubResource(dx, param);
