@@ -26,7 +26,7 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine)
 		param.vxgiParam = GIInitParam::VXGIParam(0, 0);
 #endif
 	}
-	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 2048, param);
+	return RenderSetting("MainCamera", engine.GetDirectX().GetBackBufferRect().Cast<uint>(), 2048, param, false);
 }
 
 void TestScene::OnInitialize(Engine& engine)
