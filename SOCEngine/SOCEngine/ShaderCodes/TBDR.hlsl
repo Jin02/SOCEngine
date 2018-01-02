@@ -88,7 +88,7 @@ float3 MSAALighting(uint2 globalIdx, uint sampleIdx, uint pointLightCountInThisT
 	float3 diffuseColor		= saturate(accumulativeDiffuse + iblDiffuse * accumNdotL);
 	float3 specularColor	= saturate(accumulativeSpecular + iblSpecular * accumNdotL);
 
-	return diffuseColor + specularColor + surface.emission.rgb;
+	return (diffuseColor + specularColor + surface.emission.rgb) * surface.occlusion;
 }
 #endif
 
@@ -269,7 +269,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 
 	OutDynamicLightBuffer[globalIdx.xy] = float4(debugTiles, 1.0f);
 #else
-	OutDynamicLightBuffer[globalIdx.xy]	= float4(accumulativeDiffuse + accumulativeSpecular + surface.emission.rgb,	1.0f);
+	OutDynamicLightBuffer[globalIdx.xy]	= float4((accumulativeDiffuse + accumulativeSpecular + surface.emission.rgb) * surface.occlusion,	1.0f);
 //	OutDynamicLightBuffer[globalIdx.xy]	= float4(surface.albedo,	1.0f);
 
 #endif

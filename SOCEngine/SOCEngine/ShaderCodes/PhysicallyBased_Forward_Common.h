@@ -178,7 +178,7 @@ float4 Lighting(float3 normal, float3 vtxWorldPos, float2 SVPosition, float2 uv)
 	float	alpha = 1.0f;
 #endif
 
-	return float4(result + emissiveColor, alpha);
+	return float4((result + emissiveColor) * GetOcclusion(defaultSampler, uv), alpha);
 }
 
 #endif

@@ -105,7 +105,7 @@ float4 GetDiffuse(SamplerState samplerState, float2 uv)
 
 float GetOcclusion(SamplerState samplerState, float2 uv)
 {
-	return occlusionMap.Sample(samplerState, uv).x;
+	return 1.0f - occlusionMap.Sample(samplerState, uv).x;
 }
 
 float3 UnpackNormalMap(SamplerState samplerState, float2 uv, float3 vertexNormal, float3 vertexTangent)
