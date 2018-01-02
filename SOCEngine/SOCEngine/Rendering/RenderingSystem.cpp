@@ -32,10 +32,10 @@ void RenderingSystem::InitializeRenderer(Engine& engine, const RenderSetting&& p
 	_backBufferMaker.Initialize(engine.GetDirectX(), _shaderManager);
 }
 
-void RenderingSystem::Initialize(Engine& engine)
+void RenderingSystem::Initialize(Engine& engine, bool useBloom)
 {
 	_materialManager.Initialize(engine.GetDirectX());
-	_postProcessing.Initialize(engine.GetDirectX(), _shaderManager, engine.GetComponentSystem().GetMainCamera());
+	_postProcessing.Initialize(engine.GetDirectX(), _shaderManager, engine.GetComponentSystem().GetMainCamera(), useBloom);
 }
 
 void RenderingSystem::Update(Engine& engine, float dt)
