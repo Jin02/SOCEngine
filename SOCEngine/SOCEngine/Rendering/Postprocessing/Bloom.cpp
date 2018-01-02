@@ -11,37 +11,62 @@ using namespace Rendering::Renderer;
 using namespace Rendering::Camera;
 using namespace Rendering::RenderState;
 
-void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize)
+void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, bool use)
 {
 	using Param = FullScreen::InitParam;
-
-	_bloom.Initialize(dx, Param("Bloom", "Bloom_InFullScreen_PS", nullptr), shaderMgr);
-	_bloomThreshold.Initialize(dx, Param("Bloom", "Bloom_Threshold_InFullScreen_PS", nullptr), shaderMgr);
-	_eyeAdaptation.Initialize(dx, Param("EyeAdaptation", "EyeAdaptation_InFullScreen_PS", nullptr), shaderMgr);
-
-	_blur.Initialize(dx, shaderMgr);
-
-	GaussianBlur::ParamCBData param;
+	
+	if (_use = use)
 	{
-		param.sigma				= 1.2f;
-		param.numPixelPerSide	= 2.0f;
-		param.blurSize			= 2.0f;
-		param.scale				= 1.0f;
-	};
-	_blur.UpdateParamCB(dx, param);
+		std::vector<ShaderMacro> macro{ShaderMacro("USE_BLOOM")};
+		_bloom.Initialize(dx, Param("Bloom", "Bloom_InFullScreen_PS", &macro), shaderMgr);
+		_bloomThreshold.Initialize(dx, Param("Bloom", "Bloom_Threshold_InFullScreen_PS", nullptr), shaderMgr);
+		_eyeAdaptation.Initialize(dx, Param("EyeAdaptation", "EyeAdaptation_InFullScreen_PS", nullptr), shaderMgr);
 
-	_paramCB.Initialize(dx);
-	_paramCB.UpdateSubResource(dx, ParamCBData());
+		_blur.Initialize(dx, shaderMgr);
 
-	_adaptedLuminanceMaps[0].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
-	_adaptedLuminanceMaps[1].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		GaussianBlur::ParamCBData param;
+		{
+			param.sigma				= 1.2f;
+			param.numPixelPerSide	= 2.0f;
+			param.blurSize			= 2.0f;
+			param.scale				= 1.0f;
+		};
+		_blur.UpdateParamCB(dx, param);
 
-	_bloomThresholdMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_adaptedLuminanceMaps[0].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+		_adaptedLuminanceMaps[1].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+
+		_bloomThresholdMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
+
+		_paramCB.Initialize(dx);
+		_paramCB.UpdateSubResource(dx, ParamCBData());
+	}
+	else
+	{
+		_bloom.Initialize(dx, Param("Bloom", "Bloom_InFullScreen_PS", nullptr), shaderMgr);
+	}
+}
+
+void Bloom::Destroy()
+{
+	_bloom.Destroy();
+	_bloomThreshold.Destroy();
+	_eyeAdaptation.Destroy();
+
+	_blur.Destroy();
+	_paramCB.Destroy();
+
+	_adaptedLuminanceMaps[0].Destroy();
+	_adaptedLuminanceMaps[1].Destroy();
+	_bloomThresholdMap.Destroy();
+
+	_currentAdaptedLuminanceIndx	= false;
+	_use							= false;
+	_paramData						= ParamCBData();
 }
 
 void Bloom::UpdateParamCB(Device::DirectX& dx)
 {
-	// dt때문에 계속 업데이트를 할 수 밖에 없다.
 	_paramCB.UpdateSubResource(dx, _paramData);
 }
 
