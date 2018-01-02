@@ -18,18 +18,21 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(PostProcessPipeline);
 
 		public:
-			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera);
+			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, bool useBloom);
 			void Render(Device::DirectX& dx, Renderer::MainRenderer& mainRenderer, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
 			void UpdateCB(Device::DirectX& dx, const Core::ObjectManager& objMgr, const Manager::LightManager& lightMgr, const Core::TransformPool& tfPool, const Camera::MainCamera& mainCam);
 
+			void ReCompileBloom(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, bool use);
+
 			SET_ACCESSOR(UseSSAO,			bool,	_useSSAO);
 			SET_ACCESSOR(UseDoF,			bool,	_useDoF);
-			SET_ACCESSOR(UseSunShaft,		bool,	_useSunShaft);
+			SET_ACCESSOR(UseSunShaft,		bool,	_useSunShaft)
 
 			GET_CONST_ACCESSOR(UseSSAO,		bool,	_useSSAO);
 			GET_CONST_ACCESSOR(UseDoF,		bool,	_useDoF);
 			GET_CONST_ACCESSOR(UseSunShaft, bool,	_useSunShaft);
+			GET_CONST_ACCESSOR(UseBloom,	bool,	GetPostproessing<PostProcessing::Bloom>().GetUse());
 
 			inline void SetElapsedTime(float time)
 			{
