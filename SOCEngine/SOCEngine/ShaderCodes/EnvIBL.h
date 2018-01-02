@@ -6,9 +6,6 @@
 #include "ShaderCommon.h"
 #include "BRDF.h"
 
-#define IBL_ACCUM_MIN_RATE 0.2f
-#define IBL_ACCUM_MAX_RATE 1.0f
-
 #define USE_APPROXIMATE
 
 Texture2D<float2> preIntegrateEnvBRDFMap	: register( t29 );
