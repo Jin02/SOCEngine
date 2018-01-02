@@ -88,10 +88,11 @@ void Engine::Initialize(IScene* scene)
 {
 	CoreConnector::SharedInstance()->Connect(&_transformPool, &_dontUseTransformPool, &_objectManager, &_componentSystem);
 
-	_rendering.InitializeRenderer(*this, scene->RegistRenderSetting(*this));
+	auto renderSetting = scene->RegistRenderSetting(*this);
+	_rendering.InitializeRenderer(*this, std::move(renderSetting));
 
 	_componentSystem.Initialize(_dx);
-	_rendering.Initialize(*this);
+	_rendering.Initialize(*this, renderSetting.useBloom);
 
 	scene->OnInitialize(*this);
 
