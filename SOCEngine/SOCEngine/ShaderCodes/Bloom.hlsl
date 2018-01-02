@@ -48,6 +48,8 @@ float3 BloomToneMapping(float3 color, float avgLum, float threshold)
 float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
 	float4 color		= CurColorMap.Sample(Sampler, input.uv);
+
+#ifdef USE_BLOOM
 	float avgLum		= AverageLuminance();
 	color.rgb			= ToGamma(BloomToneMapping(color.rgb, avgLum, 0.0f), GetGamma());
 
@@ -55,4 +57,7 @@ float4 Bloom_InFullScreen_PS(PS_INPUT input) : SV_Target
 	float3 finalColor	= min(color.rgb + bloom.rgb, 1.0f);
 
 	return float4(finalColor, color.a);
+#else
+	return float4(ToGamma(color.rgb, GetGamma()), color.a);
+#endif
 }
