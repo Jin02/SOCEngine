@@ -1,6 +1,9 @@
 #include "PhysicallyBasedMaterial.h"
 #include "BindIndexInfo.h"
 
+#undef min
+#undef max
+
 using namespace Rendering;
 using namespace Rendering::Buffer;
 using namespace Rendering::Shader;
@@ -68,8 +71,9 @@ void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 	uint resultFlag = (scaledRoughness << 24) | (scaledSpecularity << 16) | (existTextureFlag & 0xffff);
 	param.roughness_specularity_existTextureFlag = resultFlag;
 		
-	float ior		= min(max(0.0f, _ior), 1.0f) * 255.0f;				
-	param.flag_ior	= (static_cast<uint>(_flag) << 8) | static_cast<uint>(ior);
+	param.iblMin_flag_ior =	(static_cast<uint>(std::min(_iblMin * 15.0f, 15.0f)) << 12)	|
+							(static_cast<uint>(_flag) << 8)								|
+							(static_cast<uint>(_ior * 255.0f));
 
 	auto indexer	= GetConstBuffers().GetIndexer();
 	uint findIndex	= indexer.Find(ParamCB::GetKey());

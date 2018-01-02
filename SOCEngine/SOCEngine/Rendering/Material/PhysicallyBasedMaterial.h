@@ -24,8 +24,8 @@ namespace Rendering
 				uint emissiveColor_Metallic					= 0;
 				uint roughness_specularity_existTextureFlag	= 0;
 
-				// TODO: 상위 2비트는 아직 사용하지 않음
-				uint flag_ior = 0;
+				// TODO : 상위 16비트 사용하지 않는 중
+				uint iblMin_flag_ior						= 0;
 
 				static constexpr const char* GetKey() { return "PBRParam"; }
 			};
@@ -88,13 +88,21 @@ namespace Rendering
 			GET_CONST_ACCESSOR(Roughness,			float,			_roughness);
 			GET_CONST_ACCESSOR(Flag,				uchar,			_flag);
 			GET_CONST_ACCESSOR(IndexOfRefraction,	float,			_ior);
+			GET_CONST_ACCESSOR(ReciveIBLMinRate,	float,			_iblMin);
+
 			SET_ACCESSOR_DIRTY(MainColor,			const Color&,	_mainColor);
 			SET_ACCESSOR_DIRTY(EmissiveColor,		const Color&,	_emissiveColor);
 			SET_ACCESSOR_DIRTY(Metallic,			float,			_metallic);
 			SET_ACCESSOR_DIRTY(Specularity,			float,			_specularity);
 			SET_ACCESSOR_DIRTY(Roughness,			float,			_roughness);
-			SET_ACCESSOR_DIRTY(Flag,				uchar,			_flag);
+			SET_ACCESSOR_DIRTY(ReciveIBLMinRate,	float,			_iblMin);
 			SET_ACCESSOR_DIRTY(IndexOfRefraction,	float,			_ior);
+			inline void SetFlag(uchar flag)
+			{
+				assert(flag > 15u);
+				_flag = flag;
+				_dirty = true;
+			}
 
 			GET_CONST_ACCESSOR(Dirty,				bool,			_dirty);
 
@@ -106,6 +114,7 @@ namespace Rendering
 			float		_roughness		= 0.5f;
 			float		_ior			= 0.0f;
 			uchar		_flag			= 0;
+			float		_iblMin			= 0.2f;
 			bool		_dirty			= true;
 		};
 	}

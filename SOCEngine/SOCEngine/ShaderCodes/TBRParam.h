@@ -61,6 +61,7 @@ struct Surface
 
 	float2	motion;
 	uint	materialFlag;
+	float	iblAccumMin;
 };
 
 

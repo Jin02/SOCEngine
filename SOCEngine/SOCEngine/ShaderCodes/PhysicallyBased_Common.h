@@ -18,7 +18,7 @@ cbuffer Material : register( b3 )		//PhysicallyBasedMaterial
 	uint	material_mainColor_alpha;
 	uint	material_emissiveColor_Metallic;
 	uint	material_roughness_specularity_existTextureFlag;
-	uint	material_flag_ior;
+	uint	material_iblMin_flag_ior;
 };
 
 Texture2D diffuseMap			: register( t8 );
@@ -67,13 +67,23 @@ uint GetMaterialExistTextureFlag()
 
 uint GetMaterialFlag()
 {
-	return (material_flag_ior >> 8) & 0xf;
+	return (material_iblMin_flag_ior >> 8) & 0xf;
 }
 
 float GetIndexOfRefraction()
 {
-	float ior8Bit = float( material_flag_ior & 0xf );
-	return ior8Bit * rcp(255.0f);
+	float ior8Bit = float( material_iblMin_flag_ior & 0xff );
+	return ior8Bit * rcp(255.0f) + 1.0f;
+}
+
+uint GetIBLAccumMinUint()
+{
+	return (material_iblMin_flag_ior >> 12) & 0xf;
+}
+
+float GetIBLAccumMin()
+{
+	return GetIBLAccumMinUint() * rcp(15.0f);
 }
 
 bool HasDiffuseMap()	{	return (GetMaterialExistTextureFlag() & (1 << 0));	}
