@@ -214,7 +214,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 		cube.FetchTransform().SetLocalPosition(Vector3(-7, 0, 20));
 		cube.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
-		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, -45, 0));
+		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-40, -45, 0));
 
 		auto mesh = cube.GetComponent<Mesh>();
 		mesh->SetPBRMaterialID(materialKey);
@@ -232,7 +232,7 @@ void TestScene::OnInitialize(Engine& engine)
 
 		cube2.FetchTransform().SetLocalPosition(Vector3(7, 0, 20));
 		cube2.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
-		cube2.FetchTransform().UpdateLocalEulerAngle(Vector3(-45, -45, 0));
+		cube2.FetchTransform().UpdateLocalEulerAngle(Vector3(-40, -45, 0));
 
 		auto& meshMgr = engine.GetComponentSystem().GetManager<Mesh>();
 		meshMgr.ChangeTrait(cube2.GetObjectID(), *meshMgr.GetOpaqueMeshPool(), *meshMgr.GetTransparentMeshPool());
