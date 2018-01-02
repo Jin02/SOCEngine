@@ -74,6 +74,13 @@ void FullScreen::Initialize(Device::DirectX& dx, const InitParam& param, ShaderM
 	}
 }
 
+void FullScreen::Destroy()
+{
+	_psUniqueKey	= "";
+	_vs				= nullptr;
+	_ps				= nullptr;
+}
+
 void FullScreen::Render(Device::DirectX& dx, RenderTexture& outResultRT, bool useOutRTViewportSize) const
 {
 	if(useOutRTViewportSize)
