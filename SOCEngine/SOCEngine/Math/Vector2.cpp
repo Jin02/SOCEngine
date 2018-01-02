@@ -31,7 +31,7 @@ const Vector2 Vector2::operator + (const Vector2 &a) const
 
 bool Vector2::operator == (const Vector2 b) const
 {
-	return (fabsf(x - b.x) < FLT_EPSILON) && (fabsf(y - b.y) < FLT_EPSILON);
+	return (fabsf(x - b.x) < FLT_EPSILON) & (fabsf(y - b.y) < FLT_EPSILON);
 }
 
 bool Vector2::operator != (const Vector2 &b) const

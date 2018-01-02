@@ -557,25 +557,25 @@ void DirectX::Initialize(const WinApp& win, const Rect<uint>& viewport, bool use
 
 unsigned int DirectX::CalcFormatSize(DXGI_FORMAT format) const
 {
-	if(		DXGI_FORMAT_R32G32B32A32_TYPELESS	<= format && format <= DXGI_FORMAT_R32G32B32A32_SINT)
+	if(		(DXGI_FORMAT_R32G32B32A32_TYPELESS	<= format) & (format <= DXGI_FORMAT_R32G32B32A32_SINT))
 		return 16;
-	else if(DXGI_FORMAT_R32G32B32_TYPELESS		<= format && format <= DXGI_FORMAT_R32G32B32_SINT)
+	else if((DXGI_FORMAT_R32G32B32_TYPELESS		<= format) & (format <= DXGI_FORMAT_R32G32B32_SINT))
 		return 12;
-	else if(DXGI_FORMAT_R16G16B16A16_TYPELESS	<= format && format <= DXGI_FORMAT_R16G16B16A16_SINT)
+	else if((DXGI_FORMAT_R16G16B16A16_TYPELESS	<= format) & (format <= DXGI_FORMAT_R16G16B16A16_SINT))
 		return 8;
-	else if(DXGI_FORMAT_R32G32_TYPELESS			<= format && format <= DXGI_FORMAT_R32G32_SINT)
+	else if((DXGI_FORMAT_R32G32_TYPELESS		<= format) & (format <= DXGI_FORMAT_R32G32_SINT))
 		return 8;
-	else if(DXGI_FORMAT_R8G8B8A8_TYPELESS		<= format && format <= DXGI_FORMAT_R8G8B8A8_SINT)
+	else if((DXGI_FORMAT_R8G8B8A8_TYPELESS		<= format) & (format <= DXGI_FORMAT_R8G8B8A8_SINT))
 		return 4;
-	else if(DXGI_FORMAT_R16G16_TYPELESS			<= format && format <= DXGI_FORMAT_R16G16_SINT)
+	else if((DXGI_FORMAT_R16G16_TYPELESS		<= format) & (format <= DXGI_FORMAT_R16G16_SINT))
 		return 4;
-	else if(DXGI_FORMAT_R32_TYPELESS			<= format && format <= DXGI_FORMAT_R32_SINT)
+	else if((DXGI_FORMAT_R32_TYPELESS			<= format) & (format <= DXGI_FORMAT_R32_SINT))
 		return 4;
-	else if(DXGI_FORMAT_R8G8_TYPELESS			<= format && format <= DXGI_FORMAT_R8G8_SINT)
+	else if((DXGI_FORMAT_R8G8_TYPELESS			<= format) & (format <= DXGI_FORMAT_R8G8_SINT))
 		return 4;
-	else if(DXGI_FORMAT_R16_TYPELESS			<= format && format <= DXGI_FORMAT_R16_SINT)
+	else if((DXGI_FORMAT_R16_TYPELESS			<= format) & (format <= DXGI_FORMAT_R16_SINT))
 		return 2;
-	else if(DXGI_FORMAT_R8_TYPELESS				<= format && format <= DXGI_FORMAT_R8_SINT)
+	else if((DXGI_FORMAT_R8_TYPELESS			<= format) & (format <= DXGI_FORMAT_R8_SINT))
 		return 1;
 	else assert(0);
 

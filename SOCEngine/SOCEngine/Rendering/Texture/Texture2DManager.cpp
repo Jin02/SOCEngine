@@ -40,7 +40,7 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 	else
 		ASSERT_SUCCEEDED(CreateWICTextureFromFile(dx.GetDevice(), dx.GetContext(), wFilePath.c_str(), &resource, &srv));
 
-	bool notCreatedSRV = (format == "tga") || (format == "dds");
+	bool notCreatedSRV = (format == "tga") | (format == "dds");
 	if (notCreatedSRV)
 	{
 		ASSERT_SUCCEEDED(CreateShaderResourceView(dx.GetDevice(), image.GetImages(), image.GetImageCount(), metaData, &srv));

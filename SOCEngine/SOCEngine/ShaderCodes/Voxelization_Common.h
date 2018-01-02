@@ -118,7 +118,7 @@ void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uin
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 {
-	if(all(0 <= voxelIdx) && all(voxelIdx < int(gi_dimension)))
+	if(all(0 <= voxelIdx) & all(voxelIdx < int(gi_dimension)))
 	{
 		uint index = GetFlattedVoxelIndex(voxelIdx, gi_dimension);
 

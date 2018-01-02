@@ -219,7 +219,7 @@ void RenderSpotLight(
 	float distanceOfLightWithVertex = length(vtxToLight);
 
 	float currentCosineConeAngle = dot(-vtxToLightDir, lightDir);
-	if( (distanceOfLightWithVertex < (radius * 2.0f)) &&
+	if( (distanceOfLightWithVertex < (radius * 2.0f)) &
 		(outerCosineConeAngle < currentCosineConeAngle) )
 	{
 		LightingCommonParams commonParams;

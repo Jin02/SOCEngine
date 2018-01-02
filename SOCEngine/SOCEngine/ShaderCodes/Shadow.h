@@ -191,9 +191,9 @@ uint ComputeFaceIndex(float3 dir)
 
 	uint res = 0;
 
-	if( (abs(dir.x) > abs(dir.y)) && (abs(dir.x) > abs(dir.z)) )
+	if( (abs(dir.x) > abs(dir.y)) & (abs(dir.x) > abs(dir.z)) )
 		res = dir.x >= 0.0f ? 2 : 3;
-	else if( (abs(dir.y) > abs(dir.x)) && (abs(dir.y) > abs(dir.z)) )
+	else if( (abs(dir.y) > abs(dir.x)) & (abs(dir.y) > abs(dir.z)) )
 		res = dir.y >= 0.0f ? 4 : 5;
 	else
 		res = dir.z >= 0.0f ? 0 : 1;

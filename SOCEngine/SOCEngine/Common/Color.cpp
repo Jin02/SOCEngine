@@ -28,7 +28,7 @@ const Color Color::operator -(const Color& c)
 
 bool Color::operator !=(const Color& c)
 {
-	return (r != c.r) || (g != c.g) || (b != c.b) || (a != c.a);
+	return (r != c.r) | (g != c.g) | (b != c.b) | (a != c.a);
 }
 
 const Color Color::operator *(const Color& c)

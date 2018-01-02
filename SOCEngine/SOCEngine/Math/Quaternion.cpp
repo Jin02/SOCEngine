@@ -50,7 +50,7 @@ const Quaternion Quaternion::operator / (float f) const
 bool Quaternion::operator == (const Quaternion& a) const
 {
 	Quaternion q = (*this) - a;
-	return fabsf(q.x) < FLT_EPSILON && fabsf(q.y) < FLT_EPSILON && fabsf(q.z) < FLT_EPSILON && fabsf(q.w) < FLT_EPSILON;
+	return (fabsf(q.x) < FLT_EPSILON) & (fabsf(q.y) < FLT_EPSILON) & (fabsf(q.z) < FLT_EPSILON) & (fabsf(q.w) < FLT_EPSILON);
 }
 bool Quaternion::operator != (const Quaternion& a) const
 {

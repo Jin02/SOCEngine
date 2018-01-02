@@ -279,8 +279,8 @@ Importer::Material MeshImporter::ParseMaterial(const rapidjson::Value& matNode, 
 			const std::string& type = texInfoNode["type"].GetString();
 			if(type == "DIFFUSE")			texInfo.type = Material::Texture::Type::Diffuse;
 			else if(type == "AMBIENT")		texInfo.type = Material::Texture::Type::Ambient;
-			else if(type == "NORMAL" || 
-				type == "BUMP")				texInfo.type = Material::Texture::Type::Normal;
+			else if((type == "NORMAL") | 
+				    (type == "BUMP"))		texInfo.type = Material::Texture::Type::Normal;
 			else if(type == "EMISSIVE")		texInfo.type = Material::Texture::Type::Emissive;
 			else if(type == "Reflection")	texInfo.type = Material::Texture::Type::Reflection;
 			else if(type == "SHININESS")	texInfo.type = Material::Texture::Type::Shininess;
@@ -319,14 +319,14 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 		{
 			auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr) -> bool
 			{
-				return ( attr.find(getAttrStr) == 0) && ( attr.size() > getAttrStr.size() );
+				return (attr.find(getAttrStr) == 0) & (attr.size() > getAttrStr.size());
 			};
 			auto GetAttributeIndex = [](const std::string& attr) -> uint
 			{
 				std::string numStr = "";
 				for(auto iter = attr.rbegin(); iter != attr.rend(); ++iter)
-				{									
-					if('0' <= *iter && *iter <='9')
+				{
+					if(('0' <= *iter) & (*iter <='9'))
 						numStr.insert(numStr.begin(), *iter);
 					else break;
 				}
@@ -637,7 +637,7 @@ Core::ObjectID MeshImporter::BuildMesh(
 
 			bool hasNormalMap = false;
 			for(auto iter = meshPartIDKeys.begin();
-				(iter != meshPartIDKeys.end()) && (hasNormalMap == false);
+				(iter != meshPartIDKeys.end()) & (hasNormalMap == false);
 				++iter)
 			{
 				auto findIter = meshMaterialIDInAllParts.find(*iter);
@@ -681,14 +681,14 @@ Core::ObjectID MeshImporter::BuildMesh(
 						{
 							auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr) -> bool
 							{
-								return ( attr.find(getAttrStr) == 0) && ( attr.size() > getAttrStr.size() );
+								return (attr.find(getAttrStr) == 0) & (attr.size() > getAttrStr.size());
 							};
 							auto GetAttributeIndex = [](const std::string& attr) -> uint
 							{
 								std::string numStr = "";
 								for(auto iter = attr.rbegin(); iter != attr.rend(); ++iter)
-								{									
-									if('0' <= *iter && *iter <='9')
+								{
+									if(('0' <= *iter) & (*iter <='9'))
 										numStr.insert(numStr.begin(), *iter);
 									else break;
 								}

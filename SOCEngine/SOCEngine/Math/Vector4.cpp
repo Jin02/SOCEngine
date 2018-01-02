@@ -36,7 +36,7 @@ const Vector4 Vector4::operator + (const Vector4& a) const
 
 bool Vector4::operator == (const Vector4& b) const
 {
-	return (fabsf(x - b.x) < FLT_EPSILON) && (fabsf(y - b.y) < FLT_EPSILON) && (fabsf(z - b.z) < FLT_EPSILON) && (fabsf(w - b.w) < FLT_EPSILON);
+	return (fabsf(x - b.x) < FLT_EPSILON) & (fabsf(y - b.y) < FLT_EPSILON) & (fabsf(z - b.z) < FLT_EPSILON) & (fabsf(w - b.w) < FLT_EPSILON);
 }
 
 bool Vector4::operator != (const Vector4& b) const

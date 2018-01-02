@@ -234,11 +234,11 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 
 		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
-		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+		if( ((-center.z + minZ) < r) & ((center.z - maxZ) < r) )
 		{
-			if( InFrustum(center, frustumPlaneNormal[0], r) &&
-				InFrustum(center, frustumPlaneNormal[1], r) &&
-				InFrustum(center, frustumPlaneNormal[2], r) &&
+			if( InFrustum(center, frustumPlaneNormal[0], r) &
+				InFrustum(center, frustumPlaneNormal[1], r) &
+				InFrustum(center, frustumPlaneNormal[2], r) &
 				InFrustum(center, frustumPlaneNormal[3], r) )
 			{
 				uint target = 0;
@@ -262,11 +262,11 @@ void LightCulling(in uint3 halfGlobalIdx, in uint3 halfLocalIdx, in uint3 groupI
 
 		center.xyz = mul( float4(center.xyz, 1), camera_viewMat ).xyz;
 
-		if( ((-center.z + minZ) < r) && ((center.z - maxZ) < r) )
+		if( ((-center.z + minZ) < r) & ((center.z - maxZ) < r) )
 		{
-			if( InFrustum(center, frustumPlaneNormal[0], r) &&
-				InFrustum(center, frustumPlaneNormal[1], r) &&
-				InFrustum(center, frustumPlaneNormal[2], r) &&
+			if( InFrustum(center, frustumPlaneNormal[0], r) &
+				InFrustum(center, frustumPlaneNormal[1], r) &
+				InFrustum(center, frustumPlaneNormal[2], r) &
 				InFrustum(center, frustumPlaneNormal[3], r) )
 			{
 				uint target = 0;

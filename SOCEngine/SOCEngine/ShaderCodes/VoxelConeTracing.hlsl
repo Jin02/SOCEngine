@@ -89,9 +89,9 @@ float ComputeDistanceLOD(float oneVoxelSize, float currLength, float halfConeAng
 
 bool IsInBound(float3 bbMin, float3 bbMax, float3 pos)
 {
-	return	bbMin.x <= pos.x && pos.x < bbMax.x &&
-			bbMin.y <= pos.y && pos.y < bbMax.y &&
-			bbMin.z <= pos.z && pos.z < bbMax.z;
+	return	(bbMin.x <= pos.x) & (pos.x < bbMax.x) &
+			(bbMin.y <= pos.y) & (pos.y < bbMax.y) &
+			(bbMin.z <= pos.z) & (pos.z < bbMax.z);
 }
 
 float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRad, uniform uint sampleCount, uniform bool useOcclusion)
@@ -109,7 +109,7 @@ float4 TraceCone(float3 origin, float3 normal, float3 dir, float halfConeAngleRa
 	bool isInBound = IsInBound(bbMin, bbMax, origin);
 	colorAccumInCone.a = (isInBound == false) ? 1.0f : 0.0f;
 
-	for(uint i=0; (i<sampleCount) && (colorAccumInCone.a < 1.0f); ++i)
+	for(uint i=0; (i<sampleCount) & (colorAccumInCone.a < 1.0f); ++i)
 	{
 		float3 samplePos	= sampleStartPos + dir * currLength;
 

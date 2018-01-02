@@ -53,7 +53,7 @@ bool IntersectDepth(float z, float minZ, float maxZ)
 	float scale = min(1.0f, z * ssrt_strideZCutoff);
 	z += ssrt_thickness + lerp(0.0f, 2.0f, scale);
     
-    return (maxZ >= z) && (minZ - ssrt_thickness <= z);
+    return (maxZ >= z) & (minZ - ssrt_thickness <= z);
 }
 
 bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
@@ -126,9 +126,9 @@ bool TraceScreenSpaceRay(out float2 outHitScreenPos, out float3 outHitPos,
 	float stepCount	= 0.0f;
 	
 	for(;
-		((pqk.x * stepDir) <= end) &&
-		(stepCount < ssrt_maxStepCount) &&
-		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &&
+		((pqk.x * stepDir) <= end) &
+		(stepCount < ssrt_maxStepCount) &
+		(IntersectDepth(sceneMaxZ, rayMinZ, rayMaxZ) == false) &
 		(sceneMaxZ != 0.0f);
 
 		stepCount += 1.0f)

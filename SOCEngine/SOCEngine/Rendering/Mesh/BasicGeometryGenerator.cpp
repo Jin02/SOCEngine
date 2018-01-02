@@ -46,7 +46,7 @@ void BasicGeometryGenerator::AppendVertexData(	std::vector<float>& inoutVertexDa
 		inoutVertexDatas.push_back(tangent.z);
 	}
 
-	if(	HasFlag(flag, DefaultVertexInputTypeFlag::UV0) || 
+	if(	HasFlag(flag, DefaultVertexInputTypeFlag::UV0) |
 		HasFlag(flag, DefaultVertexInputTypeFlag::UV1) )
 	{
 		inoutVertexDatas.push_back(uv.x);
