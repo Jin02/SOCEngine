@@ -55,7 +55,7 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, BufferManag
 		_gbuffer.normal_roughness.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 		_gbuffer.velocity_metallic_specularity.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0);
 
-		_gbuffer.emission_materialFlag.Initialize(dx, renderSize, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, 0);
+		_gbuffer.emission_materialFlag.Initialize(dx, renderSize, DXGI_FORMAT_R8G8B8A8_UINT, DXGI_FORMAT_R8G8B8A8_UINT, DXGI_FORMAT_UNKNOWN, 0);
 
 		_gbuffer.opaqueDepthBuffer.Initialize(dx, renderSize, true);
 		_gbuffer.blendedDepthBuffer.Initialize(dx, renderSize, true);
