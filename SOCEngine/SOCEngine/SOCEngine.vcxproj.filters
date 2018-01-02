@@ -550,9 +550,6 @@
     <ClInclude Include="ShaderCodes\CommonConstBuffer.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCodes\GBufferParser.h">
-      <Filter>ShaderCodes\Common</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCodes\IsoscelesTriangle.h">
       <Filter>ShaderCodes\Common</Filter>
     </ClInclude>
@@ -1017,6 +1014,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\SunShaft.h">
       <Filter>Rendering\Postprocessing\GodRay\Sun/LightShaft</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCodes\GBufferParser.h">
+      <Filter>ShaderCodes\TiledRendering\Deferred\GBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
