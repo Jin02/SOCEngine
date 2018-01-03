@@ -42,7 +42,8 @@ float DrawCircle(float2 uv, float2 circlePosUV, float size, float aspect, float 
 	return saturate((1.0f - circle * circle) * intensity);
 }
 
-SamplerState		DefaultSampler	: register( s0 );
+SamplerState		PointSampler	: register( s0 );
+
 Texture2D<float4>	OcclusionMap	: register( t27 );
 Texture2D<float4>	InputColorMap	: register( t28 );
 
@@ -53,7 +54,7 @@ float4 OcclusionMapPS(PS_INPUT input) : SV_Target
 	if(GBufferDepth.Load(size * input.uv, 0).r > 0.0f)
 		discard;
 #else
-	if(GBufferDepth.Sample(DefaultSampler, input.uv).r > 0.0f)
+	if(GBufferDepth.Sample(PointSampler, input.uv).r > 0.0f)
 		discard;
 #endif
 
@@ -79,13 +80,13 @@ float4 SunShaftPS(PS_INPUT input) : SV_Target
 	{
 		float2 uv = lerp(input.uv, GetSunUV(), float(i) / float(NUM_SAMPLES-1));
 
-		float3 sampledColor =  OcclusionMap.Sample(DefaultSampler, uv).rgb;
+		float3 sampledColor =  OcclusionMap.Sample(PointSampler, uv).rgb;
 		sampledColor *= decay * Weight;
 
 		resultColor += sampledColor;
 		decay *= ShaftDecay;
 	}
 	
-	float3 inputColor = InputColorMap.Sample(DefaultSampler, input.uv).rgb;
+	float3 inputColor = InputColorMap.Sample(PointSampler, input.uv).rgb;
 	return float4(saturate(inputColor + resultColor), 1.0f);
 }

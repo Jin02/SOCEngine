@@ -1,6 +1,8 @@
 #include "GaussianBlur.h"
 #include "BindIndexInfo.h"
 
+#include "AutoBinder.hpp"
+
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
@@ -48,16 +50,11 @@ void GaussianBlur::UpdateParamCB(Device::DirectX & dx, const ParamCBData & param
 
 void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D()->GetShaderResourceView());
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
-	
+	AutoBinderSRV<PixelShader> inputColorMap(dx,	TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderCB<PixelShader> paramCB(dx,			ConstBufferBindIndex(0),	_paramCB);
+	AutoBinderSampler<PixelShader> sampler(dx,		SamplerStateBindIndex(0),	SamplerState::Linear);
 	_vertical.Render(dx, tempMap, true);
 
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0), tempMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> tmpMap(dx,			TextureBindIndex(0),		tempMap.GetTexture2D()->GetShaderResourceView());
 	_horizontal.Render(dx, outResultRT, true);
-
-	PixelShader::UnBindShaderResourceView(dx,	TextureBindIndex(0));
-	PixelShader::UnBindSamplerState(dx,			SamplerStateBindIndex::DefaultSamplerState);
-	PixelShader::UnBindConstBuffer(dx,			ConstBufferBindIndex(0));
 }

@@ -36,13 +36,14 @@ void SSAO::UpdateParamCB(Device::DirectX& dx)
 
 void SSAO::Render(Device::DirectX& dx, RenderTexture& outRT, const RenderTexture& inColorMap, const MainRenderer& mainRenderer) const
 {	
-	AutoBinderSRV<PixelShader> color(dx,		TextureBindIndex(0),						inColorMap.GetTexture2D()->GetShaderResourceView());
-	AutoBinderSRV<PixelShader> depth(dx,		TextureBindIndex::GBuffer_Depth,			mainRenderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
-	AutoBinderSRV<PixelShader> normal(dx,		TextureBindIndex::GBuffer_Normal_Roughness,	mainRenderer.GetGBuffers().normal_roughness.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> color(dx,			TextureBindIndex(0),						inColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> depth(dx,			TextureBindIndex::GBuffer_Depth,			mainRenderer.GetGBuffers().opaqueDepthBuffer.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> normal(dx,			TextureBindIndex::GBuffer_Normal_Roughness,	mainRenderer.GetGBuffers().normal_roughness.GetTexture2D()->GetShaderResourceView());
 	
-	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				mainRenderer.GetTBRParamCB());
-	AutoBinderCB<PixelShader> ssaoParam(dx,		ConstBufferBindIndex(1),					_paramCB);
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
+	AutoBinderCB<PixelShader> tbrParam(dx,			ConstBufferBindIndex::TBRParam,				mainRenderer.GetTBRParamCB());
+	AutoBinderCB<PixelShader> ssaoParam(dx,			ConstBufferBindIndex(1),					_paramCB);
+
+	AutoBinderSampler<PixelShader> pointSampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
 
 	_screen.Render(dx, outRT, true);
 }

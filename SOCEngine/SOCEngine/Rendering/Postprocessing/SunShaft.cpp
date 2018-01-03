@@ -87,7 +87,8 @@ void SunShaft::Render(DirectX& dx, RenderTexture& resultMap, const Texture2D& in
 {
 	_occlusionMap.Clear(dx, Color::Clear());
 
-	AutoBinderSampler<PixelShader> samplerState(dx,	SamplerStateBindIndex(0),	SamplerState::Point);
+	AutoBinderSampler<PixelShader> pointSampler(dx,	SamplerStateBindIndex(0),	SamplerState::Point);
+
 	AutoBinderCB<PixelShader> paramCB(dx,			ConstBufferBindIndex(0),	_paramCB);
 	{
 		AutoBinderCB<PixelShader> cameraCB(dx,	ConstBufferBindIndex::Camera,	mainCamera.GetCameraCB());

@@ -33,14 +33,14 @@ float GetOccluedRate()
 }
 
 Texture2D<float4>	InputSceneMap			: register( t0 );
-SamplerState		Sampler					: register( s0 );
+SamplerState		PointSampler			: register( s0 );
 
 float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 {
 #if (MSAA_SAMPLES_COUNT > 1)
 	float depth		= GBufferDepth.Load(input.position.xy, 0).r;
 #else
-	float depth		= GBufferDepth.Sample(Sampler, input.uv).r;
+	float depth		= GBufferDepth.Sample(PointSampler, input.uv).r;
 #endif
 	float4 H		= float4(input.uv.x * 2.0f - 1.0f, (1.0f - input.uv.y) * 2.0f - 1.0f, depth, 1.0f);
 	float4 viewPos = mul(H, tbrParam_invProjMat);
@@ -49,7 +49,7 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 #if (MSAA_SAMPLES_COUNT > 1)
 	float3 normal	= GBufferNormal_roughness.Load(input.position.xy, 0).rgb * 2.0f - 1.0f;
 #else
-	float3 normal	= GBufferNormal_roughness.Sample(Sampler, input.uv).rgb * 2.0f - 1.0f;
+	float3 normal	= GBufferNormal_roughness.Sample(PointSampler, input.uv).rgb * 2.0f - 1.0f;
 #endif
 
 	const float2 samples[24] = {   
@@ -98,7 +98,7 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 #if (MSAA_SAMPLES_COUNT > 1)
 		float occluedDepth		= GBufferDepth.Load(sampledPos, 0).r;
 #else
-		float occluedDepth		= GBufferDepth.Sample(Sampler, sampledUV).r;
+		float occluedDepth		= GBufferDepth.Sample(PointSampler, sampledUV).r;
 #endif
 
 
@@ -112,7 +112,7 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 #if (MSAA_SAMPLES_COUNT > 1)
 		float3 occluedNormal	= GBufferNormal_roughness.Load(sampledPos, 0).rgb * 2.0f - 1.0f;
 #else
-		float3 occluedNormal	= GBufferNormal_roughness.Sample(Sampler, sampledUV).rgb * 2.0f - 1.0f;
+		float3 occluedNormal	= GBufferNormal_roughness.Sample(PointSampler, sampledUV).rgb * 2.0f - 1.0f;
 #endif
 
 		float3 posToOcclued = (occluedViewPos - viewPos).xyz;
@@ -123,7 +123,7 @@ float4 SSAO_InFullScreen_PS(PS_INPUT input) : SV_Target
 			result += ssaoScale * saturate( dot(normal, dir) ) * rcp(1.0f + dist);
 	}
 
-	float3 color = InputSceneMap.Sample(Sampler, input.uv).rgb;
+	float3 color = InputSceneMap.Sample(PointSampler, input.uv).rgb;
 
 	const float lumRate = 0.5f;
 	float ao = 1.0f - saturate(result / float(samplingCount));

@@ -5,8 +5,8 @@
 Texture2D<float4> InputColorMap			: register( t0 );
 Texture2D<float4> DepthBuffer			: register( t1 );
 
-SamplerState DefaultSampler				: register( s0 );
-SamplerState ShadowSampler				: register( s1 );
+SamplerState LinearSampler				: register( s0 );
+SamplerState ClampLinearSampler			: register( s1 );
 
 cbuffer BlurParam : register(b0)
 {
@@ -30,8 +30,8 @@ float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma
 	float w, h;
 	InputColorMap.GetDimensions(w,h);
 
-    float4 centerTapColor	= InputColorMap.Sample(DefaultSampler, uv);
-    float centerDepthTap	= DepthBuffer.Sample(ShadowSampler, uv).x;
+    float4 centerTapColor	= InputColorMap.Sample(LinearSampler, uv);
+    float centerDepthTap	= DepthBuffer.Sample(ClampLinearSampler, uv).x;
 
     float dw,dh;
 	DepthBuffer.GetDimensions(dw,dh);
@@ -43,8 +43,8 @@ float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma
         float2 dtc	= uv + (float(i) / float2(dw, dh))	* uvScale;
 
         // fetch tap
-		float4 tap			= InputColorMap.Sample(ShadowSampler, tc);
-        float depth_tap		= DepthBuffer.Sample(ShadowSampler, dtc).x;
+		float4 tap			= InputColorMap.Sample(ClampLinearSampler, tc);
+        float depth_tap		= DepthBuffer.Sample(ClampLinearSampler, dtc).x;
 
         float depth_diff	= abs(depth_tap - centerDepthTap);
         float r2			= depth_diff * 100.0 / centerDepthTap;
@@ -71,8 +71,8 @@ float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma
 	float2 colorMapSize;
 	InputColorMap.GetDimensions(colorMapSize.x, colorMapSize.y);
 
-    float4 color	= InputColorMap.Sample(DefaultSampler, uv);
-	float depth		= DepthBuffer.Sample(ShadowSampler, uv).r;
+    float4 color	= InputColorMap.Sample(LinearSampler, uv);
+	float depth		= DepthBuffer.Sample(ClampLinearSampler, uv).r;
 
 	for(int i=-6; i<6; ++i)
 	{
@@ -80,8 +80,8 @@ float4 BilateralGaussNear(float2 uv, uniform float2 uvScale, uniform float sigma
 		{
 			float2 coord	= float2(i, j) * float2(1.0f / colorMapSize);
 
-			float3 sampledColor	= InputColorMap.Sample(DefaultSampler, uv + coord).rgb;
-			float  sampledDepth	= DepthBuffer.Sample(ShadowSampler, uv + coord).r;
+			float3 sampledColor	= InputColorMap.Sample(LinearSampler, uv + coord).rgb;
+			float  sampledDepth	= DepthBuffer.Sample(ClampLinearSampler, uv + coord).r;
 
 			float dist			= clamp(float(i*i+j*j)/float(colorMapSize.x*colorMapSize.x), 0.0f, 1.0f);
 		    float dz			= (depth-sampledDepth)*(depth-sampledDepth);

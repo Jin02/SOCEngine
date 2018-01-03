@@ -80,8 +80,9 @@ void Bloom::RenderThresholdMap(DirectX& dx, const RenderTexture& inColorMap, con
 		AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,		_paramCB);
 		AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,				tbrParamCB);
 	
-		AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
-	
+		AutoBinderSampler<PixelShader> pointSampler(dx,	SamplerStateBindIndex(0),				SamplerState::Point);
+		AutoBinderSampler<PixelShader> linearSampler(dx,SamplerStateBindIndex(1),				SamplerState::Linear);
+
 		_eyeAdaptation.Render(dx, _adaptedLuminanceMaps[_currentAdaptedLuminanceIndx], true);
 		_bloomThreshold.Render(dx, _bloomThresholdMap, true);
 	}
@@ -122,7 +123,8 @@ void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& 
 	AutoBinderCB<PixelShader> hdrParam(dx,		ConstBufferBindIndex::HDRGlobalParamCB,			_paramCB);
 	AutoBinderCB<PixelShader> tbrParam(dx,		ConstBufferBindIndex::TBRParam,					tbrParamCB);
 
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex::DefaultSamplerState,		SamplerState::Point);
+	AutoBinderSampler<PixelShader> pointSampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
+	AutoBinderSampler<PixelShader> linearSampler(dx,SamplerStateBindIndex(1),					SamplerState::Linear);
 
 	_bloom.Render(dx, outRT, true);
 

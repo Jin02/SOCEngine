@@ -1,6 +1,8 @@
 #include "BilateralFiltering.h"
 #include "BindIndexInfo.h"
 
+#include "AutoBinder.hpp"
+
 using namespace Rendering::PostProcessing;
 using namespace Rendering::Texture;
 using namespace Rendering::Shader;
@@ -37,24 +39,15 @@ void BilateralFiltering::UpdateParamCB(Device::DirectX& dx, const ParamCBData& d
 void BilateralFiltering::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 								const DepthMap& depthMap, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(0),						inputColorMap.GetTexture2D()->GetShaderResourceView());
-	PixelShader::BindShaderResourceView(dx,	TextureBindIndex(1),						depthMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> inputColorMap(dx,		TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> depthMap(dx,				TextureBindIndex(1),		depthMap.GetTexture2D().GetShaderResourceView());
 
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex::DefaultSamplerState,	SamplerState::Linear);
-	PixelShader::BindSamplerState(dx,		SamplerStateBindIndex(1),					SamplerState::ShadowLinear);
+	AutoBinderSampler<PixelShader> linearSampler(dx,	SamplerStateBindIndex(0),	SamplerState::Linear);
+	AutoBinderSampler<PixelShader> shadowLinear(dx,		SamplerStateBindIndex(1),	SamplerState::ShadowLinear);
 
-	PixelShader::BindConstBuffer(dx,		ConstBufferBindIndex(0),					_paramCB);
-
+	AutoBinderCB<PixelShader> paramCB(dx,				ConstBufferBindIndex(0),	_paramCB);
 	_vertical.Render(dx, tempMap, true);
 
-	PixelShader::BindShaderResourceView(dx, TextureBindIndex(0),						tempMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> tmpMap(dx,				TextureBindIndex(0),		tempMap.GetTexture2D()->GetShaderResourceView());
 	_horizontal.Render(dx, outResultRT, true);
-
-	PixelShader::UnBindConstBuffer(dx, ConstBufferBindIndex(0));
-
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(0));
-	PixelShader::UnBindShaderResourceView(dx, TextureBindIndex(1));
-
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex::DefaultSamplerState);
-	PixelShader::UnBindSamplerState(dx, SamplerStateBindIndex(1));
 }

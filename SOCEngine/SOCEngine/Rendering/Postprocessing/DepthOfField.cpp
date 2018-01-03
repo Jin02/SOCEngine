@@ -79,7 +79,8 @@ void DepthOfField::Render(DirectX& dx, RenderTexture& outRT, const RenderTexture
 	AutoBinderCB<PixelShader> dofParam(dx,		ConstBufferBindIndex(1),					_paramCB);
 	AutoBinderCB<PixelShader> camParam(dx,		ConstBufferBindIndex::Camera,				mains.camera.GetCameraCB());
 
-	AutoBinderSampler<PixelShader> sampler(dx,	SamplerStateBindIndex(0),					SamplerState::Point);
+	AutoBinderSampler<PixelShader> pointSampler(dx,	SamplerStateBindIndex(0),				SamplerState::Point);
+	AutoBinderSampler<PixelShader> linearSampler(dx,SamplerStateBindIndex(1),				SamplerState::Linear);
 
 	_screen.Render(dx, outRT, true);
 }
