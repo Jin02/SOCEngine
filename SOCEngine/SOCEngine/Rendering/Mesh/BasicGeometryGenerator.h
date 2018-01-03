@@ -23,11 +23,12 @@ namespace Rendering
 			static void CreateSphere(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback,		float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag);
 			static void CreateCylinder(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback,	float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag);
 			static void CreatePlane(std::function<void(const Mesh::CreateFuncArguments&)> createMeshCallback,		float width, float height, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag);
-		
-			static void CreateBox(Core::Object& targetObj,		Core::Engine& engine, const Math::Vector3& size, uint defautVertexInputTypeFlag);
-			static void CreateSphere(Core::Object& targetObj,	Core::Engine& engine, float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag);
-			static void CreateCylinder(Core::Object& targetObj, Core::Engine& engine, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag);
-			static void CreatePlane(Core::Object& targetObj,	Core::Engine& engine, float width, float depth, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag);
+
+			static constexpr uint DefaultFlag = uint(DefaultVertexInputTypeFlag::UV0) | uint(DefaultVertexInputTypeFlag::NORMAL);
+			static void CreateBox(Core::Object& targetObj,		Core::Engine& engine, const Math::Vector3& size, uint defautVertexInputTypeFlag = DefaultFlag);
+			static void CreateSphere(Core::Object& targetObj,	Core::Engine& engine, float radius, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag = DefaultFlag);
+			static void CreateCylinder(Core::Object& targetObj, Core::Engine& engine, float botRadius, float topRadius, float height, uint sliceCount, uint stackCount, uint defautVertexInputTypeFlag = DefaultFlag);
+			static void CreatePlane(Core::Object& targetObj,	Core::Engine& engine, float width, float depth, uint widthVertexCount, uint heightVertexCount, uint defautVertexInputTypeFlag = DefaultFlag);
 
 		private:
 			struct MeshInfo
