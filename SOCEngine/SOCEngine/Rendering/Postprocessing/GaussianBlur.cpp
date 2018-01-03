@@ -50,7 +50,7 @@ void GaussianBlur::UpdateParamCB(Device::DirectX & dx, const ParamCBData & param
 
 void GaussianBlur::Render(Device::DirectX& dx, RenderTexture& outResultRT, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
-	AutoBinderSRV<PixelShader> inputColorMap(dx,	TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> inputColorMapSRV(dx,	TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
 	AutoBinderCB<PixelShader> paramCB(dx,			ConstBufferBindIndex(0),	_paramCB);
 	AutoBinderSampler<PixelShader> sampler(dx,		SamplerStateBindIndex(0),	SamplerState::Linear);
 	_vertical.Render(dx, tempMap, true);

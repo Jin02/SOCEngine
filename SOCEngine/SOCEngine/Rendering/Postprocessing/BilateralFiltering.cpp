@@ -39,8 +39,8 @@ void BilateralFiltering::UpdateParamCB(Device::DirectX& dx, const ParamCBData& d
 void BilateralFiltering::Render(Device::DirectX& dx, RenderTexture& outResultRT,
 								const DepthMap& depthMap, const RenderTexture& inputColorMap, RenderTexture& tempMap) const
 {
-	AutoBinderSRV<PixelShader> inputColorMap(dx,		TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
-	AutoBinderSRV<PixelShader> depthMap(dx,				TextureBindIndex(1),		depthMap.GetTexture2D().GetShaderResourceView());
+	AutoBinderSRV<PixelShader> inputColorMapSRV(dx,		TextureBindIndex(0),		inputColorMap.GetTexture2D()->GetShaderResourceView());
+	AutoBinderSRV<PixelShader> depthMapSRV(dx,			TextureBindIndex(1),		depthMap.GetTexture2D().GetShaderResourceView());
 
 	AutoBinderSampler<PixelShader> linearSampler(dx,	SamplerStateBindIndex(0),	SamplerState::Linear);
 	AutoBinderSampler<PixelShader> shadowLinear(dx,		SamplerStateBindIndex(1),	SamplerState::ShadowLinear);
