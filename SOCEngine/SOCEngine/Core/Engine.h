@@ -1,18 +1,6 @@
 #pragma once
 
-#include "Common.h"
-#include "IScene.h"
-#include <memory>
-#include <chrono>
-#include "ComponentSystem.h"
-#include "ObjectManager.h"
-#include "RootObjectIDs.hpp"
-
-#include "Singleton.h"
-#include "Rect.h"
-
-#include "RenderingSystem.h"
-#include "MeshImporter.h"
+#include "EngineUtility.h"
 
 namespace Device
 {
@@ -24,6 +12,8 @@ namespace Core
 	class Engine final
 	{
 	public:
+		friend class EngineUtility;
+
 		Engine(Device::DirectX& dx);
 
 		DISALLOW_ASSIGN(Engine);
@@ -37,19 +27,12 @@ namespace Core
 		void Initialize(IScene* scene);
 		void Destroy();
 
-		// Importer
-		Object* LoadMesh(const std::string& fileDir, bool useDynamicVB = false, bool useDynamicIB = false);
-
 		// Root
 		void AddRootObject(const Core::Object& object);
 		void UpdateWorldMatrix();
 
-		// Sky
-		Rendering::MaterialID ActivateSkyScattering(uint resolution, const Object& directionalLight);
-		void DeactivateSkyScattering();
 		void StartLoop() { _prevTime = clock(); }
 
-		//복사 이동 금지시켜야함
 		GET_ALL_ACCESSOR_REF(DirectX,			_dx);
 		GET_ALL_ACCESSOR_REF(ComponentSystem,	_componentSystem);
 		GET_ALL_ACCESSOR_REF(TransformPool,		_transformPool);
@@ -59,7 +42,7 @@ namespace Core
 		GET_ALL_ACCESSOR_REF(Importer,			_importer);
 
 		GET_CONST_ACCESSOR(Exit,	bool,	_exit);
-//		GET_CONST_ACCESSOR(CullingParam, CullingParam, CullingParam{});
+
 		Rendering::Renderer::CullingParam GetCullingParam() const
 		{
 			return Rendering::Renderer::CullingParam{
@@ -92,5 +75,7 @@ namespace Core
 	private:
 		std::vector<Core::Transform*>				_dirtyTransforms;
 		bool										_exit = false;
+
+		EngineUtility								_util;
 	};
 }
