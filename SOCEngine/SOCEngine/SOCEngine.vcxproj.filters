@@ -1018,6 +1018,9 @@
     <ClInclude Include="ShaderCodes\GBufferParser.h">
       <Filter>ShaderCodes\TiledRendering\Deferred\GBuffer</Filter>
     </ClInclude>
+    <ClInclude Include="Core\EngineUtility.h">
+      <Filter>Core\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1331,6 +1334,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\SunShaft.cpp">
       <Filter>Rendering\Postprocessing\GodRay\Sun/LightShaft</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\EngineUtility.cpp">
+      <Filter>Core\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

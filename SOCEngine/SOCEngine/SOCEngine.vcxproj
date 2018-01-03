@@ -21,6 +21,9 @@
     <ClInclude Include="Core\ComponentSystem.h" />
     <ClInclude Include="Core\CoreConnector.h" />
     <ClInclude Include="Core\Engine.h" />
+    <ClInclude Include="Core\EngineUtility.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Core\Indexer.hpp" />
     <ClInclude Include="Core\IScene.h" />
     <ClInclude Include="Core\Launcher.h" />
@@ -296,6 +299,9 @@
     <ClCompile Include="Common\Half.cpp" />
     <ClCompile Include="Core\ComponentSystem.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\EngineUtility.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Core\Launcher.cpp" />
     <ClCompile Include="Core\Object.cpp" />
     <ClCompile Include="Core\ObjectManager.cpp" />
