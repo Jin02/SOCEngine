@@ -1,5 +1,6 @@
 Introduction
 =================
+SOCEngine is a simple 3D rendering framework written in C++.
 
 
 Requirements
@@ -10,6 +11,7 @@ Requirements
 - Visual Studio 2012
   - well.. I trying to fix this trouble. sorry :(
 - Phyton 2.7
+
 
 Features
 =================
@@ -39,6 +41,7 @@ Features
 Some Screens
 =================
 <img src="https://i.imgur.com/WR1KGw3.png" width="300"><img src="https://i.imgur.com/0NF1ijK.png" width="300"><img src="https://i.imgur.com/NJX7Yoj.png" width="300"><img src="https://i.imgur.com/PlsxsJ4.png" width="300"><img src="https://i.imgur.com/04KffSr.png" width="300"><img src="https://i.imgur.com/i3FklGO.png" width="300"><img src="https://i.imgur.com/6pDAXww.png" width="300"><img src="https://i.imgur.com/HEGuINm.png" width="300"><img src="https://i.imgur.com/gKdlH4B.png" width="300"><img src="https://i.imgur.com/rSshNB8.png" width="300"><img src="https://i.imgur.com/84IRZt7.png" width="300"><img src="https://i.imgur.com/A2BqAvY.png" width="300"><img src="https://i.imgur.com/k2N2g76.png" width="300"><img src="https://i.imgur.com/uC8DAuu.png" width="300"><img src="https://i.imgur.com/GpHI9On.png" width="300"><img src="https://i.imgur.com/BuZ3C3X.png" width="300"><img src="https://i.imgur.com/CjfGc37.png" width="300"><img src="https://i.imgur.com/RwZti2y.png" width="300"><img src="https://i.imgur.com/XDZB2Rw.png" width="300"><img src="https://i.imgur.com/xsyXMDS.png" width="300">
+
 
 To-do
 =================
