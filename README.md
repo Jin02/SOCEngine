@@ -54,7 +54,7 @@ To-do
 - Screen Space Local Reflection
 - Animation
   - Forward kinematics
-  - Inverse kinetics
+  - Inverse kinematics
 - FXAA
 - Improve voxel cone tracing
   - Casecade
