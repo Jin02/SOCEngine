@@ -38,33 +38,7 @@ Features
 
 Some Screens
 =================
-![Full](https://i.imgur.com/WR1KGw3.png)
-
-![OnlyIndirect](https://i.imgur.com/0NF1ijK.png)
-![Voxelization](https://i.imgur.com/NJX7Yoj.png)
-![Voxelization2](https://i.imgur.com/PlsxsJ4.png)
-
-![PBR_1](https://i.imgur.com/04KffSr.png)
-![PBR_2](https://i.imgur.com/i3FklGO.png)
-![PBR_3](https://i.imgur.com/6pDAXww.png)
-![PBR_4](https://i.imgur.com/HEGuINm.png)
-
-![SunShaft](https://i.imgur.com/gKdlH4B.png)
-![Bloom](https://i.imgur.com/rSshNB8.png)
-![SSAO](https://i.imgur.com/84IRZt7.png)
-
-![PCSS0](https://i.imgur.com/A2BqAvY.png)
-![PCSS1](https://i.imgur.com/k2N2g76.png)
-![PCSS2](https://i.imgur.com/uC8DAuu.png)
-
-![SkyScattering1](https://i.imgur.com/GpHI9On.png)
-![SkyScattering2](https://i.imgur.com/BuZ3C3X.png)
-
-![Skybox1](https://i.imgur.com/CjfGc37.png)
-![Skybox2](https://i.imgur.com/RwZti2y.png)
-
-![MSAA](https://i.imgur.com/XDZB2Rw.png)
-![Trnasparent](https://i.imgur.com/xsyXMDS.png)
+<img src="https://i.imgur.com/WR1KGw3.png" width="300"><img src="https://i.imgur.com/0NF1ijK.png" width="300"><img src="https://i.imgur.com/NJX7Yoj.png" width="300"><img src="https://i.imgur.com/PlsxsJ4.png" width="300"><img src="https://i.imgur.com/04KffSr.png" width="300"><img src="https://i.imgur.com/i3FklGO.png" width="300"><img src="https://i.imgur.com/6pDAXww.png" width="300"><img src="https://i.imgur.com/HEGuINm.png" width="300"><img src="https://i.imgur.com/gKdlH4B.png" width="300"><img src="https://i.imgur.com/rSshNB8.png" width="300"><img src="https://i.imgur.com/84IRZt7.png" width="300"><img src="https://i.imgur.com/A2BqAvY.png" width="300"><img src="https://i.imgur.com/k2N2g76.png" width="300"><img src="https://i.imgur.com/uC8DAuu.png" width="300"><img src="https://i.imgur.com/GpHI9On.png" width="300"><img src="https://i.imgur.com/BuZ3C3X.png" width="300"><img src="https://i.imgur.com/CjfGc37.png" width="300"><img src="https://i.imgur.com/RwZti2y.png" width="300"><img src="https://i.imgur.com/XDZB2Rw.png" width="300"><img src="https://i.imgur.com/xsyXMDS.png" width="300">
 
 To-do
 =================
