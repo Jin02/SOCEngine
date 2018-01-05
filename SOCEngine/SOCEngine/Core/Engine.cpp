@@ -3,6 +3,10 @@
 #include "ObjectManager.h"
 
 #include "CoreConnector.h"
+#include <algorithm>
+
+#undef min
+#undef max
 
 using namespace Core;
 using namespace Importer;
@@ -22,42 +26,53 @@ void Engine::RunScene()
 	clock_t curTime = clock();
 	clock_t elapsed = curTime - _prevTime;
 
-	_lag += elapsed;
+	_elapsedTimeForUpdate += elapsed;
 
-	constexpr clock_t MS_PER_UPDATE = 100;
-	while (_lag >= MS_PER_UPDATE)
+	while (_elapsedTimeForUpdate >= _perUpdate)
 	{
 		_scene->OnUpdate(*this, _util);
-		_lag -= MS_PER_UPDATE;
+		_elapsedTimeForUpdate -= _perUpdate;
 	}
 
 	UpdateWorldMatrix();
 
 	// check dirty transform
 	{
-		uint size = _transformPool.GetSize();
-		for (uint i = 0; i < size; ++i)
-		{
-			auto& tf = _transformPool.Get(i);
-
-			if (tf.GetDirty())
-				_dirtyTransforms.push_back(&tf);
-		}
+		_transformPool.Iterate(
+			[&dirtys = _dirtyTransforms](Transform& tf)
+			{
+				if (tf.GetDirty())
+					dirtys.push_back(&tf);
+			}
+		);
 	}
 
 	_componentSystem.UpdateBuffer(_dx, _transformPool, _objectManager, _rendering.GetShadowAtlasMapRenderer());
 
 	_scene->OnRenderPreview(*this, _util);
-	_rendering.Render(*this, std::max(float(clock() - _prevTime) / 1000.0f, 0.0f));
+
+	++_frameCount;
+	if (_elapsedTimePerFrame >= 1.0f)
+	{
+		_fps = static_cast<float>(_frameCount) / _elapsedTimePerFrame;
+
+		_elapsedTimePerFrame	= 0.0f;
+		_frameCount				= 0;
+	}
+
+	float dt = static_cast<float>(clock() - _prevTime) / 1000.0f;
+	_elapsedTimePerFrame += dt;
+	_rendering.Render(*this, std::max(dt, 0.0f));
+
 	_scene->OnRenderPost(*this, _util);
+
+	_prevTime = curTime;
 
 	for (auto& iter : _dirtyTransforms)
 		iter->ClearDirty();
 
 	_dirtyTransforms.clear();
 	_componentSystem.ClearDirty();
-
-	_prevTime = curTime;
 }
 
 void Engine::UpdateWorldMatrix()

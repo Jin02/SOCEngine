@@ -2,11 +2,11 @@
 #include "BasicGeometryGenerator.h"
 #include <EngineUtility.h>
 
-#define GI_TEST
+//#define GI_TEST
 //#define SKYBOX_ON
-//#define SKY_SCATTERING
-//#define SHADOW_TEST
-//#define SHADOW_TEST_USE_HOUSE
+#define SKY_SCATTERING
+#define SHADOW_TEST
+#define SHADOW_TEST_USE_HOUSE
 //#define PBR_TEST
 //#define TRANSPARENT_TEST
 
@@ -23,6 +23,7 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine, EngineUtility& util
 //	util.SetUseDoF(true);
 //	util.SetUseSSAO(false);
 //	util.SetUseSunShaft(false);
+	engine.SetUpdateTime(1);
 
 	GIInitParam param;
 	{
@@ -265,11 +266,11 @@ void TestScene::OnRenderPreview(Engine&, EngineUtility&)
 
 void TestScene::OnUpdate(Engine& engine, EngineUtility& util)
 {
-	//static constexpr float rate = 0.16f;
+	float rate = 0.001f;
 
-	//auto& tf = engine.GetObjectManager().Find("Light")->FetchTransform();
-	//Vector3 euler = tf.GetLocalEularAngle();
-	//tf.UpdateLocalEulerAngle(euler + Vector3(rate, 0, 0));
+	auto& tf = engine.GetObjectManager().Find("MainCamera")->FetchTransform();
+	Vector3 euler = tf.GetLocalEularAngle();
+	tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
 }
 
 void TestScene::OnRenderPost(Engine&, EngineUtility&)

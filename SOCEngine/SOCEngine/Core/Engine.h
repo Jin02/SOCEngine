@@ -52,12 +52,20 @@ namespace Core
 			};
 		}
 
+		SET_ACCESSOR(UpdateTime,			clock_t,	_perUpdate);
+		GET_CONST_ACCESSOR(UpdateTime,	clock_t,	_perUpdate);
+		GET_CONST_ACCESSOR(FPS,				float,		_fps);
+
 	private:
 		NullScene									_nullScene;
 		IScene*										_scene;
 
-		clock_t										_prevTime	= 0;
-		clock_t										_lag		= 0;
+		clock_t										_prevTime				= 0;
+		clock_t										_perUpdate				= 100;
+		clock_t										_elapsedTimeForUpdate	= 0;
+		uint										_frameCount				= 0;
+		float										_fps					= 0.0f;
+		float										_elapsedTimePerFrame	= 0.0f;
 
 		Core::RootObjectIDs							_rootObjectIDs;
 
