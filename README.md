@@ -10,7 +10,7 @@ Requirements
 - Visual Studio 2015
 - Visual Studio 2012
   - well.. I trying to fix this trouble. sorry :(
-- Phyton 2.7
+- Python 2.7
 
 
 Features
