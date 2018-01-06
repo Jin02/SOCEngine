@@ -3,12 +3,13 @@
 #include <EngineUtility.h>
 
 //#define GI_TEST
-//#define SKYBOX_ON
-#define SKY_SCATTERING
-#define SHADOW_TEST
-#define SHADOW_TEST_USE_HOUSE
+#define SKYBOX_ON
+//#define SKY_SCATTERING
+//#define SHADOW_TEST
+//#define SHADOW_TEST_USE_HOUSE
 //#define PBR_TEST
 //#define TRANSPARENT_TEST
+#define MOTION_BLUR_TEST
 
 using namespace Core;
 using namespace Math;
@@ -252,6 +253,69 @@ void TestScene::OnInitialize(Engine& engine, EngineUtility& util)
 	util.ActivateSkyScattering(512, light);
 #endif
 
+#elif defined(MOTION_BLUR_TEST)
+	Material::PhysicallyBasedMaterial defaultMaterial = util.AcquireMaterial("Default White Material");
+	defaultMaterial.SetReciveIBLMinRate(1.0f);
+	auto materialKey = util.AddMaterialToPool(defaultMaterial);
+	
+	Object cube = util.AcquireObject("Cube");
+	{
+		BasicGeometryGenerator::CreateBox(cube, engine, Vector3(1, 1, 1));
+		engine.AddRootObject(cube);
+
+		_objectOriginPos = Vector3(-7, 3, 20);
+		cube.FetchTransform().SetLocalPosition(Vector3(-7, 0, 20));
+		cube.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
+		cube.FetchTransform().UpdateLocalEulerAngle(Vector3(-40, -45, 0));
+	
+		auto mesh = cube.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	Object cube2 = util.AcquireObject("Cube2");
+	{
+		BasicGeometryGenerator::CreateBox(cube2, engine, Vector3(1, 1, 1));
+		engine.AddRootObject(cube2);
+	
+		_object2OriginPos = Vector3(7, 3, 20);
+		cube2.FetchTransform().SetLocalPosition(Vector3(7, 0, 20));
+		cube2.FetchTransform().SetLocalScale(Vector3(6, 6, 6));
+		cube2.FetchTransform().UpdateLocalEulerAngle(Vector3(-40, -45, 0));
+	
+		auto mesh = cube2.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	
+	Object plane2 = util.AcquireObject("Plane");
+	{
+		BasicGeometryGenerator::CreatePlane(plane2, engine, 20.0f, 20.0f, 4, 4);
+	
+		engine.AddRootObject(plane2);
+	
+		plane2.FetchTransform().SetLocalPosition(Vector3(0, -5, 20));
+		plane2.FetchTransform().UpdateLocalEulerAngle(Vector3(0, 0, 0));
+	
+		auto mesh = plane2.GetComponent<Mesh>();
+		mesh->SetPBRMaterialID(materialKey);
+	}
+	
+	Object& light = util.AcquireObject("Light");
+	{
+		light.FetchTransform().UpdateLocalEulerAngle(Vector3(120.0f, 30.0f, 0.0f));
+	
+		light.AddComponent<DirectionalLight>().GetBase()->SetIntensity(20.0f);
+		light.AddComponent<DirectionalLightShadow>().GetBase()->SetProjNear(30.0f);;
+	
+		util.SetSunShaftParam(light.GetObjectID(), 0.2f, 30.0f);
+		engine.AddRootObject(light);
+	}
+	
+	auto mainCamObj = util.FindObject("MainCamera");
+	mainCamObj->FetchTransform().SetLocalPosition(Vector3(0,0,-5));
+
+#ifdef SKY_SCATTERING
+	util.ActivateSkyScattering(512, light);
+#endif
+
 #endif
 
 }
@@ -266,11 +330,26 @@ void TestScene::OnRenderPreview(Engine&, EngineUtility&)
 
 void TestScene::OnUpdate(Engine& engine, EngineUtility& util)
 {
-	float rate = 0.001f;
+#ifdef MOTION_BLUR_TEST
+	auto Move = [&engine](const std::string& name, const Vector3& move)
+	{
+		auto& tf = engine.GetObjectManager().Find(name)->FetchTransform();
+		tf.SetLocalPosition(move);
+	};
 
-	auto& tf = engine.GetObjectManager().Find("MainCamera")->FetchTransform();
-	Vector3 euler = tf.GetLocalEularAngle();
-	tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
+	static float rate = 0.0f;
+	Move("Cube",	_objectOriginPos + Vector3(0, sin(rate), 0));
+	Move("Cube2",	_object2OriginPos + Vector3(0, cos(rate), 0));
+
+	rate += MATH_PI * 0.1f / 180.0f;
+
+#else
+	//float rate = 0.001f;
+
+	//auto& tf = engine.GetObjectManager().Find("MainCamera")->FetchTransform();
+	//Vector3 euler = tf.GetLocalEularAngle();
+	//tf.UpdateLocalEulerAngle(euler + Vector3(0, rate, 0));
+#endif
 }
 
 void TestScene::OnRenderPost(Engine&, EngineUtility&)
