@@ -146,6 +146,11 @@ void EngineUtility::SetUseSunShaft(bool use)
 	_engine.GetRenderingSystem().GetPostProcessPipeline().SetUseDoF(use);
 }
 
+void EngineUtility::SetUseMotionBlur(bool use)
+{
+	_engine.GetRenderingSystem().GetPostProcessPipeline().SetUseMotionBlur(use);
+}
+
 EngineUtility::Tex2DPtr EngineUtility::LoadTextureFromFile(const std::string& path, bool hasAlpha)
 {
 	return _engine.GetRenderingSystem().GetTexture2DManager().LoadTextureFromFile(_engine.GetDirectX(), path, hasAlpha);
