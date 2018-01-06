@@ -53,7 +53,7 @@ namespace Core
 		}
 
 		SET_ACCESSOR(UpdateTime,			clock_t,	_perUpdate);
-		GET_CONST_ACCESSOR(UpdateTime,	clock_t,	_perUpdate);
+		GET_CONST_ACCESSOR(UpdateTime,		clock_t,	_perUpdate);
 		GET_CONST_ACCESSOR(FPS,				float,		_fps);
 
 	private:

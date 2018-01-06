@@ -60,8 +60,6 @@ void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camM
 
 			const Object* object	= objMgr.Find(objID);
 
-			// TODO :	VXGI에서 TraceShadowCone 테스트 해보고 성능이 안좋으면 복구해야함
-			//			안좋으면 그땐 또 그때나름 -_-.. 이걸 어찌저찌 잡아다가 최적화 해야된다.
 #if 0
 			bool dirty	= light->GetBase().GetDirty() | shadow.GetDirty() | lightTF.GetDirty();
 			if (dirty)
