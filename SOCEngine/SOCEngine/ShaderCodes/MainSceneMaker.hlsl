@@ -30,16 +30,12 @@ float4 PS(PS_INPUT input) : SV_Target
 
 #if (MSAA_SAMPLES_COUNT > 1) // MSAA
 	float4 transparentColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 skyBoxColor		= float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	[unroll] for (uint i = 0; i < 4; ++i)
-	{
 		transparentColor += transparentMap.Load(input.position.xy, i);
-		skyBoxColor += skyBoxMap.Load(input.position.xy, i);
-	}
-
 	transparentColor /= 4.0f;
-	skyBoxColor /= 4.0f;
+
+	float4 skyBoxColor		= skyBoxMap.Load(input.position.xy, 0);
 #else
 	float4 transparentColor = transparentMap.Sample(linearSampler, input.uv);
 	float4 skyBoxColor = skyBoxMap.Sample(linearSampler, input.uv);
