@@ -36,7 +36,7 @@ Features
   - Preetham Model
 - Normal Mapping
 - hlsl parser and generate shader initialization code.
-
+- Motion blur
 
 Some Screens
 =================
@@ -45,7 +45,6 @@ Some Screens
 
 To-do
 =================
-- Motion blur
 - Irradiance Volume
   - SH probe
 - Hierarchical Z Buffer Occlusion Culling
