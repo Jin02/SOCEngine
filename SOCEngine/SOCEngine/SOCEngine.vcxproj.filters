@@ -463,6 +463,12 @@
     <Filter Include="ShaderCodes\Postprocessing\GodRay">
       <UniqueIdentifier>{e77d6e18-3f6c-40d1-96d6-803da963f0f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Postprocessing\MotionBlur">
+      <UniqueIdentifier>{7ba5e495-0188-4db7-b461-8af4c1c8a654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderCodes\Postprocessing\MotionBlur">
+      <UniqueIdentifier>{6f22df3c-a72c-45b9-8334-029ea3179ce3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -1021,6 +1027,9 @@
     <ClInclude Include="Core\EngineUtility.h">
       <Filter>Core\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\MotionBlur.h">
+      <Filter>Rendering\Postprocessing\MotionBlur</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1338,6 +1347,9 @@
     <ClCompile Include="Core\EngineUtility.cpp">
       <Filter>Core\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\MotionBlur.cpp">
+      <Filter>Rendering\Postprocessing\MotionBlur</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCodes\BilateralFiltering.hlsl">
@@ -1432,6 +1444,9 @@
     </FxCompile>
     <FxCompile Include="ShaderCodes\SunShaft.hlsl">
       <Filter>ShaderCodes\Postprocessing\GodRay</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCodes\MotionBlur.hlsl">
+      <Filter>ShaderCodes\Postprocessing\MotionBlur</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

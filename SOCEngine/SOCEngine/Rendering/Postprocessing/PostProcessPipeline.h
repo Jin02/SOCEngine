@@ -6,6 +6,7 @@
 #include "Bloom.h"
 #include "MainCamera.h"
 #include "SunShaft.h"
+#include "MotionBlur.h"
 
 namespace Rendering
 {
@@ -25,14 +26,19 @@ namespace Rendering
 
 			void ReCompileBloom(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Camera::MainCamera& mainCamera, bool use);
 
-			SET_ACCESSOR(UseSSAO,			bool,	_useSSAO);
-			SET_ACCESSOR(UseDoF,			bool,	_useDoF);
-			SET_ACCESSOR(UseSunShaft,		bool,	_useSunShaft)
+			SET_ACCESSOR(UseSSAO,				bool,	_useSSAO);
+			SET_ACCESSOR(UseDoF,				bool,	_useDoF);
+			SET_ACCESSOR(UseSunShaft,			bool,	_useSunShaft)
+			SET_ACCESSOR(UseMotionBlur,			bool,	_useMotionBlur)
 
-			GET_CONST_ACCESSOR(UseSSAO,		bool,	_useSSAO);
-			GET_CONST_ACCESSOR(UseDoF,		bool,	_useDoF);
-			GET_CONST_ACCESSOR(UseSunShaft, bool,	_useSunShaft);
+			GET_CONST_ACCESSOR(UseSSAO,			bool,	_useSSAO);
+			GET_CONST_ACCESSOR(UseDoF,			bool,	_useDoF);
+			GET_CONST_ACCESSOR(UseSunShaft,		bool,	_useSunShaft);
+			GET_CONST_ACCESSOR(UseMotionBlur,	bool,	_useMotionBlur);
+
 			GET_CONST_ACCESSOR(UseBloom,	bool,	GetPostproessing<PostProcessing::Bloom>().GetUse());
+
+			
 
 			inline void SetElapsedTime(float time)
 			{
@@ -71,13 +77,15 @@ namespace Rendering
 			std::tuple<	PostProcessing::Bloom,
 						PostProcessing::SSAO,
 						PostProcessing::DepthOfField,
-						PostProcessing::SunShaft>		_postprocessing;
+						PostProcessing::SunShaft,
+						PostProcessing::MotionBlur>		_postprocessing;
 
 			PostProcessing::Copy						_copy;
 
 			bool										_useSSAO		= false;
 			bool										_useDoF			= false;
 			bool										_useSunShaft	= false;
+			bool										_useMotionBlur	= false;
 		};
 	}
 }

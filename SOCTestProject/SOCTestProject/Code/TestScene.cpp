@@ -24,6 +24,7 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine, EngineUtility& util
 //	util.SetUseDoF(true);
 //	util.SetUseSSAO(false);
 //	util.SetUseSunShaft(false);
+	util.SetUseMotionBlur(true);
 	engine.SetUpdateTime(1);
 
 	GIInitParam param;
@@ -338,10 +339,10 @@ void TestScene::OnUpdate(Engine& engine, EngineUtility& util)
 	};
 
 	static float rate = 0.0f;
-	Move("Cube",	_objectOriginPos + Vector3(0, sin(rate), 0));
-	Move("Cube2",	_object2OriginPos + Vector3(0, cos(rate), 0));
+	Move("Cube",	_objectOriginPos + Vector3(0, sin(rate) * 2.0f, 0));
+	Move("Cube2",	_object2OriginPos + Vector3(0, cos(rate) * 2.0f, 0));
 
-	rate += MATH_PI * 0.1f / 180.0f;
+	rate += MATH_PI * 0.25f / 180.0f;
 
 #else
 	//float rate = 0.001f;

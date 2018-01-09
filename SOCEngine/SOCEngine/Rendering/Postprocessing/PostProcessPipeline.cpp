@@ -36,6 +36,8 @@ void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, cons
 	GetPostproessing<Bloom>().Initialize(dx, shaderMgr, renderSize, useBloom);
 	GetPostproessing<SSAO>().Initialize(dx, shaderMgr);
 	GetPostproessing<SunShaft>().Initialize(dx, shaderMgr, mainCamera);
+	GetPostproessing<MotionBlur>().Initialize(dx, shaderMgr);
+
 	_copy.Initialize(dx, shaderMgr);
 }
 
@@ -69,9 +71,15 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 		std::swap(input, output);
 	}
 
+	if(_useMotionBlur)
+	{
+		GetPostproessing<MotionBlur>().Render(dx, *output, _useSSAO ? *input : *mainScene, mainRenderer);
+		std::swap(input, output);
+	}
+
 	if(_useDoF)
 	{
-		GetPostproessing<DepthOfField>().Render(dx, *output, _useSSAO ? *input : *mainScene, std::move(mains), _copy, _tempTextures);
+		GetPostproessing<DepthOfField>().Render(dx, *output, _useMotionBlur ? *input : *mainScene, std::move(mains), _copy, _tempTextures);
 		std::swap(input, output);
 	}
 
@@ -83,7 +91,7 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 		std::swap(input, output);
 	}
 
-	bool allOff = !_useSSAO & !_useDoF & !runSunShaft;
+	bool allOff = !_useSSAO & !_useDoF & !runSunShaft & !_useMotionBlur;
 	if (allOff)
 	{
 		AutoBinderSampler<PixelShader> sampler(dx, SamplerStateBindIndex(0), SamplerState::Point);
@@ -101,4 +109,5 @@ void PostProcessPipeline::UpdateCB(DirectX& dx, const ObjectManager& objMgr,
 	if(_useDoF)			GetPostproessing<DepthOfField>().UpdateParamCB(dx);
 	if(_useSSAO)		GetPostproessing<SSAO>().UpdateParamCB(dx);
 	if(_useSunShaft)	GetPostproessing<SunShaft>().UpdateParamCB(dx, objMgr, lightMgr, tfPool, mainCam);
+	if(_useMotionBlur)	GetPostproessing<MotionBlur>().UpdateParamCB(dx);
 }

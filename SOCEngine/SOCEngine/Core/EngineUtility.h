@@ -60,6 +60,7 @@ namespace Core
 		void SetUseDoF(bool use);
 		void SetUseSSAO(bool use);
 		void SetUseSunShaft(bool use);
+		void SetUseMotionBlur(bool use);
 
 		// Texture
 		using Tex2DPtr = Rendering::Manager::Texture2DManager::Texture2DPtr;

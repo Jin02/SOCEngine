@@ -54,7 +54,7 @@ GBuffer PS( VS_OUTPUT input ) : SV_Target
 
 	float2 curScreenPos		= input.position.xy / input.position.w;
 	float2 prevScreenPos	= input.prevPosition.xy / input.prevPosition.w;
-	float2 velocity			= curScreenPos - prevScreenPos; velocity.y = -velocity.y;
+	float2 velocity			= curScreenPos - prevScreenPos;// velocity.y = -velocity.y;
 	
 	input.normal = normalize(input.normal);
 

@@ -175,6 +175,7 @@
     <ClInclude Include="Rendering\Postprocessing\GaussianBlur.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\PostProcessing\MotionBlur.h" />
     <ClInclude Include="Rendering\Postprocessing\PostProcessPipeline.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -410,6 +411,7 @@
     <ClCompile Include="Rendering\Postprocessing\GaussianBlur.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Rendering\PostProcessing\MotionBlur.cpp" />
     <ClCompile Include="Rendering\Postprocessing\PostProcessPipeline.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -484,6 +486,7 @@
     <FxCompile Include="ShaderCodes\InjectRadianceFromSpotLight.hlsl" />
     <FxCompile Include="ShaderCodes\MainSceneMaker.hlsl" />
     <FxCompile Include="ShaderCodes\MipmapAnisotropicVoxelTexture.hlsl" />
+    <FxCompile Include="ShaderCodes\MotionBlur.hlsl" />
     <FxCompile Include="ShaderCodes\OnlyAlphaTestWithDiffusePS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
