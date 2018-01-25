@@ -27,6 +27,7 @@ Features
   - Depth Of Field
   - Screen Space Ambient Occlusion
   - Sun Shaft
+  - Motion blur
 - Fbx-Conv model/material loading
 - Shadow
   - PCF (Point, Spot light)
@@ -36,7 +37,6 @@ Features
   - Preetham Model
 - Normal Mapping
 - hlsl parser and generate shader initialization code.
-- Motion blur
 
 Some Screens
 =================
