@@ -2,6 +2,9 @@ import sys
 import os, os.path
 import subprocess
 
+if sys.version_info < (3,):
+	range = xrange
+
 def CheckParameter():
 	fbxConvPath 		= None
 	outputType			= None
@@ -9,7 +12,7 @@ def CheckParameter():
 
 	count = len(sys.argv)-1
 	if count >= 6:
-		for i in xrange(1, count):
+		for i in range(1, count):
 			if sys.argv[i] == "-FBXConvPath":
 				fbxConvPath = sys.argv[i+1]
 			elif sys.argv[i] == "-OutputType":
@@ -27,23 +30,23 @@ def CheckParameter():
 	result = (fbxConvPath is not None) and (outputType is not None) and (runDir is not None)
 	return result, fbxConvPath, outputType, runDir
 def Dump():
-	print "Paramater Error!!\n"
-	print "-FBXConvPath \"Your Fbx-conv exe path\" -OutputType json or binary -RunStartDir \"Your Path\"\n"
-	print 'Example 1 :'
-	print "-FBXConvPath ../Tool/fbx-conv.exe -OuputType json -RunStartDir ../../SOCTestProj/Resources\n"
-	print "OutputTypes only support the json, binary\n"
+	print ("Paramater Error!!\n")
+	print ("-FBXConvPath \"Your Fbx-conv exe path\" -OutputType json or binary -RunStartDir \"Your Path\"\n")
+	print ('Example 1 :')
+	print ("-FBXConvPath ../Tool/fbx-conv.exe -OuputType json -RunStartDir ../../SOCTestProj/Resources\n")
+	print ("OutputTypes only support the json, binary\n")
 	return
 
 
 CONSOLE_LINE = "***********************************************"
 
-print CONSOLE_LINE + '\n'
-print "SOC Framework FBX-Conv Luncher\n"
+print (CONSOLE_LINE + '\n')
+print ("SOC Framework FBX-Conv Luncher\n")
 
 result, fbxConvPath, outputType, runStartDir = CheckParameter()
 if result == False:
 	Dump()
-	print CONSOLE_LINE
+	print (CONSOLE_LINE)
 	exit()
 
 if outputType == 'json':
@@ -73,9 +76,10 @@ for (path, dirs, files) in os.walk(targetDir):
 			continue
 
 		command = fbxConvPath + " -f " + fileFullPath + ' ' + outputFilePath
+		print (command)
 
 		res = subprocess.check_output(command, shell=True)
-		print "Generate File : " + outputFileNameWithExtension
+		print ("Generated File : " + outputFileNameWithExtension)
 
-print "Done!\n"
-print CONSOLE_LINE
+print ("Done!\n")
+print (CONSOLE_LINE)

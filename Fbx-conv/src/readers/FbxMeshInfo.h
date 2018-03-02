@@ -20,7 +20,7 @@
 #ifndef FBXCONV_READERS_FBXMESHINFO_H
 #define FBXCONV_READERS_FBXMESHINFO_H
 
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "../modeldata/Model.h"
 #include <sstream>
 #include <map>

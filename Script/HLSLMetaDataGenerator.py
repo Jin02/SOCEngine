@@ -5,12 +5,15 @@ import json
 
 METADATA_FILE_EXTENSION = ".metadata"
 
+if sys.version_info < (3,):
+    range = xrange
+
 # EnumGenerator
 def Enum(*sequential, **named):
-    enums 	= dict(zip(sequential, range(len(sequential))), **named)
-    reverse = dict((value, key) for key, value in enums.iteritems())
-    enums['reverse_mapping'] = reverse
-    return type('Enum', (), enums)
+	enums 	= dict(zip(sequential, list(range(len(sequential))), **named))
+	reverse = {value: key for key, value in enums.items()}
+	enums['reverse_mapping'] = reverse
+	return type('Enum', (), enums)
 
 # First return value is success or fail
 # Second return value is replaceString
@@ -21,11 +24,11 @@ def ReplaceString(srcStr, fromStr, toStr):
 # Remove Tap and Empty Space.
 # ex:) struct \t \t \t Test -> struct Test
 def CleanUpCode(lineCode):
-	while 1: # "struct \t\t\t name" -> "struct     name"
+	while 1: # "struct \t\t\t name" -> "struct	 name"
 		t, lineCode = ReplaceString(lineCode, '\t', ' ')
 		if t == False:
 			break
-	while 1: # "struct     name" -> "struct name"
+	while 1: # "struct	 name" -> "struct name"
 		t, lineCode = ReplaceString(lineCode, "  ", ' ')
 		if t == False:
 			break
@@ -43,17 +46,17 @@ class InputLayout:
 # main of script.
 # hlsl parser
 class ParseCode:
-	StateEnum 				= Enum('None', 'Comment', 'FindingStructName', 'FindingSemanticVariable')
+	StateEnum 				= Enum('Non', 'Comment', 'FindingStructName', 'FindingSemanticVariable')
 	isStructArea 			= False	
 	isCommentArea 			= False
 	currentStructName 		= ""
-	currentState 			= 0		#init value is StateEnum.None
-	beforeState 			= 0		#init value is StateEnum.None
+	currentState 			= 0		#init value is StateEnum.Non
+	beforeState 			= 0		#init value is StateEnum.Non
 	structDictionary 		= None
 	mainFuncUsingStructName = None
 	def __init__(self):
-		self.currentState 				= self.StateEnum.None
-		self.beforeState 				= self.StateEnum.None
+		self.currentState 				= self.StateEnum.Non
+		self.beforeState 				= self.StateEnum.Non
 		self.structDictionary 			= dict()
 		self.mainFuncUsingStructName 	= dict()
 	def __del__(self):
@@ -124,7 +127,7 @@ class ParseCode:
 					if structName in funcArgumentCodePart:
 						tokens = code[:start].split(' ')
 						count = len(tokens)
-						for i in xrange(0, count):
+						for i in range(0, count):
 							idx = count -i -1
 							if idx < 0:
 								break
@@ -151,7 +154,7 @@ class ParseCode:
 			
 				length = len(splitCodeSpace)
 				# find struct name
-				for i in xrange(structPos+1, length):
+				for i in range(structPos+1, length):
 					if splitCodeSpace[i] != '{':
 						structName = splitCodeSpace[i]
 						break
@@ -180,7 +183,7 @@ class ParseCode:
 
 		if '}' in modifiedCode:
 			self.isStructArea = False
-			self.UpdateState(self.StateEnum.None)			
+			self.UpdateState(self.StateEnum.Non)			
 			return
 
 		def ParseSemanticName(code):
@@ -201,7 +204,7 @@ class ParseCode:
 		nameLength = len(semanticName)
 
 		foundIdx = 0
-		for si in xrange(nameLength-1, 0, -1):
+		for si in range(nameLength-1, 0, -1):
 			foundIdx = si
 			if not semanticName[si:nameLength].isdigit():
 				break
@@ -237,7 +240,7 @@ class ParseCode:
 
 			beforeLayout 	= None
 
-			for i in xrange(0, count):
+			for i in range(0, count):
 				beforeLayout = layoutList[count - 1 - i]
 				if addUsingType == beforeLayout.usingType:
 					break
@@ -277,7 +280,7 @@ class ParseCode:
 			return layout
 
 		if typeOfVariable == "matrix" or typeOfVariable == "float4x4":
-			for i in xrange(0, 4):
+			for i in range(0, 4):
 				layout = MakeInputLayout(semanticName, "float4", i, CalculateAlignedByteOffset(layoutList, usingType), usingType)
 				layoutList.append(layout)
 		else:
@@ -290,13 +293,13 @@ class ParseCode:
 WorkReturnValues = Enum('EmptyFile', 'Success', 'NotCreateMeta')
 def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
-	print "\nShader File Modify Time : " + time.ctime(shaderFileModifyTime)
+	print ("\nShader File Modify Time : " + time.ctime(shaderFileModifyTime))
 
 	isCreateMetadata = True
 
 	# check original file
 	if os.path.isfile(metaDataFilePath):
-	 	metadataFile = open(metaDataFilePath, 'rU')
+	 	metadataFile = open(metaDataFilePath, 'r', encoding='utf-8')
 	 	js = json.loads(metadataFile.read())
 	 	metadataFile.close()	 	
 
@@ -304,10 +307,10 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 		 	#check Date
 		 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
 
- 	#check Shader File
- 	shaderFile 	= open(shaderFilePath, 'rU')
- 	firstLine 	= shaderFile.readline()
- 	shaderFile.close()
+	#check Shader File
+	shaderFile 	= open(shaderFilePath, 'r', encoding='utf-8')
+	firstLine 	= shaderFile.readline()
+	shaderFile.close()
 
  	#check create file
 	isCreateMetadata = ((NOT_CREATE_META_DATA in firstLine) == False)
@@ -318,11 +321,11 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 		elif USED_FOR_INCLUDE in firstLine:
 			return WorkReturnValues.NotCreateMeta
 
-		print "Create Metadata\n"
+		print ("Create Metadata\n")
 	else:
 		return WorkReturnValues.NotCreateMeta
 
-	shaderFile 	= open(shaderFilePath, 'rU')
+	shaderFile 	= open(shaderFilePath, 'r', encoding='utf-8')
 	lines = shaderFile.read().split('\n')
 
 	parser = ParseCode()
@@ -340,7 +343,7 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 				lines[lineIdx] = '' # remove include
 
 				incFileName	= cleanLine[cleanLine.find('"')+1 : cleanLine.rfind('"')]
-				incFile 	= open(folderPath + incFileName, 'rU')
+				incFile 	= open(folderPath + incFileName, 'r', encoding='utf-8')
 
 				newFileLines = incFile.read().split('\n')
 				if (NOT_CREATE_META_DATA in newFileLines[0]) or (ONLY_PATH_FINDING in newFileLines[0]):
@@ -379,7 +382,7 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 	for structName in deleteKeys:
 		del parser.structDictionary[structName]	
 	
-	#############    metaData    ################################################################################
+	#############	metaData	################################################################################
 
 	metaDataFile = open(metaDataFilePath, 'w')
 
@@ -468,17 +471,17 @@ ONLY_PATH_FINDING		= "EMPTY_META_DATA"  #Empty Meta Data
 USED_FOR_INCLUDE		= "USED_FOR_INCLUDE"
 CONSOLE_LINE = "***********************************************"
 
-print CONSOLE_LINE + '\n'
-print "SOC Framework Shader MetaData Generator\n"
+print (CONSOLE_LINE + '\n')
+print ("SOC Framework Shader MetaData Generator\n")
 
 def Dump():
-	print "\nParamater Error!!\n"
-	print 'Example 1 :'
-	print "-ProjectDir ./Test/ -MetaDataCustomTargetDir ./MetaDataFiles/ -IsShaderWithMetaData False -UseEasyView True\n"
-	print 'Example 2 :'
-	print "-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n"
-	print 'Example 3 :'
-	print "-ProjectDir ./ -IsShaderWithMetaData True\n"
+	print ("\nParamater Error!!\n")
+	print ('Example 1 :')
+	print ("-ProjectDir ./Test/ -MetaDataCustomTargetDir ./MetaDataFiles/ -IsShaderWithMetaData False -UseEasyView True\n")
+	print ('Example 2 :')
+	print ("-ProjectDir ./ -MetaDataCustomTargetDir NotUsing -IsShaderWithMetaData True -UseEasyView False\n")
+	print ('Example 3 :')
+	print ("-ProjectDir ./ -IsShaderWithMetaData True\n")
 	
 def CheckParameter():
 	scriptRunStartDir 		= 'undefined'
@@ -492,7 +495,7 @@ def CheckParameter():
 		if count > argvCount:
 			count = argvCount
 
-		for i in xrange(1, count):
+		for i in range(1, count):
 			if sys.argv[i] == '-ProjectDir':
 				scriptRunStartDir 		= sys.argv[i+1]
 			elif sys.argv[i] == '-IsShaderWithMetaData':
@@ -518,7 +521,7 @@ result, scriptRunStartDir, metaDataCustomTargetDir, useEasyView, isShaderWithMet
 
 if result == False:
 	Dump()
-	print CONSOLE_LINE
+	print (CONSOLE_LINE)
 	exit()
 
 def SimpleWriteFile(path, content):
@@ -529,23 +532,24 @@ def SimpleWriteFile(path, content):
 
 targetDir = os.path.normpath(scriptRunStartDir)
 for (path, dirs, files) in os.walk(targetDir):
-    for fileNameWithExtension in files:
-    	fileFullPath 	= path + "/" + fileNameWithExtension    	
-        extensionPos 	= fileNameWithExtension.rfind('.')        
-        fileExtension 	= fileNameWithExtension[extensionPos:]
-        fileName 		= fileNameWithExtension[:extensionPos]
+	for fileNameWithExtension in files:
+		fileFullPath 	= path + "/" + fileNameWithExtension
+		extensionPos 	= fileNameWithExtension.rfind('.')
+		fileExtension 	= fileNameWithExtension[extensionPos:]
+		fileName 		= fileNameWithExtension[:extensionPos]
+		print (fileName)
 
-        if (fileExtension == '.fx') or (fileExtension == '.hlsl'):
-        	print "Found!!!", fileFullPath
-        	shaderFilePath = fileFullPath
+		if (fileExtension == '.fx') or (fileExtension == '.hlsl'):
+			print ("Found!!!", fileFullPath)
+			shaderFilePath = fileFullPath
 
-        	if isShaderWithMetaData:
-        		metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
-        	else:
-        		metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
-        	result = Work(shaderFilePath, path+'\\', metaDataFilePath, useEasyView)
-        	if result == WorkReturnValues.EmptyFile: #ONLY_PATH_FINDING, empty file
-        		SimpleWriteFile(metaDataFilePath, "{}")
+			if isShaderWithMetaData:
+				metaDataFilePath = path + "/" + fileName + METADATA_FILE_EXTENSION
+			else:
+				metaDataFilePath = metaDataCustomTargetDir + fileName + METADATA_FILE_EXTENSION
+			result = Work(shaderFilePath, path+'\\', metaDataFilePath, useEasyView)
+			if result == WorkReturnValues.EmptyFile: #ONLY_PATH_FINDING, empty file
+				SimpleWriteFile(metaDataFilePath, "{}")
 
-print "Success!\n"
-print CONSOLE_LINE
+print ("Success!\n")
+print (CONSOLE_LINE)

@@ -2,6 +2,9 @@
 
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
+#include <VersionHelpers.h>
+#include <atlbase.h>
+#include <ntverp.h>
 #include <vector>
 #include <memory>
 #include <functional>

@@ -36,24 +36,6 @@ void DirectX::CreateRenderTargetView()
 
 void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA)
 {
-	//swapChain setting
-	DXGI_SWAP_CHAIN_DESC	sd;
-	memset(&sd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
-
-	sd.BufferDesc.Width						= viewportSize.w;
-	sd.BufferDesc.Height					= viewportSize.h;
-	sd.BufferCount							= 1;
-	sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow							= win.GetHandle();
-	sd.Windowed								= win.GetIsWindowMode();
-	sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	sd.BufferDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator		= 0;
-	sd.BufferDesc.RefreshRate.Denominator	= 1;
-	sd.SampleDesc.Count						= useMSAA ? 4 : 1;
-	sd.SampleDesc.Quality					= 0;
-
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -76,6 +58,8 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+	if ( IsWindows8OrGreater () )
+		createDeviceFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 	ID3D11Device*			device				= nullptr;
 	IDXGISwapChain*			swapChain			= nullptr;
@@ -86,8 +70,8 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	{
 		_driverType = driverTypes[driverTypeIndex];
 		
-		HRESULT hr = D3D11CreateDeviceAndSwapChain( NULL, _driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-								D3D11_SDK_VERSION, &sd, &swapChain, &device, &_featureLevel, &immediateContext);
+		HRESULT hr = D3D11CreateDevice ( NULL, _driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
+								D3D11_SDK_VERSION, &device, &_featureLevel, &immediateContext );
 		
 		if (SUCCEEDED(hr))
 			break;
@@ -95,10 +79,74 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 
 	assert(driverTypeIndex < numDriverTypes);
 
+	CComPtr<IDXGIFactory1> dxgiFactory;
+	CreateDXGIFactory1 ( __uuidof ( IDXGIFactory1 ), ( void** ) &dxgiFactory );
+
+	DXGI_SAMPLE_DESC sampleDesc;
+	if (IsWindows8OrGreater ())
+	{
+		DXGI_SWAP_CHAIN_DESC1	sd				= { 0, };
+		sd.Width								= viewportSize.w;
+		sd.Height								= viewportSize.h;
+		sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+#if VER_PRODUCTBUILD > 9600
+		sd.BufferCount							= IsWindows10OrGreater () ? 2 : 1;
+		sd.SwapEffect							= IsWindows10OrGreater () ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD;
+#else
+		sd.BufferCount							= 1;
+		sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
+#endif
+		sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		sd.Format								= DXGI_FORMAT_R8G8B8A8_UNORM;
+		sd.Stereo								= FALSE;
+		sd.SampleDesc.Count						= useMSAA ? 4 : 1;
+		sd.SampleDesc.Quality					= 0;
+		sd.Scaling								= DXGI_SCALING_STRETCH;
+		sd.AlphaMode							= DXGI_ALPHA_MODE_UNSPECIFIED;
+
+		sampleDesc = sd.SampleDesc;
+
+		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fd		= { 0, };
+		fd.Windowed								= win.GetIsWindowMode ();
+		fd.RefreshRate.Numerator				= 0;
+		fd.RefreshRate.Denominator				= 1;
+		fd.Scaling								= DXGI_MODE_SCALING_UNSPECIFIED;
+		fd.ScanlineOrdering						= DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+		CComQIPtr<IDXGIFactory2> dxgiFactory2 = dxgiFactory;
+		CComPtr<IDXGISwapChain1> swapChain1;
+		assert (SUCCEEDED (dxgiFactory2->CreateSwapChainForHwnd (device, win.GetHandle (), &sd, &fd, NULL, &swapChain1)));
+		assert (SUCCEEDED (swapChain1.QueryInterface<IDXGISwapChain> (&swapChain)));
+	}
+	else
+	{
+		//swapChain setting
+		DXGI_SWAP_CHAIN_DESC	sd;
+		memset ( &sd, 0, sizeof ( DXGI_SWAP_CHAIN_DESC ) );
+
+		sd.BufferDesc.Width						= viewportSize.w;
+		sd.BufferDesc.Height					= viewportSize.h;
+		sd.BufferCount							= 1;
+		sd.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		sd.OutputWindow							= win.GetHandle ();
+		sd.Windowed								= win.GetIsWindowMode ();
+		sd.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
+		sd.Flags								= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		sd.BufferDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
+		sd.BufferDesc.RefreshRate.Numerator		= 0;
+		sd.BufferDesc.RefreshRate.Denominator	= 1;
+		sd.SampleDesc.Count						= useMSAA ? 4 : 1;
+		sd.SampleDesc.Quality					= 0;
+
+		sampleDesc = sd.SampleDesc;
+
+		assert ( SUCCEEDED (dxgiFactory->CreateSwapChain (device, &sd, &swapChain)));
+	}
+
 	_device				= DXUniqueResource<ID3D11Device>(device);
 	_swapChain			= DXUniqueResource<IDXGISwapChain>(swapChain);
 	_immediateContext	= DXUniqueResource<ID3D11DeviceContext>(immediateContext);	
-	_msaaDesc			= sd.SampleDesc;
+	_msaaDesc			= sampleDesc;
 }
 
 void DirectX::SetViewport(const Rect<float>& rect)

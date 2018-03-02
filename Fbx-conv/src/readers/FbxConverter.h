@@ -20,7 +20,7 @@
 #ifndef FBXCONV_READERS_FBXCONVERTER_H
 #define FBXCONV_READERS_FBXCONVERTER_H
 
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "../Settings.h"
 #include "Reader.h"
 #include <sstream>
@@ -575,10 +575,10 @@ namespace readers {
 				result->opacity.set((float)trans);
 			}
 			else if (lambert->TransparencyFactor.IsValid())
-				result->opacity.set(1.f - lambert->TransparencyFactor.Get());
+				result->opacity.set((float)1.f - lambert->TransparencyFactor.Get());
 			else if (lambert->TransparentColor.IsValid()) {
 				FbxDouble3 color = lambert->TransparentColor.Get();
-				result->opacity.set((color[0] + color[1] + color[2]) / 3.0);
+				result->opacity.set((float)(color[0] + color[1] + color[2]) / 3.0f);
 			}
 
 			if (!material->Is<FbxSurfacePhong>())
@@ -812,7 +812,7 @@ namespace readers {
 		inline bool isLerp(const float *v1, const float &t1, const float *v2, const float &t2, const float *v3, const float &t3, const int size) {
 			const double d = (t2 - t1) / (t3 - t1);
 			for (int i = 0; i < size; i++)
-				if (!cmp(v2[i], v1[i] + d * (v3[i] - v1[i])))
+				if (!cmp(v2[i], v1[i] + (float)d * (v3[i] - v1[i])))
 					return false;
 			return true;
 		}
