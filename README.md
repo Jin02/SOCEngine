@@ -8,9 +8,7 @@ Requirements
 - Windows 7 later
 - DirectX 11
 - Visual Studio 2015
-- Visual Studio 2012
-  - well.. I trying to fix this trouble. sorry :(
-- Python 2.7
+- Python 3
 
 
 Features
