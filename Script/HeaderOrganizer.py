@@ -2,6 +2,9 @@ import sys
 import os, os.path
 import shutil
 
+if sys.version_info < (3,):
+    range = xrange
+
 def CheckParameter():
 	outputPath 			= None
 	searchStartDir		= None
@@ -10,7 +13,7 @@ def CheckParameter():
 
 	count = len(sys.argv)-1
 	if count >= 8:
-		for i in xrange(1, count):
+		for i in range(1, count):
 			if sys.argv[i] == "-OutputPath":
 				outputPath = os.path.abspath(sys.argv[i+1])
 			elif sys.argv[i] == "-SearchStartDir":
@@ -34,29 +37,29 @@ def CheckParameter():
 		if len(excludePaths) == 1 and excludePaths[0].lower() is 'null':
 			excludePaths = None
 		else:
-			for i in range(0, len(excludePaths)):
+			for i in list(range(0, len(excludePaths))):
 				excludePaths[i] = os.path.abspath(excludePaths[i])
 
 	result = (outputPath is not None) and (searchStartDir is not None) and (isIncludeFolder is not None)
 	return result, outputPath, searchStartDir, isIncludeFolder, excludePaths
 def Dump():
-	print "Paramater Error!!\n"
-	print "-OutputPath \'outputpath\' -SearchStartDir \'searchstartDir\' -IsIncludeFolder \'True or False\' -ExcludePaths excludepath\n"
-	print 'Example 1 :'
-	print "-OutputPath ../../Output -SearchStartDir ./Engine -IsIncludeFolder False -ExcludePaths ./Engine/ShaderCodes,./Engine/Scripts \n"
+	print ("Paramater Error!!\n")
+	print ("-OutputPath \'outputpath\' -SearchStartDir \'searchstartDir\' -IsIncludeFolder \'True or False\' -ExcludePaths excludepath\n")
+	print ('Example 1 :')
+	print ("-OutputPath ../../Output -SearchStartDir ./Engine -IsIncludeFolder False -ExcludePaths ./Engine/ShaderCodes,./Engine/Scripts \n")
 	return
 
 
 CONSOLE_LINE = "***********************************************"
 
-print CONSOLE_LINE + '\n'
-print "SOC Framework HeaderOrganizer\n"
+print (CONSOLE_LINE + '\n')
+print ("SOC Framework HeaderOrganizer\n")
 
 result, outputPath, searchStartDir, isIncludeFolder, excludePaths = CheckParameter()
 
 if result == False:
 	Dump()
-	print CONSOLE_LINE
+	print (CONSOLE_LINE)
 	exit()
 
 headerFormat = ['.h', '.hpp', '.inl']
@@ -65,7 +68,7 @@ def MakeDirectoryPiramid(path):
 	folders = path.split('\\')
 
 	folders.reverse()
-	for i in range(1, len(folders)):
+	for i in list(range(1, len(folders))):
 		invIdx = len(folders) - i
 		folders[invIdx - 1] = folders[invIdx] + '\\' + folders[invIdx - 1]
 	folders.reverse()
@@ -105,7 +108,7 @@ for (path, dirs, files) in os.walk(targetDir):
 			saveFilePath = outputPath + '\\' + fileNameWithExtension
 			shutil.copy(fileFullPath, saveFilePath)
 
-		print fileFullPath + " -> " + saveFilePath
+		print (fileFullPath + " -> " + saveFilePath)
 
-print "\nDone!\n"
-print CONSOLE_LINE
+print ("\nDone!\n")
+print (CONSOLE_LINE)
