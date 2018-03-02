@@ -27,7 +27,7 @@
 #define PRIMITIVETYPE_TRIANGLESTRIP	5
 
 #include <string>
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "../json/BaseJSONWriter.h"
 
 namespace fbxconv {

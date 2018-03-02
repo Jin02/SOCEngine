@@ -22,7 +22,7 @@
 
 #include "FbxConv.h"
 
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "Settings.h"
 #include "FbxConvCommand.h"
 #include "readers/FbxConverter.h"

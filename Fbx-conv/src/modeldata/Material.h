@@ -21,7 +21,7 @@
 #define MODELDATA_MATERIAL_H
 
 #include <vector>
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "../readers/matrix3.h"
 #include "../json/BaseJSONWriter.h"
 

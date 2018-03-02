@@ -21,7 +21,7 @@
 #define MODELDATA_NODE_H
 
 #include <vector>
-#include "fbxsdk_2014_2_1.h"
+#include <fbxsdk.h>
 #include "NodePart.h"
 #include "../json/BaseJSONWriter.h"
 
