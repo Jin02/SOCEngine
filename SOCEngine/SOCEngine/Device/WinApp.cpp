@@ -33,9 +33,18 @@ WinApp::WinApp(const Desc& desc)
 	_windowInfo.lpfnWndProc = WndProc;
 
 	_options				= desc.isChild ? WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN : WS_OVERLAPPEDWINDOW | WS_SYSMENU;
-	_rect					= desc.rect;
 	_parentHandle			= desc.parentHandle;
 	_windowsMode			= desc.windowMode;
+	_rect					= desc.rect;
+	if (_rect.x == 0 && _rect.y == 0)
+	{
+		RECT rect = { 0, 0, _rect.size.w, _rect.size.h };
+		AdjustWindowRect ( &rect, _options, FALSE );
+		_rect.size.w = rect.right - rect.left;
+		_rect.size.h = rect.bottom - rect.top;
+		_rect.x = GetSystemMetrics (SM_CXSCREEN) / 2 - _rect.size.w / 2;
+		_rect.y = GetSystemMetrics (SM_CYSCREEN) / 2 - _rect.size.h / 2;
+	}
 }
 
 void WinApp::Initialize()
