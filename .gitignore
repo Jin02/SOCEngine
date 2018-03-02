@@ -9,6 +9,7 @@ SOCEngine/Output/
 *.db-shm
 *.db-wal
 .vscode
+*.user
 
 Fbx-conv/build/vs2012/bin/
 Fbx-conv/build/vs2012/obj/
