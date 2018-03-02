@@ -3,9 +3,12 @@ SOCEngine/Output/
 *.sdf
 *.opensdf
 *.ipch
-*.v11.suo
-*.VC.VC.opendb
+*.suo
+*.VC.opendb
 *.VC.db
+*.db-shm
+*.db-wal
+.vscode
 
 Fbx-conv/build/vs2012/bin/
 Fbx-conv/build/vs2012/obj/
