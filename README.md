@@ -9,7 +9,7 @@ Requirements
 - DirectX 11
 - Visual Studio 2015
 - Python 3
-
+- FBX SDK 2018.1.1
 
 Features
 =================
