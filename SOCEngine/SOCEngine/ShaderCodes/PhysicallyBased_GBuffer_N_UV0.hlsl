@@ -34,9 +34,8 @@ VS_OUTPUT VS( VS_INPUT input )
 
 	float4 prevWorldPos	= mul(localPos, transform_prevWorld);
 	output.prevPosition	= mul(prevWorldPos, camera_prevViewProjMat);
-	output.prevPosition	= float4(output.prevPosition.xyz / output.prevPosition.w, 1.0f);
-	
-	output.position		= float4(position.xyz / position.w, 1.0f);
+
+	output.position		= position;
  	output.sv_position 	= position;
 
     return output;
