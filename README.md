@@ -1,3 +1,7 @@
+This project is not working.
+=================
+
+
 Introduction
 =================
 SOCEngine is a simple 3D rendering framework written in C++.
