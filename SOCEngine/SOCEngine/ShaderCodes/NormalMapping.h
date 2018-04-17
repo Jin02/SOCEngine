@@ -8,7 +8,6 @@ float3 UnpackNormal(float3 normalMapXYZ, float3 normal, float3 tangent)
 	float3 binormal = normalize( cross(normal, tangent) );
 
 	float3x3 TBN = float3x3(normalize(tangent), normalize(binormal), normalize(normal));
-	TBN = transpose(TBN);
 
 	float3 tangentNormal = normalize(normalMapXYZ * 2.0f - 1.0f);
 	return mul(TBN, tangentNormal);
