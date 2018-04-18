@@ -108,7 +108,7 @@ void Voxelization::Voxelize(DirectX& dx, VoxelMap& outDLInjectVoxelMap, const Vo
 	AutoBinderCB<GeometryShader> infoCBGS(dx,		ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 	AutoBinderCB<PixelShader> infoCBPS(dx,			ConstBufferBindIndex::VoxelizationInfoCB,				_infoCB);
 
-	// Voxel World BoundBoxø° µÈæÓø¿¥¬ MeshµÈ∏∏ ∫πºø»≠∏¶ «—¥Ÿ.
+	// Voxel World BoundBoxÏóê Îì§Ïñ¥Ïò§Îäî MeshÎì§Îßå Î≥µÏÖÄÌôîÎ•º ÌïúÎã§.
 	const auto& cullParam = param.cullParam;
 	MeshUtility::ClassifyOpaqueMesh(_renderQ.opaqueRenderQ, *cullParam.meshManager.GetOpaqueMeshPool(), cullParam.objMgr, cullParam.transformPool,
 		[&worldBB = _voxeWorldBoundBox](const Mesh& mesh, const Transform&)
@@ -200,15 +200,6 @@ void Voxelization::UpdateConstBuffer(DirectX& dx, const Vector3& startCenterPos)
 		currentVoxelizeInfo.viewProjY = viewAxisY * orthoProjMat;
 		currentVoxelizeInfo.viewProjZ = viewAxisZ * orthoProjMat;
 
-#ifdef USE_BLOATING_IN_VOXELIZATION_PASS 
-		Matrix::Inverse(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
-		Matrix::Inverse(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
-		Matrix::Inverse(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
-
-		Matrix::Transpose(currentVoxelizeInfo.viewProjX_inv, currentVoxelizeInfo.viewProjX_inv);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjY_inv, currentVoxelizeInfo.viewProjY_inv);
-		Matrix::Transpose(currentVoxelizeInfo.viewProjZ_inv, currentVoxelizeInfo.viewProjZ_inv);
-#endif
 		currentVoxelizeInfo.viewProjX = Matrix::Transpose(currentVoxelizeInfo.viewProjX);
 		currentVoxelizeInfo.viewProjY = Matrix::Transpose(currentVoxelizeInfo.viewProjY);
 		currentVoxelizeInfo.viewProjZ = Matrix::Transpose(currentVoxelizeInfo.viewProjZ);
