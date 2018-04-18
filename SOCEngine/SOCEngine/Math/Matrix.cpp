@@ -292,11 +292,31 @@ Matrix Matrix::Inverse(const Matrix& mat)
 }
 
 Matrix Matrix::RotateUsingQuaternion(const Quaternion& q)
-{
-	return Matrix(	1.0f - 2.0f * (q.y * q.y + q.z * q.z),	2.0f * (q.x *q.y + q.z * q.w),			2.0f * (q.x * q.z - q.y * q.w),			0.0f,
-					2.0f * (q.x * q.y - q.z * q.w),			1.0f - 2.0f * (q.x * q.x + q.z * q.z),	2.0f * (q.y *q.z + q.x *q.w),			0.0f,
-					2.0f * (q.x * q.z + q.y * q.w),			2.0f * (q.y *q.z - q.x *q.w),			1.0f - 2.0f * (q.x * q.x + q.y * q.y),	0.0f,
-					0.0f,									0.0f,									0.0f,									1.0f	);
+{	
+	float qy2 = q.y * q.y;
+	float qx2 = q.x * q.x;
+	float qz2 = q.z * q.z;	
+	
+	return Matrix(
+		1.0f - 2.0f * (qy2 + qz2),
+		2.0f * (q.x * q.y - q.z * q.w),
+		2.0f * (q.x * q.z + q.y * q.w),
+		0.0f,
+
+		2.0f * (q.x * q.y + q.z * q.w),		
+		1.0f - 2.0f * (qx2 + qz2),
+		2.0f * (q.y * q.z - q.x * q.w),
+		0.0f,
+				
+		2.0f * (q.x * q.z - q.y * q.w),
+		2.0f * (q.y * q.z + q.x * q.w),
+		1.0f - 2.0f * (qx2 + qy2),
+		0.0f,
+		
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f	);
 }
 
 Matrix Matrix::PerspectiveFovLH(float aspect, float fovy, float zn, float zf)
@@ -333,23 +353,21 @@ Matrix Matrix::RotateUsingAxis(const Vector3& v, float angle)
 
 Matrix Matrix::ComputeViewMatrix(const Matrix& worldMatrix)
 {
-	Matrix outMatrix = worldMatrix;
-
-	Vector3 right		= Vector3(worldMatrix._11, worldMatrix._21, worldMatrix._31);
-	Vector3 up			= Vector3(worldMatrix._12, worldMatrix._22, worldMatrix._32);
-	Vector3 forward		= Vector3(worldMatrix._13, worldMatrix._23, worldMatrix._33);
+	Vector3 right		= Vector3(worldMatrix._11, worldMatrix._12, worldMatrix._13);
+	Vector3 up			= Vector3(worldMatrix._21, worldMatrix._22, worldMatrix._23);
+	Vector3 forward		= Vector3(worldMatrix._31, worldMatrix._32, worldMatrix._33);
 	Vector3 worldPos	= Vector3(worldMatrix._41, worldMatrix._42, worldMatrix._43);
 
 	Vector3 p			= Vector3(	-Vector3::Dot(right, worldPos),
 									-Vector3::Dot(up, worldPos),
 									-Vector3::Dot(forward, worldPos)	);
 
-	outMatrix._41 = p.x;
-	outMatrix._42 = p.y;
-	outMatrix._43 = p.z;
-	outMatrix._44 = 1.0f;
-
-	return outMatrix;
+	return Matrix(
+		right.x, up.x, forward.x,
+		right.y, up.y, forward.y,
+		right.z, up.z, forward.z,	
+		p.x, p.y, p.z, 1.0f
+	);
 }
 
 Matrix Matrix::ComputeViewportMatrix(const Rect<uint>& rect)
@@ -368,10 +386,10 @@ Matrix Matrix::ComputeInvViewportMatrix(const Rect<uint>& rect)
 
 inline Matrix Math::Matrix::MakeRotationMatrix(const Vector3& right, const Vector3& up, const Vector3& forward)
 {
-	return Matrix(	right.x,	up.x,	forward.x,	0.0f,
-					right.y,	up.y,	forward.y,	0.0f,
-					right.z,	up.z,	forward.z,	0.0f,
-					0.0f,		0.0f,	0.0f,		1.0f	);
+	return Matrix(	right.x,	right.y,	right.z,	0.0f,
+					up.x,		up.y,		up.z,		0.0f,
+					forward.x,	forward.y,	forward.z,	0.0f,
+					0.0f,		0.0f,		0.0f,		1.0f	);
 }
 
 Matrix Math::Matrix::LookAtDir(const Vector3& targetDir, const Vector3 * upVec)
