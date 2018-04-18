@@ -7,17 +7,17 @@ using namespace Math;
 const Matrix& Transform::ComputeLocalMatrix()
 {
 	_localMat._11 = _scale.x * _right.x;
-	_localMat._12 = _scale.y * _up.x;
-	_localMat._13 = _scale.z * _forward.x;
+	_localMat._12 = _scale.y * _right.y;
+	_localMat._13 = _scale.z * _right.z;
 	_localMat._14 = 0.0f;
 
-	_localMat._21 = _scale.x * _right.y;
+	_localMat._21 = _scale.x * _up.x;
 	_localMat._22 = _scale.y * _up.y;
-	_localMat._23 = _scale.z * _forward.y;
+	_localMat._23 = _scale.z * _up.z;
 	_localMat._24 = 0.0f;
 
-	_localMat._31 = _scale.x * _right.z;
-	_localMat._32 = _scale.y * _up.z;
+	_localMat._31 = _scale.x * _forward.x;
+	_localMat._32 = _scale.y * _forward.y;
 	_localMat._33 = _scale.z * _forward.z;
 	_localMat._34 = 0.0f;
 
@@ -47,9 +47,9 @@ void Transform::UpdateLocalForward(const Vector3& f)
 void Transform::UpdateLocalEulerAngle(const Vector3& e)
 {
 	_eulerAngle = Vector3::EulerNormalize(e);
-	_quaternion = Quaternion::FromEuler(-Vector3(DEG_TO_RAD(_eulerAngle.x),
-												 DEG_TO_RAD(_eulerAngle.y),
-												 DEG_TO_RAD(_eulerAngle.z)));
+	_quaternion = Quaternion::FromEuler(Vector3(DEG_TO_RAD(_eulerAngle.x),
+												DEG_TO_RAD(_eulerAngle.y),
+												DEG_TO_RAD(_eulerAngle.z)));
 
 	_right		= _quaternion.GetRight();
 	_up			= _quaternion.GetUp();
@@ -103,30 +103,29 @@ const Vector3 Transform::GetWorldPosition() const
 
 const Vector3 Transform::GetWorldScale() const
 {
-							// Forward			Up				Right
-	return Vector3(	Vector3(_worldMat._11, _worldMat._21, _worldMat._31).Length(),
-					Vector3(_worldMat._12, _worldMat._22, _worldMat._32).Length(),
-					Vector3(_worldMat._13, _worldMat._23, _worldMat._33).Length() );
+	return Vector3(	Vector3(_worldMat._11, _worldMat._12, _worldMat._13).Length(),
+					Vector3(_worldMat._21, _worldMat._22, _worldMat._23).Length(),
+					Vector3(_worldMat._31, _worldMat._32, _worldMat._33).Length() );
 }
 
 const Vector3 Transform::GetWorldRight(const Vector3& scale) const
 {
 	return Vector3(	_worldMat._11 / scale.x,
-					_worldMat._21 / scale.y,
-					_worldMat._31 / scale.z	).Normalized();
+					_worldMat._12 / scale.y,
+					_worldMat._13 / scale.z	).Normalized();
 }
 
 const Vector3 Transform::GetWorldUp(const Vector3& scale) const
 {
-	return Vector3(	_worldMat._12 / scale.x,
+	return Vector3(	_worldMat._21 / scale.x,
 					_worldMat._22 / scale.y,
-					_worldMat._32 / scale.z	).Normalized();
+					_worldMat._23 / scale.z	).Normalized();
 }
 
 const Vector3 Transform::GetWorldForward(const Vector3& scale)	const
 {
-	return Vector3(	_worldMat._13 / scale.x,
-					_worldMat._23 / scale.y,
+	return Vector3(	_worldMat._31 / scale.x,
+					_worldMat._32 / scale.y,
 					_worldMat._33 / scale.z	).Normalized();
 }
 
