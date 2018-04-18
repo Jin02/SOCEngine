@@ -29,7 +29,7 @@ void MeshUtility::_SortTransparentMesh(TransparentMeshRenderQueue& renderQueue,
 			return Vector3::Dot(pos, viewDir);
 		};
 	
-		return SortKey(left) < SortKey(right);
+		return SortKey(left) > SortKey(right);
 	};
 		
 	std::sort(renderQueue.begin(), renderQueue.end(), SortingByDistance);				

@@ -103,16 +103,13 @@ void MainCamera::ClassifyMesh(	const MeshPoolPtrs&& pool,
 								const ObjectManager& objMgr,
 								const TransformPool& transformPool)
 {
-	// TODO:
-	// 일단 Frustum Culling만 수행한다.
-	// 나중에 Hierarchical Z Buffer Occlusion Culling(#73)도
-	// 이곳에서 추가해야한다
-
+	// TODO: Hierarchical Z Buffer Occlusion Culling(#73)
+	
 	// Tarnsparent Meshes
 	{
 		//camCBData was transposed.
-		Vector3 viewDir = Vector3(	_camCBData.viewMat._31,
-									_camCBData.viewMat._32,
+		Vector3 viewDir = Vector3(	_camCBData.viewMat._13,
+									_camCBData.viewMat._23,
 									_camCBData.viewMat._33	);
 
 		MeshUtility::ClassifyTransparentMesh(
