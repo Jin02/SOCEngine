@@ -6,8 +6,6 @@ Introduction
 =================
 SOCEngine is a simple 3D rendering framework written in C++.
 
-This project has been moved from github.com/TeamSOC/SOCEngine-Prototype.
-
 Requirements
 =================
 - Windows 7 later
