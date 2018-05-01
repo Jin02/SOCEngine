@@ -42,24 +42,35 @@ namespace Rendering
 			}
 
 			template <class CallPreRender, class CallPostRender>
-			static void RenderOpaqueMeshes(Device::DirectX& dx, Param param, DefaultRenderType renderType, const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes, CallPreRender preRenderCall, CallPostRender postCall)
+			static void RenderOpaqueMeshes(Device::DirectX& dx,
+				Param param, DefaultRenderType renderType,
+				const Rendering::RenderQueue::OpaqueMeshRenderQueue& meshes,
+				CallPreRender preRenderCall, CallPostRender postCall)
 			{
-				auto& vbPool				= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
-				const VertexBuffer* prevVB	= nullptr;				
-				for (const auto meshPtr : meshes)
+				auto& vbPool		= param.bufferMgr.GetPool<Buffer::VertexBuffer>();
+				auto& vbPerQueue	= meshes.GetQueue();
+
+				uint vbKeyCount		= vbPerQueue.GetSize();
+				for (uint i = 0; i < vbKeyCount; ++i)
 				{
-					const VertexBuffer* curVB = vbPool.Find(mesh->GetVBKey());
-					assert(curVB);
-					
-					if(curVB != prevVB)
+					auto& rawPtrs	= vbPerQueue.Get(i);
+
+					// Render Queue에 들어오는 모든 Mesh는 VB를 가져야 함.
+					assert(rawPtrs->Get(0)); // invalid mesh.
+					auto vbKey		= rawPtrs->Get(0)->GetVBKey();
+
+					const auto* vb	= vbPool.Find(vbKey);
+					assert(vb);
+					vb->IASetBuffer(dx);
+
+					uint meshCount = rawPtrs.GetSize();
+					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
 					{
-						prevVB = curVB;
-						curVB->IASetBuffer(dx);
+						const auto meshPtr = rawPtrs.Get(meshIdx);
+						preRenderCall(meshPtr);
+						RenderWithoutIASetVB(dx, param, renderType, *meshPtr);
+						postCall();
 					}
-		
-					preRenderCall(mesh);
-					RenderWithoutIASetVB(dx, param, renderType, *mesh);
-					postCall();
 				}
 			}
 
