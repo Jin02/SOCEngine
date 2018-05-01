@@ -59,6 +59,8 @@ namespace Rendering
 				}
 			}
 
+			GET_CONST_ACCESSOR(Pool,	_pool);
+			GET_ACCESSOR(Pool,			_pool);
 
 		private:
 			using VBKey = Buffer::VertexBuffer::Key;
