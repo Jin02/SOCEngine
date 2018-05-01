@@ -51,20 +51,28 @@ namespace Rendering
 				CullFunc cullFunc)
 			{
 				renderQueue.DeleteAllContent();
-				
-				pool.Iterate(
-						[&objMgr, &transformPool,
-						 &renderQueue, &cullFunc](const Mesh& mesh)
-						{
-							Core::ObjectID id					= mesh.GetObjectID();
-							const Core::Object* object			= objMgr.Find(id); assert(object);
-							const Core::Transform& transform	= _FindTransform(id, transformPool);
+
+				auto& vbPerMeshes	= pool.GetPool();
+				uint vbKeyCount		= vbPerMeshes.GetSize();
+
+				for (uint i = 0; i < vbKeyCount; ++i)
+				{
+					auto& rawPool	= vbPerMeshes.Get(i);
+					uint meshCount	= rawPool.GetSize();
+					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
+					{
+						const Mesh& mesh = rawPool.Get(meshIdx);
+
+						Core::ObjectID id					= mesh.GetObjectID();
+						const Core::Object* object			= objMgr.Find(id); assert(object);
+						const Core::Transform& transform	= _FindTransform(id, transformPool);
 							
-							bool use = object->GetUse() & cullFunc(mesh, transform);
-							if (use)
-								renderQueue.Add(const_cast<Mesh&>(mesh));
-						}
-					);				
+						bool use = object->GetUse() & cullFunc(mesh, transform);
+
+						if (use)
+							renderQueue.Add(const_cast<Mesh&>(mesh));
+					}
+				}
 			}
 			
 			
