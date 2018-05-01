@@ -30,20 +30,6 @@ namespace Rendering
 						static_cast<const VBSortedMeshPool*>(this)->Find(literalID)
 					);
 			}
-			
-			template <class Iterator>
-			void Iterate(Iterator iterator) const
-			{
-				uint vbKeyCount = _pool.GetSize();
-				for (uint i = 0; i < vbKeyCount; ++i)
-				{
-					auto& rawPool = _pool.Get(i);
-
-					uint meshCount = rawPool.GetSize();
-					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
-						iterator(rawPool.Get(meshIdx));
-				}
-			}
 
 			template <class Iterator>
 			void Iterate(Iterator iterator)
@@ -57,6 +43,12 @@ namespace Rendering
 					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
 						iterator(rawPool.Get(meshIdx));
 				}
+			}
+
+			template <class Iterator>
+			void Iterate(Iterator iterator) const
+			{
+				const_cast<VBSortedMeshPool*>(this)->Iterate(iterator);
 			}
 
 			GET_CONST_ACCESSOR(Pool,	_pool);

@@ -27,22 +27,17 @@ namespace Rendering
 					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
 						iterator( rawPtrs.Get(meshIdx) );
 				}
-			}
+			}			
 
 			template <class Iterator>		// Iterator Form = "[](const Mesh*) -> void { }"
 			void Iterate(Iterator iterator) const
 			{
-				uint vbKeyCount = _vbPerMeshes.GetSize();
-				for (uint i = 0; i < vbKeyCount; ++i)
-				{
-					const auto& rawPtrs = _vbPerMeshes.Get(i);
-
-					uint meshCount = rawPtrs.GetSize();
-					for (uint meshIdx = 0; meshIdx < meshCount; ++meshIdx)
-						iterator( rawPtrs.Get(meshIdx) );
-				}
+				const_cast<OpaqueMeshRenderQueue*>(this)->Iterate(iterator);
 			}
 
+
+			GET_ACCESSOR_REF(Queue,			_vbPerMeshes);
+			GET_CONST_ACCESSOR_REF(Queue,	_vbPerMeshes);
 			
 		private:
 			Core::VectorHashMap<Buffer::VertexBuffer::Key,
