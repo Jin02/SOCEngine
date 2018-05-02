@@ -39,8 +39,8 @@ void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3],
 	position[2] = mul(worldPos[2], voxelization_vp_axis[axisIndex]);
 }
 
-void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx,
-											   float4 value)
+// Moving Average
+void AtomicStoreAvgColor(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, float4 value)
 {
 	value *= 255.0f;
 
@@ -50,7 +50,7 @@ void StoreVoxelMapAtomicColorAvgUsingRawBuffer(RWByteAddressBuffer voxelMap, uin
 
 	uint count = 0;
 
-	[allow_uav_condition]do//[allow_uav_condition]while(true)
+	do
 	{
 		uint address	= flattedVoxelIdx * 4;
 		voxelMap.InterlockedCompareExchange(address, prevStoredValue, newValue, currentStoredValue);
@@ -76,10 +76,10 @@ void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
 	{
 		uint index = GetFlattedVoxelIndex(voxelIdx, gi_dimension);
 
-		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelAlbedoMap,	index,	albedoWithAlpha);
+		AtomicStoreAvgColor(OutVoxelAlbedoMap,	index,	albedoWithAlpha);
 
 		float3 storeNormal = normal * 0.5f + 0.5f;
-		StoreVoxelMapAtomicColorAvgUsingRawBuffer(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f));
+		AtomicStoreAvgColor(OutVoxelNormalMap,	index,	float4(storeNormal, 1.0f));
 	}
 }
 

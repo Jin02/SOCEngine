@@ -221,23 +221,25 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	
 			// AlphaTest
 			{
-				// GBuffer는 그대로 Output으로 사용한다.
+				// TODO : github.com/Jin02/SOCEngine/issues/89
 				// dx.SetRenderTargets(ARRAYSIZE(renderTargets), renderTargets, _gbuffer.opaqueDepthBuffer);
 	
 				if(dx.GetMSAADesc().Count > 1)	// on msaa
 					dx.SetBlendState(BlendState::AlphaToCoverage);
-				// msaa가 아니라면 BlendState::Opaque를 그대로 쓴다.
 	
 				dx.SetRasterizerState(RasterizerState::CWDisableCulling);
 	
 				MeshRenderer::RenderAlphaTestMeshes(dx, renderParam, DefaultRenderType::GBuffer_AlphaTest, mainCamera.GetAlphaTestMeshRenderQ(),
 					[&dx, &materialMgr](const Mesh* mesh)	// Pre-Render
 					{
-						const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
+						const auto* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
 						if(material)
 							BindGBufferResourceTextures(dx, material);
 					},
-					[&dx](/*Post Render*/) { UnBindGBufferResourceTextures(dx); }
+					[&dx](/*Post Render*/)
+					{
+						UnBindGBufferResourceTextures(dx);
+					}
 				);	
 			}
 		}
@@ -319,14 +321,14 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		_blendedDepthLightCulling.Dispatch(dx, _tbdrThreadGroup);
 	}
 
-	// 2 - Sky
+	// 3 Pass - Render Skybox
 	if(param.skyBoxMaterial)
 	{
 		_skyBoxMap.Clear(dx, Color::Clear());
 		_skyBoxRenderer.Render(dx, _skyBoxMap, _gbuffer.opaqueDepthBuffer, *param.skyBoxMaterial, _tbrCB);
 	}
 
-	// 3 - Render Transparent Mesh
+	// 4 Pass - Render Transparent Mesh, Forward+
 	{
 		_transparentMap.Clear(dx, Color::Clear());
 
@@ -378,7 +380,7 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 			mainCamera.GetTransparentMeshRenderQ(),
 			[&dx, &materialMgr](const Mesh* mesh)
 			{
-				const PhysicallyBasedMaterial* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
+				const auto* material = materialMgr.Find<PhysicallyBasedMaterial>(mesh->GetPBRMaterialID());					
 				if(material)
 					BindGBufferResourceTextures(dx, material);
 			},
@@ -391,13 +393,13 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 		dx.ReSetRenderTargets(1);
 	}
 
-	// 4 - GI
+	// 5 Pass - VXGI
 	if (_useGI)
 	{
 		_gi.Run(dx, VXGI::Param{MainRenderingSystemParam{*this, mainCamera}, lightMgr, param.shadowParam, std::move(param.cullingParam), param.renderParam, param.materialMgr});
 	}
 
-	// 5 - Build Main RT
+	// 6 Pass - Build Main RT
 	{
 		_mainSceneMaker.Render(dx, _resultMap,	{	
 													*_scaledMap.GetTexture2D(),

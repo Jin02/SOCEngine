@@ -41,7 +41,7 @@ def Dump():
 CONSOLE_LINE = "***********************************************"
 
 print (CONSOLE_LINE + '\n')
-print ("SOC Framework FBX-Conv Luncher\n")
+print ("SOC Framework FBX-Conv Launcher\n")
 
 result, fbxConvPath, outputType, runStartDir = CheckParameter()
 if result == False:
