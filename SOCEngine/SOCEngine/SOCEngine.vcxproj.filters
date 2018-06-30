@@ -1412,12 +1412,6 @@
     <FxCompile Include="ShaderCodes\VoxelTextureToBuffer.hlsl">
       <Filter>ShaderCodes\VXGI\Debug</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceRayTracing.hlsl">
-      <Filter>ShaderCodes\Postprocessing\RayTracing</Filter>
-    </FxCompile>
-    <FxCompile Include="ShaderCodes\ScreenSpaceConeTracing.hlsl">
-      <Filter>ShaderCodes\Postprocessing\RayTracing</Filter>
-    </FxCompile>
     <FxCompile Include="ShaderCodes\Bloom.hlsl">
       <Filter>ShaderCodes\Postprocessing\HDR</Filter>
     </FxCompile>
