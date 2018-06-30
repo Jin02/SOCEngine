@@ -19,7 +19,7 @@ SamplerState		linearSampler						: register( s0 );
 #define SAMPLE_START_OFFSET_RATE			2.0f
 #define AMBIENT_OCCLUSION_K				8.0f
 
-// ì½˜ì˜ ê°ë„ì— ê´€ë ¨í•œ ë°ì´í„° ê°’ì€ ì•„ë˜ ê¸€ ì°¸ê³ í–ˆìŒ.
+// ÄÜÀÇ °¢µµ¿¡ °ü·ÃÇÑ µ¥ÀÌÅÍ °ªÀº ¾Æ·¡ ±Û Âü°íÇßÀ½.
 // http://simonstechblog.blogspot.kr/2013/01/implementing-voxel-cone-tracing.html
 static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Space
 {
@@ -31,7 +31,7 @@ static const float3 ConeDirLS[MAXIMUM_CONE_COUNT] = //Cone Direction In Local Sp
 	float3(-0.823639f, 0.5f, 0.267617f)
 };
 
-// ì´ê²ƒë„ ìœ„ì˜ ë§í¬ ì°¸ê³ 
+// ÀÌ°Íµµ À§ÀÇ ¸µÅ© Âü°í
 static const float ConeWeights[MAXIMUM_CONE_COUNT] =
 {
 	PI / 4.0f,		//45 degree

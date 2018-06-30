@@ -230,7 +230,7 @@ void TileBasedDeferredShadingCS(uint3 globalIdx : SV_DispatchThreadID,
 	uint2 scale_sample_coord	= uint2(0, 0);
 	uint sample_mul_LightCount	= (MSAA_SAMPLES_COUNT - 1) * s_edgePixelCounter;
 	for(uint i=idxInTile; i < sample_mul_LightCount; i += THREAD_COUNT)
-	{	// 이해 안가면 차근차근 읽어보자. 구현한지 하도 오래되서 기억이 가물가물 하다.
+	{
 		edgePixelIdx	= i / (MSAA_SAMPLES_COUNT - 1);			// 0 ~ s_edgePixelCounter
 		sampleIdx		= (i % (MSAA_SAMPLES_COUNT - 1)) + 1;	// 1 ~ 3
 
