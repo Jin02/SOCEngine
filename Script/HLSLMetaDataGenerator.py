@@ -293,13 +293,13 @@ class ParseCode:
 WorkReturnValues = Enum('EmptyFile', 'Success', 'NotCreateMeta')
 def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 	shaderFileModifyTime = os.path.getmtime(shaderFilePath)
-	print ("\nShader File Modify Time : " + time.ctime(shaderFileModifyTime))
+	print ("Shader File Modify Time : " + time.ctime(shaderFileModifyTime), '\n')
 
 	isCreateMetadata = True
 
 	# check original file
 	if os.path.isfile(metaDataFilePath):
-	 	metadataFile = open(metaDataFilePath, 'r', encoding='utf-8')
+	 	metadataFile = open(metaDataFilePath, 'r')
 	 	js = json.loads(metadataFile.read())
 	 	metadataFile.close()	 	
 
@@ -308,7 +308,7 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 		 	isCreateMetadata = (js["ShaderFileModifyTime"] != time.ctime(shaderFileModifyTime))
 
 	#check Shader File
-	shaderFile 	= open(shaderFilePath, 'r', encoding='utf-8')
+	shaderFile 	= open(shaderFilePath, 'r')
 	firstLine 	= shaderFile.readline()
 	shaderFile.close()
 
@@ -320,12 +320,10 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 			return WorkReturnValues.EmptyFile
 		elif USED_FOR_INCLUDE in firstLine:
 			return WorkReturnValues.NotCreateMeta
-
-		print ("Create Metadata\n")
 	else:
 		return WorkReturnValues.NotCreateMeta
 
-	shaderFile 	= open(shaderFilePath, 'r', encoding='utf-8')
+	shaderFile 	= open(shaderFilePath, 'r')
 	lines = shaderFile.read().split('\n')
 
 	parser = ParseCode()
@@ -343,7 +341,7 @@ def Work(shaderFilePath, folderPath, metaDataFilePath, useEasyView):
 				lines[lineIdx] = '' # remove include
 
 				incFileName	= cleanLine[cleanLine.find('"')+1 : cleanLine.rfind('"')]
-				incFile 	= open(folderPath + incFileName, 'r', encoding='utf-8')
+				incFile 	= open(folderPath + incFileName, 'r')
 
 				newFileLines = incFile.read().split('\n')
 				if (NOT_CREATE_META_DATA in newFileLines[0]) or (ONLY_PATH_FINDING in newFileLines[0]):
@@ -537,7 +535,6 @@ for (path, dirs, files) in os.walk(targetDir):
 		extensionPos 	= fileNameWithExtension.rfind('.')
 		fileExtension 	= fileNameWithExtension[extensionPos:]
 		fileName 		= fileNameWithExtension[:extensionPos]
-		print (fileName)
 
 		if (fileExtension == '.fx') or (fileExtension == '.hlsl'):
 			print ("Found!!!", fileFullPath)
