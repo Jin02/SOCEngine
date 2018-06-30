@@ -363,9 +363,9 @@ Matrix Matrix::ComputeViewMatrix(const Matrix& worldMatrix)
 									-Vector3::Dot(forward, worldPos)	);
 
 	return Matrix(
-		right.x, up.x, forward.x,
-		right.y, up.y, forward.y,
-		right.z, up.z, forward.z,	
+		right.x, up.x, forward.x, 0.0f,
+		right.y, up.y, forward.y, 0.0f,
+		right.z, up.z, forward.z, 0.0f,
 		p.x, p.y, p.z, 1.0f
 	);
 }

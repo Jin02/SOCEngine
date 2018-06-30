@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DefaultShaders.h"
 #include "MeshManager.h"
@@ -56,8 +56,8 @@ namespace Rendering
 					auto& rawPtrs	= vbPerQueue.Get(i);
 
 					// Render Queue에 들어오는 모든 Mesh는 VB를 가져야 함.
-					assert(rawPtrs->Get(0)); // invalid mesh.
-					auto vbKey		= rawPtrs->Get(0)->GetVBKey();
+					assert(rawPtrs.Get(0)); // invalid mesh.
+					auto vbKey		= rawPtrs.Get(0)->GetVBKey();
 
 					const auto* vb	= vbPool.Find(vbKey);
 					assert(vb);

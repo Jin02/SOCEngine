@@ -38,7 +38,8 @@ WinApp::WinApp(const Desc& desc)
 	_rect					= desc.rect;
 	if (_rect.x == 0 && _rect.y == 0)
 	{
-		RECT rect = { 0, 0, _rect.size.w, _rect.size.h };
+		auto longTtypeSize = _rect.size.Cast<LONG>();
+		RECT rect = { 0, 0, longTtypeSize.w, longTtypeSize.h };
 		AdjustWindowRect ( &rect, _options, FALSE );
 		_rect.size.w = rect.right - rect.left;
 		_rect.size.h = rect.bottom - rect.top;

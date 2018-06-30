@@ -51,8 +51,8 @@ namespace Rendering
 				const_cast<VBSortedMeshPool*>(this)->Iterate(iterator);
 			}
 
-			GET_CONST_ACCESSOR(Pool,	_pool);
-			GET_ACCESSOR(Pool,			_pool);
+			GET_CONST_ACCESSOR_REF(Pool,	_pool);
+			GET_ACCESSOR_REF(Pool,			_pool);
 
 		private:
 			using VBKey = Buffer::VertexBuffer::Key;

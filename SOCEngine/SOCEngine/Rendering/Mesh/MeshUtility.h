@@ -67,9 +67,7 @@ namespace Rendering
 						const Core::Object* object			= objMgr.Find(id); assert(object);
 						const Core::Transform& transform	= _FindTransform(id, transformPool);
 							
-						bool use = object->GetUse() & cullFunc(mesh, transform);
-
-						if (use)
+						if (object->GetUse() && cullFunc(mesh, transform))
 							renderQueue.Add(const_cast<Mesh&>(mesh));
 					}
 				}
@@ -77,11 +75,9 @@ namespace Rendering
 			
 			
 		private:
-			static const Core::Transform&
-				_FindTransform(Core::ObjectID id, const Core::TransformPool& transformPool);
-			static void
-				_SortTransparentMesh(RenderQueue::TransparentMeshRenderQueue& renderQueue,
-									 const Math::Vector3& viewDir, const Core::TransformPool& transformPool);
+			static const Core::Transform& _FindTransform(Core::ObjectID id, const Core::TransformPool& transformPool);
+			static void _SortTransparentMesh(RenderQueue::TransparentMeshRenderQueue& renderQueue,
+											 const Math::Vector3& viewDir, const Core::TransformPool& transformPool);
 		};
 	}
 }
