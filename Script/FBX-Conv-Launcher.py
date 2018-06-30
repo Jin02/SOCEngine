@@ -78,7 +78,7 @@ for (path, dirs, files) in os.walk(targetDir):
 		command = fbxConvPath + " -f " + fileFullPath + ' ' + outputFilePath
 		print (command)
 
-		res = subprocess.check_output(command, shell=True)
+		res = subprocess.run(command)
 		print ("Generated File : " + outputFileNameWithExtension)
 
 print ("Done!\n")
