@@ -1,7 +1,3 @@
-This project is not working.
-=================
-
-
 Introduction
 =================
 SOCEngine is a simple 3D rendering framework written in C++
@@ -13,8 +9,9 @@ Requirements
 - Windows 7 later
 - DirectX 11
 - Visual Studio 2015
+- Visual Studio 2012
 - Python 3
-- FBX SDK 2018.1.1
+- FBX SDK 2014.2.1
 
 Features
 =================
