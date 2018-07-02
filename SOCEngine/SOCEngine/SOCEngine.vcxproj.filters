@@ -508,9 +508,6 @@
     <ClInclude Include="Core\IScene.h">
       <Filter>Core\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Core\VectorIndexer.hpp">
-      <Filter>Core\Structure</Filter>
-    </ClInclude>
     <ClInclude Include="Core\ArrayVector.hpp">
       <Filter>Core\Structure</Filter>
     </ClInclude>
@@ -1029,6 +1026,9 @@
     </ClInclude>
     <ClInclude Include="Rendering\PostProcessing\MotionBlur.h">
       <Filter>Rendering\Postprocessing\MotionBlur</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\VectorIndexer.hpp">
+      <Filter>Core\Transform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
