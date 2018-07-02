@@ -42,6 +42,7 @@ void ComputeVoxelizationProjPos(out float4 position[3], out float4 worldPos[3],
 // Moving Average
 void AtomicStoreAvgColor(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, float4 value)
 {
+#if 0
 	value *= 255.0f;
 
 	uint newValue			= ToUint(value);
@@ -67,7 +68,10 @@ void AtomicStoreAvgColor(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, flo
 		reCompute.xyz /= reCompute.w;
 
 		newValue = ToUint(reCompute);
-	}while(++count < 16);
+	}while(false);
+#else
+	voxelMap.Store(flattedVoxelIdx * 4, ToUint(value * 255.0f));
+#endif
 }
 
 void StoreVoxelMap(float4 albedoWithAlpha, float3 normal, int3 voxelIdx)
