@@ -12,9 +12,9 @@ namespace Core
 	class Indexer
 	{
 	public:
-		void Add(const Key& key, uint index)
+		bool Add(const Key& key, uint index)
 		{
-			_map.insert(std::make_pair(key, index));
+			return _map.insert(std::make_pair(key, index)).second;
 		}
 
 		uint Find(const Key& key) const

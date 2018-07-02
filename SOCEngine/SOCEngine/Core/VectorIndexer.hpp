@@ -25,8 +25,9 @@ namespace Core
 
 		Object& Add(const Key& key, Object& object)
 		{
-			uint idx = _vector.size();
-			_indexer.Add(key, idx);
+			uint idx			= _vector.size();
+			bool noDuplicated	= _indexer.Add(key, idx);
+			assert(noDuplicated);
 
 			_vector.push_back(object);
 			return _vector[idx];
