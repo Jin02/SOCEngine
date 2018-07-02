@@ -47,7 +47,7 @@ void Transform::UpdateLocalForward(const Vector3& f)
 void Transform::UpdateLocalEulerAngle(const Vector3& e)
 {
 	_eulerAngle = Vector3::EulerNormalize(e);
-	_quaternion = Quaternion::FromEuler(Vector3(DEG_TO_RAD(_eulerAngle.x),
+	_quaternion = Quaternion::FromEuler(-Vector3(DEG_TO_RAD(_eulerAngle.x),
 												DEG_TO_RAD(_eulerAngle.y),
 												DEG_TO_RAD(_eulerAngle.z)));
 
