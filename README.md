@@ -33,7 +33,7 @@ Features
   - PCF (Point, Spot light)
   - PCSS (Directional light)
 - Skybox
-- Sky Scattering
+- Atmospheric Scattering
   - Preetham Model
 - Normal Mapping
 - hlsl parser and generate shader initialization code.
