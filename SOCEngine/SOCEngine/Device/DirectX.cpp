@@ -280,7 +280,12 @@ void DirectX::CreateBlendStates()
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
 	_blendStates[static_cast<uint>(BlendState::Opaque)] = DXUniqueResource<ID3D11BlendState>(blendState);
 
+	renderTargetBlendDesc.RenderTargetWriteMask = 0;
+	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
+	_blendStates[static_cast<uint>(BlendState::OpaqueDepthOnly)] = DXUniqueResource<ID3D11BlendState>(blendState);
+
 	blendDesc.AlphaToCoverageEnable = true;
+	renderTargetBlendDesc.RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
 	assert(SUCCEEDED(_device->CreateBlendState(&blendDesc, &blendState)));
 	_blendStates[static_cast<uint>(BlendState::AlphaToCoverage)] = DXUniqueResource<ID3D11BlendState>(blendState);
 

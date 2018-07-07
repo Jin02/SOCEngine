@@ -221,11 +221,10 @@ void MainRenderer::Render(DirectX& dx, const Param&& param)
 	
 			// AlphaTest
 			{
-				// TODO : github.com/Jin02/SOCEngine/issues/89
-				// dx.SetRenderTargets(ARRAYSIZE(renderTargets), renderTargets, _gbuffer.opaqueDepthBuffer);
-	
-				if(dx.GetMSAADesc().Count > 1)	// on msaa
+				if (dx.GetMSAADesc().Count > 1)	// on msaa
 					dx.SetBlendState(BlendState::AlphaToCoverage);
+				else
+					dx.SetBlendState(BlendState::OpaqueDepthOnly);
 	
 				dx.SetRasterizerState(RasterizerState::CWDisableCulling);
 	

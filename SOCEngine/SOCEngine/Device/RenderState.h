@@ -20,6 +20,7 @@ namespace Rendering
 		enum class BlendState : unsigned int
 		{
 			Opaque				= 0,
+			OpaqueDepthOnly,
 			AlphaToCoverage,
 			Alpha,
 			MAX
