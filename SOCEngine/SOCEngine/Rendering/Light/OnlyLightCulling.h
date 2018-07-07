@@ -17,6 +17,8 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& maxRenderRectSize);
+			void Destroy();
+
 			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup& group);
 			void Dispatch(Device::DirectX& dx, const Shader::ComputeShader::ThreadGroup&& group) { Dispatch(dx, group); }
 

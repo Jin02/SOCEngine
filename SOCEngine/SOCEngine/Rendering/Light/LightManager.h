@@ -17,6 +17,7 @@ namespace Rendering
 			DISALLOW_COPY_CONSTRUCTOR(LightManager);
 
 			void Initialize(Device::DirectX& dx);
+			void Destroy();
 
 			template <class LightType>
 			LightType& Acquire(Core::ObjectID objID)
@@ -75,8 +76,6 @@ namespace Rendering
 				Delete<LightType>(id);
 				_changedLightCounts = true;
 			}
-
-			void DeleteAll();
 
 			uint GetPackedLightCount() const;
 

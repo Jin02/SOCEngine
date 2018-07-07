@@ -23,6 +23,11 @@ void MipmapVoxelMap::Initialize(DirectX& dx, ShaderManager& shaderMgr)
 	_infoCB.Initialize(dx);
 }
 
+void MipmapVoxelMap::Destroy()
+{
+	_infoCB.Destroy();
+}
+
 void MipmapVoxelMap::Mipmapping(DirectX& dx, const VoxelMap& sourceColorMap, VoxelMap& outAnisotropicMap)
 {
 	uint sourceDimension = sourceColorMap.GetSideLength();

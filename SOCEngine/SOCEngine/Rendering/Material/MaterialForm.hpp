@@ -22,6 +22,7 @@ namespace Rendering
 		using ConstBuffers		= Core::VectorHashMap<std::string, BindConstBuffer>;
 
 		MaterialForm(const std::string& name) : _name(name) {}
+
 		inline void Destroy()
 		{
 			_constBuffers.DeleteAll();

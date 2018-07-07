@@ -38,6 +38,23 @@ void ShadowManager::Initialize(DirectX& dx)
 	GetBuffer<PointLightShadow>().Initialize(dx, POINT_LIGHT_BUFFER_MAX_NUM);
 }
 
+void ShadowManager::Destroy()
+{
+	auto Clear = [](auto& datas)
+	{
+		datas.buffers.Destroy();
+		datas.cbPool.DeleteAll();
+		datas.dirtyShadows.clear();
+		datas.influentialLights.clear();
+		datas.mustUpdateToGPU = true;
+		datas.pool.DeleteAll();
+	};
+
+	Clear(GetShadowDatas<DirectionalLightShadow>());
+	Clear(GetShadowDatas<SpotLightShadow>());
+	Clear(GetShadowDatas<PointLightShadow>());
+}
+
 void ShadowManager::CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const ObjectManager& objMgr,
 											  const LightManager& lightMgr, const TransformPool& tfPool)
 {

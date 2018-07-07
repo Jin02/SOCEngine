@@ -31,6 +31,11 @@ void DirectionalLightShadowMapCBPool::Delete(uint shadowIndex)
 
 void DirectionalLightShadowMapCBPool::DeleteAll()
 {
+	for (auto& iter : _constBuffers)
+	{
+		iter.viewMatCB.Destroy();
+		iter.viewProjMatCB.Destroy();
+	}
 	_constBuffers.clear();
 	_preparedConstBuffers.clear();
 }

@@ -25,6 +25,12 @@ void SSAO::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr)
 	_paramCB.UpdateSubResource(dx, ParamCBData());
 }
 
+void SSAO::Destroy()
+{
+	_screen.Destroy();
+	_paramCB.Destroy();
+}
+
 void SSAO::UpdateParamCB(Device::DirectX& dx)
 {
 	if(_dirty == false)

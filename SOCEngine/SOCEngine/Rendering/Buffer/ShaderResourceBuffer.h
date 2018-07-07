@@ -14,6 +14,7 @@ namespace Rendering
 			ShaderResourceBuffer(const BaseBuffer&, const View::ShaderResourceView&);
 
 			void Initialize(Device::DirectX& dx, uint stride, uint num, DXGI_FORMAT format, const void* sysMem, uint optionalBindFlag, D3D11_USAGE usage);
+			void Destroy();
 
 			inline void UpdateResourceUsingMapUnMap(Device::DirectX& dx, const void* data, uint size)
 			{

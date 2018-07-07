@@ -25,11 +25,13 @@ void LightManager::Initialize(Device::DirectX& dx)
 	GetBuffer<SpotLight>().Initialize(dx);
 }
 
-void LightManager::DeleteAll()
+void LightManager::Destroy()
 {
 	auto DeleteAll = [](auto& lightData)
 	{
+		lightData.lightBuffer.Destroy();
 		lightData.lightBuffer.DeleteAll();
+
 		lightData.pool.DeleteAll();
 		lightData.dirtyParamLights.clear();
 		lightData.dirtyTransformLights.clear();

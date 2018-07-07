@@ -107,6 +107,9 @@ void Engine::Initialize(IScene* scene)
 void Engine::Destroy()
 {
 	_scene->OnDestroy(*this, _util);
+	_rendering.Destroy(*this);
+	_componentSystem.Destroy();
+
 	_exit = true;
 }
 

@@ -41,6 +41,23 @@ void PostProcessPipeline::Initialize(DirectX& dx, ShaderManager& shaderMgr, cons
 	_copy.Initialize(dx, shaderMgr);
 }
 
+void PostProcessPipeline::Destroy()
+{
+	for (auto& tex : _tempTextures.downScaledTextures)
+		tex.Destroy();
+	_tempTextures.halfSizeMap.Destroy();
+	_tempTextures.minSizeMap.Destroy();
+	_tempTextures.originSizeMap.Destroy();
+
+	_tempResultMap.Destroy();
+
+	GetPostproessing<Bloom>().Destroy();
+	GetPostproessing<SSAO>().Destroy();
+	GetPostproessing<DepthOfField>().Destroy();
+	GetPostproessing<SunShaft>().Destroy();
+	GetPostproessing<MotionBlur>().Destroy();
+}
+
 void PostProcessPipeline::ReCompileBloom(DirectX& dx, ShaderManager& shaderMgr, const MainCamera& mainCamera, bool use)
 {
 	if (GetPostproessing<Bloom>().GetUse())

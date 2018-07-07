@@ -40,6 +40,14 @@ void DepthOfField::Initialize(Device::DirectX& dx, Manager::ShaderManager& shade
 	_blurredColorMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 }
 
+void DepthOfField::Destroy()
+{
+	_screen.Destroy();
+	_blur.Destroy();
+	_blurredColorMap.Destroy();
+	_paramCB.Destroy();	
+}
+
 void DepthOfField::UpdateParamCB(Device::DirectX& dx)
 {
 	if(_dirty == false)

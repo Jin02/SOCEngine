@@ -86,7 +86,16 @@ void RenderingSystem::Render(Engine& engine, float dt)
 
 void RenderingSystem::Destroy(Engine& engine)
 {
+	_postProcessing.Destroy();
+	_mainRenderer.Destroy();
+	_shadowRenderer.Destroy();
+	_skyScatteringRenderer.Destroy();
 
+	_materialManager.Destroy();
+	_defaultShaders.Destroy();
+	_bufferManager.Destroy();
+	_shaderManager.Destroy();
+	_tex2dManager.DeleteAll();
 }
 
 MaterialID RenderingSystem::ActivateSkyScattering(Engine& engine, uint resolution, const Object& directionalLightObject)

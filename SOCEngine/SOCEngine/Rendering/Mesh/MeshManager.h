@@ -51,6 +51,8 @@ namespace Rendering
 
 
 		public:
+			void Destroy();
+
 			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::TransparentMeshPool& meshPool)
 			{
 				assert(mesh.GetVBKey() != 0); //Error, mesh does not init yet.

@@ -31,3 +31,9 @@ void ShaderResourceBuffer::Initialize(
 	_baseBuffer.SetBuffer(dx.CreateBuffer(desc, sysMem ? &data : nullptr));
 	_srv.InitializeUsingBuffer(dx, _baseBuffer, num, format, false);
 }
+
+void ShaderResourceBuffer::Destroy()
+{
+	_srv.Destroy();
+	_baseBuffer.Destroy();
+}

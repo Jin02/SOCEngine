@@ -28,6 +28,7 @@ namespace Rendering
 		{
 		public:
 			void Initialize(Device::DirectX& dx);
+			void Destroy();
 
 			void CheckDirtyWithCullShadows(const Manager::CameraManager& camMgr, const Core::ObjectManager& objMgr, const LightManager& lightMgr, const Core::TransformPool& tfPool);			
 			void ClearDirty();

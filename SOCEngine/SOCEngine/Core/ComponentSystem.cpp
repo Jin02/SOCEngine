@@ -82,5 +82,8 @@ void ComponentSystem::ClearDirty()
 
 void ComponentSystem::Destroy()
 {
-
+	GetManager_Direct<ShadowManager>().Destroy();
+	GetManager_Direct<LightManager>().Destroy();
+	GetManager_Direct<MeshManager>().Destroy();
+	GetManager_Direct<CameraManager>().Destroy();
 }

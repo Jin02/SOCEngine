@@ -20,6 +20,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, uint sideLength, DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, uint mipmapCount, bool isAnisotropic);
+			void Destroy();
 
 			GET_CONST_ACCESSOR(SideLength,		uint,		_sideLength);
 			GET_CONST_ACCESSOR(MaxMipmapLevel,	uint,		_mipmapCount-1);

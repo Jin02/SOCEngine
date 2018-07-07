@@ -16,6 +16,7 @@ namespace Rendering
 							uint width, uint height, uint depth,
 							DXGI_FORMAT tex3DFormat, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat,
 							uint optionBindFlag, uint mipLevels);
+			void Destroy();
 
 			GET_CONST_ACCESSOR_REF(ShaderResourceView,				_srv);
 			GET_CONST_ACCESSOR_REF(Texture,							_texture);

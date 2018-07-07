@@ -54,6 +54,7 @@ namespace Rendering
 			};
 			void Initialize(Device::DirectX& dx, Manager::BufferManager& bufferMgr, const CreateFuncArguments& args);
 			void Initialize(Device::DirectX& dx, const Buffer::VertexBuffer::Semantics& semantics, Buffer::BaseBuffer::Key vbKey, Buffer::BaseBuffer::Key ibKey);
+			void Destroy();
 
 			void CalcWorldSize(Math::Vector3& worldMin, Math::Vector3& worldMax, const Core::Transform& transform) const;
 			void UpdateTransformCB(Device::DirectX& dx, const Core::Transform& transform);

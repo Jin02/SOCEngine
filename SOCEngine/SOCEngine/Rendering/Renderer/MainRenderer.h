@@ -33,6 +33,8 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MainRenderer);
 
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, Manager::BufferManager& bufferMgr, const Camera::MainCamera& mainCamera, const GIInitParam& giParam);
+			void Destroy();
+
 			void UpdateCB(Device::DirectX& dx, const Camera::MainCamera& mainCamera, const Manager::LightManager& lightMgr);
 
 			struct Param

@@ -99,3 +99,25 @@ void MeshManager::UpdateTransformCB(DirectX& dx, const Core::TransformPool& tfPo
 		mesh->UpdateTransformCB(dx, *tf);
 	}
 }
+
+void MeshManager::Destroy()
+{
+	auto DestroyMesh = [](auto& pool)
+	{
+		pool.Iterate(
+			[](auto& mesh)
+			{
+				mesh.Destroy();
+			}	
+		);
+	};
+
+	DestroyMesh(_transparentMeshPool);
+	DestroyMesh(_opaqueMeshPool);
+	DestroyMesh(_alphaTestMeshPool);
+
+	_dirtyMeshes.clear();
+	_mustUpdateCBMeshes.clear();
+
+	_dirty = true;
+}

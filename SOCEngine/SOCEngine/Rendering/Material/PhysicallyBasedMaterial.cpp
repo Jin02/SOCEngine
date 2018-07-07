@@ -33,10 +33,6 @@ void PhysicallyBasedMaterial::Initialize(Device::DirectX& dx)
 	GetConstBuffers().Add(ParamCB::GetKey(), bind);
 }
 
-void PhysicallyBasedMaterial::Destroy()
-{
-}
-
 void PhysicallyBasedMaterial::UpdateConstBuffer(Device::DirectX& dx)
 {
 	ParamCB param;

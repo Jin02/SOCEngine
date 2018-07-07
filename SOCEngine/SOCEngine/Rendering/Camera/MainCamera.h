@@ -54,6 +54,8 @@ namespace Rendering
 			DISALLOW_ASSIGN_COPY(MainCamera);
 
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Rect<uint>& rect);
+			void Destroy();
+
 			void UpdateCB(Device::DirectX& dx, const Core::Transform& transform);
 			void ClearDirty() { _dirty = false; }
 

@@ -9,6 +9,7 @@ namespace Rendering
 	{
 	public:
 		void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
+		void Destroy();
 
 		struct RenderParam
 		{
@@ -21,6 +22,5 @@ namespace Rendering
 
 	private:
 		PostProcessing::FullScreen	_screen;
-
 	};
 }

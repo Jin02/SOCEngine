@@ -21,6 +21,12 @@ void SkyBoxRenderer::Initialize(DirectX& dx, BufferManager& bufferMgr)
 	_transformCB.Initialize(dx);
 }
 
+void SkyBoxRenderer::Destroy()
+{
+	_geometry.Destroy();
+	_transformCB.Destroy();
+}
+
 void SkyBoxRenderer::UpdateCB(DirectX& dx, const Vector3& worldPos, const Matrix& viewProjMat, float far)
 {
 	Matrix matrix;

@@ -32,3 +32,10 @@ void GPURawBuffer::Initialize(Device::DirectX& dx, uint stride, uint elemNum, Fl
 	if(useUAV)
 		_uav.Initialize(dx, DXGI_FORMAT_R32_TYPELESS, elemNum, _buffer.GetBuffer(), D3D11_UAV_DIMENSION_BUFFER, 0, 0, D3D11_BUFFER_UAV_FLAG_RAW);
 }
+
+void GPURawBuffer::Destroy()
+{
+	_uav.Destroy();
+	_srv.Destroy();
+	_buffer.Destroy();
+}

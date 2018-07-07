@@ -31,6 +31,12 @@ void OnlyLightCulling::Initialize(Device::DirectX& dx, ShaderManager& shaderMgr,
 	}
 }
 
+void OnlyLightCulling::Destroy()
+{
+	_srb.Destroy();
+	_uav.Destroy();
+}
+
 void OnlyLightCulling::Dispatch(Device::DirectX& dx, const ComputeShader::ThreadGroup& group)
 {
 	ComputeShader::BindUnorderedAccessView(dx,	UAVBindIndex::Lightculling_LightIndexBuffer, _uav);

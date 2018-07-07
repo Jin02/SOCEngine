@@ -19,7 +19,8 @@ namespace Rendering
 				CommonLightBuffer() = default;
 			
 				void Initialize(Device::DirectX& dx, uint count, const void* dummy);
-				
+				void Destroy();
+
 				void SetData(uint index, const Light::BaseLight& light, ushort shadowIndex);
 				void PushData(const Light::BaseLight& light, ushort shadowIndex);
 

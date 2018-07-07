@@ -23,7 +23,7 @@ namespace Rendering
 			void DeleteAll();
 
 		private:
-			std::unordered_map<std::string, Texture2DPtr> _hash;
+			std::unordered_map<std::string, Texture2DPtr> _textures;
 		};
 	}
 }

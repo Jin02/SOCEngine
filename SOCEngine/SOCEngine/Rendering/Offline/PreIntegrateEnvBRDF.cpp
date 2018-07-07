@@ -33,3 +33,8 @@ Texture::Texture2D& PreIntegrateEnvBRDF::CreatePreBRDFMap(Device::DirectX& dx, S
 
 	return _texture;
 }
+
+void PreIntegrateEnvBRDF::Destroy()
+{
+	_texture.Destroy();
+}

@@ -59,6 +59,11 @@ void Mesh::Initialize(DirectX& dx, const VertexBuffer::Semantics& semantics, Bas
 	_transformCB.Initialize(dx);
 }
 
+void Mesh::Destroy()
+{
+	_transformCB.Destroy();
+}
+
 uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& semantics, uint maxRecognizeBoneCount) const
 {
 	uint flag = 0;

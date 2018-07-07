@@ -21,6 +21,12 @@ namespace Rendering
 				_srBuffer.Initialize(dx, sizeof(T), count, format, dummy, 0, D3D11_USAGE_DYNAMIC);
 			}
 
+			void Destroy()
+			{
+				_srBuffer.Destroy();
+				_pool.clear();
+			}
+
 			// _srBuffer
 			void UpdateSRBuffer(Device::DirectX& dx)
 			{

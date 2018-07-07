@@ -12,6 +12,11 @@ CameraManager::CameraManager()
 
 }
 
+void CameraManager::Destroy()
+{
+	_mainCamera.Destroy();
+}
+
 bool CameraManager::CheckCanUseMainCam(const ObjectIDManager& objIDMgr) const
 {
 	return objIDMgr.Has(_mainCamera.GetObjectID());

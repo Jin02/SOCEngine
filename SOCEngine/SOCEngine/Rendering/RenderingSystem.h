@@ -52,12 +52,12 @@ namespace Rendering
 		GET_CONST_ACCESSOR(UseSkyScattering,	bool,	_useSkyScattering);
 
 	private:
-		Manager::MaterialManager			_materialManager;
 		Manager::PostProcessPipeline		_postProcessing;
 		Renderer::MainRenderer				_mainRenderer;
 		Renderer::ShadowAtlasMapRenderer	_shadowRenderer;
 		Renderer::SkyPreethamModelRenderer	_skyScatteringRenderer;
 
+		Manager::MaterialManager			_materialManager;
 		Manager::BufferManager				_bufferManager;
 		Manager::ShaderManager				_shaderManager;
 		Manager::Texture2DManager			_tex2dManager;

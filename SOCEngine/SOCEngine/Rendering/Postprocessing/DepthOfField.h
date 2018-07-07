@@ -26,6 +26,8 @@ namespace Rendering
 			};
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize);
+			void Destroy();
+
 			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, 
 						const Texture::RenderTexture& inColorMap,
 						const MainRenderingSystemParam&& mains, const Copy& copy, TempTextures& tempTextures);

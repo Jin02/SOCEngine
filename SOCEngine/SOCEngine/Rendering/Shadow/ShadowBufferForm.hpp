@@ -24,7 +24,7 @@ namespace Rendering
 
 			public:
 				ShadowBufferForm() = default;
-				~ShadowBufferForm() { DeleteAll(); }
+				~ShadowBufferForm() = default;
 
 				void Initialize(Device::DirectX& dx, uint maxShadowCount)
 				{
@@ -34,6 +34,14 @@ namespace Rendering
 					_transformBuffer.Initialize(dx, maxShadowCount, DXGI_FORMAT_UNKNOWN, dummy);
 					_paramBuffer.Initialize(dx, maxShadowCount, DXGI_FORMAT_R32G32B32A32_UINT, dummy);
 				}
+
+				void Destroy()
+				{
+					DeleteAll();
+					_transformBuffer.Destroy();
+					_paramBuffer.Destroy();
+				}
+
 				void PushShadow(const ShadowType& shadow)
 				{
 					const auto& base = shadow.GetBase();

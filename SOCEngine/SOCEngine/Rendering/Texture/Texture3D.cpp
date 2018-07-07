@@ -53,3 +53,11 @@ void Texture3D::Initialize(	Device::DirectX& dx,
 	if (bindFlag & D3D11_BIND_UNORDERED_ACCESS)
 		_uav.Initialize(dx, uavFormat, width * height * depth, _texture, D3D11_UAV_DIMENSION_TEXTURE3D, 0, -1);
 }
+
+void Texture3D::Destroy()
+{
+	_texture.Destroy();
+	_rtv.Destroy();
+	_srv.Destroy();
+	_uav.Destroy();
+}

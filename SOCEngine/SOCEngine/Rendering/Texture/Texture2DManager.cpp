@@ -49,6 +49,7 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 
 	ID3D11Texture2D* tex2d = nullptr;
 	resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&tex2d);
+	resource->Release();
 
 	D3D11_TEXTURE2D_DESC desc;
 	tex2d->GetDesc(&desc);
@@ -57,29 +58,29 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 	uint texH = desc.Height;
 	auto dxResource = DXSharedResource<ID3D11ShaderResourceView>(srv);
 	tex = std::make_shared<Texture2D>(ShaderResourceView(dxResource), DXSharedResource<ID3D11Texture2D>(tex2d), hasAlpha, Size<uint>(texW, texH));
-	_hash.insert(std::make_pair(name + format, tex));
+	_textures.insert(std::make_pair(name + format, tex));
 	
 	return tex;
 }
 
 Texture2DManager::Texture2DPtr Texture2DManager::Find(const std::string& key)
 {
-	auto findIter = _hash.find(key);
-	return findIter == _hash.end() ? nullptr : findIter->second;
+	auto findIter = _textures.find(key);
+	return findIter == _textures.end() ? nullptr : findIter->second;
 }
 
 void Texture2DManager::Delete(const std::string& key)
 {
-	auto findIter = _hash.find(key);
+	auto findIter = _textures.find(key);
 
-	if(findIter != _hash.end())
+	if(findIter != _textures.end())
 	{
 		findIter->second.reset();
-		_hash.erase(findIter);
+		_textures.erase(findIter);
 	}
 }
 
 void Texture2DManager::DeleteAll()
 {
-	_hash.clear();
+	_textures.clear();
 }

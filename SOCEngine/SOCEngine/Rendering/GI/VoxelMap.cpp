@@ -30,3 +30,11 @@ void VoxelMap::Initialize(
 		_mipmapUAVs.push_back(uav);
 	}
 }
+
+void VoxelMap::Destroy()
+{
+	for (auto& uav : _mipmapUAVs)
+		uav.Destroy();
+
+	_tex3D.Destroy();
+}

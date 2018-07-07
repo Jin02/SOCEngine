@@ -30,6 +30,11 @@ void MainCamera::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Rect<ui
 	_camCB.Initialize(dx);
 }
 
+void MainCamera::Destroy()
+{
+	_camCB.Destroy();
+}
+
 void MainCamera::UpdateCB(Device::DirectX & dx, const Core::Transform& dirtyTransform)
 {
 	assert(dirtyTransform.GetObjectID() == _objID);

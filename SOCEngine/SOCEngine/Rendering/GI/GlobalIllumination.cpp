@@ -16,6 +16,11 @@ void GlobalIllumination::Initialize(DirectX& dx, ShaderManager& shaderMgr, const
 	}
 }
 
+void GlobalIllumination::Destroy()
+{
+	_vxgi.Destroy();
+}
+
 void GlobalIllumination::Run(DirectX& dx, const VXGI::Param&& param)
 {
 	// TODO :	현재는 In-door GI만 처리 중

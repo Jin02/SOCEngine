@@ -75,6 +75,20 @@ void VXGI::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Size<uint>& r
 	_indirectColorMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 1);
 }
 
+void VXGI::Destroy()
+{
+	_infoCB.staticInfoCB.Destroy();
+	_infoCB.dynamicInfoCB.Destroy();
+
+	_injectionSourceMap.Destroy();
+	_mipmappedInjectionMap.Destroy();
+
+	_voxelization.Destroy();
+	_mipmap.Destroy();
+
+	_indirectColorMap.Destroy();
+}
+
 void VXGI::Run(DirectX& dx, const VXGI::Param&& param)
 {	
 	ClearInjectColorVoxelMap(dx);

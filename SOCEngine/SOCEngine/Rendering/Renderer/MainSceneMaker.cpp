@@ -23,6 +23,11 @@ void MainSceneMaker::Initialize(DirectX& dx, ShaderManager& shaderMgr, const Siz
 	_screen.Initialize(dx, param, shaderMgr);
 }
 
+void MainSceneMaker::Destroy()
+{
+	_screen.Destroy();
+}
+
 void MainSceneMaker::Render(DirectX& dx, RenderTexture& output, const RenderParam&& param)
 {
 	AutoBinderSRV<PixelShader>	colorMap(dx,		TextureBindIndex(0),			param.opaqueMap.GetShaderResourceView());

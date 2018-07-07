@@ -6,6 +6,10 @@
 #include "RenderTexture.h"
 #include "DepthMap.h"
 
+#ifdef DEBUG
+#include <dxgidebug.h>
+#endif
+
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -148,6 +152,38 @@ void DirectX::CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& view
 	_immediateContext	= DXUniqueResource<ID3D11DeviceContext>(immediateContext);	
 	_msaaDesc			= sampleDesc;
 }
+
+void DirectX::Destroy()
+{
+	_backBufferRect = Rect<float>();
+	_driverType = D3D_DRIVER_TYPE_NULL;
+	_msaaDesc = DXGI_SAMPLE_DESC();
+
+	for (auto& state : _blendStates)		state.Destroy();
+	for (auto& state : _rasterizerStates)	state.Destroy();
+	for (auto& state : _depthStencilStates)	state.Destroy();
+	for (auto& state : _samplerStates)		state.Destroy();
+
+	_backBufferRenderTexture.Destroy();
+
+	_immediateContext->Flush();
+}
+
+#ifdef DEBUG
+void DirectX::ReportLiveObjects()
+{
+	using fPtrDXGIGetDebugInterface = HRESULT(__stdcall*)(const IID&, void**);
+
+	HMODULE hMod = GetModuleHandle("Dxgidebug.dll");
+	fPtrDXGIGetDebugInterface DXGIGetDebugInterface = (fPtrDXGIGetDebugInterface)GetProcAddress(hMod, "DXGIGetDebugInterface");
+
+	IDXGIDebug* debug = nullptr;
+	DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&debug);
+
+	debug->ReportLiveObjects(DXGI_DEBUG_D3D11, DXGI_DEBUG_RLO_ALL);
+	debug->Release();
+}
+#endif // DEBUG
 
 void DirectX::SetViewport(const Rect<float>& rect)
 {

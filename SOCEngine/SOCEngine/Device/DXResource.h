@@ -4,12 +4,19 @@
 #include "Common.h"
 #include <functional>
 
+class DXReleaseResource
+{
+protected:
+	static void Release(IUnknown* resource)
+	{
+		SAFE_RELEASE(resource);
+	}
+};
+
 template<typename Resource>
-class DXUniqueResource
+class DXUniqueResource final : private DXReleaseResource
 {
 public:
-	static void Release(IUnknown* resource) { SAFE_RELEASE(resource); };
-
 	DXUniqueResource()								: _resource(nullptr, nullptr)	{ }
 	explicit DXUniqueResource(Resource* resource)	: _resource(resource, Release)	{ }
 
@@ -22,17 +29,16 @@ public:
 
 	inline operator Resource*()					{ return _resource.get();		}
 	inline operator const Resource* const()		{ return _resource.get();		}
+	inline void Destroy()						{ _resource.reset();			}
 
 private:
 	std::unique_ptr<Resource, std::function<void(IUnknown*)>> _resource;
 };
 
 template <typename Resource>
-class DXSharedResource final
+class DXSharedResource final : private DXReleaseResource
 {
 public:
-	static void Release(IUnknown* resource)	{	SAFE_RELEASE(resource);	};
-
 	DXSharedResource()								: _resource(nullptr)			{ }
 	explicit DXSharedResource(Resource* resource)	: _resource(resource, Release)	{ }
 

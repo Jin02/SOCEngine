@@ -14,6 +14,25 @@ void MaterialManager::Initialize(Device::DirectX& dx)
 	_pbmDefaultKey = Add<PhysicallyBasedMaterial>(materal).first;
 }
 
+void MaterialManager::Destroy()
+{
+	auto ClearData = [](auto& datas)
+	{		
+		datas.dirty.clear();
+		datas.idBookmark.DeleteAll();
+		datas.idMgr.DeleteAll();
+
+		int count = datas.pool.GetSize();
+		for (int i = 0; i < count; ++i)
+			datas.pool.Get(i).Destroy();
+
+		datas.pool.DeleteAll();
+	};
+
+	ClearData(GetMaterialDatas<PhysicallyBasedMaterial>());
+	ClearData(GetMaterialDatas<SkyBoxMaterial>());
+}
+
 void MaterialManager::UpdateConstBuffer(DirectX & dx)
 {
 	auto CheckDirty = [](auto& materialDatas)

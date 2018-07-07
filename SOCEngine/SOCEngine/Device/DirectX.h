@@ -27,6 +27,7 @@
 #include "RenderTextureCube.h"
 #include "DepthMapCube.h"
 
+
 namespace Core
 {
 	class Launcher;
@@ -116,8 +117,14 @@ namespace Device
 		void CreateRenderTargetView();
 		void CreateDeviceAndSwapChain(const WinApp& win, const Size<uint>& viewportSize, bool useMSAA);
 		void CreateBlendStates();
+		void Destroy();
 
 		std::vector<DXGI_SAMPLE_DESC> CheckAbleMultiSampler(DXGI_FORMAT format);
+
+#ifdef DEBUG
+	public:
+		static void ReportLiveObjects();
+#endif
 
 	private:
 		DXUniqueResource<ID3D11Device>				_device;

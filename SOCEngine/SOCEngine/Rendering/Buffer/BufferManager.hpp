@@ -25,10 +25,18 @@ namespace Rendering
 				return std::get<BufferPool<BufferType>>(_bufferPools);
 			}
 
+			void Destroy()
+			{
+				GetPool<Buffer::VertexBuffer>().Destroy();
+				GetPool<Buffer::IndexBuffer>().Destroy();
+				GetPool<RawBufferType>().Destroy();
+			}
+
 		private:
+			using RawBufferType = std::shared_ptr<const void>;
 			std::tuple<	BufferPool<Buffer::VertexBuffer>,
 						BufferPool<Buffer::IndexBuffer>, 
-						BufferPool<std::shared_ptr<const void>> > _bufferPools;
+						BufferPool<RawBufferType>>			_bufferPools;
 		};
 	}
 }

@@ -11,6 +11,15 @@ void CommonLightBuffer::Initialize(Device::DirectX& dx, uint count, const void* 
 	_optionalParamIndexBuffer.Initialize(dx, count, DXGI_FORMAT_R32_UINT, dummy);	
 }
 
+void CommonLightBuffer::Destroy()
+{
+	_colorBuffer.DeleteAll();
+	_optionalParamIndexBuffer.DeleteAll();
+
+	_colorBuffer.Destroy();
+	_optionalParamIndexBuffer.Destroy();
+}
+
 void CommonLightBuffer::SetData(uint index, const Light::BaseLight& light, ushort shadowIndex)
 {
 	_colorBuffer[index]					= light.Get32BitMainColor();

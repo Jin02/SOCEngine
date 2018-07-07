@@ -41,6 +41,17 @@ void Voxelization::Initialize(DirectX& dx, ShaderManager& shaderMgr, uint dimens
 	_clearVoxelRawMapCS = *ShaderFactory::LoadComputeShader(dx, shaderMgr, "ClearVoxelRawMap", "ClearVoxelMapCS", nullptr, "@ClearVoxelRawMap");
 }
 
+void Voxelization::Destroy()
+{
+	_voxelAlbedoRawBuffer.Destroy();
+	_voxelNormalRawBuffer.Destroy();
+	_voxelEmissionRawBuffer.Destroy();
+
+	_infoCB.Destroy();
+	_renderQ.opaqueRenderQ.DeleteAllContent();
+	_renderQ.alphaTestRenderQ.DeleteAllContent();
+}
+
 void Voxelization::ClearVoxelMap(DirectX& dx, const ExplicitConstBuffer<VXGIStaticInfo>& vxgiStaticInfoCB)
 {
 	ComputeShader::BindUnorderedAccessView(dx, UAVBindIndex::VoxelMap_Albedo,	*_voxelAlbedoRawBuffer.GetUnorderedAccessView());

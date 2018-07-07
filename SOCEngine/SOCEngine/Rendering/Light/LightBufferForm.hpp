@@ -33,6 +33,14 @@ namespace Rendering
 					_mustUpdateCommonSRBuffer		= true;
 				}
 
+				void Destroy()
+				{
+					DeleteAll();
+
+					_transformBuffer.Destroy();
+					_commonBuffer.Destroy();
+				}
+
 				void PushLight(const LightType& light)
 				{
 					_transformBuffer.PushData(LightType::TransformType());

@@ -34,7 +34,6 @@ namespace Rendering
 			using MaterialForm::MaterialForm;
 
 			void Initialize(Device::DirectX& dx);
-			void Destroy();
 			void UpdateConstBuffer(Device::DirectX& dx);
 
 			void RegistTexture(const std::string& key, TextureBindIndex bind, const Texture::Texture2D& tex);

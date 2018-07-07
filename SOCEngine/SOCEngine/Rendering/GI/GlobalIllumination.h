@@ -18,6 +18,8 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, const Size<uint>& renderSize, const GIInitParam& giParam);
+			void Destroy();
+
 			void Run(Device::DirectX& dx, const GI::VXGI::Param&& param);
 
 		private:

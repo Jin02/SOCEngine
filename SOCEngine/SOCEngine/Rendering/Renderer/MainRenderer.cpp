@@ -83,6 +83,35 @@ void MainRenderer::Initialize(DirectX& dx, ShaderManager& shaderMgr, BufferManag
 	_envBRDFMap.CreatePreBRDFMap(dx, shaderMgr);
 }
 
+void MainRenderer::Destroy()
+{
+	_resultMap.Destroy();
+	_scaledMap.Destroy();
+	_transparentMap.Destroy();
+	_skyBoxMap.Destroy();
+
+	_gbuffer.albedo_occlusion.Destroy();
+	_gbuffer.blendedDepthBuffer.Destroy();
+	_gbuffer.emission_materialFlag.Destroy();
+	_gbuffer.normal_roughness.Destroy();
+	_gbuffer.opaqueDepthBuffer.Destroy();
+	_gbuffer.velocity_metallic_specularity.Destroy();
+
+	_tbrCB.Destroy();
+	_blendedDepthLightCulling.Destroy();
+
+	_skyBoxRenderer.Destroy();
+	_mainSceneMaker.Destroy();
+
+	_gi.Destroy();
+	
+	_renderQ.opaqueRenderQ.DeleteAllContent();
+	_renderQ.alphaTestRenderQ.DeleteAllContent();
+	_transparentMeshRenderQ.clear();
+
+	_envBRDFMap.Destroy();
+}
+
 void MainRenderer::UpdateCB(DirectX& dx, const MainCamera& mainCamera, const LightManager& lightMgr)
 {
 	if( (_dirty == false) & (mainCamera.GetDirty() == false) & (lightMgr.GetHasChangedLightCount() == false) & (mainCamera.GetHasChangedCB() == false) )

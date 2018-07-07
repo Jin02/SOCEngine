@@ -40,6 +40,8 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, uint dimension, float voxelSize);
+			void Destroy();
+
 			void UpdateConstBuffer(Device::DirectX& dx, const Math::Vector3& startCenterPos);
 
 			GET_CONST_ACCESSOR(InfoCB,					const auto&,	_infoCB);

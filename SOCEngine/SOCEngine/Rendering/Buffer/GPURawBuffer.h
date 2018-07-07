@@ -19,7 +19,8 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx, uint stride, uint elemNum, Flag flag);
-			
+			void Destroy();
+
 			GET_CONST_ACCESSOR_REF(ShaderResourceView,	_srv);
 			GET_CONST_ACCESSOR_REF(BaseBuffer,			_buffer);
 

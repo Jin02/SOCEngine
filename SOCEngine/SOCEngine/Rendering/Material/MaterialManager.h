@@ -21,6 +21,7 @@ namespace Rendering
 
 		public:
 			void Initialize(Device::DirectX& dx);
+			void Destroy();
 			void UpdateConstBuffer(Device::DirectX& dx);
 
 		public:
