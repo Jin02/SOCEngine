@@ -17,7 +17,7 @@ namespace Rendering
 		public:
 			struct ParamCBData
 			{
-				float	length		= 0.025f;
+				float	length		= 0.0025f;
 				float	kernelSize	= 7.5f;
 				float	kernelStep	= 1.0f;
 				uint	dummy;
@@ -28,7 +28,10 @@ namespace Rendering
 			void Destroy();
 
 			void UpdateParamCB(Device::DirectX& dx);
-			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inColorMap, const Renderer::MainRenderer& mainRenderer);
+			void Render(Device::DirectX& dx, Texture::RenderTexture& outRT,
+				const Texture::RenderTexture& inColorMap,
+				const Renderer::MainRenderer& mainRenderer,
+				const Buffer::ConstBuffer& hdrGlobalParamCB);
 
 			SET_ACCESSOR_DIRTY(Param, const ParamCBData&, _paramData);
 			GET_CONST_ACCESSOR(Param, const ParamCBData&, _paramData);
