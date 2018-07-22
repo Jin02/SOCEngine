@@ -1030,6 +1030,9 @@
     <ClInclude Include="Core\VectorIndexer.hpp">
       <Filter>Core\Transform</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\Mesh\UnsortedMeshPool.h">
+      <Filter>Rendering\Mesh\Pool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1349,6 +1352,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\PostProcessing\MotionBlur.cpp">
       <Filter>Rendering\Postprocessing\MotionBlur</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Mesh\UnsortedMeshPool.cpp">
+      <Filter>Rendering\Mesh\Pool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -157,6 +157,7 @@
     <ClInclude Include="Rendering\Mesh\MeshRawPtrs.h" />
     <ClInclude Include="Rendering\Mesh\MeshRenderQueue.h" />
     <ClInclude Include="Rendering\Mesh\OpaqueMeshRenderQueue.h" />
+    <ClInclude Include="Rendering\Mesh\UnsortedMeshPool.h" />
     <ClInclude Include="Rendering\Mesh\VBSortedMeshPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshRawPool.h" />
     <ClInclude Include="Rendering\Mesh\MeshUtility.h" />
@@ -393,6 +394,7 @@
     <ClCompile Include="Rendering\Mesh\MeshManager.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRawPtrs.cpp" />
     <ClCompile Include="Rendering\Mesh\OpaqueMeshRenderQueue.cpp" />
+    <ClCompile Include="Rendering\Mesh\UnsortedMeshPool.cpp" />
     <ClCompile Include="Rendering\Mesh\VBSortedMeshPool.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshRawPool.cpp" />
     <ClCompile Include="Rendering\Mesh\MeshUtility.cpp" />

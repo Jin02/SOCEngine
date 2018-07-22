@@ -133,8 +133,17 @@ void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& 
 
 void Bloom::SetElapsedTime(float time)
 {
-	Half hTime(time);
-	Half hInvTime(1.0f / time);
+	uint packedTime = 0;
 
-	_paramData.packedDeltaTime = (hInvTime.GetValue() << 16) | hTime.GetValue();
+	if (fabsf(time) <= FLT_EPSILON)
+		packedTime = 0;
+	else
+	{
+		Half hTime(time);
+		Half hInvTime(1.0f / time);
+
+		packedTime = (hInvTime.GetValue() << 16) | hTime.GetValue();
+	}
+
+	_paramData.packedDeltaTime = packedTime;
 }
