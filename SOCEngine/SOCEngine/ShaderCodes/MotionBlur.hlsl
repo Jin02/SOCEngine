@@ -4,13 +4,14 @@
 #include "FullScreenShader.h"
 #include "TBDRInput.h"
 #include "CommonConstBuffer.h"
+#include "HDRCommon.h"
 
-cbuffer MotionBlurParamCB : register(b1)
+cbuffer MotionBlurParamCB : register(b2)
 {
-	float	Length;
-	float	KernelSize;
-	float	KernelStep;
-	uint	dummy;
+	float	mbParam_length;
+	float	mbParam_kernelSize;
+	float	mbParam_kernelStep;
+	uint	mbParam_dummy;
 };
 
 Texture2D<float4>	InputSceneMap			: register( t0 );
@@ -35,10 +36,12 @@ float4 MotionBlurPS(PS_INPUT input) : SV_Target
 	float2 bl = GetVelocity(input.uv, int2(-Offset,  Offset));
 	float2 br = GetVelocity(input.uv, int2( Offset,  Offset));
 	float2 ce = GetVelocity(input.uv, int2(      0,       0));
-	float2 velocity = (tl + tr + bl + br + ce) * 0.2f * Length;
+	float2 velocity = (tl + tr + bl + br + ce) * 0.2f * mbParam_length;
+
+	velocity *= GetInvDeltaTime(); // auto scalling
 
 	float4 color = 0;
-	for(float i=-KernelSize; i<=KernelSize; i+=KernelStep)
+	for(float i=-mbParam_kernelSize; i<= mbParam_kernelSize; i+= mbParam_kernelStep)
 	{
 		float2 uv = saturate(input.uv + velocity * i);
 		color += InputSceneMap.Sample(LinearSampler, uv);
