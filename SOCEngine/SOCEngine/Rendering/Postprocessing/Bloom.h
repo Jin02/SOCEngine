@@ -21,10 +21,11 @@ namespace Rendering
 		public:
 			struct ParamCBData
 			{
-				float dt					= 0.0f;
-				float exposureStrength		= 0.2f;
-				float exposureSpeed			= 0.8f;
-				float bloomThreshold		= 0.4f;
+				uint	packedDeltaTime		= 0;
+
+				float	exposureStrength	= 0.2f;
+				float	exposureSpeed		= 0.8f;
+				float	bloomThreshold		= 0.4f;
 			};
 
 		public:
@@ -35,10 +36,11 @@ namespace Rendering
 
 			void RenderThresholdMap(Device::DirectX& dx, const Texture::RenderTexture& inColorMap, const Copy& copy, TempTextures& tempTextures, const Renderer::TBRParamCB& tbrParamCB);
 			void RenderBloom(Device::DirectX& dx, Texture::RenderTexture& outRT, const Texture::RenderTexture& inputColorMap, const Renderer::TBRParamCB& tbrParamCB);
+			void SetElapsedTime(float time);
 
-			SET_ACCESSOR(ElapsedTime,	float,				_paramData.dt);
 			SET_ACCESSOR(Param,			const ParamCBData&,	_paramData);
 			GET_CONST_ACCESSOR(Param,	const ParamCBData&,	_paramData);
+			GET_CONST_ACCESSOR_REF(ParamCB,					_paramCB);
 
 			GET_CONST_ACCESSOR(Use, bool, _use);
 

@@ -5,11 +5,11 @@
 
 cbuffer HDRGlobalParam : register(b1)
 {
-	float hdr_timeDelta;
-	float hdr_exposureStrength;
-	float hdr_exposureSpeed;
+	uint	hdr_packedDeltaTime;
+	float	hdr_exposureStrength;
+	float	hdr_exposureSpeed;
 
-	float bloom_threshold;
+	float	bloom_threshold;
 };
 
 float GetExposureStrength()
@@ -27,9 +27,14 @@ float GetBloomThreshold()
 	return bloom_threshold;
 }
 
-float GetTimeDelta()
+float GetDeltaTime()
 {
-	return hdr_timeDelta;
+	return f16tof32(hdr_packedDeltaTime & 0xffff);
+}
+
+float GetInvDeltaTime()
+{
+	return f16tof32(hdr_packedDeltaTime >> 16);
 }
 
 #endif

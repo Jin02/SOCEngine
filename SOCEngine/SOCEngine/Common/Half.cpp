@@ -1,5 +1,6 @@
 #include "Half.h"
 #include <assert.h>
+#include <math.h>
 
 Half::Half(ushort us)
 	: _value(us)
@@ -15,6 +16,13 @@ Half::Half(float f)
 	// 16bit float (half)
 	// 1   5       10
 	// s eeeee mmmmmmmmmm
+
+	const float epsilon = 1.192092896e-07F;
+	if (fabsf(f) <= epsilon)
+	{
+		_value = 0.0f;
+		return;
+	}
 
 	unsigned int floatBit = *((unsigned int*)&f);
 

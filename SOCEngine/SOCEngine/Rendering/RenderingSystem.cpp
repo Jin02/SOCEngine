@@ -38,11 +38,6 @@ void RenderingSystem::Initialize(Engine& engine, bool useBloom)
 	_postProcessing.Initialize(engine.GetDirectX(), _shaderManager, engine.GetComponentSystem().GetMainCamera(), useBloom);
 }
 
-void RenderingSystem::Update(Engine& engine, float dt)
-{
-	_postProcessing.SetElapsedTime(dt);
-}
-
 void RenderingSystem::Render(Engine& engine, float dt)
 {
 	auto& dx = engine.GetDirectX();

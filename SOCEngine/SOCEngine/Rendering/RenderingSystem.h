@@ -29,7 +29,6 @@ namespace Rendering
 
 		void InitializeRenderer(Core::Engine& engine, const RenderSetting&& param);
 		void Initialize(Core::Engine& engine, bool useBloom);
-		void Update(Core::Engine& engine, float dt);
 		void Render(Core::Engine& engine, float dt);
 		void Destroy(Core::Engine& engine);
 
