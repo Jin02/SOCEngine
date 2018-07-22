@@ -37,14 +37,14 @@ void Bloom::Initialize(Device::DirectX& dx, Manager::ShaderManager& shaderMgr, c
 		_adaptedLuminanceMaps[1].Initialize(dx, Size<uint>(1, 1), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
 
 		_bloomThresholdMap.Initialize(dx, renderSize, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, 0, 1, 1);
-
-		_paramCB.Initialize(dx);
-		_paramCB.UpdateSubResource(dx, ParamCBData());
 	}
 	else
 	{
 		_bloom.Initialize(dx, Param("Bloom", "Bloom_InFullScreen_PS", nullptr), shaderMgr);
 	}
+
+	_paramCB.Initialize(dx);
+	_paramCB.UpdateSubResource(dx, ParamCBData());
 }
 
 void Bloom::Destroy()
@@ -129,4 +129,12 @@ void Bloom::RenderBloom(DirectX& dx, RenderTexture& outRT, const RenderTexture& 
 	_bloom.Render(dx, outRT, true);
 
 	_currentAdaptedLuminanceIndx = !_currentAdaptedLuminanceIndx;
+}
+
+void Bloom::SetElapsedTime(float time)
+{
+	Half hTime(time);
+	Half hInvTime(1.0f / time);
+
+	_paramData.packedDeltaTime = (hInvTime.GetValue() << 16) | hTime.GetValue();
 }
