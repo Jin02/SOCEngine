@@ -68,9 +68,9 @@ void AtomicStoreAvgColor(RWByteAddressBuffer voxelMap, uint flattedVoxelIdx, flo
 		reCompute.xyz /= reCompute.w;
 
 		newValue = ToUint(reCompute);
-	}while(false);
+	}while(++count > 16);
 #else
-	voxelMap.Store(flattedVoxelIdx * 4, ToUint(value * 255.0f));
+	voxelMap.InterlockedMax(flattedVoxelIdx * 4, ToUint(value * 255.0f));
 #endif
 }
 
