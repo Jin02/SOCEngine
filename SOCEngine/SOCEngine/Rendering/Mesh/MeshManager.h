@@ -3,8 +3,9 @@
 #include <tuple>
 #include <assert.h>
 #include "OpaqueMeshRenderQueue.h"
-#include "VectorIndexer.hpp"
+
 #include "VBSortedMeshPool.h"
+#include "UnsortedMeshPool.h"
 
 namespace Core
 {
@@ -15,7 +16,7 @@ namespace Rendering
 {
 	namespace Geometry
 	{
-		using TransparentMeshPool	= Core::VectorHashMap<Core::ObjectID::LiteralType, Mesh>;
+		using TransparentMeshPool	= UnsortedMeshPool;
 		using OpaqueMeshPool		= VBSortedMeshPool;
 		using AlphaTestMeshPool		= OpaqueMeshPool;
 
@@ -56,7 +57,7 @@ namespace Rendering
 			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::TransparentMeshPool& meshPool)
 			{
 				assert(mesh.GetVBKey() != 0); //Error, mesh does not init yet.
-				return meshPool.Add(mesh.GetObjectID().Literal(), mesh);
+				return meshPool.Add(mesh.GetObjectID(), 0, mesh);
 			}
 
 			Geometry::Mesh& Add(Geometry::Mesh& mesh, Geometry::OpaqueMeshPool& meshPool) // or AlphaTestMeshPool
@@ -103,29 +104,9 @@ namespace Rendering
 
 			void ClearDirty() { _dirtyMeshes.clear(); _mustUpdateCBMeshes.clear(); _dirty = false; }
 
+			template <class FromMeshPool, class ToMeshPool>
 			void ChangeTrait(Core::ObjectID id,
-				Geometry::OpaqueMeshPool& fromPool, Geometry::OpaqueMeshPool& toPool) // Opaque <-> AlphaTest
-			{
-				uint literlID = id.Literal();
-				assert(fromPool.Has(literlID));
-				assert(toPool.Has(literlID) == false);
-
-				Geometry::Mesh* mesh = fromPool.Find(literlID);
-				toPool.Add(id, mesh->GetVBKey(), *mesh);
-				fromPool.Delete(literlID);
-			}
-			void ChangeTrait(Core::ObjectID id,
-							 Geometry::OpaqueMeshPool& fromPool, Geometry::TransparentMeshPool& toPool) // Opaque or AlphaTest -> Transparent
-			{
-				uint literlID = id.Literal();
-				assert(fromPool.Has(literlID));
-				assert(toPool.Has(literlID) == false);
-
-				toPool.Add(literlID, *fromPool.Find(literlID));
-				fromPool.Delete(literlID);
-			}
-			void ChangeTrait(Core::ObjectID id,
-							 Geometry::TransparentMeshPool& fromPool, Geometry::OpaqueMeshPool& toPool) // Transparent -> Opaque / AlphaTest
+				FromMeshPool& fromPool, ToMeshPool& toPool)
 			{
 				uint literlID = id.Literal();
 				assert(fromPool.Has(literlID));
