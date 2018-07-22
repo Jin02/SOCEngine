@@ -90,7 +90,8 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 
 	if(_useMotionBlur)
 	{
-		GetPostproessing<MotionBlur>().Render(dx, *output, _useSSAO ? *input : *mainScene, mainRenderer);
+		const auto& bloomCB = GetPostproessing<Bloom>().GetParamCB();
+		GetPostproessing<MotionBlur>().Render(dx, *output, _useSSAO ? *input : *mainScene, mainRenderer, bloomCB);
 		std::swap(input, output);
 	}
 
@@ -121,8 +122,8 @@ void PostProcessPipeline::Render(DirectX& dx, MainRenderer& mainRenderer, const 
 void PostProcessPipeline::UpdateCB(DirectX& dx, const ObjectManager& objMgr,
 	const LightManager& lightMgr, const TransformPool& tfPool, const MainCamera& mainCam)
 {
-	if(GetPostproessing<Bloom>().GetUse())
-		GetPostproessing<Bloom>().UpdateParamCB(dx);
+	GetPostproessing<Bloom>().UpdateParamCB(dx);
+	
 	if(_useDoF)			GetPostproessing<DepthOfField>().UpdateParamCB(dx);
 	if(_useSSAO)		GetPostproessing<SSAO>().UpdateParamCB(dx);
 	if(_useSunShaft)	GetPostproessing<SunShaft>().UpdateParamCB(dx, objMgr, lightMgr, tfPool, mainCam);
