@@ -33,12 +33,20 @@ Texture2DManager::Texture2DPtr Texture2DManager::LoadTextureFromFile(Device::Dir
 	TexMetadata					metaData;
 	ScratchImage				image;
 
-	if(format == "tga")	
-		ASSERT_SUCCEEDED(LoadFromTGAFile(wFilePath.c_str(), &metaData, image));
-	else if(format == "dds")
-		ASSERT_SUCCEEDED(LoadFromDDSFile(wFilePath.c_str(), 0u,  &metaData, image));
-	else
-		ASSERT_SUCCEEDED(CreateWICTextureFromFile(dx.GetDevice(), dx.GetContext(), wFilePath.c_str(), &resource, &srv));
+	bool success = false;
+
+	if (format == "tga")		success = SUCCEEDED(LoadFromTGAFile(wFilePath.c_str(), &metaData, image));
+	else if (format == "dds")	success = SUCCEEDED(LoadFromDDSFile(wFilePath.c_str(), 0u, &metaData, image));
+	else						success = SUCCEEDED(CreateWICTextureFromFile(dx.GetDevice(), dx.GetContext(), wFilePath.c_str(), &resource, &srv));
+
+	if (false == success)
+	{
+		std::wstring debugMsg = L"해당 텍스처를 찾을 수 없습니다. \t :";
+		debugMsg += wFilePath; debugMsg += '\n';
+
+		OutputDebugStringW(debugMsg.c_str());
+		return nullptr;
+	}	
 
 	bool notCreatedSRV = (format == "tga") | (format == "dds");
 	if (notCreatedSRV)
