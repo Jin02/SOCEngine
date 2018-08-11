@@ -75,7 +75,7 @@ for (path, dirs, files) in os.walk(targetDir):
 		if os.path.isfile(outputFilePath):
 			continue
 
-		command = fbxConvPath + " -f " + fileFullPath + ' ' + outputFilePath
+		command = fbxConvPath + " -b 1024 " " -f " + fileFullPath + ' ' + outputFilePath
 		print (command)
 
 		res = subprocess.run(command)

@@ -83,11 +83,13 @@ uint Mesh::ComputeBufferFlag(const std::vector<VertexShader::SemanticInfo>& sema
 			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::NORMAL);
 		else if (semantic.name == "TANGENT")
 			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::TANGENT);
+		else if (semantic.name == "BINORMAL")
+			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::BINORMAL);
 		else if (semantic.name == "COLOR")
 			flag |= static_cast<uint>(DefaultVertexInputTypeFlag::COLOR);
-		else if (semantic.name == "BONEWEIGHT")
+		else if (semantic.name == "BLENDWEIGHT")
 		{
-			if (semantic.semanticIndex + 1 >= maxRecognizeBoneCount)
+			if (semantic.semanticIndex < maxRecognizeBoneCount)
 				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::BONE) << semantic.semanticIndex;
 			else
 				flag |= static_cast<uint>(DefaultVertexInputTypeFlag::USERS);

@@ -199,10 +199,42 @@ Node MeshImporter::ParseNode(const rapidjson::Value& node,
 			const auto& node = partsNode[i];
 			Node::Parts parts;
 
-			if(node.HasMember("meshpartid"))
+			if (node.HasMember("meshpartid"))
 				parts.meshPartID = node["meshpartid"].GetString();
-			if(node.HasMember("materialid"))
+			if (node.HasMember("materialid"))
 				parts.materialID = node["materialid"].GetString();
+			if (node.HasMember("bones"))
+			{
+				const auto& bones = node["bones"];
+				uint size = bones.Size();
+				for (uint i = 0; i < size; ++i)
+				{
+					const auto& boneNode = bones[i];
+
+					Node::Parts::Bone bone;
+					bone.node = boneNode["node"].GetString();
+
+					const auto& t = boneNode["translation"];
+					{
+						// unsupported translation type.
+						assert(t[3u].GetDouble() == 0.0f);
+
+						bone.translation = Vector3(t[0u].GetDouble(), t[1u].GetDouble(), t[2u].GetDouble());
+					}
+
+					const auto& r = boneNode["rotation"];
+					bone.rotation = Quaternion(r[0u].GetDouble(), r[1u].GetDouble(), r[2u].GetDouble(), r[3u].GetDouble());
+
+					const auto& s = boneNode["scale"];
+					{
+						// unsupported scale type.
+						assert(s[3u].GetDouble() == 0.0f);
+						bone.scale = Vector3(s[0u].GetDouble(), s[1u].GetDouble(), s[2u].GetDouble());
+					}
+
+					parts.bones.push_back(bone);
+				}
+			}
 
 			outParts.push_back(parts);
 		}
@@ -300,8 +332,10 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 {
 	Importer::Mesh outMesh;
 
-	uint stride		= 0;
-	bool hasNormal	= false;
+	uint stride			= 0;
+	bool hasNormal		= false;
+	bool hasTangent		= false;
+	bool hasBinormal	= false;
 
 	const auto& attributesNode = meshNode["attributes"];
 	for(uint i=0; i<attributesNode.Size(); ++i)
@@ -314,36 +348,39 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 			stride += sizeof(Vector3);
 			hasNormal = true;
 		}
-		else if(attr == "COLOR")	stride += sizeof(Vector4);
+		else if(attr == "COLOR")		stride += sizeof(Vector4);
+		else if (attr == "TANGENT")
+		{
+			stride += sizeof(Vector3);
+			hasTangent = true;
+		}			 
+		else if (attr == "BINORMAL")
+		{
+			stride += sizeof(Vector3);
+			hasBinormal = true;
+		}
 		else
 		{
 			auto IsValidAttribute = [](const std::string& attr, const std::string& getAttrStr) -> bool
 			{
 				return (attr.find(getAttrStr) == 0) & (attr.size() > getAttrStr.size());
 			};
-			auto GetAttributeIndex = [](const std::string& attr) -> uint
-			{
-				std::string numStr = "";
-				for(auto iter = attr.rbegin(); iter != attr.rend(); ++iter)
-				{
-					if(('0' <= *iter) & (*iter <='9'))
-						numStr.insert(numStr.begin(), *iter);
-					else break;
-				}
 
-				return atoi(numStr.c_str());
-			};
-
-			if(IsValidAttribute(attr, "TEXCOORD"))
+			if (IsValidAttribute(attr, "TEXCOORD"))
 				stride += sizeof(Vector2);
 
-			if(IsValidAttribute(attr, "BONEWEIGHT"))
+			else if (IsValidAttribute(attr, "BLENDWEIGHT"))
 				stride += sizeof(Vector2);
+
+			else
+				assert(!"Unsupported attribute.");
 		}
 
 		outMesh.attributes.push_back(attr);
 	}
 	
+
+	assert(meshNode.HasMember("vertices"));
 
 	BoundBox entireBox;
 	// Setting Vertices
@@ -357,6 +394,8 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 		uint fltCountInStride = stride / sizeof(float);
 		for(uint i=0; i<size; i+=fltCountInStride)
 		{
+			uint skipStride = 0;
+
 			Vector3 pos( verticesNode[i + 0].GetDouble(),
 						 verticesNode[i + 2].GetDouble(),
 						-verticesNode[i + 1].GetDouble() );
@@ -364,6 +403,7 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 			outMesh.vertexDatas.push_back(pos.x);
 			outMesh.vertexDatas.push_back(pos.y);
 			outMesh.vertexDatas.push_back(pos.z);
+			skipStride += 3;
 
 			if(bbMin.x > pos.x) bbMin.x = pos.x;
 			if(bbMin.y > pos.y) bbMin.y = pos.y;
@@ -376,12 +416,30 @@ Importer::Mesh MeshImporter::ParseMesh(	const rapidjson::Value& meshNode,
 			if(hasNormal)	// normal의 위치는 pos의 다음 위치로 고정되어 있다. 
 							// 뭐 어짜피 위치가 변동적이지 않기 때문에, 그냥 고정으로 해도 상관없다.
 			{
-				outMesh.vertexDatas.push_back(  verticesNode[i + 3].GetDouble() ); //x
-				outMesh.vertexDatas.push_back(  verticesNode[i + 5].GetDouble() ); //y
-				outMesh.vertexDatas.push_back( -verticesNode[i + 4].GetDouble() ); //z
+				outMesh.vertexDatas.push_back(  verticesNode[i + 3].GetDouble() );	//x
+				outMesh.vertexDatas.push_back(  verticesNode[i + 5].GetDouble() );	//y
+				outMesh.vertexDatas.push_back( -verticesNode[i + 4].GetDouble() );	//z
+				skipStride += 3;
+
+				if (hasBinormal & hasTangent)
+				{
+					// tangent
+					outMesh.vertexDatas.push_back(verticesNode[i + 6].GetDouble());	
+					outMesh.vertexDatas.push_back(verticesNode[i + 8].GetDouble());	
+					outMesh.vertexDatas.push_back(-verticesNode[i + 7].GetDouble());
+
+					// binormal
+					outMesh.vertexDatas.push_back(verticesNode[i + 9].GetDouble());	
+					outMesh.vertexDatas.push_back(verticesNode[i + 11].GetDouble());
+					outMesh.vertexDatas.push_back(-verticesNode[i + 10].GetDouble());
+
+					skipStride += 6;
+				}
+				else if(!hasBinormal ^ !hasTangent)
+					assert(!"invalid attribute");
 			}
 
-			for(uint j = hasNormal ? 6 : 3; j < fltCountInStride; ++j)
+			for(uint j = skipStride; j < fltCountInStride; ++j)
 				outMesh.vertexDatas.push_back( verticesNode[j + i].GetDouble() );
 		}
 
@@ -659,6 +717,8 @@ Core::ObjectID MeshImporter::BuildMesh(
 				}
 			}
 
+			bool hasTangent = false, hasBinormal = false;
+
 			std::vector<VertexShader::SemanticInfo> semantics; // attributes
 			// Setting VB
 			{
@@ -676,6 +736,16 @@ Core::ObjectID MeshImporter::BuildMesh(
 
 						if(attr == "POSITION")		stride += sizeof(Vector3);
 						else if(attr == "NORMAL")	stride += sizeof(Vector3);
+						else if (attr == "TANGENT")
+						{
+							stride += sizeof(Vector3);
+							hasTangent = true;
+						}
+						else if (attr == "BINORMAL")
+						{
+							stride += sizeof(Vector3);
+							hasBinormal = true;
+						}
 						else if(attr == "COLOR")	stride += sizeof(Vector4);
 						else
 						{
@@ -706,11 +776,11 @@ Core::ObjectID MeshImporter::BuildMesh(
 
 								stride += sizeof(Vector2);
 							}
-							if(IsValidAttribute(attr, "BONEWEIGHT"))
+							if(IsValidAttribute(attr, "BLENDWEIGHT"))
 							{
 								semanticIndex = GetAttributeIndex(attr);
 
-								attr = "BONEWEIGHT";
+								attr = "BLENDWEIGHT";
 								stride += sizeof(Vector2);
 							}
 						}
@@ -720,6 +790,9 @@ Core::ObjectID MeshImporter::BuildMesh(
 							semantic.name			= attr;
 							semantic.semanticIndex	= semanticIndex;
 							semantic.size			= stride - prevStride;
+
+							// 최소한 float 한개 정도 차이는 나야한다 -_-.
+							assert(semantic.size > sizeof(float));
 						}
 						semantics.push_back(semantic);
 
@@ -727,7 +800,7 @@ Core::ObjectID MeshImporter::BuildMesh(
 					}
 				}
 
-				if(hasNormalMap)
+				if(hasNormalMap & (hasTangent == false) & (hasBinormal == false))
 				{
 					//tangent를 버퍼에 끼워넣는 작업.
 

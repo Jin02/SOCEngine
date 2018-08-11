@@ -14,8 +14,17 @@ namespace Importer
 	{
 		struct Parts final
 		{
-			std::string meshPartID = "";
-			std::string materialID = "";
+			std::string			meshPartID = "";
+			std::string			materialID = "";
+
+			struct Bone
+			{
+				std::string			node		= "";
+				Math::Vector3		translation = Math::Vector3::Zero();
+				Math::Quaternion	rotation	= Math::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+				Math::Vector3		scale		= Math::Vector3::Zero();
+			};
+			std::vector<Bone>	bones;
 		};
 
 		template <typename Type>
