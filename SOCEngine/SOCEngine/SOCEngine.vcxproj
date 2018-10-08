@@ -46,7 +46,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GlobalDefine.h" />
-    <ClInclude Include="Importer\G3djDataTypes.hpp" />
+    <ClInclude Include="Importer\AnimationImporter.h" />
+    <ClInclude Include="Importer\G3djDataTypes.h" />
     <ClInclude Include="Importer\MeshImporter.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -79,6 +80,7 @@
     <ClInclude Include="Rendering\Camera\CameraManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Rendering\Character\Animation\AnimationNode.h" />
     <ClInclude Include="Rendering\GI\GlobalIllumination.h" />
     <ClInclude Include="Rendering\GI\GIInitParam.h" />
     <ClInclude Include="Rendering\GI\InjectRadianceFromPointLight.h">
@@ -314,6 +316,7 @@
     <ClCompile Include="Device\WinApp.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Importer\AnimationImporter.cpp" />
     <ClCompile Include="Importer\MeshImporter.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -545,7 +548,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Renderer;Rendering/Renderer/Shadow;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/GI;Rendering/Postprocessing;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Rendering;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
+    <IncludePath>Rendering/Shadow;Rendering/Light;Rendering/Buffer;Rendering/Character/Animation;Rendering/Character;Rendering/Renderer;Rendering/Renderer/Shadow;Rendering/Camera;Rendering/Material;Rendering/Mesh;Rendering/Offline;Rendering/GI;Rendering/Postprocessing;Rendering/Shader;Rendering/Shading;Rendering/Texture;Rendering/Sky;Rendering/View;Rendering;Importer;ShaderCodes;Intersection;GPGPU;Core;Template;Math;Device;Common;../../ExternalLib/Output/Header;./;$(IncludePath)</IncludePath>
     <LibraryPath>../../ExternalLib/Output;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\Output\</OutDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>

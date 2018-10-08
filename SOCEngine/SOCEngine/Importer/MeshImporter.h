@@ -4,7 +4,7 @@
 
 #include "VectorIndexer.hpp"
 #include "Object.h"
-#include "G3djDataTypes.hpp"
+#include "G3djDataTypes.h"
 #include <unordered_map>
 #include <rapidjson/document.h>
 #include <set>

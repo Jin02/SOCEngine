@@ -469,6 +469,12 @@
     <Filter Include="ShaderCodes\Postprocessing\MotionBlur">
       <UniqueIdentifier>{6f22df3c-a72c-45b9-8334-029ea3179ce3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{9b9a3a4b-e78c-4bdc-bf62-1e5878de5ebc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Animation">
+      <UniqueIdentifier>{5d7f17ec-bc0e-45a9-b590-51637aa018c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -629,9 +635,6 @@
       <Filter>ShaderCodes\TiledRendering\Forward\Optional</Filter>
     </ClInclude>
     <ClInclude Include="Importer\MeshImporter.h">
-      <Filter>Importer</Filter>
-    </ClInclude>
-    <ClInclude Include="Importer\G3djDataTypes.hpp">
       <Filter>Importer</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Buffer\BaseBuffer.h">
@@ -1033,6 +1036,15 @@
     <ClInclude Include="Rendering\Mesh\UnsortedMeshPool.h">
       <Filter>Rendering\Mesh\Pool</Filter>
     </ClInclude>
+    <ClInclude Include="Importer\AnimationImporter.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer\G3djDataTypes.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Character\Animation\AnimationNode.h">
+      <Filter>Character\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device\DirectX.cpp">
@@ -1355,6 +1367,9 @@
     </ClCompile>
     <ClCompile Include="Rendering\Mesh\UnsortedMeshPool.cpp">
       <Filter>Rendering\Mesh\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer\AnimationImporter.cpp">
+      <Filter>Importer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
