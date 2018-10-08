@@ -1,12 +1,8 @@
 #include "Launcher.h"
 #include "TestScene.h"
 
-#include "AnimationImporter.h"
-
 using namespace Core;
 using namespace Device;
-
-#include "AnimationNode.h"
 
 INT WINAPI wWinMain( HINSTANCE hInst, HINSTANCE, LPWSTR, INT )
 {

@@ -40,9 +40,6 @@ RenderSetting TestScene::RegistRenderSetting(Engine& engine, EngineUtility& util
 
 void TestScene::OnInitialize(Engine& engine, EngineUtility& util)
 {
-	auto test = util.LoadMesh("Resources/Deer/Deer2_model.fbx");
-	assert(0);
-
 #ifdef SKYBOX_ON
 	util.ActivateSkyBox("Resources/CubeMap/desertcube1024.dds", "@SkyBox");
 #endif

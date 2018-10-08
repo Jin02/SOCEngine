@@ -5,7 +5,5 @@
     </LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments />
-    <RemoteDebuggerCommandArguments />
   </PropertyGroup>
 </Project>
